@@ -17,7 +17,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractStaticPlugin;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,20 +32,10 @@ import org.slf4j.LoggerFactory;
  * getFragmentManager().beginTransaction().add(AndroidNfcFragment.newInstance(),
  * "myFragmentId").commit();
  *
- * Then set the Activity as an observer of the plugin as any Keyple plugin :
- *
- * SeProxyService seProxyService = SeProxyService.getInstance(); List<ReaderPlugin> plugins = new
- * ArrayList<ReaderPlugin>(); plugins.add(AndroidNfcPluginImpl.getInstance());
- * seProxyService.setPlugins(plugins);
- *
- * ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
- * ((AbstractObservableReader) reader).addObserver(this);
- *
- *
  *
  */
 
-final class AndroidNfcPluginImpl extends AbstractStaticPlugin implements AndroidNfcPlugin {
+final class AndroidNfcPluginImpl extends AbstractPlugin implements AndroidNfcPlugin {
 
     private static final Logger LOG = LoggerFactory.getLogger(AndroidNfcPluginImpl.class);
 
@@ -90,17 +80,5 @@ final class AndroidNfcPluginImpl extends AbstractStaticPlugin implements Android
         SortedSet<SeReader> readers = new TreeSet<SeReader>();
         readers.add(AndroidNfcReaderImpl.getInstance());
         return readers;
-    }
-
-
-    /**
-     * Return the AndroidNfcReaderImpl whatever is the provided name
-     * 
-     * @param name : name of the reader to retrieve
-     * @return instance of @{@link AndroidNfcReaderImpl}
-     */
-    @Override
-    protected SeReader fetchNativeReader(String name) {
-        return readers.first();
     }
 }

@@ -13,13 +13,9 @@ package org.eclipse.keyple.example.generic.pc.usecase4;
 
 import java.io.IOException;
 import org.eclipse.keyple.core.selection.*;
-import org.eclipse.keyple.core.seproxy.ChannelState;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
@@ -41,7 +37,7 @@ public class SequentialMultiSelection_Pcsc {
         SelectionsResult selectionsResult = seSelection.processExplicitSelection(seReader);
         if (selectionsResult.hasActiveSelection()) {
             AbstractMatchingSe matchingSe =
-                    selectionsResult.getMatchingSelection(index).getMatchingSe();
+                    selectionsResult.getMatchingSelection(0).getMatchingSe();
             logger.info("The SE matched the selection {}.", index);
 
             logger.info("Selection status for case {}: \n\t\tATR: {}\n\t\tFCI: {}", index,
@@ -53,7 +49,7 @@ public class SequentialMultiSelection_Pcsc {
     }
 
     public static void main(String[] args)
-            throws KeypleBaseException, InterruptedException, IOException, NoStackTraceThrowable {
+            throws KeypleBaseException, InterruptedException, IOException {
 
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
@@ -84,7 +80,8 @@ public class SequentialMultiSelection_Pcsc {
 
             SeSelection seSelection;
 
-            seSelection = new SeSelection();
+            seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
+                    ChannelControl.CLOSE_AFTER);
 
             /* operate SE selection (change the AID here to adapt it to the SE used for the test) */
             String seAidPrefix = "A000000404012509";
@@ -96,12 +93,13 @@ public class SequentialMultiSelection_Pcsc {
                             new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAidPrefix)),
                             null, SeSelector.AidSelector.FileOccurrence.FIRST,
                             SeSelector.AidSelector.FileControlInformation.FCI),
-                    "Initial selection #1"), ChannelState.KEEP_OPEN));
-
-            seSelection = new SeSelection();
+                    "Initial selection #1")));
 
             doAndAnalyseSelection(seReader, seSelection, 1);
 
+            seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
+                    ChannelControl.CLOSE_AFTER);
+
             /* next selection */
             seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector(
                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
@@ -109,12 +107,14 @@ public class SequentialMultiSelection_Pcsc {
                             new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAidPrefix)),
                             null, SeSelector.AidSelector.FileOccurrence.NEXT,
                             SeSelector.AidSelector.FileControlInformation.FCI),
-                    "Next selection #2"), ChannelState.KEEP_OPEN));
-
-            seSelection = new SeSelection();
+                    "Next selection #2")));
 
             doAndAnalyseSelection(seReader, seSelection, 2);
 
+            seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
+                    ChannelControl.CLOSE_AFTER);
+
+
             /* next selection */
             seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector(
                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
@@ -122,7 +122,7 @@ public class SequentialMultiSelection_Pcsc {
                             new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAidPrefix)),
                             null, SeSelector.AidSelector.FileOccurrence.NEXT,
                             SeSelector.AidSelector.FileControlInformation.FCI),
-                    "Next selection #3"), ChannelState.CLOSE_AFTER));
+                    "Next selection #3")));
 
             doAndAnalyseSelection(seReader, seSelection, 3);
 

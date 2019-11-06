@@ -15,12 +15,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
@@ -35,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * Virtual Reader is a proxy to a Native Reader on the slave terminal Use it like a local reader,
  * all API call will be transferred to the Native Reader with a RPC session
  */
-final class VirtualReaderImpl extends AbstractObservableReader implements VirtualReader {
+final class VirtualReaderImpl extends AbstractReader implements VirtualReader {
 
     private final VirtualReaderSession session;
     private final String nativeReaderName;
@@ -68,7 +70,7 @@ final class VirtualReaderImpl extends AbstractObservableReader implements Virtua
         this.parameters = options;
         logger.info(
                 "A new virtual reader was created with name:{}, sessionId:{}, transmissionMode:{}, options:{}",
-                name, session, transmissionMode, options);
+                this.getName(), session, transmissionMode, options);
     }
 
     /**
@@ -102,12 +104,15 @@ final class VirtualReaderImpl extends AbstractObservableReader implements Virtua
      * Blocking TransmitSet
      * 
      * @param seRequestSet : Set of SeRequest to be transmitted to SE
+     * @param multiSeRequestProcessing the multi se processing mode
+     * @param channelControl indicates if the channel has to be closed at the end of the processing
      * @return List of SeResponse from SE
      * @throws IllegalArgumentException
      * @throws KeypleReaderException
      */
     @Override
-    protected List<SeResponse> processSeRequestSet(Set<SeRequest> seRequestSet)
+    protected List<SeResponse> processSeRequestSet(Set<SeRequest> seRequestSet,
+            MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
             throws IllegalArgumentException, KeypleReaderException {
 
         RmTransmitSetTx transmit = new RmTransmitSetTx(seRequestSet, session.getSessionId(),
@@ -134,12 +139,13 @@ final class VirtualReaderImpl extends AbstractObservableReader implements Virtua
      * Blocking Transmit
      * 
      * @param seRequest : SeRequest to be transmitted to SE
+     * @param channelControl indicates if the channel has to be closed at the end of the processing
      * @return seResponse : SeResponse from SE
      * @throws IllegalArgumentException
      * @throws KeypleReaderException
      */
     @Override
-    protected SeResponse processSeRequest(SeRequest seRequest)
+    protected SeResponse processSeRequest(SeRequest seRequest, ChannelControl channelControl)
             throws IllegalArgumentException, KeypleReaderException {
 
         RmTransmitTx transmit =
@@ -156,17 +162,6 @@ final class VirtualReaderImpl extends AbstractObservableReader implements Virtua
         }
 
     }
-
-    @Override
-    protected void startObservation() {
-        logger.trace("startObservation is not used in this plugin");
-    }
-
-    @Override
-    protected void stopObservation() {
-        logger.trace("stopObservation is not used in this plugin");
-    }
-
 
     @Override
     public void addSeProtocolSetting(SeProtocol seProtocol, String protocolRule) {
@@ -220,6 +215,16 @@ final class VirtualReaderImpl extends AbstractObservableReader implements Virtua
     }
 
     @Override
+    public void startSeDetection(PollingMode pollingMode) {
+        // TODO implement this method
+    }
+
+    @Override
+    public void stopSeDetection() {
+        // TODO implement this method
+    }
+
+    @Override
     public void setDefaultSelectionRequest(
             AbstractDefaultSelectionsRequest defaultSelectionsRequest,
             NotificationMode notificationMode) {
@@ -242,5 +247,11 @@ final class VirtualReaderImpl extends AbstractObservableReader implements Virtua
         }
     }
 
-
+    @Override
+    public void setDefaultSelectionRequest(
+            AbstractDefaultSelectionsRequest defaultSelectionsRequest,
+            NotificationMode notificationMode, PollingMode pollingMode) {
+        // TODO implement this method
+        // ensure that only one exchange with the remote part is necessary
+    }
 }

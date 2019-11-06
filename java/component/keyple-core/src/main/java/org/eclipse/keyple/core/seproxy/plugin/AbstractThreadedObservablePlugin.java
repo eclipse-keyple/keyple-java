@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information regarding copyright
  * ownership.
@@ -14,16 +14,103 @@ package org.eclipse.keyple.core.seproxy.plugin;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractThreadedObservablePlugin extends AbstractObservablePlugin {
+/**
+ * The {@link AbstractThreadedObservablePlugin} class provides the means to observe a plugin
+ * (insertion/removal of readers) using a monitoring thread.
+ */
+public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin {
+    private static final Logger logger = LoggerFactory.getLogger(AbstractPlugin.class);
 
-    private static final Logger logger =
-            LoggerFactory.getLogger(AbstractThreadedObservablePlugin.class);
+    /**
+     * Instantiates a observable plugin.
+     *
+     * @param name name of the plugin
+     */
+    protected AbstractThreadedObservablePlugin(String name) {
+        super(name);
+    }
 
+    /**
+     * Fetch the list of connected native reader (usually from third party library) and returns
+     * their names (or id)
+     *
+     * @return connected readers' name list
+     * @throws KeypleReaderException if a reader error occurs
+     */
+    protected abstract SortedSet<String> fetchNativeReadersNames() throws KeypleReaderException;
+
+    /**
+     * Fetch connected native reader (from third party library) by its name Returns the current
+     * {@link AbstractReader} if it is already listed. Creates and returns a new
+     * {@link AbstractReader} if not.
+     *
+     * @param name the reader name
+     * @return the list of AbstractReader objects.
+     * @throws KeypleReaderException if a reader error occurs
+     */
+    protected abstract SeReader fetchNativeReader(String name) throws KeypleReaderException;
+
+    /**
+     * Add a plugin observer.
+     * <p>
+     * The observer will receive all the events produced by this plugin (reader insertion, removal,
+     * etc.)
+     * <p>
+     * In the case of a {@link AbstractThreadedObservablePlugin}, a thread is created if it does not
+     * already exist (when the first observer is added).
+     *
+     * @param observer the observer object
+     */
+    @Override
+    public final void addObserver(ObservablePlugin.PluginObserver observer) {
+        super.addObserver(observer);
+        if (this instanceof AbstractThreadedObservablePlugin) {
+            if (super.countObservers() == 1) {
+                logger.debug("Start monitoring the plugin {}", this.getName());
+                thread = new EventThread(this.getName());
+                thread.start();
+            }
+        }
+    }
+
+    /**
+     * Remove a plugin observer.
+     * <p>
+     * The observer will do not receive any of the events produced by this plugin.
+     * <p>
+     * In the case of a {@link AbstractThreadedObservablePlugin}, the monitoring thread is ended
+     * when the last observer is removed.
+     *
+     * @param observer the observer object
+     */
+    @Override
+    public final void removeObserver(ObservablePlugin.PluginObserver observer) {
+        super.removeObserver(observer);
+        if (super.countObservers() == 0) {
+            logger.debug("Stop the plugin monitoring.");
+            if (thread != null) {
+                thread.end();
+            }
+        }
+    }
+
+    @Override
+    public void clearObservers() {
+        super.clearObservers();
+        if (thread != null) {
+            logger.debug("Stop the plugin monitoring.");
+            thread.end();
+        }
+    }
+
+    /* Reader insertion/removal management */
     private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 1000;
 
     /**
@@ -44,46 +131,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
      * {@link org.eclipse.keyple.core.seproxy.SeReader} Insertion, removal, and access operations
      * safely execute concurrently by multiple threads.
      */
-    private SortedSet<String> nativeReadersNames = new ConcurrentSkipListSet<String>();
-
-    /**
-     * Fetch the list of connected native reader (usually from third party library) and returns
-     * their names (or id)
-     *
-     * @return connected readers' name list
-     * @throws KeypleReaderException if a reader error occurs
-     */
-    abstract protected SortedSet<String> fetchNativeReadersNames() throws KeypleReaderException;
-
-    /**
-     * Constructor
-     *
-     * @param name name of the plugin
-     */
-    public AbstractThreadedObservablePlugin(String name) {
-        super(name);
-    }
-
-    /**
-     * Start the monitoring thread.
-     * <p>
-     * The thread is created if it does not already exist
-     */
-    @Override
-    protected void startObservation() {
-        thread = new EventThread(this.getName());
-        thread.start();
-    }
-
-    /**
-     * Terminate the monitoring thread
-     */
-    @Override
-    protected void stopObservation() {
-        if (thread != null) {
-            thread.end();
-        }
-    }
+    final private SortedSet<String> nativeReadersNames = new ConcurrentSkipListSet<String>();
 
     /**
      * Thread in charge of reporting live events
@@ -104,12 +152,14 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
             this.interrupt();
         }
 
+        @Override
         public void run() {
             SortedSet<String> changedReaderNames = new ConcurrentSkipListSet<String>();
             try {
                 while (running) {
                     /* retrieves the current readers names list */
-                    SortedSet<String> actualNativeReadersNames = fetchNativeReadersNames();
+                    SortedSet<String> actualNativeReadersNames =
+                            AbstractThreadedObservablePlugin.this.fetchNativeReadersNames();
                     /*
                      * checks if it has changed this algorithm favors cases where nothing change
                      */
@@ -134,6 +184,10 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                             /* list update */
                             for (SeReader reader : readers) {
                                 if (!actualNativeReadersNames.contains(reader.getName())) {
+                                    /* removes any possible observers before removing the reader */
+                                    if (reader instanceof ObservableReader) {
+                                        ((ObservableReader) reader).clearObservers();
+                                    }
                                     readers.remove(reader);
                                     logger.trace(
                                             "[{}][{}] Plugin thread => Remove unplugged reader from readers list.",
@@ -173,11 +227,9 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                     Thread.sleep(threadWaitTimeout);
                 }
             } catch (InterruptedException e) {
-                e.printStackTrace();
                 logger.warn("[{}] An exception occurred while monitoring plugin: {}, cause {}",
                         this.pluginName, e.getMessage(), e.getCause());
             } catch (KeypleReaderException e) {
-                e.printStackTrace();
                 logger.warn("[{}] An exception occurred while monitoring plugin: {}, cause {}",
                         this.pluginName, e.getMessage(), e.getCause());
             }

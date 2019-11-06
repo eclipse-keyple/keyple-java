@@ -24,9 +24,10 @@ public class UnlockCmdBuild extends AbstractSamCommandBuilder {
     private static final CalypsoSamCommands command = CalypsoSamCommands.UNLOCK;
 
     /**
-     *
-     * @param revision
-     * @param unlockData
+     * Builder constructor
+     * 
+     * @param revision the SAM revision
+     * @param unlockData the unlock data
      */
     public UnlockCmdBuild(SamRevision revision, byte[] unlockData) {
         super(command, null);

@@ -20,16 +20,16 @@ import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
+import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +62,7 @@ public class Rev1Selection_Pcsc {
 
 
     public static void main(String[] args)
-            throws KeypleBaseException, InterruptedException, IOException, NoStackTraceThrowable {
+            throws KeypleBaseException, InterruptedException, IOException {
 
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
@@ -75,6 +75,9 @@ public class Rev1Selection_Pcsc {
          * CalypsoUtilities class.
          */
         SeReader poReader = CalypsoUtilities.getDefaultPoReader();
+
+        poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_B_PRIME,
+                PcscProtocolSetting.PCSC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_B_PRIME));
 
         /* Check if the reader exists */
         if (poReader == null) {
@@ -96,25 +99,23 @@ public class Rev1Selection_Pcsc {
                     "==================================================================================");
 
             /*
-             * Prepare a Calypso PO selection
+             * Prepare a Calypso PO selection Setting up a selection of a Calypso REV1 PO (B Prime)
+             * based on ATR
+             *
+             * Select the first application matching the selection.
              */
             SeSelection seSelection = new SeSelection();
 
             /*
-             * Setting of an AID based selection of a Calypso REV3 PO
-             *
-             * Select the first application matching the selection AID whatever the SE communication
-             * protocol keep the logical channel open after the selection
              */
 
             /*
              * Calypso selection: configures a PoSelectionRequest with all the desired attributes to
              * make the selection and read additional information afterwards
              */
-            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
-                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                            new PoSelector.PoAtrFilter(poAtrRegex), null, "ATR: " + poAtrRegex),
-                    ChannelState.KEEP_OPEN);
+            PoSelectionRequest poSelectionRequest =
+                    new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_B_PRIME,
+                            new PoSelector.PoAtrFilter(poAtrRegex), null, "ATR: " + poAtrRegex));
 
             /*
              * Prepare the selection of the DF RT.
@@ -124,11 +125,12 @@ public class Rev1Selection_Pcsc {
 
             /*
              * Prepare the reading order and keep the associated parser for later use once the
-             * selection has been made.
+             * selection has been made. We provide the expected record length since the REV1 PO need
+             * it.
              */
             int readEnvironmentParserIndex = poSelectionRequest.prepareReadRecordsCmd(
                     CalypsoClassicInfo.SFI_EnvironmentAndHolder,
-                    ReadDataStructure.SINGLE_RECORD_DATA, CalypsoClassicInfo.RECORD_NUMBER_1,
+                    ReadDataStructure.SINGLE_RECORD_DATA, CalypsoClassicInfo.RECORD_NUMBER_1, 29,
                     String.format("EnvironmentAndHolder (SFI=%02X))",
                             CalypsoClassicInfo.SFI_EnvironmentAndHolder));
 
@@ -178,11 +180,12 @@ public class Rev1Selection_Pcsc {
 
                 /*
                  * Prepare the reading order and keep the associated parser for later use once the
-                 * transaction has been processed.
+                 * transaction has been processed. We provide the expected record length since the
+                 * REV1 PO need it.
                  */
                 int readEventLogParserIndex = poTransaction.prepareReadRecordsCmd(
                         CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
-                        CalypsoClassicInfo.RECORD_NUMBER_1,
+                        CalypsoClassicInfo.RECORD_NUMBER_1, 29,
                         String.format("EventLog (SFI=%02X, recnbr=%d))",
                                 CalypsoClassicInfo.SFI_EventLog,
                                 CalypsoClassicInfo.RECORD_NUMBER_1));
@@ -191,7 +194,7 @@ public class Rev1Selection_Pcsc {
                  * Actual PO communication: send the prepared read order, then close the channel
                  * with the PO
                  */
-                if (poTransaction.processPoCommands(ChannelState.CLOSE_AFTER)) {
+                if (poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER)) {
                     logger.info("The reading of the EventLog has succeeded.");
 
                     /*

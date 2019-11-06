@@ -24,11 +24,12 @@ public class SamWriteKeyCmdBuild extends AbstractSamCommandBuilder {
     private static final CalypsoSamCommands command = CalypsoSamCommands.WRITE_KEY;
 
     /**
-     *
-     * @param revision
-     * @param writingMode
-     * @param keyReference
-     * @param keyData
+     * Builder constructor
+     * 
+     * @param revision the SAM revision
+     * @param writingMode the writing mode (P1)
+     * @param keyReference the key reference (P2)
+     * @param keyData the key data
      */
     public SamWriteKeyCmdBuild(SamRevision revision, byte writingMode, byte keyReference,
             byte[] keyData) {

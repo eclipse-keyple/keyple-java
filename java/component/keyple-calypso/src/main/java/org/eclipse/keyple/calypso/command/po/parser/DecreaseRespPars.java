@@ -51,6 +51,8 @@ public final class DecreaseRespPars extends AbstractPoResponseParser {
 
     /**
      * Instantiates a new DecreaseRespPars.
+     * 
+     * @param response the response from the PO
      */
     public DecreaseRespPars(ApduResponse response) {
         super(response);

@@ -13,7 +13,6 @@ package org.eclipse.keyple.core.seproxy.message;
 
 import java.io.Serializable;
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 
 /**
@@ -33,16 +32,7 @@ public final class SeRequest implements Serializable {
     /**
      * contains a group of APDUCommand to operate on the selected SE application by the SE reader.
      */
-    private List<ApduRequest> apduRequests;
-
-
-    /**
-     * the final logical channel status: the SE reader may kept active the logical channel of the SE
-     * application after processing the group of APDU commands otherwise the SE reader will close
-     * the logical channel of the SE application after processing the group of APDU commands (i.e.
-     * after the receipt of the last APDU response).
-     */
-    private ChannelState channelState;
+    final private List<ApduRequest> apduRequests;
 
 
     /**
@@ -53,26 +43,20 @@ public final class SeRequest implements Serializable {
      *        selection
      * @param apduRequests a optional list of {@link ApduRequest} to execute after a successful
      *        selection process
-     * @param channelState the channel management parameter allowing to close or keep the channel
-     *        open after the request execution
      */
-    public SeRequest(SeSelector seSelector, List<ApduRequest> apduRequests,
-            ChannelState channelState) {
+    public SeRequest(SeSelector seSelector, List<ApduRequest> apduRequests) {
         this.seSelector = seSelector;
         this.apduRequests = apduRequests;
-        this.channelState = channelState;
     }
 
     /**
      * Constructor to be used when the SE is already selected (without {@link SeSelector})
      * 
      * @param apduRequests a list of ApudRequest
-     * @param channelState a flag to tell if the channel has to be closed at the end
      */
-    public SeRequest(List<ApduRequest> apduRequests, ChannelState channelState) {
+    public SeRequest(List<ApduRequest> apduRequests) {
         this.seSelector = null;
         this.apduRequests = apduRequests;
-        this.channelState = channelState;
     }
 
 
@@ -95,18 +79,9 @@ public final class SeRequest implements Serializable {
         return apduRequests;
     }
 
-    /**
-     * Define if the channel should be kept open after the {@link SeRequest} has been executed.
-     *
-     * @return If the channel should be kept open
-     */
-    public boolean isKeepChannelOpen() {
-        return channelState == ChannelState.KEEP_OPEN;
-    }
-
     @Override
     public String toString() {
-        return String.format("SeRequest:{REQUESTS = %s, SELECTOR = %s, KEEPCHANNELOPEN = %s}",
-                getApduRequests(), getSeSelector(), channelState);
+        return String.format("SeRequest:{REQUESTS = %s, SELECTOR = %s}", getApduRequests(),
+                getSeSelector());
     }
 }

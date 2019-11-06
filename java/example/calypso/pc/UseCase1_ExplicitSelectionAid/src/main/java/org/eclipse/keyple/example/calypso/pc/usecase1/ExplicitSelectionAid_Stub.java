@@ -19,12 +19,8 @@ import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.ChannelState;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
@@ -58,7 +54,7 @@ public class ExplicitSelectionAid_Stub {
     protected static final Logger logger = LoggerFactory.getLogger(ExplicitSelectionAid_Stub.class);
 
     public static void main(String[] args)
-            throws KeypleBaseException, InterruptedException, IOException, NoStackTraceThrowable {
+            throws KeypleBaseException, InterruptedException, IOException {
 
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
@@ -120,13 +116,12 @@ public class ExplicitSelectionAid_Stub {
              * Calypso selection: configures a PoSelectionRequest with all the desired attributes to
              * make the selection and read additional information afterwards
              */
-            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
-                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                            new PoSelector.PoAidSelector(
-                                    new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
-                                    PoSelector.InvalidatedPo.REJECT),
-                            "AID: " + CalypsoClassicInfo.AID),
-                    ChannelState.KEEP_OPEN);
+            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                    new PoSelector.PoAidSelector(
+                            new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
+                            PoSelector.InvalidatedPo.REJECT),
+                    "AID: " + CalypsoClassicInfo.AID));
 
             /*
              * Prepare the reading order and keep the associated parser for later use once the
@@ -193,7 +188,7 @@ public class ExplicitSelectionAid_Stub {
                  * Actual PO communication: send the prepared read order, then close the channel
                  * with the PO
                  */
-                if (poTransaction.processPoCommands(ChannelState.CLOSE_AFTER)) {
+                if (poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER)) {
                     logger.info("The reading of the EventLog has succeeded.");
 
                     /*

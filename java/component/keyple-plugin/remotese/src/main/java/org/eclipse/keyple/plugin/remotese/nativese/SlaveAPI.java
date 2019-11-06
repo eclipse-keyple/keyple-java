@@ -23,7 +23,7 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractReader;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.nativese.method.*;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
@@ -274,9 +274,13 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
             // blocking call
             disconnect.getResponse();
             ProxyReader nativeReader = findLocalReader(nativeReaderName);
-            if (nativeReader instanceof AbstractObservableReader) {
+            if (nativeReader instanceof AbstractReader) {
+                logger.debug("Disconnected reader is observable, removing slaveAPI observer");
+
                 // stop propagating the local reader events
-                ((AbstractObservableReader) nativeReader).removeObserver(this);
+                ((AbstractReader) nativeReader).removeObserver(this);
+            } else {
+                logger.debug("Disconnected reader is not observable");
             }
         } catch (KeypleRemoteException e) {
             throw new KeypleReaderException("An error occurred while calling connectReader", e);
@@ -293,6 +297,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
      * @return found reader if any
      * @throws KeypleReaderNotFoundException if not reader were found with this name
      */
+    @Override
     public ProxyReader findLocalReader(String nativeReaderName)
             throws KeypleReaderNotFoundException {
         logger.trace("Find local reader by name {} in {} plugin(s)", nativeReaderName,

@@ -16,14 +16,14 @@ import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 /**
  * Exception thrown when Channel Operations (open/close) failed in a {@link ProxyReader}
  */
-public class KeypleChannelStateException extends KeypleReaderException {
+public class KeypleChannelControlException extends KeypleReaderException {
 
     /**
      * New exception to be thrown
      *
      * @param message : message to identify the exception and the context
      */
-    public KeypleChannelStateException(String message) {
+    public KeypleChannelControlException(String message) {
         super(message);
     }
 
@@ -33,7 +33,7 @@ public class KeypleChannelStateException extends KeypleReaderException {
      * @param message : message to add some context to the exception
      * @param cause : lower level exception
      */
-    public KeypleChannelStateException(String message, Throwable cause) {
+    public KeypleChannelControlException(String message, Throwable cause) {
         super(message, cause);
     }
 }

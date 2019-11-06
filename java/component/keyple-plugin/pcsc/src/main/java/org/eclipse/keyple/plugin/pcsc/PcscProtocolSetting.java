@@ -39,7 +39,7 @@ public class PcscProtocolSetting {
         map.put(SeCommonProtocols.PROTOCOL_ISO14443_4,
                 "3B8880....................|3B8C800150.*|.*4F4D4141544C4153.*");
 
-        map.put(SeCommonProtocols.PROTOCOL_B_PRIME, "3B8F8001805A0A0103200311........829000..");
+        map.put(SeCommonProtocols.PROTOCOL_B_PRIME, "3B8F8001805A0...................829000..");
 
         map.put(SeCommonProtocols.PROTOCOL_MIFARE_UL, "3B8F8001804F0CA0000003060300030000000068");
 
@@ -58,7 +58,7 @@ public class PcscProtocolSetting {
     /**
      * Return a subset of the settings map
      * 
-     * @param specificProtocols
+     * @param specificProtocols subset of protocols
      * @return a settings map
      */
     public static Map<SeProtocol, String> getSpecificSettings(

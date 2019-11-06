@@ -35,6 +35,7 @@ public class RmSetDefaultSelectionRequestExecutor implements RemoteMethodExecuto
     private static final Logger logger =
             LoggerFactory.getLogger(RmSetDefaultSelectionRequestExecutor.class);
 
+    @Override
     public RemoteMethod getMethodName() {
         return RemoteMethod.DEFAULT_SELECTION_REQUEST;
     }

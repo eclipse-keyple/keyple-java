@@ -13,7 +13,6 @@ package org.eclipse.keyple.example.generic.pc.usecase2;
 
 
 import org.eclipse.keyple.core.selection.*;
-import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
@@ -100,13 +99,11 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
          * Generic selection: configures a SeSelector with all the desired attributes to make the
          * selection
          */
-        GenericSeSelectionRequest seSelector =
-                new GenericSeSelectionRequest(
-                        new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(
-                                        ByteArrayUtil.fromHex(seAid)), null),
-                                "AID: " + seAid),
-                        ChannelState.KEEP_OPEN);
+        GenericSeSelectionRequest seSelector = new GenericSeSelectionRequest(new SeSelector(
+                SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                new SeSelector.AidSelector(
+                        new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAid)), null),
+                "AID: " + seAid));
 
         /*
          * Add the selection case to the current selection (we could have added other cases here)
@@ -117,8 +114,8 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
          * Provide the SeReader with the selection operation to be processed when a SE is inserted.
          */
         ((ObservableReader) seReader).setDefaultSelectionRequest(
-                seSelection.getSelectionOperation(),
-                ObservableReader.NotificationMode.MATCHED_ONLY);
+                seSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY,
+                ObservableReader.PollingMode.REPEATING);
 
         /* Set the current class as Observer of the first reader */
         ((ObservableReader) seReader).addObserver(this);
@@ -165,16 +162,36 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
                     logger.error(
                             "The selection of the SE has failed. Should not have occurred due to the MATCHED_ONLY selection mode.");
                 }
+                logger.error(
+                        "SE_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.");
                 break;
             case SE_INSERTED:
                 logger.error(
                         "SE_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.");
+                logger.error(
+                        "SE_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.");
                 break;
-            case SE_REMOVAL:
-                logger.info("The SE has been removed.");
+            case SE_REMOVED:
+                logger.info("There is no PO inserted anymore. Return to the waiting state...");
                 break;
             default:
                 break;
+        }
+        if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED
+                || event.getEventType() == ReaderEvent.EventType.SE_MATCHED) {
+            /*
+             * Informs the underlying layer of the end of the SE processing, in order to manage the
+             * removal sequence. <p>If closing has already been requested, this method will do
+             * nothing.
+             */
+            try {
+                ((ObservableReader) SeProxyService.getInstance().getPlugin(event.getPluginName())
+                        .getReader(event.getReaderName())).notifySeProcessed();
+            } catch (KeypleReaderNotFoundException e) {
+                e.printStackTrace();
+            } catch (KeyplePluginNotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 

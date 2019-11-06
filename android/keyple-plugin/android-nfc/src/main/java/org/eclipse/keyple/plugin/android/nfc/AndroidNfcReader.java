@@ -14,9 +14,26 @@ package org.eclipse.keyple.plugin.android.nfc;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 
+import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 
-public interface AndroidNfcReader extends ObservableReader, NfcAdapter.ReaderCallback  {
+/**
+ * {@link SeReader} to communicate with NFC Tag though
+ * Android {@link NfcAdapter}
+ *
+ * Configure NFCAdapter Protocols with {@link AndroidNfcReaderImpl#setParameter(String, String)}
+ *
+ * Optimized for android 4.4 (API 19) to  6.0 (API 23)
+ */
+public interface AndroidNfcReader extends ObservableReader{
+
+    String READER_NAME = "AndroidNfcReaderImpl";
+    String PLUGIN_NAME = AndroidNfcPlugin.PLUGIN_NAME;
+
+    String FLAG_READER_SKIP_NDEF_CHECK = "FLAG_READER_SKIP_NDEF_CHECK";
+    String FLAG_READER_NO_PLATFORM_SOUNDS = "FLAG_READER_NO_PLATFORM_SOUNDS";
+    String FLAG_READER_PRESENCE_CHECK_DELAY =
+            "FLAG_READER_PRESENCE_CHECK_DELAY";
     /**
      * Gets a string describing the low level description of the current tag.
      * <p>Used for logging purpose

@@ -18,7 +18,8 @@ import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -53,8 +54,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     private class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
         TransmissionMode transmissionMode;
 
-        public GenericSeSelectionRequest(SeSelector seSelector, ChannelState channelState) {
-            super(seSelector, channelState);
+        public GenericSeSelectionRequest(SeSelector seSelector) {
+            super(seSelector);
             transmissionMode = seSelector.getSeProtocol().getTransmissionMode();
         }
 
@@ -145,7 +146,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
     /**
      * Test SE_REMOVED Reader Event throwing and catching
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -162,11 +163,11 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                     Assert.assertEquals(2, lock.getCount());
                     lock.countDown();
                 } else {
-                    // the next event should be SE_REMOVAL
+                    // the next event should be SE_REMOVED
                     Assert.assertEquals(1, lock.getCount());
                     Assert.assertEquals(event.getReaderName(), virtualReader.getName());
                     Assert.assertEquals(event.getPluginName(), masterAPI.getPlugin().getName());
-                    Assert.assertEquals(ReaderEvent.EventType.SE_REMOVAL, event.getEventType());
+                    Assert.assertEquals(ReaderEvent.EventType.SE_REMOVED, event.getEventType());
                     logger.debug("Reader Event is correct, release lock");
                     lock.countDown();
 
@@ -181,9 +182,9 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
         // insert SE
         nativeReader.insertSe(StubReaderTest.hoplinkSE());
-
         // wait 0,5 second
         Thread.sleep(500);
+        nativeReader.notifySeProcessed();
 
         // remove SE
         nativeReader.removeSe();
@@ -261,8 +262,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
                 new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                         new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid), null),
-                        "AID: " + poAid),
-                ChannelState.KEEP_OPEN);
+                        "AID: " + poAid));
 
         seSelection.prepareSelection(genericSeSelectionRequest);
 
@@ -313,8 +313,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
                 new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                         new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid), null),
-                        "AID: " + poAid),
-                ChannelState.KEEP_OPEN);
+                        "AID: " + poAid));
 
         seSelection.prepareSelection(genericSeSelectionRequest);
 
@@ -374,8 +373,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
                 new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                         new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid), null),
-                        "AID: " + poAid),
-                ChannelState.KEEP_OPEN);
+                        "AID: " + poAid));
 
         seSelection.prepareSelection(genericSeSelectionRequest);
 
@@ -412,11 +410,11 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
                 Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
 
-                SeSelection seSelection = new SeSelection();
+                SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
+                        ChannelControl.KEEP_OPEN);
                 GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
                         new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                                new SeSelector.AtrFilter("3B.*"), null, "Test " + "ATR"),
-                        ChannelState.KEEP_OPEN);
+                                new SeSelector.AtrFilter("3B.*"), null, "Test " + "ATR"));
 
                 /* Prepare selector, ignore AbstractMatchingSe here */
                 seSelection.prepareSelection(genericSeSelectionRequest);

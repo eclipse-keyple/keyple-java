@@ -16,7 +16,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
- * A {@link PluginEvent} is used to propagate a change of reader state in reader plugin.
+ * A {@link PluginEvent} is used to propagate a change of reader currentState in reader plugin.
  * <p>
  * The getReaderNames and getEventType methods allow the event recipient to retrieve the names of
  * the readers involved and the type of the event.
@@ -32,12 +32,12 @@ public final class PluginEvent {
     /**
      * The name of the plugin handling the reader that produced the event
      */
-    private final String pluginName;
+    final private String pluginName;
 
     /**
      * The name of the readers involved
      */
-    private SortedSet<String> readerNames = new TreeSet<String>();
+    final private SortedSet<String> readerNames = new TreeSet<String>();
 
     /**
      * The different types of reader event

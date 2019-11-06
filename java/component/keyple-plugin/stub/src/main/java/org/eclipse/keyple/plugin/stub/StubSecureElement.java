@@ -13,7 +13,7 @@ package org.eclipse.keyple.plugin.stub;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.keyple.core.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
@@ -33,11 +33,11 @@ public abstract class StubSecureElement {
         return isPhysicalChannelOpen;
     }
 
-    public void openPhysicalChannel() throws KeypleChannelStateException {
+    public void openPhysicalChannel() throws KeypleChannelControlException {
         isPhysicalChannelOpen = true;
     }
 
-    public void closePhysicalChannel() throws KeypleChannelStateException {
+    public void closePhysicalChannel() throws KeypleChannelControlException {
         isPhysicalChannelOpen = false;
     }
 

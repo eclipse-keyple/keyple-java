@@ -29,6 +29,7 @@ class RmDisconnectReaderExecutor implements RemoteMethodExecutor {
 
     private static final Logger logger = LoggerFactory.getLogger(RmDisconnectReaderExecutor.class);
 
+    @Override
     public RemoteMethod getMethodName() {
         return RemoteMethod.READER_DISCONNECT;
     }
@@ -57,7 +58,8 @@ class RmDisconnectReaderExecutor implements RemoteMethodExecutor {
                     null, nativeReaderName, null, keypleDto.getTargetNodeId(),
                     keypleDto.getRequesterNodeId(), keypleDto.getId()));
         } catch (KeypleReaderNotFoundException e) {
-            logger.error("Impossible to disconnect reader " + nativeReaderName, e);
+            logger.warn("Impossible to disconnect reader {}, reader is not connected ",
+                    nativeReaderName);
             return transportDto
                     .nextTransportDTO(KeypleDtoHelper.ExceptionDTO(getMethodName().getName(), e,
                             keypleDto.getSessionId(), keypleDto.getNativeReaderName(),

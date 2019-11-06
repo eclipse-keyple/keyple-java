@@ -75,6 +75,8 @@ public class Demo_CalypsoClassic_Stub {
         poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_B_PRIME,
                 StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_B_PRIME));
 
+        samReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO7816_3, ".*");
+
         /* Assign readers to the Hoplink transaction engine */
         transactionEngine.setReaders(poReader, samReader);
 
@@ -89,7 +91,8 @@ public class Demo_CalypsoClassic_Stub {
         /* Set the default selection operation */
         ((ObservableReader) poReader).setDefaultSelectionRequest(
                 transactionEngine.preparePoSelection(),
-                ObservableReader.NotificationMode.MATCHED_ONLY);
+                ObservableReader.NotificationMode.MATCHED_ONLY,
+                ObservableReader.PollingMode.REPEATING);
 
         /* Set the transactionEngine as Observer of the PO reader */
         ((ObservableReader) poReader).addObserver(transactionEngine);

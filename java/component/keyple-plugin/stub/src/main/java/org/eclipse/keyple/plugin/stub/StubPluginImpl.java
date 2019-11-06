@@ -69,10 +69,12 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
         parameters.put(key, value);
     }
 
+    @Override
     public void plugStubReader(String name, Boolean synchronous) {
         plugStubReader(name, TransmissionMode.CONTACTLESS, synchronous);
     }
 
+    @Override
     public void plugStubReader(String name, TransmissionMode transmissionMode,
             Boolean synchronous) {
 
@@ -93,6 +95,7 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
 
     }
 
+    @Override
     public void plugStubReaders(Set<String> names, Boolean synchronous) {
         logger.debug("Plugging {} readers ..", names.size());
 
@@ -128,6 +131,7 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
 
     }
 
+    @Override
     public void unplugStubReader(String name, Boolean synchronous) throws KeypleReaderException {
 
         if (!connectedStubNames.contains(name)) {
@@ -146,6 +150,7 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
         }
     }
 
+    @Override
     public void unplugStubReaders(Set<String> names, Boolean synchronous) {
         logger.info("Unplug {} stub readers", names.size());
         logger.debug("Unplug stub readers.. {}", names);
@@ -171,7 +176,7 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
      * @return connected readers' name list
      */
     @Override
-    protected SortedSet<String> fetchNativeReadersNames() {
+    public SortedSet<String> fetchNativeReadersNames() {
         if (connectedStubNames.isEmpty()) {
             logger.trace("No reader available.");
         }

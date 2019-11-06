@@ -117,7 +117,7 @@ public class SamResourceManager {
         SamSelector samSelector = new SamSelector(new SamIdentifier(AUTO, null, null), "SAM");
 
         /* Prepare selector, ignore MatchingSe here */
-        samSelection.prepareSelection(new SamSelectionRequest(samSelector, ChannelState.KEEP_OPEN));
+        samSelection.prepareSelection(new SamSelectionRequest(samSelector));
 
         SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
         if (!selectionsResult.hasActiveSelection()) {
@@ -142,9 +142,11 @@ public class SamResourceManager {
      *
      * @param allocationMode the blocking/non-blocking mode
      * @param samIdentifier the targeted SAM identifier
+     * @return a SAM resource
+     * @throws KeypleReaderException if a reader error occurs
      */
     public SamResource allocateSamResource(AllocationMode allocationMode,
-            SamIdentifier samIdentifier) throws InterruptedException, KeypleReaderException {
+            SamIdentifier samIdentifier) throws KeypleReaderException {
         long maxBlockingDate = System.currentTimeMillis() + MAX_BLOCKING_TIME;
         boolean noSamResourceLogged = false;
         logger.debug("Allocating SAM reader channel...");
@@ -182,7 +184,12 @@ public class SamResourceManager {
                     logger.trace("No SAM resources available at the moment.");
                     noSamResourceLogged = true;
                 }
-                Thread.sleep(10);
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt(); // set interrupt flag
+                    logger.error("Interrupt exception in Thread.sleep.");
+                }
                 if (System.currentTimeMillis() >= maxBlockingDate) {
                     logger.error("The allocation process failed. Timeout {} sec exceeded .",
                             (MAX_BLOCKING_TIME / 100.0));
@@ -268,9 +275,9 @@ public class SamResourceManager {
                     samReader = SeProxyService.getInstance().getPlugin(event.getPluginName())
                             .getReader(readerName);
                 } catch (KeyplePluginNotFoundException e) {
-                    e.printStackTrace();
+                    logger.error("Plugin not found {}", event.getPluginName());
                 } catch (KeypleReaderNotFoundException e) {
-                    e.printStackTrace();
+                    logger.error("Reader not found {}", readerName);
                 }
                 switch (event.getEventType()) {
                     case READER_CONNECTED:
@@ -293,7 +300,7 @@ public class SamResourceManager {
                                 /* Shared mode */
                                 samReader.setParameter("mode", "shared");
                             } catch (KeypleBaseException e) {
-                                e.printStackTrace();
+                                logger.error("Wrong parameter", e);
                             }
 
                             if (samReader instanceof ObservableReader && readerObserver != null) {
@@ -309,10 +316,10 @@ public class SamResourceManager {
                                             localSamResources.add(createSamResource(samReader));
                                         }
                                     }
-                                } catch (NoStackTraceThrowable noStackTraceThrowable) {
-                                    noStackTraceThrowable.printStackTrace();
+                                } catch (KeypleIOReaderException e) {
+                                    logger.error("Error in reader", e);
                                 } catch (KeypleReaderException e) {
-                                    e.printStackTrace();
+                                    logger.error("Error in reader", e);
                                 }
                             }
                         } else {
@@ -408,8 +415,8 @@ public class SamResourceManager {
                             localSamResources.add(newSamResource);
                         }
                         break;
-                    case SE_REMOVAL:
-                    case IO_ERROR:
+                    case SE_REMOVED:
+                    case TIMEOUT_ERROR:
                         removeResource(samReader);
                         break;
                 }

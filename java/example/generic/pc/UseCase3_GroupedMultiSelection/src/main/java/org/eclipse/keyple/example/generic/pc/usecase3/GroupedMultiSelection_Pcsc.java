@@ -13,12 +13,8 @@ package org.eclipse.keyple.example.generic.pc.usecase3;
 
 import java.io.IOException;
 import org.eclipse.keyple.core.selection.*;
-import org.eclipse.keyple.core.seproxy.ChannelState;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
@@ -36,7 +32,7 @@ public class GroupedMultiSelection_Pcsc {
             LoggerFactory.getLogger(GroupedMultiSelection_Pcsc.class);
 
     public static void main(String[] args)
-            throws KeypleBaseException, InterruptedException, IOException, NoStackTraceThrowable {
+            throws KeypleBaseException, InterruptedException, IOException {
 
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
@@ -63,7 +59,8 @@ public class GroupedMultiSelection_Pcsc {
         if (seReader.isSePresent()) {
 
             /* CLOSE_AFTER pour assurer la sélection de toutes les applications */
-            SeSelection seSelection = new SeSelection();
+            SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.PROCESS_ALL,
+                    ChannelControl.CLOSE_AFTER);
 
             /* operate SE selection (change the AID here to adapt it to the SE used for the test) */
             String seAidPrefix = "A000000404012509";
@@ -74,7 +71,7 @@ public class GroupedMultiSelection_Pcsc {
                     new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(seAidPrefix), null,
                             SeSelector.AidSelector.FileOccurrence.FIRST,
                             SeSelector.AidSelector.FileControlInformation.FCI),
-                    "Initial selection #1"), ChannelState.CLOSE_AFTER));
+                    "Initial selection #1")));
 
             /* next selection (2nd selection, later indexed 1) */
             seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector(
@@ -82,7 +79,7 @@ public class GroupedMultiSelection_Pcsc {
                     new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(seAidPrefix), null,
                             SeSelector.AidSelector.FileOccurrence.NEXT,
                             SeSelector.AidSelector.FileControlInformation.FCI),
-                    "Next selection #2"), ChannelState.CLOSE_AFTER));
+                    "Next selection #2")));
 
             /* next selection (3rd selection, later indexed 2) */
             seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector(
@@ -90,7 +87,7 @@ public class GroupedMultiSelection_Pcsc {
                     new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(seAidPrefix), null,
                             SeSelector.AidSelector.FileOccurrence.NEXT,
                             SeSelector.AidSelector.FileControlInformation.FCI),
-                    "Next selection #3"), ChannelState.CLOSE_AFTER));
+                    "Next selection #3")));
             /*
              * Actual SE communication: operate through a single request the SE selection
              */

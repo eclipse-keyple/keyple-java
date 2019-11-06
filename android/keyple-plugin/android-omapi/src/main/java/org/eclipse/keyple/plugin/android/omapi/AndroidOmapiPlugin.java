@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.android.omapi;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 
 /**
- * The PcscPlugin interface provides the public elements used to manage the Android OMAPI plugin.
+ * The AndroidOmapiPlugin interface provides the public elements used to manage the Android OMAPI plugin.
  */
 public interface AndroidOmapiPlugin extends ReaderPlugin {
     String PLUGIN_NAME = "AndroidOmapiPlugin";

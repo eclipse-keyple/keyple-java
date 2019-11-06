@@ -135,7 +135,7 @@ public class StubPluginAsyncTest extends BaseStubTest {
                 new HashSet<String>(Arrays.asList("E_Reader1", "E_Reader2", "E_Reader3"));
 
         // lock test until message is received
-        final CountDownLatch readerConnected = new CountDownLatch(1);
+        final CountDownLatch readerConnected = new CountDownLatch(3);
 
         // add READER_CONNECTED assert observer
         stubPlugin.addObserver(new ObservablePlugin.PluginObserver() {
@@ -145,12 +145,12 @@ public class StubPluginAsyncTest extends BaseStubTest {
                         event.getReaderNames().size());
                 Assert.assertEquals(PluginEvent.EventType.READER_CONNECTED, event.getEventType());
                 Assert.assertTrue(event.getReaderNames().size() >= 1);// can be one or three
-                Assert.assertEquals(READERS, event.getReaderNames());
-                readerConnected.countDown();
+                // we are waiting for 3 notifications of reader insertion
+                for (int i = 0; i < event.getReaderNames().size(); i++) {
+                    readerConnected.countDown();
+                }
             }
-
         });
-
 
         // connect readers
         stubPlugin.plugStubReaders(READERS, false);

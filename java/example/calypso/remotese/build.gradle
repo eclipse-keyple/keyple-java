@@ -17,6 +17,7 @@ compileJava.doFirst {
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven {
         url 'https://repo.eclipse.org/service/local/repositories/maven_central/content'

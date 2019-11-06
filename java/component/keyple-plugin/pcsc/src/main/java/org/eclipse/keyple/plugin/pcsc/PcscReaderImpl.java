@@ -13,17 +13,26 @@ package org.eclipse.keyple.plugin.pcsc;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 import javax.smartcardio.*;
 import org.eclipse.keyple.core.seproxy.exception.*;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.local.*;
+import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.SmartInsertionMonitoringJob;
+import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.SmartRemovalMonitoringJob;
+import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeInsertion;
+import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeProcessing;
+import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeRemoval;
+import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForStartDetect;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscReader {
+final class PcscReaderImpl extends AbstractObservableLocalReader
+        implements PcscReader, SmartInsertionReader, SmartRemovalReader {
 
     private static final Logger logger = LoggerFactory.getLogger(PcscReaderImpl.class);
 
@@ -31,8 +40,6 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
     private static final String PROTOCOL_T1 = "T=1";
     private static final String PROTOCOL_T_CL = "T=CL";
     private static final String PROTOCOL_ANY = "T=0";
-
-    private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 5000;
 
     private final CardTerminal terminal;
 
@@ -44,8 +51,15 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
     private Card card;
     private CardChannel channel;
 
-    private boolean logging;
+    // the latency delay value (in ms) determines the maximum time during which the
+    // waitForCardPresent and waitForCardPresent blocking functions will execute.
+    // This will correspond to the capacity to react to the interrupt signal of
+    // the thread (see cancel method of the Future object)
+    private final long insertLatency = 50;
+    private final long removalLatency = 50;
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
+    private boolean logging;
 
     /**
      * This constructor should only be called by PcscPlugin PCSC reader parameters are initialized
@@ -60,7 +74,8 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
         this.terminal = terminal;
         this.card = null;
         this.channel = null;
-        this.protocolsMap = new HashMap<SeProtocol, String>();
+
+        this.stateService = initStateService();
 
         // Using null values to use the standard method for defining default values
         try {
@@ -75,7 +90,31 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
     }
 
     @Override
-    protected void closePhysicalChannel() throws KeypleChannelStateException {
+    public ObservableReaderStateService initStateService() {
+
+        Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
+                new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
+                new WaitForStartDetect(this));
+
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
+                new WaitForSeInsertion(this, new SmartInsertionMonitoringJob(this),
+                        executorService));
+
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
+                new WaitForSeProcessing(this, new SmartRemovalMonitoringJob(this),
+                        executorService));
+
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
+                new WaitForSeRemoval(this, new SmartRemovalMonitoringJob(this), executorService));
+
+
+        return new ObservableReaderStateService(this, states,
+                AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION);
+    }
+
+    @Override
+    protected void closePhysicalChannel() throws KeypleChannelControlException {
         try {
             if (card != null) {
                 if (logging) {
@@ -92,44 +131,83 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
                 }
             }
         } catch (CardException e) {
-            throw new KeypleChannelStateException("Error while closing physical channel", e);
+            throw new KeypleChannelControlException("Error while closing physical channel", e);
         }
     }
 
     @Override
-    protected boolean checkSePresence() throws NoStackTraceThrowable {
+    protected boolean checkSePresence() throws KeypleIOReaderException {
         try {
             return terminal.isCardPresent();
         } catch (CardException e) {
-            logger.trace("[{}] Exception occured in isSePresent. Message: {}", this.getName(),
+            logger.trace("[{}] Exception occurred in isSePresent. Message: {}", this.getName(),
                     e.getMessage());
-            throw new NoStackTraceThrowable();
+            throw new KeypleIOReaderException("Exception occurred in isSePresent", e);
         }
     }
 
     @Override
-    protected boolean waitForCardPresent(long timeout) throws NoStackTraceThrowable {
+    public boolean waitForCardPresent() throws KeypleIOReaderException {
+        logger.trace("[{}] waitForCardPresent => loop with latency of {} ms.", this.getName(),
+                insertLatency);
         try {
-            return terminal.waitForCardPresent(timeout);
-        } catch (CardException e) {
-            logger.trace("[{}] Exception occured in waitForCardPresent. Message: {}",
-                    this.getName(), e.getMessage());
-            throw new NoStackTraceThrowable();
-        }
-    }
-
-    @Override
-    protected boolean waitForCardAbsent(long timeout) throws NoStackTraceThrowable {
-        try {
-            if (terminal.waitForCardAbsent(timeout)) {
-                return true;
-            } else {
-                return false;
+            while (true) {
+                if (terminal.waitForCardPresent(insertLatency)) {
+                    // card inserted
+                    return true;
+                } else {
+                    if (Thread.interrupted()) {
+                        logger.trace("[{}] waitForCardPresent => task has been cancelled",
+                                this.getName());
+                        // task has been cancelled
+                        return false;
+                    }
+                }
             }
         } catch (CardException e) {
-            logger.trace("[{}] Exception occured in waitForCardAbsent. Message: {}", this.getName(),
-                    e.getMessage());
-            throw new NoStackTraceThrowable();
+            throw new KeypleIOReaderException(
+                    "[" + this.getName() + "] Exception occurred in waitForCardPresent. "
+                            + "Message: " + e.getMessage());
+        } catch (Throwable t) {
+            // can or can not happen depending on terminal.waitForCardPresent
+            logger.trace("[{}] waitForCardPresent => Throwable catched {}", this.getName(),
+                    t.getCause());
+            return false;
+        }
+    }
+
+    /**
+     * Wait for the card absent event from smartcard.io
+     * 
+     * @return true if the card is removed within the delay
+     */
+    @Override
+    public boolean waitForCardAbsentNative() throws KeypleIOReaderException {
+        logger.trace("[{}] waitForCardAbsentNative => loop with latency of {} ms.", this.getName(),
+                removalLatency);
+        try {
+            while (true) {
+                if (terminal.waitForCardAbsent(removalLatency)) {
+                    // card removed
+                    return true;
+                } else {
+                    if (Thread.interrupted()) {
+                        logger.trace("[{}] waitForCardAbsentNative => task has been cancelled",
+                                this.getName());
+                        // task has been cancelled
+                        return false;
+                    }
+                }
+            }
+        } catch (CardException e) {
+            throw new KeypleIOReaderException(
+                    "[" + this.getName() + "] Exception occurred in waitForCardAbsentNative. "
+                            + "Message: " + e.getMessage());
+        } catch (Throwable t) {
+            // can or can not happen depending on terminal.waitForCardAbsent
+            logger.trace("[{}] waitForCardAbsentNative => Throwable catched {}", this.getName(),
+                    t.getCause());
+            return false;
         }
     }
 
@@ -143,13 +221,19 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
     @Override
     protected byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
         ResponseAPDU apduResponseData;
-        try {
-            apduResponseData = channel.transmit(new CommandAPDU(apduIn));
-        } catch (CardException e) {
-            throw new KeypleIOReaderException(this.getName() + ":" + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            // card could have been removed prematurely
-            throw new KeypleIOReaderException(this.getName() + ":" + e.getMessage());
+
+        if (channel != null) {
+            try {
+                apduResponseData = channel.transmit(new CommandAPDU(apduIn));
+            } catch (CardException e) {
+                throw new KeypleIOReaderException(this.getName() + ":" + e.getMessage());
+            } catch (IllegalArgumentException e) {
+                // card could have been removed prematurely
+                throw new KeypleIOReaderException(this.getName() + ":" + e.getMessage());
+            }
+        } else {
+            // could occur if the SE was removed
+            throw new KeypleIOReaderException(this.getName() + ": null channel.");
         }
         return apduResponseData.getBytes();
     }
@@ -284,20 +368,6 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
                 throw new IllegalArgumentException(
                         "Parameter value not supported " + name + " : " + value);
             }
-        } else if (name.equals(SETTING_KEY_THREAD_TIMEOUT)) {
-            // TODO use setter
-            if (value == null) {
-                threadWaitTimeout = SETTING_THREAD_TIMEOUT_DEFAULT;
-            } else {
-                long timeout = Long.parseLong(value);
-
-                if (timeout <= 0) {
-                    throw new IllegalArgumentException(
-                            "Timeout has to be of at least 1ms " + name + value);
-                }
-
-                threadWaitTimeout = timeout;
-            }
         } else if (name.equals(SETTING_KEY_DISCONNECT)) {
             if (value == null || value.equals(SETTING_DISCONNECT_RESET)) {
                 cardReset = true;
@@ -344,13 +414,6 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
             }
         }
 
-        { // The thread wait timeout
-            if (threadWaitTimeout != SETTING_THREAD_TIMEOUT_DEFAULT) {
-                parameters.put(SETTING_KEY_THREAD_TIMEOUT, Long.toString(threadWaitTimeout));
-            }
-        }
-
-
         return parameters;
     }
 
@@ -365,7 +428,7 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
      * This status may be wrong if the card has been removed.
      * <p>
      * The caller should test the card presence with isSePresent before calling this method.
-     * 
+     *
      * @return true if the physical channel is open
      */
     @Override
@@ -380,11 +443,11 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
      *
      * In this case be aware that on some platforms (ex. Windows 8+), the exclusivity is granted for
      * a limited time (ex. 5 seconds). After this delay, the card is automatically resetted.
-     * 
-     * @throws KeypleChannelStateException if a reader error occurs
+     *
+     * @throws KeypleChannelControlException if a reader error occurs
      */
     @Override
-    protected void openPhysicalChannel() throws KeypleChannelStateException {
+    protected void openPhysicalChannel() throws KeypleChannelControlException {
         // init of the physical SE channel: if not yet established, opening of a new physical
         // channel
         try {
@@ -405,7 +468,7 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
             }
             this.channel = card.getBasicChannel();
         } catch (CardException e) {
-            throw new KeypleChannelStateException("Error while opening Physical Channel", e);
+            throw new KeypleChannelControlException("Error while opening Physical Channel", e);
         }
     }
 
@@ -433,4 +496,6 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
             }
         }
     }
+
+
 }

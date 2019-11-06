@@ -16,11 +16,21 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleChannelStateException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractSelectionLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState;
+import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState.MonitoringState;
+import org.eclipse.keyple.core.seproxy.plugin.local.ObservableReaderStateService;
+import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.CardAbsentPingMonitoringJob;
+import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeInsertion;
+import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeProcessing;
+import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeRemoval;
+import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForStartDetect;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -33,56 +43,56 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
 
+import static org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState.MonitoringState.*;
+
 
 /**
- * Implementation of {@link SeReader} to communicate with NFC Tag though
- * Android {@link NfcAdapter}
- *
- * Configure NFCAdapter Protocols with {@link AndroidNfcReaderImpl#setParameter(String, String)}
- *
- *
+ * Implementation of {@link AndroidNfcReader} based on keyple core abstract classes {@link AbstractObservableLocalReader}
+ * and
  */
-final class AndroidNfcReaderImpl extends AbstractSelectionLocalReader
-        implements AndroidNfcReader {
+final class AndroidNfcReaderImpl extends AbstractObservableLocalReader
+        implements AndroidNfcReader, NfcAdapter.ReaderCallback  {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AndroidNfcReaderImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(AndroidNfcReaderImpl.class);
 
-    static final String READER_NAME = "AndroidNfcReaderImpl";
-    static final String PLUGIN_NAME = "AndroidNfcPluginImpl";
-
-
-    public static final String FLAG_READER_SKIP_NDEF_CHECK = "FLAG_READER_SKIP_NDEF_CHECK";
-    public static final String FLAG_READER_NO_PLATFORM_SOUNDS = "FLAG_READER_NO_PLATFORM_SOUNDS";
-    public static final String FLAG_READER_PRESENCE_CHECK_DELAY =
-            "FLAG_READER_PRESENCE_CHECK_DELAY";
-
-
-    // Android NFC Adapter
+      // Android NFC Adapter
     private NfcAdapter nfcAdapter;
 
     // keep state between session if required
     private TagProxy tagProxy;
 
-    // flags for NFCAdapter
-    // private int flags = 0;
     private final Map<String, String> parameters = new HashMap<String, String>();
+
+    private ExecutorService executorService;
 
     /**
      * Private constructor
      */
     AndroidNfcReaderImpl() {
         super(PLUGIN_NAME, READER_NAME);
-        LOG.info("Init singleton NFC Reader");
+        logger.info("Init NFC Reader");
+
+        executorService = Executors.newSingleThreadExecutor();
+
+        stateService = initStateService();
     }
 
     @Override
-    protected void startObservation() {
+    protected ObservableReaderStateService initStateService() {
 
-    }
+        Map<MonitoringState, AbstractObservableState> states =
+                new HashMap<MonitoringState, AbstractObservableState>();
 
-    @Override
-    protected void stopObservation() {
+        states.put(WAIT_FOR_START_DETECTION,
+                new WaitForStartDetect(this));
+        states.put(WAIT_FOR_SE_INSERTION,
+                new WaitForSeInsertion(this));
+        states.put(WAIT_FOR_SE_PROCESSING,
+                new WaitForSeProcessing(this));
+        states.put(WAIT_FOR_SE_REMOVAL,
+                new WaitForSeRemoval(this, new CardAbsentPingMonitoringJob(this), executorService));
 
+        return new ObservableReaderStateService(this, states, WAIT_FOR_START_DETECTION);
     }
 
     /**
@@ -98,6 +108,7 @@ final class AndroidNfcReaderImpl extends AbstractSelectionLocalReader
     static AndroidNfcReaderImpl getInstance() {
         return SingletonHolder.instance;
     }
+
 
     /**
      * Get Reader parameters
@@ -120,23 +131,23 @@ final class AndroidNfcReaderImpl extends AbstractSelectionLocalReader
      */
     @Override
     public void setParameter(String key, String value) throws IllegalArgumentException {
-        LOG.info("AndroidNfcReaderImpl supports the following parameters");
-        LOG.info(READER_NAME,
+        logger.info("AndroidNfcReaderImpl supports the following parameters");
+        logger.info(READER_NAME,
                 "FLAG_READER_SKIP_NDEF_CHECK:\"int\", FLAG_READER_NO_PLATFORM_SOUNDS:\"int\", FLAG_READER_PRESENCE_CHECK_DELAY:\"int\"");
 
-        Boolean correctParameter = (key.equals(AndroidNfcReaderImpl.FLAG_READER_SKIP_NDEF_CHECK)
+        Boolean correctParameter = (key.equals(AndroidNfcReader.FLAG_READER_SKIP_NDEF_CHECK)
                 && value.equals("1") || value.equals("0"))
-                || (key.equals(AndroidNfcReaderImpl.FLAG_READER_NO_PLATFORM_SOUNDS) && value.equals("1")
+                || (key.equals(AndroidNfcReader.FLAG_READER_NO_PLATFORM_SOUNDS) && value.equals("1")
                         || value.equals("0"))
                 || (key.equals(AndroidNfcReaderImpl.FLAG_READER_PRESENCE_CHECK_DELAY)
                         && Integer.parseInt(value) > -1);
 
 
         if (correctParameter) {
-            LOG.warn("Adding parameter : " + key + " - " + value);
+            logger.warn("Adding parameter : " + key + " - " + value);
             parameters.put(key, value);
         } else {
-            LOG.warn("Unrecognized parameter : " + key);
+            logger.warn("Unrecognized parameter : " + key);
             throw new IllegalArgumentException("Unrecognized parameter " + key + " : " + value);
         }
 
@@ -162,15 +173,17 @@ final class AndroidNfcReaderImpl extends AbstractSelectionLocalReader
      */
     @Override
     public void onTagDiscovered(Tag tag) {
-        LOG.info("Received Tag Discovered event");
+        logger.info("Received Tag Discovered event");
+        //nfcAdapter.ignore(tag, 1000, onTagRemoved, Handler(Looper.getMainLooper()));
+
         try {
             tagProxy = TagProxy.getTagProxy(tag);
-            cardInserted();
+            onEvent(InternalEvent.SE_INSERTED);
+
         } catch (KeypleReaderException e) {
-            // print and do nothing
             e.printStackTrace();
-            LOG.error(e.getLocalizedMessage());
         }
+
     }
 
     /**
@@ -188,7 +201,7 @@ final class AndroidNfcReaderImpl extends AbstractSelectionLocalReader
     @Override
     protected byte[] getATR() {
         byte[] atr = tagProxy.getATR();
-        LOG.debug("ATR : " + Arrays.toString(atr));
+        logger.debug("ATR : " + Arrays.toString(atr));
         return atr != null && atr.length > 0 ? atr : null;
     }
 
@@ -198,44 +211,48 @@ final class AndroidNfcReaderImpl extends AbstractSelectionLocalReader
     }
 
     @Override
-    protected void openPhysicalChannel() throws KeypleChannelStateException {
+    protected void openPhysicalChannel() throws KeypleChannelControlException {
         if (!checkSePresence()) {
             try {
-                LOG.debug("Connect to tag..");
+                logger.debug("Connect to tag..");
                 tagProxy.connect();
-                LOG.info("Tag connected successfully : " + printTagId());
+                logger.info("Tag connected successfully : " + printTagId());
 
             } catch (IOException e) {
-                LOG.error("Error while connecting to Tag ");
+                logger.error("Error while connecting to Tag ");
                 e.printStackTrace();
-                throw new KeypleChannelStateException("Error while opening physical channel", e);
+                throw new KeypleChannelControlException("Error while opening physical channel", e);
             }
         } else {
-            LOG.info("Tag is already connected to : " + printTagId());
+            logger.info("Tag is already connected to : " + printTagId());
         }
     }
 
     @Override
-    protected void closePhysicalChannel() throws KeypleChannelStateException {
+    protected void closePhysicalChannel() throws KeypleChannelControlException {
         try {
             if (tagProxy != null) {
                 tagProxy.close();
+                /*
+                done in method AbstractObservableLocalReader#processSeRemoved()
                 notifyObservers(new ReaderEvent(PLUGIN_NAME, READER_NAME,
-                        ReaderEvent.EventType.SE_REMOVAL, null));
-                LOG.info("Disconnected tag : " + printTagId());
+                        ReaderEvent.EventType.SE_REMOVED, null));
+                */
+                logger.info("Disconnected tag : " + printTagId());
+            }else{
+                logger.info("Tag is already disconnected");
             }
         } catch (IOException e) {
-            LOG.error("Disconnecting error");
-            throw new KeypleChannelStateException("Error while closing physical channel", e);
+            logger.error("Disconnecting error");
+            throw new KeypleChannelControlException("Error while closing physical channel", e);
         }
         tagProxy = null;
     }
 
-
     @Override
     protected byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
         // Initialization
-        LOG.debug("Send " + apduIn.length + " bytes");
+        logger.debug("Send data to card : " + apduIn.length + " bytes");
         byte[] dataOut = null;
         try {
             dataOut = tagProxy.transceive(apduIn);
@@ -246,10 +263,9 @@ final class AndroidNfcReaderImpl extends AbstractSelectionLocalReader
         } catch (IOException e) {
             throw new KeypleIOReaderException("Error while transmitting APDU", e);
         }
-        LOG.debug("Data out : " + ByteArrayUtil.toHex(dataOut));
+        logger.debug("Receive data from card : " + ByteArrayUtil.toHex(dataOut));
         return dataOut;
     }
-
 
     @Override
     protected boolean protocolFlagMatches(SeProtocol protocolFlag) {
@@ -361,7 +377,7 @@ final class AndroidNfcReaderImpl extends AbstractSelectionLocalReader
         Bundle options = getOptions();
 
 
-        LOG.info("Enabling Read Write Mode with flags : " + flags + " and options : "
+        logger.info("Enabling Read Write Mode with flags : " + flags + " and options : "
                 + options.toString());
 
         // Reader mode for NFC reader allows to listen to NFC events without the Intent mechanism.

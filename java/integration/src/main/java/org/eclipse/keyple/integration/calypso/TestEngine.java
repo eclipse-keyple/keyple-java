@@ -20,8 +20,8 @@ import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
@@ -38,31 +38,25 @@ public class TestEngine {
         SeSelection seSelection = new SeSelection();
 
         // Add Audit C0 AID to the list
-        seSelection
-                .prepareSelection(new PoSelectionRequest(
-                        new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(
-                                        PoFileStructureInfo.poAuditC0Aid), null),
-                                "Audit C0"),
-                        ChannelState.KEEP_OPEN));
+        seSelection.prepareSelection(new PoSelectionRequest(new PoSelector(
+                SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                new PoSelector.PoAidSelector(
+                        new SeSelector.AidSelector.IsoAid(PoFileStructureInfo.poAuditC0Aid), null),
+                "Audit C0")));
 
         // Add CLAP AID to the list
-        seSelection
-                .prepareSelection(new PoSelectionRequest(
-                        new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(
-                                        PoFileStructureInfo.clapAid), null),
-                                "CLAP"),
-                        ChannelState.KEEP_OPEN));
+        seSelection.prepareSelection(new PoSelectionRequest(new PoSelector(
+                SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                new PoSelector.PoAidSelector(
+                        new SeSelector.AidSelector.IsoAid(PoFileStructureInfo.clapAid), null),
+                "CLAP")));
 
         // Add cdLight AID to the list
-        seSelection
-                .prepareSelection(new PoSelectionRequest(
-                        new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(
-                                        PoFileStructureInfo.cdLightAid), null),
-                                "CDLight"),
-                        ChannelState.KEEP_OPEN));
+        seSelection.prepareSelection(new PoSelectionRequest(new PoSelector(
+                SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                new PoSelector.PoAidSelector(
+                        new SeSelector.AidSelector.IsoAid(PoFileStructureInfo.cdLightAid), null),
+                "CDLight")));
 
         MatchingSelection matchingSelection =
                 seSelection.processExplicitSelection(poReader).getActiveSelection();
@@ -125,7 +119,7 @@ public class TestEngine {
             if (!samReader.isSePresent()) {
                 throw new IllegalStateException("No SAM present in the reader.");
             }
-        } catch (NoStackTraceThrowable noStackTraceThrowable) {
+        } catch (KeypleIOReaderException e) {
             throw new KeypleReaderException("Exception raised while checking SE presence.");
         }
 
@@ -136,8 +130,8 @@ public class TestEngine {
         // open
         SeSelection samSelection = new SeSelection();
 
-        SamSelectionRequest samSelectionRequest = new SamSelectionRequest(
-                new SamSelector(SamRevision.C1, null, "SAM Selection"), ChannelState.KEEP_OPEN);
+        SamSelectionRequest samSelectionRequest =
+                new SamSelectionRequest(new SamSelector(SamRevision.C1, null, "SAM Selection"));
 
         /* Prepare selector, ignore AbstractMatchingSe here */
         samSelection.prepareSelection(samSelectionRequest);

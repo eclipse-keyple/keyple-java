@@ -26,12 +26,10 @@ import org.eclipse.keyple.calypso.command.sam.parser.security.CardGenerateKeyRes
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
@@ -69,7 +67,7 @@ public class Tool_LoadKeys {
         apduRequests.add(new PoGetChallengeCmdBuild(poResource.getMatchingSe().getPoClass())
                 .getApduRequest());
 
-        SeRequest seRequest = new SeRequest(apduRequests, ChannelState.KEEP_OPEN);
+        SeRequest seRequest = new SeRequest(apduRequests);
 
         SeResponse seResponse = ((ProxyReader) poResource.getSeReader()).transmit(seRequest);
 
@@ -141,7 +139,7 @@ public class Tool_LoadKeys {
         // get the challenge from the PO
         apduRequests.add(new UnlockCmdBuild(SamRevision.C1, unlockData).getApduRequest());
 
-        SeRequest seRequest = new SeRequest(apduRequests, ChannelState.KEEP_OPEN);
+        SeRequest seRequest = new SeRequest(apduRequests);
 
         SeResponse seResponse = ((ProxyReader) samResource.getSeReader()).transmit(seRequest);
 
@@ -157,9 +155,8 @@ public class Tool_LoadKeys {
      * 
      * @param args
      * @throws KeypleBaseException
-     * @throws NoStackTraceThrowable
      */
-    public static void main(String[] args) throws KeypleBaseException, NoStackTraceThrowable {
+    public static void main(String[] args) throws KeypleBaseException {
         // the unlocking data must be set to the expected value
         final String UNLOCK_DATA = "00112233445566778899AABBCCDDEEFF";
 
@@ -201,8 +198,8 @@ public class Tool_LoadKeys {
 
         SeSelection samSelection = new SeSelection();
 
-        SamSelectionRequest samSelectionRequest = new SamSelectionRequest(
-                new SamSelector(SamRevision.C1, null, "SAM Selection"), ChannelState.KEEP_OPEN);
+        SamSelectionRequest samSelectionRequest =
+                new SamSelectionRequest(new SamSelector(SamRevision.C1, null, "SAM Selection"));
 
         /* Prepare selector, ignore AbstractMatchingSe here */
         samSelection.prepareSelection(samSelectionRequest);
@@ -243,8 +240,7 @@ public class Tool_LoadKeys {
                             new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(aid),
                                     null),
 
-                            "Calypso Classic AID"),
-                    ChannelState.KEEP_OPEN));
+                            "Calypso Classic AID")));
 
             SelectionsResult poSelectionsResult = seSelection.processExplicitSelection(poReader);
 

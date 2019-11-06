@@ -25,7 +25,9 @@ import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.integration.IntegrationUtils;
@@ -48,8 +50,21 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                         "\n==================================================================================");
                 System.out.println("Found a Calypso PO! Validating...\n");
                 detectAndHandlePO();
+                /*
+                 * informs the underlying layer of the end of the SE processing, in order to manage
+                 * the removal sequence
+                 */
+                try {
+                    ((ObservableReader) SeProxyService.getInstance()
+                            .getPlugin(event.getPluginName()).getReader(event.getReaderName()))
+                                    .notifySeProcessed();
+                } catch (KeypleReaderNotFoundException e) {
+                    e.printStackTrace();
+                } catch (KeyplePluginNotFoundException e) {
+                    e.printStackTrace();
+                }
                 break;
-            case SE_REMOVAL:
+            case SE_REMOVED:
                 System.out.println("\nWaiting for new Calypso PO...");
                 break;
             default:
@@ -183,7 +198,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         poTransaction.processPoCommandsInSession();
 
-        poTransaction.processClosing(ChannelState.KEEP_OPEN);
+        poTransaction.processClosing(ChannelControl.KEEP_OPEN);
 
         System.out.println("\nValidation Successful!");
         System.out.println(
@@ -250,7 +265,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
             System.out.println("No value present in the card. Initiating auto top-up...");
 
-            poTransaction.processClosing(ChannelState.KEEP_OPEN);
+            poTransaction.processClosing(ChannelControl.KEEP_OPEN);
 
             poTransaction = new PoTransaction(new PoResource(poReader, detectedPO), samResource,
                     new SecuritySettings());
@@ -286,7 +301,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         poTransaction.processPoCommandsInSession();
 
-        poTransaction.processClosing(ChannelState.KEEP_OPEN);
+        poTransaction.processClosing(ChannelControl.KEEP_OPEN);
 
         System.out.println("\nValidation Successful!");
         System.out.println(
@@ -305,29 +320,27 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
             SeSelection seSelection = new SeSelection();
 
             // Add Audit C0 AID to the list
-            int auditC0SeIndex = seSelection.prepareSelection(new PoSelectionRequest(
-                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                            new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(
-                                    PoFileStructureInfo.poAuditC0Aid), null),
-                            "Audit C0"),
-                    ChannelState.KEEP_OPEN));
+            int auditC0SeIndex = seSelection.prepareSelection(new PoSelectionRequest(new PoSelector(
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                    new PoSelector.PoAidSelector(
+                            new SeSelector.AidSelector.IsoAid(PoFileStructureInfo.poAuditC0Aid),
+                            null),
+                    "Audit C0")));
 
             // Add CLAP AID to the list
-            int clapSeIndex =
-                    seSelection.prepareSelection(new PoSelectionRequest(
-                            new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                    new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(
-                                            PoFileStructureInfo.clapAid), null),
-                                    "CLAP"),
-                            ChannelState.KEEP_OPEN));
+            int clapSeIndex = seSelection.prepareSelection(new PoSelectionRequest(new PoSelector(
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                    new PoSelector.PoAidSelector(
+                            new SeSelector.AidSelector.IsoAid(PoFileStructureInfo.clapAid), null),
+                    "CLAP")));
 
             // Add cdLight AID to the list
-            int cdLightSeIndex = seSelection.prepareSelection(new PoSelectionRequest(
-                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                            new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(
-                                    PoFileStructureInfo.cdLightAid), null),
-                            "CDLight"),
-                    ChannelState.KEEP_OPEN));
+            int cdLightSeIndex = seSelection.prepareSelection(new PoSelectionRequest(new PoSelector(
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                    new PoSelector.PoAidSelector(
+                            new SeSelector.AidSelector.IsoAid(PoFileStructureInfo.cdLightAid),
+                            null),
+                    "CDLight")));
 
             SelectionsResult selectionsResult = seSelection.processExplicitSelection(poReader);
 
@@ -422,8 +435,8 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         SeSelection samSelection = new SeSelection();
 
-        SamSelectionRequest samSelectionRequest = new SamSelectionRequest(
-                new SamSelector(SamRevision.C1, null, "SAM Selection"), ChannelState.KEEP_OPEN);
+        SamSelectionRequest samSelectionRequest =
+                new SamSelectionRequest(new SamSelector(SamRevision.C1, null, "SAM Selection"));
 
         /* Prepare selector, ignore AbstractMatchingSe here */
         samSelection.prepareSelection(samSelectionRequest);

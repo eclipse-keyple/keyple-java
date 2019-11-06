@@ -24,7 +24,6 @@ import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.SelectFileRespPars;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
-import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
@@ -51,11 +50,10 @@ public final class PoSelectionRequest extends AbstractSeSelectionRequest {
      * Constructor.
      * 
      * @param poSelector the selector to target a particular SE
-     * @param channelState tell if the channel is to be closed or not after the command
      */
-    public PoSelectionRequest(PoSelector poSelector, ChannelState channelState) {
+    public PoSelectionRequest(PoSelector poSelector) {
 
-        super(poSelector, channelState);
+        super(poSelector);
 
         commandIndex = 0;
 

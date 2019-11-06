@@ -12,16 +12,25 @@
 package org.eclipse.keyple.core.seproxy.plugin;
 
 
+import static org.eclipse.keyple.core.seproxy.ChannelControl.CLOSE_AFTER;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader.NotificationMode;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.message.*;
+import org.eclipse.keyple.core.seproxy.message.ProxyReader;
+import org.eclipse.keyple.core.seproxy.message.SeRequest;
+import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.util.Configurable;
+import org.eclipse.keyple.core.util.Nameable;
+import org.eclipse.keyple.core.util.Observable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,11 +45,11 @@ import org.slf4j.LoggerFactory;
  * </ul>
  */
 
-public abstract class AbstractObservableReader extends AbstractLoggedObservable<ReaderEvent>
-        implements ProxyReader {
+public abstract class AbstractReader extends Observable<ReaderEvent>
+        implements ProxyReader, Nameable, Configurable {
 
     /** logger */
-    private static final Logger logger = LoggerFactory.getLogger(AbstractObservableReader.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractReader.class);
 
     /** Timestamp recorder */
     private long before;
@@ -48,13 +57,19 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
     /** Contains the name of the plugin */
     protected final String pluginName;
 
-    /** The default DefaultSelectionsRequest to be executed upon SE insertion */
-    protected DefaultSelectionsRequest defaultSelectionsRequest;
+    /** The reader name (must be unique) */
+    protected final String name;
 
-    /** Indicate if all SE detected should be notified or only matching SE */
-    protected NotificationMode notificationMode;
+    /**
+     * This flag is used with transmit or transmitSet
+     * <p>
+     * It will be used by the terminate method to determine if a command to close the physical
+     * channel has been already requested and therefore to switch directly to the removal sequence
+     * for the observed readers.
+     */
+    private boolean forceClosing = true;
 
-    /** ==== Constructor =================================================== */
+    /* ==== Constructor =================================================== */
 
     /**
      * Reader constructor
@@ -64,10 +79,10 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
      * Initialize the time measurement
      *
      * @param pluginName the name of the plugin that instantiated the reader
-     * @param readerName the name of the reader
+     * @param name the name of the reader
      */
-    protected AbstractObservableReader(String pluginName, String readerName) {
-        super(readerName);
+    protected AbstractReader(String pluginName, String name) {
+        this.name = name;
         this.pluginName = pluginName;
         this.before = System.nanoTime(); /*
                                           * provides an initial value for measuring the
@@ -76,7 +91,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
                                           */
     }
 
-    /** ==== Utility methods =============================================== */
+    /* ==== Utility methods =============================================== */
 
     /**
      * Gets the name of plugin provided in the constructor.
@@ -86,21 +101,32 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
      * 
      * @return the plugin name String
      */
-    protected final String getPluginName() {
+    public final String getPluginName() {
         return pluginName;
+    }
+
+    /**
+     * Gets the reader name
+     *
+     * @return the reader name string
+     */
+    @Override
+    public final String getName() {
+        return name;
     }
 
     /**
      * Compare the name of the current SeReader to the name of the SeReader provided in argument
      *
      * @param seReader a SeReader object
-     * @return true if the names match (The method is needed for the SortedSet lists)
+     * @return 0 if the names match (The method is needed for the SortedSet lists)
      */
+    @Override
     public final int compareTo(SeReader seReader) {
         return this.getName().compareTo(seReader.getName());
     }
 
-    /** ==== High level communication API ================================== */
+    /* ==== High level communication API ================================== */
 
     /**
      * Execute the transmission of a list of {@link SeRequest} and returns a list of
@@ -115,11 +141,16 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
      * @return responseSet the response set
      * @throws KeypleReaderException if a reader error occurs
      */
-    public final List<SeResponse> transmitSet(Set<SeRequest> requestSet)
+    @Override
+    public final List<SeResponse> transmitSet(Set<SeRequest> requestSet,
+            MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
             throws KeypleReaderException {
         if (requestSet == null) {
             throw new IllegalArgumentException("seRequestSet must not be null");
         }
+
+        /* sets the forceClosing flag */
+        forceClosing = channelControl == ChannelControl.KEEP_OPEN;
 
         List<SeResponse> responseSet;
 
@@ -132,8 +163,8 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
         }
 
         try {
-            responseSet = processSeRequestSet(requestSet);
-        } catch (KeypleChannelStateException ex) {
+            responseSet = processSeRequestSet(requestSet, multiSeRequestProcessing, channelControl);
+        } catch (KeypleChannelControlException ex) {
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
@@ -162,16 +193,26 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
         return responseSet;
     }
 
+    @Override
+    public final List<SeResponse> transmitSet(Set<SeRequest> requestSet)
+            throws KeypleReaderException {
+        return transmitSet(requestSet, MultiSeRequestProcessing.FIRST_MATCH,
+                ChannelControl.KEEP_OPEN);
+    }
+
     /**
      * Abstract method implemented by the AbstractLocalReader and VirtualReader classes.
      * <p>
      * This method is handled by transmitSet.
-     * 
+     *
      * @param requestSet the Set of {@link SeRequest} to be processed
+     * @param multiSeRequestProcessing the multi se processing mode
+     * @param channelControl indicates if the channel has to be closed at the end of the processing
      * @return the List of {@link SeResponse} (responses to the Set of {@link SeRequest})
      * @throws KeypleReaderException if reader error occurs
      */
-    protected abstract List<SeResponse> processSeRequestSet(Set<SeRequest> requestSet)
+    protected abstract List<SeResponse> processSeRequestSet(Set<SeRequest> requestSet,
+            MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
             throws KeypleReaderException;
 
     /**
@@ -183,15 +224,21 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
      * As the method is final, it cannot be extended.
      *
      * @param seRequest the request to be transmitted
+     * @param channelControl indicates if the channel has to be closed at the end of the processing
      * @return the received response
      * @throws KeypleReaderException if a reader error occurs
      */
-    public final SeResponse transmit(SeRequest seRequest) throws KeypleReaderException {
+    @Override
+    public final SeResponse transmit(SeRequest seRequest, ChannelControl channelControl)
+            throws KeypleReaderException {
         if (seRequest == null) {
             throw new IllegalArgumentException("seRequest must not be null");
         }
 
-        SeResponse seResponse = null;
+        /* sets the forceClosing flag */
+        forceClosing = channelControl == ChannelControl.KEEP_OPEN;
+
+        SeResponse seResponse;
 
         if (logger.isDebugEnabled()) {
             long timeStamp = System.nanoTime();
@@ -202,8 +249,8 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
         }
 
         try {
-            seResponse = processSeRequest(seRequest);
-        } catch (KeypleChannelStateException ex) {
+            seResponse = processSeRequest(seRequest, channelControl);
+        } catch (KeypleChannelControlException ex) {
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
@@ -232,58 +279,62 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
         return seResponse;
     }
 
+    @Override
+    public final SeResponse transmit(SeRequest seRequest) throws KeypleReaderException {
+        return transmit(seRequest, ChannelControl.KEEP_OPEN);
+    }
+
     /**
      * Abstract method implemented by the AbstractLocalReader and VirtualReader classes.
      * <p>
      * This method is handled by transmit.
-     * 
+     *
      * @param seRequest the {@link SeRequest} to be processed
+     * @param channelControl a flag indicating if the channel has to be closed after the processing
+     *        of the {@link SeRequest}
      * @return the {@link SeResponse} (responses to the {@link SeRequest})
      * @throws KeypleReaderException if reader error occurs
      */
-    protected abstract SeResponse processSeRequest(SeRequest seRequest)
-            throws KeypleReaderException;
+    protected abstract SeResponse processSeRequest(SeRequest seRequest,
+            ChannelControl channelControl) throws KeypleReaderException;
 
-    /** ==== Methods specific to observability ============================= */
-
-    /**
-     * Starts the monitoring of the reader activity (especially card insertion and removal)
-     * <p>
-     * This abstract method has to be implemented by the class that handle the monitoring thread (
-     * e.g. {@link AbstractThreadedLocalReader}).
-     * <p>
-     * It will be called when a first observer is added (see addObserver).
-     */
-    protected abstract void startObservation();
+    /* ==== Methods specific to observability ============================= */
 
     /**
-     * Ends the monitoring of the reader activity
+     * Allows the application to signal the end of processing and thus proceed with the removal
+     * sequence, followed by a restart of the card search.
      * <p>
-     * This abstract method has to be implemented by the class that handle the monitoring thread
-     * (e.g. {@link AbstractThreadedLocalReader}). It will be called when the observer is removed.
+     * Do nothing if the closing of the physical channel has already been requested.
      * <p>
-     * It will be called when the last observer is removed (see removeObserver).
-     *
+     * Send a request without APDU just to close the physical channel if it has not already been
+     * closed.
+     * 
      */
-    protected abstract void stopObservation();
+    final public void notifySeProcessed() {
+        if (forceClosing) {
+            try {
+                // close the physical channel thanks to CLOSE_AFTER flag
+                processSeRequest(null, CLOSE_AFTER);
+                logger.trace("Explicit physical channel closing executed.");
+            } catch (KeypleReaderException e) {
+                logger.error("KeypleReaderException while terminating. {}", e.getMessage());
+            }
+        } else {
+            logger.trace("Explicit physical channel closing already requested.");
+        }
+    }
 
     /**
      * Add a reader observer.
      * <p>
      * The observer will receive all the events produced by this reader (card insertion, removal,
      * etc.)
-     * <p>
-     * The startObservation() is called when the first observer is added. (to start a monitoring
-     * thread for instance)
      *
      * @param observer the observer object
      */
-    public final void addObserver(ReaderObserver observer) {
-        // if an observer is added to an empty list, start the observation
-        if (super.countObservers() == 0) {
-            logger.debug("Start monitoring the reader {}", this.getName());
-            startObservation();
-        }
+    public void addObserver(ReaderObserver observer) {
+        logger.trace("[{}] addObserver => Adding '{}' as an observer of '{}'.",
+                this.getClass().getSimpleName(), observer.getClass().getSimpleName(), name);
         super.addObserver(observer);
     }
 
@@ -291,17 +342,46 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
      * Remove a reader observer.
      * <p>
      * The observer will not receive any of the events produced by this reader.
-     * <p>
-     * The stopObservation() is called when the last observer is removed. (to stop a monitoring
-     * thread for instance)
      *
      * @param observer the observer object
      */
-    public final void removeObserver(ReaderObserver observer) {
+    public void removeObserver(ReaderObserver observer) {
+        logger.trace("[{}] removeObserver => Deleting a reader observer", this.getName());
         super.removeObserver(observer);
-        if (super.countObservers() == 0) {
-            logger.debug("Stop the reader monitoring.");
-            stopObservation();
+    }
+
+    /**
+     * This method shall be called only from a SE Proxy reader implementing AbstractReader. Push a
+     * ReaderEvent of the selected AbstractReader to its registered Observer.
+     *
+     * @param event the event
+     */
+    @Override
+    public final void notifyObservers(final ReaderEvent event) {
+
+        logger.trace(
+                "[{}] AbstractReader => Notifying a reader event to {} observers. EVENTNAME = {}",
+                this.getName(), this.countObservers(), event.getEventType().getName());
+
+        setChanged();
+
+        super.notifyObservers(event);
+    }
+
+    /**
+     * Set a list of parameters on a reader.
+     * <p>
+     * See {@link #setParameter(String, String)} for more details
+     *
+     * @param parameters the new parameters
+     * @throws KeypleBaseException This method can fail when disabling the exclusive mode as it's
+     *         executed instantly
+     */
+    @Override
+    public final void setParameters(Map<String, String> parameters)
+            throws IllegalArgumentException, KeypleBaseException {
+        for (Map.Entry<String, String> en : parameters.entrySet()) {
+            setParameter(en.getKey(), en.getValue());
         }
     }
 }

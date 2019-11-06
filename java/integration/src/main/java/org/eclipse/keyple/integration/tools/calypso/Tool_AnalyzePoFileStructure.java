@@ -29,12 +29,11 @@ import org.eclipse.keyple.calypso.command.po.parser.security.PoGetChallengeRespP
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
@@ -66,7 +65,7 @@ public class Tool_AnalyzePoFileStructure {
             apduRequests.add(new PoGetChallengeCmdBuild(poResource.getMatchingSe().getPoClass())
                     .getApduRequest());
 
-            SeRequest seRequest = new SeRequest(apduRequests, ChannelState.KEEP_OPEN);
+            SeRequest seRequest = new SeRequest(apduRequests);
 
             SeResponse seResponse = ((ProxyReader) poResource.getSeReader()).transmit(seRequest);
 
@@ -103,7 +102,7 @@ public class Tool_AnalyzePoFileStructure {
                             inFileInformation.getSfi(), ReadDataStructure.SINGLE_RECORD_DATA,
                             (byte) (i + 1), inFileInformation.getRecSize(), "");
 
-                    poTransaction.processPoCommands(ChannelState.KEEP_OPEN);
+                    poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
 
                     fileData.getRecordData()
                             .add((new RecordData(i + 1,
@@ -133,7 +132,7 @@ public class Tool_AnalyzePoFileStructure {
 
             int selectCurrentDfIndex = poTransaction.prepareSelectFileCmd(CURRENT_DF, "CurrentDF");
 
-            poTransaction.processPoCommands(ChannelState.KEEP_OPEN);
+            poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
 
             SelectFileRespPars selectCurrentDf =
                     (SelectFileRespPars) poTransaction.getResponseParser(selectCurrentDfIndex);
@@ -149,7 +148,7 @@ public class Tool_AnalyzePoFileStructure {
 
                 apduRequests.add(new GetDataTraceCmdBuild(poResource.getMatchingSe().getPoClass())
                         .getApduRequest());
-                SeRequest seRequest = new SeRequest(apduRequests, ChannelState.KEEP_OPEN);
+                SeRequest seRequest = new SeRequest(apduRequests);
 
                 SeResponse seResponse =
                         ((ProxyReader) poResource.getSeReader()).transmit(seRequest);
@@ -174,7 +173,7 @@ public class Tool_AnalyzePoFileStructure {
 
             int selectFileParserFirstIndex = poTransaction.prepareSelectFileCmd(FIRST, "First EF");
 
-            poTransaction.processPoCommands(ChannelState.KEEP_OPEN);
+            poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
 
             SelectFileRespPars selectFileParserFirst = (SelectFileRespPars) poTransaction
                     .getResponseParser(selectFileParserFirstIndex);
@@ -186,7 +185,7 @@ public class Tool_AnalyzePoFileStructure {
             currentFile = selectFileParserFirst.getLid();
 
             int selectFileParserNextIndex = poTransaction.prepareSelectFileCmd(NEXT, "Next EF");
-            poTransaction.processPoCommands(ChannelState.KEEP_OPEN);
+            poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
 
             SelectFileRespPars selectFileParserNext =
                     (SelectFileRespPars) poTransaction.getResponseParser(selectFileParserNextIndex);
@@ -202,7 +201,7 @@ public class Tool_AnalyzePoFileStructure {
                 currentFile = selectFileParserNext.getLid();
 
                 selectFileParserNextIndex = poTransaction.prepareSelectFileCmd(NEXT, "Next EF");
-                poTransaction.processPoCommands(ChannelState.KEEP_OPEN);
+                poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
 
                 selectFileParserNext = (SelectFileRespPars) poTransaction
                         .getResponseParser(selectFileParserNextIndex);
@@ -228,7 +227,7 @@ public class Tool_AnalyzePoFileStructure {
             PoSelectionRequest poSelectionRequest1 = new PoSelectionRequest(new PoSelector(
                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                     new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(aid), null),
-                    "firstApplication"), ChannelState.KEEP_OPEN);
+                    "firstApplication"));
 
             int firstApplicationIndex = seSelection.prepareSelection(poSelectionRequest1);
 
@@ -251,8 +250,7 @@ public class Tool_AnalyzePoFileStructure {
                             new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(aid),
                                     null, SeSelector.AidSelector.FileOccurrence.NEXT,
                                     SeSelector.AidSelector.FileControlInformation.FCI),
-                            "secondApplication"),
-                    ChannelState.KEEP_OPEN);
+                            "secondApplication"));
 
             int secondApplicationIndex = seSelection.prepareSelection(poSelectionRequest2);
 
@@ -275,7 +273,7 @@ public class Tool_AnalyzePoFileStructure {
     }
 
 
-    public static void main(String[] args) throws KeypleBaseException, NoStackTraceThrowable {
+    public static void main(String[] args) throws KeypleBaseException {
 
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();

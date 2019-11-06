@@ -17,11 +17,13 @@ import com.google.gson.*;
 
 public class HexTypeAdapter implements JsonSerializer<byte[]>, JsonDeserializer<byte[]> {
 
+    @Override
     public byte[] deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {
         return ByteArrayUtil.fromHex(json.getAsString());
     }
 
+    @Override
     public JsonElement serialize(byte[] data, Type typeOfSrc, JsonSerializationContext context) {
         return new JsonPrimitive(ByteArrayUtil.toHex(data));
     }

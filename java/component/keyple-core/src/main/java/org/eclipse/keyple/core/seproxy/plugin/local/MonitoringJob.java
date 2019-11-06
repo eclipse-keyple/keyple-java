@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information regarding copyright
  * ownership.
@@ -9,15 +9,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.exception;
+package org.eclipse.keyple.core.seproxy.plugin.local;
+
 
 /**
- * Exception that do not print stack trace Useful when the exceptions are expected and managed.
+ * Monitoring jobs interface
  */
-// TODO workaround for no stackstrace; should we keep it?
-public class NoStackTraceThrowable extends Throwable {
-    @Override
-    public synchronized Throwable fillInStackTrace() {
-        return this;
-    }
+public interface MonitoringJob {
+
+    /**
+     * Define a Runnable task of the monitoring job
+     * 
+     * @param state referentce to the state he monitoring job in running againts
+     * @return routine that will be executed in background of the state
+     */
+    Runnable getMonitoringJob(AbstractObservableState state);
 }
