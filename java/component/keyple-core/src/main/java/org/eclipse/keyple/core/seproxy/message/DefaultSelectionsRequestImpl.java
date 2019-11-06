@@ -23,7 +23,7 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
  */
 public final class DefaultSelectionsRequestImpl implements DefaultSelectionsRequest {
 
-    protected Set<SeRequest> selectionSeRequestSet;
+    private Set<SeRequest> selectionSeRequestSet;
 
     private MultiSeRequestProcessing multiSeRequestProcessing;
 

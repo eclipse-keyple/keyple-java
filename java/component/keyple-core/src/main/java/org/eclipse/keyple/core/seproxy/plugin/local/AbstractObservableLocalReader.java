@@ -18,7 +18,7 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
+import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponseImpl;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -322,7 +322,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                     if (aSeMatched) {
                         notifyObservers(new ReaderEvent(this.pluginName, this.name,
                                 ReaderEvent.EventType.SE_MATCHED,
-                                new DefaultSelectionsResponse(seResponseList)));
+                                new DefaultSelectionsResponseImpl(seResponseList)));
                         presenceNotified = true;
                     } else {
                         logger.trace(
@@ -336,7 +336,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                         /* The SE matched, notify an SE_MATCHED event with the received response */
                         notifyObservers(new ReaderEvent(this.pluginName, this.name,
                                 ReaderEvent.EventType.SE_MATCHED,
-                                new DefaultSelectionsResponse(seResponseList)));
+                                new DefaultSelectionsResponseImpl(seResponseList)));
                     } else {
                         /*
                          * The SE didn't match, notify an SE_INSERTED event with the received
@@ -347,7 +347,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                                 this.getName(), seResponseList.size());
                         notifyObservers(new ReaderEvent(this.pluginName, this.name,
                                 ReaderEvent.EventType.SE_INSERTED,
-                                new DefaultSelectionsResponse(seResponseList)));
+                                new DefaultSelectionsResponseImpl(seResponseList)));
                     }
                     presenceNotified = true;
                 }
