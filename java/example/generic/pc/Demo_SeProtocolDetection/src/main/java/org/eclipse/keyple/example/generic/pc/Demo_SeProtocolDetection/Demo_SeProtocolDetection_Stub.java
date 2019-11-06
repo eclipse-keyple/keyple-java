@@ -54,10 +54,11 @@ Demo_SeProtocolDetection_Stub {
         /* add the PcscPlugin to the SeProxyService */
         SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();
 
-        /* Register Stub plugin in the platform */
-        seProxyService.registerPlugin(new StubPluginFactory());
+        final String STUB_PLUGIN_NAME = "stub1";
 
-        ReaderPlugin stubPlugin = seProxyService.getPlugin(StubPlugin.PLUGIN_NAME);
+        /* Register Stub plugin in the platform */
+        seProxyService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
+        ReaderPlugin stubPlugin = seProxyService.getPlugin(STUB_PLUGIN_NAME);
 
         /* create an observer class to handle the SE operations */
         SeProtocolDetectionEngine observer = new SeProtocolDetectionEngine();
