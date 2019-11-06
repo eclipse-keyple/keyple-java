@@ -15,8 +15,10 @@ import java.util.List;
 import java.util.Set;
 import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequestImpl;
+import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponseImpl;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
@@ -89,6 +91,14 @@ public class JsonParserTest {
         KeypleBaseException exception = SampleFactory.getAStackedKeypleException();
         testSerializeDeserializeObj(exception, KeypleBaseException.class);
 
+    }
+
+    @Test
+    public void testReaderEvent() {
+        ReaderEvent readerEvent = new ReaderEvent("PLUGIN", "READER",
+                ReaderEvent.EventType.SE_INSERTED,
+                new DefaultSelectionsResponseImpl(SampleFactory.getCompleteResponseSet()));
+        testSerializeDeserializeObj(readerEvent, ReaderEvent.class);
     }
 
     /*
