@@ -9,15 +9,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin.state;
+package org.eclipse.keyple.core.seproxy.plugin.local.state;
 
 import java.util.concurrent.ExecutorService;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState;
-import org.eclipse.keyple.core.seproxy.plugin.monitor.AbstractMonitoringJob;
+import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState;
+import org.eclipse.keyple.core.seproxy.plugin.local.MonitoringJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+/**
+ * Wait for Start SE Detection
+ */
 public class WaitForStartDetect extends AbstractObservableState {
 
     /** logger */
@@ -27,8 +31,8 @@ public class WaitForStartDetect extends AbstractObservableState {
         super(MonitoringState.WAIT_FOR_START_DETECTION, reader);
     }
 
-    public WaitForStartDetect(AbstractObservableLocalReader reader,
-            AbstractMonitoringJob monitoringJob, ExecutorService executorService) {
+    public WaitForStartDetect(AbstractObservableLocalReader reader, MonitoringJob monitoringJob,
+            ExecutorService executorService) {
         super(MonitoringState.WAIT_FOR_START_DETECTION, reader, monitoringJob, executorService);
     }
 
@@ -36,6 +40,10 @@ public class WaitForStartDetect extends AbstractObservableState {
     public void onEvent(AbstractObservableLocalReader.InternalEvent event) {
         logger.trace("[{}] onEvent => Event {} received in currentState {}", reader.getName(),
                 event, state);
+
+        /*
+         * Process InternalEvent
+         */
         switch (event) {
             case START_DETECT:
                 switchState(MonitoringState.WAIT_FOR_SE_INSERTION);
@@ -48,13 +56,4 @@ public class WaitForStartDetect extends AbstractObservableState {
         }
     }
 
-    /*
-     * @Override public void onActivate() {
-     * 
-     * }
-     * 
-     * @Override public void onDeactivate() {
-     * 
-     * }
-     */
 }

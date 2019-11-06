@@ -13,7 +13,7 @@ package org.eclipse.keyple.core.seproxy.plugin.mock;
 
 import java.util.Map;
 import org.eclipse.keyple.core.seproxy.exception.*;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.local.AbstractLocalReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 

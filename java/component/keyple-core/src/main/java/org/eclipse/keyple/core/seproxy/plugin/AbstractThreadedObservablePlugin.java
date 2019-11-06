@@ -29,7 +29,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin {
     private static final Logger logger = LoggerFactory.getLogger(AbstractPlugin.class);
 
     /**
-     * Instanciates a observable plugin.
+     * Instantiates a observable plugin.
      *
      * @param name name of the plugin
      */

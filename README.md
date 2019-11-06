@@ -16,7 +16,6 @@ Although symlink support should be provided out of the box for Unix users, **Win
 
 It is important to note that for this option to be actually working, the Windows user needs to have the **_SeCreateSymbolicLink_ permission**: a user with admin rights is typically granted with this permission.
 
-
 ### Import keyple components with Gradle
 
 When using gradle, it is fairly simple to import Keyple components into your project. Just add the following statements to your build.gradle file :

@@ -9,46 +9,43 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin.state;
+package org.eclipse.keyple.core.seproxy.plugin.local.state;
 
 import java.util.concurrent.ExecutorService;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState;
-import org.eclipse.keyple.core.seproxy.plugin.monitor.AbstractMonitoringJob;
+import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState;
+import org.eclipse.keyple.core.seproxy.plugin.local.MonitoringJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WaitForSeProcessing extends AbstractObservableState {
+
+/**
+ * Wait for Se Removal State
+ */
+public class WaitForSeRemoval extends AbstractObservableState {
 
     /** logger */
-    private static final Logger logger = LoggerFactory.getLogger(WaitForSeProcessing.class);
+    private static final Logger logger = LoggerFactory.getLogger(WaitForSeRemoval.class);
 
-    public WaitForSeProcessing(AbstractObservableLocalReader reader) {
-        super(MonitoringState.WAIT_FOR_SE_PROCESSING, reader);
+    public WaitForSeRemoval(AbstractObservableLocalReader reader) {
+        super(MonitoringState.WAIT_FOR_SE_REMOVAL, reader);
     }
 
-    public WaitForSeProcessing(AbstractObservableLocalReader reader,
-            AbstractMonitoringJob monitoringJob, ExecutorService executorService) {
-        super(MonitoringState.WAIT_FOR_SE_PROCESSING, reader, monitoringJob, executorService);
+    public WaitForSeRemoval(AbstractObservableLocalReader reader, MonitoringJob monitoringJob,
+            ExecutorService executorService) {
+        super(MonitoringState.WAIT_FOR_SE_REMOVAL, reader, monitoringJob, executorService);
     }
 
     @Override
     public void onEvent(AbstractObservableLocalReader.InternalEvent event) {
         logger.trace("[{}] onEvent => Event {} received in currentState {}", reader.getName(),
                 event, state);
-        switch (event) {
-            case SE_PROCESSED:
-                if (this.reader.getPollingMode() == ObservableReader.PollingMode.REPEATING) {
-                    switchState(MonitoringState.WAIT_FOR_SE_REMOVAL);
-                } else {
-                    // We close the channels now and notify the application of
-                    // the SE_REMOVED event.
-                    this.reader.processSeRemoved();
-                    switchState(MonitoringState.WAIT_FOR_START_DETECTION);
-                }
-                break;
 
+        /*
+         * Process InternalEvent
+         */
+        switch (event) {
             case SE_REMOVED:
                 // the SE has been removed, we close all channels and return to
                 // the currentState of waiting
@@ -62,6 +59,13 @@ public class WaitForSeProcessing extends AbstractObservableState {
                 }
                 break;
 
+            // case TIME_OUT:
+            // switchState(MonitoringState.WAIT_FOR_START_DETECTION);
+            // // We notify the application of the TIMEOUT_ERROR event.
+            // reader.notifyObservers(new ReaderEvent(this.reader.getPluginName(),
+            // this.reader.getName(), ReaderEvent.EventType.TIMEOUT_ERROR, null));
+            // logger.warn("The time limit for the removal of the SE has been exceeded.");
+            // break;
 
             case STOP_DETECT:
                 reader.processSeRemoved();
@@ -74,4 +78,5 @@ public class WaitForSeProcessing extends AbstractObservableState {
                 break;
         }
     }
+
 }

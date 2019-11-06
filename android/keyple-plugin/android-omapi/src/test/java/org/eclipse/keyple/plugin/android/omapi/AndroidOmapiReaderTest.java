@@ -18,6 +18,7 @@ import java.util.*;
 
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
@@ -71,7 +72,7 @@ public class AndroidOmapiReaderTest {
     }
 
     @Test
-    public void isSEPresent()  {
+    public void isSEPresent() throws KeypleIOReaderException {
         Assert.assertEquals(true, reader.isSePresent());
     }
 

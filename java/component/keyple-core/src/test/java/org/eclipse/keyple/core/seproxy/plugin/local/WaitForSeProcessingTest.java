@@ -9,19 +9,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin;
+package org.eclipse.keyple.core.seproxy.plugin.local;
 
-import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION;
-import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL;
-import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION;
+import static org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION;
+import static org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL;
+import static org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION;
 import static org.mockito.Mockito.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.SmartRemovalMonitoringJob;
+import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeProcessing;
 import org.eclipse.keyple.core.seproxy.plugin.mock.BlankSmartPresenceTheadedReader;
-import org.eclipse.keyple.core.seproxy.plugin.monitor.SmartRemovalMonitoringJob;
-import org.eclipse.keyple.core.seproxy.plugin.state.WaitForSeProcessing;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;

@@ -16,16 +16,18 @@ import org.eclipse.keyple.example.remote.transport.wspolling.client_retrofit.WsP
 import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;
 
 /**
- * Demo Web Service with Retrofit http client library (Android friendly) The master device uses the
- * webservice client whereas the slave device uses the webservice server
+ * Demo Web Service with Retrofit http client library (Android friendly)
+ *
+ * The master device uses the webservice client whereas the slave device uses the webservice server
+ *
  */
 public class Demo_WebserviceWithRetrofit_MasterClient {
 
     public static void main(String[] args) throws Exception {
 
 
-        final String CLIENT_NODE_ID = "Demo_WebserviceWithRetrofit_MasterClient1";
-        final String SERVER_NODE_ID = "Demo_WebserviceWithRetrofit_MasterClientServer1";
+        final String CLIENT_NODE_ID = "WsMC1";
+        final String SERVER_NODE_ID = "WsMC1Server";
 
 
         // Create a HTTP Web Polling factory with a retrofitClient

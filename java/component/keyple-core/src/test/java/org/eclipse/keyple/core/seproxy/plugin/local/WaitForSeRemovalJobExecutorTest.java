@@ -9,10 +9,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin;
+package org.eclipse.keyple.core.seproxy.plugin.local;
 
-import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION;
-import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION;
+import static org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION;
+import static org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -20,10 +20,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.CardAbsentPingMonitoringJob;
+import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.SmartRemovalMonitoringJob;
+import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeRemoval;
 import org.eclipse.keyple.core.seproxy.plugin.mock.BlankSmartPresenceTheadedReader;
-import org.eclipse.keyple.core.seproxy.plugin.monitor.CardAbsentPingMonitoringJob;
-import org.eclipse.keyple.core.seproxy.plugin.monitor.SmartRemovalMonitoringJob;
-import org.eclipse.keyple.core.seproxy.plugin.state.WaitForSeRemoval;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;

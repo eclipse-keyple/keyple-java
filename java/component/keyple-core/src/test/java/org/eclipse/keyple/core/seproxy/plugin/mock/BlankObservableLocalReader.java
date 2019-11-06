@@ -14,10 +14,13 @@ package org.eclipse.keyple.core.seproxy.plugin.mock;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.core.seproxy.exception.*;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState;
-import org.eclipse.keyple.core.seproxy.plugin.ObservableReaderStateService;
-import org.eclipse.keyple.core.seproxy.plugin.state.*;
+import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState;
+import org.eclipse.keyple.core.seproxy.plugin.local.ObservableReaderStateService;
+import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeInsertion;
+import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeProcessing;
+import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeRemoval;
+import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForStartDetect;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 

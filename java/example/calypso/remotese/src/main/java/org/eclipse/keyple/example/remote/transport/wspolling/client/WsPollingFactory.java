@@ -22,7 +22,14 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Web service factory, get {@link WsPClient} and {@link WsPServer}
+ *
+ * @Deprecated
+ *
+ *             Use
+ *             {@link org.eclipse.keyple.example.remote.transport.wspolling.client_retrofit.WsPollingRetrofitFactory}
+ *             instead
  */
+@Deprecated
 @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
 public class WsPollingFactory extends TransportFactory {
 

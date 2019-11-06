@@ -9,17 +9,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin.monitor;
+package org.eclipse.keyple.core.seproxy.plugin.local;
 
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState;
 
-public abstract class AbstractMonitoringJob {
+/**
+ * Monitoring jobs interface
+ */
+public interface MonitoringJob {
 
-    AbstractObservableState state;
-
-    abstract public Runnable getMonitoringJob();
-
-    public void setState(AbstractObservableState state) {
-        this.state = state;
-    }
+    /**
+     * Define a Runnable task of the monitoring job
+     * 
+     * @param state referentce to the state he monitoring job in running againts
+     * @return routine that will be executed in background of the state
+     */
+    Runnable getMonitoringJob(AbstractObservableState state);
 }

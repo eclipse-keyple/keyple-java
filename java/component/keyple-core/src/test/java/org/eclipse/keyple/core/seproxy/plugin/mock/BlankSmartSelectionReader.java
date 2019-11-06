@@ -15,8 +15,8 @@ import java.util.Map;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractLocalReader;
-import org.eclipse.keyple.core.seproxy.plugin.SmartSelectionReader;
+import org.eclipse.keyple.core.seproxy.plugin.local.AbstractLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.local.SmartSelectionReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 

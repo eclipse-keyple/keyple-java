@@ -11,24 +11,32 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.util.Configurable;
+import org.eclipse.keyple.core.util.Nameable;
+import org.eclipse.keyple.core.util.Observable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Observable plugin. These plugin can report when a reader is added or removed.
  */
-public abstract class AbstractPlugin extends AbstractLoggedObservable<PluginEvent>
-        implements ReaderPlugin {
+public abstract class AbstractPlugin extends Observable<PluginEvent>
+        implements ReaderPlugin, Nameable, Configurable {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractPlugin.class);
+
+    /** The plugin name (must be unique) */
+    private final String name;
 
     /**
      * The list of readers
@@ -37,21 +45,30 @@ public abstract class AbstractPlugin extends AbstractLoggedObservable<PluginEven
 
 
     /**
-     * Instanciates a new ReaderPlugin. Retrieve the current readers list.
-     * 
+     * Instantiates a new ReaderPlugin. Retrieve the current readers list.
+     *
      * Gets the list for the native method the first time (null)
-     * 
+     *
      * @param name name of the plugin
      */
     protected AbstractPlugin(String name) {
-        super(name);
-        if (readers == null) {
-            try {
-                readers = initNativeReaders();
-            } catch (KeypleReaderException e) {
-                logger.error("Could not instantiate readers in plugin constructor {}", e);
-            }
+        this.name = name;
+
+        try {
+            readers = initNativeReaders();
+        } catch (KeypleReaderException e) {
+            logger.error("Could not instantiate readers in plugin constructor {}", e.getMessage());
         }
+    }
+
+    /**
+     * Gets the plugin name
+     *
+     * @return the plugin name string
+     */
+    @Override
+    public final String getName() {
+        return name;
     }
 
     /**
@@ -59,7 +76,7 @@ public abstract class AbstractPlugin extends AbstractLoggedObservable<PluginEven
      *
      * The list is initialized in the constructor and may be updated in background in the case of a
      * threaded plugin {@link AbstractThreadedObservablePlugin}
-     * 
+     *
      * @return the current reader list, can be null if the
      */
     @Override
@@ -91,7 +108,7 @@ public abstract class AbstractPlugin extends AbstractLoggedObservable<PluginEven
      * {@link SeReader}
      * <p>
      * {@link SeReader} are new instances.
-     * 
+     *
      * @return the list of AbstractReader objects.
      * @throws KeypleReaderException if a reader error occurs
      */
@@ -100,7 +117,7 @@ public abstract class AbstractPlugin extends AbstractLoggedObservable<PluginEven
     /**
      * Compare the name of the current ReaderPlugin to the name of the ReaderPlugin provided in
      * argument
-     * 
+     *
      * @param plugin a {@link ReaderPlugin} object
      * @return true if the names match (The method is needed for the SortedSet lists)
      */
@@ -111,7 +128,7 @@ public abstract class AbstractPlugin extends AbstractLoggedObservable<PluginEven
 
     /**
      * Gets a specific reader designated by its name in the current readers list
-     * 
+     *
      * @param name of the reader
      * @return the reader
      * @throws KeypleReaderNotFoundException if the wanted reader is not found
@@ -135,6 +152,9 @@ public abstract class AbstractPlugin extends AbstractLoggedObservable<PluginEven
      * @param observer the observer object
      */
     public void addObserver(ObservablePlugin.PluginObserver observer) {
+        logger.trace("[{}] addObserver => Adding '{}' as an observer of '{}'.",
+                this.getClass().getSimpleName(), observer.getClass().getSimpleName(),
+                this.getName());
         super.addObserver(observer);
     }
 
@@ -146,11 +166,42 @@ public abstract class AbstractPlugin extends AbstractLoggedObservable<PluginEven
      * @param observer the observer object
      */
     public void removeObserver(ObservablePlugin.PluginObserver observer) {
+        logger.trace("[{}] removeObserver => Deleting a plugin observer", this.getName());
         super.removeObserver(observer);
     }
 
+    /**
+     * This method shall be called only from a SE Proxy plugin implementing AbstractPlugin. Push a
+     * PluginEvent of the selected AbstractPlugin to its registered Observer.
+     *
+     * @param event the event
+     */
     @Override
-    public void clearObservers() {
-        super.clearObservers();
+    public final void notifyObservers(final PluginEvent event) {
+
+        logger.trace(
+                "[{}] AbstractPlugin => Notifying a plugin event to {} observers. EVENTNAME = {} ",
+                this.getName(), this.countObservers(), event.getEventType().getName());
+
+        setChanged();
+
+        super.notifyObservers(event);
+    }
+
+    /**
+     * Set a list of parameters on a plugin.
+     * <p>
+     * See {@link #setParameter(String, String)} for more details
+     *
+     * @param parameters the new parameters
+     * @throws KeypleBaseException This method can fail when disabling the exclusive mode as it's
+     *         executed instantly
+     */
+    @Override
+    public final void setParameters(Map<String, String> parameters)
+            throws IllegalArgumentException, KeypleBaseException {
+        for (Map.Entry<String, String> en : parameters.entrySet()) {
+            setParameter(en.getKey(), en.getValue());
+        }
     }
 }

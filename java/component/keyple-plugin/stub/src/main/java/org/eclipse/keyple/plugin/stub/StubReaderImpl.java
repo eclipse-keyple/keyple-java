@@ -19,10 +19,13 @@ import java.util.regex.Pattern;
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.plugin.*;
-import org.eclipse.keyple.core.seproxy.plugin.monitor.SmartInsertionMonitoringJob;
-import org.eclipse.keyple.core.seproxy.plugin.monitor.SmartRemovalMonitoringJob;
-import org.eclipse.keyple.core.seproxy.plugin.state.*;
+import org.eclipse.keyple.core.seproxy.plugin.local.*;
+import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.SmartInsertionMonitoringJob;
+import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.SmartRemovalMonitoringJob;
+import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeInsertion;
+import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeProcessing;
+import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeRemoval;
+import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForStartDetect;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.slf4j.Logger;
@@ -209,8 +212,8 @@ final class StubReaderImpl extends AbstractObservableLocalReader
     }
 
     /**
-     * Defined in the {@link org.eclipse.keyple.core.seproxy.plugin.SmartRemovalReader} interface,
-     * this method is called by the monitoring thread to check SE absence
+     * Defined in the {@link org.eclipse.keyple.core.seproxy.plugin.local.SmartRemovalReader}
+     * interface, this method is called by the monitoring thread to check SE absence
      * 
      * @return true if the SE is absent
      */

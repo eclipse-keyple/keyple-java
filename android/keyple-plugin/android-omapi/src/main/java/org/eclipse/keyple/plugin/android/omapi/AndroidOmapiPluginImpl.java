@@ -102,7 +102,7 @@ final class AndroidOmapiPluginImpl extends AbstractPlugin implements AndroidOmap
      * Warning. Do not call this method directly.
      *
      * Invoked by Open Mobile {@link SEService} when connected
-     * Instanciates {@link AndroidOmapiReaderImpl} for each SE Reader detected in the platform
+     * Instantiates {@link AndroidOmapiReaderImpl} for each SE Reader detected in the platform
      * 
      * @param seService : connected omapi service
      */
