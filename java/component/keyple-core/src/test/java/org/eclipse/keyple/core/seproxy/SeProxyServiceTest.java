@@ -20,7 +20,6 @@ import java.util.SortedSet;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstanciationException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
@@ -94,8 +93,9 @@ public class SeProxyServiceTest {
 
 
 
-        @Test
-    public void testRegisterPlugin() throws KeyplePluginNotFoundException, KeyplePluginInstanciationException {
+    @Test
+    public void testRegisterPlugin()
+            throws KeyplePluginNotFoundException, KeyplePluginInstanciationException {
 
         // register plugin1 by its factory
         proxyService.registerPlugin(factory1);

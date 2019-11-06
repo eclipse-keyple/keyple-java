@@ -14,7 +14,6 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import java.util.HashMap;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstanciationException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;

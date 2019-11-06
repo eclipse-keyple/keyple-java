@@ -56,7 +56,8 @@ public class MasterAPI implements DtoHandler {
      * @param seProxyService : SeProxyService
      * @param dtoNode : outgoing node to send Dto to Slave
      */
-    public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode) throws KeyplePluginInstanciationException {
+    public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode)
+            throws KeyplePluginInstanciationException {
         this(seProxyService, dtoNode, DEFAULT_RPC_TIMEOUT);
     }
 
@@ -69,7 +70,8 @@ public class MasterAPI implements DtoHandler {
      * @param rpc_timeout : timeout in milliseconds to wait for an answer from slave before throwing
      *        an exception
      */
-    public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode, long rpc_timeout) throws KeyplePluginInstanciationException {
+    public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode, long rpc_timeout)
+            throws KeyplePluginInstanciationException {
         this(seProxyService, dtoNode, rpc_timeout, PLUGIN_TYPE_DEFAULT,
                 RemoteSePluginImpl.DEFAULT_PLUGIN_NAME);
     }
