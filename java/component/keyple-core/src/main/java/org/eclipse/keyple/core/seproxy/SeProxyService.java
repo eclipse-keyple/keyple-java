@@ -14,6 +14,8 @@ package org.eclipse.keyple.core.seproxy;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstanciationException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +58,7 @@ public final class SeProxyService {
      * 
      * @param pluginFactory : plugin factory to instanciate plugin to be added
      */
-    public void registerPlugin(AbstractPluginFactory pluginFactory) {
+    public void registerPlugin(AbstractPluginFactory pluginFactory) throws KeyplePluginInstanciationException {
         if (pluginFactory == null) {
             throw new IllegalArgumentException("Factory must not be null");
         }
