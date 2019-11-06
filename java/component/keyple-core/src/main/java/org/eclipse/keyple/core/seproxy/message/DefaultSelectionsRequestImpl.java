@@ -14,7 +14,6 @@ package org.eclipse.keyple.core.seproxy.message;
 import java.util.Set;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 
@@ -31,7 +30,7 @@ public final class DefaultSelectionsRequestImpl implements DefaultSelectionsRequ
     private ChannelControl channelControl;
 
     public DefaultSelectionsRequestImpl(Set<SeRequest> selectionSeRequestSet,
-                                               MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl) {
+            MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl) {
         this.selectionSeRequestSet = selectionSeRequestSet;
         this.multiSeRequestProcessing = multiSeRequestProcessing;
         this.channelControl = channelControl;

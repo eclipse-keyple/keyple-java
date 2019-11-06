@@ -15,8 +15,8 @@ import java.util.*;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
+import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequestImpl;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
@@ -186,14 +186,14 @@ public final class SeSelection {
     }
 
     /**
-     * The SelectionOperation is the DefaultSelectionsRequestImpl to process in ordered to select a SE
-     * among others through the selection process. This method is useful to build the prepared
+     * The SelectionOperation is the DefaultSelectionsRequestImpl to process in ordered to select a
+     * SE among others through the selection process. This method is useful to build the prepared
      * selection to be executed by a reader just after a SE insertion.
      * 
      * @return the {@link DefaultSelectionsRequestImpl} previously prepared with prepareSelection
      */
-    public AbstractDefaultSelectionsRequest getSelectionOperation() {
-        return (DefaultSelectionsRequest) (new DefaultSelectionsRequestImpl(selectionRequestSet,
-                multiSeRequestProcessing, channelControl));
+    public DefaultSelectionsRequest getSelectionOperation() {
+        return new DefaultSelectionsRequestImpl(selectionRequestSet, multiSeRequestProcessing,
+                channelControl);
     }
 }
