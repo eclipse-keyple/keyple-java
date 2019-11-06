@@ -18,8 +18,8 @@ import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.core.selection.*;
 import org.eclipse.keyple.core.seproxy.*;
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
+import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
@@ -49,7 +49,7 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
         this.poReader = poReader;
     }
 
-    public AbstractDefaultSelectionsRequest prepareSeSelection() {
+    public DefaultSelectionsRequest prepareSeSelection() {
 
         seSelection = new SeSelection();
 

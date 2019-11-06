@@ -18,8 +18,8 @@ import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.*;
 import org.eclipse.keyple.core.seproxy.*;
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
+import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -268,7 +268,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
         }
     }
 
-    public AbstractDefaultSelectionsRequest preparePoSelection() {
+    public DefaultSelectionsRequest preparePoSelection() {
         /*
          * Initialize the selection process
          */
