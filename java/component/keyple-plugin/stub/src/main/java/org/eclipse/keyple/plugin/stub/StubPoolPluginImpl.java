@@ -34,8 +34,9 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
     Map<String, String> allocatedReader;// readerName,groupReference
 
 
-    public StubPoolPluginImpl(StubPluginImpl stubPlugin) {
-        this.stubPlugin = stubPlugin;
+    public StubPoolPluginImpl(String pluginName) {
+        // create an embedded stubplugin to manage reader
+        this.stubPlugin = (StubPluginImpl) new StubPluginFactory(pluginName).getPluginInstance();
         this.readerPool = new HashMap<String, StubReaderImpl>();
         this.allocatedReader = new HashMap<String, String>();
 
@@ -43,7 +44,7 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
 
     @Override
     public String getName() {
-        return PLUGIN_NAME;
+        return stubPlugin.getName();
     }
 
     @Override

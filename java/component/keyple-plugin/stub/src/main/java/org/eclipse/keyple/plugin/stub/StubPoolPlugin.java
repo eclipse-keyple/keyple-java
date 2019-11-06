@@ -15,9 +15,11 @@ package org.eclipse.keyple.plugin.stub;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 
+/**
+ * StubPoolPlugin allows to simulate a {@link org.eclipse.keyple.core.seproxy.ReaderPoolPlugin} and
+ * a {@link StubSecureElement}
+ */
 public interface StubPoolPlugin extends ReaderPoolPlugin {
-
-    String PLUGIN_NAME = "STUB_POOL_PLUGIN";
 
     /**
      * Plug synchronously a new @{@link StubReaderImpl} in Pool with groupReference and a StubSE. A

@@ -40,8 +40,14 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
     private SortedSet<String> connectedStubNames =
             Collections.synchronizedSortedSet(new ConcurrentSkipListSet<String>());
 
-    StubPluginImpl() {
-        super(PLUGIN_NAME);
+
+    /**
+     * Constructor
+     * 
+     * @param pluginName : custom name for the plugin
+     */
+    StubPluginImpl(String pluginName) {
+        super(pluginName);
 
         /*
          * Monitoring is not handled by a lower layer (as in PC/SC), reduce the threading period to
@@ -70,38 +76,38 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
     }
 
     @Override
-    public void plugStubReader(String name, Boolean synchronous) {
-        plugStubReader(name, TransmissionMode.CONTACTLESS, synchronous);
+    public void plugStubReader(String readerName, Boolean synchronous) {
+        plugStubReader(readerName, TransmissionMode.CONTACTLESS, synchronous);
     }
 
     @Override
-    public void plugStubReader(String name, TransmissionMode transmissionMode,
+    public void plugStubReader(String readerName, TransmissionMode transmissionMode,
             Boolean synchronous) {
 
-        logger.info("Plugging a new reader with name " + name);
+        logger.info("Plugging a new reader with readerName " + readerName);
         /* add the native reader to the native readers list */
-        Boolean exist = connectedStubNames.contains(name);
+        Boolean exist = connectedStubNames.contains(readerName);
 
         if (!exist && synchronous) {
             /* add the reader as a new reader to the readers list */
-            readers.add(new StubReaderImpl(name));
+            readers.add(new StubReaderImpl(this.getName(), readerName, transmissionMode));
         }
 
-        connectedStubNames.add(name);
+        connectedStubNames.add(readerName);
 
         if (exist) {
-            logger.error("Reader with name " + name + " was already plugged");
+            logger.error("Reader with readerName " + readerName + " was already plugged");
         }
 
     }
 
     @Override
-    public void plugStubReaders(Set<String> names, Boolean synchronous) {
-        logger.debug("Plugging {} readers ..", names.size());
+    public void plugStubReaders(Set<String> readerNames, Boolean synchronous) {
+        logger.debug("Plugging {} readers ..", readerNames.size());
 
         /* plug stub readers that were not plugged already */
-        // duplicate names
-        Set<String> newNames = new HashSet<String>(names);
+        // duplicate readerNames
+        Set<String> newNames = new HashSet<String>(readerNames);
         // remove already connected stubNames
         newNames.removeAll(connectedStubNames);
 
@@ -109,22 +115,22 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
 
 
         /*
-         * Add new names to the connectedStubNames
+         * Add new readerNames to the connectedStubNames
          */
 
         if (newNames.size() > 0) {
             if (synchronous) {
                 List<StubReaderImpl> newReaders = new ArrayList<StubReaderImpl>();
                 for (String name : newNames) {
-                    newReaders.add(new StubReaderImpl(name));
+                    newReaders.add(new StubReaderImpl(this.getName(), name));
                 }
                 readers.addAll(newReaders);
             }
 
-            connectedStubNames.addAll(names);
+            connectedStubNames.addAll(readerNames);
 
         } else {
-            logger.error("All {} readers were already plugged", names.size());
+            logger.error("All {} readers were already plugged", readerNames.size());
 
         }
 
@@ -132,37 +138,38 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
     }
 
     @Override
-    public void unplugStubReader(String name, Boolean synchronous) throws KeypleReaderException {
+    public void unplugStubReader(String readerName, Boolean synchronous)
+            throws KeypleReaderException {
 
-        if (!connectedStubNames.contains(name)) {
-            logger.warn("unplugStubReader() No reader found with name {}", name);
+        if (!connectedStubNames.contains(readerName)) {
+            logger.warn("unplugStubReader() No reader found with name {}", readerName);
         } else {
             /* remove the reader from the readers list */
             if (synchronous) {
-                connectedStubNames.remove(name);
-                readers.remove(getReader(name));
+                connectedStubNames.remove(readerName);
+                readers.remove(getReader(readerName));
             } else {
-                connectedStubNames.remove(name);
+                connectedStubNames.remove(readerName);
             }
             /* remove the native reader from the native readers list */
-            logger.info("Unplugged reader with name {}, connectedStubNames size {}", name,
+            logger.info("Unplugged reader with name {}, connectedStubNames size {}", readerName,
                     connectedStubNames.size());
         }
     }
 
     @Override
-    public void unplugStubReaders(Set<String> names, Boolean synchronous) {
-        logger.info("Unplug {} stub readers", names.size());
-        logger.debug("Unplug stub readers.. {}", names);
+    public void unplugStubReaders(Set<String> readerNames, Boolean synchronous) {
+        logger.info("Unplug {} stub readers", readerNames.size());
+        logger.debug("Unplug stub readers.. {}", readerNames);
         List<StubReaderImpl> readersToDelete = new ArrayList<StubReaderImpl>();
-        for (String name : names) {
+        for (String name : readerNames) {
             try {
                 readersToDelete.add((StubReaderImpl) getReader(name));
             } catch (KeypleReaderNotFoundException e) {
                 logger.warn("unplugStubReaders() No reader found with name {}", name);
             }
         }
-        connectedStubNames.removeAll(names);
+        connectedStubNames.removeAll(readerNames);
         if (synchronous) {
             readers.removeAll(readersToDelete);
         }
@@ -208,19 +215,19 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
      *
      * Throws an exception if the wanted reader is not found.
      *
-     * @param name name of the reader
+     * @param readerName name of the reader
      * @return the reader object
      */
     @Override
-    protected SeReader fetchNativeReader(String name) {
+    protected SeReader fetchNativeReader(String readerName) {
         for (SeReader reader : readers) {
-            if (reader.getName().equals(name)) {
+            if (reader.getName().equals(readerName)) {
                 return reader;
             }
         }
         SeReader reader = null;
-        if (connectedStubNames.contains(name)) {
-            reader = new StubReaderImpl(name);
+        if (connectedStubNames.contains(readerName)) {
+            reader = new StubReaderImpl(this.getName(), readerName);
         }
         return reader;
     }

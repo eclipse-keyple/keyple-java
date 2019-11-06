@@ -25,6 +25,8 @@ import org.slf4j.LoggerFactory;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class StubPoolPluginTest extends BaseStubTest {
 
+    static public final String POOL_PLUGIN_NAME = "pool1";
+
     Logger logger = LoggerFactory.getLogger(StubPoolPluginTest.class);
 
     @Before
@@ -46,7 +48,7 @@ public class StubPoolPluginTest extends BaseStubTest {
     @Test
     public void plugStubPoolReader_success() throws InterruptedException, KeypleReaderException {
         StubPoolPluginImpl stubPoolPlugin =
-                (StubPoolPluginImpl) new StubPoolPluginFactory(new StubPluginFactory())
+                (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)
                         .getPluginInstance();
 
         SeReader seReader = stubPoolPlugin.plugStubPoolReader("anyGroup", "anyName", stubSe);
@@ -62,7 +64,7 @@ public class StubPoolPluginTest extends BaseStubTest {
     @Test
     public void unplugStubPoolReader_success() throws InterruptedException, KeypleReaderException {
         StubPoolPluginImpl stubPoolPlugin =
-                (StubPoolPluginImpl) new StubPoolPluginFactory(new StubPluginFactory())
+                (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)
                         .getPluginInstance();
 
         // plug a reader
@@ -84,7 +86,7 @@ public class StubPoolPluginTest extends BaseStubTest {
     public void allocate_success() throws InterruptedException, KeypleReaderException {
         // init stubPoolPlugin
         StubPoolPluginImpl stubPoolPlugin =
-                (StubPoolPluginImpl) new StubPoolPluginFactory(new StubPluginFactory())
+                (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)
                         .getPluginInstance();
 
         // plug readers
@@ -110,7 +112,7 @@ public class StubPoolPluginTest extends BaseStubTest {
     public void allocate_twice() throws InterruptedException, KeypleReaderException {
         // init stubPoolPlugin
         StubPoolPluginImpl stubPoolPlugin =
-                (StubPoolPluginImpl) new StubPoolPluginFactory(new StubPluginFactory())
+                (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)
                         .getPluginInstance();
 
         // plug readers
@@ -132,7 +134,7 @@ public class StubPoolPluginTest extends BaseStubTest {
     public void release_success() throws InterruptedException, KeypleReaderException {
         // init stubPoolPlugin
         StubPoolPluginImpl stubPoolPlugin =
-                (StubPoolPluginImpl) new StubPoolPluginFactory(new StubPluginFactory())
+                (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)
                         .getPluginInstance();
 
         // plug readers
