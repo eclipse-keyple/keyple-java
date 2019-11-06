@@ -95,7 +95,7 @@ public class SlaveAPITest {
         logger.info("TearDown Test");
 
         StubPlugin stubPlugin =
-                (StubPlugin) SeProxyService.getInstance().getPlugin(StubPlugin.PLUGIN_NAME);
+                (StubPlugin) SeProxyService.getInstance().getPlugin(Integration.SLAVE_STUB);
 
         Assert.assertEquals(0, ((ObservableReader) nativeReader).countObservers());
 

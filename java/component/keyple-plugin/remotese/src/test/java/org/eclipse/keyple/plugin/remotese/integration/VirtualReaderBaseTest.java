@@ -87,8 +87,8 @@ public class VirtualReaderBaseTest {
 
 
     protected void unregisterPlugins() {
-        seProxyService.unregisterPlugin(StubPlugin.PLUGIN_NAME);
-        seProxyService.unregisterPlugin(StubPoolPlugin.PLUGIN_NAME);
+        seProxyService.unregisterPlugin(Integration.SLAVE_POOL_STUB);
+        seProxyService.unregisterPlugin(Integration.SLAVE_STUB);
         seProxyService.unregisterPlugin(REMOTE_SE_PLUGIN_NAME);
     }
 
@@ -98,7 +98,7 @@ public class VirtualReaderBaseTest {
         StubPlugin stubPlugin = null;
         try {
             stubPlugin =
-                    (StubPlugin) SeProxyService.getInstance().getPlugin(StubPlugin.PLUGIN_NAME);
+                    (StubPlugin) SeProxyService.getInstance().getPlugin(Integration.SLAVE_STUB);
 
             // Set<SeReader> readers = stubPlugin.getReaders();
 

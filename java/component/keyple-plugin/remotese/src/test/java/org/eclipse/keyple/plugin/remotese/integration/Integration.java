@@ -37,7 +37,8 @@ import org.slf4j.LoggerFactory;
 public class Integration {
 
     private static final Logger logger = LoggerFactory.getLogger(Integration.class);
-
+    public static final String SLAVE_STUB = "SLAVE_STUB";
+    public static final String SLAVE_POOL_STUB = "SLAVE_POOL_STUB";
 
     /**
      * Create a Spy MasterAPI
@@ -96,8 +97,8 @@ public class Integration {
     }
 
     public static void unregisterAllPlugin(String remoteSePluginName) {
-        SeProxyService.getInstance().unregisterPlugin(StubPlugin.PLUGIN_NAME);
-        SeProxyService.getInstance().unregisterPlugin(StubPoolPlugin.PLUGIN_NAME);
+        SeProxyService.getInstance().unregisterPlugin(SLAVE_STUB);
+        SeProxyService.getInstance().unregisterPlugin(SLAVE_POOL_STUB);
         SeProxyService.getInstance().unregisterPlugin(remoteSePluginName);
 
     }
@@ -109,11 +110,11 @@ public class Integration {
         SeProxyService seProxyService = SeProxyService.getInstance();
 
         // register plugin
-        seProxyService.registerPlugin(new StubPluginFactory());
+        seProxyService.registerPlugin(new StubPluginFactory(SLAVE_STUB));
 
 
         // get plugin
-        StubPlugin stubPlugin = (StubPlugin) seProxyService.getPlugin(StubPlugin.PLUGIN_NAME);
+        StubPlugin stubPlugin = (StubPlugin) seProxyService.getPlugin(SLAVE_STUB);
 
         return stubPlugin;
     }
@@ -129,14 +130,12 @@ public class Integration {
 
         SeProxyService seProxyService = SeProxyService.getInstance();
 
-        StubPoolPluginFactory stubPoolPluginFactory =
-                new StubPoolPluginFactory(new StubPluginFactory());
+        StubPoolPluginFactory stubPoolPluginFactory = new StubPoolPluginFactory(SLAVE_POOL_STUB);
 
         seProxyService.registerPlugin(stubPoolPluginFactory);
 
 
-        StubPoolPlugin poolPlugin =
-                (StubPoolPlugin) seProxyService.getPlugin(StubPoolPlugin.PLUGIN_NAME);
+        StubPoolPlugin poolPlugin = (StubPoolPlugin) seProxyService.getPlugin(SLAVE_POOL_STUB);
 
         return poolPlugin;
     }

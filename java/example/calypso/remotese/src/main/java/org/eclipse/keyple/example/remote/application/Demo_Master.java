@@ -51,14 +51,13 @@ import org.slf4j.LoggerFactory;
 public class Demo_Master {
 
     private static final Logger logger = LoggerFactory.getLogger(Demo_Master.class);
-    // private SeSelection seSelection;
-    // private VirtualReader poReader;
-    // private int readEnvironmentParserIndex;
     private SamResource samResource;
     private MasterAPI masterAPI;
 
     // DtoNode used as to send and receive KeypleDto to Slaves
     private DtoNode node;
+
+    static public String STUB_MASTER = "stubMaster";
 
     /**
      * Constructor of the DemoMaster thread Starts a common node, can be server or client
@@ -256,13 +255,12 @@ public class Demo_Master {
          * Plug a stub SAM Reader
          */
 
-        SeProxyService.getInstance().registerPlugin(new StubPluginFactory());
+        SeProxyService.getInstance().registerPlugin(new StubPluginFactory(STUB_MASTER));
 
 
         try {
             /* Get the instance of the Stub plugin */
-            ReaderPlugin stubPlugin =
-                    SeProxyService.getInstance().getPlugin(StubPlugin.PLUGIN_NAME);
+            ReaderPlugin stubPlugin = SeProxyService.getInstance().getPlugin(STUB_MASTER);
 
             /* Plug the SAM stub reader. */
             ((StubPlugin) stubPlugin).plugStubReader("samReader", true);

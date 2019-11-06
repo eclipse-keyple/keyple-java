@@ -31,9 +31,11 @@ public class Demo_ObservableReaderNotification_Stub {
         // Set Stub plugin
         SeProxyService seProxyService = SeProxyService.getInstance();
 
+        final String STUB_PLUGIN_NAME = "stub1";
+
         /* Register Stub plugin in the platform */
-        seProxyService.registerPlugin(new StubPluginFactory());
-        ReaderPlugin stubPlugin = seProxyService.getPlugin(StubPlugin.PLUGIN_NAME);
+        seProxyService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
+        ReaderPlugin stubPlugin = seProxyService.getPlugin(STUB_PLUGIN_NAME);
 
         // Set observers
         System.out.println("Set plugin observer.");
