@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
@@ -46,19 +47,20 @@ public class StubPluginTest extends BaseStubTest {
         super.clearStub();
     }
 
-    /*
-     * @Test public void instanciatePlugin() throws InterruptedException, KeypleReaderException,
-     * KeyplePluginNotFoundException { final String READER_NAME = "plugOneReaderSync_sucess";
-     * SeProxyService seProxyService = SeProxyService.getInstance();
-     * 
-     * seProxyService.registerPlugin(new StubPluginFactory());
-     * 
-     * ReaderPlugin stubPlugin = seProxyService.getPlugin(StubPlugin.PLUGIN_NAME);
-     * 
-     * ((StubPlugin) stubPlugin).plugStubReader(READER_NAME, TransmissionMode.CONTACTLESS, true);
-     * 
-     * }
-     */
+
+    @Test
+    public void instanciatePlugin()
+            throws InterruptedException, KeypleReaderException, KeyplePluginNotFoundException {
+        final String PLUGIN_NAME = "test1";
+
+
+
+        StubPluginFactory factory = new StubPluginFactory(PLUGIN_NAME);
+
+        ReaderPlugin plugin = factory.getPluginInstance();
+
+        Assert.assertEquals(PLUGIN_NAME, plugin.getName());
+    }
 
 
 

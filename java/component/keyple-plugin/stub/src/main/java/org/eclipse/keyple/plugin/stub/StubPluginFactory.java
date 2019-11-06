@@ -14,15 +14,29 @@ package org.eclipse.keyple.plugin.stub;
 import org.eclipse.keyple.core.seproxy.AbstractPluginFactory;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 
+/**
+ * Instanciate a {@link StubPlugin} with a custom plugin name
+ */
 public class StubPluginFactory extends AbstractPluginFactory {
+
+    private String pluginName;
+
+    /**
+     * Create the factory
+     * 
+     * @param pluginName name of the plugin that will be instantiated
+     */
+    public StubPluginFactory(String pluginName) {
+        this.pluginName = pluginName;
+    }
 
     @Override
     public String getPluginName() {
-        return StubPlugin.PLUGIN_NAME;
+        return pluginName;
     }
 
     @Override
     protected ReaderPlugin getPluginInstance() {
-        return new StubPluginImpl();
+        return new StubPluginImpl(pluginName);
     }
 }

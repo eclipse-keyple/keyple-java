@@ -53,14 +53,20 @@ final class StubReaderImpl extends AbstractObservableLocalReader
      * 
      * @param name
      */
-    StubReaderImpl(String name) {
-        super(StubPlugin.PLUGIN_NAME, name);
-
+    StubReaderImpl(String pluginName, String name) {
+        super(pluginName, name);
         stateService = initStateService();
     }
 
-    StubReaderImpl(String name, TransmissionMode transmissionMode) {
-        this(name);
+    /**
+     * Specify
+     * 
+     * @param pluginName
+     * @param name
+     * @param transmissionMode
+     */
+    StubReaderImpl(String pluginName, String name, TransmissionMode transmissionMode) {
+        this(pluginName, name);
         this.transmissionMode = transmissionMode;
     }
 

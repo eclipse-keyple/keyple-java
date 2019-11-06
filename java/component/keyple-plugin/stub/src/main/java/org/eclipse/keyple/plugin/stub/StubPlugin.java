@@ -16,9 +16,11 @@ import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 
+/**
+ * Stubplugin allows to simulate a {@link org.eclipse.keyple.core.seproxy.ReaderPlugin} and a
+ * {@link StubSecureElement}
+ */
 public interface StubPlugin extends ObservablePlugin {
-
-    String PLUGIN_NAME = "STUB_PLUGIN";
 
     /**
      * Plug a Stub Reader

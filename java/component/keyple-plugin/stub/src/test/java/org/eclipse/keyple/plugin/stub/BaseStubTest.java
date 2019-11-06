@@ -26,6 +26,7 @@ public class BaseStubTest {
 
     private static final Logger logger = LoggerFactory.getLogger(BaseStubTest.class);
 
+    static public String PLUGIN_NAME = "stub1";
 
     @Rule
     public TestName name = new TestName();
@@ -36,7 +37,7 @@ public class BaseStubTest {
         logger.info("------------------------------");
 
         logger.info("setupStub, assert stubplugin is empty");
-        stubPlugin = (StubPluginImpl) new StubPluginFactory().getPluginInstance();
+        stubPlugin = (StubPluginImpl) new StubPluginFactory(PLUGIN_NAME).getPluginInstance();
 
         logger.info("Stubplugin readers size {}", stubPlugin.getReaders().size());
         Assert.assertEquals(0, stubPlugin.getReaders().size());
