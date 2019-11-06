@@ -95,9 +95,9 @@ public class JsonParserTest {
 
     @Test
     public void testReaderEvent() {
-        ReaderEvent readerEvent = new ReaderEvent("PLUGIN", "READER",
-                ReaderEvent.EventType.SE_INSERTED,
-                new DefaultSelectionsResponseImpl(SampleFactory.getCompleteResponseSet()));
+        ReaderEvent readerEvent =
+                new ReaderEvent("PLUGIN", "READER", ReaderEvent.EventType.SE_INSERTED,
+                        new DefaultSelectionsResponseImpl(SampleFactory.getCompleteResponseSet()));
         testSerializeDeserializeObj(readerEvent, ReaderEvent.class);
     }
 
