@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * Simulates communication with a {@link StubSecureElement}. StubReader is observable, it raises
  * {@link org.eclipse.keyple.core.seproxy.event.ReaderEvent} : SE_INSERTED, SE_REMOVED
  */
-final class StubReaderImpl extends AbstractObservableLocalReader
+class StubReaderImpl extends AbstractObservableLocalReader
         implements StubReader, SmartInsertionReader, SmartRemovalReader {
 
     private static final Logger logger = LoggerFactory.getLogger(StubReaderImpl.class);

@@ -111,11 +111,16 @@ final class VirtualReaderImpl extends AbstractReader implements VirtualReader {
      * @throws KeypleReaderException
      */
     @Override
-    protected List<SeResponse> processSeRequestSet(Set<SeRequest> seRequestSet,
-            MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
-            throws IllegalArgumentException, KeypleReaderException {
+    protected List<SeResponse> processSeRequestSet(
+            Set<SeRequest> seRequestSet,
+            MultiSeRequestProcessing multiSeRequestProcessing,
+            ChannelControl channelControl)
+        throws IllegalArgumentException, KeypleReaderException {
 
-        RmTransmitSetTx transmit = new RmTransmitSetTx(seRequestSet, session.getSessionId(),
+        RmTransmitSetTx transmit = new RmTransmitSetTx(
+                seRequestSet,
+                multiSeRequestProcessing,
+                channelControl, session.getSessionId(),
                 this.getNativeReaderName(), this.getName(), session.getMasterNodeId(),
                 session.getSlaveNodeId());
         try {

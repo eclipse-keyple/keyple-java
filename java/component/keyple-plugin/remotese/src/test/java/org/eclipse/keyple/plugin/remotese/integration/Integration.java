@@ -46,7 +46,7 @@ public class Integration {
      * @param node
      * @return
      */
-    public static MasterAPI createMasterAPI(DtoNode node, String pluginName) {
+    public static MasterAPI createSpyMasterAPI(DtoNode node, String pluginName) {
         // Create Master services : masterAPI
         MasterAPI masterAPI = new MasterAPI(SeProxyService.getInstance(), node, 10000,
                 MasterAPI.PLUGIN_TYPE_DEFAULT, pluginName);
@@ -60,7 +60,7 @@ public class Integration {
      * @param node
      * @return
      */
-    public static SlaveAPI createSlaveAPI(DtoNode node, String masterNodeId) {
+    public static SlaveAPI createSpySlaveAPI(DtoNode node, String masterNodeId) {
         // Binds node for outgoing KeypleDto
         SlaveAPI slaveAPI = new SlaveAPI(SeProxyService.getInstance(), node, masterNodeId);
         SlaveAPI spy = Mockito.spy(slaveAPI);

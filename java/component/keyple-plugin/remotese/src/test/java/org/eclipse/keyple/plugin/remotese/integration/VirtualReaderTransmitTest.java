@@ -18,6 +18,8 @@ import java.util.Set;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
@@ -30,8 +32,14 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.invoke.util.VerifyAccess;
+
+import static org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Test transmit scenarii extends configuration from VirtualReaderTest
@@ -114,6 +122,8 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
         }
     }
 
+
+
     /**
      * Successful Transmit with a Calypso command to a Calypso SE
      *
@@ -149,8 +159,6 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
             logger.info("SeResponse returned as expected {}", seResponse.get(0));
         }
-
-
     }
 
     @Test(expected = KeypleReaderException.class)

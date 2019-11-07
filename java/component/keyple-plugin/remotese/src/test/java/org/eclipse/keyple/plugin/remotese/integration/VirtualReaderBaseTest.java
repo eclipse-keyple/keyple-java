@@ -41,7 +41,6 @@ public class VirtualReaderBaseTest {
 
     // Real objects
     protected TransportFactory factory;
-    // protected StubReader nativeReader;
 
     protected final String NATIVE_READER_NAME = "testStubReader";
     protected final String CLIENT_NODE_ID = "testClientNodeId";
@@ -70,11 +69,11 @@ public class VirtualReaderBaseTest {
 
         logger.info("*** Bind Master Services");
         // bind Master services to server
-        masterAPI = Integration.createMasterAPI(factory.getServer(), REMOTE_SE_PLUGIN_NAME);
+        masterAPI = Integration.createSpyMasterAPI(factory.getServer(), REMOTE_SE_PLUGIN_NAME);
 
         logger.info("*** Bind Slave Services");
         // bind Slave services to client
-        slaveAPI = Integration.createSlaveAPI(factory.getClient(CLIENT_NODE_ID), SERVER_NODE_ID);
+        slaveAPI = Integration.createSpySlaveAPI(factory.getClient(CLIENT_NODE_ID), SERVER_NODE_ID);
 
     }
 
@@ -123,9 +122,11 @@ public class VirtualReaderBaseTest {
         // configure native reader
         StubReader nativeReader =
                 (StubReader) Integration.createStubReader(readerName, transmissionMode);
+
         nativeReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
                 StubProtocolSetting.STUB_PROTOCOL_SETTING
                         .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+
         this.slaveAPI.connectReader(nativeReader);
         return nativeReader;
     }
