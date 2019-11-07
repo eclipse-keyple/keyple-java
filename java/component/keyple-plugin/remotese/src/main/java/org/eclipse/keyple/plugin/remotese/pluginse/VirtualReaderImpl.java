@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
+import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
@@ -225,8 +225,7 @@ final class VirtualReaderImpl extends AbstractReader implements VirtualReader {
     }
 
     @Override
-    public void setDefaultSelectionRequest(
-            AbstractDefaultSelectionsRequest defaultSelectionsRequest,
+    public void setDefaultSelectionRequest(DefaultSelectionsRequest defaultSelectionsRequest,
             NotificationMode notificationMode) {
 
         RmSetDefaultSelectionRequestTx setDefaultSelectionRequest =
@@ -248,8 +247,7 @@ final class VirtualReaderImpl extends AbstractReader implements VirtualReader {
     }
 
     @Override
-    public void setDefaultSelectionRequest(
-            AbstractDefaultSelectionsRequest defaultSelectionsRequest,
+    public void setDefaultSelectionRequest(DefaultSelectionsRequest defaultSelectionsRequest,
             NotificationMode notificationMode, PollingMode pollingMode) {
         // TODO implement this method
         // ensure that only one exchange with the remote part is necessary

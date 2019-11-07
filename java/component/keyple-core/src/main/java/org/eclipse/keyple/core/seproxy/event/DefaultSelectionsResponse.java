@@ -15,13 +15,15 @@ package org.eclipse.keyple.core.seproxy.event;
 import java.util.List;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 
-public abstract class AbstractDefaultSelectionsResponse {
-    /** The Listt of {@link SeResponse} */
-    protected final List<SeResponse> selectionSeResponseSet;
-
-    protected AbstractDefaultSelectionsResponse(List<SeResponse> selectionSeResponseSet) {
-        this.selectionSeResponseSet = selectionSeResponseSet;
-    }
-
-    protected abstract List<SeResponse> getSelectionSeResponseSet();
+/**
+ * The interface defining the default selections response in return to the default selection made
+ * when the SE was inserted..
+ * <p>
+ * The default selections response provides a list of {@link SeResponse}
+ */
+public interface DefaultSelectionsResponse {
+    /**
+     * @return the list of {@link SeResponse}
+     */
+    List<SeResponse> getSelectionSeResponseSet();
 }

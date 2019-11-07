@@ -15,11 +15,11 @@ package org.eclipse.keyple.plugin.remotese.rm.json;
 import java.io.IOException;
 import java.util.*;
 import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
@@ -35,7 +35,7 @@ public class SampleFactory {
     }
 
     public static DefaultSelectionsRequest getSelectionRequest() {
-        return new DefaultSelectionsRequest(getASeRequestSet_ISO14443_4());
+        return new DefaultSelectionsRequestImpl(getASeRequestSet_ISO14443_4());
     }
 
     public static ObservableReader.NotificationMode getNotificationMode() {
