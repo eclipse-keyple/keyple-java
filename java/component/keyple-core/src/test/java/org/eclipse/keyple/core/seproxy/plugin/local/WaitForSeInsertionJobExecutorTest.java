@@ -33,13 +33,12 @@ public class WaitForSeInsertionJobExecutorTest extends CoreBaseTest {
     private static final Logger logger =
             LoggerFactory.getLogger(WaitForSeInsertionJobExecutorTest.class);
 
-    final String PLUGIN_NAME = "WaitForSeInsertionJobExecutorTestP";
     final String READER_NAME = "WaitForSeInsertionJobExecutorTest";
 
     AbstractObservableState waitForInsert;
     BlankSmartInsertionTheadedReader r;
     long timeout;
-    final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    ExecutorService executorService = Executors.newSingleThreadExecutor();;
 
 
     @Before
@@ -48,9 +47,12 @@ public class WaitForSeInsertionJobExecutorTest extends CoreBaseTest {
         logger.info("Test {}", name.getMethodName() + "");
         logger.info("------------------------------");
 
+        /*
+         * Setup new parameters for each tests
+         */
         timeout = 100l;
-
-        r = AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 1);
+        // executorService = Executors.newSingleThreadExecutor();
+        r = AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
         waitForInsert =
                 new WaitForSeInsertion(r, new SmartInsertionMonitoringJob(r), executorService);
     }
@@ -62,6 +64,10 @@ public class WaitForSeInsertionJobExecutorTest extends CoreBaseTest {
         logger.info("\"******************************");
 
         waitForInsert.onDeactivate();
+
+        // shutdown executorService, no tasks should be left actived
+        // List<Runnable> activeTask = executorService.shutdownNow();
+        // Assert.assertTrue(activeTask.isEmpty());
     }
 
 

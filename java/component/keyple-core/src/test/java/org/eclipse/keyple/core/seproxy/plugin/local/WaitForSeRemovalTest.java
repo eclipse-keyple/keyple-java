@@ -13,9 +13,7 @@ package org.eclipse.keyple.core.seproxy.plugin.local;
 
 import static org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION;
 import static org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeRemoval;
@@ -41,13 +39,14 @@ public class WaitForSeRemovalTest extends CoreBaseTest {
     }
 
     @Test
-    public void waitForRemoval_STOP() throws Exception {
+    public void waitForRemoval_SINGLESHOT() throws Exception {
         /*
          * ------------ input polling mode is STOP SE has been removed within timeout
          */
-        AbstractObservableLocalReader r =
-                AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 0);
+        AbstractObservableLocalReader r = AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
         WaitForSeRemoval waitForSeRemoval = new WaitForSeRemoval(r);
+        doReturn(ObservableReader.PollingMode.SINGLESHOT).when(r).getPollingMode();
+        doNothing().when(r).processSeRemoved();
 
         /* test */
         waitForSeRemoval.onActivate();
@@ -59,14 +58,14 @@ public class WaitForSeRemovalTest extends CoreBaseTest {
     }
 
     @Test
-    public void waitForRemoval_CONTINUE() throws Exception {
+    public void waitForRemoval_REPEATING() throws Exception {
         /*
          * ------------ input polling mode is CONTINUE SE has been removed within timeout
          */
-        AbstractObservableLocalReader r =
-                AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 0);
+        AbstractObservableLocalReader r = AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
         WaitForSeRemoval waitForSeRemoval = new WaitForSeRemoval(r);
         doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();
+        doNothing().when(r).processSeRemoved();
 
         /* test */
         waitForSeRemoval.onActivate();
