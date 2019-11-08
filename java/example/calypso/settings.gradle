@@ -1,0 +1,10 @@
+rootProject.name = 'calyspo-example'
+
+include 'pc'
+include 'pc:Demo_CalypsoClassic'
+include 'pc:UseCase1_ExplicitSelectionAid'
+include 'pc:UseCase2_DefaultSelectionNotification'
+include 'pc:UseCase3_Rev1Selection'
+include 'pc:UseCase4_PoAuthentication'
+include 'pc:UseCase5_MultipleSession'
+include 'remotese'
