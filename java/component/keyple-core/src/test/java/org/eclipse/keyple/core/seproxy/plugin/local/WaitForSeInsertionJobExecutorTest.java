@@ -50,7 +50,7 @@ public class WaitForSeInsertionJobExecutorTest extends CoreBaseTest {
 
         timeout = 100l;
 
-        r = AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 1);
+        r = AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
         waitForInsert =
                 new WaitForSeInsertion(r, new SmartInsertionMonitoringJob(r), executorService);
     }

@@ -57,7 +57,7 @@ public class WaitForSeRemovalJobExecutorTest extends CoreBaseTest {
          * SE has been removed
          */
         AbstractObservableLocalReader r =
-                AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 0);
+                AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
         WaitForSeRemoval waitForSeRemoval =
                 new WaitForSeRemoval(r, new CardAbsentPingMonitoringJob(r), executorService);
         doReturn(ObservableReader.PollingMode.SINGLESHOT).when(r).getPollingMode();
@@ -82,7 +82,7 @@ public class WaitForSeRemovalJobExecutorTest extends CoreBaseTest {
          * ------------ input polling mode is CONTINUE SE has been removed within timeout
          */
         AbstractObservableLocalReader r =
-                AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 0);
+                AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
         WaitForSeRemoval waitForSeRemoval =
                 new WaitForSeRemoval(r, new CardAbsentPingMonitoringJob(r), executorService);
         doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();
