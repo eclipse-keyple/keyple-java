@@ -52,6 +52,9 @@ public class Demo_Slave {
 
     private String nativeReaderName;
 
+    static public String STUB_SLAVE = "stubSlave";
+
+
     /**
      * At startup, create the {@link DtoNode} object, either a {@link ClientNode} or a
      * {@link ServerNode}
@@ -142,9 +145,9 @@ public class Demo_Slave {
             SeProxyService seProxyService = SeProxyService.getInstance();
 
             /* Assign PcscPlugin to the SeProxyService */
-            seProxyService.registerPlugin(new StubPluginFactory());
+            seProxyService.registerPlugin(new StubPluginFactory(STUB_SLAVE));
 
-            ReaderPlugin stubPlugin = seProxyService.getPlugin(StubPlugin.PLUGIN_NAME);
+            ReaderPlugin stubPlugin = seProxyService.getPlugin(STUB_SLAVE);
 
             ObservablePlugin.PluginObserver observer = new ObservablePlugin.PluginObserver() {
                 @Override
