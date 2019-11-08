@@ -18,6 +18,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.CardAbsentPingMonitoringJob;

@@ -36,14 +36,17 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
         return new Runnable() {
             long threshold = 200;
             long retries = 0;
+            boolean loop = true;
 
             @Override
             public void run() {
                 logger.debug("[{}] Polling from isSePresentPing", reader.getName());
-                while (true) {
+                while (loop) {
                     if (!reader.isSePresentPing()) {
                         logger.debug("[{}] The SE stopped responding", reader.getName());
+                        loop = false;
                         state.onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
+                        return;
                     }
                     retries++;
 
@@ -54,6 +57,7 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
                         // wait a bit
                         Thread.sleep(threshold);
                     } catch (InterruptedException ignored) {
+                        loop = false;
                     }
                 }
             }
