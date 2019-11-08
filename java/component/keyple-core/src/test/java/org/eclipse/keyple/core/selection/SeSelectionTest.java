@@ -15,6 +15,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import java.util.*;
 import org.eclipse.keyple.core.CoreBaseTest;
+import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeSelector;
@@ -201,22 +202,29 @@ public class SeSelectionTest extends CoreBaseTest {
         MatchingSelection matchingSelection = selectionsResult.getActiveSelection();
         MatchingSe matchingSe = (MatchingSe) matchingSelection.getMatchingSe();
         Assert.assertTrue(matchingSe.isSelected());
+        Assert.assertEquals(true, matchingSe.getSelectionStatus().hasMatched());
+        Assert.assertEquals(TransmissionMode.CONTACTLESS, matchingSe.getTransmissionMode());
+        Assert.assertEquals("Se Selector #1", matchingSe.getSelectionExtraInfo());
+        Assert.assertEquals(0, matchingSelection.getSelectionIndex());
+        AbstractApduResponseParser responseParser = matchingSelection.getResponseParser(0);
+        Assert.assertTrue(responseParser.isSuccessful());
+        Assert.assertEquals("Se Selector #1", matchingSelection.getExtraInfo());
     }
 
     /*
      * @Test public void processExplicitSelection() { // create a SeSelection SeSelection
      * seSelection = createSeSelection();
-     * 
+     *
      * AbstractLocalReader r = Mockito.spy(new Reader("SeSelectionP", "SeSelectionR"));
-     * 
+     *
      * // success apdu doReturn(ByteArrayUtil.fromHex(
      * "001122334455669000")).when(r).transmitApdu(ByteArrayUtil.fromHex( "001122334455669000"));
-     * 
+     *
      * // aid selection doReturn(ByteArrayUtil.fromHex(
      * "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000"))
      * .when(r).transmitApdu(ByteArrayUtil
      * .fromHex("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00"));
-     * 
+     *
      * // physical channel is open doReturn(true).when(r).isPhysicalChannelOpen(); }
      */
 
@@ -246,7 +254,7 @@ public class SeSelectionTest extends CoreBaseTest {
             {
                 add(0x6283);
             }
-        };;
+        };
 
         SeSelector seSelector2 = new SeSelector(SeCommonProtocols.PROTOCOL_B_PRIME,
                 new SeSelector.AtrFilter(".*"),
@@ -280,6 +288,12 @@ public class SeSelectionTest extends CoreBaseTest {
             return new MatchingSe(seResponse, seSelector.getSeProtocol().getTransmissionMode(),
                     seSelector.getExtraInfo());
         }
+
+        @Override
+        public AbstractApduResponseParser getCommandParser(SeResponse seResponse,
+                int commandIndex) {
+            return new ApduResponseParser(seResponse.getApduResponses().get(commandIndex));
+        }
     }
 
     /**
@@ -296,6 +310,17 @@ public class SeSelectionTest extends CoreBaseTest {
 
         public Reader(String pluginName, String readerName) {
             super(pluginName, readerName);
+        }
+    }
+
+    public final class ApduResponseParser extends AbstractApduResponseParser {
+
+        public ApduResponseParser(ApduResponse response) {
+            super(response);
+            // additional status words
+            STATUS_TABLE.put(0x9999, new StatusProperties(true, "sw 9999"));
+            STATUS_TABLE.put(0x6500, new StatusProperties(false, "sw 6500"));
+            STATUS_TABLE.put(0x6400, new StatusProperties(false, "sw 6400"));
         }
     }
 }
