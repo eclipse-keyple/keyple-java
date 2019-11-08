@@ -16,6 +16,7 @@ import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstanciationException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
@@ -176,6 +177,8 @@ public class Demo_Slave {
         } catch (KeypleReaderNotFoundException e) {
             e.printStackTrace();
         } catch (KeyplePluginNotFoundException e) {
+            e.printStackTrace();
+        } catch (KeyplePluginInstanciationException e) {
             e.printStackTrace();
         }
 

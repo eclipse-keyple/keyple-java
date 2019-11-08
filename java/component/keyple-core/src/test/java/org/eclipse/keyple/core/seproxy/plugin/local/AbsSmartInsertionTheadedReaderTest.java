@@ -304,10 +304,9 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
         return r;
     }
 
-    static public BlankSmartInsertionTheadedReader getMock(String pluginName, String readerName,
-            Integer mockDetect) {
+    static public BlankSmartInsertionTheadedReader getMock(String readerName) {
         BlankSmartInsertionTheadedReader r = Mockito.mock(BlankSmartInsertionTheadedReader.class);
-        doReturn("test").when(r).getName();
+        doReturn(readerName).when(r).getName();
         return r;
     }
 

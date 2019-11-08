@@ -52,7 +52,7 @@ public class VirtualReaderTest {
     }
 
     @Test(expected = KeypleReaderException.class)
-    public void transmit_timeout() throws KeypleReaderException {
+    public void transmit_timeout() throws Exception {
         MasterAPI masterAPI = new MasterAPI(SeProxyService.getInstance(),
                 Integration.getFakeDtoNode(), RPC_TIMEOUT);
 

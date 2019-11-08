@@ -107,8 +107,9 @@ public abstract class AbstractObservableState {
 
         // launch the monitoringJob is necessary
         if (monitoringJob != null) {
-            if (executorService == null)
+            if (executorService == null) {
                 throw new AssertionError("ExecutorService must be set");
+            }
             monitoringEvent = executorService.submit(monitoringJob.getMonitoringJob(this));
         }
     };
