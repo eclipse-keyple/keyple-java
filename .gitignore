@@ -98,4 +98,5 @@ ehthumbs_vista.db
 
 # Temp
 gradle/
-gradlew*.*
+gradlew
+gradlew.bat
