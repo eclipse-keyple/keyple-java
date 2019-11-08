@@ -108,6 +108,7 @@ public class Integration {
 
     public static StubPlugin createStubPlugin() throws KeyplePluginNotFoundException {
 
+        try{
         // get SeProxyService
         SeProxyService seProxyService = SeProxyService.getInstance();
 
