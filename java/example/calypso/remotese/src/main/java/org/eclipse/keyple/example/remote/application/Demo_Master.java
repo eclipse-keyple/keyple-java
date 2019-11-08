@@ -117,8 +117,7 @@ public class Demo_Master {
         /*
          * Declare the remoteSE Observer that controls the ticketing logic execution
          */
-         ObservablePlugin.PluginObserver remoteSeObserver =
-                new ObservablePlugin.PluginObserver() {
+        ObservablePlugin.PluginObserver remoteSeObserver = new ObservablePlugin.PluginObserver() {
             @Override
             public void update(PluginEvent event) {
                 logger.info("{} UPDATE {} {} {}", node.getNodeId(), event.getEventType(),
@@ -269,7 +268,7 @@ public class Demo_Master {
              * Plug a stub SAM Reader
              */
 
-        SeProxyService.getInstance().registerPlugin(new StubPluginFactory(STUB_MASTER));
+            SeProxyService.getInstance().registerPlugin(new StubPluginFactory(STUB_MASTER));
 
             /* Get the instance of the Stub plugin */
             ReaderPlugin stubPlugin = SeProxyService.getInstance().getPlugin(STUB_MASTER);

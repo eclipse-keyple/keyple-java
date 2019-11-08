@@ -26,6 +26,7 @@ public abstract class AbstractPluginFactory {
 
     /**
      * Retrieve instance of a plugin (can be a singleton or not)
+     * 
      * @return instance of a ReaderPlugin
      * @throws KeyplePluginInstanciationException if instanciation failed
      */

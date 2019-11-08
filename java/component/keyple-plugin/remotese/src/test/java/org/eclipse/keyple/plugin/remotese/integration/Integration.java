@@ -108,16 +108,16 @@ public class Integration {
 
     public static StubPlugin createStubPlugin() throws KeyplePluginNotFoundException {
 
-        try{
-        // get SeProxyService
-        SeProxyService seProxyService = SeProxyService.getInstance();
+        try {
+            // get SeProxyService
+            SeProxyService seProxyService = SeProxyService.getInstance();
 
-        // register plugin
-        seProxyService.registerPlugin(new StubPluginFactory(SLAVE_STUB));
+            // register plugin
+            seProxyService.registerPlugin(new StubPluginFactory(SLAVE_STUB));
 
 
-        // get plugin
-        StubPlugin stubPlugin = (StubPlugin) seProxyService.getPlugin(SLAVE_STUB);
+            // get plugin
+            StubPlugin stubPlugin = (StubPlugin) seProxyService.getPlugin(SLAVE_STUB);
 
             return stubPlugin;
         } catch (KeyplePluginInstanciationException e) {
@@ -145,7 +145,7 @@ public class Integration {
             seProxyService.registerPlugin(stubPoolPluginFactory);
 
 
-        StubPoolPlugin poolPlugin = (StubPoolPlugin) seProxyService.getPlugin(SLAVE_POOL_STUB);
+            StubPoolPlugin poolPlugin = (StubPoolPlugin) seProxyService.getPlugin(SLAVE_POOL_STUB);
 
             return poolPlugin;
         } catch (KeyplePluginInstanciationException e) {
