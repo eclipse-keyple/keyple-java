@@ -13,7 +13,11 @@ plugins {
     id 'java'
 }
 
-project(':remotese') {
+ext {
+    remotese_subproject = project.hasProperty("remotese_subproject_name") ? remotese_subproject_name : ':remotese'
+}
+
+project(remotese_subproject) {
     apply plugin: "com.diffplug.gradle.spotless"
     apply plugin: 'pmd'
 
