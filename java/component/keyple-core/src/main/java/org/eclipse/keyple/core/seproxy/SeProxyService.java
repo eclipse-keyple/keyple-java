@@ -56,6 +56,7 @@ public final class SeProxyService {
      * Register a new plugin to be available in the platform if not registered yet
      * 
      * @param pluginFactory : plugin factory to instanciate plugin to be added
+     * @throws KeyplePluginInstanciationException if instanciation failed
      */
     public void registerPlugin(AbstractPluginFactory pluginFactory)
             throws KeyplePluginInstanciationException {

@@ -23,10 +23,11 @@ public abstract class AbstractPluginFactory {
      */
     public abstract String getPluginName();
 
+
     /**
      * Retrieve instance of a plugin (can be a singleton or not)
-     * 
      * @return instance of a ReaderPlugin
+     * @throws KeyplePluginInstanciationException if instanciation failed
      */
     protected abstract ReaderPlugin getPluginInstance() throws KeyplePluginInstanciationException;
 }
