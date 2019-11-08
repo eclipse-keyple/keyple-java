@@ -20,7 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Detect the SE insertion thanks to the method {@link SmartInsertionReader#waitForCardPresent()}
+ * Detect the SE insertion thanks to the method {@link SmartInsertionReader#waitForCardPresent()}.
+ * This method is invoked in another thread
  */
 public class SmartInsertionMonitoringJob implements MonitoringJob {
 
@@ -32,8 +33,13 @@ public class SmartInsertionMonitoringJob implements MonitoringJob {
         this.reader = reader;
     }
 
+
+
     @Override
     public Runnable getMonitoringJob(final AbstractObservableState state) {
+        /**
+         * Invoke the method SmartInsertionReader#waitForCardPresent() in another thread
+         */
         return new Runnable() {
             @Override
             public void run() {

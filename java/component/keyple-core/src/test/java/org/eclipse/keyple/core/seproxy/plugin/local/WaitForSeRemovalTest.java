@@ -14,7 +14,6 @@ package org.eclipse.keyple.core.seproxy.plugin.local;
 import static org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION;
 import static org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION;
 import static org.mockito.Mockito.*;
-
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeRemoval;
@@ -44,8 +43,7 @@ public class WaitForSeRemovalTest extends CoreBaseTest {
         /*
          * ------------ input polling mode is STOP SE has been removed within timeout
          */
-        AbstractObservableLocalReader r =
-                AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
+        AbstractObservableLocalReader r = AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
         WaitForSeRemoval waitForSeRemoval = new WaitForSeRemoval(r);
         doReturn(ObservableReader.PollingMode.SINGLESHOT).when(r).getPollingMode();
         doNothing().when(r).processSeRemoved();
@@ -64,8 +62,7 @@ public class WaitForSeRemovalTest extends CoreBaseTest {
         /*
          * ------------ input polling mode is CONTINUE SE has been removed within timeout
          */
-        AbstractObservableLocalReader r =
-                AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
+        AbstractObservableLocalReader r = AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
         WaitForSeRemoval waitForSeRemoval = new WaitForSeRemoval(r);
         doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();
         doNothing().when(r).processSeRemoved();

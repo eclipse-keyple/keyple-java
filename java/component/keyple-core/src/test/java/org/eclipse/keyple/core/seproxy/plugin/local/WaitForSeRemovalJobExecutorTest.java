@@ -18,8 +18,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.CardAbsentPingMonitoringJob;
@@ -58,8 +56,7 @@ public class WaitForSeRemovalJobExecutorTest extends CoreBaseTest {
          *
          * SE has been removed
          */
-        AbstractObservableLocalReader r =
-                AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
+        AbstractObservableLocalReader r = AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
         WaitForSeRemoval waitForSeRemoval =
                 new WaitForSeRemoval(r, new CardAbsentPingMonitoringJob(r), executorService);
         doReturn(ObservableReader.PollingMode.SINGLESHOT).when(r).getPollingMode();
@@ -83,8 +80,7 @@ public class WaitForSeRemovalJobExecutorTest extends CoreBaseTest {
         /*
          * ------------ input polling mode is CONTINUE SE has been removed within timeout
          */
-        AbstractObservableLocalReader r =
-                AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
+        AbstractObservableLocalReader r = AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
         WaitForSeRemoval waitForSeRemoval =
                 new WaitForSeRemoval(r, new CardAbsentPingMonitoringJob(r), executorService);
         doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();

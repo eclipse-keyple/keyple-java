@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Ping the SE to detect removal thanks to the method
- * {@link AbstractObservableLocalReader#isSePresentPing()}
+ * {@link AbstractObservableLocalReader#isSePresentPing()}. This method is invoked in another thread
  */
 public class CardAbsentPingMonitoringJob implements MonitoringJob {
 
@@ -33,6 +33,12 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
 
     @Override
     public Runnable getMonitoringJob(final AbstractObservableState state) {
+
+        /**
+         * Loop until one the following condition is met : -
+         * AbstractObservableLocalReader#isSePresentPing returns false, meaning that the SE ping has
+         * failed - InterruptedException is caught
+         */
         return new Runnable() {
             long threshold = 200;
             long retries = 0;

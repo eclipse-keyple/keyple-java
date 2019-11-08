@@ -16,15 +16,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.SmartInsertionMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeInsertion;
 import org.eclipse.keyple.core.seproxy.plugin.mock.BlankSmartInsertionTheadedReader;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -41,7 +38,7 @@ public class WaitForSeInsertionJobExecutorTest extends CoreBaseTest {
     AbstractObservableState waitForInsert;
     BlankSmartInsertionTheadedReader r;
     long timeout;
-    ExecutorService executorService= Executors.newSingleThreadExecutor();;
+    ExecutorService executorService = Executors.newSingleThreadExecutor();;
 
 
     @Before
@@ -54,7 +51,7 @@ public class WaitForSeInsertionJobExecutorTest extends CoreBaseTest {
          * Setup new parameters for each tests
          */
         timeout = 100l;
-        //executorService = Executors.newSingleThreadExecutor();
+        // executorService = Executors.newSingleThreadExecutor();
         r = AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
         waitForInsert =
                 new WaitForSeInsertion(r, new SmartInsertionMonitoringJob(r), executorService);
@@ -68,9 +65,9 @@ public class WaitForSeInsertionJobExecutorTest extends CoreBaseTest {
 
         waitForInsert.onDeactivate();
 
-        //shutdown executorService, no tasks should be left actived
-        //List<Runnable> activeTask = executorService.shutdownNow();
-        //Assert.assertTrue(activeTask.isEmpty());
+        // shutdown executorService, no tasks should be left actived
+        // List<Runnable> activeTask = executorService.shutdownNow();
+        // Assert.assertTrue(activeTask.isEmpty());
     }
 
 
