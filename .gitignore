@@ -95,8 +95,3 @@ ehthumbs_vista.db
 !.vscode/launch.json
 !.vscode/extensions.json
 
-
-# Temp
-gradle/
-gradlew
-gradlew.bat
