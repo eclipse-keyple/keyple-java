@@ -27,6 +27,9 @@ public class RmSetDefaultSelectionRequestTx extends RemoteMethodTx {
 
     private final DefaultSelectionsRequest defaultSelectionsRequest;
     private final ObservableReader.NotificationMode notificationMode;
+    private ObservableReader.PollingMode pollingMode;
+
+    public static String DEFAULT_VALUE;
 
     @Override
     public RemoteMethod getMethodName() {
@@ -34,13 +37,22 @@ public class RmSetDefaultSelectionRequestTx extends RemoteMethodTx {
     }
 
     public RmSetDefaultSelectionRequestTx(DefaultSelectionsRequest defaultSelectionsRequest,
-            ObservableReader.NotificationMode notificationMode, String nativeReaderName,
-            String virtualReaderName, String sessionId, String slaveNodeId,
-            String requesterNodeId) {
+                                          ObservableReader.NotificationMode notificationMode, ObservableReader.PollingMode pollingMode, String nativeReaderName,
+                                          String virtualReaderName, String sessionId, String slaveNodeId,
+                                          String requesterNodeId) {
         super(sessionId, nativeReaderName, virtualReaderName, slaveNodeId, requesterNodeId);
         this.defaultSelectionsRequest = defaultSelectionsRequest;
         this.notificationMode = notificationMode;
+        this.pollingMode = pollingMode;
+    }
 
+    public RmSetDefaultSelectionRequestTx(DefaultSelectionsRequest defaultSelectionsRequest,
+                                          ObservableReader.NotificationMode notificationMode, String nativeReaderName,
+                                          String virtualReaderName, String sessionId, String slaveNodeId,
+                                          String requesterNodeId) {
+        super(sessionId, nativeReaderName, virtualReaderName, slaveNodeId, requesterNodeId);
+        this.defaultSelectionsRequest = defaultSelectionsRequest;
+        this.notificationMode = notificationMode;
     }
 
     /*
@@ -55,9 +67,18 @@ public class RmSetDefaultSelectionRequestTx extends RemoteMethodTx {
     @Override
     public KeypleDto dto() {
         JsonObject body = new JsonObject();
+
         body.addProperty("defaultSelectionsRequest",
                 JsonParser.getGson().toJson(defaultSelectionsRequest));
+
         body.addProperty("notificationMode", notificationMode.getName());
+
+        if(pollingMode!=null){
+            body.addProperty("pollingMode", pollingMode.name());
+        }else{
+            body.addProperty("pollingMode", KeypleDtoHelper.notSpecified());
+        }
+
 
         return KeypleDtoHelper.buildRequest(getMethodName().getName(),
                 JsonParser.getGson().toJson(body, JsonObject.class), sessionId, nativeReaderName,

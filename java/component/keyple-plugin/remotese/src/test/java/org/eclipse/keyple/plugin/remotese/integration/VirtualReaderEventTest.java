@@ -31,6 +31,7 @@ import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.plugin.remotese.pluginse.VirtualObservableReader;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.plugin.stub.StubReaderTest;
@@ -45,7 +46,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(VirtualReaderEventTest.class);
 
-    private VirtualReader virtualReader;
+    private VirtualObservableReader virtualReader;
     private StubReader nativeReader;
 
     /**
@@ -88,7 +89,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                 TransmissionMode.CONTACTLESS);
 
         // get virtual reader
-        virtualReader = getVirtualReader();
+        virtualReader = (VirtualObservableReader) getVirtualReader();
 
     }
 

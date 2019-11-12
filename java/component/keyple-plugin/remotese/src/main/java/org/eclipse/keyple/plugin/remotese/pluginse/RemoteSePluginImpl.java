@@ -85,7 +85,7 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
      * Create a virtual reader (internal method)
      */
     ProxyReader createVirtualReader(String slaveNodeId, String nativeReaderName,
-            DtoSender dtoSender, TransmissionMode transmissionMode, Map<String, String> options)
+            DtoSender dtoSender, TransmissionMode transmissionMode, Boolean isObservable, Map<String, String> options)
             throws KeypleReaderException {
         logger.debug("createVirtualReader for slaveNodeId {} and reader {}", slaveNodeId,
                 nativeReaderName);
@@ -105,21 +105,26 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
 
 
         // check if reader is not already connected (by localReaderName)
-        logger.info("Create a new Virtual Reader with localReaderName {} with session {}",
-                nativeReaderName, session.getSessionId());
+        logger.info("Create a new Virtual Reader with localReaderName {} with session {} isObservable {}",
+                nativeReaderName, session.getSessionId(),isObservable);
 
-        // Create virtual reader with a remote method engine so the reader can send dto
-        // with a session
-        // and the provided name
-        final VirtualReaderImpl virtualReader = new VirtualReaderImpl(session, nativeReaderName,
-                new RemoteMethodTxEngine(dtoSender, rpc_timeout), slaveNodeId, transmissionMode,
-                options);
+        /*
+         * Create virtual reader with a remote method engine so the reader can send dto
+         * with a session and the provided name
+         * Virtual Reader can be Observable or not.
+         */
+        VirtualReaderImpl virtualReader;
+        if(isObservable){
+            virtualReader = new VirtualObservableReaderImpl(session, nativeReaderName,
+                    new RemoteMethodTxEngine(dtoSender, rpc_timeout), slaveNodeId, transmissionMode,
+                    options);
+        }else{
+            virtualReader = new VirtualReaderImpl(session, nativeReaderName,
+                    new RemoteMethodTxEngine(dtoSender, rpc_timeout), slaveNodeId, transmissionMode,
+                    options);
+        }
         readers.add(virtualReader);
 
-        // notify that a new reader is connected in a separated thread
-        /*
-         * new Thread() { public void run() { } }.start();
-         */
         notifyObservers(new PluginEvent(getName(), virtualReader.getName(),
                 PluginEvent.EventType.READER_CONNECTED));
 

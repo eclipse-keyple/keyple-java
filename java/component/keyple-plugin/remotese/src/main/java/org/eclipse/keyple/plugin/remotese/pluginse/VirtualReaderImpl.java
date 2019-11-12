@@ -37,13 +37,13 @@ import org.slf4j.LoggerFactory;
  * Virtual Reader is a proxy to a Native Reader on the slave terminal Use it like a local reader,
  * all API call will be transferred to the Native Reader with a RPC session
  */
-final class VirtualReaderImpl extends AbstractReader implements VirtualReader {
+class VirtualReaderImpl extends AbstractReader implements VirtualReader {
 
-    private final VirtualReaderSession session;
-    private final String nativeReaderName;
-    private final RemoteMethodTxEngine rmTxEngine;
-    private final String slaveNodeId;
-    private final TransmissionMode transmissionMode;
+    protected final VirtualReaderSession session;
+    protected final String nativeReaderName;
+    protected final RemoteMethodTxEngine rmTxEngine;
+    protected final String slaveNodeId;
+    protected final TransmissionMode transmissionMode;
 
     private static final Logger logger = LoggerFactory.getLogger(VirtualReaderImpl.class);
 
@@ -202,8 +202,6 @@ final class VirtualReaderImpl extends AbstractReader implements VirtualReader {
      *
      * HELPERS
      */
-
-
     @Override
     public Map<String, String> getParameters() {
         return parameters;
@@ -214,42 +212,4 @@ final class VirtualReaderImpl extends AbstractReader implements VirtualReader {
         parameters.put(key, value);
     }
 
-    @Override
-    public void startSeDetection(PollingMode pollingMode) {
-        // TODO implement this method
-    }
-
-    @Override
-    public void stopSeDetection() {
-        // TODO implement this method
-    }
-
-    @Override
-    public void setDefaultSelectionRequest(DefaultSelectionsRequest defaultSelectionsRequest,
-            NotificationMode notificationMode) {
-
-        RmSetDefaultSelectionRequestTx setDefaultSelectionRequest =
-                new RmSetDefaultSelectionRequestTx(defaultSelectionsRequest, notificationMode,
-                        this.getNativeReaderName(), this.getName(),
-                        this.getSession().getSessionId(), session.getSlaveNodeId(),
-                        session.getMasterNodeId());
-
-        try {
-            rmTxEngine.add(setDefaultSelectionRequest);
-
-            // blocking call
-            setDefaultSelectionRequest.getResponse();
-        } catch (KeypleRemoteException e) {
-            logger.error(
-                    "setDefaultSelectionRequest encounters an exception while communicating with slave",
-                    e);
-        }
-    }
-
-    @Override
-    public void setDefaultSelectionRequest(DefaultSelectionsRequest defaultSelectionsRequest,
-            NotificationMode notificationMode, PollingMode pollingMode) {
-        // TODO implement this method
-        // ensure that only one exchange with the remote part is necessary
-    }
 }

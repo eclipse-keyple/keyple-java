@@ -59,7 +59,7 @@ public class VirtualReaderTest {
         RemoteSePluginImpl plugin = (RemoteSePluginImpl) masterAPI.getPlugin();
 
         ProxyReader reader = plugin.createVirtualReader(CLIENT_NODE_ID, NATIVE_READER_NAME,
-                Integration.getFakeDtoNode(), TransmissionMode.CONTACTLESS,
+                Integration.getFakeDtoNode(), TransmissionMode.CONTACTLESS, false,
                 new HashMap<String, String>());
 
         reader.transmitSet(StubReaderTest.getRequestIsoDepSetSample());

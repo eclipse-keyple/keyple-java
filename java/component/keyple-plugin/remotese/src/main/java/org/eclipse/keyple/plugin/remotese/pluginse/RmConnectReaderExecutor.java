@@ -56,7 +56,9 @@ class RmConnectReaderExecutor implements RemoteMethodExecutor {
         // parseResponse msg
         String nativeReaderName = keypleDto.getNativeReaderName();
         String slaveNodeId = keypleDto.getRequesterNodeId();
-        String tranmissionMode = body.get("transmissionMode").getAsString();
+        String transmissionMode = body.get("transmissionMode").getAsString();
+        Boolean isObservable = body.get("isObservable").getAsBoolean();
+
         Map<String, String> options =
                 JsonParser.getGson().fromJson(body.get("options").getAsString(), Map.class);
 
@@ -65,7 +67,7 @@ class RmConnectReaderExecutor implements RemoteMethodExecutor {
         try {
             // create a virtual Reader
             virtualReader = (VirtualReaderImpl) this.plugin.createVirtualReader(slaveNodeId,
-                    nativeReaderName, this.dtoSender, TransmissionMode.valueOf(tranmissionMode),
+                    nativeReaderName, this.dtoSender, TransmissionMode.valueOf(transmissionMode), isObservable,
                     options);
 
 

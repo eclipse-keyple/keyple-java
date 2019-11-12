@@ -109,6 +109,7 @@ public class RmConnectReaderTx extends RemoteMethodTx<String> {
         // create response
         JsonObject body = new JsonObject();
         body.addProperty("transmissionMode", localReader.getTransmissionMode().name());
+        body.addProperty("isObservable", localReader instanceof ObservableReader);
         body.addProperty("options", JsonParser.getGson().toJson(options));
 
         return KeypleDtoHelper.buildRequest(getMethodName().getName(), body.toString(), null,

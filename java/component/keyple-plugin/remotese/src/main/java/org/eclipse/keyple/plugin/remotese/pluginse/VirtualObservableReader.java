@@ -11,25 +11,12 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 
 /**
- * Define a Virtual Reader
- * (non observable)
+ * Define a Virtual Observable Reader
  */
-public interface VirtualReader extends SeReader {
-    /**
-     * Name of the Native Reader on the slave device
-     * 
-     * @return local name of the native reader (on slave device)
-     */
-    String getNativeReaderName();
+public interface VirtualObservableReader extends VirtualReader, ObservableReader {
 
-    /**
-     * Return Virtual Reader Session that contains informations about master and slave nodes
-     * 
-     * @return virtual reader session
-     */
-    public VirtualReaderSession getSession();
+
 }

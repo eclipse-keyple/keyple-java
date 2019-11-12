@@ -84,7 +84,7 @@ public class RmPoolAllocateTx extends RemoteMethodTx<SeReader> {
                 VirtualReaderImpl virtualReader =
                         (VirtualReaderImpl) this.virtualPoolPlugin.createVirtualReader(slaveNodeId,
                                 nativeReaderName, this.dtoSender,
-                                TransmissionMode.valueOf(transmissionMode), options);
+                                TransmissionMode.valueOf(transmissionMode),false, options);
 
                 return virtualReader;
 
