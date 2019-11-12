@@ -78,11 +78,12 @@ public class SlaveAPITest {
 
         logger.info("*** Bind Master Services");
         // bind Master services to server
-        masterAPI = Integration.createMasterAPI(factory.getServer(), REMOTE_SE_PLUGIN_NAME);
+        masterAPI = Integration.createSpyMasterAPI(factory.getServer(), REMOTE_SE_PLUGIN_NAME);
 
         logger.info("*** Bind Slave Services");
         // bind Slave services to client
-        spySlaveAPI = Integration.createSlaveAPI(factory.getClient(CLIENT_NODE_ID), SERVER_NODE_ID);
+        spySlaveAPI =
+                Integration.createSpySlaveAPI(factory.getClient(CLIENT_NODE_ID), SERVER_NODE_ID);
 
         nativeReader =
                 Integration.createStubReader(NATIVE_READER_NAME, TransmissionMode.CONTACTLESS);
@@ -203,8 +204,8 @@ public class SlaveAPITest {
     public void testKOConnectServerError() throws Exception {
 
         // bind Slave to faulty client
-        spySlaveAPI =
-                Integration.createSlaveAPI(new LocalClient(CLIENT_NODE_ID, null), SERVER_NODE_ID);
+        spySlaveAPI = Integration.createSpySlaveAPI(new LocalClient(CLIENT_NODE_ID, null),
+                SERVER_NODE_ID);
 
         spySlaveAPI.connectReader(nativeReader);
         // should throw a KeypleRemoteException in slave side
@@ -266,8 +267,8 @@ public class SlaveAPITest {
     public void testKODisconnectServerError() throws Exception {
 
         // bind Slave to faulty client
-        spySlaveAPI =
-                Integration.createSlaveAPI(new LocalClient(CLIENT_NODE_ID, null), SERVER_NODE_ID);
+        spySlaveAPI = Integration.createSpySlaveAPI(new LocalClient(CLIENT_NODE_ID, null),
+                SERVER_NODE_ID);
 
         spySlaveAPI.disconnectReader("null", nativeReader.getName());
         // should throw a KeypleRemoteException in slave side

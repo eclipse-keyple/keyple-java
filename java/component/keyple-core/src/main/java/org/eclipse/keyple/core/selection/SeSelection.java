@@ -101,11 +101,6 @@ public final class SeSelection {
     private SelectionsResult processSelection(DefaultSelectionsResponse defaultSelectionsResponse) {
         SelectionsResult selectionsResult = new SelectionsResult();
 
-        /* null pointer exception protection */
-        if (defaultSelectionsResponse == null) {
-            logger.error("defaultSelectionsResponse shouldn't be null in processSelection.");
-            return null;
-        }
         int selectionIndex = 0;
 
         /* Check SeResponses */
@@ -143,6 +138,13 @@ public final class SeSelection {
      */
     public SelectionsResult processDefaultSelection(
             DefaultSelectionsResponse defaultSelectionsResponse) {
+
+        /* null pointer exception protection */
+        if (defaultSelectionsResponse == null) {
+            logger.error("defaultSelectionsResponse shouldn't be null in processSelection.");
+            return null;
+        }
+
         if (logger.isTraceEnabled()) {
             logger.trace("Process default SELECTIONRESPONSE ({} response(s))",
                     defaultSelectionsResponse.getSelectionSeResponseSet().size());

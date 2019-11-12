@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
@@ -26,6 +28,7 @@ import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -36,23 +39,38 @@ public class RmTransmitSetTx extends RemoteMethodTx<List<SeResponse>> {
     private static final Logger logger = LoggerFactory.getLogger(RmTransmitSetTx.class);
 
     private final Set<SeRequest> seRequestSet;
+    private final MultiSeRequestProcessing multiSeRequestProcessing;
+    private final ChannelControl channelControl;
 
     @Override
     public RemoteMethod getMethodName() {
         return RemoteMethod.READER_TRANSMIT_SET;
     }
 
-    public RmTransmitSetTx(Set<SeRequest> seRequestSet, String sessionId, String nativeReaderName,
-            String virtualReaderName, String requesterNodeId, String slaveNodeId) {
+    public RmTransmitSetTx(Set<SeRequest> seRequestSet,
+            MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl,
+            String sessionId, String nativeReaderName, String virtualReaderName,
+            String requesterNodeId, String slaveNodeId) {
         super(sessionId, nativeReaderName, virtualReaderName, slaveNodeId, requesterNodeId);
         this.seRequestSet = seRequestSet;
+        this.multiSeRequestProcessing = multiSeRequestProcessing;
+        this.channelControl = channelControl;
     }
 
     @Override
     public KeypleDto dto() {
-        return KeypleDtoHelper.buildRequest(getMethodName().getName(),
-                JsonParser.getGson().toJson(seRequestSet,
-                        new TypeToken<LinkedHashSet<SeRequest>>() {}.getType()),
+
+
+        JsonObject body = new JsonObject();
+
+        body.addProperty("seRequestSet", JsonParser.getGson().toJson(seRequestSet,
+                new TypeToken<LinkedHashSet<SeRequest>>() {}.getType()));
+
+        body.addProperty("multiSeRequestProcessing", multiSeRequestProcessing.name());
+
+        body.addProperty("channelControl", channelControl.name());
+
+        return KeypleDtoHelper.buildRequest(getMethodName().getName(), body.toString(),
                 this.sessionId, this.nativeReaderName, this.virtualReaderName, requesterNodeId,
                 targetNodeId, id);
     }
@@ -62,6 +80,7 @@ public class RmTransmitSetTx extends RemoteMethodTx<List<SeResponse>> {
     public List<SeResponse> parseResponse(KeypleDto keypleDto) throws KeypleRemoteException {
 
         logger.trace("KeypleDto : {}", keypleDto);
+
         if (KeypleDtoHelper.containsException(keypleDto)) {
             logger.trace("KeypleDto contains an exception: {}", keypleDto);
             KeypleReaderException ex =

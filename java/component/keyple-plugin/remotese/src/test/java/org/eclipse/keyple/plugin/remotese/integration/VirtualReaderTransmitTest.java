@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.integration;
 
+
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -32,6 +33,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 /**
  * Test transmit scenarii extends configuration from VirtualReaderTest
@@ -114,6 +116,8 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
         }
     }
 
+
+
     /**
      * Successful Transmit with a Calypso command to a Calypso SE
      *
@@ -149,8 +153,6 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
             logger.info("SeResponse returned as expected {}", seResponse.get(0));
         }
-
-
     }
 
     @Test(expected = KeypleReaderException.class)

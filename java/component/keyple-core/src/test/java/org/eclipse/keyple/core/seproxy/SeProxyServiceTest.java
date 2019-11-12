@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstanciationException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
+import org.eclipse.keyple.core.seproxy.plugin.mock.MockAbstractThreadedPlugin;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

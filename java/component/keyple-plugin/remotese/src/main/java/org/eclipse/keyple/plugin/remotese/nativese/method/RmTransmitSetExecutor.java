@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
@@ -28,10 +30,15 @@ import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 /**
- * Execute the Transmit on Native Reader
+ * Execute the TransmitSet on Native Reader from KeypleDto
+ *
+ * <p>
+ * See {@link org.eclipse.keyple.plugin.remotese.pluginse.method.RmTransmitTx}
+ *
  */
 public class RmTransmitSetExecutor implements RemoteMethodExecutor {
 
@@ -53,19 +60,35 @@ public class RmTransmitSetExecutor implements RemoteMethodExecutor {
         KeypleDto keypleDto = transportDto.getKeypleDTO();
         TransportDto out = null;
         List<SeResponse> seResponseList = null;
+        MultiSeRequestProcessing multiSeRequestProcessing;
+        ChannelControl channelControl;
 
-        // Extract info from keypleDto
-        Set<SeRequest> seRequestSet = JsonParser.getGson().fromJson(keypleDto.getBody(),
-                new TypeToken<LinkedHashSet<SeRequest>>() {}.getType());
+        // parse body
+        JsonObject bodyJsonO = JsonParser.getGson().fromJson(keypleDto.getBody(), JsonObject.class);
+
+        // extract info
+        multiSeRequestProcessing = MultiSeRequestProcessing
+                .valueOf(bodyJsonO.get("multiSeRequestProcessing").getAsString());
+
+        channelControl = ChannelControl.valueOf(bodyJsonO.get("channelControl").getAsString());
+
+        Set<SeRequest> seRequestSet =
+                JsonParser.getGson().fromJson(bodyJsonO.get("seRequestSet").getAsString(),
+                        new TypeToken<LinkedHashSet<SeRequest>>() {}.getType());
+
+
+        // prepare transmitSet on nativeReader
         String nativeReaderName = keypleDto.getNativeReaderName();
-        logger.trace("Execute locally seRequestSet : {}", seRequestSet);
+        logger.trace("Execute locally seRequestSet : {} with params {} {}", seRequestSet,
+                channelControl, multiSeRequestProcessing);
 
         try {
             // find native reader by name
             ProxyReader reader = (ProxyReader) slaveAPI.findLocalReader(nativeReaderName);
 
             // execute transmitSet
-            seResponseList = reader.transmitSet(seRequestSet);
+            seResponseList =
+                    reader.transmitSet(seRequestSet, multiSeRequestProcessing, channelControl);
 
             // prepare response
             String parseBody = JsonParser.getGson().toJson(seResponseList,
