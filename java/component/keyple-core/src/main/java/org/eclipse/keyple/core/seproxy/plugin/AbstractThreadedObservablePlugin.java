@@ -110,6 +110,14 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin {
         }
     }
 
+    /**
+     * Check weither the background job is monitoring for new readers
+     * @return true, if the background job is monitoring, false in all other cases.
+     */
+    Boolean isMonitoring(){
+        return thread != null && thread.isAlive() && thread.isMonitoring();
+    }
+
     /* Reader insertion/removal management */
     private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 1000;
 
@@ -150,6 +158,10 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin {
         void end() {
             running = false;
             this.interrupt();
+        }
+
+        boolean isMonitoring(){
+            return running;
         }
 
         @Override
