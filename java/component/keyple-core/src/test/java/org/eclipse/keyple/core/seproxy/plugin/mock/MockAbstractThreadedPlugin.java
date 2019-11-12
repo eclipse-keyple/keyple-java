@@ -14,7 +14,6 @@ package org.eclipse.keyple.core.seproxy.plugin.mock;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -28,7 +27,7 @@ public class MockAbstractThreadedPlugin extends AbstractThreadedObservablePlugin
         super(name);
     }
 
-    public Boolean isMonitoring(){
+    public Boolean isMonitoring() {
         return super.isMonitoring();
     }
 
