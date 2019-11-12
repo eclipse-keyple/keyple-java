@@ -115,9 +115,9 @@ final class VirtualReaderImpl extends AbstractReader implements VirtualReader {
             MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
             throws IllegalArgumentException, KeypleReaderException {
 
-        RmTransmitSetTx transmit = new RmTransmitSetTx(seRequestSet, session.getSessionId(),
-                this.getNativeReaderName(), this.getName(), session.getMasterNodeId(),
-                session.getSlaveNodeId());
+        RmTransmitSetTx transmit = new RmTransmitSetTx(seRequestSet, multiSeRequestProcessing,
+                channelControl, session.getSessionId(), this.getNativeReaderName(), this.getName(),
+                session.getMasterNodeId(), session.getSlaveNodeId());
         try {
             rmTxEngine.add(transmit);
 
@@ -148,9 +148,9 @@ final class VirtualReaderImpl extends AbstractReader implements VirtualReader {
     protected SeResponse processSeRequest(SeRequest seRequest, ChannelControl channelControl)
             throws IllegalArgumentException, KeypleReaderException {
 
-        RmTransmitTx transmit =
-                new RmTransmitTx(seRequest, session.getSessionId(), this.getNativeReaderName(),
-                        this.getName(), session.getMasterNodeId(), session.getSlaveNodeId());
+        RmTransmitTx transmit = new RmTransmitTx(seRequest, channelControl, session.getSessionId(),
+                this.getNativeReaderName(), this.getName(), session.getMasterNodeId(),
+                session.getSlaveNodeId());
         try {
             rmTxEngine.add(transmit);
 

@@ -62,7 +62,6 @@ public class LocalClient implements ClientNode {
 
     @Override
     public void sendDTO(KeypleDto keypleDto) throws KeypleRemoteException {
-
         if (theServer == null) {
             throw new KeypleRemoteException("Unable to connect to server");
         }
