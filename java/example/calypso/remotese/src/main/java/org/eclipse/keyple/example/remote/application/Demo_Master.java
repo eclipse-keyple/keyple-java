@@ -24,6 +24,7 @@ import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstanciationException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
@@ -112,19 +113,11 @@ public class Demo_Master {
     public void boot() {
 
 
-        logger.info("{} Create VirtualReaderService, start plugin", node.getNodeId());
-        // Create masterAPI with a DtoSender
-        // Dto Sender is required so masterAPI can send KeypleDTO to Slave
-        // In this case, node is used as the dtosender (can be client or server)
-        masterAPI = new MasterAPI(SeProxyService.getInstance(), node);
 
-        // observe remote se plugin for events
-        logger.info("{} Observe SeRemotePlugin for Plugin Events and Reader Events",
-                node.getNodeId());
-        ReaderPlugin rsePlugin = masterAPI.getPlugin();
-
-
-        ((ObservablePlugin) rsePlugin).addObserver(new ObservablePlugin.PluginObserver() {
+        /*
+         * Declare the remoteSE Observer that controls the ticketing logic execution
+         */
+        ObservablePlugin.PluginObserver remoteSeObserver = new ObservablePlugin.PluginObserver() {
             @Override
             public void update(PluginEvent event) {
                 logger.info("{} UPDATE {} {} {}", node.getNodeId(), event.getEventType(),
@@ -249,16 +242,34 @@ public class Demo_Master {
                         break;
                 }
             }
-        });
-
-        /*
-         * Plug a stub SAM Reader
-         */
-
-        SeProxyService.getInstance().registerPlugin(new StubPluginFactory(STUB_MASTER));
+        };
 
 
         try {
+
+            /*
+             * Configure the RemoteSe Plugin
+             */
+            logger.info("{} Create VirtualReaderService, start plugin", node.getNodeId());
+            // Create masterAPI with a DtoSender
+            // Dto Sender is required so masterAPI can send KeypleDTO to Slave
+            // In this case, node is used as the dtosender (can be client or server)
+            masterAPI = new MasterAPI(SeProxyService.getInstance(), node);
+
+            // observe remote se plugin for events
+            logger.info("{} Observe SeRemotePlugin for Plugin Events and Reader Events",
+                    node.getNodeId());
+            ReaderPlugin rsePlugin = masterAPI.getPlugin();
+
+
+            ((ObservablePlugin) rsePlugin).addObserver(remoteSeObserver);
+
+            /*
+             * Plug a stub SAM Reader
+             */
+
+            SeProxyService.getInstance().registerPlugin(new StubPluginFactory(STUB_MASTER));
+
             /* Get the instance of the Stub plugin */
             ReaderPlugin stubPlugin = SeProxyService.getInstance().getPlugin(STUB_MASTER);
 
@@ -288,6 +299,8 @@ public class Demo_Master {
         } catch (KeypleReaderNotFoundException e) {
             e.printStackTrace();
         } catch (KeyplePluginNotFoundException e) {
+            e.printStackTrace();
+        } catch (KeyplePluginInstanciationException e) {
             e.printStackTrace();
         }
 

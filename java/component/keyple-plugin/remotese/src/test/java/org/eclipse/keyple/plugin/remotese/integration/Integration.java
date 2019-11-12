@@ -14,6 +14,7 @@ package org.eclipse.keyple.plugin.remotese.integration;
 
 
 import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstanciationException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -46,7 +47,8 @@ public class Integration {
      * @param node
      * @return
      */
-    public static MasterAPI createSpyMasterAPI(DtoNode node, String pluginName) {
+    public static MasterAPI createSpyMasterAPI(DtoNode node, String pluginName)
+            throws KeyplePluginInstanciationException {
         // Create Master services : masterAPI
         MasterAPI masterAPI = new MasterAPI(SeProxyService.getInstance(), node, 10000,
                 MasterAPI.PLUGIN_TYPE_DEFAULT, pluginName);
@@ -106,17 +108,24 @@ public class Integration {
 
     public static StubPlugin createStubPlugin() throws KeyplePluginNotFoundException {
 
-        // get SeProxyService
-        SeProxyService seProxyService = SeProxyService.getInstance();
+        try {
+            // get SeProxyService
+            SeProxyService seProxyService = SeProxyService.getInstance();
 
-        // register plugin
-        seProxyService.registerPlugin(new StubPluginFactory(SLAVE_STUB));
+            // register plugin
+            seProxyService.registerPlugin(new StubPluginFactory(SLAVE_STUB));
 
 
-        // get plugin
-        StubPlugin stubPlugin = (StubPlugin) seProxyService.getPlugin(SLAVE_STUB);
+            // get plugin
+            StubPlugin stubPlugin = (StubPlugin) seProxyService.getPlugin(SLAVE_STUB);
 
-        return stubPlugin;
+            return stubPlugin;
+        } catch (KeyplePluginInstanciationException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+
     }
 
     /**
@@ -126,18 +135,27 @@ public class Integration {
      * @throws InterruptedException
      * @throws KeypleReaderNotFoundException
      */
-    public static StubPoolPlugin createStubPoolPlugin() throws KeyplePluginNotFoundException {
+    public static StubPoolPlugin createStubPoolPlugin() {
 
         SeProxyService seProxyService = SeProxyService.getInstance();
 
         StubPoolPluginFactory stubPoolPluginFactory = new StubPoolPluginFactory(SLAVE_POOL_STUB);
 
-        seProxyService.registerPlugin(stubPoolPluginFactory);
+        try {
+            seProxyService.registerPlugin(stubPoolPluginFactory);
 
 
-        StubPoolPlugin poolPlugin = (StubPoolPlugin) seProxyService.getPlugin(SLAVE_POOL_STUB);
+            StubPoolPlugin poolPlugin = (StubPoolPlugin) seProxyService.getPlugin(SLAVE_POOL_STUB);
 
-        return poolPlugin;
+            return poolPlugin;
+        } catch (KeyplePluginInstanciationException e) {
+            e.printStackTrace();
+        } catch (KeyplePluginNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+
+
     }
 
 

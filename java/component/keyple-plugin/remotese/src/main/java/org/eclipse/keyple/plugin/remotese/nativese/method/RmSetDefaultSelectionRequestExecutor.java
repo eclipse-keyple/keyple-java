@@ -11,9 +11,10 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.nativese.method;
 
+import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
+import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequestImpl;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
@@ -64,7 +65,7 @@ public class RmSetDefaultSelectionRequestExecutor implements RemoteMethodExecuto
 
         DefaultSelectionsRequest defaultSelectionsRequest =
                 (DefaultSelectionsRequest) JsonParser.getGson().fromJson(
-                        selectionRequestJson.getAsString(), DefaultSelectionsRequest.class);
+                        selectionRequestJson.getAsString(), DefaultSelectionsRequestImpl.class);
         ObservableReader.NotificationMode notificationMode =
                 ObservableReader.NotificationMode.get(notificationModeJson.getAsString());
 

@@ -9,19 +9,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.event;
+package org.eclipse.keyple.core.seproxy.exception;
+
+public class KeyplePluginInstanciationException extends KeypleBaseException {
 
 
-import java.util.List;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
-
-public abstract class AbstractDefaultSelectionsResponse {
-    /** The Listt of {@link SeResponse} */
-    protected final List<SeResponse> selectionSeResponseSet;
-
-    protected AbstractDefaultSelectionsResponse(List<SeResponse> selectionSeResponseSet) {
-        this.selectionSeResponseSet = selectionSeResponseSet;
+    public KeyplePluginInstanciationException(String message) {
+        super(message);
     }
 
-    protected abstract List<SeResponse> getSelectionSeResponseSet();
+    public KeyplePluginInstanciationException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

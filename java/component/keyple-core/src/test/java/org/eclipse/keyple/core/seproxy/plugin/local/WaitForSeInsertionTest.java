@@ -39,7 +39,7 @@ public class WaitForSeInsertionTest extends CoreBaseTest {
         logger.info("Test {}", name.getMethodName() + "");
         logger.info("------------------------------");
 
-        r = AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 1);
+        r = AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
         waitForInsert = new WaitForSeInsertion(r);
 
     }

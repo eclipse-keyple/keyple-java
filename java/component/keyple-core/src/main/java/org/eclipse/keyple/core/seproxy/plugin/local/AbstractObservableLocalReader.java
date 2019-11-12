@@ -12,14 +12,13 @@
 package org.eclipse.keyple.core.seproxy.plugin.local;
 
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
+import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
-import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
+import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponseImpl;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -219,14 +218,13 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      * regardless of the selection status, or only if the current SE matches the selection criteria.
      * <p>
      *
-     * @param defaultSelectionsRequest the {@link AbstractDefaultSelectionsRequest} to be executed
-     *        when a SE is inserted
+     * @param defaultSelectionsRequest the {@link DefaultSelectionsRequest} to be executed when a SE
+     *        is inserted
      * @param notificationMode the notification mode enum (ALWAYS or MATCHED_ONLY)
      */
-    public void setDefaultSelectionRequest(
-            AbstractDefaultSelectionsRequest defaultSelectionsRequest,
+    public void setDefaultSelectionRequest(DefaultSelectionsRequest defaultSelectionsRequest,
             ObservableReader.NotificationMode notificationMode) {
-        this.defaultSelectionsRequest = (DefaultSelectionsRequest) defaultSelectionsRequest;
+        this.defaultSelectionsRequest = defaultSelectionsRequest;
         this.notificationMode = notificationMode;
     }
 
@@ -241,8 +239,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      *        the SE detection is restarted, if STOP, the SE detection is stopped until a new call
      *        to startSeDetection is made.
      */
-    public void setDefaultSelectionRequest(
-            AbstractDefaultSelectionsRequest defaultSelectionsRequest,
+    public void setDefaultSelectionRequest(DefaultSelectionsRequest defaultSelectionsRequest,
             ObservableReader.NotificationMode notificationMode,
             ObservableReader.PollingMode pollingMode) {
         // define the default selection request
@@ -325,7 +322,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                     if (aSeMatched) {
                         notifyObservers(new ReaderEvent(this.pluginName, this.name,
                                 ReaderEvent.EventType.SE_MATCHED,
-                                new DefaultSelectionsResponse(seResponseList)));
+                                new DefaultSelectionsResponseImpl(seResponseList)));
                         presenceNotified = true;
                     } else {
                         logger.trace(
@@ -339,7 +336,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                         /* The SE matched, notify an SE_MATCHED event with the received response */
                         notifyObservers(new ReaderEvent(this.pluginName, this.name,
                                 ReaderEvent.EventType.SE_MATCHED,
-                                new DefaultSelectionsResponse(seResponseList)));
+                                new DefaultSelectionsResponseImpl(seResponseList)));
                     } else {
                         /*
                          * The SE didn't match, notify an SE_INSERTED event with the received
@@ -350,7 +347,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                                 this.getName(), seResponseList.size());
                         notifyObservers(new ReaderEvent(this.pluginName, this.name,
                                 ReaderEvent.EventType.SE_INSERTED,
-                                new DefaultSelectionsResponse(seResponseList)));
+                                new DefaultSelectionsResponseImpl(seResponseList)));
                     }
                     presenceNotified = true;
                 }
