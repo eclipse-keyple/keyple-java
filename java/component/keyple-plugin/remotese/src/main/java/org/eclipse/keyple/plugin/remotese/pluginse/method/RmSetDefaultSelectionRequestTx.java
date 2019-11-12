@@ -33,13 +33,9 @@ public class RmSetDefaultSelectionRequestTx extends RemoteMethodTx {
         return RemoteMethod.DEFAULT_SELECTION_REQUEST;
     }
 
-    public RmSetDefaultSelectionRequestTx(
-            DefaultSelectionsRequest defaultSelectionsRequest,
-            ObservableReader.NotificationMode notificationMode,
-            String nativeReaderName,
-            String virtualReaderName,
-            String sessionId,
-            String slaveNodeId,
+    public RmSetDefaultSelectionRequestTx(DefaultSelectionsRequest defaultSelectionsRequest,
+            ObservableReader.NotificationMode notificationMode, String nativeReaderName,
+            String virtualReaderName, String sessionId, String slaveNodeId,
             String requesterNodeId) {
         super(sessionId, nativeReaderName, virtualReaderName, slaveNodeId, requesterNodeId);
         this.defaultSelectionsRequest = defaultSelectionsRequest;
