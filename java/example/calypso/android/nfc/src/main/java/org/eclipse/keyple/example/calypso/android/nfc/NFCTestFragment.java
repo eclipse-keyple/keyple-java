@@ -94,17 +94,17 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
 
-        /* Assign PcscPlugin to the SeProxyService */
-        seProxyService.registerPlugin(new AndroidNfcPluginFactory());
-
-        // 2 - add NFC Fragment to activity in order to communicate with Android Plugin
-        LOG.debug("Add Keyple NFC Fragment to activity in order to "
-                + "communicate with Android Plugin");
-        FragmentManager fm = getFragmentManager();
-        fm.beginTransaction().add(AndroidNfcFragment.newInstance(), TAG_NFC_ANDROID_FRAGMENT)
-                .commit();
-
         try {
+            /* register AndroidNfcPlugin to the SeProxyService */
+            seProxyService.registerPlugin(new AndroidNfcPluginFactory());
+
+            // 2 - add NFC Fragment to activity in order to communicate with Android Plugin
+            LOG.debug("Add Keyple NFC Fragment to activity in order to "
+                    + "communicate with Android Plugin");
+            FragmentManager fm = getFragmentManager();
+            fm.beginTransaction().add(AndroidNfcFragment.newInstance(), TAG_NFC_ANDROID_FRAGMENT)
+                    .commit();
+
             // define task as an observer for ReaderEvents
             LOG.debug("Define this view as an observer for ReaderEvents");
             reader = (AndroidNfcReader) seProxyService.getPlugins().first().getReaders().first();
