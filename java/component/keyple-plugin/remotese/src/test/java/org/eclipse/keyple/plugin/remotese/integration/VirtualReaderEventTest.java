@@ -126,7 +126,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
             }
         };
 
-        // add stubPluginObserver
+        // register stubPluginObserver
         virtualReader.addObserver(obs);
 
         logger.info("Insert a Hoplink SE and wait 5 seconds for a SE event to be thrown");
@@ -174,7 +174,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                 }
             }
         };
-        // add stubPluginObserver
+        // register stubPluginObserver
         virtualReader.addObserver(obs);
 
         logger.info(
@@ -254,7 +254,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
             }
         };
 
-        // add observer
+        // register observer
         virtualReader.addObserver(obs);
 
         SeSelection seSelection = new SeSelection();
@@ -303,7 +303,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
             }
         };
 
-        // add observer
+        // register observer
         virtualReader.addObserver(obs);
 
         String poAid = "A000000291A000000192";// not matching poAid
@@ -344,7 +344,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         // CountDown lock
         final CountDownLatch lock = new CountDownLatch(1);
 
-        // add observer
+        // register observer
         ObservableReader.ReaderObserver obs = new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
@@ -436,7 +436,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
             }
         };
 
-        // add observer
+        // register observer
         virtualReader.addObserver(obs);
 
         // wait 1 second

@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.remotese.rm;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum RemoteMethod {
+public enum RemoteMethodName {
 
     READER_TRANSMIT_SET("reader_transmitSet"),
 
@@ -34,7 +34,7 @@ public enum RemoteMethod {
 
     private String name;
 
-    RemoteMethod(String name) {
+    RemoteMethodName(String name) {
         this.name = name;
     }
 
@@ -46,17 +46,18 @@ public enum RemoteMethod {
     // ****** Reverse Lookup Implementation************//
 
     // Lookup table
-    private static final Map<String, RemoteMethod> lookup = new HashMap<String, RemoteMethod>();
+    private static final Map<String, RemoteMethodName> lookup =
+            new HashMap<String, RemoteMethodName>();
 
     // Populate the lookup table on loading time
     static {
-        for (RemoteMethod env : RemoteMethod.values()) {
+        for (RemoteMethodName env : RemoteMethodName.values()) {
             lookup.put(env.getName(), env);
         }
     }
 
     // This method can be used for reverse lookup purpose
-    public static RemoteMethod get(String name) {
+    public static RemoteMethodName get(String name) {
         return lookup.get(name);
     }
 }

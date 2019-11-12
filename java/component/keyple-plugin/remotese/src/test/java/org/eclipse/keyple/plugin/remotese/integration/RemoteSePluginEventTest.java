@@ -76,7 +76,7 @@ public class RemoteSePluginEventTest extends VirtualReaderBaseTest {
             }
         };
 
-        // add observer
+        // register observer
         remoteSePlugin.addObserver(obs);
 
         // connect a Stub Native reader
@@ -125,7 +125,7 @@ public class RemoteSePluginEventTest extends VirtualReaderBaseTest {
             }
         };
 
-        // add observer
+        // register observer
         remoteSePlugin.addObserver(obs);
 
         // connect a Stub Native reader
@@ -159,7 +159,7 @@ public class RemoteSePluginEventTest extends VirtualReaderBaseTest {
      *           Assert.assertNotNull(event.getReaderNames().first()); Assert.assertEquals(1,
      *           event.getReaderNames().size()); Assert.assertEquals(remoteSePlugin.getName(),
      *           event.getPluginName()); Assert.assertEquals(PluginEvent.EventType.READER_CONNECTED,
-     *           event.getEventType()); lock.countDown(); } }; //add observer
+     *           event.getEventType()); lock.countDown(); } }; //register observer
      *           remoteSePlugin.addObserver(obs);
      * 
      *           // connect a Stub Native reader try { this.connectStubReader(NATIVE_READER_NAME,
@@ -229,7 +229,7 @@ public class RemoteSePluginEventTest extends VirtualReaderBaseTest {
             }
         };
 
-        // add observer
+        // register observer
         remoteSePlugin.addObserver(obs);
 
         // connect a Stub Native reader

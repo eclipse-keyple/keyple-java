@@ -80,7 +80,7 @@ public class Integration {
 
         StubPlugin stubPlugin = createStubPlugin();
 
-        // add an stubPluginObserver to start the plugin monitoring thread
+        // register an stubPluginObserver to start the plugin monitoring thread
         // stubPlugin.addObserver(observer); //do not observe so the monitoring thread is not
         // created
 

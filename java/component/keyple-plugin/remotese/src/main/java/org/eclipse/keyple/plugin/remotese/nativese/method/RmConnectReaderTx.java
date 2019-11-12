@@ -16,12 +16,10 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractReader;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.nativese.INativeReaderService;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTx;
+import org.eclipse.keyple.plugin.remotese.rm.AbstractRemoteMethodTx;
+import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
@@ -32,7 +30,7 @@ import com.google.gson.JsonObject;
 /**
  * Handle the Connect Reader keypleDTO serialization and deserialization
  */
-public class RmConnectReaderTx extends RemoteMethodTx<String> {
+public class RmConnectReaderTx extends AbstractRemoteMethodTx<String> {
 
 
     private final SeReader localReader;
@@ -40,8 +38,8 @@ public class RmConnectReaderTx extends RemoteMethodTx<String> {
     private final Map<String, String> options;
 
     @Override
-    public RemoteMethod getMethodName() {
-        return RemoteMethod.READER_CONNECT;
+    public RemoteMethodName getMethodName() {
+        return RemoteMethodName.READER_CONNECT;
     }
 
 
@@ -84,7 +82,7 @@ public class RmConnectReaderTx extends RemoteMethodTx<String> {
                             .addObserver((ObservableReader.ReaderObserver) slaveAPI);
                 } else {
                     logger.debug(
-                            "Connected reader is not observable, do not add observer capabilities to virtual reader");
+                            "Connected reader is not observable, do not register observer capabilities to virtual reader");
                 }
 
                 // retrieve sessionId from keypleDto

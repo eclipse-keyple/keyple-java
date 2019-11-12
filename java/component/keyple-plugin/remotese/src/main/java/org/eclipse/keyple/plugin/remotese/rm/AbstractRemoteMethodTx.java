@@ -26,9 +26,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @param <T> : type of the response
  */
-public abstract class RemoteMethodTx<T> {
+public abstract class AbstractRemoteMethodTx<T> {
 
-    private static final Logger logger = LoggerFactory.getLogger(RemoteMethodTx.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractRemoteMethodTx.class);
     protected final String sessionId;
     protected final String nativeReaderName;
     protected final String virtualReaderName;
@@ -45,13 +45,13 @@ public abstract class RemoteMethodTx<T> {
 
     // blocking mechanism
     private CountDownLatch lock;
-    private RemoteMethodTxCallback<T> callback;
+    private IRemoteMethodTxCallback<T> callback;
     private long timeout;
 
     private DtoSender sender;
 
-    protected RemoteMethodTx(String sessionId, String nativeReaderName, String virtualReaderName,
-            String targetNodeId, String requesterNodeId) {
+    protected AbstractRemoteMethodTx(String sessionId, String nativeReaderName,
+            String virtualReaderName, String targetNodeId, String requesterNodeId) {
         this.sessionId = sessionId;
         this.nativeReaderName = nativeReaderName;
         this.virtualReaderName = virtualReaderName;
@@ -85,41 +85,45 @@ public abstract class RemoteMethodTx<T> {
      * 
      * @return : name of the remote method
      */
-    public abstract RemoteMethod getMethodName();
+    public abstract RemoteMethodName getMethodName();
 
 
     /**
-     * Non blocking method to getResponse results from the remote method call
+     * Non blocking method to execute results from the remote method call
      * 
      * @param callback get Result from this callback
      * @throws KeypleRemoteException if a problem occurs while sending
      */
-    public void send(RemoteMethodTxCallback<T> callback) throws KeypleRemoteException {
+    public void send(IRemoteMethodTxCallback<T> callback) throws KeypleRemoteException {
         this.callback = callback;
         sender.sendDTO(this.dto());
     }
 
 
     /**
-     * Blocking method to getResponse results from the remote method call. To be called by the
-     * client (used internally by rmCommands, do not use)
+     * Blocking method to execute results from the remote method call. To be called by the client
+     * (used internally by rmCommands, do not use)
      *
      * @return T : result of the command
      * @throws KeypleRemoteException : if an
      */
-    final public T getResponse() throws KeypleRemoteException {
+    final public T execute(IRemoteMethodTxEngine rmTxEngine) throws KeypleRemoteException {
+
+        // register this method to receive response
+        rmTxEngine.register(this);
+
         if (!isRegistered) {
             throw new IllegalStateException(
-                    "RemoteMethodTx#getResponse() can not be used until RemoteMethod is isRegistered in a RemoteMethodEngine, please call RemoteMethodEngine#register");
+                    "RemoteMethodTx#execute() can not be used until RemoteMethod is isRegistered in a RemoteMethodEngine, please call RemoteMethodEngine#register");
         }
         logger.debug("Blocking Get {}", this.getClass().getCanonicalName());
-        final RemoteMethodTx thisInstance = this;
+        final AbstractRemoteMethodTx thisInstance = this;
 
         Thread asyncSend = new Thread() {
             @Override
             public void run() {
                 try {
-                    send(new RemoteMethodTxCallback<T>() {
+                    send(new IRemoteMethodTxCallback<T>() {
                         @Override
                         public void get(T response, KeypleRemoteException exception) {
                             logger.debug("release lock");

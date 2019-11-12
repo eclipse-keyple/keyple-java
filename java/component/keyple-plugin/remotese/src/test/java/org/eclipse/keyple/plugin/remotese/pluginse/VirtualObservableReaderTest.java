@@ -12,37 +12,22 @@
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
 
-import org.eclipse.keyple.core.seproxy.ChannelControl;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
-import org.eclipse.keyple.plugin.remotese.integration.Integration;
-import org.eclipse.keyple.plugin.remotese.integration.VirtualReaderBaseTest;
-import org.eclipse.keyple.plugin.remotese.rm.json.SampleFactory;
-import org.eclipse.keyple.plugin.stub.StubReaderTest;
-import org.junit.*;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.plugin.remotese.integration.Integration;
+import org.eclipse.keyple.plugin.remotese.integration.VirtualReaderBaseTest;
+import org.junit.*;
+import org.mockito.Mockito;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Unit Test Observable Virtual Reader
@@ -87,14 +72,17 @@ public class VirtualObservableReaderTest extends VirtualReaderBaseTest {
     // execute at hand and check logs
     public void setDefaultSelectionRequest_withNotificationMode() throws Exception {
 
-        DefaultSelectionsRequest defaultSelectionsRequest = Mockito.mock(DefaultSelectionsRequest.class);
+        DefaultSelectionsRequest defaultSelectionsRequest =
+                Mockito.mock(DefaultSelectionsRequest.class);
 
         // test setDefaultSelectionRequest with NotificationMode
-        (virtualReader).setDefaultSelectionRequest(defaultSelectionsRequest, ObservableReader.NotificationMode.MATCHED_ONLY);
+        (virtualReader).setDefaultSelectionRequest(defaultSelectionsRequest,
+                ObservableReader.NotificationMode.MATCHED_ONLY);
 
 
         // condition -> the nativeReader execute the method executed on the virtual reader
-        verify(nativeReader, times(1)).setDefaultSelectionRequest(defaultSelectionsRequest,ObservableReader.NotificationMode.MATCHED_ONLY);
+        verify(nativeReader, times(1)).setDefaultSelectionRequest(defaultSelectionsRequest,
+                ObservableReader.NotificationMode.MATCHED_ONLY);
     }
 
 

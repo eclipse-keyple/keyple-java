@@ -16,8 +16,8 @@ import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodExecutor;
+import org.eclipse.keyple.plugin.remotese.rm.IRemoteMethodExecutor;
+import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
@@ -29,15 +29,15 @@ import com.google.gson.JsonObject;
 /**
  * Execute the Transmit on Native Reader
  */
-public class RmTransmitExecutor implements RemoteMethodExecutor {
+public class RmTransmitExecutor implements IRemoteMethodExecutor {
 
     private static final Logger logger = LoggerFactory.getLogger(RmTransmitExecutor.class);
 
     private final SlaveAPI slaveAPI;
 
     @Override
-    public RemoteMethod getMethodName() {
-        return RemoteMethod.READER_TRANSMIT;
+    public RemoteMethodName getMethodName() {
+        return RemoteMethodName.READER_TRANSMIT;
     }
 
 

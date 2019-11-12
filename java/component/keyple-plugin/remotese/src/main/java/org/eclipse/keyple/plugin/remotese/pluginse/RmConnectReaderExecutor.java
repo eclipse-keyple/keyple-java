@@ -14,8 +14,8 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 import java.util.Map;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodExecutor;
+import org.eclipse.keyple.plugin.remotese.rm.IRemoteMethodExecutor;
+import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
 import org.eclipse.keyple.plugin.remotese.transport.*;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
@@ -29,13 +29,13 @@ import com.google.gson.JsonPrimitive;
 /**
  * Execute the Connect Reader on Remote Se plugin
  */
-class RmConnectReaderExecutor implements RemoteMethodExecutor {
+class RmConnectReaderExecutor implements IRemoteMethodExecutor {
 
     private static final Logger logger = LoggerFactory.getLogger(RmConnectReaderExecutor.class);
 
     @Override
-    public RemoteMethod getMethodName() {
-        return RemoteMethod.READER_DISCONNECT;
+    public RemoteMethodName getMethodName() {
+        return RemoteMethodName.READER_DISCONNECT;
     }
 
     private final RemoteSePluginImpl plugin;
@@ -84,22 +84,12 @@ class RmConnectReaderExecutor implements RemoteMethodExecutor {
 
         } catch (KeypleReaderException e) {
             // virtual reader for remote reader already exists
-            logger.warn("Virtual reader already exists for reader " + nativeReaderName, e);
+            logger.warn("Virtual reader already exists for reader {}", nativeReaderName);
 
             // send the exception inside the dto
             return transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(keypleDto.getAction(),
                     e, null, nativeReaderName, null, transportDto.getKeypleDTO().getTargetNodeId(),
                     slaveNodeId, keypleDto.getId()));
-
-        } catch (IllegalArgumentException e) {
-            // virtual reader for remote reader already exists
-            logger.warn("Transmission mode is illegal " + nativeReaderName, e);
-
-            // send the exception inside the dto
-            return transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(keypleDto.getAction(),
-                    e, null, nativeReaderName, null, keypleDto.getTargetNodeId(),
-                    keypleDto.getRequesterNodeId(), keypleDto.getId()));
-
         }
     }
 }

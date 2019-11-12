@@ -13,8 +13,8 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTx;
+import org.eclipse.keyple.plugin.remotese.rm.AbstractRemoteMethodTx;
+import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
-public class RmPoolReleaseTx extends RemoteMethodTx<Boolean> {
+public class RmPoolReleaseTx extends AbstractRemoteMethodTx<Boolean> {
 
     private static final Logger logger = LoggerFactory.getLogger(RmPoolReleaseTx.class);
 
@@ -39,8 +39,8 @@ public class RmPoolReleaseTx extends RemoteMethodTx<Boolean> {
     }
 
     @Override
-    public RemoteMethod getMethodName() {
-        return RemoteMethod.POOL_RELEASE_READER;
+    public RemoteMethodName getMethodName() {
+        return RemoteMethodName.POOL_RELEASE_READER;
     }
 
     @Override

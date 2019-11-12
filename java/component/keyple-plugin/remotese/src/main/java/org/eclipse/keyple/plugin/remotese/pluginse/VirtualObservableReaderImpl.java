@@ -21,8 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Virtual Reader is a proxy to a Native Reader on the slave terminal Use it like a local reader,
- * all API call will be transferred to the Native Reader with a RPC session
+ * Observable Virtual Reader add Observable methods to VirtualReaderImpl
  */
 final class VirtualObservableReaderImpl extends VirtualReaderImpl
         implements VirtualObservableReader {
@@ -39,12 +38,14 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
 
     @Override
     public void startSeDetection(PollingMode pollingMode) {
-        // TODO implement this method
+        logger.error(
+                "startSeDetection is not implemented in VirtualObservableReaderImpl, please use the local method");
     }
 
     @Override
     public void stopSeDetection() {
-        // TODO implement this method
+        logger.error(
+                "stopSeDetection is not implemented in VirtualObservableReaderImpl, please use the local method");
     }
 
     @Override
@@ -58,10 +59,8 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
                         session.getMasterNodeId());
 
         try {
-            rmTxEngine.add(setDefaultSelectionRequest);
-
             // blocking call
-            setDefaultSelectionRequest.getResponse();
+            setDefaultSelectionRequest.execute(rmTxEngine);
         } catch (KeypleRemoteException e) {
             logger.error(
                     "setDefaultSelectionRequest encounters an exception while communicating with slave",
@@ -84,10 +83,8 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
                         session.getMasterNodeId());
 
         try {
-            rmTxEngine.add(setDefaultSelectionRequest);
-
             // blocking call
-            setDefaultSelectionRequest.getResponse();
+            setDefaultSelectionRequest.execute(rmTxEngine);
         } catch (KeypleRemoteException e) {
             logger.error(
                     "setDefaultSelectionRequest encounters an exception while communicating with slave",

@@ -66,7 +66,7 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
         this.slaveNodeId = slaveNodeId;
         this.transmissionMode = transmissionMode;
         this.parameters = options;
-     }
+    }
 
     /**
      * @return the current transmission mode
@@ -114,10 +114,8 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
                 channelControl, session.getSessionId(), this.getNativeReaderName(), this.getName(),
                 session.getMasterNodeId(), session.getSlaveNodeId());
         try {
-            rmTxEngine.add(transmit);
-
             // blocking call
-            return transmit.getResponse();
+            return transmit.execute(rmTxEngine);
         } catch (KeypleRemoteException e) {
             if (e.getCause() != null) {
                 // KeypleReaderException is inside the KeypleRemoteException
@@ -147,10 +145,8 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
                 this.getNativeReaderName(), this.getName(), session.getMasterNodeId(),
                 session.getSlaveNodeId());
         try {
-            rmTxEngine.add(transmit);
-
             // blocking call
-            return transmit.getResponse();
+            return transmit.execute(rmTxEngine);
         } catch (KeypleRemoteException e) {
             e.printStackTrace();
             throw (KeypleReaderException) e.getCause();

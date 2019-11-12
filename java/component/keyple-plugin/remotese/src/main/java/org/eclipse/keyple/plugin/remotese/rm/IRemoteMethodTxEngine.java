@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information regarding copyright
  * ownership.
@@ -11,14 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.rm;
 
+public interface IRemoteMethodTxEngine {
 
-import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
-
-public interface RemoteMethodExecutor {
-
-
-    RemoteMethod getMethodName();
-
-    TransportDto execute(TransportDto transportDto);
+    void register(final AbstractRemoteMethodTx rm);
 
 }
