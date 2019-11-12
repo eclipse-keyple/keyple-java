@@ -242,7 +242,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
     }
 
     @Override
-    protected ObservableReaderStateService initStateService() {
+    final protected ObservableReaderStateService initStateService() {
         if (executorService == null) {
             throw new IllegalArgumentException("Executor service has not been initialized");
         }
