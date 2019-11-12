@@ -345,37 +345,17 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
         }
     }
 
-    /**
-     * Add a reader observer.
-     * <p>
-     * The observer will receive all the events produced by this reader (card insertion, removal,
-     * etc.)
-     *
-     * @param observer the observer object
-     */
     public void addObserver(ReaderObserver observer) {
         logger.trace("[{}] addObserver => Adding '{}' as an observer of '{}'.",
                 this.getClass().getSimpleName(), observer.getClass().getSimpleName(), name);
         super.addObserver(observer);
     }
 
-    /**
-     * Remove a reader observer.
-     * <p>
-     * The observer will not receive any of the events produced by this reader.
-     *
-     * @param observer the observer object
-     */
     public void removeObserver(ReaderObserver observer) {
         logger.trace("[{}] removeObserver => Deleting a reader observer", this.getName());
         super.removeObserver(observer);
     }
 
-    /**
-     * Push a ReaderEvent of the selected AbstractReader to its registered observers.
-     *
-     * @param event the event (see {@link ReaderEvent})
-     */
     @Override
     public final void notifyObservers(final ReaderEvent event) {
 
@@ -393,7 +373,7 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
      * <p>
      * See {@link #setParameter(String, String)} for more details
      *
-     * @param parameters a Map<String, String> parameter set
+     * @param parameters a Map &lt;String, String&gt; parameter set
      * @throws KeypleBaseException if one of the parameters could not be set up
      */
     @Override

@@ -20,8 +20,7 @@ import org.eclipse.keyple.core.seproxy.message.ProxyReader;
  */
 public interface Nameable {
     /**
-     *
-     * @return the ‘unique’ name of the item
+     * @return the unique name of the item
      */
     String getName();
 }
