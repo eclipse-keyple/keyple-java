@@ -114,7 +114,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin {
      * Check weither the background job is monitoring for new readers
      * @return true, if the background job is monitoring, false in all other cases.
      */
-    Boolean isMonitoring(){
+    protected Boolean isMonitoring(){
         return thread != null && thread.isAlive() && thread.isMonitoring();
     }
 

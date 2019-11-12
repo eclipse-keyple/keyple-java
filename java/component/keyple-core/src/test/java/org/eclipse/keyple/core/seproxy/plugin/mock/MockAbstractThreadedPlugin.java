@@ -9,10 +9,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy;
+package org.eclipse.keyple.core.seproxy.plugin.mock;
 
 import java.util.Map;
 import java.util.SortedSet;
+import java.util.TreeSet;
+
+import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractReader;
@@ -21,18 +24,26 @@ import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
 public class MockAbstractThreadedPlugin extends AbstractThreadedObservablePlugin {
 
 
-    protected MockAbstractThreadedPlugin(String name) {
+    public MockAbstractThreadedPlugin(String name) {
         super(name);
+    }
+
+    public Boolean isMonitoring(){
+        return super.isMonitoring();
+    }
+
+    public void finalize() throws Throwable {
+        super.finalize();
     }
 
     @Override
     protected SortedSet<String> fetchNativeReadersNames() throws KeypleReaderException {
-        return null;
+        return new TreeSet<String>();
     }
 
     @Override
     protected SortedSet<SeReader> initNativeReaders() throws KeypleReaderException {
-        return null;
+        return new TreeSet<SeReader>();
     }
 
     @Override
@@ -50,4 +61,5 @@ public class MockAbstractThreadedPlugin extends AbstractThreadedObservablePlugin
             throws IllegalArgumentException, KeypleBaseException {
 
     }
+
 }
