@@ -66,10 +66,7 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
         this.slaveNodeId = slaveNodeId;
         this.transmissionMode = transmissionMode;
         this.parameters = options;
-        logger.info(
-                "A new virtual reader was created with name:{}, sessionId:{}, transmissionMode:{}, options:{}",
-                this.getName(), session, transmissionMode, options);
-    }
+     }
 
     /**
      * @return the current transmission mode

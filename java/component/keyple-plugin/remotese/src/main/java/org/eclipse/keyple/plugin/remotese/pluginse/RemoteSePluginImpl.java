@@ -87,8 +87,6 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
     ProxyReader createVirtualReader(String slaveNodeId, String nativeReaderName,
             DtoSender dtoSender, TransmissionMode transmissionMode, Boolean isObservable,
             Map<String, String> options) throws KeypleReaderException {
-        logger.debug("createVirtualReader for slaveNodeId {} and reader {}", slaveNodeId,
-                nativeReaderName);
 
         // create a new session for the new reader
         VirtualReaderSession session =
@@ -105,9 +103,9 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
 
 
         // check if reader is not already connected (by localReaderName)
-        logger.info(
-                "Create a new Virtual Reader with localReaderName {} with session {} isObservable {}",
-                nativeReaderName, session.getSessionId(), isObservable);
+        logger.debug(
+                "Create a new Virtual Reader with localReaderName {} with session {} isObservable {}  for slaveNodeId {}",
+                nativeReaderName, session.getSessionId(), isObservable, slaveNodeId);
 
         /*
          * Create virtual reader with a remote method engine so the reader can send dto with a
