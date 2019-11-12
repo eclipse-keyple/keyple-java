@@ -75,12 +75,12 @@ public class RmConnectReaderTx extends RemoteMethodTx<String> {
                  */
 
                 // find the local reader by name
-                ProxyReader localReader = (ProxyReader) slaveAPI.findLocalReader(nativeReaderName);
+                SeReader localReader = slaveAPI.findLocalReader(nativeReaderName);
 
-                if (localReader instanceof AbstractReader) {
+                if (localReader instanceof ObservableReader) {
                     logger.debug("Register SlaveAPI as an observer for native reader {}",
                             localReader.getName());
-                    ((AbstractReader) localReader)
+                    ((ObservableReader) localReader)
                             .addObserver((ObservableReader.ReaderObserver) slaveAPI);
                 } else {
                     logger.debug(

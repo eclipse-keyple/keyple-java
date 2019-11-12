@@ -56,7 +56,7 @@ public class RmTransmitExecutor implements RemoteMethodExecutor {
 
         try {
             // find native reader by name
-            ProxyReader reader = slaveAPI.findLocalReader(nativeReaderName);
+            ProxyReader reader = (ProxyReader) slaveAPI.findLocalReader(nativeReaderName);
 
             // execute transmitSet
             seResponse = reader.transmit(seRequest);

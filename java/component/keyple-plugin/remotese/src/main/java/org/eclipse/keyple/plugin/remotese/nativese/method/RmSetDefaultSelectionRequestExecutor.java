@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.nativese.method;
 
+import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -82,7 +83,7 @@ public class RmSetDefaultSelectionRequestExecutor implements RemoteMethodExecuto
 
         try {
             // find native reader by name
-            ProxyReader reader = slaveAPI.findLocalReader(nativeReaderName);
+            SeReader reader = slaveAPI.findLocalReader(nativeReaderName);
 
             if (reader instanceof ObservableReader) {
                 logger.debug(reader.getName()

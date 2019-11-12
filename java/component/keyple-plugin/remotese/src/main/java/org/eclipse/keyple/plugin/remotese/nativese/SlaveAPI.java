@@ -14,6 +14,8 @@ package org.eclipse.keyple.plugin.remotese.nativese;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import com.sun.corba.se.impl.protocol.InfoOnlyServantCacheLocalCRDImpl;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
@@ -273,12 +275,12 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
 
             // blocking call
             disconnect.getResponse();
-            ProxyReader nativeReader = findLocalReader(nativeReaderName);
-            if (nativeReader instanceof AbstractReader) {
+            SeReader nativeReader = findLocalReader(nativeReaderName);
+            if (nativeReader instanceof ObservableReader) {
                 logger.debug("Disconnected reader is observable, removing slaveAPI observer");
 
                 // stop propagating the local reader events
-                ((AbstractReader) nativeReader).removeObserver(this);
+                ((ObservableReader) nativeReader).removeObserver(this);
             } else {
                 logger.debug("Disconnected reader is not observable");
             }
@@ -298,13 +300,13 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
      * @throws KeypleReaderNotFoundException if not reader were found with this name
      */
     @Override
-    public ProxyReader findLocalReader(String nativeReaderName)
+    public SeReader findLocalReader(String nativeReaderName)
             throws KeypleReaderNotFoundException {
         logger.trace("Find local reader by name {} in {} plugin(s)", nativeReaderName,
                 seProxyService.getPlugins().size());
         for (ReaderPlugin plugin : seProxyService.getPlugins()) {
             try {
-                return (ProxyReader) plugin.getReader(nativeReaderName);
+                return plugin.getReader(nativeReaderName);
             } catch (KeypleReaderNotFoundException e) {
                 // continue
             }
