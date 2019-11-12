@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
-import com.google.gson.JsonObject;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -30,6 +28,7 @@ import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -49,13 +48,9 @@ public class RmTransmitSetTx extends RemoteMethodTx<List<SeResponse>> {
     }
 
     public RmTransmitSetTx(Set<SeRequest> seRequestSet,
-        MultiSeRequestProcessing multiSeRequestProcessing,
-        ChannelControl channelControl,
-        String sessionId,
-        String nativeReaderName,
-        String virtualReaderName,
-        String requesterNodeId,
-        String slaveNodeId) {
+            MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl,
+            String sessionId, String nativeReaderName, String virtualReaderName,
+            String requesterNodeId, String slaveNodeId) {
         super(sessionId, nativeReaderName, virtualReaderName, slaveNodeId, requesterNodeId);
         this.seRequestSet = seRequestSet;
         this.multiSeRequestProcessing = multiSeRequestProcessing;
@@ -68,19 +63,14 @@ public class RmTransmitSetTx extends RemoteMethodTx<List<SeResponse>> {
 
         JsonObject body = new JsonObject();
 
-        body.addProperty("seRequestSet",
-                JsonParser.getGson().toJson(seRequestSet,
-                        new TypeToken<LinkedHashSet<SeRequest>>() {}.getType()));
+        body.addProperty("seRequestSet", JsonParser.getGson().toJson(seRequestSet,
+                new TypeToken<LinkedHashSet<SeRequest>>() {}.getType()));
 
-        body.addProperty("multiSeRequestProcessing",
-                JsonParser.getGson().toJson(multiSeRequestProcessing));
+        body.addProperty("multiSeRequestProcessing", multiSeRequestProcessing.name());
 
-        body.addProperty("channelControl",
-                JsonParser.getGson().toJson(channelControl));
+        body.addProperty("channelControl", channelControl.name());
 
-        return KeypleDtoHelper.buildRequest(
-                getMethodName().getName(),
-                JsonParser.getGson().toJson(body, JsonObject.class) ,
+        return KeypleDtoHelper.buildRequest(getMethodName().getName(), body.toString(),
                 this.sessionId, this.nativeReaderName, this.virtualReaderName, requesterNodeId,
                 targetNodeId, id);
     }

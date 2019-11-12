@@ -11,6 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.nativese.method;
 
+
+import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
@@ -22,6 +24,7 @@ import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.gson.JsonObject;
 
 /**
  * Execute the Transmit on Native Reader
@@ -48,18 +51,26 @@ public class RmTransmitExecutor implements RemoteMethodExecutor {
         KeypleDto keypleDto = transportDto.getKeypleDTO();
         TransportDto out = null;
         SeResponse seResponse = null;
+        ChannelControl channelControl;
 
         // Extract info from keypleDto
-        SeRequest seRequest = JsonParser.getGson().fromJson(keypleDto.getBody(), SeRequest.class);
+        JsonObject bodyJsonO = JsonParser.getGson().fromJson(keypleDto.getBody(), JsonObject.class);
+
+        channelControl = ChannelControl.valueOf(bodyJsonO.get("channelControl").getAsString());
+
+        SeRequest seRequest = JsonParser.getGson()
+                .fromJson(bodyJsonO.get("seRequest").getAsString(), SeRequest.class);
+
+
         String nativeReaderName = keypleDto.getNativeReaderName();
-        logger.trace("Execute locally seRequest : {}", seRequest);
+        logger.trace("Execute locally seRequest : {} with params {} ", seRequest, channelControl);
 
         try {
             // find native reader by name
             ProxyReader reader = slaveAPI.findLocalReader(nativeReaderName);
 
             // execute transmitSet
-            seResponse = reader.transmit(seRequest);
+            seResponse = reader.transmit(seRequest, channelControl);
 
             // prepare response
             String parseBody = JsonParser.getGson().toJson(seResponse, SeResponse.class);

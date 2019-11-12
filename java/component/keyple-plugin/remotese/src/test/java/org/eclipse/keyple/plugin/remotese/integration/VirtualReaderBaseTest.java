@@ -48,7 +48,7 @@ public class VirtualReaderBaseTest {
 
     protected SeProxyService seProxyService = SeProxyService.getInstance();
 
-    final String REMOTE_SE_PLUGIN_NAME = "remoteseplugin1";
+    protected final String REMOTE_SE_PLUGIN_NAME = "remoteseplugin1";
 
 
     // Spy Object
