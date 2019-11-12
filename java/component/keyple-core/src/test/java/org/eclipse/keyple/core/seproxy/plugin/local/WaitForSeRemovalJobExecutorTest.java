@@ -40,6 +40,8 @@ public class WaitForSeRemovalJobExecutorTest extends CoreBaseTest {
 
     final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
+    final Long WAIT = 100l;
+
     @Before
     public void setUp() {
         logger.info("------------------------------");
@@ -65,7 +67,7 @@ public class WaitForSeRemovalJobExecutorTest extends CoreBaseTest {
         /* test */
         waitForSeRemoval.onActivate();
 
-        Thread.sleep(50l);
+        Thread.sleep(WAIT);// wait for the monitoring to act
 
         /* Assert */
         // Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
@@ -89,7 +91,7 @@ public class WaitForSeRemovalJobExecutorTest extends CoreBaseTest {
         /* test */
         waitForSeRemoval.onActivate();
 
-        Thread.sleep(50l);// wait for timeout
+        Thread.sleep(WAIT);// wait for the monitoring to act
 
         /* Assert */
         // Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentState().getMonitoringState());
@@ -138,7 +140,7 @@ public class WaitForSeRemovalJobExecutorTest extends CoreBaseTest {
         /* test */
         waitForSeRemoval.onActivate();
 
-        Thread.sleep(50l);
+        Thread.sleep(WAIT);// wait for the monitoring to act
 
         /* Assert */
         // Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
@@ -162,7 +164,7 @@ public class WaitForSeRemovalJobExecutorTest extends CoreBaseTest {
         /* test */
         waitForSeRemoval.onActivate();
 
-        Thread.sleep(50l);// wait
+        Thread.sleep(WAIT);// wait for the monitoring to act
 
         /* Assert */
         // Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentState().getMonitoringState());
