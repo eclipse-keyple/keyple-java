@@ -19,6 +19,7 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +39,7 @@ public class AbstractApduResponseParserTest extends CoreBaseTest {
     public void testApduSuccessful1() {
         // standard successful status word (9000)
         ApduResponse apduResponse = new ApduResponse(ByteArrayUtil.fromHex("9000"), null);
-        ApduResponseParser apduResponseParser = new ApduResponseParser(apduResponse);
+        ApduResponseParser apduResponseParser = getApduResponseParser(apduResponse);
 
         Assert.assertArrayEquals(ByteArrayUtil.fromHex("9000"),
                 apduResponseParser.getApduResponse().getBytes());
@@ -50,7 +51,7 @@ public class AbstractApduResponseParserTest extends CoreBaseTest {
     public void testApduSuccessful2() {
 
         ApduResponse apduResponse = new ApduResponse(ByteArrayUtil.fromHex("9999"), null);
-        ApduResponseParser apduResponseParser = new ApduResponseParser(apduResponse);
+        ApduResponseParser apduResponseParser = getApduResponseParser(apduResponse);
 
         Assert.assertArrayEquals(ByteArrayUtil.fromHex("9999"),
                 apduResponseParser.getApduResponse().getBytes());
@@ -61,7 +62,7 @@ public class AbstractApduResponseParserTest extends CoreBaseTest {
     @Test
     public void testApduUnsuccessful() {
         ApduResponse apduResponse = new ApduResponse(ByteArrayUtil.fromHex("6500"), null);
-        ApduResponseParser apduResponseParser = new ApduResponseParser(apduResponse);
+        ApduResponseParser apduResponseParser = getApduResponseParser(apduResponse);
 
         Assert.assertArrayEquals(ByteArrayUtil.fromHex("6500"),
                 apduResponseParser.getApduResponse().getBytes());
@@ -71,8 +72,9 @@ public class AbstractApduResponseParserTest extends CoreBaseTest {
 
     @Test
     public void testGetStatusTable() {
-        ApduResponse apduResponse = new ApduResponse(ByteArrayUtil.fromHex("6500"), null);
-        ApduResponseParser apduResponseParser = new ApduResponseParser(apduResponse);
+        ApduResponse apduResponse = Mockito.mock(ApduResponse.class);
+
+        ApduResponseParser apduResponseParser = getApduResponseParser(apduResponse);
 
         Map<Integer, AbstractApduResponseParser.StatusProperties> statusTable =
                 apduResponseParser.getStatusTable();
@@ -88,8 +90,17 @@ public class AbstractApduResponseParserTest extends CoreBaseTest {
         Assert.assertFalse(statusTable.get(0x6400).isSuccessful());
     }
 
-    public final class ApduResponseParser extends AbstractApduResponseParser {
+    /**
+     * Build a custom and simple AbstractApduResponseParser
+     * 
+     * @param response ApduResponse to build ApduResponseParser
+     * @return ApduResponseParser
+     */
+    static public ApduResponseParser getApduResponseParser(ApduResponse response) {
+        return new ApduResponseParser(response);
+    }
 
+    static public final class ApduResponseParser extends AbstractApduResponseParser {
         public ApduResponseParser(ApduResponse response) {
             super(response);
             // additional status words

@@ -16,19 +16,20 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.command.AbstractApduResponseParserTest;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.plugin.mock.BlankAbstractLocalReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,7 +113,7 @@ public class SeSelectionTest extends CoreBaseTest {
 
     @Test
     public void processDefaultSelectionNull() {
-        SeSelection seSelection = createSeSelection();
+        SeSelection seSelection = Mockito.mock(SeSelection.class);
 
         Assert.assertNull(seSelection.processDefaultSelection(null));
     }
@@ -292,7 +293,8 @@ public class SeSelectionTest extends CoreBaseTest {
         @Override
         public AbstractApduResponseParser getCommandParser(SeResponse seResponse,
                 int commandIndex) {
-            return new ApduResponseParser(seResponse.getApduResponses().get(commandIndex));
+            return AbstractApduResponseParserTest
+                    .getApduResponseParser(seResponse.getApduResponses().get(commandIndex));
         }
     }
 
@@ -306,21 +308,5 @@ public class SeSelectionTest extends CoreBaseTest {
         }
     }
 
-    private final class Reader extends BlankAbstractLocalReader {
 
-        public Reader(String pluginName, String readerName) {
-            super(pluginName, readerName);
-        }
-    }
-
-    public final class ApduResponseParser extends AbstractApduResponseParser {
-
-        public ApduResponseParser(ApduResponse response) {
-            super(response);
-            // additional status words
-            STATUS_TABLE.put(0x9999, new StatusProperties(true, "sw 9999"));
-            STATUS_TABLE.put(0x6500, new StatusProperties(false, "sw 6500"));
-            STATUS_TABLE.put(0x6400, new StatusProperties(false, "sw 6400"));
-        }
-    }
 }
