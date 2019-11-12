@@ -12,11 +12,9 @@
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 
 /**
- * Define a Virtual Reader
- * (non observable)
+ * Define a Virtual Reader (non observable)
  */
 public interface VirtualReader extends SeReader {
     /**

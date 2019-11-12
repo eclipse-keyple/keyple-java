@@ -90,7 +90,7 @@ public class KeypleDtoHelper {
         return keypleDto.getBody().contains("stackTrace");
     }
 
-    static public String notSpecified(){
+    static public String notSpecified() {
         return "notSpecified";
     }
 

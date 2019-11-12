@@ -85,8 +85,8 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
      * Create a virtual reader (internal method)
      */
     ProxyReader createVirtualReader(String slaveNodeId, String nativeReaderName,
-            DtoSender dtoSender, TransmissionMode transmissionMode, Boolean isObservable, Map<String, String> options)
-            throws KeypleReaderException {
+            DtoSender dtoSender, TransmissionMode transmissionMode, Boolean isObservable,
+            Map<String, String> options) throws KeypleReaderException {
         logger.debug("createVirtualReader for slaveNodeId {} and reader {}", slaveNodeId,
                 nativeReaderName);
 
@@ -105,20 +105,20 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
 
 
         // check if reader is not already connected (by localReaderName)
-        logger.info("Create a new Virtual Reader with localReaderName {} with session {} isObservable {}",
-                nativeReaderName, session.getSessionId(),isObservable);
+        logger.info(
+                "Create a new Virtual Reader with localReaderName {} with session {} isObservable {}",
+                nativeReaderName, session.getSessionId(), isObservable);
 
         /*
-         * Create virtual reader with a remote method engine so the reader can send dto
-         * with a session and the provided name
-         * Virtual Reader can be Observable or not.
+         * Create virtual reader with a remote method engine so the reader can send dto with a
+         * session and the provided name Virtual Reader can be Observable or not.
          */
         VirtualReaderImpl virtualReader;
-        if(isObservable){
+        if (isObservable) {
             virtualReader = new VirtualObservableReaderImpl(session, nativeReaderName,
                     new RemoteMethodTxEngine(dtoSender, rpc_timeout), slaveNodeId, transmissionMode,
                     options);
-        }else{
+        } else {
             virtualReader = new VirtualReaderImpl(session, nativeReaderName,
                     new RemoteMethodTxEngine(dtoSender, rpc_timeout), slaveNodeId, transmissionMode,
                     options);

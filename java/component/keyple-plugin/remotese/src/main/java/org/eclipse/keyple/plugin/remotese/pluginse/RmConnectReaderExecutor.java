@@ -67,8 +67,8 @@ class RmConnectReaderExecutor implements RemoteMethodExecutor {
         try {
             // create a virtual Reader
             virtualReader = (VirtualReaderImpl) this.plugin.createVirtualReader(slaveNodeId,
-                    nativeReaderName, this.dtoSender, TransmissionMode.valueOf(transmissionMode), isObservable,
-                    options);
+                    nativeReaderName, this.dtoSender, TransmissionMode.valueOf(transmissionMode),
+                    isObservable, options);
 
 
             // create response

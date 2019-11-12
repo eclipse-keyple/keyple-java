@@ -37,9 +37,10 @@ public class RmSetDefaultSelectionRequestTx extends RemoteMethodTx {
     }
 
     public RmSetDefaultSelectionRequestTx(DefaultSelectionsRequest defaultSelectionsRequest,
-                                          ObservableReader.NotificationMode notificationMode, ObservableReader.PollingMode pollingMode, String nativeReaderName,
-                                          String virtualReaderName, String sessionId, String slaveNodeId,
-                                          String requesterNodeId) {
+            ObservableReader.NotificationMode notificationMode,
+            ObservableReader.PollingMode pollingMode, String nativeReaderName,
+            String virtualReaderName, String sessionId, String slaveNodeId,
+            String requesterNodeId) {
         super(sessionId, nativeReaderName, virtualReaderName, slaveNodeId, requesterNodeId);
         this.defaultSelectionsRequest = defaultSelectionsRequest;
         this.notificationMode = notificationMode;
@@ -47,9 +48,9 @@ public class RmSetDefaultSelectionRequestTx extends RemoteMethodTx {
     }
 
     public RmSetDefaultSelectionRequestTx(DefaultSelectionsRequest defaultSelectionsRequest,
-                                          ObservableReader.NotificationMode notificationMode, String nativeReaderName,
-                                          String virtualReaderName, String sessionId, String slaveNodeId,
-                                          String requesterNodeId) {
+            ObservableReader.NotificationMode notificationMode, String nativeReaderName,
+            String virtualReaderName, String sessionId, String slaveNodeId,
+            String requesterNodeId) {
         super(sessionId, nativeReaderName, virtualReaderName, slaveNodeId, requesterNodeId);
         this.defaultSelectionsRequest = defaultSelectionsRequest;
         this.notificationMode = notificationMode;
@@ -73,9 +74,9 @@ public class RmSetDefaultSelectionRequestTx extends RemoteMethodTx {
 
         body.addProperty("notificationMode", notificationMode.getName());
 
-        if(pollingMode!=null){
+        if (pollingMode != null) {
             body.addProperty("pollingMode", pollingMode.name());
-        }else{
+        } else {
             body.addProperty("pollingMode", KeypleDtoHelper.notSpecified());
         }
 
