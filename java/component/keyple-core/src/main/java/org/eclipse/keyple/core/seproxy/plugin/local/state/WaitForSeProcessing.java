@@ -21,6 +21,15 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Wait for Se Processing State
+ * <p>
+ * The state during which the SE is being processed by the application.
+ * <ul>
+ * <li>Upon SE_PROCESSED event, the machine changes state for WAIT_FOR_SE_REMOVAL or
+ * WAIT_FOR_SE_DETECTION according to the {@link ObservableReader.PollingMode} setting.
+ * <li>Upon SE_REMOVED event, the machine changes state for WAIT_FOR_SE_INSERTION or
+ * WAIT_FOR_SE_DETECTION according to the {@link ObservableReader.PollingMode} setting.
+ * <li>Upon STOP_DETECT event, the machine changes state for WAIT_FOR_SE_DETECTION.
+ * </ul>
  */
 public class WaitForSeProcessing extends AbstractObservableState {
 

@@ -12,6 +12,7 @@
 package org.eclipse.keyple.core.seproxy.plugin.local.state;
 
 import java.util.concurrent.ExecutorService;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState;
 import org.eclipse.keyple.core.seproxy.plugin.local.MonitoringJob;
@@ -20,6 +21,14 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Wait for Se Insertion State
+ * <p>
+ * The state during which the insertion of an SE is expected.
+ * <ul>
+ * <li>Upon SE_INSERTED event, the default selection is processed if required and if the conditions
+ * are met (ALWAYS or SE MATCHED) the machine changes state for WAIT_FOR_SE_PROCESSING.
+ * <li>Upon STOP_DETECT event, the machine changes state for WAIT_FOR_SE_DETECTION.
+ * <li>Upon SE_REMOVED event, the machine changes state for WAIT_FOR_SE_DETECTION.
+ * </ul>
  */
 public class WaitForSeInsertion extends AbstractObservableState {
 
@@ -51,7 +60,6 @@ public class WaitForSeInsertion extends AbstractObservableState {
                 } else {
                     // if none event was sent to the application, back to SE detection
                     // stay in the same state
-                    // switchState(MonitoringState.WAIT_FOR_START_DETECTION);
                     logger.trace("[{}] onEvent => Inserted SE hasn't matched", reader.getName());
                 }
                 break;
@@ -61,8 +69,13 @@ public class WaitForSeInsertion extends AbstractObservableState {
                 break;
 
             case SE_REMOVED:
+                // TODO Check if this case really happens (NFC?)
                 // SE has been removed during default selection
-                switchState(MonitoringState.WAIT_FOR_START_DETECTION);
+                if (reader.getPollingMode() == ObservableReader.PollingMode.REPEATING) {
+                    switchState(MonitoringState.WAIT_FOR_SE_INSERTION);
+                } else {
+                    switchState(MonitoringState.WAIT_FOR_START_DETECTION);
+                }
                 break;
 
             default:
