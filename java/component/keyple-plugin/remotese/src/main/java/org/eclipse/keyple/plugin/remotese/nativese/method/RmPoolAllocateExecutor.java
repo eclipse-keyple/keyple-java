@@ -14,21 +14,21 @@ package org.eclipse.keyple.plugin.remotese.nativese.method;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodExecutor;
+import org.eclipse.keyple.plugin.remotese.rm.IRemoteMethodExecutor;
+import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 import com.google.gson.JsonObject;
 
-public class RmPoolAllocateExecutor implements RemoteMethodExecutor {
+public class RmPoolAllocateExecutor implements IRemoteMethodExecutor {
 
     ReaderPoolPlugin poolPlugin;
 
     @Override
-    public RemoteMethod getMethodName() {
-        return RemoteMethod.POOL_ALLOCATE_READER;
+    public RemoteMethodName getMethodName() {
+        return RemoteMethodName.POOL_ALLOCATE_READER;
     }
 
     public RmPoolAllocateExecutor(ReaderPoolPlugin poolPlugin) {

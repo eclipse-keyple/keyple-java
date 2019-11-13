@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information regarding copyright
  * ownership.
@@ -9,16 +9,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.plugin.remotese.rm;
+package org.eclipse.keyple.plugin.remotese.pluginse;
 
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 
-import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
+/**
+ * Define a Virtual Observable Reader
+ */
+public interface VirtualObservableReader extends VirtualReader, ObservableReader {
 
-public interface RemoteMethodExecutor {
-
-
-    RemoteMethod getMethodName();
-
-    TransportDto execute(TransportDto transportDto);
 
 }

@@ -11,8 +11,14 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.rm;
 
-import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 
-public interface RemoteMethodTxCallback<T> {
-    void get(T response, KeypleRemoteException exception);
+import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
+
+public interface IRemoteMethodExecutor {
+
+
+    RemoteMethodName getMethodName();
+
+    TransportDto execute(TransportDto transportDto);
+
 }
