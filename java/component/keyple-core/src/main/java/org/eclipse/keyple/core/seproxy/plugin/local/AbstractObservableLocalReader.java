@@ -30,28 +30,17 @@ import org.slf4j.LoggerFactory;
  *
  * <p>
  * It provides the means to configure the plugin's behavior when a SE is detected.
- * <p>
- * Thus, it is possible to preload the so-called default selection, played directly by the plugin as
- * soon as the OS has been introduced.
- * <p>
- * Two outputs of this processing are available depending on whether one wants to be notified of all
- * SE arrivals (ObservableReader.NotificationMode.ALWAYS) or only those that lead to a logical
- * channel opening (ObservableReader.NotificationMode.MATCHED_ONLY).
- * <p>
- * The monitoring of these events is either directly implemented by the plugin (e. g. Android NFC
- * plugin)
- * <p>
  *
- * TODO : refactor this part
- *
- * The event management implements a currentState machine that is composed of four states.
+ * The event management implements a ObservableReaderStateService state machine that is composed of
+ * four states.
  * <ol>
  * <li>WAIT_FOR_START_DETECTION
  * <p>
  * Infinitely waiting for a signal from the application to start SE detection by changing to
- * WAIT_FOR_SE_INSERTION currentState. This signal is given by calling the
- * setDefaultSelectionRequest method. Note: The system always starts directly in the
- * WAIT_FOR_SE_INSERTION currentState.</li>
+ * WAIT_FOR_SE_INSERTION state. This signal is given by calling the setDefaultSelectionRequest
+ * method.
+ * <p>
+ * Note: The system always starts in the WAIT_FOR_START_DETECTION state.
  * <li>WAIT_FOR_SE_INSERTION
  * <p>
  * Awaiting the SE insertion. After insertion, the processSeInserted method is called.
@@ -59,43 +48,36 @@ import org.slf4j.LoggerFactory;
  * A number of cases arise:
  * <ul>
  * <li>A default selection is defined: in this case it is played and its result leads to an event
- * notification SE_INSERTED or SE_MATCHED or no event (see setDefaultSelectionRequest)</li>
+ * notification SE_INSERTED or SE_MATCHED or no event (see setDefaultSelectionRequest)
  *
  * <li>There is no default selection: a SE_INSERTED event is then notified.
  * <p>
- * In the case where an event has been notified to the application, the currentState machine changes
- * to the WAIT_FOR_SE_PROCESSING currentState otherwise it changes to the WAIT_FOR_SE_REMOVAL
- * currentState.</li>
+ * In the case where an event has been notified to the application, the state machine changes to the
+ * WAIT_FOR_SE_PROCESSING state otherwise it remains in the WAIT_FOR_SE_INSERTION state.
  * </ul>
  * <p>
  * The notification consists in calling the "update" methods of the defined observers. In the case
  * where several observers have been defined, it is up to the application developer to ensure that
- * there is no long processing in these methods, by making their execution asynchronous for
- * example.</li>
- * <li>WAIT_FOR_SE_PROCESSING:
+ * there is no long processing in these methods, by making their execution asynchronous for example.
+ * <li>WAIT_FOR_SE_PROCESSING
  * <p>
  * Waiting for the end of processing by the application. The end signal is triggered either by a
  * transmission made with a CLOSE_AFTER parameter, or by an explicit call to the notifySeProcessed
  * method (if the latter is called when a "CLOSE" transmission has already been made, it will do
  * nothing, otherwise it will make a pseudo transmission intended only for closing channels).
  * <p>
- * If the instruction given when defining the default selection request is STOP then the logical and
- * physical channels are closed immediately and the Machine to currentState changes to
- * WAIT_FOR_START_DETECTION currentState.
+ * If the instruction given when defining the default selection request is to stop
+ * (ObservableReader.PollingMode.SINGLESHOT) then the logical and physical channels are closed
+ * immediately and the machine state changes to WAIT_FOR_START_DETECTION state.
  * <p>
- * If the instruction given is CONTINUE then the currentState machine changes to
- * WAIT_FOR_SE_REMOVAL.
+ * If the instruction given is continue (ObservableReader.PollingMode.REPEATING) then the state
+ * machine changes to WAIT_FOR_SE_REMOVAL.
  * <p>
- * A timeout management is also optionally present in order to avoid a lock in this waiting
- * currentState due to a failure of the application that would have prevented it from notifying the
- * end of SE processing (see setThreadWaitTimeout).</li>
  * <li>WAIT_FOR_SE_REMOVAL:
  * <p>
  * Waiting for the SE to be removed. When the SE is removed, a SE_REMOVED event is notified to the
- * application and the currentState machine changes to the WAIT_FOR_SE_INSERTION currentState.
- * <p>
- * A timeout management is also optionally present in order to avoid a lock in this waiting
- * currentState due to a SE forgotten on the reader. *</li>
+ * application and the state machine changes to the WAIT_FOR_SE_INSERTION or
+ * WAIT_FOR_START_DETECTION state according the polling mode (ObservableReader.PollingMode).
  * </ol>
  */
 public abstract class AbstractObservableLocalReader extends AbstractLocalReader {
@@ -115,7 +97,18 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
 
     /* Internal events */
     public enum InternalEvent {
-        SE_INSERTED, SE_REMOVED, SE_PROCESSED, START_DETECT, STOP_DETECT, TIME_OUT
+        /** A SE has been inserted */
+        SE_INSERTED,
+        /** The SE has been removed */
+        SE_REMOVED,
+        /** The application has completed the processing of the SE */
+        SE_PROCESSED,
+        /** The application has requested the start of SE detection */
+        START_DETECT,
+        /** The application has requested that SE detection is to be stopped. */
+        STOP_DETECT,
+        /** A timeout has occurred (not yet implemented) */
+        TIME_OUT
     }
 
     /* Service that handles Internal Events and their impact on the current state of the reader */
@@ -175,7 +168,6 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
     }
 
 
-
     /**
      * Starts the SE detection. Once activated, the application can be notified of the arrival of an
      * SE.
@@ -185,9 +177,9 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      * <p>
      * Note: they must call the super method with the argument PollingMode.
      *
-     * @param pollingMode indicates the action to be followed after processing the SE: if CONTINUE,
-     *        the SE detection is restarted, if STOP, the SE detection is stopped until a new call
-     *        to startSeDetection is made.
+     * @param pollingMode indicates the action to be followed after processing the SE: if REPEATING,
+     *        the SE detection is restarted, if SINGLESHOT, the SE detection is stopped until a new
+     *        call to startSeDetection is made.
      */
     public void startSeDetection(ObservableReader.PollingMode pollingMode) {
         logger.trace("[{}] startSeDetection => start Se Detection with pollingMode {}",
@@ -253,9 +245,9 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
     /**
      * This method initiates the SE removal sequence.
      * <p>
-     * The reader will remain in the WAIT_FOR_SE_REMOVAL currentState as long as the SE is present.
-     * It will change to the WAIT_FOR_START_DETECTION or WAIT_FOR_SE_INSERTION currentState
-     * depending on what was set when the detection was started.
+     * The reader will remain in the WAIT_FOR_SE_REMOVAL state as long as the SE is present. It will
+     * change to the WAIT_FOR_START_DETECTION or WAIT_FOR_SE_INSERTION state depending on what was
+     * set when the detection was started.
      */
     protected void startRemovalSequence() {
         logger.trace("[{}] startRemovalSequence => start removal sequence of the reader",
@@ -270,13 +262,13 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      * e.g. from the monitoring thread in the case of a Pcsc plugin or from the NfcAdapter callback
      * method onTagDiscovered in the case of a Android NFC plugin.
      * <p>
-     * It will fire an ReaderEvent in the following cases:
+     * It will fire a ReaderEvent in the following cases:
      * <ul>
-     * <li>SE_INSERTED: if no default selection request was defined</li>
+     * <li>SE_INSERTED: if no default selection request was defined
      * <li>SE_MATCHED: if a default selection request was defined in any mode and a SE matched the
-     * selection</li>
+     * selection
      * <li>SE_INSERTED: if a default selection request was defined in ALWAYS mode but no SE matched
-     * the selection (the DefaultSelectionsResponse is however transmitted)</li>
+     * the selection (the DefaultSelectionsResponse is however transmitted)
      * </ul>
      * <p>
      * It will do nothing if a default selection is defined in MATCHED_ONLY mode but no SE matched
@@ -297,8 +289,8 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
             presenceNotified = true;
         } else {
             /*
-             * a default request is defined, send it a notify according to the notification mode and
-             * the selection status
+             * a default request is defined, send it and notify according to the notification mode
+             * and the selection status
              */
             boolean aSeMatched = false;
             try {
@@ -333,7 +325,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                 } else {
                     // ObservableReader.NotificationMode.ALWAYS
                     if (aSeMatched) {
-                        /* The SE matched, notify an SE_MATCHED event with the received response */
+                        /* The SE matched, notify a SE_MATCHED event with the received response */
                         notifyObservers(new ReaderEvent(this.pluginName, this.name,
                                 ReaderEvent.EventType.SE_MATCHED,
                                 new DefaultSelectionsResponseImpl(seResponseList)));
@@ -374,7 +366,9 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
     }
 
     /**
-     * Sends a neutral APDU to the SE to check its presence
+     * Sends a neutral APDU to the SE to check its presence. The status of the response is not
+     * verified as long as the mere fact that the SE responds is sufficient to indicate whether or
+     * not it is present.
      * <p>
      * This method has to be called regularly until the SE no longer respond.
      * <p>
@@ -425,7 +419,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
 
 
     /**
-     * switch state
+     * Changes the state of the state machine
      *
      * @param stateId : new stateId
      */
@@ -434,7 +428,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
     }
 
     /**
-     * Get current getMonitoringState
+     * Get the current monitoring state
      * 
      * @return current getMonitoringState
      */

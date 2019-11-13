@@ -75,9 +75,9 @@ public abstract class AbstractObservableState {
     }
 
     /**
-     * Get currentState identifier
+     * Get the current state identifier of the state machine
      * 
-     * @return name currentState
+     * @return the current state identifier
      */
     public MonitoringState getMonitoringState() {
         return state;
