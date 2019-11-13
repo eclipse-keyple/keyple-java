@@ -18,7 +18,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstanciationExcept
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
+import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
 import org.eclipse.keyple.plugin.remotese.transport.*;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
@@ -179,7 +179,7 @@ public class MasterAPI implements DtoHandler {
     public TransportDto onDTO(TransportDto transportDto) {
 
         KeypleDto keypleDTO = transportDto.getKeypleDTO();
-        RemoteMethod method = RemoteMethod.get(keypleDTO.getAction());
+        RemoteMethodName method = RemoteMethodName.get(keypleDTO.getAction());
         logger.trace("onDTO, Remote Method called : {} - isRequest : {} - keypleDto : {}", method,
                 keypleDTO.isRequest(), KeypleDtoHelper.toJson(keypleDTO));
 

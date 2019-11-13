@@ -24,15 +24,15 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Manages the transaction (request/response) for remote method invocation It holds
- * the @{@link RemoteMethodTx} untils the answer is received
+ * the @{@link AbstractRemoteMethodTx} untils the answer is received
  */
-public class RemoteMethodTxPoolEngine implements DtoHandler {
+public class RemoteMethodTxPoolEngine implements DtoHandler, IRemoteMethodTxEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteMethodTxPoolEngine.class);
 
 
     // rm id, rm
-    private Map<String, RemoteMethodTx> queue;
+    private Map<String, AbstractRemoteMethodTx> queue;
 
     // Dto Sender
     private final DtoSender sender;
@@ -46,7 +46,7 @@ public class RemoteMethodTxPoolEngine implements DtoHandler {
      * @param timeout : timeout to wait for the answer, in milliseconds
      */
     public RemoteMethodTxPoolEngine(DtoSender sender, long timeout) {
-        this.queue = new HashMap<String, RemoteMethodTx>();
+        this.queue = new HashMap<String, AbstractRemoteMethodTx>();
         this.sender = sender;
         this.timeout = timeout;
     }
@@ -87,7 +87,8 @@ public class RemoteMethodTxPoolEngine implements DtoHandler {
      * 
      * @param rm : RemoteMethodTx to be executed
      */
-    public void add(final RemoteMethodTx rm) {
+    @Override
+    public void register(final AbstractRemoteMethodTx rm) {
         logger.debug("Register rm to engine : {}", rm);
         rm.setRegistered(true);
         queue.put(rm.id, rm);

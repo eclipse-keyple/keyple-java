@@ -9,25 +9,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.plugin.remotese.pluginse;
+package org.eclipse.keyple.plugin.remotese.rm;
 
-import org.eclipse.keyple.core.seproxy.SeReader;
+public interface IRemoteMethodTxEngine {
 
-/**
- * Define a Virtual Reader (non observable)
- */
-public interface VirtualReader extends SeReader {
-    /**
-     * Name of the Native Reader on the slave device
-     * 
-     * @return local name of the native reader (on slave device)
-     */
-    String getNativeReaderName();
+    void register(final AbstractRemoteMethodTx rm);
 
-    /**
-     * Return Virtual Reader Session that contains informations about master and slave nodes
-     * 
-     * @return virtual reader session
-     */
-    public VirtualReaderSession getSession();
 }

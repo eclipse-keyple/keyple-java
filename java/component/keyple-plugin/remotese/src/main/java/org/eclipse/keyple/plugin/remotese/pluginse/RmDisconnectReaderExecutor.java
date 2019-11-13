@@ -12,8 +12,8 @@
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodExecutor;
+import org.eclipse.keyple.plugin.remotese.rm.IRemoteMethodExecutor;
+import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
@@ -25,13 +25,13 @@ import com.google.gson.JsonObject;
 /**
  * Execute the disconnect Reader on Remote Se plugin
  */
-class RmDisconnectReaderExecutor implements RemoteMethodExecutor {
+class RmDisconnectReaderExecutor implements IRemoteMethodExecutor {
 
     private static final Logger logger = LoggerFactory.getLogger(RmDisconnectReaderExecutor.class);
 
     @Override
-    public RemoteMethod getMethodName() {
-        return RemoteMethod.READER_DISCONNECT;
+    public RemoteMethodName getMethodName() {
+        return RemoteMethodName.READER_DISCONNECT;
     }
 
 

@@ -11,14 +11,14 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.nativese.method;
 
+import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequestImpl;
-import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodExecutor;
+import org.eclipse.keyple.plugin.remotese.rm.IRemoteMethodExecutor;
+import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
@@ -26,19 +26,18 @@ import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 
 /**
  * Execute the Default Selection Request on Native Reader
  */
-public class RmSetDefaultSelectionRequestExecutor implements RemoteMethodExecutor {
+public class RmSetDefaultSelectionRequestExecutor implements IRemoteMethodExecutor {
 
     private static final Logger logger =
             LoggerFactory.getLogger(RmSetDefaultSelectionRequestExecutor.class);
 
     @Override
-    public RemoteMethod getMethodName() {
-        return RemoteMethod.DEFAULT_SELECTION_REQUEST;
+    public RemoteMethodName getMethodName() {
+        return RemoteMethodName.DEFAULT_SELECTION_REQUEST;
     }
 
     private final SlaveAPI slaveAPI;
@@ -56,32 +55,48 @@ public class RmSetDefaultSelectionRequestExecutor implements RemoteMethodExecuto
         String body = keypleDto.getBody();
         JsonObject jsonObject = JsonParser.getGson().fromJson(body, JsonObject.class);
 
-        JsonPrimitive selectionRequestJson =
-                jsonObject.getAsJsonPrimitive("defaultSelectionsRequest");
-        JsonPrimitive notificationModeJson = jsonObject.getAsJsonPrimitive("notificationMode");
+        // Selection Request
+        String selectionRequestJson =
+                jsonObject.getAsJsonPrimitive("defaultSelectionsRequest").getAsString();
+        DefaultSelectionsRequest defaultSelectionsRequest = (DefaultSelectionsRequest) JsonParser
+                .getGson().fromJson(selectionRequestJson, DefaultSelectionsRequestImpl.class);
 
-        logger.trace("DefaultSelectionsRequest : {}", selectionRequestJson.getAsString());
-        logger.trace("Notification Mode : {}", notificationModeJson.getAsString());
+        // Notification Mode
+        ObservableReader.NotificationMode notificationMode = ObservableReader.NotificationMode
+                .get(jsonObject.getAsJsonPrimitive("notificationMode").getAsString());
 
-        DefaultSelectionsRequest defaultSelectionsRequest =
-                (DefaultSelectionsRequest) JsonParser.getGson().fromJson(
-                        selectionRequestJson.getAsString(), DefaultSelectionsRequestImpl.class);
-        ObservableReader.NotificationMode notificationMode =
-                ObservableReader.NotificationMode.get(notificationModeJson.getAsString());
+        // Polling Mode can be set or not.
+        String pollingModeJson = jsonObject.get("pollingMode").getAsString();
+        ObservableReader.PollingMode pollingMode = null;
+        Boolean hasPollingMode = false;
+        if (!pollingModeJson.equals(KeypleDtoHelper.notSpecified())) {
+            pollingMode = ObservableReader.PollingMode.valueOf(pollingModeJson);
+            hasPollingMode = true;
+        }
 
         String nativeReaderName = keypleDto.getNativeReaderName();
-        logger.debug("Execute locally SetDefaultSelectionRequest : {} - {}", notificationMode,
+
+        logger.debug("Execute locally SetDefaultSelectionRequest : {} - {} - {}", notificationMode,
+                hasPollingMode ? pollingMode : KeypleDtoHelper.notSpecified(),
                 defaultSelectionsRequest.getSelectionSeRequestSet());
 
         try {
             // find native reader by name
-            ProxyReader reader = slaveAPI.findLocalReader(nativeReaderName);
+            SeReader reader = slaveAPI.findLocalReader(nativeReaderName);
 
             if (reader instanceof ObservableReader) {
                 logger.debug(reader.getName()
                         + " is an ObservableReader, invoke setDefaultSelectionRequest on it");
-                ((ObservableReader) reader).setDefaultSelectionRequest(defaultSelectionsRequest,
-                        notificationMode);
+
+                // invoke a different method if polling Mode was set
+                if (hasPollingMode) {
+                    // this method has a different behaviour with the parameter pollingMode
+                    ((ObservableReader) reader).setDefaultSelectionRequest(defaultSelectionsRequest,
+                            notificationMode, pollingMode);
+                } else {
+                    ((ObservableReader) reader).setDefaultSelectionRequest(defaultSelectionsRequest,
+                            notificationMode);
+                }
 
                 // prepare response
                 String parseBody = "{}";

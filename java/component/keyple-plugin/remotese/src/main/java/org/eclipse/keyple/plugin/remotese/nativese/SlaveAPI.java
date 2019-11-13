@@ -22,12 +22,10 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractReader;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.nativese.method.*;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodExecutor;
+import org.eclipse.keyple.plugin.remotese.rm.IRemoteMethodExecutor;
+import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTxEngine;
 import org.eclipse.keyple.plugin.remotese.transport.*;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
@@ -36,6 +34,7 @@ import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 
 /**
@@ -114,7 +113,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
 
         logger.trace("{} onDto {}", dtoNode.getNodeId(), KeypleDtoHelper.toJson(keypleDTO));
 
-        RemoteMethod method = RemoteMethod.get(keypleDTO.getAction());
+        RemoteMethodName method = RemoteMethodName.get(keypleDTO.getAction());
         logger.debug("{} Remote Method called : {} - isRequest : {}", dtoNode.getNodeId(), method,
                 keypleDTO.isRequest());
 
@@ -140,7 +139,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
             case READER_TRANSMIT:
                 // must be a request
                 if (keypleDTO.isRequest()) {
-                    RemoteMethodExecutor rmTransmit = new RmTransmitExecutor(this);
+                    IRemoteMethodExecutor rmTransmit = new RmTransmitExecutor(this);
                     out = rmTransmit.execute(transportDto);
                 } else {
                     throw new IllegalStateException(
@@ -151,7 +150,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
             case READER_TRANSMIT_SET:
                 // must be a request
                 if (keypleDTO.isRequest()) {
-                    RemoteMethodExecutor rmTransmitSet = new RmTransmitSetExecutor(this);
+                    IRemoteMethodExecutor rmTransmitSet = new RmTransmitSetExecutor(this);
                     out = rmTransmitSet.execute(transportDto);
                 } else {
                     throw new IllegalStateException(
@@ -249,10 +248,8 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
         RmConnectReaderTx connect = new RmConnectReaderTx(null, localReader.getName(), null,
                 masterNodeId, localReader, dtoNode.getNodeId(), this, options);
         try {
-            rmTxEngine.add(connect);
-
             // blocking call
-            return connect.getResponse();
+            return connect.execute(rmTxEngine);
         } catch (KeypleRemoteException e) {
             throw new KeypleReaderException("An error occurred while calling connectReader", e);
         }
@@ -269,16 +266,14 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
                 dtoNode.getNodeId(), masterNodeId);
 
         try {
-            rmTxEngine.add(disconnect);
-
             // blocking call
-            disconnect.getResponse();
-            ProxyReader nativeReader = findLocalReader(nativeReaderName);
-            if (nativeReader instanceof AbstractReader) {
+            disconnect.execute(rmTxEngine);
+            SeReader nativeReader = findLocalReader(nativeReaderName);
+            if (nativeReader instanceof ObservableReader) {
                 logger.debug("Disconnected reader is observable, removing slaveAPI observer");
 
                 // stop propagating the local reader events
-                ((AbstractReader) nativeReader).removeObserver(this);
+                ((ObservableReader) nativeReader).removeObserver(this);
             } else {
                 logger.debug("Disconnected reader is not observable");
             }
@@ -298,13 +293,12 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
      * @throws KeypleReaderNotFoundException if not reader were found with this name
      */
     @Override
-    public ProxyReader findLocalReader(String nativeReaderName)
-            throws KeypleReaderNotFoundException {
+    public SeReader findLocalReader(String nativeReaderName) throws KeypleReaderNotFoundException {
         logger.trace("Find local reader by name {} in {} plugin(s)", nativeReaderName,
                 seProxyService.getPlugins().size());
         for (ReaderPlugin plugin : seProxyService.getPlugins()) {
             try {
-                return (ProxyReader) plugin.getReader(nativeReaderName);
+                return plugin.getReader(nativeReaderName);
             } catch (KeypleReaderNotFoundException e) {
                 // continue
             }
@@ -326,9 +320,9 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
         String data = JsonParser.getGson().toJson(event);
 
         try {
-            dtoNode.sendDTO(KeypleDtoHelper.buildNotification(RemoteMethod.READER_EVENT.getName(),
-                    data, null, event.getReaderName(), null, this.dtoNode.getNodeId(),
-                    masterNodeId));
+            dtoNode.sendDTO(KeypleDtoHelper.buildNotification(
+                    RemoteMethodName.READER_EVENT.getName(), data, null, event.getReaderName(),
+                    null, this.dtoNode.getNodeId(), masterNodeId));
         } catch (KeypleRemoteException e) {
             logger.error("Event " + event.toString()
                     + " could not be sent though Remote Service Interface", e);

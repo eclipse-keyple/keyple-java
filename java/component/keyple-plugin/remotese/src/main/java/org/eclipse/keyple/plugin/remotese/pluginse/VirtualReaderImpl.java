@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Set;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
@@ -26,7 +25,6 @@ import org.eclipse.keyple.core.seproxy.plugin.AbstractReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
-import org.eclipse.keyple.plugin.remotese.pluginse.method.RmSetDefaultSelectionRequestTx;
 import org.eclipse.keyple.plugin.remotese.pluginse.method.RmTransmitSetTx;
 import org.eclipse.keyple.plugin.remotese.pluginse.method.RmTransmitTx;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTxEngine;
@@ -37,13 +35,13 @@ import org.slf4j.LoggerFactory;
  * Virtual Reader is a proxy to a Native Reader on the slave terminal Use it like a local reader,
  * all API call will be transferred to the Native Reader with a RPC session
  */
-final class VirtualReaderImpl extends AbstractReader implements VirtualReader {
+class VirtualReaderImpl extends AbstractReader implements VirtualReader {
 
-    private final VirtualReaderSession session;
-    private final String nativeReaderName;
-    private final RemoteMethodTxEngine rmTxEngine;
-    private final String slaveNodeId;
-    private final TransmissionMode transmissionMode;
+    protected final VirtualReaderSession session;
+    protected final String nativeReaderName;
+    protected final RemoteMethodTxEngine rmTxEngine;
+    protected final String slaveNodeId;
+    protected final TransmissionMode transmissionMode;
 
     private static final Logger logger = LoggerFactory.getLogger(VirtualReaderImpl.class);
 
@@ -68,9 +66,6 @@ final class VirtualReaderImpl extends AbstractReader implements VirtualReader {
         this.slaveNodeId = slaveNodeId;
         this.transmissionMode = transmissionMode;
         this.parameters = options;
-        logger.info(
-                "A new virtual reader was created with name:{}, sessionId:{}, transmissionMode:{}, options:{}",
-                this.getName(), session, transmissionMode, options);
     }
 
     /**
@@ -119,10 +114,8 @@ final class VirtualReaderImpl extends AbstractReader implements VirtualReader {
                 channelControl, session.getSessionId(), this.getNativeReaderName(), this.getName(),
                 session.getMasterNodeId(), session.getSlaveNodeId());
         try {
-            rmTxEngine.add(transmit);
-
             // blocking call
-            return transmit.getResponse();
+            return transmit.execute(rmTxEngine);
         } catch (KeypleRemoteException e) {
             if (e.getCause() != null) {
                 // KeypleReaderException is inside the KeypleRemoteException
@@ -152,10 +145,8 @@ final class VirtualReaderImpl extends AbstractReader implements VirtualReader {
                 this.getNativeReaderName(), this.getName(), session.getMasterNodeId(),
                 session.getSlaveNodeId());
         try {
-            rmTxEngine.add(transmit);
-
             // blocking call
-            return transmit.getResponse();
+            return transmit.execute(rmTxEngine);
         } catch (KeypleRemoteException e) {
             e.printStackTrace();
             throw (KeypleReaderException) e.getCause();
@@ -202,8 +193,6 @@ final class VirtualReaderImpl extends AbstractReader implements VirtualReader {
      *
      * HELPERS
      */
-
-
     @Override
     public Map<String, String> getParameters() {
         return parameters;
@@ -214,42 +203,4 @@ final class VirtualReaderImpl extends AbstractReader implements VirtualReader {
         parameters.put(key, value);
     }
 
-    @Override
-    public void startSeDetection(PollingMode pollingMode) {
-        // TODO implement this method
-    }
-
-    @Override
-    public void stopSeDetection() {
-        // TODO implement this method
-    }
-
-    @Override
-    public void setDefaultSelectionRequest(DefaultSelectionsRequest defaultSelectionsRequest,
-            NotificationMode notificationMode) {
-
-        RmSetDefaultSelectionRequestTx setDefaultSelectionRequest =
-                new RmSetDefaultSelectionRequestTx(defaultSelectionsRequest, notificationMode,
-                        this.getNativeReaderName(), this.getName(),
-                        this.getSession().getSessionId(), session.getSlaveNodeId(),
-                        session.getMasterNodeId());
-
-        try {
-            rmTxEngine.add(setDefaultSelectionRequest);
-
-            // blocking call
-            setDefaultSelectionRequest.getResponse();
-        } catch (KeypleRemoteException e) {
-            logger.error(
-                    "setDefaultSelectionRequest encounters an exception while communicating with slave",
-                    e);
-        }
-    }
-
-    @Override
-    public void setDefaultSelectionRequest(DefaultSelectionsRequest defaultSelectionsRequest,
-            NotificationMode notificationMode, PollingMode pollingMode) {
-        // TODO implement this method
-        // ensure that only one exchange with the remote part is necessary
-    }
 }

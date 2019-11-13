@@ -20,6 +20,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
+import org.eclipse.keyple.plugin.remotese.pluginse.VirtualObservableReader;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
 import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;
 import org.eclipse.keyple.plugin.remotese.transport.impl.java.LocalClient;
@@ -127,7 +128,7 @@ public class SlaveAPITest {
         String sessionId = spySlaveAPI.connectReader(nativeReader);
 
         // assert that a virtual reader has been created
-        VirtualReader virtualReader = (VirtualReader) masterAPI.getPlugin()
+        VirtualObservableReader virtualReader = (VirtualObservableReader) masterAPI.getPlugin()
                 .getReaderByRemoteName(NATIVE_READER_NAME, CLIENT_NODE_ID);
 
         Assert.assertEquals(NATIVE_READER_NAME, virtualReader.getNativeReaderName());
@@ -157,7 +158,7 @@ public class SlaveAPITest {
         String sessionId = spySlaveAPI.connectReader(nativeReader, options);
 
         // assert that a virtual reader has been created
-        VirtualReader virtualReader = (VirtualReader) masterAPI.getPlugin()
+        VirtualObservableReader virtualReader = (VirtualObservableReader) masterAPI.getPlugin()
                 .getReaderByRemoteName(NATIVE_READER_NAME, CLIENT_NODE_ID);
 
         Assert.assertEquals(NATIVE_READER_NAME, virtualReader.getNativeReaderName());

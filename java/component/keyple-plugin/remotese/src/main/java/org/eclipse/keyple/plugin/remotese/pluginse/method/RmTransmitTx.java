@@ -17,8 +17,8 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTx;
+import org.eclipse.keyple.plugin.remotese.rm.AbstractRemoteMethodTx;
+import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
@@ -29,7 +29,7 @@ import com.google.gson.JsonObject;
 /**
  * Handle the Transmit keypleDTO serialization and deserialization
  */
-public class RmTransmitTx extends RemoteMethodTx<SeResponse> {
+public class RmTransmitTx extends AbstractRemoteMethodTx<SeResponse> {
 
     private static final Logger logger = LoggerFactory.getLogger(RmTransmitTx.class);
 
@@ -37,8 +37,8 @@ public class RmTransmitTx extends RemoteMethodTx<SeResponse> {
     private final ChannelControl channelControl;
 
     @Override
-    public RemoteMethod getMethodName() {
-        return RemoteMethod.READER_TRANSMIT;
+    public RemoteMethodName getMethodName() {
+        return RemoteMethodName.READER_TRANSMIT;
     }
 
     public RmTransmitTx(SeRequest seRequest, ChannelControl channelControl, String sessionId,
