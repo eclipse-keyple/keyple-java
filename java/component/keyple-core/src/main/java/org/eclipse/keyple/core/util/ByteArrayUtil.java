@@ -44,6 +44,10 @@ public class ByteArrayUtil {
      */
     private static final Pattern HEX_IGNORED_CHARS = Pattern.compile(" |h");
 
+    private ByteArrayUtil() {
+        throw new IllegalStateException("ByteArray utility class");
+    }
+
     /**
      * Create a byte array from an hexa string. This method allows spaces and "h".
      *

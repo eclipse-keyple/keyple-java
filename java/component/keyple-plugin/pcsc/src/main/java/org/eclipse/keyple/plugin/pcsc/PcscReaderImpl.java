@@ -394,24 +394,22 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     public Map<String, String> getParameters() {
         Map<String, String> parameters = new HashMap<String, String>();
 
-        { // Returning the protocol
-            String protocol = parameterCardProtocol;
-            if (protocol.equals("*")) {
-                protocol = SETTING_PROTOCOL_TX;
-            } else if (protocol.equals("T=0")) {
-                protocol = SETTING_PROTOCOL_T0;
-            } else if (protocol.equals("T=1")) {
-                protocol = SETTING_PROTOCOL_T1;
-            } else {
-                throw new IllegalStateException("Illegal protocol: " + protocol);
-            }
-            parameters.put(SETTING_KEY_PROTOCOL, protocol);
+        // Returning the protocol
+        String protocol = parameterCardProtocol;
+        if (protocol.equals("*")) {
+            protocol = SETTING_PROTOCOL_TX;
+        } else if (protocol.equals("T=0")) {
+            protocol = SETTING_PROTOCOL_T0;
+        } else if (protocol.equals("T=1")) {
+            protocol = SETTING_PROTOCOL_T1;
+        } else {
+            throw new IllegalStateException("Illegal protocol: " + protocol);
         }
+        parameters.put(SETTING_KEY_PROTOCOL, protocol);
 
-        { // The mode ?
-            if (!cardExclusiveMode) {
-                parameters.put(SETTING_KEY_MODE, SETTING_MODE_SHARED);
-            }
+        // The mode ?
+        if (!cardExclusiveMode) {
+            parameters.put(SETTING_KEY_MODE, SETTING_MODE_SHARED);
         }
 
         return parameters;

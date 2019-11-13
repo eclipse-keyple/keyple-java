@@ -112,7 +112,7 @@ public abstract class AbstractObservableState {
             }
             monitoringEvent = executorService.submit(monitoringJob.getMonitoringJob(this));
         }
-    };
+    }
 
     /**
      * Invoked when deactivated
@@ -127,7 +127,7 @@ public abstract class AbstractObservableState {
                     "[{}] onDeactivate => cancel runnable waitForCarPresent by thead interruption {}",
                     reader.getName(), canceled);
         }
-    };
+    }
 
 
 

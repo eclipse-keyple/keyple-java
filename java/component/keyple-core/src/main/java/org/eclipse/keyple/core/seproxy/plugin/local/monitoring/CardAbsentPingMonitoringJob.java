@@ -72,6 +72,8 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
                         // wait a bit
                         Thread.sleep(threshold);
                     } catch (InterruptedException ignored) {
+                        // Restore interrupted state...      
+                        Thread.currentThread().interrupt();
                         loop = false;
                     }
                 }
