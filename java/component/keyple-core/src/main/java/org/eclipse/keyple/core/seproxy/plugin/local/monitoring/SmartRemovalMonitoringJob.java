@@ -64,7 +64,7 @@ public class SmartRemovalMonitoringJob implements MonitoringJob {
                     }
                 } catch (KeypleIOReaderException e) {
                     logger.trace(
-                            "[{}] waitForCardAbsent => Error while polling card with waitForCardAbsent",
+                            "[{}] waitForCardAbsent => Error while polling SE with waitForCardAbsent",
                             reader.getName());
                     state.onEvent(AbstractObservableLocalReader.InternalEvent.STOP_DETECT);
                 }

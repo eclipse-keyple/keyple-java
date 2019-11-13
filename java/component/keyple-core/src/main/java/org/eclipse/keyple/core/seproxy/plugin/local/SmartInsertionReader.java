@@ -16,12 +16,12 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 
 public interface SmartInsertionReader extends ObservableReader {
     /**
-     * Waits for a card. Returns true if a card is detected before the end of the provided timeout.
+     * Waits for a SE. Returns true if a SE is detected before the end of the provided timeout.
      * <p>
      * This method must be implemented by the plugin's reader class when it implements the
      * {@link SmartInsertionReader} interface.
      * <p>
-     * Returns false if no card detected within the delay.
+     * Returns false if no SE is detected within the delay.
      *
      * @return presence status
      * @throws KeypleIOReaderException in the event of a communication failure with the reader

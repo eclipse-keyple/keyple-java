@@ -57,7 +57,7 @@ public class SmartInsertionMonitoringJob implements MonitoringJob {
                     }
                 } catch (KeypleIOReaderException e) {
                     logger.trace(
-                            "[{}] waitForCardPresent => Error while polling card with waitForCardPresent",
+                            "[{}] waitForCardPresent => Error while polling SE with waitForCardPresent",
                             reader.getName());
                     state.onEvent(AbstractObservableLocalReader.InternalEvent.STOP_DETECT);
                 }

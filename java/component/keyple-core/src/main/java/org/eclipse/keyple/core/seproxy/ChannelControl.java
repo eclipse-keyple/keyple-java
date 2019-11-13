@@ -13,12 +13,15 @@ package org.eclipse.keyple.core.seproxy;
 
 /**
  * indicates the action to be operated on the physical channel at the end of the request
- * transmission
- * <ul>
- * <li>KEEP_OPEN: lefts the physical channel open</li>
- * <li>CLOSE_AFTER: closes the physical channel</li>
- * </ul>
+ * transmission.
  */
 public enum ChannelControl {
-    KEEP_OPEN, CLOSE_AFTER
+    /**
+     * lefts the physical channel open
+     */
+    KEEP_OPEN,
+    /**
+     * closes the physical channel
+     */
+    CLOSE_AFTER
 }

@@ -153,8 +153,8 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      * <p>
      * This method is recommended for non-observable readers.
      * <p>
-     * When the card is not present the logical and physical channels status may be refreshed
-     * through a call to the processSeRemoved method.
+     * When the SE is not present the logical and physical channels status may be refreshed through
+     * a call to the processSeRemoved method.
      *
      * @return true if the SE is present
      */
@@ -356,7 +356,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                 closeLogicalAndPhysicalChannels();
                 logger.debug("An IO Exception occurred while processing the default selection. {}",
                         e.getMessage());
-                // in this case the card has been removed or not read correctly, do not throw event
+                // in this case the SE has been removed or not read correctly, do not throw event
             }
         }
 
