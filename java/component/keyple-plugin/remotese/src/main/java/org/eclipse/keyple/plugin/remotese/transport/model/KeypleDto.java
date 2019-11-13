@@ -14,7 +14,8 @@ package org.eclipse.keyple.plugin.remotese.transport.model;
 /**
  * Immutable Message used in the RPC protocol.
  * <p>
- * It contains the name of the method {@link org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName}, the parameters
+ * It contains the name of the method
+ * {@link org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName}, the parameters
  *
  */
 public class KeypleDto {
@@ -53,7 +54,6 @@ public class KeypleDto {
 
     // Master reader name
     private final String virtualReaderName;
-
 
 
 
