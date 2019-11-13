@@ -24,7 +24,7 @@ public interface DtoNode extends DtoSender {
      * {@link org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI} or
      * {@link org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI})
      * 
-     * @param handler : process incoming
+     * @param handler : set the handler that will process incoming
      *        {@link org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto}, usually
      *        {@link org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI} or
      *        {@link org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI}
