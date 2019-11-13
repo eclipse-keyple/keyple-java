@@ -12,11 +12,32 @@
 package org.eclipse.keyple.plugin.remotese.transport.model;
 
 /**
- * Immutable Object used to invoke remotely an API call to MasterAPI or to SlaveAPI
+ * Immutable Message used in the RPC protocol.
+ * <p>
+ * It contains the name of the method {@link org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName}, the parameters
+ *
  */
 public class KeypleDto {
 
+    /*
+     * API call
+     */
+
+    // API method to be called
+    private final String action;
+
+    // Arguments of the API (json)
+    private final String body;
+
+    // Is a request or a response
+    private final Boolean isRequest;
+
+    // Id of the request
     private final String id;
+
+    /*
+     * Metadata
+     */
 
     // Requester Node Id (can be slave or master)
     private final String requesterNodeId;
@@ -33,14 +54,7 @@ public class KeypleDto {
     // Master reader name
     private final String virtualReaderName;
 
-    // API method to be called
-    private final String action;
 
-    // Arguments of the API (json)
-    private final String body;
-
-    // Is a request or a response
-    private final Boolean isRequest;
 
 
     /**
