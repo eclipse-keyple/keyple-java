@@ -23,6 +23,11 @@ import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
  * readers.
  * <p>
  * The application can choose to add all parameters or only a subset.
+ * <p>
+ * Since they are based on the virtual ATR created by the reader, the protocol identification values
+ * are provided as is, they may vary from one reader and SE to another.
+ * <p>
+ * It may be necessary to create a custom parameter set specific to the context.
  */
 public class PcscProtocolSetting {
 
@@ -37,8 +42,7 @@ public class PcscProtocolSetting {
         Map<SeProtocol, String> map = new HashMap<SeProtocol, String>();
 
         map.put(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                "3B8880....................|3B8C800150.*|.*4F4D4141544C4153.*");
-
+                "3B8880....................|3B8B80.*|3B8C800150.*|.*4F4D4141544C4153.*");
         map.put(SeCommonProtocols.PROTOCOL_B_PRIME, "3B8F8001805A0...................829000..");
 
         map.put(SeCommonProtocols.PROTOCOL_MIFARE_UL, "3B8F8001804F0CA0000003060300030000000068");
@@ -57,7 +61,7 @@ public class PcscProtocolSetting {
 
     /**
      * Return a subset of the settings map
-     * 
+     *
      * @param specificProtocols subset of protocols
      * @return a settings map
      */
@@ -73,7 +77,7 @@ public class PcscProtocolSetting {
 
     /**
      * Return the whole settings map
-     * 
+     *
      * @return a settings map
      */
     public static Map<SeProtocol, String> getAllSettings() {
