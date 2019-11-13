@@ -72,7 +72,6 @@ import org.slf4j.LoggerFactory;
  * <p>
  * If the instruction given is continue (ObservableReader.PollingMode.REPEATING) then the state
  * machine changes to WAIT_FOR_SE_REMOVAL.
- * <p>
  * <li>WAIT_FOR_SE_REMOVAL:
  * <p>
  * Waiting for the SE to be removed. When the SE is removed, a SE_REMOVED event is notified to the
