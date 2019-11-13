@@ -47,8 +47,8 @@ public interface INativeReaderService {
     /**
      * Disconnect Physical Local Reader from RemoteSe Master, nativeReaderName must be used as the
      * identifier of the nativeReader
-     * 
-     * @param sessionId not used
+     *
+     * @param sessionId (optional)
      * @param nativeReaderName local name of the reader, will be used coupled with the nodeId to
      *        identify the virtualReader
      * @throws KeypleReaderException if reader is not already connected

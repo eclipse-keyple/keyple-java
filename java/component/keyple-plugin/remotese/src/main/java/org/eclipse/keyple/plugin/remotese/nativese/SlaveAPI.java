@@ -38,7 +38,14 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * SlaveAPI to manage local reader and connect them to Remote Service
+ * SlaveAPI is the main component of the Remote Se Architecture on the slave side.
+ * <p>
+ * It allows also to connect/disconnect a reader trhough dedicated methods
+ * <p>
+ * It handles incoming {@link KeypleDto} and transfer them to the right {@link SeReader}
+ * <p>
+ * Configure the SlaveAPI with a {@link DtoNode} to enable communication with the
+ * {@link org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI}
  *
  */
 public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableReader.ReaderObserver {
@@ -100,7 +107,8 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
     }
 
     /**
-     * Dispatch a Keyple DTO to the right Native Reader. {@link DtoHandler}
+     * Process and dispatch a {@link KeypleDto} to the right Native Reader. Override from the
+     * interface {@link DtoHandler}
      * 
      * @param transportDto to be processed
      * @return Keyple DTO to be sent back
@@ -217,7 +225,8 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
      */
 
     /**
-     * Connect a local reader to Remote SE Plugin {@link INativeReaderService}
+     * Connect a local reader to Remote SE Plugin. Override from interface
+     * {@link INativeReaderService}
      *
      * @param localReader : native reader to be connected
      * @return sessionId : if successful returns sessionId
@@ -229,8 +238,9 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
     }
 
     /**
-     * Connect a local reader to Remote SE Plugin {@link INativeReaderService} with options
-     *
+     * Connect a local reader to Remote SE Plugin with options Override from interface
+     * {@link INativeReaderService}
+     * 
      * @param localReader : native reader to be connected
      * @param options : options will be set as parameters of virtual reader
      */
@@ -256,6 +266,14 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
 
     }
 
+    /**
+     * Disconnect a SeReader. Matching virtual session will be destroyed on Master node.
+     * 
+     * @param sessionId (optional)
+     * @param nativeReaderName local name of the reader, will be used coupled with the nodeId to
+     *        identify the virtualReader
+     * @throws KeypleReaderException
+     */
     @Override
     public void disconnectReader(String sessionId, String nativeReaderName)
             throws KeypleReaderException {
@@ -289,7 +307,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
      * Internal method to find a local reader by its name across multiple plugins
      * 
      * @param nativeReaderName : name of the reader to be found
-     * @return found reader if any
+     * @return Se Reader found if any
      * @throws KeypleReaderNotFoundException if not reader were found with this name
      */
     @Override
