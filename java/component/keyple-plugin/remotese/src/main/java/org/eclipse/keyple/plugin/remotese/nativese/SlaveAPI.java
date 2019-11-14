@@ -240,7 +240,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
     /**
      * Connect a local reader to Remote SE Plugin with options Override from interface
      * {@link INativeReaderService}
-     * 
+     *
      * @param localReader : native reader to be connected
      * @param options : options will be set as parameters of virtual reader
      */
@@ -268,11 +268,11 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
 
     /**
      * Disconnect a SeReader. Matching virtual session will be destroyed on Master node.
-     * 
+     *
      * @param sessionId (optional)
      * @param nativeReaderName local name of the reader, will be used coupled with the nodeId to
      *        identify the virtualReader
-     * @throws KeypleReaderException
+     * @throws KeypleReaderException if an error occured while sending remote command
      */
     @Override
     public void disconnectReader(String sessionId, String nativeReaderName)
@@ -296,7 +296,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
                 logger.debug("Disconnected reader is not observable");
             }
         } catch (KeypleRemoteException e) {
-            throw new KeypleReaderException("An error occurred while calling connectReader", e);
+            throw new KeypleReaderException("An error occurred while calling disconnectReader", e);
         } catch (KeypleReaderNotFoundException e) {
             logger.warn("SlaveAPI#disconnectReader() : reader with name was not found",
                     nativeReaderName);

@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Client side of the 1 to many local transport for unit testing purposes only one server
+ * Client side of the java-based local transport. For unit testing purposes. only one server per JVM
  */
 public class LocalClient implements ClientNode {
 
@@ -83,13 +83,6 @@ public class LocalClient implements ClientNode {
     public String getServerNodeId() {
         return theServer.getNodeId();
     }
-
-    /*
-     * @Override public void update(KeypleDto event) { try { sendDTO(event); } catch
-     * (KeypleRemoteException e) { // Error is not propagated
-     * logger.error("Exception while sending event throw KeypleRemoteInterface", e); } }
-     */
-
 
     @Override
     public void connect(ConnectCallback connectCallback) {
