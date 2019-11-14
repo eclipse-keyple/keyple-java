@@ -19,7 +19,6 @@ public class LocalTransportDto implements TransportDto {
     private final KeypleDto keypleDto;
     private final LocalClient theClient;
 
-
     public LocalTransportDto(KeypleDto keypleDto, LocalClient theClient) {
         this.keypleDto = keypleDto;
         this.theClient = theClient;

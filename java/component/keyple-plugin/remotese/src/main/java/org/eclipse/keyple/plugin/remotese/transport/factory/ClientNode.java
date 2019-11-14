@@ -19,15 +19,37 @@ import org.eclipse.keyple.plugin.remotese.transport.DtoNode;
  */
 public interface ClientNode extends DtoNode {
 
+    /**
+     * Connect to the server
+     * 
+     * @param connectCallback
+     */
     void connect(ConnectCallback connectCallback);
 
+    /**
+     * Disconnect from the server
+     */
     void disconnect();
 
+    /**
+     * Retrieve ServerNodeId
+     * 
+     * @return
+     */
     String getServerNodeId();
 
+    /**
+     * Callback on the connection success
+     */
     interface ConnectCallback {
+        /**
+         * Called if the connection is sucessful
+         */
         void onConnectSuccess();
 
+        /**
+         * Called if the connection has failed
+         */
         void onConnectFailure();
     }
 

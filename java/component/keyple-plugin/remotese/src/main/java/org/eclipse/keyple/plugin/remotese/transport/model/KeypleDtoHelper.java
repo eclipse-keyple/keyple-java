@@ -16,14 +16,15 @@ import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import com.google.gson.JsonObject;
 
 /**
- * Utility class to manipulate KeypleDto. Use this class to build the different types of {@link KeypleDto}
+ * Utility class to manipulate KeypleDto. Use this class to build the different types of
+ * {@link KeypleDto}
  * <ul>
- *    <li>Request</li>
- *    <li>Response</li>
- *    <li>Notification</li>
- *      <li>NoResponse</li>
- *      <li>Exception</li>
- *</ul>
+ * <li>Request</li>
+ * <li>Response</li>
+ * <li>Notification</li>
+ * <li>NoResponse</li>
+ * <li>Exception</li>
+ * </ul>
  */
 public class KeypleDtoHelper {
 
@@ -32,6 +33,7 @@ public class KeypleDtoHelper {
 
     /**
      * Build a KeypleDto of type "Request"
+     * 
      * @param action : name of the remote method
      * @param body : parameters of the remote method
      * @param sessionId : virtual session id (if exists)
@@ -43,14 +45,15 @@ public class KeypleDtoHelper {
      * @return keypleDto request
      */
     static public KeypleDto buildRequest(String action, String body, String sessionId,
-                                         String nativeReaderName, String virtualReaderName, String requesterNodeId,
-                                         String targetNodeId, String id) {
+            String nativeReaderName, String virtualReaderName, String requesterNodeId,
+            String targetNodeId, String id) {
         return new KeypleDto(action, body, true, sessionId, nativeReaderName, virtualReaderName,
                 requesterNodeId, targetNodeId, id);
     }
 
     /**
      * Build a KeypleDto of type "Response"
+     * 
      * @param action : name of the remote method
      * @param body : parameters of the remote method
      * @param sessionId : virtual session id (if exists)
@@ -70,6 +73,7 @@ public class KeypleDtoHelper {
 
     /**
      * Build a KeypleDto of type "Notification", (without id)
+     * 
      * @param action : name of the notification
      * @param body : parameters of the notification
      * @param sessionId : virtual session id
@@ -89,7 +93,8 @@ public class KeypleDtoHelper {
     /**
      * Build a keypleDto of type "Exception" containing a Java Throwable
      * <p>
-     *     This keypleDto send the exception to the other node
+     * This keypleDto send the exception to the other node
+     * 
      * @param action : name of the remote method that failed
      * @param sessionId : virtual session id (if exists)
      * @param nativeReaderName : name of the local reader
@@ -100,16 +105,17 @@ public class KeypleDtoHelper {
      * @return
      */
     static public KeypleDto ExceptionDTO(String action, Throwable exception, String sessionId,
-                                         String nativeReaderName, String virtualReaderName, String requesterNodeId,
-                                         String targetNodeId, String id) {
+            String nativeReaderName, String virtualReaderName, String requesterNodeId,
+            String targetNodeId, String id) {
 
         return buildResponse(action, JsonParser.getGson().toJson(exception), sessionId,
                 nativeReaderName, virtualReaderName, requesterNodeId, targetNodeId, id);
     }
 
     /**
-     * Build a keypleDto of type "NoResponse".
-     * This Dto should be not be sent by the {@link org.eclipse.keyple.plugin.remotese.transport.DtoNode}.
+     * Build a keypleDto of type "NoResponse". This Dto should be not be sent by the
+     * {@link org.eclipse.keyple.plugin.remotese.transport.DtoNode}.
+     * 
      * @param id : id of the request
      * @return NoResponse KeypleDto
      */
@@ -119,6 +125,7 @@ public class KeypleDtoHelper {
 
     /**
      * Check if the keypleDto is of type "NoResponse"
+     * 
      * @param dto
      * @return true of the keypleDto is of type "NoResponse"
      */
@@ -128,6 +135,7 @@ public class KeypleDtoHelper {
 
     /**
      * Check if the keypleDto is of type "Exception"
+     * 
      * @param keypleDto
      * @return true of the keypleDto is of type "Exception"
      */
@@ -137,11 +145,11 @@ public class KeypleDtoHelper {
 
 
 
-
     /* ----------- Serialization Helpers */
 
     /**
      * Serialize keypleDto to json
+     * 
      * @param keypleDto
      * @return json serialization of the keypleDto
      */
@@ -151,6 +159,7 @@ public class KeypleDtoHelper {
 
     /**
      * Parse a json serialized keypleDto
+     * 
      * @param json json String representation of the keypleDto
      * @return keypleDto object
      */
@@ -160,6 +169,7 @@ public class KeypleDtoHelper {
 
     /**
      * Parse a json keypleDto
+     * 
      * @param jsonObj json Object representation of the keypleDto
      * @return keypleDto object
      */
@@ -169,6 +179,7 @@ public class KeypleDtoHelper {
 
     /**
      * The parameter in the keypleDto has not been specified
+     * 
      * @return
      */
     static public String notSpecified() {
@@ -183,8 +194,8 @@ public class KeypleDtoHelper {
     /* --------- private method ---------- */
 
     static private KeypleDto build(String action, String body, boolean isRequest, String sessionId,
-                                   String nativeReaderName, String virtualReaderName, String requesterNodeId,
-                                   String targetNodeId, String id) {
+            String nativeReaderName, String virtualReaderName, String requesterNodeId,
+            String targetNodeId, String id) {
         return new KeypleDto(action, body, isRequest, sessionId, nativeReaderName,
                 virtualReaderName, requesterNodeId, targetNodeId, id);
     }

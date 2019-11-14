@@ -14,17 +14,36 @@ package org.eclipse.keyple.plugin.remotese.transport.factory;
 import java.io.IOException;
 
 /**
- * Factory for Clients and Servers sharing a protocol and a configuration to connectAReader each
- * others
+ * Factory helper for Client/Server protocol implementation. This class holds a configuration and
+ * create a server and clients based on this configuration.
+ * <p>
+ * See {@link org.eclipse.keyple.plugin.remotese.transport.impl.java.LocalTransportFactory} for an
+ * example of implementation
  */
 public abstract class TransportFactory {
 
+    /**
+     * Return a (new) client for this configuration
+     * 
+     * @param clientNodeId
+     * @return new ClientNode
+     */
     abstract public ClientNode getClient(String clientNodeId);
 
+    /**
+     * Return the server of this configuration
+     * 
+     * @return ServerNode
+     * @throws IOException if the server could not startup
+     */
     abstract public ServerNode getServer() throws IOException;
 
+    /**
+     * Return the server nodeId
+     * 
+     * @return serverNodeId
+     */
     abstract public String getServerNodeId();
-
 
 
 }
