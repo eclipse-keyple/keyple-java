@@ -56,8 +56,7 @@ public final class PcscProtocolSetting {
         PCSC_PROTOCOL_SETTING = Collections.unmodifiableMap(map);
     }
 
-    private PcscProtocolSetting() {
-    }
+    private PcscProtocolSetting() {}
 
     /**
      * Return a subset of the settings map
