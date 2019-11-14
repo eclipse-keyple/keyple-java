@@ -16,12 +16,36 @@ import java.util.Map;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.util.Observable;
 
+/**
+ * The ObservableReader interface provides the API for observable readers.
+ * <ul>
+ * <li>Observer management
+ * <li>Start/stop of SE detection
+ * <li>Managing the default selection
+ * <li>Definition of polling and notification modes
+ * </ul>
+ */
 public interface ObservableReader extends SeReader {
+    /**
+     * Interface to be implemented by reader observers.
+     */
     interface ReaderObserver extends Observable.Observer<ReaderEvent> {
     }
 
+    /**
+     * The NotificationMode defines the expected behavior when processing a default selection.
+     */
     enum NotificationMode {
-        ALWAYS("always"), MATCHED_ONLY("matched_only");
+        /**
+         * all SEs presented to readers are notified regardless of the result of the default
+         * selection.
+         */
+        ALWAYS("always"),
+        /**
+         * only SEs that have been successfully selected (logical channel open) will be notified.
+         * The others will be ignored and the application will not be aware of them.
+         */
+        MATCHED_ONLY("matched_only");
 
         private String name;
 
@@ -67,20 +91,54 @@ public interface ObservableReader extends SeReader {
     }
 
     /**
-     * Indicates the action to be taken after processing a SE: continue waiting for the insertion of
-     * a next SE (CONTINUE) or stop and wait for a restart signal (STOP).
+     * Indicates the action to be taken after processing a SE.
      */
     enum PollingMode {
-        REPEATING, SINGLESHOT
+        /**
+         * continue waiting for the insertion of a next SE.
+         */
+        REPEATING,
+        /**
+         * stop and wait for a restart signal.
+         */
+        SINGLESHOT
     }
 
+    /**
+     * Add a reader observer.
+     * <p>
+     * The observer will receive all the events produced by this reader (card insertion, removal,
+     * etc.)
+     *
+     * @param observer the observer object
+     */
     void addObserver(ReaderObserver observer);
 
+    /**
+     * Remove a reader observer.
+     * <p>
+     * The observer will not receive any of the events produced by this reader.
+     *
+     * @param observer the observer object
+     */
     void removeObserver(ReaderObserver observer);
 
+    /**
+     * Push a ReaderEvent of the {@link ObservableReader} to its registered observers.
+     *
+     * @param event the event (see {@link ReaderEvent})
+     */
     void notifyObservers(ReaderEvent event);
 
+    /**
+     * Remove all observers at once
+     */
     void clearObservers();
+
+    /**
+     * @return the number of observers
+     */
+    int countObservers();
 
     /**
      * Starts the SE detection. Once activated, the application can be notified of the arrival of an
@@ -139,6 +197,4 @@ public interface ObservableReader extends SeReader {
      * detection.
      */
     void notifySeProcessed();
-
-    int countObservers();
 }

@@ -63,9 +63,9 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
     /**
      * This flag is used with transmit or transmitSet
      * <p>
-     * It will be used by the terminate method to determine if a command to close the physical
-     * channel has been already requested and therefore to switch directly to the removal sequence
-     * for the observed readers.
+     * It will be used by the notifySeProcessed method to determine if a request to close the
+     * physical channel has been already made and therefore to switch directly to the removal
+     * sequence for the observed readers.
      */
     private boolean forceClosing = true;
 
@@ -73,8 +73,6 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
 
     /**
      * Reader constructor
-     * <p>
-     * Force the definition of a name through the use of super method.
      * <p>
      * Initialize the time measurement
      *
@@ -132,13 +130,22 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
      * Execute the transmission of a list of {@link SeRequest} and returns a list of
      * {@link SeResponse}
      * <p>
+     * The {@link MultiSeRequestProcessing} parameter indicates whether all requests are to be sent
+     * regardless of their result (PROCESS_ALL) or whether the process should stop at the first
+     * request whose result is a success (FIRST_MATCH).
+     * <p>
+     * The {@link ChannelControl} parameter specifies whether the physical channel should be closed
+     * (CLOSE_AFTER) or not (KEEP_OPEN) after all requests have been transmitted.
+     * <p>
      * The global execution time (inter-exchange and communication) and the Set of SeRequest content
      * is logged (DEBUG level).
      * <p>
      * As the method is final, it cannot be extended.
      *
      * @param requestSet the request set
-     * @return responseSet the response set
+     * @param multiSeRequestProcessing the multi SE request processing mode
+     * @param channelControl the channel control indicator
+     * @return the response set
      * @throws KeypleReaderException if a reader error occurs
      */
     @Override
@@ -159,7 +166,7 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
             logger.debug("[{}] transmit => SEREQUESTSET = {}, elapsed {} ms.", this.getName(),
-                    requestSet.toString(), elapsedMs);
+                    requestSet, elapsedMs);
         }
 
         try {
@@ -187,12 +194,19 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
             double elapsedMs = (double) ((timeStamp - before) / 100000) / 10;
             this.before = timeStamp;
             logger.debug("[{}] transmit => SERESPONSESET = {}, elapsed {} ms.", this.getName(),
-                    responseSet.toString(), elapsedMs);
+                    responseSet, elapsedMs);
         }
 
         return responseSet;
     }
 
+    /**
+     * Simplified version of transmitSet for standard use.
+     * 
+     * @param requestSet the request set
+     * @return the response set
+     * @throws KeypleReaderException if a reader error occurs
+     */
     @Override
     public final List<SeResponse> transmitSet(Set<SeRequest> requestSet)
             throws KeypleReaderException {
@@ -245,7 +259,7 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
             logger.debug("[{}] transmit => SEREQUEST = {}, elapsed {} ms.", this.getName(),
-                    seRequest.toString(), elapsedMs);
+                    seRequest, elapsedMs);
         }
 
         try {
@@ -273,12 +287,19 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
             double elapsedMs = (double) ((timeStamp - before) / 100000) / 10;
             this.before = timeStamp;
             logger.debug("[{}] transmit => SERESPONSE = {}, elapsed {} ms.", this.getName(),
-                    seResponse.toString(), elapsedMs);
+                    seResponse, elapsedMs);
         }
 
         return seResponse;
     }
 
+    /**
+     * Simplified version of transmit for standard use.
+     * 
+     * @param seRequest the request to be transmitted
+     * @return the received response
+     * @throws KeypleReaderException if a reader error occurs
+     */
     @Override
     public final SeResponse transmit(SeRequest seRequest) throws KeypleReaderException {
         return transmit(seRequest, ChannelControl.KEEP_OPEN);
@@ -310,7 +331,7 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
      * closed.
      * 
      */
-    final public void notifySeProcessed() {
+    public final void notifySeProcessed() {
         if (forceClosing) {
             try {
                 // close the physical channel thanks to CLOSE_AFTER flag
@@ -324,38 +345,17 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
         }
     }
 
-    /**
-     * Add a reader observer.
-     * <p>
-     * The observer will receive all the events produced by this reader (card insertion, removal,
-     * etc.)
-     *
-     * @param observer the observer object
-     */
     public void addObserver(ReaderObserver observer) {
         logger.trace("[{}] addObserver => Adding '{}' as an observer of '{}'.",
                 this.getClass().getSimpleName(), observer.getClass().getSimpleName(), name);
         super.addObserver(observer);
     }
 
-    /**
-     * Remove a reader observer.
-     * <p>
-     * The observer will not receive any of the events produced by this reader.
-     *
-     * @param observer the observer object
-     */
     public void removeObserver(ReaderObserver observer) {
         logger.trace("[{}] removeObserver => Deleting a reader observer", this.getName());
         super.removeObserver(observer);
     }
 
-    /**
-     * This method shall be called only from a SE Proxy reader implementing AbstractReader. Push a
-     * ReaderEvent of the selected AbstractReader to its registered Observer.
-     *
-     * @param event the event
-     */
     @Override
     public final void notifyObservers(final ReaderEvent event) {
 
@@ -369,13 +369,12 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
     }
 
     /**
-     * Set a list of parameters on a reader.
+     * Sets at once a set of parameters for a reader
      * <p>
      * See {@link #setParameter(String, String)} for more details
      *
-     * @param parameters the new parameters
-     * @throws KeypleBaseException This method can fail when disabling the exclusive mode as it's
-     *         executed instantly
+     * @param parameters a Map &lt;String, String&gt; parameter set
+     * @throws KeypleBaseException if one of the parameters could not be set up
      */
     @Override
     public final void setParameters(Map<String, String> parameters)

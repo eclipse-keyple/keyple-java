@@ -32,7 +32,7 @@ public final class SeRequest implements Serializable {
     /**
      * contains a group of APDUCommand to operate on the selected SE application by the SE reader.
      */
-    final private List<ApduRequest> apduRequests;
+    private final List<ApduRequest> apduRequests;
 
 
     /**

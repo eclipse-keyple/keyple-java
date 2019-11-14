@@ -16,7 +16,7 @@ import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
 
 /**
- * Only used by MasterAPI
+ * Used internally by MasterAPI to create the {@link RemoteSePlugin}
  */
 class RemoteSePluginFactory extends AbstractPluginFactory {
 

@@ -37,7 +37,6 @@ public final class SeProxyService {
     // this is the object we will be synchronizing on ("the monitor")
     private final Object MONITOR = new Object();
 
-    // private SortedSet<ReaderPlugin> plugins = new ConcurrentSkipListSet<ReaderPlugin>();
     /**
      * Instantiates a new SeProxyService.
      */

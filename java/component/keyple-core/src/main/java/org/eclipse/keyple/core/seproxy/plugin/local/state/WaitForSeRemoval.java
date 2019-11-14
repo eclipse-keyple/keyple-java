@@ -22,6 +22,13 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Wait for Se Removal State
+ * <p>
+ * The state in which the SE is still present and awaiting removal.
+ * <ul>
+ * <li>Upon SE_REMOVED event, the machine changes state for WAIT_FOR_SE_INSERTION or
+ * WAIT_FOR_SE_DETECTION according to the {@link ObservableReader.PollingMode} setting.
+ * <li>Upon STOP_DETECT event, the machine changes state for WAIT_FOR_SE_DETECTION.
+ * </ul>
  */
 public class WaitForSeRemoval extends AbstractObservableState {
 
@@ -58,14 +65,6 @@ public class WaitForSeRemoval extends AbstractObservableState {
                     switchState(MonitoringState.WAIT_FOR_START_DETECTION);
                 }
                 break;
-
-            // case TIME_OUT:
-            // switchState(MonitoringState.WAIT_FOR_START_DETECTION);
-            // // We notify the application of the TIMEOUT_ERROR event.
-            // reader.notifyObservers(new ReaderEvent(this.reader.getPluginName(),
-            // this.reader.getName(), ReaderEvent.EventType.TIMEOUT_ERROR, null));
-            // logger.warn("The time limit for the removal of the SE has been exceeded.");
-            // break;
 
             case STOP_DETECT:
                 reader.processSeRemoved();

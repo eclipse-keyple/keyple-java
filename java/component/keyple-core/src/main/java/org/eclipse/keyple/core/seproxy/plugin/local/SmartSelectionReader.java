@@ -24,6 +24,15 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  */
 public interface SmartSelectionReader extends SeReader {
 
+    /**
+     * Opens a logical channel for the provided AID
+     * 
+     * @param aidSelector the selection data
+     * @return an ApduResponse containing the SE answer to selection
+     * @throws KeypleIOReaderException if a communication error occurs
+     * @throws KeypleChannelControlException if channel control error occurs
+     * @throws KeypleApplicationSelectionException if selection error occurs
+     */
     ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector)
             throws KeypleIOReaderException, KeypleChannelControlException,
             KeypleApplicationSelectionException;

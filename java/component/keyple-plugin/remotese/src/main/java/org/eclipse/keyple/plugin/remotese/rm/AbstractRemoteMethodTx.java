@@ -104,6 +104,7 @@ public abstract class AbstractRemoteMethodTx<T> {
      * Blocking method to execute results from the remote method call. To be called by the client
      * (used internally by rmCommands, do not use)
      *
+     * @param rmTxEngine : local RemoteMethodTxEngine to execute the command into
      * @return T : result of the command
      * @throws KeypleRemoteException : if an
      */

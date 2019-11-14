@@ -17,13 +17,14 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 
 /**
- * RemoteSePlugin manages Virtual Reader. Use it as a standard ObservablePlugin. It is wrapped into
- * the MasterAPI.
+ * RemoteSePlugin manages Virtual Reader. Use its ObservablePlugin capacities to get notified when a
+ * {@link VirtualReader} is connected/disconnected. It is created and registered by the
+ * {@link MasterAPI}
  */
 public interface RemoteSePlugin extends ReaderPlugin, ObservablePlugin {
 
     /**
-     * Retrieve a reader by its native reader name and slave Node Id
+     * Retrieve a {@link VirtualReader} by its native reader name and slave Node Id
      *
      * @param remoteName : name of the reader on its native device
      * @param slaveNodeId : slave node Id of the reader to disconnect

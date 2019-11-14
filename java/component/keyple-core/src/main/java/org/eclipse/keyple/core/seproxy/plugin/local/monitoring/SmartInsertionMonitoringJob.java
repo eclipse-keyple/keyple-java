@@ -21,7 +21,14 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Detect the SE insertion thanks to the method {@link SmartInsertionReader#waitForCardPresent()}.
- * This method is invoked in another thread
+ * This method is invoked in another thread.
+ * <p>
+ * The job waits indefinitely for the waitForCardPresent method to return.
+ * <p>
+ * When an SE is present, an internal SE_INSERTED event is fired.
+ * <p>
+ * If a communication problem with the reader occurs (KeypleIOReaderException) an internal
+ * STOP_DETECT event is fired.
  */
 public class SmartInsertionMonitoringJob implements MonitoringJob {
 
@@ -50,7 +57,7 @@ public class SmartInsertionMonitoringJob implements MonitoringJob {
                     }
                 } catch (KeypleIOReaderException e) {
                     logger.trace(
-                            "[{}] waitForCardPresent => Error while polling card with waitForCardPresent",
+                            "[{}] waitForCardPresent => Error while polling SE with waitForCardPresent",
                             reader.getName());
                     state.onEvent(AbstractObservableLocalReader.InternalEvent.STOP_DETECT);
                 }

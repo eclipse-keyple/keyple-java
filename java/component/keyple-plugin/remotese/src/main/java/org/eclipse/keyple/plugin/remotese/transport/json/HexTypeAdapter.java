@@ -15,6 +15,9 @@ import java.lang.reflect.Type;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import com.google.gson.*;
 
+/**
+ * Gson Adapter to serialize and unserialize byte[] to Hex String
+ */
 public class HexTypeAdapter implements JsonSerializer<byte[]>, JsonDeserializer<byte[]> {
 
     @Override

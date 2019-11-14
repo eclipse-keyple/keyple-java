@@ -49,7 +49,7 @@ public class ObservableReaderStateService {
      *
      * @param event internal event
      */
-    final synchronized public void onEvent(AbstractObservableLocalReader.InternalEvent event) {
+    public final synchronized void onEvent(AbstractObservableLocalReader.InternalEvent event) {
         this.currentState.onEvent(event);
     }
 
@@ -60,7 +60,7 @@ public class ObservableReaderStateService {
      *
      * @param stateId : next state to onActivate
      */
-    final synchronized public void switchState(AbstractObservableState.MonitoringState stateId) {
+    public final synchronized void switchState(AbstractObservableState.MonitoringState stateId) {
 
         if (currentState != null) {
             logger.trace("[{}] Switch currentState from {} to {}", this.reader.getName(),
@@ -86,7 +86,7 @@ public class ObservableReaderStateService {
      *
      * @return reader current state
      */
-    final synchronized protected AbstractObservableState getCurrentState() {
+    protected final synchronized AbstractObservableState getCurrentState() {
         return currentState;
     }
 
@@ -95,7 +95,7 @@ public class ObservableReaderStateService {
      *
      * @return current monitoring state
      */
-    final synchronized public AbstractObservableState.MonitoringState getCurrentMonitoringState() {
+    public final synchronized AbstractObservableState.MonitoringState getCurrentMonitoringState() {
         return this.currentState.getMonitoringState();
     }
 }

@@ -55,6 +55,7 @@ public class MasterAPI implements DtoHandler {
      *
      * @param seProxyService : SeProxyService
      * @param dtoNode : outgoing node to send Dto to Slave
+     * @throws KeyplePluginInstanciationException if plugin does not instanciate
      */
     public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode)
             throws KeyplePluginInstanciationException {
@@ -69,6 +70,7 @@ public class MasterAPI implements DtoHandler {
      * @param dtoNode : outgoing node to send Dto to Slave
      * @param rpc_timeout : timeout in milliseconds to wait for an answer from slave before throwing
      *        an exception
+     * @throws KeyplePluginInstanciationException if plugin does not instanciate
      */
     public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode, long rpc_timeout)
             throws KeyplePluginInstanciationException {
@@ -87,7 +89,9 @@ public class MasterAPI implements DtoHandler {
      * @param pluginType : either a default plugin or readerPool plugin, use
      *        {@link #PLUGIN_TYPE_DEFAULT} or @PLUGIN_TYPE_POOL
      * @param pluginName : specify a name for remoteseplugin
+     * @throws KeyplePluginInstanciationException if plugin does not instanciate
      *
+     * 
      */
     public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode, long rpcTimeout,
             int pluginType, String pluginName) throws KeyplePluginInstanciationException {

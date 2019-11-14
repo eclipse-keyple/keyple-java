@@ -16,5 +16,12 @@ package org.eclipse.keyple.core.seproxy;
  * requests in the SeRequest Set
  */
 public enum MultiSeRequestProcessing {
-    FIRST_MATCH, PROCESS_ALL
+    /**
+     * The selection process stops as soon as a selection case is successful.
+     */
+    FIRST_MATCH,
+    /**
+     * The selection process performs all the selection cases provided in the Set of SeRequest.
+     */
+    PROCESS_ALL
 }

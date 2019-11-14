@@ -19,7 +19,7 @@ import java.util.Arrays;
  * (May be enhanced to provide analysis methods)
  */
 public class AnswerToReset {
-    final private byte[] atrBytes;
+    private final byte[] atrBytes;
 
     public AnswerToReset(byte[] atrBytes) {
         this.atrBytes = atrBytes;
