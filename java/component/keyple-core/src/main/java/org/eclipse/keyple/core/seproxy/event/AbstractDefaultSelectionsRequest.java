@@ -17,8 +17,8 @@ import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 
 /**
- * The interface defining the default selection request to be processed when an SE is inserted in an
- * observable reader.
+ * The abstract class defining the default selection request to be processed when an SE is inserted
+ * in an observable reader.
  * <p>
  * The default selection is defined by:
  * <ul>
@@ -30,19 +30,19 @@ import org.eclipse.keyple.core.seproxy.message.SeRequest;
  * </ul>
  */
 
-public interface DefaultSelectionsRequest {
+public abstract class AbstractDefaultSelectionsRequest {
     /**
      * @return the selection request set
      */
-    Set<SeRequest> getSelectionSeRequestSet();
+    protected abstract Set<SeRequest> getSelectionSeRequestSet();
 
     /**
      * @return the multi SE request mode
      */
-    MultiSeRequestProcessing getMultiSeRequestProcessing();
+    protected abstract MultiSeRequestProcessing getMultiSeRequestProcessing();
 
     /**
      * @return the channel control
      */
-    ChannelControl getChannelControl();
+    protected abstract ChannelControl getChannelControl();
 }

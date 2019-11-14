@@ -168,7 +168,7 @@ public interface ObservableReader extends SeReader {
      *        selection has failed (ALWAYS) or whether the SE insertion should be ignored in this
      *        case (MATCHED_ONLY).
      */
-    void setDefaultSelectionRequest(DefaultSelectionsRequest defaultSelectionsRequest,
+    void setDefaultSelectionRequest(AbstractDefaultSelectionsRequest defaultSelectionsRequest,
             NotificationMode notificationMode);
 
     /**
@@ -182,7 +182,7 @@ public interface ObservableReader extends SeReader {
      *        the SE detection is restarted, if STOP, the SE detection is stopped until a new call
      *        to startSeDetection is made.
      */
-    void setDefaultSelectionRequest(DefaultSelectionsRequest defaultSelectionsRequest,
+    void setDefaultSelectionRequest(AbstractDefaultSelectionsRequest defaultSelectionsRequest,
             NotificationMode notificationMode, PollingMode pollingMode);
 
     /**

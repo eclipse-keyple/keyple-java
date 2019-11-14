@@ -14,14 +14,14 @@ package org.eclipse.keyple.core.seproxy.message;
 import java.util.Set;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
+import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 
 /**
  * Class containing the Set of {@link SeRequest} used to make a default selection at the
  * {@link ObservableReader} level.
  */
-public final class DefaultSelectionsRequestImpl implements DefaultSelectionsRequest {
+public final class DefaultSelectionsRequest extends AbstractDefaultSelectionsRequest {
 
     private Set<SeRequest> selectionSeRequestSet;
 
@@ -29,14 +29,14 @@ public final class DefaultSelectionsRequestImpl implements DefaultSelectionsRequ
 
     private ChannelControl channelControl;
 
-    public DefaultSelectionsRequestImpl(Set<SeRequest> selectionSeRequestSet,
+    public DefaultSelectionsRequest(Set<SeRequest> selectionSeRequestSet,
             MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl) {
         this.selectionSeRequestSet = selectionSeRequestSet;
         this.multiSeRequestProcessing = multiSeRequestProcessing;
         this.channelControl = channelControl;
     }
 
-    public DefaultSelectionsRequestImpl(Set<SeRequest> selectionSeRequestSet) {
+    public DefaultSelectionsRequest(Set<SeRequest> selectionSeRequestSet) {
         this(selectionSeRequestSet, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
     }
 

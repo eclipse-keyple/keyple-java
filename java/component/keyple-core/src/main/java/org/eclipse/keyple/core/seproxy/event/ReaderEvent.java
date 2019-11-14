@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.event;
 
-import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponseImpl;
+import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 
 /**
  * ReaderEvent used to notify changes at reader level
@@ -29,9 +29,9 @@ public final class ReaderEvent {
 
     /**
      * The response to the selection request Note: although the object is instantiated externally,
-     * we use DefaultSelectionsResponseImpl here to keep ReaderEvent serializable
+     * we use DefaultSelectionsResponse here to keep ReaderEvent serializable
      */
-    private final DefaultSelectionsResponseImpl defaultResponseSet;
+    private final DefaultSelectionsResponse defaultResponseSet;
 
     /**
      * The different types of reader events, reflecting the status of the reader regarding the
@@ -81,15 +81,15 @@ public final class ReaderEvent {
      * @param pluginName the name of the current plugin
      * @param readerName the name of the current reader
      * @param eventType the type of event
-     * @param defaultSelectionsResponse the response to the default DefaultSelectionsRequest (may be
-     *        null)
+     * @param defaultSelectionsResponse the response to the default AbstractDefaultSelectionsRequest
+     *        (may be null)
      */
     public ReaderEvent(String pluginName, String readerName, EventType eventType,
-            DefaultSelectionsResponse defaultSelectionsResponse) {
+            AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
         this.pluginName = pluginName;
         this.readerName = readerName;
         this.eventType = eventType;
-        this.defaultResponseSet = (DefaultSelectionsResponseImpl) defaultSelectionsResponse;
+        this.defaultResponseSet = (DefaultSelectionsResponse) defaultSelectionsResponse;
     }
 
 
@@ -105,7 +105,7 @@ public final class ReaderEvent {
         return eventType;
     }
 
-    public DefaultSelectionsResponse getDefaultSelectionsResponse() {
+    public AbstractDefaultSelectionsResponse getDefaultSelectionsResponse() {
         return defaultResponseSet;
     }
 }

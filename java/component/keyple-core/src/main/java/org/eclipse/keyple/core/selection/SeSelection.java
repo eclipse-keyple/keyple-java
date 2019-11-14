@@ -15,11 +15,10 @@ import java.util.*;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsResponse;
+import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponseImpl;
+import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -129,7 +128,7 @@ public final class SeSelection {
      * Selection cases that have not matched the current SE are set to null.
      *
      * @param defaultSelectionsResponse the response from the reader to the
-     *        {@link DefaultSelectionsRequest}
+     *        {@link AbstractDefaultSelectionsRequest}
      * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
      *         including {@link AbstractMatchingSe} and {@link SeResponse}.
      */
@@ -177,18 +176,19 @@ public final class SeSelection {
         List<SeResponse> seResponseList = ((ProxyReader) seReader).transmitSet(selectionRequestSet,
                 multiSeRequestProcessing, channelControl);
 
-        return processSelection(new DefaultSelectionsResponseImpl(seResponseList));
+        return processSelection(new DefaultSelectionsResponse(seResponseList));
     }
 
     /**
-     * The SelectionOperation is the {@link DefaultSelectionsRequest} to process in ordered to
-     * select a SE among others through the selection process. This method is useful to build the
+     * The SelectionOperation is the {@link AbstractDefaultSelectionsRequest} to process in ordered
+     * to select a SE among others through the selection process. This method is useful to build the
      * prepared selection to be executed by a reader just after a SE insertion.
      * 
-     * @return the {@link DefaultSelectionsRequest} previously prepared with prepareSelection
+     * @return the {@link AbstractDefaultSelectionsRequest} previously prepared with
+     *         prepareSelection
      */
-    public DefaultSelectionsRequest getSelectionOperation() {
-        return new DefaultSelectionsRequestImpl(selectionRequestSet, multiSeRequestProcessing,
+    public AbstractDefaultSelectionsRequest getSelectionOperation() {
+        return new DefaultSelectionsRequest(selectionRequestSet, multiSeRequestProcessing,
                 channelControl);
     }
 }
