@@ -84,13 +84,6 @@ public class LocalClient implements ClientNode {
         return theServer.getNodeId();
     }
 
-    /*
-     * @Override public void update(KeypleDto event) { try { sendDTO(event); } catch
-     * (KeypleRemoteException e) { // Error is not propagated
-     * logger.error("Exception while sending event throw KeypleRemoteInterface", e); } }
-     */
-
-
     @Override
     public void connect(ConnectCallback connectCallback) {
         if (connectCallback != null) {

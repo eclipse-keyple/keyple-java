@@ -28,7 +28,6 @@ import com.google.gson.JsonObject;
  */
 public class KeypleDtoHelper {
 
-
     /* ----------- Constructors Helpers */
 
     /**
@@ -44,7 +43,7 @@ public class KeypleDtoHelper {
      * @param id : unique id for this request
      * @return keypleDto request
      */
-    static public KeypleDto buildRequest(String action, String body, String sessionId,
+    public static KeypleDto buildRequest(String action, String body, String sessionId,
             String nativeReaderName, String virtualReaderName, String requesterNodeId,
             String targetNodeId, String id) {
         return new KeypleDto(action, body, true, sessionId, nativeReaderName, virtualReaderName,
@@ -64,7 +63,7 @@ public class KeypleDtoHelper {
      * @param id : id of the request
      * @return keypleDto response
      */
-    static public KeypleDto buildResponse(String action, String body, String sessionId,
+    public static KeypleDto buildResponse(String action, String body, String sessionId,
             String nativeReaderName, String virtualReaderName, String requesterNodeId,
             String targetNodeId, String id) {
         return build(action, body, false, sessionId, nativeReaderName, virtualReaderName,
@@ -83,7 +82,7 @@ public class KeypleDtoHelper {
      * @param targetNodeId : node id of the destinee
      * @return keypleDto notification
      */
-    static public KeypleDto buildNotification(String action, String body, String sessionId,
+    public static KeypleDto buildNotification(String action, String body, String sessionId,
             String nativeReaderName, String virtualReaderName, String requesterNodeId,
             String targetNodeId) {
         return new KeypleDto(action, body, true, sessionId, nativeReaderName, virtualReaderName,
@@ -104,7 +103,7 @@ public class KeypleDtoHelper {
      * @param id
      * @return
      */
-    static public KeypleDto ExceptionDTO(String action, Throwable exception, String sessionId,
+    public static KeypleDto ExceptionDTO(String action, Throwable exception, String sessionId,
             String nativeReaderName, String virtualReaderName, String requesterNodeId,
             String targetNodeId, String id) {
 
@@ -119,7 +118,7 @@ public class KeypleDtoHelper {
      * @param id : id of the request
      * @return NoResponse KeypleDto
      */
-    static public KeypleDto NoResponse(String id) {
+    public static KeypleDto NoResponse(String id) {
         return buildResponse("", "", "", "", "", "", "", id);
     }
 
@@ -129,7 +128,7 @@ public class KeypleDtoHelper {
      * @param dto
      * @return true of the keypleDto is of type "NoResponse"
      */
-    static public Boolean isNoResponse(KeypleDto dto) {
+    public static Boolean isNoResponse(KeypleDto dto) {
         return dto == null || dto.getAction() == null || dto.getAction().isEmpty();
     }
 
@@ -139,7 +138,7 @@ public class KeypleDtoHelper {
      * @param keypleDto
      * @return true of the keypleDto is of type "Exception"
      */
-    static public Boolean containsException(KeypleDto keypleDto) {
+    public static Boolean containsException(KeypleDto keypleDto) {
         return keypleDto.getBody().contains("stackTrace");
     }
 
@@ -153,7 +152,7 @@ public class KeypleDtoHelper {
      * @param keypleDto
      * @return json serialization of the keypleDto
      */
-    static public String toJson(KeypleDto keypleDto) {
+    public static String toJson(KeypleDto keypleDto) {
         return JsonParser.getGson().toJson(keypleDto);
     }
 
@@ -163,7 +162,7 @@ public class KeypleDtoHelper {
      * @param json json String representation of the keypleDto
      * @return keypleDto object
      */
-    static public KeypleDto fromJson(String json) {
+    public static KeypleDto fromJson(String json) {
         return JsonParser.getGson().fromJson(json, KeypleDto.class);
     }
 
@@ -173,7 +172,7 @@ public class KeypleDtoHelper {
      * @param jsonObj json Object representation of the keypleDto
      * @return keypleDto object
      */
-    static public KeypleDto fromJsonObject(JsonObject jsonObj) {
+    public static KeypleDto fromJsonObject(JsonObject jsonObj) {
         return JsonParser.getGson().fromJson(jsonObj, KeypleDto.class);
     }
 
@@ -182,22 +181,26 @@ public class KeypleDtoHelper {
      * 
      * @return
      */
-    static public String notSpecified() {
+    public static String notSpecified() {
         return "notSpecified";
     }
 
-    static public Boolean isKeypleDTO(JsonObject json) {
+    public static Boolean isKeypleDTO(JsonObject json) {
         return json.has("action");
     }
 
 
     /* --------- private method ---------- */
 
-    static private KeypleDto build(String action, String body, boolean isRequest, String sessionId,
+    private static KeypleDto build(String action, String body, boolean isRequest, String sessionId,
             String nativeReaderName, String virtualReaderName, String requesterNodeId,
             String targetNodeId, String id) {
         return new KeypleDto(action, body, isRequest, sessionId, nativeReaderName,
                 virtualReaderName, requesterNodeId, targetNodeId, id);
+    }
+
+    private KeypleDtoHelper() {
+        throw new IllegalStateException("Utility class");
     }
 
 }

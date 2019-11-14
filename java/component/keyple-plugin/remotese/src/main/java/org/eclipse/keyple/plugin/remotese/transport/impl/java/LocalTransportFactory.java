@@ -20,15 +20,8 @@ import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;
 /**
  * Factory to create a local {@link ClientNode} and a local {@link ServerNode}.
  *
- *
- *
  */
 public class LocalTransportFactory extends TransportFactory {
-
-    /*
-     * static private LocalTransportFactory instance = new LocalTransportFactory(); private
-     * LocalTransportFactory(){} static public LocalTransportFactory instance(){ return instance; }
-     */
 
     private final LocalServer theServer;
 

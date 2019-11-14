@@ -28,7 +28,7 @@ public abstract class TransportFactory {
      * @param clientNodeId
      * @return new ClientNode
      */
-    abstract public ClientNode getClient(String clientNodeId);
+    public abstract ClientNode getClient(String clientNodeId);
 
     /**
      * Return the server of this configuration
@@ -36,14 +36,14 @@ public abstract class TransportFactory {
      * @return ServerNode
      * @throws IOException if the server could not startup
      */
-    abstract public ServerNode getServer() throws IOException;
+    public abstract ServerNode getServer() throws IOException;
 
     /**
      * Return the server nodeId
      * 
      * @return serverNodeId
      */
-    abstract public String getServerNodeId();
+    public abstract String getServerNodeId();
 
 
 }
