@@ -101,26 +101,23 @@ public final class SeSelection {
     private SelectionsResult processSelection(DefaultSelectionsResponse defaultSelectionsResponse) {
         SelectionsResult selectionsResult = new SelectionsResult();
 
-        int selectionIndex = 0;
+        int index = 0;
 
         /* Check SeResponses */
         for (SeResponse seResponse : defaultSelectionsResponse.getSelectionSeResponseSet()) {
-            if (seResponse != null) {
-                /* test if the selection is successful: we should have either a FCI or an ATR */
-                if (seResponse.getSelectionStatus() != null
-                        && seResponse.getSelectionStatus().hasMatched()) {
-                    /*
-                     * create a AbstractMatchingSe with the class deduced from the selection request
-                     * during the selection preparation
-                     */
-                    AbstractMatchingSe matchingSe =
-                            seSelectionRequestList.get(selectionIndex).parse(seResponse);
+            /* test if the selection is successful: we should have either a FCI or an ATR */
+            if (seResponse != null && seResponse.getSelectionStatus() != null
+                    && seResponse.getSelectionStatus().hasMatched()) {
+                /*
+                 * create a AbstractMatchingSe with the class deduced from the selection request
+                 * during the selection preparation
+                 */
+                AbstractMatchingSe matchingSe = seSelectionRequestList.get(index).parse(seResponse);
 
-                    selectionsResult.addMatchingSelection(new MatchingSelection(selectionIndex,
-                            seSelectionRequestList.get(selectionIndex), matchingSe, seResponse));
-                }
+                selectionsResult.addMatchingSelection(new MatchingSelection(index,
+                        seSelectionRequestList.get(index), matchingSe, seResponse));
             }
-            selectionIndex++;
+            index++;
         }
         return selectionsResult;
     }

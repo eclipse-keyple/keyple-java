@@ -30,10 +30,6 @@ public abstract class AbstractApduCommandBuilder {
      * The command name (will appear in logs)
      */
     private String name;
-    /**
-     * The command parser class
-     */
-    private Class<? extends AbstractApduResponseParser> commandParserClass;
 
     /** the byte array APDU request. */
     protected ApduRequest request;
@@ -45,7 +41,6 @@ public abstract class AbstractApduCommandBuilder {
      * @param commandReference command reference
      * @param request request
      */
-    // public AbstractApduCommandBuilder(CalypsoCommands commandReference, ApduRequest request) {
     public AbstractApduCommandBuilder(CommandsTable commandReference, ApduRequest request) {
         this.name = commandReference.getName();
         this.request = request;
@@ -58,7 +53,6 @@ public abstract class AbstractApduCommandBuilder {
     public AbstractApduCommandBuilder(String name, ApduRequest request) {
         this.name = name;
         this.request = request;
-        this.commandParserClass = null;
         // set APDU name for non null request
         if (request != null) {
             this.request.setName(name);

@@ -23,10 +23,10 @@ public class Tag {
     private final int size;
 
     /* the tag class */
-    public final static byte UNIVERSAL = (byte) 0x00;
-    public final static byte APPLICATION = (byte) 0x01;
-    public final static byte CONTEXT = (byte) 0x02;
-    public final static byte PRIVATE = (byte) 0x03;
+    public static final byte UNIVERSAL = (byte) 0x00;
+    public static final byte APPLICATION = (byte) 0x01;
+    public static final byte CONTEXT = (byte) 0x02;
+    public static final byte PRIVATE = (byte) 0x03;
 
     /* the tag type */
     public enum TagType {
@@ -118,9 +118,16 @@ public class Tag {
         return size;
     }
 
-    public boolean equals(Tag tag) {
-        return ((this.tagNumber == tag.tagNumber) && (this.tagClass == tag.tagClass)
-                && (this.tagType == tag.tagType));
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof Tag)) {
+            return false;
+        }
+        return ((this.tagNumber == ((Tag) obj).tagNumber) && (this.tagClass == ((Tag) obj).tagClass)
+                && (this.tagType == ((Tag) obj).tagType));
     }
 
     @Override

@@ -26,7 +26,8 @@ import org.slf4j.LoggerFactory;
  * (insertion/removal of readers) using a monitoring thread.
  */
 public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin {
-    private static final Logger logger = LoggerFactory.getLogger(AbstractPlugin.class);
+    private static final Logger logger =
+            LoggerFactory.getLogger(AbstractThreadedObservablePlugin.class);
 
     /**
      * Instantiates a observable plugin.
@@ -71,12 +72,10 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin {
     @Override
     public final void addObserver(ObservablePlugin.PluginObserver observer) {
         super.addObserver(observer);
-        if (this instanceof AbstractThreadedObservablePlugin) {
-            if (super.countObservers() == 1) {
-                logger.debug("Start monitoring the plugin {}", this.getName());
-                thread = new EventThread(this.getName());
-                thread.start();
-            }
+        if (this instanceof AbstractThreadedObservablePlugin && super.countObservers() == 1) {
+            logger.debug("Start monitoring the plugin {}", this.getName());
+            thread = new EventThread(this.getName());
+            thread.start();
         }
     }
 
@@ -140,7 +139,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin {
      * {@link org.eclipse.keyple.core.seproxy.SeReader} Insertion, removal, and access operations
      * safely execute concurrently by multiple threads.
      */
-    final private SortedSet<String> nativeReadersNames = new ConcurrentSkipListSet<String>();
+    private final SortedSet<String> nativeReadersNames = new ConcurrentSkipListSet<String>();
 
     /**
      * Thread in charge of reporting live events
@@ -189,7 +188,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin {
                             }
                         }
                         /* notify disconnections if any and update the reader list */
-                        if (changedReaderNames.size() > 0) {
+                        if (!changedReaderNames.isEmpty()) {
                             /* grouped notification */
                             logger.trace("Notifying disconnection(s): {}", changedReaderNames);
                             notifyObservers(new PluginEvent(this.pluginName, changedReaderNames,
@@ -230,7 +229,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin {
                             }
                         }
                         /* notify connections if any */
-                        if (changedReaderNames.size() > 0) {
+                        if (!changedReaderNames.isEmpty()) {
                             logger.trace("Notifying connection(s): {}", changedReaderNames);
                             notifyObservers(new PluginEvent(this.pluginName, changedReaderNames,
                                     PluginEvent.EventType.READER_CONNECTED));
@@ -242,6 +241,8 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin {
             } catch (InterruptedException e) {
                 logger.warn("[{}] An exception occurred while monitoring plugin: {}, cause {}",
                         this.pluginName, e.getMessage(), e.getCause());
+                // Restore interrupted state...      
+                Thread.currentThread().interrupt();
             } catch (KeypleReaderException e) {
                 logger.warn("[{}] An exception occurred while monitoring plugin: {}, cause {}",
                         this.pluginName, e.getMessage(), e.getCause());
@@ -257,7 +258,6 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin {
     @Override
     protected void finalize() throws Throwable {
         thread.end();
-        thread = null;
         logger.trace("[{}] Observable Plugin thread ended.", this.getName());
         super.finalize();
     }

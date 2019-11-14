@@ -56,8 +56,6 @@ public class SmartRemovalMonitoringJob implements MonitoringJob {
                         // timeout is already managed within the task
                         state.onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
                     } else {
-                        // se was not removed within timeout
-                        // onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
                         logger.trace(
                                 "[{}] waitForCardAbsentNative => return false, task interrupted",
                                 reader.getName());

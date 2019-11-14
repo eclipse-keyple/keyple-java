@@ -247,8 +247,11 @@ public abstract class AbstractLocalReader extends AbstractReader {
                         ByteArrayUtil.toHex(atr));
             }
             if (!seSelector.getAtrFilter().atrMatches(atr)) {
-                logger.info("[{}] openLogicalChannel => ATR didn't match. SELECTOR = {}, ATR = {}",
-                        this.getName(), seSelector, ByteArrayUtil.toHex(atr));
+                if (logger.isInfoEnabled()) {
+                    logger.info(
+                            "[{}] openLogicalChannel => ATR didn't match. SELECTOR = {}, ATR = {}",
+                            this.getName(), seSelector, ByteArrayUtil.toHex(atr));
+                }
                 selectionHasMatched = false;
             }
         }

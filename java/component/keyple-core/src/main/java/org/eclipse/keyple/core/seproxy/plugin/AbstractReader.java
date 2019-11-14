@@ -166,7 +166,7 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
             logger.debug("[{}] transmit => SEREQUESTSET = {}, elapsed {} ms.", this.getName(),
-                    requestSet.toString(), elapsedMs);
+                    requestSet, elapsedMs);
         }
 
         try {
@@ -194,7 +194,7 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
             double elapsedMs = (double) ((timeStamp - before) / 100000) / 10;
             this.before = timeStamp;
             logger.debug("[{}] transmit => SERESPONSESET = {}, elapsed {} ms.", this.getName(),
-                    responseSet.toString(), elapsedMs);
+                    responseSet, elapsedMs);
         }
 
         return responseSet;
@@ -259,7 +259,7 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
             logger.debug("[{}] transmit => SEREQUEST = {}, elapsed {} ms.", this.getName(),
-                    seRequest.toString(), elapsedMs);
+                    seRequest, elapsedMs);
         }
 
         try {
@@ -287,7 +287,7 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
             double elapsedMs = (double) ((timeStamp - before) / 100000) / 10;
             this.before = timeStamp;
             logger.debug("[{}] transmit => SERESPONSE = {}, elapsed {} ms.", this.getName(),
-                    seResponse.toString(), elapsedMs);
+                    seResponse, elapsedMs);
         }
 
         return seResponse;
@@ -331,7 +331,7 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
      * closed.
      * 
      */
-    final public void notifySeProcessed() {
+    public final void notifySeProcessed() {
         if (forceClosing) {
             try {
                 // close the physical channel thanks to CLOSE_AFTER flag
