@@ -24,11 +24,13 @@ import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeRemoval;
 import org.eclipse.keyple.core.seproxy.plugin.mock.BlankSmartPresenceTheadedReader;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@RunWith(Parameterized.class)
 public class WaitForSeRemovalJobExecutorTest extends CoreBaseTest {
-
 
     private static final Logger logger =
             LoggerFactory.getLogger(WaitForSeRemovalJobExecutorTest.class);
@@ -38,7 +40,15 @@ public class WaitForSeRemovalJobExecutorTest extends CoreBaseTest {
 
     final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-    final Long WAIT = 200l;
+    final Long WAIT = 500l;
+
+    static final Integer X_TIMES = 10; // run tests multiple times to reproduce flaky
+
+    @Parameterized.Parameters
+    public static Object[][] data() {
+        return new Object[X_TIMES][0];
+    }
+
 
     @Before
     public void setUp() {
@@ -99,30 +109,6 @@ public class WaitForSeRemovalJobExecutorTest extends CoreBaseTest {
 
     }
 
-    // @Test
-    // public void waitForRemoval_Timeout() throws Exception, NoStackTraceThrowable {
-    // /*
-    // * ------------ input polling mode is CONTINUE SE has NOT been removed within timeout
-    // */
-    // long timeout = 1000l;
-    // AbstractObservableLocalReader r =
-    // AbsSmartInsertionTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
-    // WaitForSeRemoval waitForSeRemoval =
-    // new WaitForSeRemoval(r, executorService);
-    // doReturn(true).when(r).isSePresentPing();
-    //
-    // /* test */
-    // waitForSeRemoval.onActivate();
-    //
-    // Thread.sleep(2000l);// wait for timeout
-    //
-    // /* Assert */
-    // // Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
-    // verify(r, times(1)).switchState(WAIT_FOR_START_DETECTION);
-    // waitForSeRemoval.onDeactivate();
-    //
-    // }
-
 
     @Test
     public void smart_waitForRemoval_SINGLESHOT() throws Exception {
@@ -150,6 +136,8 @@ public class WaitForSeRemovalJobExecutorTest extends CoreBaseTest {
 
     @Test
     public void smart_waitForRemoval_REPEATING() throws Exception {
+        // flaky
+
         /*
          * ------------ input polling mode is CONTINUE SE has been removed within timeout
          */
@@ -171,29 +159,5 @@ public class WaitForSeRemovalJobExecutorTest extends CoreBaseTest {
         waitForSeRemoval.onDeactivate();
 
     }
-
-    // @Test
-    // public void smart_waitForRemoval_Timeout() throws Exception {
-    // /*
-    // * ------------ input SE has NOT been removed within timeout
-    // */
-    // long timeout = 100l;
-    // BlankSmartPresenceTheadedReader r =
-    // AbsSmartPresenceTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME);
-    // WaitForSeRemoval waitForSeRemoval =
-    // new WaitForSeRemoval(r, executorService);
-    // doReturn(false).when(r).waitForCardAbsentNative(timeout);
-    //
-    // /* test */
-    // waitForSeRemoval.onActivate();
-    //
-    // Thread.sleep(50l);// wait for timeout
-    //
-    // /* Assert */
-    // // Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
-    // verify(r, times(1)).switchState(WAIT_FOR_START_DETECTION);
-    // waitForSeRemoval.onDeactivate();
-    //
-    // }
 
 }

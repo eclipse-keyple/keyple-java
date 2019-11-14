@@ -19,9 +19,12 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeRemoval;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@RunWith(Parameterized.class)
 public class WaitForSeRemovalTest extends CoreBaseTest {
 
 
@@ -30,6 +33,13 @@ public class WaitForSeRemovalTest extends CoreBaseTest {
     final String PLUGIN_NAME = "WaitForSeRemovalJobExecutorTestP";
     final String READER_NAME = "WaitForSeRemovalJobExecutorTest";
 
+
+    static final Integer X_TIMES = 10; // run tests multiple times to reproduce flaky
+
+    @Parameterized.Parameters
+    public static Object[][] data() {
+        return new Object[X_TIMES][0];
+    }
 
     @Before
     public void setUp() {
@@ -76,23 +86,5 @@ public class WaitForSeRemovalTest extends CoreBaseTest {
         verify(r, times(1)).switchState(WAIT_FOR_SE_INSERTION);
     }
 
-    // @Test
-    // public void waitForRemoval_Timeout() throws Exception {
-    // /*
-    // * ------------ input polling mode is CONTINUE SE has NOT been removed within timeout
-    // */
-    // AbstractObservableLocalReader r =
-    // AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 0);
-    // WaitForSeRemoval waitForSeRemoval = new WaitForSeRemoval(r);
-    //
-    // /* test */
-    // waitForSeRemoval.onActivate();
-    // waitForSeRemoval.onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
-    //
-    // Thread.sleep(50l);// wait for timeout
-    //
-    // /* Assert */
-    // verify(r, times(1)).switchState(WAIT_FOR_START_DETECTION);
-    // }
 
 }
