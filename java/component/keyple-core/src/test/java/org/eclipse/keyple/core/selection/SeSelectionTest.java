@@ -54,11 +54,13 @@ public class SeSelectionTest extends CoreBaseTest {
 
         // check common flags
         Assert.assertEquals(MultiSeRequestProcessing.FIRST_MATCH,
-                selectionOperation.getMultiSeRequestProcessing());
-        Assert.assertEquals(ChannelControl.KEEP_OPEN, selectionOperation.getChannelControl());
+                ((DefaultSelectionsRequest) selectionOperation).getMultiSeRequestProcessing());
+        Assert.assertEquals(ChannelControl.KEEP_OPEN,
+                ((DefaultSelectionsRequest) selectionOperation).getChannelControl());
 
         // get the serequest set
-        Set<SeRequest> selectionSeRequestSet = selectionOperation.getSelectionSeRequestSet();
+        Set<SeRequest> selectionSeRequestSet =
+                ((DefaultSelectionsRequest) selectionOperation).getSelectionSeRequestSet();
         Assert.assertEquals(2, selectionSeRequestSet.size());
 
         // get the two se requests

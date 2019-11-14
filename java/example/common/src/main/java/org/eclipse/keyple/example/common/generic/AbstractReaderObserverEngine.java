@@ -13,7 +13,7 @@ package org.eclipse.keyple.example.common.generic;
 
 
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsResponse;
+import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
@@ -30,7 +30,8 @@ public abstract class AbstractReaderObserverEngine implements ObservableReader.R
     private static Logger logger = LoggerFactory.getLogger(AbstractReaderObserverEngine.class);
 
 
-    protected abstract void processSeMatch(DefaultSelectionsResponse defaultSelectionsResponse);
+    protected abstract void processSeMatch(
+            AbstractDefaultSelectionsResponse defaultSelectionsResponse);
 
     protected abstract void processSeInserted(); // alternative AID selection
 

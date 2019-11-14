@@ -33,8 +33,8 @@ public class Demo_CalypsoClassic_Stub {
      * @param args the program arguments
      * @throws InterruptedException thread exception
      */
-    public static void main(String[] args)
-            throws InterruptedException, KeyplePluginNotFoundException, KeyplePluginInstanciationException {
+    public static void main(String[] args) throws InterruptedException,
+            KeyplePluginNotFoundException, KeyplePluginInstanciationException {
         final Logger logger = LoggerFactory.getLogger(Demo_CalypsoClassic_Stub.class);
 
         /* Get the instance of the SeProxyService (Singleton pattern) */
