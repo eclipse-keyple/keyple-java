@@ -13,15 +13,17 @@ package org.eclipse.keyple.plugin.remotese.transport.model;
 
 
 /**
- * Container message  with an embedded Keyple Dto.
+ * Container message with an embedded Keyple Dto.
  * <p>
- *     The implementation can be enriched with network layer information. For instance, it can
- * embed web socket connection information
+ * The implementation can be enriched with network layer information. For instance, it can embed web
+ * socket connection information
  * <p>
- *     This message transits from the DtoNode to the Keyple layers, back to the DtoNode. Use the method #nextTransportDTO() to build a new container message from a keypleDto.
+ * This message transits from the DtoNode to the Keyple layers, back to the DtoNode. Use the method
+ * #nextTransportDTO() to build a new container message from a keypleDto.
  *
- *    <p>
- *        If you don't need to wrap a KeypleDto with additional info, you can use the {@link DefaultTransportDto}
+ * <p>
+ * If you don't need to wrap a KeypleDto with additional info, you can use the
+ * {@link DefaultTransportDto}
  */
 public interface TransportDto {
 
