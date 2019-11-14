@@ -25,7 +25,7 @@ public abstract class TransportFactory {
     /**
      * Return a (new) client for this configuration
      * 
-     * @param clientNodeId
+     * @param clientNodeId unique id for this client
      * @return new ClientNode
      */
     public abstract ClientNode getClient(String clientNodeId);

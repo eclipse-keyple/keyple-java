@@ -22,7 +22,7 @@ public interface ClientNode extends DtoNode {
     /**
      * Connect to the server
      * 
-     * @param connectCallback
+     * @param connectCallback callback function
      */
     void connect(ConnectCallback connectCallback);
 
@@ -34,7 +34,7 @@ public interface ClientNode extends DtoNode {
     /**
      * Retrieve ServerNodeId
      * 
-     * @return
+     * @return server node id
      */
     String getServerNodeId();
 

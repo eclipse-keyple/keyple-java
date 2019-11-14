@@ -26,7 +26,7 @@ import com.google.gson.JsonObject;
  * <li>Exception</li>
  * </ul>
  */
-public class KeypleDtoHelper {
+public final class KeypleDtoHelper {
 
     /* ----------- Constructors Helpers */
 
@@ -100,8 +100,9 @@ public class KeypleDtoHelper {
      * @param virtualReaderName : name of the virtual reader (if exists)
      * @param requesterNodeId : node id of the sender
      * @param targetNodeId : node id of the destinee
-     * @param id
-     * @return
+     * @param id : id of the failed request
+     * @param exception : throwable that occurs during the execution of the method
+     * @return keypleDto of type "Exception"
      */
     public static KeypleDto ExceptionDTO(String action, Throwable exception, String sessionId,
             String nativeReaderName, String virtualReaderName, String requesterNodeId,
@@ -125,7 +126,7 @@ public class KeypleDtoHelper {
     /**
      * Check if the keypleDto is of type "NoResponse"
      * 
-     * @param dto
+     * @param dto keypleDto to test
      * @return true of the keypleDto is of type "NoResponse"
      */
     public static Boolean isNoResponse(KeypleDto dto) {
@@ -135,7 +136,7 @@ public class KeypleDtoHelper {
     /**
      * Check if the keypleDto is of type "Exception"
      * 
-     * @param keypleDto
+     * @param keypleDto keypleDto to test
      * @return true of the keypleDto is of type "Exception"
      */
     public static Boolean containsException(KeypleDto keypleDto) {
@@ -149,7 +150,7 @@ public class KeypleDtoHelper {
     /**
      * Serialize keypleDto to json
      * 
-     * @param keypleDto
+     * @param keypleDto keypleDto to serialize
      * @return json serialization of the keypleDto
      */
     public static String toJson(KeypleDto keypleDto) {
@@ -179,7 +180,7 @@ public class KeypleDtoHelper {
     /**
      * The parameter in the keypleDto has not been specified
      * 
-     * @return
+     * @return "notSpecified" String
      */
     public static String notSpecified() {
         return "notSpecified";
