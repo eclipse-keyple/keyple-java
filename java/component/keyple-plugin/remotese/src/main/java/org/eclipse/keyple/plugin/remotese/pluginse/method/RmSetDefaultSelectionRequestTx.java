@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.pluginse.method;
 
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
+import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.plugin.remotese.rm.AbstractRemoteMethodTx;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
@@ -25,7 +25,7 @@ import com.google.gson.JsonObject;
  */
 public class RmSetDefaultSelectionRequestTx extends AbstractRemoteMethodTx {
 
-    private final DefaultSelectionsRequest defaultSelectionsRequest;
+    private final AbstractDefaultSelectionsRequest defaultSelectionsRequest;
     private final ObservableReader.NotificationMode notificationMode;
     private ObservableReader.PollingMode pollingMode;
 
@@ -36,7 +36,7 @@ public class RmSetDefaultSelectionRequestTx extends AbstractRemoteMethodTx {
         return RemoteMethodName.DEFAULT_SELECTION_REQUEST;
     }
 
-    public RmSetDefaultSelectionRequestTx(DefaultSelectionsRequest defaultSelectionsRequest,
+    public RmSetDefaultSelectionRequestTx(AbstractDefaultSelectionsRequest defaultSelectionsRequest,
             ObservableReader.NotificationMode notificationMode,
             ObservableReader.PollingMode pollingMode, String nativeReaderName,
             String virtualReaderName, String sessionId, String slaveNodeId,
@@ -47,7 +47,7 @@ public class RmSetDefaultSelectionRequestTx extends AbstractRemoteMethodTx {
         this.pollingMode = pollingMode;
     }
 
-    public RmSetDefaultSelectionRequestTx(DefaultSelectionsRequest defaultSelectionsRequest,
+    public RmSetDefaultSelectionRequestTx(AbstractDefaultSelectionsRequest defaultSelectionsRequest,
             ObservableReader.NotificationMode notificationMode, String nativeReaderName,
             String virtualReaderName, String sessionId, String slaveNodeId,
             String requesterNodeId) {

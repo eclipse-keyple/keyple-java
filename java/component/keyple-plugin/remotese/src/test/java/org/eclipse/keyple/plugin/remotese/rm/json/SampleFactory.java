@@ -15,7 +15,7 @@ package org.eclipse.keyple.plugin.remotese.rm.json;
 import java.io.IOException;
 import java.util.*;
 import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
+import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -34,8 +34,8 @@ public class SampleFactory {
         return new KeypleReaderException("Keyple Reader Exception");
     }
 
-    public static DefaultSelectionsRequest getSelectionRequest() {
-        return new DefaultSelectionsRequestImpl(getASeRequestSet_ISO14443_4());
+    public static AbstractDefaultSelectionsRequest getSelectionRequest() {
+        return new DefaultSelectionsRequest(getASeRequestSet_ISO14443_4());
     }
 
     public static ObservableReader.NotificationMode getNotificationMode() {

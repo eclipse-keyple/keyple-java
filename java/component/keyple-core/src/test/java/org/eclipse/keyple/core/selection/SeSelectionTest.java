@@ -11,8 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.selection;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 import java.util.*;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
@@ -20,8 +18,8 @@ import org.eclipse.keyple.core.command.AbstractApduResponseParserTest;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsResponse;
+import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
+import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -52,15 +50,17 @@ public class SeSelectionTest extends CoreBaseTest {
         // (see createSelectionSelectionSelection to have a look at the expected values)
 
         // get the selection operation
-        DefaultSelectionsRequest selectionOperation = seSelection.getSelectionOperation();
+        AbstractDefaultSelectionsRequest selectionOperation = seSelection.getSelectionOperation();
 
         // check common flags
         Assert.assertEquals(MultiSeRequestProcessing.FIRST_MATCH,
-                selectionOperation.getMultiSeRequestProcessing());
-        Assert.assertEquals(ChannelControl.KEEP_OPEN, selectionOperation.getChannelControl());
+                ((DefaultSelectionsRequest) selectionOperation).getMultiSeRequestProcessing());
+        Assert.assertEquals(ChannelControl.KEEP_OPEN,
+                ((DefaultSelectionsRequest) selectionOperation).getChannelControl());
 
         // get the serequest set
-        Set<SeRequest> selectionSeRequestSet = selectionOperation.getSelectionSeRequestSet();
+        Set<SeRequest> selectionSeRequestSet =
+                ((DefaultSelectionsRequest) selectionOperation).getSelectionSeRequestSet();
         Assert.assertEquals(2, selectionSeRequestSet.size());
 
         // get the two se requests
@@ -122,10 +122,10 @@ public class SeSelectionTest extends CoreBaseTest {
     public void processDefaultSelectionEmpty() {
         SeSelection seSelection = createSeSelection();
 
-        DefaultSelectionsResponse defaultSelectionsResponse;
+        AbstractDefaultSelectionsResponse defaultSelectionsResponse;
         List<SeResponse> seResponseList = new ArrayList<SeResponse>();
 
-        defaultSelectionsResponse = new DefaultSelectionsResponseImpl(seResponseList);
+        defaultSelectionsResponse = new DefaultSelectionsResponse(seResponseList);
 
         SelectionsResult selectionsResult =
                 seSelection.processDefaultSelection(defaultSelectionsResponse);
@@ -140,7 +140,7 @@ public class SeSelectionTest extends CoreBaseTest {
         SeSelection seSelection = createSeSelection();
 
         // create a selection response
-        DefaultSelectionsResponse defaultSelectionsResponse;
+        AbstractDefaultSelectionsResponse defaultSelectionsResponse;
         List<SeResponse> seResponseList = new ArrayList<SeResponse>();
 
         ApduResponse apduResponse = new ApduResponse(ByteArrayUtil.fromHex(
@@ -158,7 +158,7 @@ public class SeSelectionTest extends CoreBaseTest {
 
         seResponseList.add(seResponse);
 
-        defaultSelectionsResponse = new DefaultSelectionsResponseImpl(seResponseList);
+        defaultSelectionsResponse = new DefaultSelectionsResponse(seResponseList);
 
         // process the selection response with the SeSelection
         SelectionsResult selectionsResult =
@@ -174,7 +174,7 @@ public class SeSelectionTest extends CoreBaseTest {
         SeSelection seSelection = createSeSelection();
 
         // create a selection response
-        DefaultSelectionsResponse defaultSelectionsResponse;
+        AbstractDefaultSelectionsResponse defaultSelectionsResponse;
         List<SeResponse> seResponseList = new ArrayList<SeResponse>();
 
         ApduResponse apduResponse = new ApduResponse(ByteArrayUtil.fromHex(
@@ -192,7 +192,7 @@ public class SeSelectionTest extends CoreBaseTest {
 
         seResponseList.add(seResponse);
 
-        defaultSelectionsResponse = new DefaultSelectionsResponseImpl(seResponseList);
+        defaultSelectionsResponse = new DefaultSelectionsResponse(seResponseList);
 
         // process the selection response with the SeSelection
         SelectionsResult selectionsResult =

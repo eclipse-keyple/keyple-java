@@ -240,7 +240,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
     /**
      * Connect a local reader to Remote SE Plugin with options Override from interface
      * {@link INativeReaderService}
-     * 
+     *
      * @param localReader : native reader to be connected
      * @param options : options will be set as parameters of virtual reader
      */
@@ -268,7 +268,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
 
     /**
      * Disconnect a SeReader. Matching virtual session will be destroyed on Master node.
-     * 
+     *
      * @param sessionId (optional)
      * @param nativeReaderName local name of the reader, will be used coupled with the nodeId to
      *        identify the virtualReader

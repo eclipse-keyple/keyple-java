@@ -125,7 +125,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         // return matching selection
         doReturn(getNotMatchingResponses()).when(r).transmitSet(selections, multi, channel);
 
-        r.setDefaultSelectionRequest(new DefaultSelectionsRequestImpl(selections, multi, channel),
+        r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel),
                 mode);
 
         // test
@@ -156,7 +156,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         // return matching selection
         doReturn(getNotMatchingResponses()).when(r).transmitSet(selections, multi, channel);
 
-        r.setDefaultSelectionRequest(new DefaultSelectionsRequestImpl(selections, multi, channel),
+        r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel),
                 mode);
 
         // test
@@ -188,7 +188,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         // return success selection
         doReturn(getMatchingResponses()).when(r).transmitSet(selections, multi, channel);
 
-        r.setDefaultSelectionRequest(new DefaultSelectionsRequestImpl(selections, multi, channel),
+        r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel),
                 mode);
 
         // test
@@ -219,7 +219,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         // return success selection
         doReturn(getMatchingResponses()).when(r).transmitSet(selections, multi, channel);
 
-        r.setDefaultSelectionRequest(new DefaultSelectionsRequestImpl(selections, multi, channel),
+        r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel),
                 mode);
 
 
@@ -252,7 +252,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         doThrow(new KeypleIOReaderException("io error when selecting")).when(r)
                 .transmitSet(selections, multi, channel);
 
-        r.setDefaultSelectionRequest(new DefaultSelectionsRequestImpl(selections, multi, channel),
+        r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel),
                 mode);
 
         // test
