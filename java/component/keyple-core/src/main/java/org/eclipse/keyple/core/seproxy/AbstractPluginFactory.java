@@ -11,12 +11,12 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy;
 
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstanciationException;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 
 public abstract class AbstractPluginFactory {
 
     /**
-     * Retrieve the name of the plugin that will be instanciated by this factory (can be static or
+     * Retrieve the name of the plugin that will be instantiated by this factory (can be static or
      * dynamic)
      * 
      * @return pluginName
@@ -28,7 +28,7 @@ public abstract class AbstractPluginFactory {
      * Retrieve instance of a plugin (can be a singleton or not)
      * 
      * @return instance of a ReaderPlugin
-     * @throws KeyplePluginInstanciationException if instanciation failed
+     * @throws KeyplePluginInstantiationException if instantiation failed
      */
-    protected abstract ReaderPlugin getPluginInstance() throws KeyplePluginInstanciationException;
+    protected abstract ReaderPlugin getPluginInstance() throws KeyplePluginInstantiationException;
 }

@@ -15,7 +15,7 @@ import org.eclipse.keyple.core.seproxy.AbstractPluginFactory;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 
 /**
- * Instanciate a {@link StubPoolPlugin} with a custom plugin name
+ * Instantiate a {@link StubPoolPlugin} with a custom plugin name
  */
 public class StubPoolPluginFactory extends AbstractPluginFactory {
 

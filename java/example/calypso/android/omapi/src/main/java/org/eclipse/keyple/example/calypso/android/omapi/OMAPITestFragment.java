@@ -27,7 +27,7 @@ import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstanciationException;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
@@ -75,7 +75,7 @@ public class OMAPITestFragment extends Fragment {
         /* register Omapi Plugin to the SeProxyService */
         try {
             seProxyService.registerPlugin(new AndroidOmapiPluginFactory());
-        } catch (KeyplePluginInstanciationException e) {
+        } catch (KeyplePluginInstantiationException e) {
             e.printStackTrace();
         }
     }

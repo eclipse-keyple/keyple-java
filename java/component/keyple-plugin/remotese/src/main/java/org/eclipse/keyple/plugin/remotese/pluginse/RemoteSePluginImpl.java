@@ -48,7 +48,7 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
     private final Map<String, String> parameters;
 
     /**
-     * RemoteSePlugin is wrapped into MasterAPI and instanciated like a standard plugin
+     * RemoteSePlugin is wrapped into MasterAPI and instantiated like a standard plugin
      * by @SeProxyService. Use MasterAPI
      */
     RemoteSePluginImpl(VirtualReaderSessionFactory sessionManager, DtoSender dtoSender,
