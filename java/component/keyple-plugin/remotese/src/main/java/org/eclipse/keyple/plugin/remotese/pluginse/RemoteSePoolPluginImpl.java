@@ -34,7 +34,7 @@ class RemoteSePoolPluginImpl extends RemoteSePluginImpl implements RemoteSePoolP
     RemoteMethodTxPoolEngine rmTxEngine;
 
     /**
-     * Only {@link MasterAPI} can instanciate a RemoteSePlugin
+     * Only {@link MasterAPI} can instantiate a RemoteSePlugin
      */
     RemoteSePoolPluginImpl(VirtualReaderSessionFactory sessionManager, DtoSender sender,
             long rpcTimeout, String pluginName) {

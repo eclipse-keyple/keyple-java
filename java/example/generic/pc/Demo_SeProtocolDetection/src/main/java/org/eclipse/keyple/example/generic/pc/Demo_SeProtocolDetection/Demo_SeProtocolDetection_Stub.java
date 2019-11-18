@@ -19,7 +19,7 @@ import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstanciationException;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
@@ -48,7 +48,7 @@ Demo_SeProtocolDetection_Stub {
      * @throws InterruptedException if thread error occurs
      */
     public static void main(String[] args) throws IllegalArgumentException, InterruptedException,
-            KeyplePluginNotFoundException, KeyplePluginInstanciationException {
+            KeyplePluginNotFoundException, KeyplePluginInstantiationException {
         /* get the SeProxyService instance */
         SeProxyService seProxyService = SeProxyService.getInstance();
 

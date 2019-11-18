@@ -52,7 +52,7 @@ public class AndroidOmapiReaderTest {
         // default reader connected with secure element with poAid
         omapiReader = mockReader();
 
-        // instanciate reader with omapiReader
+        // instantiate reader with omapiReader
         reader = new AndroidOmapiReaderImpl(PLUGIN_NAME, omapiReader, omapiReader.getName());
     }
 

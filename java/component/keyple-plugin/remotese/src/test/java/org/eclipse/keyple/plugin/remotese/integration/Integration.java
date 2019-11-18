@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.remotese.integration;
 
 
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstanciationException;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -48,7 +48,7 @@ public class Integration {
      * @return
      */
     public static MasterAPI createSpyMasterAPI(DtoNode node, String pluginName)
-            throws KeyplePluginInstanciationException {
+            throws KeyplePluginInstantiationException {
 
         // Create Master services : masterAPI
         return Mockito.spy(new MasterAPI(SeProxyService.getInstance(), node, 10000,
@@ -117,7 +117,7 @@ public class Integration {
             StubPlugin stubPlugin = (StubPlugin) seProxyService.getPlugin(SLAVE_STUB);
 
             return stubPlugin;
-        } catch (KeyplePluginInstanciationException e) {
+        } catch (KeyplePluginInstantiationException e) {
             e.printStackTrace();
         }
 
@@ -145,7 +145,7 @@ public class Integration {
             StubPoolPlugin poolPlugin = (StubPoolPlugin) seProxyService.getPlugin(SLAVE_POOL_STUB);
 
             return poolPlugin;
-        } catch (KeyplePluginInstanciationException e) {
+        } catch (KeyplePluginInstantiationException e) {
             e.printStackTrace();
         } catch (KeyplePluginNotFoundException e) {
             e.printStackTrace();

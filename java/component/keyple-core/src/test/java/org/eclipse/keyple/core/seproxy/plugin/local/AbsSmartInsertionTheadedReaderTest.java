@@ -73,7 +73,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
     }
 
     /*
-     * Observers management + Thread instanciation
+     * Observers management + Thread instantiation
      */
     @Test
     public void addObserver() throws Exception {

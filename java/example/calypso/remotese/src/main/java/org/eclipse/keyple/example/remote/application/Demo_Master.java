@@ -24,7 +24,7 @@ import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstanciationException;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
@@ -300,7 +300,7 @@ public class Demo_Master {
             e.printStackTrace();
         } catch (KeyplePluginNotFoundException e) {
             e.printStackTrace();
-        } catch (KeyplePluginInstanciationException e) {
+        } catch (KeyplePluginInstantiationException e) {
             e.printStackTrace();
         }
 
