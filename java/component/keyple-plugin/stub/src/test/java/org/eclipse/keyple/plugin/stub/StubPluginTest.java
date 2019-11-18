@@ -49,7 +49,7 @@ public class StubPluginTest extends BaseStubTest {
 
 
     @Test
-    public void instanciatePlugin()
+    public void instantiatePlugin()
             throws InterruptedException, KeypleReaderException, KeyplePluginNotFoundException {
         final String PLUGIN_NAME = "test1";
 
