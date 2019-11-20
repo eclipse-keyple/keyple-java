@@ -92,8 +92,6 @@ public class SeProxyServiceTest {
         proxyService.registerPlugin(factory1);
     }
 
-
-
     @Test
     public void testRegisterPlugin()
             throws KeyplePluginNotFoundException, KeyplePluginInstantiationException {

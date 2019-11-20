@@ -121,7 +121,7 @@ public class OMAPITestFragment extends Fragment {
 
             }
 
-        } catch (KeypleReaderException | KeyplePluginNotFoundException e) {
+        } catch (KeyplePluginNotFoundException e) {
             e.printStackTrace();
         }
 

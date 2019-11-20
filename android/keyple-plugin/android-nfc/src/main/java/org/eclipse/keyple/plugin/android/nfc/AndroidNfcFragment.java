@@ -139,10 +139,7 @@ public class AndroidNfcFragment extends Fragment {
             reader.startSeDetection(ObservableReader.PollingMode.REPEATING);
 
 
-        } catch (KeypleReaderException e) {
-            e.printStackTrace();
-            LOG.error("KeypleReaders are not ready");
-        } catch (KeyplePluginNotFoundException e) {
+        }  catch (KeyplePluginNotFoundException e) {
             e.printStackTrace();
             LOG.error("NFC Plugin not found");
         }
@@ -166,10 +163,7 @@ public class AndroidNfcFragment extends Fragment {
             //notify reader that se detection has been switched off
             reader.stopSeDetection();
 
-        } catch (KeypleReaderException e) {
-            e.printStackTrace();
-            LOG.error("NFC Reader is not ready");
-        } catch (KeyplePluginNotFoundException e) {
+        }catch (KeyplePluginNotFoundException e) {
             LOG.error("NFC Plugin not found");
 
         }
