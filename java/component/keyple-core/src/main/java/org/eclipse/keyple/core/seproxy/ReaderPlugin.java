@@ -12,7 +12,6 @@
 package org.eclipse.keyple.core.seproxy;
 
 import java.util.SortedSet;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.Configurable;
 import org.eclipse.keyple.core.util.Nameable;
@@ -34,10 +33,9 @@ public interface ReaderPlugin extends Nameable, Configurable, Comparable<ReaderP
     /**
      * Gets the readers.
      *
-     * @return the ‘unique’ name of the readers’ plugin.
-     * @throws KeypleReaderException if the list of readers has not been initialized
+     * @return list of connected readers in this plugin, can be an empty list, can not be null;
      */
-    SortedSet<SeReader> getReaders() throws KeypleReaderException;
+    SortedSet<SeReader> getReaders();
 
     /**
      * Gets the reader whose name is provided as an argument

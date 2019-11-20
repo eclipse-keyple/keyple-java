@@ -17,6 +17,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.exception.KeypleRuntimeException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
 import org.simalliance.openmobileapi.Reader;
 import org.simalliance.openmobileapi.SEService;
@@ -52,14 +53,15 @@ final class AndroidOmapiPluginImpl extends AbstractPlugin implements AndroidOmap
         Log.i(TAG, "OMAPI SEService version: " + seService.getVersion());
     }
 
-
+    /**
+     * retrieve instance of this singleton plugin
+     * @return
+     */
     public static AndroidOmapiPluginImpl getInstance() {
         if (uniqueInstance == null) {
             uniqueInstance = new AndroidOmapiPluginImpl();
         }
         return uniqueInstance;
-
-
     }
 
 
@@ -94,6 +96,8 @@ final class AndroidOmapiPluginImpl extends AbstractPlugin implements AndroidOmap
         } else {
             Log.w(TAG, "OMAPI SeService is not connected yet");
             return readers;// empty list
+            //throw new KeypleReaderException("OMAPI SeService is not connected yet, try again");
+            //can throw an exception to notif
         }
 
     }

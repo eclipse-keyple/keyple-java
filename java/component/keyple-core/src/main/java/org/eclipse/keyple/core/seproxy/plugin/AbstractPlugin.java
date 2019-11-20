@@ -18,9 +18,7 @@ import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.util.Configurable;
 import org.eclipse.keyple.core.util.Nameable;
 import org.eclipse.keyple.core.util.Observable;
@@ -47,7 +45,9 @@ public abstract class AbstractPlugin extends Observable<PluginEvent>
     /**
      * Instantiates a new ReaderPlugin. Retrieve the current readers list.
      *
-     * Gets the list for the native method the first time (null)
+     * Initialize the list of readers calling the abstract method initNativeReaders
+     *
+     * When readers initialisation failed, a KeypleRuntimeException is thrown
      *
      * @param name name of the plugin
      */
@@ -57,7 +57,8 @@ public abstract class AbstractPlugin extends Observable<PluginEvent>
         try {
             readers = initNativeReaders();
         } catch (KeypleReaderException e) {
-            logger.error("Could not instantiate readers in plugin constructor {}", e.getMessage());
+            throw new KeypleRuntimeException("Could not instantiate readers in plugin constructor",
+                    e);
         }
     }
 
@@ -77,12 +78,13 @@ public abstract class AbstractPlugin extends Observable<PluginEvent>
      * The list is initialized in the constructor and may be updated in background in the case of a
      * threaded plugin {@link AbstractThreadedObservablePlugin}
      *
-     * @return the current reader list, can be null if the
+     * @return the current reader list, can be an empty list
      */
     @Override
-    public final SortedSet<SeReader> getReaders() throws KeypleReaderException {
+    public final SortedSet<SeReader> getReaders() {
         if (readers == null) {
-            throw new KeypleReaderException("List of readers has not been initialized");
+            throw new KeypleRuntimeException(
+                    "Readers list is null, it has not been initialized properly, check initNativeReaders()");
         }
         return readers;
     }
@@ -104,13 +106,16 @@ public abstract class AbstractPlugin extends Observable<PluginEvent>
     }
 
     /**
-     * Fetch connected native readers (from third party library) and returns a list of corresponding
+     * Init connected native readers (from third party library) and returns a list of corresponding
      * {@link SeReader}
      * <p>
      * {@link SeReader} are new instances.
+     *<p> this method is called once in the plugin constructor.
      *
      * @return the list of AbstractReader objects.
-     * @throws KeypleReaderException if a reader error occurs
+     * @throws KeypleReaderException if a reader error when readers list initialization, it will be
+     *         thrown by the constructor in a KeypleRuntimeException to be caught at a higher level
+     *         by the {@link org.eclipse.keyple.core.seproxy.AbstractPluginFactory}
      */
     protected abstract SortedSet<SeReader> initNativeReaders() throws KeypleReaderException;
 

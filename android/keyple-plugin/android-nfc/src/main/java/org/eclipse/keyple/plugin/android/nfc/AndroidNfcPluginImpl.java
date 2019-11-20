@@ -76,7 +76,8 @@ final class AndroidNfcPluginImpl extends AbstractPlugin implements AndroidNfcPlu
     @Override
     protected SortedSet<SeReader> initNativeReaders() {
         LOG.debug("InitNativeReader() add the unique instance of AndroidNfcReaderImpl");
-        // return the only one reader in a list
+
+        //Nfc android adapter availability is checked in AndroidNfcFragment
         SortedSet<SeReader> readers = new TreeSet<SeReader>();
         readers.add(AndroidNfcReaderImpl.getInstance());
         return readers;
