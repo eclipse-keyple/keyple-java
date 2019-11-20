@@ -28,6 +28,7 @@ public class PcscPluginFactory extends AbstractPluginFactory {
 
     /**
      * Returns an instance of the {@link PcscPlugin} if the platform is ready
+     * 
      * @return PcscPlugin instance
      * @throws KeyplePluginInstantiationException if Smartcard.io library is not ready
      */

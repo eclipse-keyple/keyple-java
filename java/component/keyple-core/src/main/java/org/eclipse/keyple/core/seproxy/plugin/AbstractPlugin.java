@@ -110,7 +110,8 @@ public abstract class AbstractPlugin extends Observable<PluginEvent>
      * {@link SeReader}
      * <p>
      * {@link SeReader} are new instances.
-     *<p> this method is called once in the plugin constructor.
+     * <p>
+     * this method is called once in the plugin constructor.
      *
      * @return the list of AbstractReader objects.
      * @throws KeypleReaderException if a reader error when readers list initialization, it will be

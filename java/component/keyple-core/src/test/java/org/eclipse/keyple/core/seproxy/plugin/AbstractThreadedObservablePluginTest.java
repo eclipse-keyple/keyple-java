@@ -12,7 +12,6 @@
 package org.eclipse.keyple.core.seproxy.plugin;
 
 import org.eclipse.keyple.core.CoreBaseTest;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleRuntimeException;
@@ -39,6 +38,7 @@ public class AbstractThreadedObservablePluginTest extends CoreBaseTest {
 
     /**
      * An KeypleRuntimeException is thrown when building the plugin
+     * 
      * @throws Throwable
      */
     @Test(expected = KeypleRuntimeException.class)
