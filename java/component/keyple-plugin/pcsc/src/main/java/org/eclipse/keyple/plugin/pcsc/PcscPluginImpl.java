@@ -22,6 +22,7 @@ import javax.smartcardio.CardTerminals;
 import javax.smartcardio.TerminalFactory;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleRuntimeException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
 import org.slf4j.Logger;
@@ -50,6 +51,9 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
      * @return single instance of PcscPlugin
      */
     public static PcscPluginImpl getInstance() {
+        if (uniqueInstance.readers == null) {
+            throw new KeypleRuntimeException("Reader list is not accessible");
+        }
         return uniqueInstance;
     }
 
@@ -116,7 +120,9 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
             } else {
                 logger.trace("[{}] Terminal list is not accessible. Exception: {}", this.getName(),
                         e.getMessage());
-                throw new KeypleReaderException("Could not access terminals list", e);
+                // throw new KeypleReaderException("Could not access terminals list", e); do not
+                // propagate exception at the constructor will propagate it as a
+                // org.eclipse.keyple.core.seproxy.exception.KeypleRuntimeException
 
             }
         }

@@ -14,6 +14,8 @@ package org.eclipse.keyple.core.seproxy.plugin;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeypleRuntimeException;
+import org.eclipse.keyple.core.seproxy.plugin.mock.BlankFailingPlugin;
 import org.eclipse.keyple.core.seproxy.plugin.mock.MockAbstractThreadedPlugin;
 import org.junit.Assert;
 import org.junit.Before;
@@ -32,6 +34,16 @@ public class AbstractThreadedObservablePluginTest extends CoreBaseTest {
         logger.info("------------------------------");
         logger.info("Test {}", name.getMethodName() + "");
         logger.info("------------------------------");
+    }
+
+    /**
+     * An KeypleRuntimeException is thrown when building the plugin
+     * 
+     * @throws Throwable
+     */
+    @Test(expected = KeypleRuntimeException.class)
+    public void instantiatePlugin() {
+        new BlankFailingPlugin("addObserverTest");
     }
 
 

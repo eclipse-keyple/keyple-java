@@ -197,15 +197,9 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
      * @throws KeypleReaderException if a reader error occurs
      */
     @Override
-    protected SortedSet<SeReader> initNativeReaders() throws KeypleReaderException {
+    protected SortedSet<SeReader> initNativeReaders() {
         /* init Stub Readers response object */
         SortedSet<SeReader> newNativeReaders = new ConcurrentSkipListSet<SeReader>();
-
-        /*
-         * parse the current readers list to create the ProxyReader(s) associated with new reader(s)
-         * if (connectedStubNames != null && connectedStubNames.size() > 0) { for (String name :
-         * connectedStubNames) { newNativeReaders.add(new StubReader(name)); } }
-         */
         return newNativeReaders;
     }
 

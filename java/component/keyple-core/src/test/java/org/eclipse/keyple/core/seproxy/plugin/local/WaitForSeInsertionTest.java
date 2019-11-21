@@ -20,18 +20,30 @@ import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeInsertion;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@RunWith(Parameterized.class)
 public class WaitForSeInsertionTest extends CoreBaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(WaitForSeInsertionTest.class);
 
-    final String PLUGIN_NAME = "WaitForSeInsertionTestP";
     final String READER_NAME = "WaitForSeInsertionTest";
 
     AbstractObservableState waitForInsert;
     AbstractObservableLocalReader r;
+
+    final Long WAIT = 500l;
+
+    static final Integer X_TIMES = 10; // run tests multiple times to reproduce flaky
+
+    @Parameterized.Parameters
+    public static Object[][] data() {
+        return new Object[X_TIMES][0];
+    }
+
 
     @Before
     public void setUp() {
@@ -65,6 +77,9 @@ public class WaitForSeInsertionTest extends CoreBaseTest {
         waitForInsert.onActivate();
         waitForInsert.onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
 
+        Thread.sleep(WAIT);// wait for the monitoring to act
+
+
         /* Assert */
         verify(r, times(1)).switchState(WAIT_FOR_SE_PROCESSING);
 
@@ -83,6 +98,9 @@ public class WaitForSeInsertionTest extends CoreBaseTest {
         waitForInsert.onActivate();
         waitForInsert.onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
         /* Assert */
+
+        Thread.sleep(WAIT);// wait for the monitoring to act
+
 
         // stay in same state
         verify(r, times(0)).switchState(any(AbstractObservableState.MonitoringState.class));

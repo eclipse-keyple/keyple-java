@@ -38,7 +38,6 @@ public class WaitForSeProcessingTest extends CoreBaseTest {
     final ExecutorService executorService = Executors.newSingleThreadExecutor();
     BlankSmartPresenceTheadedReader r;
     WaitForSeProcessing waitForSeProcessing;
-    long timeout;
 
     @Before
     public void setUp() {
@@ -46,7 +45,6 @@ public class WaitForSeProcessingTest extends CoreBaseTest {
         logger.info("Test {}", name.getMethodName() + "");
         logger.info("------------------------------");
 
-        timeout = 5000l;
         r = AbsSmartPresenceTheadedReaderTest.getSmartPresenceMock(PLUGIN_NAME, READER_NAME);
         waitForSeProcessing =
                 new WaitForSeProcessing(r, new SmartRemovalMonitoringJob(r), executorService);
@@ -78,6 +76,7 @@ public class WaitForSeProcessingTest extends CoreBaseTest {
 
     @Test
     public void smart_waitForProcessed_STOP() throws Exception {
+        // flaky test
         /*
          * ------------ input polling mode is STOP SE has been REMOVED within timeout
          */
@@ -87,7 +86,7 @@ public class WaitForSeProcessingTest extends CoreBaseTest {
         /* test */
         waitForSeProcessing.onActivate();
 
-        Thread.sleep(50l);
+        Thread.sleep(500l);// avoid flaky
 
         /* Assert */
         verify(r, times(1)).switchState(WAIT_FOR_START_DETECTION);
