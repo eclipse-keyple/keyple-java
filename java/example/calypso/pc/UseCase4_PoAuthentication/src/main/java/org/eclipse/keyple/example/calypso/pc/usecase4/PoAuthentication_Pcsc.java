@@ -219,6 +219,12 @@ public class PoAuthentication_Pcsc {
                     throw new IllegalStateException("processClosing failure.");
                 }
 
+                if (poTransaction.isSuccessful()) {
+                    logger.info("The Calypso session ended successfully.");
+                } else {
+                    logger.error("The Calypso session failed.");
+                }
+
                 logger.info(
                         "==================================================================================");
                 logger.info(
