@@ -1,0 +1,178 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        google()
+        jcenter()
+
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.1'
+    }
+}
+
+
+plugins {
+    id "com.diffplug.gradle.spotless" version "3.14.0"
+}
+
+apply plugin: 'com.android.application'
+apply from:'../../../../common.gradle'
+
+project.group 'org.eclipse.keyple'
+project.version = '0.7.0-SNAPSHOT'
+
+allprojects {
+
+    configurations.all {
+        // check for updates every build
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+            def requested = details.requested
+            if (requested.group == 'com.android.support') {
+                if (!requested.name.startsWith("multidex")) {
+                    println "version ${android_support_version}"
+                    details.useVersion("${android_support_version}")
+                } else {
+                    details.useVersion("1.0.3")
+                }
+            }
+        }
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        google()
+        jcenter()
+        maven { url 'https://artifactory.coppernic.fr/artifactory/libs-release'}
+        flatDir {
+            dirs 'aars'
+        }
+    }
+
+    apply plugin: 'pmd'
+
+    pmd {
+        ruleSets = [
+                "java-basic",
+                "java-braces",
+        ]
+    }
+}
+
+spotless {
+    java {
+        target '**/*.java'
+
+        licenseHeaderFile '../../../../.build/spotless.license.txt'
+
+        importOrder 'java', 'javax', 'org', 'com', 'com.diffplug', ''
+
+        removeUnusedImports()
+
+        eclipse().configFile '../../../../.build/spotless.eclipseformat.xml'
+    }
+
+    format 'misc', {
+        target '**/*.java', '**/*.gradle', '**/*.yml', '**/*.md'
+
+        indentWithSpaces()
+        endWithNewline()
+    }
+}
+
+android {
+    signingConfigs {
+        config {
+        }
+    }
+    compileSdkVersion 26
+    defaultConfig {
+        applicationId "org.eclipse.keyple.example.android.cone2"
+        minSdkVersion 19
+        targetSdkVersion 26
+        multiDexEnabled true
+        versionName project.version
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.config
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            debuggable true
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_6
+        targetCompatibility JavaVersion.VERSION_1_6
+    }
+    buildToolsVersion '26.0.2'
+    lintOptions {
+        abortOnError false
+    }
+    productFlavors {
+    }
+
+    packagingOptions {
+        exclude 'META-INF/NOTICE.md'
+        exclude 'META-INF/keyple-core.properties'
+        exclude 'META-INF/lib_release.kotlin_module'
+    }
+
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    google()
+    jcenter()
+    maven { url 'https://artifactory.coppernic.fr/artifactory/libs-release'}
+    flatDir {
+        dirs 'aars'
+    }
+}
+
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    /*
+    Keyple dependencies
+     */
+    implementation project(path:':java:component:keyple-calypso')
+    implementation project(path:':java:component:keyple-core')
+    implementation project(path:':keyple-plugin:android-cone2')
+    //implementation (name:'keyple-plugin-android-cone2-0.8.0-20190925-SNAPSHOT', ext:'aar')
+
+    
+    /*
+    Android components
+     */
+    implementation "com.android.support:support-v4:${android_support_version}"
+    implementation "com.android.support:appcompat-v7:${android_support_version}"
+    implementation "com.android.support:design:${android_support_version}"
+    implementation "com.android.support.constraint:constraint-layout:${android_support_constraint_version}"
+
+    implementation 'fr.coppernic.sdk.ask:CpcAsk:3.5.8-keyple'
+    implementation 'fr.coppernic.sdk.core:CpcCore:1.8.16'
+    implementation 'fr.coppernic.sdk.cpcutils:CpcUtilsLib:6.18.4'
+
+    /*
+    Log
+     */
+    //slf4j logback for android - https://github.com/tony19/logback-android
+    implementation "org.slf4j:slf4j-api:${slf4japi_version}"
+    implementation "com.github.tony19:logback-android:${android_logback_version}"
+    // Timber
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+    implementation 'fr.bipi.treessence:treessence:0.3.0'
+
+    /*
+    Test
+     */
+    testImplementation "junit:junit:${junit_version}"
+    androidTestImplementation "com.android.support.test:runner:${android_support_test}"
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:${android_support_espresso}"
+
+}

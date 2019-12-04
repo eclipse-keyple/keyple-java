@@ -1,0 +1,10 @@
+rootProject.name = 'example-android-cone2'
+
+include ':keyple-plugin:android-cone2'
+project(':keyple-plugin:android-cone2').projectDir = new File("../../../keyple-plugin/android-cone2")
+
+include ':java:component:keyple-core'
+project(':java:component:keyple-core').projectDir = new File("../../../../java/component/keyple-core")
+
+include ':java:component:keyple-calypso'
+project(':java:component:keyple-calypso').projectDir = new File("../../../../java/component/keyple-calypso")
