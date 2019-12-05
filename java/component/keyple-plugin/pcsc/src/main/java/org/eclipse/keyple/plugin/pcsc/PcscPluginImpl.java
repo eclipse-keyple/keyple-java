@@ -34,6 +34,8 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
 
     private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 1000;
 
+    private final boolean scardNoServiceHackNeeded;
+
     /**
      * singleton instance of SeProxyService
      */
@@ -43,6 +45,12 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
 
     private PcscPluginImpl() {
         super(PLUGIN_NAME);
+        /*
+         * activate a special processing "SCARD_E_NO_NO_SERVICE" (on Windows platforms the removal
+         * of the last PC/SC reader stops the "Windows Smart Card service")
+         */
+        String OS = System.getProperty("os.name").toLowerCase();
+        scardNoServiceHackNeeded = OS.indexOf("win") >= 0;
     }
 
     /**
@@ -173,29 +181,35 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
     }
 
     private CardTerminals getCardTerminals() {
-        try {
-            Class pcscterminal;
-            pcscterminal = Class.forName("sun.security.smartcardio.PCSCTerminals");
-            Field contextId = pcscterminal.getDeclaredField("contextId");
-            contextId.setAccessible(true);
+        if (scardNoServiceHackNeeded) {
+            /*
+             * This hack avoids the problem of stopping the Windows Smart Card service when removing
+             * the last PC/SC reader
+             */
+            try {
+                Class pcscterminal;
+                pcscterminal = Class.forName("sun.security.smartcardio.PCSCTerminals");
+                Field contextId = pcscterminal.getDeclaredField("contextId");
+                contextId.setAccessible(true);
 
-            if (contextId.getLong(pcscterminal) != 0L) {
-                Class pcsc = Class.forName("sun.security.smartcardio.PCSC");
-                Method SCardEstablishContext =
-                        pcsc.getDeclaredMethod("SCardEstablishContext", new Class[] {Integer.TYPE});
-                SCardEstablishContext.setAccessible(true);
+                if (contextId.getLong(pcscterminal) != 0L) {
+                    Class pcsc = Class.forName("sun.security.smartcardio.PCSC");
+                    Method SCardEstablishContext = pcsc.getDeclaredMethod("SCardEstablishContext",
+                            new Class[] {Integer.TYPE});
+                    SCardEstablishContext.setAccessible(true);
 
-                Field SCARD_SCOPE_USER = pcsc.getDeclaredField("SCARD_SCOPE_USER");
-                SCARD_SCOPE_USER.setAccessible(true);
+                    Field SCARD_SCOPE_USER = pcsc.getDeclaredField("SCARD_SCOPE_USER");
+                    SCARD_SCOPE_USER.setAccessible(true);
 
-                long newId = ((Long) SCardEstablishContext.invoke(pcsc,
-                        new Object[] {Integer.valueOf(SCARD_SCOPE_USER.getInt(pcsc))})).longValue();
-                contextId.setLong(pcscterminal, newId);
+                    long newId = ((Long) SCardEstablishContext.invoke(pcsc,
+                            new Object[] {Integer.valueOf(SCARD_SCOPE_USER.getInt(pcsc))}))
+                                    .longValue();
+                    contextId.setLong(pcscterminal, newId);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-
         if (factory == null) {
             factory = TerminalFactory.getDefault();
         }
