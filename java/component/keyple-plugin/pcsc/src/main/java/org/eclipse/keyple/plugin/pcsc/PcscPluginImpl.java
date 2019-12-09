@@ -51,6 +51,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
          */
         String OS = System.getProperty("os.name").toLowerCase();
         scardNoServiceHackNeeded = OS.indexOf("win") >= 0;
+        logger.info("System detected : {}, is windows reset activated {}", OS, scardNoServiceHackNeeded);
     }
 
     /**

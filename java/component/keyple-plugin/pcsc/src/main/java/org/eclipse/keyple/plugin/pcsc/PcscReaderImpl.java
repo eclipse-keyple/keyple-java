@@ -118,7 +118,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         try {
             if (card != null) {
                 if (logging) {
-                    logger.trace("[{}] closePhysicalChannel => closing the channel.",
+                    logger.debug("[{}] closePhysicalChannel => closing the channel.",
                             this.getName());
                 }
                 channel = null;
@@ -126,7 +126,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                 card = null;
             } else {
                 if (logging) {
-                    logger.trace("[{}] closePhysicalChannel => card object is null.",
+                    logger.debug("[{}] closePhysicalChannel => card object is null.",
                             this.getName());
                 }
             }
@@ -140,7 +140,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         try {
             return terminal.isCardPresent();
         } catch (CardException e) {
-            logger.trace("[{}] Exception occurred in isSePresent. Message: {}", this.getName(),
+            logger.debug("[{}] Exception occurred in isSePresent. Message: {}", this.getName(),
                     e.getMessage());
             throw new KeypleIOReaderException("Exception occurred in isSePresent", e);
         }
@@ -148,16 +148,17 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
 
     @Override
     public boolean waitForCardPresent() throws KeypleIOReaderException {
-        logger.trace("[{}] waitForCardPresent => loop with latency of {} ms.", this.getName(),
+        logger.debug("[{}] waitForCardPresent => loop with latency of {} ms.", this.getName(),
                 insertLatency);
         try {
             while (true) {
+                logger.trace("[{}] waitForCardPresent => looping" , this.getName());
                 if (terminal.waitForCardPresent(insertLatency)) {
                     // card inserted
                     return true;
                 } else {
                     if (Thread.interrupted()) {
-                        logger.trace("[{}] waitForCardPresent => task has been cancelled",
+                        logger.debug("[{}] waitForCardPresent => task has been cancelled",
                                 this.getName());
                         // task has been cancelled
                         return false;
@@ -170,7 +171,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                             + "Message: " + e.getMessage());
         } catch (Throwable t) {
             // can or can not happen depending on terminal.waitForCardPresent
-            logger.trace("[{}] waitForCardPresent => Throwable catched {}", this.getName(),
+            logger.debug("[{}] waitForCardPresent => Throwable catched {}", this.getName(),
                     t.getCause());
             return false;
         }
@@ -183,16 +184,17 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
      */
     @Override
     public boolean waitForCardAbsentNative() throws KeypleIOReaderException {
-        logger.trace("[{}] waitForCardAbsentNative => loop with latency of {} ms.", this.getName(),
+        logger.debug("[{}] waitForCardAbsentNative => loop with latency of {} ms.", this.getName(),
                 removalLatency);
         try {
             while (true) {
+                logger.trace("[{}] waitForCardAbsentNative => looping" , this.getName());
                 if (terminal.waitForCardAbsent(removalLatency)) {
                     // card removed
                     return true;
                 } else {
                     if (Thread.interrupted()) {
-                        logger.trace("[{}] waitForCardAbsentNative => task has been cancelled",
+                        logger.debug("[{}] waitForCardAbsentNative => task has been cancelled",
                                 this.getName());
                         // task has been cancelled
                         return false;
@@ -205,7 +207,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                             + "Message: " + e.getMessage());
         } catch (Throwable t) {
             // can or can not happen depending on terminal.waitForCardAbsent
-            logger.trace("[{}] waitForCardAbsentNative => Throwable catched {}", this.getName(),
+            logger.debug("[{}] waitForCardAbsentNative => Throwable catched {}", this.getName(),
                     t.getCause());
             return false;
         }
@@ -264,14 +266,14 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
             String atr = ByteArrayUtil.toHex(card.getATR().getBytes());
             if (!p.matcher(atr).matches()) {
                 if (logging) {
-                    logger.trace(
+                    logger.debug(
                             "[{}] protocolFlagMatches => unmatching SE. PROTOCOLFLAG = {}, ATR = {}, MASK = {}",
                             this.getName(), protocolFlag, atr, selectionMask);
                 }
                 result = false;
             } else {
                 if (logging) {
-                    logger.trace("[{}] protocolFlagMatches => matching SE. PROTOCOLFLAG = {}",
+                    logger.debug("[{}] protocolFlagMatches => matching SE. PROTOCOLFLAG = {}",
                             this.getName(), protocolFlag);
                 }
                 result = true;
@@ -324,7 +326,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     public void setParameter(String name, String value)
             throws IllegalArgumentException, KeypleBaseException {
         if (logging) {
-            logger.trace("[{}] setParameter => PCSC: Set a parameter. NAME = {}, VALUE = {}",
+            logger.debug("[{}] setParameter => PCSC: Set a parameter. NAME = {}, VALUE = {}",
                     this.getName(), name, value);
         }
         if (name == null) {
@@ -454,12 +456,12 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                 if (cardExclusiveMode) {
                     card.beginExclusive();
                     if (logging) {
-                        logger.trace("[{}] Opening of a physical SE channel in exclusive mode.",
+                        logger.debug("[{}] Opening of a physical SE channel in exclusive mode.",
                                 this.getName());
                     }
                 } else {
                     if (logging) {
-                        logger.trace("[{}] Opening of a physical SE channel in shared mode.",
+                        logger.debug("[{}] Opening of a physical SE channel in shared mode.",
                                 this.getName());
                     }
                 }
