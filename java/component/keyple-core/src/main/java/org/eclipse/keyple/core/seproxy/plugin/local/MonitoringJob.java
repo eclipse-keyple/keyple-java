@@ -34,4 +34,9 @@ public interface MonitoringJob {
      * @return routine that will be executed in background of the state
      */
     Runnable getMonitoringJob(AbstractObservableState state);
+
+    /**
+     * Should stop/interrupt the monitoring job
+     */
+    void stop();
 }

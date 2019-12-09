@@ -55,8 +55,8 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     // waitForCardPresent and waitForCardPresent blocking functions will execute.
     // This will correspond to the capacity to react to the interrupt signal of
     // the thread (see cancel method of the Future object)
-    private final long insertLatency = 50;
-    private final long removalLatency = 50;
+    private final long insertLatency = 500;
+    private final long removalLatency = 500;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     private boolean logging;
@@ -76,6 +76,9 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         this.channel = null;
 
         this.stateService = initStateService();
+
+        logger.debug("[{}] constructor => using terminal ",
+                terminal);
 
         // Using null values to use the standard method for defining default values
         try {
@@ -98,7 +101,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                 new WaitForStartDetect(this));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-                new WaitForSeInsertion(this, new SmartInsertionMonitoringJob(this),
+                new WaitForSeInsertion(this, new CardPresentMonitoring(this),
                         executorService));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
@@ -152,7 +155,9 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                 insertLatency);
         try {
             while (true) {
-                logger.trace("[{}] waitForCardPresent => looping" , this.getName());
+                if (logger.isTraceEnabled()) {
+                    logger.trace("[{}] waitForCardPresent => looping" , this.getName());
+                }
                 if (terminal.waitForCardPresent(insertLatency)) {
                     // card inserted
                     return true;
@@ -188,7 +193,9 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                 removalLatency);
         try {
             while (true) {
-                logger.trace("[{}] waitForCardAbsentNative => looping" , this.getName());
+                if (logger.isTraceEnabled()) {
+                    logger.trace("[{}] waitForCardAbsentNative => looping" , this.getName());
+                }
                 if (terminal.waitForCardAbsent(removalLatency)) {
                     // card removed
                     return true;

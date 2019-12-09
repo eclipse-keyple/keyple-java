@@ -35,9 +35,12 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
     private static final Logger logger = LoggerFactory.getLogger(CardAbsentPingMonitoringJob.class);
 
     private final AbstractObservableLocalReader reader;
+    private Runnable job;
+    Boolean loop;
 
     public CardAbsentPingMonitoringJob(AbstractObservableLocalReader reader) {
         this.reader = reader;
+        this.loop = true;
     }
 
     @Override
@@ -48,10 +51,9 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
          * AbstractObservableLocalReader#isSePresentPing returns false, meaning that the SE ping has
          * failed - InterruptedException is caught
          */
-        return new Runnable() {
+        job =  new Runnable() {
             long threshold = 200;
             long retries = 0;
-            boolean loop = true;
 
             @Override
             public void run() {
@@ -79,6 +81,12 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
                 }
             }
         };
+        return job;
+    }
+
+    @Override
+    public void stop() {
+        loop =false;
     }
 
 }

@@ -65,4 +65,9 @@ public class SmartInsertionMonitoringJob implements MonitoringJob {
         };
     }
 
+    @Override
+    public void stop() {
+
+    }
+
 }
