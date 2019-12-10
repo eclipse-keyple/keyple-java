@@ -67,7 +67,8 @@ public class SmartInsertionMonitoringJob implements MonitoringJob {
 
     @Override
     public void stop() {
-
+        logger.trace("[{}] stopWaitForCard on reader", reader.getName());
+        reader.stopWaitForCard();
     }
 
 }

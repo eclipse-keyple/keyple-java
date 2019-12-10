@@ -116,6 +116,11 @@ public class BlankSmartPresenceTheadedReader extends AbstractObservableLocalRead
     }
 
     @Override
+    public void stopWaitForCard() {
+
+    }
+
+    @Override
     public boolean waitForCardPresent() {
         detectCount++;
         return detectCount <= mockDetect;

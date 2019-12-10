@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 import javax.smartcardio.*;
 import org.eclipse.keyple.core.seproxy.exception.*;
@@ -61,6 +62,9 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
 
     private boolean logging;
 
+    final private AtomicBoolean loopWaitSe = new AtomicBoolean() ;
+    final private AtomicBoolean loopWaitSeRemoval = new AtomicBoolean() ;
+
     /**
      * This constructor should only be called by PcscPlugin PCSC reader parameters are initialized
      * with their default values as defined in setParameter. See
@@ -100,8 +104,14 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
                 new WaitForStartDetect(this));
 
+        /*
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
                 new WaitForSeInsertion(this, new CardPresentMonitoring(this),
+                        executorService));
+        */
+
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
+                new WaitForSeInsertion(this, new SmartInsertionMonitoringJob(this),
                         executorService));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
@@ -149,12 +159,19 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         }
     }
 
+    /*
+     * Implements from SmartInsertionReader
+     */
     @Override
     public boolean waitForCardPresent() throws KeypleIOReaderException {
         logger.debug("[{}] waitForCardPresent => loop with latency of {} ms.", this.getName(),
                 insertLatency);
+
+        //activate loop
+        loopWaitSe.set(true);
+
         try {
-            while (true) {
+            while (loopWaitSe.get()) {
                 if (logger.isTraceEnabled()) {
                     logger.trace("[{}] waitForCardPresent => looping" , this.getName());
                 }
@@ -170,6 +187,8 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                     }
                 }
             }
+            //if loop was stopped
+            return false;
         } catch (CardException e) {
             throw new KeypleIOReaderException(
                     "[" + this.getName() + "] Exception occurred in waitForCardPresent. "
@@ -180,7 +199,17 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                     t.getCause());
             return false;
         }
+
     }
+
+    /*
+     * Implements from SmartInsertionReader
+     */
+    @Override
+    public void stopWaitForCard() {
+        loopWaitSe.set(false);
+    }
+
 
     /**
      * Wait for the card absent event from smartcard.io
@@ -191,8 +220,11 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     public boolean waitForCardAbsentNative() throws KeypleIOReaderException {
         logger.debug("[{}] waitForCardAbsentNative => loop with latency of {} ms.", this.getName(),
                 removalLatency);
+
+        loopWaitSeRemoval.set(true);
+
         try {
-            while (true) {
+            while (loopWaitSeRemoval.get()) {
                 if (logger.isTraceEnabled()) {
                     logger.trace("[{}] waitForCardAbsentNative => looping" , this.getName());
                 }
@@ -208,6 +240,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                     }
                 }
             }
+            return false;
         } catch (CardException e) {
             throw new KeypleIOReaderException(
                     "[" + this.getName() + "] Exception occurred in waitForCardAbsentNative. "
@@ -218,6 +251,14 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                     t.getCause());
             return false;
         }
+    }
+
+    /*
+     * Implements from SmartRemovalReader
+     */
+    @Override
+    public void stopWaitForCardRemoval() {
+        loopWaitSeRemoval.set(false);
     }
 
     /**

@@ -199,6 +199,11 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin {
                                     /* removes any possible observers before removing the reader */
                                     if (reader instanceof ObservableReader) {
                                         ((ObservableReader) reader).clearObservers();
+
+                                        /*
+                                         * In case where Reader was detected SE
+                                         */
+                                        ((ObservableReader) reader).stopSeDetection();
                                     }
                                     readers.remove(reader);
                                     logger.trace(
@@ -206,6 +211,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin {
                                             this.pluginName, reader.getName());
                                     /* remove reader name from the current list */
                                     nativeReadersNames.remove(reader.getName());
+
                                 }
                             }
                             /* clean the list for a possible connection notification */
