@@ -41,8 +41,6 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
      */
     private static final PcscPluginImpl uniqueInstance = new PcscPluginImpl();
 
-    private static TerminalFactory factory;
-
     private PcscPluginImpl() {
         super(PLUGIN_NAME);
         /*
@@ -120,7 +118,6 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
                 terminals);
         try {
             for (CardTerminal term : terminals.list()) {
-
                 nativeReaders.add(new PcscReaderImpl(this.getName(), term));
             }
         } catch (CardException e) {
@@ -206,17 +203,22 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
                             new Object[] {Integer.valueOf(SCARD_SCOPE_USER.getInt(pcsc))}))
                                     .longValue();
                     contextId.setLong(pcscterminal, newId);
+
+                    // clear the terminals in cache
+                    TerminalFactory factory = TerminalFactory.getDefault();
+                    CardTerminals terminals = factory.terminals();
+                    Field fieldTerminals = pcscterminal.getDeclaredField("terminals");
+                    fieldTerminals.setAccessible(true);
+                    Class classMap = Class.forName("java.util.Map");
+                    Method clearMap = classMap.getDeclaredMethod("clear");
+
+                    clearMap.invoke(fieldTerminals.get(terminals));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        if (factory == null) {
-            factory = TerminalFactory.getDefault();
-        }
 
-        CardTerminals terminals = factory.terminals();
-
-        return terminals;
+        return TerminalFactory.getDefault().terminals();
     }
 }
