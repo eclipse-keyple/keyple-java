@@ -79,6 +79,9 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
                         loop = false;
                     }
                 }
+
+                logger.debug("[{}] Polling loop has been stopped", reader.getName());
+
             }
         };
         return job;
@@ -86,7 +89,11 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
 
     @Override
     public void stop() {
-        loop =false;
+        logger.debug("[{}] Stop Polling ", reader.getName());
+        loop = false;
     }
 
+    public Boolean getLoop() {
+        return loop;
+    }
 }
