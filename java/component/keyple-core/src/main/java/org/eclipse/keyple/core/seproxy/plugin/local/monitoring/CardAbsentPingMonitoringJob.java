@@ -51,7 +51,7 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
          * AbstractObservableLocalReader#isSePresentPing returns false, meaning that the SE ping has
          * failed - InterruptedException is caught
          */
-        job =  new Runnable() {
+        job = new Runnable() {
             long threshold = 200;
             long retries = 0;
 

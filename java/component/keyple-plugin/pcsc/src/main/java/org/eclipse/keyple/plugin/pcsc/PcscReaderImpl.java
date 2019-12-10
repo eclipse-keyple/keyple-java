@@ -64,8 +64,8 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
 
     private boolean logging;
 
-    final private AtomicBoolean loopWaitSe = new AtomicBoolean() ;
-    final private AtomicBoolean loopWaitSeRemoval = new AtomicBoolean() ;
+    final private AtomicBoolean loopWaitSe = new AtomicBoolean();
+    final private AtomicBoolean loopWaitSeRemoval = new AtomicBoolean();
 
     private final boolean usePingPresence;
 
@@ -85,12 +85,12 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
 
         this.stateService = initStateService();
 
-        logger.debug("[{}] constructor => using terminal ",
-                terminal);
+        logger.debug("[{}] constructor => using terminal ", terminal);
 
         String OS = System.getProperty("os.name").toLowerCase();
         usePingPresence = OS.indexOf("mac") >= 0;
-        logger.info("System detected : {}, is macOs checkPresence ping activated {}", OS, usePingPresence);
+        logger.info("System detected : {}, is macOs checkPresence ping activated {}", OS,
+                usePingPresence);
 
 
         // Using null values to use the standard method for defining default values
@@ -113,17 +113,18 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
                 new WaitForStartDetect(this));
 
-        //should the SmartInsertionMonitoringJob be used?
-        if(!usePingPresence){
-            //use the SmartInsertionMonitoringJob
+        // should the SmartInsertionMonitoringJob be used?
+        if (!usePingPresence) {
+            // use the SmartInsertionMonitoringJob
             states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
                     new WaitForSeInsertion(this, new SmartInsertionMonitoringJob(this),
                             executorService));
-        }else{
-            //use the CardPresentMonitoring job (only on Mac due to jvm crash)
-            //https://github.com/eclipse/keyple-java/issues/153
+        } else {
+            // use the CardPresentMonitoring job (only on Mac due to jvm crash)
+            // https://github.com/eclipse/keyple-java/issues/153
             states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-                    new WaitForSeInsertion(this, new CardPresentMonitoring(this, insertWaitTimeout, true),
+                    new WaitForSeInsertion(this,
+                            new CardPresentMonitoring(this, insertWaitTimeout, true),
                             executorService));
         }
 
@@ -133,7 +134,6 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
                 new WaitForSeRemoval(this, new SmartRemovalMonitoringJob(this), executorService));
-
 
 
 
@@ -182,13 +182,13 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         logger.debug("[{}] waitForCardPresent => loop with latency of {} ms.", this.getName(),
                 insertLatency);
 
-        //activate loop
+        // activate loop
         loopWaitSe.set(true);
 
         try {
             while (loopWaitSe.get()) {
                 if (logger.isTraceEnabled()) {
-                    logger.trace("[{}] waitForCardPresent => looping" , this.getName());
+                    logger.trace("[{}] waitForCardPresent => looping", this.getName());
                 }
                 if (terminal.waitForCardPresent(insertLatency)) {
                     // card inserted
@@ -202,7 +202,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                     }
                 }
             }
-            //if loop was stopped
+            // if loop was stopped
             return false;
         } catch (CardException e) {
             throw new KeypleIOReaderException(
@@ -241,7 +241,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         try {
             while (loopWaitSeRemoval.get()) {
                 if (logger.isTraceEnabled()) {
-                    logger.trace("[{}] waitForCardAbsentNative => looping" , this.getName());
+                    logger.trace("[{}] waitForCardAbsentNative => looping", this.getName());
                 }
                 if (terminal.waitForCardAbsent(removalLatency)) {
                     // card removed
