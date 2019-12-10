@@ -200,7 +200,7 @@ repositories {
     mavenCentral()
     google()
     jcenter()
-    maven { url 'http://arti-01:8081/artifactory/libs-release' }
+    maven { url 'https://artifactory.coppernic.fr/artifactory/libs-release' }
 }
 
 dependencies {
