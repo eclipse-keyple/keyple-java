@@ -159,6 +159,116 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
 
     }
 
+    @Test
+    @Ignore
+    public void fullScenario() throws KeypleReaderException, InterruptedException {
+
+        final CountDownLatch connect1 = new CountDownLatch(1);
+        final CountDownLatch disconnect1 = new CountDownLatch(1);
+        final CountDownLatch insert = new CountDownLatch(1);
+        final CountDownLatch remove = new CountDownLatch(1);
+        final CountDownLatch connect2 = new CountDownLatch(1);
+        final CountDownLatch insert2 = new CountDownLatch(1);
+        final CountDownLatch remove2 = new CountDownLatch(1);
+
+        PcscPluginImpl plugin = PcscPluginImpl.getInstance();
+
+        //start with no reader connected
+        Assert.assertTrue(plugin.getReaders().isEmpty());
+
+        plugin.addObserver(onReaderConnected(plugin, connect1, insert, remove));
+        plugin.addObserver(onReaderDisconnected(disconnect1));
+
+
+        logger.info("** ************************");
+        logger.info("** Connect a PCSC Reader **");
+        logger.info("** ********************* **");
+
+        connect1.await(10, TimeUnit.SECONDS);
+
+        logger.info("** ************************");
+        logger.info("** Present a card        **");
+        logger.info("** ********************* **");
+
+        insert.await(10, TimeUnit.SECONDS);
+
+        logger.info("** ************************");
+        logger.info("** Remove the card       **");
+        logger.info("** ********************* **");
+
+        remove.await(10, TimeUnit.SECONDS);
+
+        logger.info("** **************  ********** **");
+        logger.info("** Disconnect the PCSC Reader **");
+        logger.info("** ****************  ******** **");
+
+        disconnect1.await(10, TimeUnit.SECONDS);
+        plugin.clearObservers();
+        plugin.addObserver(onReaderConnected(plugin, connect2, insert2, remove2));
+
+        logger.info("** ********************* **");
+        logger.info("** Connect a PCSC Reader **");
+        logger.info("** ********************* **");
+
+        connect2.await(10, TimeUnit.SECONDS);
+
+        logger.info("** ************************");
+        logger.info("** Present a card        **");
+        logger.info("** ********************* **");
+
+        insert2.await(10, TimeUnit.SECONDS);
+
+
+    }
+
+
+
+    /*
+      * HELPERS
+     */
+
+    static public ObservablePlugin.PluginObserver onReaderConnected(
+            final PcscPlugin plugin,
+            final CountDownLatch connectedLock,
+            final CountDownLatch insertedlock,
+            final CountDownLatch removedlock
+            ) {
+        return new ObservablePlugin.PluginObserver() {
+            @Override
+            public void update(PluginEvent event) {
+                //only one reader should be connected
+                Assert.assertEquals(1, event.getReaderNames().size());
+                if (event.getEventType() == PluginEvent.EventType.READER_CONNECTED) {
+                    logger.info("[{}] Reader connected.", event.getReaderNames().first());
+                    if (connectedLock != null) {
+                        PcscReader reader = (PcscReader) plugin.getReaders().first();
+                        reader.addObserver(onInsertedCountDown(insertedlock));
+                        reader.addObserver(onRemovedCountDown(removedlock));
+                        reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+                        connectedLock.countDown();
+                    }
+                }
+                ;
+
+            }
+        };
+    }
+
+    static public ObservablePlugin.PluginObserver onReaderDisconnected(final CountDownLatch lock) {
+        return new ObservablePlugin.PluginObserver() {
+            @Override
+            public void update(PluginEvent event) {
+                if (event.getEventType() == PluginEvent.EventType.READER_DISCONNECTED) {
+                    logger.info("[{}] Reader connected.", event.getReaderNames().first());
+                    if (lock != null) {
+                        lock.countDown();
+                    }
+                }
+                ;
+
+            }
+        };
+    }
 
     static public ObservableReader.ReaderObserver onRemovedCountDown(final CountDownLatch lock) {
         return new ObservableReader.ReaderObserver() {
