@@ -25,6 +25,10 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This test suite helps testing a pcsc reader with real sc
+ */
+@Ignore
 public class PcscReaderImpl_EventTest extends CoreBaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(PcscReaderImpl_EventTest.class);
@@ -35,31 +39,6 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
         logger.info("------------------------------");
         logger.info("Test {}", name.getMethodName() + "");
         logger.info("------------------------------");
-    }
-
-    @Test
-    @Ignore
-    public void startStopDetection() throws KeypleReaderException, InterruptedException {
-        logger.info("** ************* **");
-        logger.info("** Plug a reader **");
-        logger.info("** ************* **");
-
-        PcscPluginImpl plugin = PcscPluginImpl.getInstance();
-        PcscReader reader = (PcscReader) plugin.getReaders().first();
-        logger.info("Working this reader [{}]", reader.getName());
-
-        reader.startSeDetection(ObservableReader.PollingMode.REPEATING);
-        logger.info("[{}] Waiting 5 seconds for the card insertion and removal...",
-                reader.getName());
-        Thread.sleep(5000);
-        reader.stopSeDetection();
-        Thread.sleep(1000);
-        reader.startSeDetection(ObservableReader.PollingMode.REPEATING);
-        logger.info("[{}] Waiting 5 seconds for the card insertion and removal...",
-                reader.getName());
-        Thread.sleep(5000);
-        reader.stopSeDetection();
-        logger.info("End of test");
     }
 
     @Test
@@ -174,7 +153,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
         PcscPluginImpl plugin = PcscPluginImpl.getInstance();
 
         //start with no reader connected
-        Assert.assertTrue(plugin.getReaders().isEmpty());
+        assert plugin.getReaders().isEmpty() : "Disconnect all readers before this test";
 
         plugin.addObserver(onReaderConnected(plugin, connect1, insert, remove));
         plugin.addObserver(onReaderDisconnected(disconnect1));
@@ -244,7 +223,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
                         PcscReader reader = (PcscReader) plugin.getReaders().first();
                         reader.addObserver(onInsertedCountDown(insertedlock));
                         reader.addObserver(onRemovedCountDown(removedlock));
-                        reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+                        reader.startSeDetection(ObservableReader.PollingMode.REPEATING);
                         connectedLock.countDown();
                     }
                 }
