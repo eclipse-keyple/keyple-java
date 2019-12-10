@@ -21,11 +21,17 @@ public interface SmartInsertionReader extends ObservableReader {
      * This method must be implemented by the plugin's reader class when it implements the
      * {@link SmartInsertionReader} interface.
      * <p>
-     * Returns false if no SE is detected within the delay.
+     * Returns false if no SE is detected.
      *
      * @return presence status
      * @throws KeypleIOReaderException in the event of a communication failure with the reader
      *         (disconnection)
      */
     boolean waitForCardPresent() throws KeypleIOReaderException;
+
+
+    /**
+     * Interrupts the waiting of a SE
+     */
+    void stopWaitForCard();
 }
