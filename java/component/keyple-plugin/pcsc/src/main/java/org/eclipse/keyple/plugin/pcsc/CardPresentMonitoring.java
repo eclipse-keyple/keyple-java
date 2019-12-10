@@ -10,6 +10,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * This monitoring job polls the {@link SeReader#isSePresent()} method to detect SE_INSERTED/SE_REMOVED
+ */
 public class CardPresentMonitoring implements MonitoringJob {
 
     private static final Logger logger = LoggerFactory.getLogger(CardPresentMonitoring.class);
@@ -84,6 +87,7 @@ public class CardPresentMonitoring implements MonitoringJob {
         };
     }
 
+    @Override
     public void stop(){
         logger.debug("[{}] Stop polling ", reader.getName());
         loop.set(false);
