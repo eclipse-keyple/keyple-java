@@ -58,12 +58,16 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     // the thread (see cancel method of the Future object)
     private final long insertLatency = 500;
     private final long removalLatency = 500;
+
+    private final long insertWaitTimeout = 200;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     private boolean logging;
 
     final private AtomicBoolean loopWaitSe = new AtomicBoolean() ;
     final private AtomicBoolean loopWaitSeRemoval = new AtomicBoolean() ;
+
+    private final boolean usePingPresence;
 
     /**
      * This constructor should only be called by PcscPlugin PCSC reader parameters are initialized
@@ -83,6 +87,11 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
 
         logger.debug("[{}] constructor => using terminal ",
                 terminal);
+
+        String OS = System.getProperty("os.name").toLowerCase();
+        usePingPresence = OS.indexOf("mac") >= 0;
+        logger.info("System detected : {}, is macOs checkPresence ping activated {}", OS, usePingPresence);
+
 
         // Using null values to use the standard method for defining default values
         try {
@@ -104,15 +113,19 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
                 new WaitForStartDetect(this));
 
-        /*
-        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-                new WaitForSeInsertion(this, new CardPresentMonitoring(this),
-                        executorService));
-        */
-
-        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-                new WaitForSeInsertion(this, new SmartInsertionMonitoringJob(this),
-                        executorService));
+        //should the SmartInsertionMonitoringJob be used?
+        if(!usePingPresence){
+            //use the SmartInsertionMonitoringJob
+            states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
+                    new WaitForSeInsertion(this, new SmartInsertionMonitoringJob(this),
+                            executorService));
+        }else{
+            //use the CardPresentMonitoring job (only on Mac due to jvm crash)
+            //https://github.com/eclipse/keyple-java/issues/153
+            states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
+                    new WaitForSeInsertion(this, new CardPresentMonitoring(this, insertWaitTimeout, true),
+                            executorService));
+        }
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
                 new WaitForSeProcessing(this, new SmartRemovalMonitoringJob(this),
@@ -120,6 +133,8 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
                 new WaitForSeRemoval(this, new SmartRemovalMonitoringJob(this), executorService));
+
+
 
 
         return new ObservableReaderStateService(this, states,
