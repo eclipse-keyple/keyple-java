@@ -136,7 +136,6 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                 new WaitForSeRemoval(this, new SmartRemovalMonitoringJob(this), executorService));
 
 
-
         return new ObservableReaderStateService(this, states,
                 AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION);
     }

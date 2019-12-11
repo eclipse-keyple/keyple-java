@@ -34,7 +34,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
 
     private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 1000;
 
-    private boolean scardNoServiceHackNeeded;
+    private final boolean scardNoServiceHackNeeded;
 
     /**
      * singleton instance of SeProxyService
@@ -181,15 +181,12 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
     }
 
     private CardTerminals getCardTerminals() {
-
         if (scardNoServiceHackNeeded) {
-
             /*
              * This hack avoids the problem of stopping the Windows Smart Card service when removing
              * the last PC/SC reader
              */
             try {
-
                 Class pcscterminal;
                 pcscterminal = Class.forName("sun.security.smartcardio.PCSCTerminals");
                 Field contextId = pcscterminal.getDeclaredField("contextId");
@@ -225,6 +222,5 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
         }
 
         return TerminalFactory.getDefault().terminals();
-
     }
 }
