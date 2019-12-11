@@ -184,7 +184,6 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
 
         if (scardNoServiceHackNeeded) {
 
-            logger.trace("Activate windows reset, polling for CardTerminals changes");
             /*
              * This hack avoids the problem of stopping the Windows Smart Card service when removing
              * the last PC/SC reader
@@ -223,8 +222,6 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }else{
-            logger.trace("Do not activate windows, polling for CardTerminals changes");
         }
 
         return TerminalFactory.getDefault().terminals();
