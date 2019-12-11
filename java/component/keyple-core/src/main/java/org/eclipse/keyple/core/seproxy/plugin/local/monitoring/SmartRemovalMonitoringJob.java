@@ -72,7 +72,7 @@ public class SmartRemovalMonitoringJob implements MonitoringJob {
 
     @Override
     public void stop() {
-
+        reader.stopWaitForCardRemoval();
     }
 
 }
