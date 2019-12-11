@@ -34,7 +34,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
 
     private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 1000;
 
-    private final boolean scardNoServiceHackNeeded;
+    private boolean scardNoServiceHackNeeded;
 
     /**
      * singleton instance of SeProxyService
@@ -47,10 +47,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
          * activate a special processing "SCARD_E_NO_NO_SERVICE" (on Windows platforms the removal
          * of the last PC/SC reader stops the "Windows Smart Card service")
          */
-        String OS = System.getProperty("os.name").toLowerCase();
-        scardNoServiceHackNeeded = OS.indexOf("win") >= 0;
-        logger.info("System detected : {}, is windows reset activated {}", OS,
-                scardNoServiceHackNeeded);
+
     }
 
     /**
@@ -112,6 +109,10 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
     @Override
     protected SortedSet<SeReader> initNativeReaders() throws KeypleReaderException {
         SortedSet<SeReader> nativeReaders = new ConcurrentSkipListSet<SeReader>();
+
+        String OS = System.getProperty("os.name").toLowerCase();
+        scardNoServiceHackNeeded = OS.indexOf("win") >= 0;
+        logger.info("System detected : {}", scardNoServiceHackNeeded);
 
         // parse the current readers list to create the ProxyReader(s) associated with new reader(s)
         CardTerminals terminals = getCardTerminals();
@@ -180,12 +181,16 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
     }
 
     private CardTerminals getCardTerminals() {
+
         if (scardNoServiceHackNeeded) {
+
+            logger.trace("Activate windows reset, polling for CardTerminals changes");
             /*
              * This hack avoids the problem of stopping the Windows Smart Card service when removing
              * the last PC/SC reader
              */
             try {
+
                 Class pcscterminal;
                 pcscterminal = Class.forName("sun.security.smartcardio.PCSCTerminals");
                 Field contextId = pcscterminal.getDeclaredField("contextId");
@@ -218,8 +223,11 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }else{
+            logger.trace("Do not activate windows, polling for CardTerminals changes");
         }
 
         return TerminalFactory.getDefault().terminals();
+
     }
 }
