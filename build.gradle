@@ -81,7 +81,7 @@ allprojects {
     }
 }
 
-
+uploadArchives.dependsOn(":java:component:keyple-core:uploadArchives")
 
 spotless {
     java {

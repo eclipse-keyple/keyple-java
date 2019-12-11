@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
@@ -47,6 +48,10 @@ class StubReaderImpl extends AbstractObservableLocalReader
     TransmissionMode transmissionMode = TransmissionMode.CONTACTLESS;
 
     protected ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+
+    final private AtomicBoolean loopWaitSe = new AtomicBoolean();
+    final private AtomicBoolean loopWaitSeRemoval = new AtomicBoolean();
 
     /**
      * Do not use directly
@@ -202,8 +207,8 @@ class StubReaderImpl extends AbstractObservableLocalReader
      */
     @Override
     public boolean waitForCardPresent() {
-        // for (int i = 0; i < timeout / 10; i++) {
-        while (true) {
+        loopWaitSe.set(true);
+        while (loopWaitSe.get()) {
             if (checkSePresence()) {
                 return true;
             }
@@ -213,8 +218,14 @@ class StubReaderImpl extends AbstractObservableLocalReader
                 logger.debug("Sleep was interrupted");
             }
         }
+        return false;
         // logger.trace("[{}] no card was inserted", this.getName());
         // return false;
+    }
+
+    @Override
+    public void stopWaitForCard() {
+        loopWaitSe.set(false);
     }
 
     /**
@@ -225,8 +236,8 @@ class StubReaderImpl extends AbstractObservableLocalReader
      */
     @Override
     public boolean waitForCardAbsentNative() {
-        // for (int i = 0; i < timeout / 10; i++) {
-        while (true) {
+        loopWaitSeRemoval.set(true);
+        while (loopWaitSeRemoval.get()) {
             if (!checkSePresence()) {
                 logger.trace("[{}] card removed", this.getName());
                 return true;
@@ -237,8 +248,14 @@ class StubReaderImpl extends AbstractObservableLocalReader
                 logger.debug("Sleep was interrupted");
             }
         }
+        return false;
         // logger.trace("[{}] no card was removed", this.getName());
         // return false;
+    }
+
+    @Override
+    public void stopWaitForCardRemoval() {
+        loopWaitSeRemoval.set(false);
     }
 
     @Override
