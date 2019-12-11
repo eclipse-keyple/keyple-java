@@ -131,8 +131,7 @@ Here are the prerequisites to build the keyple components (jars)
 Following commands will build all the artifacts at once. The first command is required to be executed at least once to build the gradle wrapper. Then, the keyple-core artifact is built and installed into the local maven repository as other artifacts depends on it.  
 ```
 gradle wrapper --gradle-version 4.5.1
-./gradlew :java:component:keyple-core:uploadArchives --info
-./gradlew build  --info
+./gradlew :installAllLibrary --info
 ```
 
 
@@ -140,8 +139,7 @@ gradle wrapper --gradle-version 4.5.1
 Following commands will build all the artifacts at once. The first command is required to be executed at least once to build the gradle wrapper. Then, the keyple-core artifact is built and installed into the local maven repository as other artifacts depends on it.  
 ```
 gradle wrapper --gradle-version 4.5.1
-.\gradlew.bat :java:component:keyple-core:uploadArchives --info
-.\gradlew.bat build  --info
+.\gradlew.bat :installAllLibrary --info
 ```
 
 ### Android components
