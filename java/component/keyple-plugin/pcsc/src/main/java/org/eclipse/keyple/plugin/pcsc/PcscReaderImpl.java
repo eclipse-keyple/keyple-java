@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 import javax.smartcardio.*;
 import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.seproxy.plugin.local.*;
+import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.CardPresentMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.SmartInsertionMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.SmartRemovalMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeInsertion;
@@ -125,7 +126,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
             // https://github.com/eclipse/keyple-java/issues/153
             states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
                     new WaitForSeInsertion(this,
-                            new CardPresentMonitoring(this, insertWaitTimeout, true),
+                            new CardPresentMonitoringJob(this, insertWaitTimeout, true),
                             executorService));
         }
 

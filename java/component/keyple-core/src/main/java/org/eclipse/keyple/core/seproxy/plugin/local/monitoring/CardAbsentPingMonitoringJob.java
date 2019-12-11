@@ -92,8 +92,4 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
         logger.debug("[{}] Stop Polling ", reader.getName());
         loop = false;
     }
-
-    public Boolean getLoop() {
-        return loop;
-    }
 }

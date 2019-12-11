@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.plugin.pcsc;
+package org.eclipse.keyple.core.seproxy.plugin.local.monitoring;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -24,9 +24,9 @@ import org.slf4j.LoggerFactory;
  * This monitoring job polls the {@link SeReader#isSePresent()} method to detect
  * SE_INSERTED/SE_REMOVED
  */
-public class CardPresentMonitoring implements MonitoringJob {
+public class CardPresentMonitoringJob implements MonitoringJob {
 
-    private static final Logger logger = LoggerFactory.getLogger(CardPresentMonitoring.class);
+    private static final Logger logger = LoggerFactory.getLogger(CardPresentMonitoringJob.class);
 
     private final long waitTimeout;
     private final boolean monitorInsertion;
@@ -40,7 +40,7 @@ public class CardPresentMonitoring implements MonitoringJob {
      * @param waitTimeout : wait time during two hit of the polling
      * @param monitorInsertion : if true, polls for SE_INSERTED, else SE_REMOVED
      */
-    CardPresentMonitoring(SeReader reader, long waitTimeout, boolean monitorInsertion) {
+    public CardPresentMonitoringJob(SeReader reader, long waitTimeout, boolean monitorInsertion) {
         this.waitTimeout = waitTimeout;
         this.reader = reader;
         this.monitorInsertion = monitorInsertion;
