@@ -81,6 +81,55 @@ allprojects {
     }
 }
 
+task installCore{
+    group 'keyple'
+    description 'This task install the keyple core into maven local'
+    dependsOn ':java:component:keyple-core:uploadArchives'
+}
+
+task installCalypso{
+    group 'keyple'
+    description 'This task install the keyple calypso extension library into maven local'
+    dependsOn ':java:component:keyple-calypso:uploadArchives'
+}
+
+task installPcsc{
+    group 'keyple'
+    description 'This task install the keyple pcsc plugin into maven local'
+    dependsOn ':java:component:keyple-plugin:keyple-plugin-pcsc:uploadArchives'
+}
+
+task installRemotese{
+    group 'keyple'
+    description 'This task install the keyple core into maven local'
+    dependsOn ':java:component:keyple-plugin:keyple-plugin-remotese:uploadArchives'
+}
+
+task installStub{
+    group 'keyple'
+    description 'This task install the keyple core into maven local'
+    dependsOn ':java:component:keyple-plugin:keyple-plugin-stub:uploadArchives'
+}
+
+task installAllLibrary {
+    group 'keyple'
+    description 'This task install all java Keyple artifact into maven local'
+    dependsOn installCore
+    dependsOn installCalypso
+    dependsOn installRemotese
+    dependsOn installStub
+    dependsOn installPcsc
+
+    tasks.findByName('installCalypso').mustRunAfter "installCore"
+    tasks.findByName('installRemotese').mustRunAfter "installCore"
+    tasks.findByName('installStub').mustRunAfter "installCore"
+    tasks.findByName('installPcsc').mustRunAfter "installCore"
+
+    doLast {
+        println 'Keyple artifacts have been installed into maven local repo'
+    }
+
+}
 
 
 spotless {
