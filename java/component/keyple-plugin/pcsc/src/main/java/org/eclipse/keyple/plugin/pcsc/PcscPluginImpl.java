@@ -34,7 +34,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
 
     private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 1000;
 
-    private final boolean scardNoServiceHackNeeded;
+    private boolean scardNoServiceHackNeeded;
 
     /**
      * singleton instance of SeProxyService
