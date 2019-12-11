@@ -173,7 +173,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
 
         PcscPluginImpl plugin = PcscPluginImpl.getInstance();
 
-        //start with no reader connected
+        // start with no reader connected
         Assert.assertTrue(plugin.getReaders().isEmpty());
 
         plugin.addObserver(onReaderConnected(plugin, connect1, insert, remove));
@@ -224,19 +224,16 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
 
 
     /*
-      * HELPERS
+     * HELPERS
      */
 
-    static public ObservablePlugin.PluginObserver onReaderConnected(
-            final PcscPlugin plugin,
-            final CountDownLatch connectedLock,
-            final CountDownLatch insertedlock,
-            final CountDownLatch removedlock
-            ) {
+    static public ObservablePlugin.PluginObserver onReaderConnected(final PcscPlugin plugin,
+            final CountDownLatch connectedLock, final CountDownLatch insertedlock,
+            final CountDownLatch removedlock) {
         return new ObservablePlugin.PluginObserver() {
             @Override
             public void update(PluginEvent event) {
-                //only one reader should be connected
+                // only one reader should be connected
                 Assert.assertEquals(1, event.getReaderNames().size());
                 if (event.getEventType() == PluginEvent.EventType.READER_CONNECTED) {
                     logger.info("[{}] Reader connected.", event.getReaderNames().first());
@@ -247,8 +244,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
                         reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
                         connectedLock.countDown();
                     }
-                }
-                ;
+                } ;
 
             }
         };
@@ -263,8 +259,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
                     if (lock != null) {
                         lock.countDown();
                     }
-                }
-                ;
+                } ;
 
             }
         };

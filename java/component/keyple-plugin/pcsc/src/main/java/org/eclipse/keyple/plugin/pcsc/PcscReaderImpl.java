@@ -152,7 +152,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                 insertLatency);
         try {
             while (true) {
-                logger.trace("[{}] waitForCardPresent => looping" , this.getName());
+                logger.trace("[{}] waitForCardPresent => looping", this.getName());
                 if (terminal.waitForCardPresent(insertLatency)) {
                     // card inserted
                     return true;
@@ -188,7 +188,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                 removalLatency);
         try {
             while (true) {
-                logger.trace("[{}] waitForCardAbsentNative => looping" , this.getName());
+                logger.trace("[{}] waitForCardAbsentNative => looping", this.getName());
                 if (terminal.waitForCardAbsent(removalLatency)) {
                     // card removed
                     return true;
