@@ -41,6 +41,7 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
 
     /**
      * Create a job monitor job that ping the SE with the method isSePresentPing()
+     * 
      * @param reader : reference to the reader
      */
     public CardAbsentPingMonitoringJob(AbstractObservableLocalReader reader) {
@@ -50,6 +51,7 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
 
     /**
      * Create a job monitor job that ping the SE with the method isSePresentPing()
+     * 
      * @param reader : reference to the reader
      * @param removalWait : delay between between each APDU sending
      */
