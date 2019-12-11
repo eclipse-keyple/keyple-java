@@ -59,7 +59,6 @@ public class Demo_SeProtocolDetection_Pcsc {
         }
 
         System.out.println("PO Reader  : " + poReader.getName());
-        poReader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
 
         /* create an observer class to handle the SE operations */
         SeProtocolDetectionEngine observer = new SeProtocolDetectionEngine();

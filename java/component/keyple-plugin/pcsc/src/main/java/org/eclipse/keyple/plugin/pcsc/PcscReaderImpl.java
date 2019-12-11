@@ -99,7 +99,6 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
             setParameter(SETTING_KEY_PROTOCOL, null);
             setParameter(SETTING_KEY_MODE, null);
             setParameter(SETTING_KEY_DISCONNECT, null);
-            setParameter(SETTING_KEY_LOGGING, null);
         } catch (KeypleBaseException ex) {
             // can not fail with null value
         }
@@ -145,15 +144,13 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     protected void closePhysicalChannel() throws KeypleChannelControlException {
         try {
             if (card != null) {
-                logger.debug("[{}] closePhysicalChannel => closing the channel.",
-                        this.getName());
+                logger.debug("[{}] closePhysicalChannel => closing the channel.", this.getName());
 
                 channel = null;
                 card.disconnect(cardReset);
                 card = null;
             } else {
-                logger.debug("[{}] closePhysicalChannel => card object is null.",
-                        this.getName());
+                logger.debug("[{}] closePhysicalChannel => card object is null.", this.getName());
 
             }
         } catch (CardException e) {
@@ -327,13 +324,13 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
             String atr = ByteArrayUtil.toHex(card.getATR().getBytes());
             if (!p.matcher(atr).matches()) {
                 logger.debug(
-                            "[{}] protocolFlagMatches => unmatching SE. PROTOCOLFLAG = {}, ATR = {}, MASK = {}",
-                            this.getName(), protocolFlag, atr, selectionMask);
+                        "[{}] protocolFlagMatches => unmatching SE. PROTOCOLFLAG = {}, ATR = {}, MASK = {}",
+                        this.getName(), protocolFlag, atr, selectionMask);
 
                 result = false;
             } else {
                 logger.debug("[{}] protocolFlagMatches => matching SE. PROTOCOLFLAG = {}",
-                            this.getName(), protocolFlag);
+                        this.getName(), protocolFlag);
 
                 result = true;
             }
@@ -386,7 +383,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
             throws IllegalArgumentException, KeypleBaseException {
 
         logger.debug("[{}] setParameter => PCSC: Set a parameter. NAME = {}, VALUE = {}",
-                    this.getName(), name, value);
+                this.getName(), name, value);
 
         if (name == null) {
             throw new IllegalArgumentException("Parameter shouldn't be null");
@@ -443,7 +440,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                 throw new IllegalArgumentException(
                         "Parameters not supported : " + name + " : " + value);
             }
-        }  else {
+        } else {
             throw new IllegalArgumentException(
                     "This parameter is unknown !" + name + " : " + value);
         }
@@ -512,12 +509,12 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                 this.card = this.terminal.connect(parameterCardProtocol);
                 if (cardExclusiveMode) {
                     card.beginExclusive();
-                        logger.debug("[{}] Opening of a physical SE channel in exclusive mode.",
-                                this.getName());
+                    logger.debug("[{}] Opening of a physical SE channel in exclusive mode.",
+                            this.getName());
 
                 } else {
-                        logger.debug("[{}] Opening of a physical SE channel in shared mode.",
-                                this.getName());
+                    logger.debug("[{}] Opening of a physical SE channel in shared mode.",
+                            this.getName());
 
                 }
             }
