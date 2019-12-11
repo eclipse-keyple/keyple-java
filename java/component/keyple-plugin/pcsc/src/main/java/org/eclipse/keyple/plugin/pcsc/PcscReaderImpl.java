@@ -99,7 +99,6 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
             setParameter(SETTING_KEY_PROTOCOL, null);
             setParameter(SETTING_KEY_MODE, null);
             setParameter(SETTING_KEY_DISCONNECT, null);
-            setParameter(SETTING_KEY_LOGGING, null);
         } catch (KeypleBaseException ex) {
             // can not fail with null value
         }
