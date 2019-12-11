@@ -116,6 +116,11 @@ public class BlankSmartPresenceTheadedReader extends AbstractObservableLocalRead
     }
 
     @Override
+    public void stopWaitForCardRemoval() {
+
+    }
+
+    @Override
     public void stopWaitForCard() {
 
     }
