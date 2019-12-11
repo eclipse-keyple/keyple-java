@@ -83,14 +83,15 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         this.card = null;
         this.channel = null;
 
-        this.stateService = initStateService();
-
-        logger.debug("[{}] constructor => using terminal ", terminal);
 
         String OS = System.getProperty("os.name").toLowerCase();
         usePingPresence = OS.indexOf("mac") >= 0;
         logger.info("System detected : {}, is macOs checkPresence ping activated {}", OS,
                 usePingPresence);
+
+        this.stateService = initStateService();
+
+        logger.debug("[{}] constructor => using terminal ", terminal);
 
 
         // Using null values to use the standard method for defining default values
