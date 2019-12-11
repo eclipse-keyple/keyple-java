@@ -63,8 +63,6 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     private final long insertWaitTimeout = 200;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-    private boolean logging;
-
     final private AtomicBoolean loopWaitSe = new AtomicBoolean();
     final private AtomicBoolean loopWaitSeRemoval = new AtomicBoolean();
 
@@ -147,18 +145,16 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     protected void closePhysicalChannel() throws KeypleChannelControlException {
         try {
             if (card != null) {
-                if (logging) {
-                    logger.debug("[{}] closePhysicalChannel => closing the channel.",
-                            this.getName());
-                }
+                logger.debug("[{}] closePhysicalChannel => closing the channel.",
+                        this.getName());
+
                 channel = null;
                 card.disconnect(cardReset);
                 card = null;
             } else {
-                if (logging) {
-                    logger.debug("[{}] closePhysicalChannel => card object is null.",
-                            this.getName());
-                }
+                logger.debug("[{}] closePhysicalChannel => card object is null.",
+                        this.getName());
+
             }
         } catch (CardException e) {
             throw new KeypleChannelControlException("Error while closing physical channel", e);
@@ -330,17 +326,15 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
             Pattern p = Pattern.compile(selectionMask);
             String atr = ByteArrayUtil.toHex(card.getATR().getBytes());
             if (!p.matcher(atr).matches()) {
-                if (logging) {
-                    logger.debug(
+                logger.debug(
                             "[{}] protocolFlagMatches => unmatching SE. PROTOCOLFLAG = {}, ATR = {}, MASK = {}",
                             this.getName(), protocolFlag, atr, selectionMask);
-                }
+
                 result = false;
             } else {
-                if (logging) {
-                    logger.debug("[{}] protocolFlagMatches => matching SE. PROTOCOLFLAG = {}",
+                logger.debug("[{}] protocolFlagMatches => matching SE. PROTOCOLFLAG = {}",
                             this.getName(), protocolFlag);
-                }
+
                 result = true;
             }
         } else {
@@ -390,10 +384,10 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     @Override
     public void setParameter(String name, String value)
             throws IllegalArgumentException, KeypleBaseException {
-        if (logging) {
-            logger.debug("[{}] setParameter => PCSC: Set a parameter. NAME = {}, VALUE = {}",
+
+        logger.debug("[{}] setParameter => PCSC: Set a parameter. NAME = {}, VALUE = {}",
                     this.getName(), name, value);
-        }
+
         if (name == null) {
             throw new IllegalArgumentException("Parameter shouldn't be null");
         }
@@ -449,9 +443,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                 throw new IllegalArgumentException(
                         "Parameters not supported : " + name + " : " + value);
             }
-        } else if (name.equals(SETTING_KEY_LOGGING)) {
-            logging = Boolean.parseBoolean(value); // default is null and perfectly acceptable
-        } else {
+        }  else {
             throw new IllegalArgumentException(
                     "This parameter is unknown !" + name + " : " + value);
         }
@@ -520,15 +512,13 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                 this.card = this.terminal.connect(parameterCardProtocol);
                 if (cardExclusiveMode) {
                     card.beginExclusive();
-                    if (logging) {
                         logger.debug("[{}] Opening of a physical SE channel in exclusive mode.",
                                 this.getName());
-                    }
+
                 } else {
-                    if (logging) {
                         logger.debug("[{}] Opening of a physical SE channel in shared mode.",
                                 this.getName());
-                    }
+
                 }
             }
             this.channel = card.getBasicChannel();
