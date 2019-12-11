@@ -112,7 +112,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
         try {
             closePhysicalChannel();
         } catch (KeypleChannelControlException e) {
-            logger.trace("[{}] Exception occurred in closeLogicalAndPhysicalChannels. Message: {}",
+            logger.debug("[{}] Exception occurred in closeLogicalAndPhysicalChannels. Message: {}",
                     this.getName(), e.getMessage());
         }
     }
@@ -151,7 +151,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
                 aidSelector.getSuccessfulSelectionStatusCodes()));
 
         if (!fciResponse.isSuccessful()) {
-            logger.trace("[{}] selectionGetData => Get data failed. SELECTOR = {}", this.getName(),
+            logger.debug("[{}] selectionGetData => Get data failed. SELECTOR = {}", this.getName(),
                     aidSelector);
         }
         return fciResponse;
@@ -172,8 +172,8 @@ public abstract class AbstractLocalReader extends AbstractReader {
         if (aid == null) {
             throw new IllegalArgumentException("AID must not be null for an AidSelector.");
         }
-        if (logger.isTraceEnabled()) {
-            logger.trace("[{}] openLogicalChannel => Select Application with AID = {}",
+        if (logger.isDebugEnabled()) {
+            logger.debug("[{}] openLogicalChannel => Select Application with AID = {}",
                     this.getName(), ByteArrayUtil.toHex(aid));
         }
         /*
@@ -200,7 +200,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
                 selectApplicationCommand, true, aidSelector.getSuccessfulSelectionStatusCodes()));
 
         if (!fciResponse.isSuccessful()) {
-            logger.trace("[{}] openLogicalChannel => Application Selection failed. SELECTOR = {}",
+            logger.debug("[{}] openLogicalChannel => Application Selection failed. SELECTOR = {}",
                     this.getName(), aidSelector);
         }
         return fciResponse;
@@ -242,8 +242,8 @@ public abstract class AbstractLocalReader extends AbstractReader {
                 throw new KeypleIOReaderException("Didn't get an ATR from the SE.");
             }
 
-            if (logger.isTraceEnabled()) {
-                logger.trace("[{}] openLogicalChannel => ATR = {}", this.getName(),
+            if (logger.isDebugEnabled()) {
+                logger.debug("[{}] openLogicalChannel => ATR = {}", this.getName(),
                         ByteArrayUtil.toHex(atr));
             }
             if (!seSelector.getAtrFilter().atrMatches(atr)) {
@@ -639,8 +639,10 @@ public abstract class AbstractLocalReader extends AbstractReader {
 
         List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
 
-        logger.trace("[{}] processSeRequest => Logical channel open = {}", this.getName(),
-                logicalChannelIsOpen);
+        if (logger.isDebugEnabled()) {
+            logger.debug("[{}] processSeRequest => Logical channel open = {}", this.getName(),
+                    logicalChannelIsOpen);
+        }
         /*
          * unless the selector is null, we try to open a logical channel; if the channel was open
          * and the PO is still matching we won't redo the selection and just use the current
@@ -674,8 +676,8 @@ public abstract class AbstractLocalReader extends AbstractReader {
                 } else if (!aidCurrentlySelected
                         .startsWith(seRequest.getSeSelector().getAidSelector().getAidToSelect())) {
                     // the AID changed (longer or different), close the logical channel
-                    if (logger.isTraceEnabled()) {
-                        logger.trace(
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(
                                 "[{}] processSeRequest => The AID changed, close the logical channel. AID = {}, EXPECTEDAID = {}",
                                 this.getName(),
                                 ByteArrayUtil.toHex(aidCurrentlySelected.getValue()),
@@ -697,7 +699,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
                     logger.trace("[{}] processSeRequest => Logical channel opening success.",
                             this.getName());
                 } catch (KeypleApplicationSelectionException e) {
-                    logger.trace("[{}] processSeRequest => Logical channel opening failure",
+                    logger.debug("[{}] processSeRequest => Logical channel opening failure",
                             this.getName());
                     closeLogicalChannel();
                     /* return a null SeResponse when the opening of the logical channel failed */
@@ -766,11 +768,11 @@ public abstract class AbstractLocalReader extends AbstractReader {
     private ApduResponse processApduRequest(ApduRequest apduRequest)
             throws KeypleIOReaderException {
         ApduResponse apduResponse;
-        if (logger.isTraceEnabled()) {
+        if (logger.isDebugEnabled()) {
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - before) / 100000) / 10;
             this.before = timeStamp;
-            logger.trace("[{}] processApduRequest => {}, elapsed {} ms.", this.getName(),
+            logger.debug("[{}] processApduRequest => {}, elapsed {} ms.", this.getName(),
                     apduRequest, elapsedMs);
         }
 
@@ -784,11 +786,11 @@ public abstract class AbstractLocalReader extends AbstractReader {
             apduResponse = case4HackGetResponse(apduResponse.getStatusCode());
         }
 
-        if (logger.isTraceEnabled()) {
+        if (logger.isDebugEnabled()) {
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - before) / 100000) / 10;
             this.before = timeStamp;
-            logger.trace("[{}] processApduRequest => {}, elapsed {} ms.", this.getName(),
+            logger.debug("[{}] processApduRequest => {}, elapsed {} ms.", this.getName(),
                     apduResponse, elapsedMs);
         }
         return apduResponse;
@@ -809,11 +811,11 @@ public abstract class AbstractLocalReader extends AbstractReader {
          * build a get response command the actual length expected by the SE in the get response
          * command is handled in transmitApdu
          */
-        if (logger.isTraceEnabled()) {
+        if (logger.isDebugEnabled()) {
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
-            logger.trace(
+            logger.debug(
                     "[{}] case4HackGetResponse => ApduRequest: NAME = \"Internal Get Response\", RAWDATA = {}, elapsed = {}",
                     this.getName(), ByteArrayUtil.toHex(getResponseHackRequestBytes), elapsedMs);
         }
@@ -823,11 +825,11 @@ public abstract class AbstractLocalReader extends AbstractReader {
         /* we expect here a 0x9000 status code */
         ApduResponse getResponseHackResponse = new ApduResponse(getResponseHackResponseBytes, null);
 
-        if (logger.isTraceEnabled()) {
+        if (logger.isDebugEnabled()) {
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
-            logger.trace("[{}] case4HackGetResponse => Internal {}, elapsed {} ms.", this.getName(),
+            logger.debug("[{}] case4HackGetResponse => Internal {}, elapsed {} ms.", this.getName(),
                     getResponseHackResponseBytes, elapsedMs);
         }
 
