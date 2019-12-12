@@ -16,6 +16,11 @@ ext {
     timestamp = new Date().format('yyyyMMdd')
 }
 
+
+
+
+
+
 subprojects {
 
     group 'org.eclipse.keyple'

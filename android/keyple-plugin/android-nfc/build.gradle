@@ -197,12 +197,17 @@ uploadArchives  {
 }
 
 
-
 repositories {
     mavenLocal()
     mavenCentral()
     google()
     jcenter()
+}
+
+task installPlugin{
+    group 'keyple'
+    description 'Builds and installs the keyple Android NFC plugin library into maven local repository'
+    dependsOn ':keyple-plugin:keyple-plugin-android-nfc:uploadArchives'
 }
 
 dependencies {
