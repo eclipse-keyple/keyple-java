@@ -75,9 +75,7 @@ public class Demo_CalypsoClassic_Pcsc {
         logger.info("SAM Reader  NAME = {}", samReader.getName());
 
         /* Set PcSc settings per reader */
-        poReader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
         poReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T1);
-        samReader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
         samReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
 
         /*

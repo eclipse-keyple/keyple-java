@@ -291,9 +291,6 @@ public class SamResourceManager {
                         if (p.matcher(readerName).matches()) {
                             /* Enable logging */
                             try {
-                                /* enable low level logging */
-                                samReader.setParameter("logging", "true");
-
                                 /* contactless SE works with T0 protocol */
                                 samReader.setParameter("protocol", "T0");
 

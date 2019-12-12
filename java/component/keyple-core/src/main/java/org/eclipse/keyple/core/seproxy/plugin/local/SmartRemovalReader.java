@@ -39,4 +39,11 @@ public interface SmartRemovalReader extends ObservableReader {
      *         (disconnection)
      */
     boolean waitForCardAbsentNative() throws KeypleIOReaderException;
+
+
+
+    /**
+     * Interrupts the waiting of the removal of the SE
+     */
+    void stopWaitForCardRemoval();
 }

@@ -28,16 +28,37 @@ import org.slf4j.LoggerFactory;
  * It is based on sending a neutral APDU command as long as the SE is responding, an internal
  * SE_REMOVED event is fired when the SE is no longer responding.
  * <p>
- * A delay of 200 ms is inserted between each APDU sending.
+ * By default a delay of 200 ms is inserted between each APDU sending .
  */
 public class CardAbsentPingMonitoringJob implements MonitoringJob {
 
     private static final Logger logger = LoggerFactory.getLogger(CardAbsentPingMonitoringJob.class);
 
     private final AbstractObservableLocalReader reader;
+    private Runnable job;
+    Boolean loop;
+    private long removalWait = 200;
 
+    /**
+     * Create a job monitor job that ping the SE with the method isSePresentPing()
+     * 
+     * @param reader : reference to the reader
+     */
     public CardAbsentPingMonitoringJob(AbstractObservableLocalReader reader) {
         this.reader = reader;
+        this.loop = true;
+    }
+
+    /**
+     * Create a job monitor job that ping the SE with the method isSePresentPing()
+     * 
+     * @param reader : reference to the reader
+     * @param removalWait : delay between between each APDU sending
+     */
+    public CardAbsentPingMonitoringJob(AbstractObservableLocalReader reader, long removalWait) {
+        this.reader = reader;
+        this.loop = true;
+        this.removalWait = removalWait;
     }
 
     @Override
@@ -48,10 +69,8 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
          * AbstractObservableLocalReader#isSePresentPing returns false, meaning that the SE ping has
          * failed - InterruptedException is caught
          */
-        return new Runnable() {
-            long threshold = 200;
+        job = new Runnable() {
             long retries = 0;
-            boolean loop = true;
 
             @Override
             public void run() {
@@ -70,15 +89,24 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
                     }
                     try {
                         // wait a bit
-                        Thread.sleep(threshold);
+                        Thread.sleep(removalWait);
                     } catch (InterruptedException ignored) {
                         // Restore interrupted state...      
                         Thread.currentThread().interrupt();
                         loop = false;
                     }
                 }
+
+                logger.debug("[{}] Polling loop has been stopped", reader.getName());
+
             }
         };
+        return job;
     }
 
+    @Override
+    public void stop() {
+        logger.debug("[{}] Stop Polling ", reader.getName());
+        loop = false;
+    }
 }
