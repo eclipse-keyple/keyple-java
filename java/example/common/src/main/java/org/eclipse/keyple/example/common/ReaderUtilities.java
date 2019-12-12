@@ -65,9 +65,6 @@ public class ReaderUtilities {
      * @throws KeypleBaseException in case of an error while settings the parameters
      */
     public static void setContactlessSettings(SeReader reader) throws KeypleBaseException {
-        /* Enable logging */
-        reader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
-
         /* Contactless SE works with T1 protocol */
         reader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T1);
 
@@ -98,9 +95,6 @@ public class ReaderUtilities {
      * @throws KeypleBaseException in case of an error while settings the parameters
      */
     public static void setContactsSettings(SeReader reader) throws KeypleBaseException {
-        /* Enable logging */
-        reader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
-
         /* Contactless SE works with T0 protocol */
         reader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
 

@@ -15,10 +15,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 import javax.smartcardio.*;
 import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.seproxy.plugin.local.*;
+import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.CardPresentMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.SmartInsertionMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.SmartRemovalMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeInsertion;
@@ -55,11 +57,16 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     // waitForCardPresent and waitForCardPresent blocking functions will execute.
     // This will correspond to the capacity to react to the interrupt signal of
     // the thread (see cancel method of the Future object)
-    private final long insertLatency = 50;
-    private final long removalLatency = 50;
+    private final long insertLatency = 500;
+    private final long removalLatency = 500;
+
+    private final long insertWaitTimeout = 200;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-    private boolean logging;
+    final private AtomicBoolean loopWaitSe = new AtomicBoolean();
+    final private AtomicBoolean loopWaitSeRemoval = new AtomicBoolean();
+
+    private final boolean usePingPresence;
 
     /**
      * This constructor should only be called by PcscPlugin PCSC reader parameters are initialized
@@ -75,7 +82,16 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         this.card = null;
         this.channel = null;
 
+
+        String OS = System.getProperty("os.name").toLowerCase();
+        usePingPresence = OS.indexOf("mac") >= 0;
+        logger.info("System detected : {}, is macOs checkPresence ping activated {}", OS,
+                usePingPresence);
+
         this.stateService = initStateService();
+
+        logger.debug("[{}] constructor => using terminal ", terminal);
+
 
         // Using null values to use the standard method for defining default values
         try {
@@ -83,7 +99,6 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
             setParameter(SETTING_KEY_PROTOCOL, null);
             setParameter(SETTING_KEY_MODE, null);
             setParameter(SETTING_KEY_DISCONNECT, null);
-            setParameter(SETTING_KEY_LOGGING, null);
         } catch (KeypleBaseException ex) {
             // can not fail with null value
         }
@@ -97,9 +112,20 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
                 new WaitForStartDetect(this));
 
-        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-                new WaitForSeInsertion(this, new SmartInsertionMonitoringJob(this),
-                        executorService));
+        // should the SmartInsertionMonitoringJob be used?
+        if (!usePingPresence) {
+            // use the SmartInsertionMonitoringJob
+            states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
+                    new WaitForSeInsertion(this, new SmartInsertionMonitoringJob(this),
+                            executorService));
+        } else {
+            // use the CardPresentMonitoring job (only on Mac due to jvm crash)
+            // https://github.com/eclipse/keyple-java/issues/153
+            states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
+                    new WaitForSeInsertion(this,
+                            new CardPresentMonitoringJob(this, insertWaitTimeout, true),
+                            executorService));
+        }
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
                 new WaitForSeProcessing(this, new SmartRemovalMonitoringJob(this),
@@ -117,18 +143,14 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     protected void closePhysicalChannel() throws KeypleChannelControlException {
         try {
             if (card != null) {
-                if (logging) {
-                    logger.trace("[{}] closePhysicalChannel => closing the channel.",
-                            this.getName());
-                }
+                logger.debug("[{}] closePhysicalChannel => closing the channel.", this.getName());
+
                 channel = null;
                 card.disconnect(cardReset);
                 card = null;
             } else {
-                if (logging) {
-                    logger.trace("[{}] closePhysicalChannel => card object is null.",
-                            this.getName());
-                }
+                logger.debug("[{}] closePhysicalChannel => card object is null.", this.getName());
+
             }
         } catch (CardException e) {
             throw new KeypleChannelControlException("Error while closing physical channel", e);
@@ -140,41 +162,63 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         try {
             return terminal.isCardPresent();
         } catch (CardException e) {
-            logger.trace("[{}] Exception occurred in isSePresent. Message: {}", this.getName(),
+            logger.debug("[{}] Exception occurred in isSePresent. Message: {}", this.getName(),
                     e.getMessage());
             throw new KeypleIOReaderException("Exception occurred in isSePresent", e);
         }
     }
 
+    /*
+     * Implements from SmartInsertionReader
+     */
     @Override
     public boolean waitForCardPresent() throws KeypleIOReaderException {
-        logger.trace("[{}] waitForCardPresent => loop with latency of {} ms.", this.getName(),
+        logger.debug("[{}] waitForCardPresent => loop with latency of {} ms.", this.getName(),
                 insertLatency);
+
+        // activate loop
+        loopWaitSe.set(true);
+
         try {
-            while (true) {
+            while (loopWaitSe.get()) {
+                if (logger.isTraceEnabled()) {
+                    logger.trace("[{}] waitForCardPresent => looping", this.getName());
+                }
                 if (terminal.waitForCardPresent(insertLatency)) {
                     // card inserted
                     return true;
                 } else {
                     if (Thread.interrupted()) {
-                        logger.trace("[{}] waitForCardPresent => task has been cancelled",
+                        logger.debug("[{}] waitForCardPresent => task has been cancelled",
                                 this.getName());
                         // task has been cancelled
                         return false;
                     }
                 }
             }
+            // if loop was stopped
+            return false;
         } catch (CardException e) {
             throw new KeypleIOReaderException(
                     "[" + this.getName() + "] Exception occurred in waitForCardPresent. "
                             + "Message: " + e.getMessage());
         } catch (Throwable t) {
             // can or can not happen depending on terminal.waitForCardPresent
-            logger.trace("[{}] waitForCardPresent => Throwable catched {}", this.getName(),
+            logger.debug("[{}] waitForCardPresent => Throwable catched {}", this.getName(),
                     t.getCause());
             return false;
         }
+
     }
+
+    /*
+     * Implements from SmartInsertionReader
+     */
+    @Override
+    public void stopWaitForCard() {
+        loopWaitSe.set(false);
+    }
+
 
     /**
      * Wait for the card absent event from smartcard.io
@@ -183,32 +227,47 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
      */
     @Override
     public boolean waitForCardAbsentNative() throws KeypleIOReaderException {
-        logger.trace("[{}] waitForCardAbsentNative => loop with latency of {} ms.", this.getName(),
+        logger.debug("[{}] waitForCardAbsentNative => loop with latency of {} ms.", this.getName(),
                 removalLatency);
+
+        loopWaitSeRemoval.set(true);
+
         try {
-            while (true) {
+            while (loopWaitSeRemoval.get()) {
+                if (logger.isTraceEnabled()) {
+                    logger.trace("[{}] waitForCardAbsentNative => looping", this.getName());
+                }
                 if (terminal.waitForCardAbsent(removalLatency)) {
                     // card removed
                     return true;
                 } else {
                     if (Thread.interrupted()) {
-                        logger.trace("[{}] waitForCardAbsentNative => task has been cancelled",
+                        logger.debug("[{}] waitForCardAbsentNative => task has been cancelled",
                                 this.getName());
                         // task has been cancelled
                         return false;
                     }
                 }
             }
+            return false;
         } catch (CardException e) {
             throw new KeypleIOReaderException(
                     "[" + this.getName() + "] Exception occurred in waitForCardAbsentNative. "
                             + "Message: " + e.getMessage());
         } catch (Throwable t) {
             // can or can not happen depending on terminal.waitForCardAbsent
-            logger.trace("[{}] waitForCardAbsentNative => Throwable catched {}", this.getName(),
+            logger.debug("[{}] waitForCardAbsentNative => Throwable catched {}", this.getName(),
                     t.getCause());
             return false;
         }
+    }
+
+    /*
+     * Implements from SmartRemovalReader
+     */
+    @Override
+    public void stopWaitForCardRemoval() {
+        loopWaitSeRemoval.set(false);
     }
 
     /**
@@ -263,17 +322,15 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
             Pattern p = Pattern.compile(selectionMask);
             String atr = ByteArrayUtil.toHex(card.getATR().getBytes());
             if (!p.matcher(atr).matches()) {
-                if (logging) {
-                    logger.trace(
-                            "[{}] protocolFlagMatches => unmatching SE. PROTOCOLFLAG = {}, ATR = {}, MASK = {}",
-                            this.getName(), protocolFlag, atr, selectionMask);
-                }
+                logger.debug(
+                        "[{}] protocolFlagMatches => unmatching SE. PROTOCOLFLAG = {}, ATR = {}, MASK = {}",
+                        this.getName(), protocolFlag, atr, selectionMask);
+
                 result = false;
             } else {
-                if (logging) {
-                    logger.trace("[{}] protocolFlagMatches => matching SE. PROTOCOLFLAG = {}",
-                            this.getName(), protocolFlag);
-                }
+                logger.debug("[{}] protocolFlagMatches => matching SE. PROTOCOLFLAG = {}",
+                        this.getName(), protocolFlag);
+
                 result = true;
             }
         } else {
@@ -323,10 +380,10 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     @Override
     public void setParameter(String name, String value)
             throws IllegalArgumentException, KeypleBaseException {
-        if (logging) {
-            logger.trace("[{}] setParameter => PCSC: Set a parameter. NAME = {}, VALUE = {}",
-                    this.getName(), name, value);
-        }
+
+        logger.debug("[{}] setParameter => PCSC: Set a parameter. NAME = {}, VALUE = {}",
+                this.getName(), name, value);
+
         if (name == null) {
             throw new IllegalArgumentException("Parameter shouldn't be null");
         }
@@ -382,8 +439,6 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                 throw new IllegalArgumentException(
                         "Parameters not supported : " + name + " : " + value);
             }
-        } else if (name.equals(SETTING_KEY_LOGGING)) {
-            logging = Boolean.parseBoolean(value); // default is null and perfectly acceptable
         } else {
             throw new IllegalArgumentException(
                     "This parameter is unknown !" + name + " : " + value);
@@ -453,15 +508,13 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                 this.card = this.terminal.connect(parameterCardProtocol);
                 if (cardExclusiveMode) {
                     card.beginExclusive();
-                    if (logging) {
-                        logger.trace("[{}] Opening of a physical SE channel in exclusive mode.",
-                                this.getName());
-                    }
+                    logger.debug("[{}] Opening of a physical SE channel in exclusive mode.",
+                            this.getName());
+
                 } else {
-                    if (logging) {
-                        logger.trace("[{}] Opening of a physical SE channel in shared mode.",
-                                this.getName());
-                    }
+                    logger.debug("[{}] Opening of a physical SE channel in shared mode.",
+                            this.getName());
+
                 }
             }
             this.channel = card.getBasicChannel();

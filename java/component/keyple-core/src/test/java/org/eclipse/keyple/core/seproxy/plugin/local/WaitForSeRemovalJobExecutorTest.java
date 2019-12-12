@@ -16,16 +16,19 @@ import static org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableSta
 import static org.mockito.Mockito.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.CardAbsentPingMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.SmartRemovalMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeRemoval;
 import org.eclipse.keyple.core.seproxy.plugin.mock.BlankSmartPresenceTheadedReader;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,6 +109,39 @@ public class WaitForSeRemovalJobExecutorTest extends CoreBaseTest {
         // Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentState().getMonitoringState());
         verify(r, times(1)).switchState(WAIT_FOR_SE_INSERTION);
         waitForSeRemoval.onDeactivate();
+
+    }
+
+
+    @Test
+    public void waitForRemoval_STOP() throws Exception {
+        /*
+         * ------------ input
+         *
+         * polling mode is SINGLESHOT
+         *
+         * SE has been removed
+         */
+        AbstractObservableLocalReader r = AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
+        AbstractObservableState stateMock = Mockito.mock(AbstractObservableState.class);
+        CardAbsentPingMonitoringJob jobControl = new CardAbsentPingMonitoringJob(r);
+        doReturn(ObservableReader.PollingMode.SINGLESHOT).when(r).getPollingMode();
+        doReturn(true).when(r).isSePresentPing();
+        doNothing().when(r).processSeRemoved();
+        /* test */
+        Runnable task = jobControl.getMonitoringJob(stateMock);
+        Future future = executorService.submit(task);
+
+        Thread.sleep(200);
+
+        jobControl.stop();
+
+        Thread.sleep(WAIT);// wait for the monitoring to act
+
+        /* Assert */
+        // Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
+        verify(r, times(0)).switchState(WAIT_FOR_START_DETECTION);
+        Assert.assertTrue(future.isDone());
 
     }
 

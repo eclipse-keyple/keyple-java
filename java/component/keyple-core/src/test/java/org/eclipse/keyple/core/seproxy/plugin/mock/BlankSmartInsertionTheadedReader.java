@@ -171,5 +171,10 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
         return detectCount <= mockDetect;
     }
 
+    @Override
+    public void stopWaitForCard() {
+
+    }
+
 
 }
