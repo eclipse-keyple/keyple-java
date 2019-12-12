@@ -135,9 +135,10 @@ task removeAll(type: Delete){
     group 'keyple'
     def path = new URL(project.getRepositories().get(0).getAt("url").toString() + "org/eclipse/keyple");
     description 'Removes all keyple artifacts deployed in maven local repo at path : ' + path
-    println description
     delete path
-
+    doLast {
+        println description
+    }
 }
 
 
