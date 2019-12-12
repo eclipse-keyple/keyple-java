@@ -130,16 +130,14 @@ Here are the prerequisites to build the keyple components (jars)
 #### Linux or Macos
 Following commands will build all the artifacts at once. The first command is required to be executed at least once to build the gradle wrapper. Then, the keyple-core artifact is built and installed into the local maven repository as other artifacts depends on it.  
 ```
-gradle wrapper --gradle-version 4.5.1
-./gradlew :installAllLibrary --info
+./gradlew :installAll --info
 ```
 
 
 #### Windows
 Following commands will build all the artifacts at once. The first command is required to be executed at least once to build the gradle wrapper. Then, the keyple-core artifact is built and installed into the local maven repository as other artifacts depends on it.  
 ```
-gradle wrapper --gradle-version 4.5.1
-.\gradlew.bat :installAllLibrary --info
+.\gradlew.bat :installAll --info
 ```
 
 ### Android components
@@ -159,8 +157,7 @@ For instance ``sdk.dir=/Users/user/Library/Android/sdk``
 First, you need to build and install locally the java component keyple-core (see above)
 To build the plugins, execute the following commands in the **/android folder**, the first command is required to be executed at least once to build the gradle wrapper.  
 ```
-gradle wrapper --gradle-version 4.5.1
-./gradlew build
+./gradlew installPlugin
 ```
 
 To build the example app NFC and OMAPI, first, you need to build and install locally the java component keyple-core, keyple-calypso and keyple-android-plugin (see above)
@@ -175,8 +172,7 @@ First, you need to build and install locally the java component keyple-core (see
 To build the plugins, execute the following commands in the **/android folder**, the first command is required to be executed at least once to build the gradle wrapper.  
 
 ```
-gradle wrapper --gradle-version 4.5.1`
-.\gradlew.bat build
+.\gradlew.bat installPlugin
 ```
 
 To build the example app NFC and OMAPI, first, you need to build and install locally the java component keyple-core, keyple-calypso and keyple-android-plugin (see above)
