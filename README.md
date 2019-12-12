@@ -182,3 +182,8 @@ To build the example app NFC and OMAPI, first, you need to build and install loc
 .\gradlew.bat -b ./example/calypso/nfc/build.gradle assembleDebug 
 .\gradlew.bat -b ./example/calypso/omapi/build.gradle assembleDebug
 ```
+
+### CI and Docker 
+Eclipse CI tools to build and test the components are Open Source too. They can be found in this repository : [Eclipse Keyple Ops](https://www.github.com/eclipse/keyple-ops)
+
+
