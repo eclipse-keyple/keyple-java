@@ -141,6 +141,16 @@ uploadArchives {
     }
 }
 
+task installPlugin{
+    group 'keyple'
+    description 'Builds and installs  the keyple remotese plugin into maven local repository'
+    dependsOn ':java:component:keyple-plugin:keyple-plugin-remotese:uploadArchives'
+
+    doLast {
+        println 'Keyple Remote SE Plugin has been installed into maven local repo at path : ' + project.getRepositories().get(0).getAt("url")
+    }
+}
+
 dependencies {
     //use java library : keyple core
     //api project(path:':java:component:keyple-core')

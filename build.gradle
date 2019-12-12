@@ -85,21 +85,21 @@ allprojects {
 task installCore{
     group 'keyple'
     description 'Builds and installs the keyple core library into maven local repository'
-    dependsOn ':java:component:keyple-core:uploadArchives'
+    dependsOn ':java:component:keyple-core:installCore'
 }
 
 task installCalypso{
     group 'keyple'
     description 'Builds and installs  the keyple calypso extension library into maven local repository'
     dependsOn installCore
-    dependsOn ':java:component:keyple-calypso:uploadArchives'
+    dependsOn ':java:component:keyple-calypso:installExtension'
 }
 
 task installPcsc{
     group 'keyple'
     description 'Builds and installs  the keyple pcsc plugin into maven local repository'
     dependsOn installCore
-    dependsOn ':java:component:keyple-plugin:keyple-plugin-pcsc:uploadArchives'
+    dependsOn ':java:component:keyple-plugin:keyple-plugin-pcsc:installPlugin'
 
 }
 
@@ -107,15 +107,14 @@ task installRemotese{
     group 'keyple'
     description 'Builds and installs  the keyple remotese plugin into maven local repository'
     dependsOn installCore
-    dependsOn ':java:component:keyple-plugin:keyple-plugin-remotese:uploadArchives'
+    dependsOn ':java:component:keyple-plugin:keyple-plugin-remotese:installPlugin'
 }
 
 task installStub{
     group 'keyple'
     description 'Builds and installs  the keyple stub plugin into maven local repository'
     dependsOn installCore
-    dependsOn ':java:component:keyple-plugin:keyple-plugin-stub:uploadArchives'
-
+    dependsOn ':java:component:keyple-plugin:keyple-plugin-stub:installPlugin'
 }
 
 task installAll {
@@ -128,7 +127,7 @@ task installAll {
     dependsOn installPcsc
 
     doLast {
-        println 'Keyple artifacts have been installed into maven local repo, generally at path : ' + project.getRepositories().get(0).getAt("url")
+        println 'Keyple artifacts have been installed into maven local repo at path : ' + project.getRepositories().get(0).getAt("url")
     }
 }
 

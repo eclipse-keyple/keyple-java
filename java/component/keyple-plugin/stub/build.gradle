@@ -157,6 +157,16 @@ uploadArchives {
     }
 }
 
+task installPlugin{
+    group 'keyple'
+    description 'Builds and installs  the keyple stub plugin into maven local repository'
+    dependsOn ':java:component:keyple-plugin:keyple-plugin-stub:uploadArchives'
+    
+    doLast {
+        println 'Keyple Stub Plugin has been installed into maven local repo at path : ' + project.getRepositories().get(0).getAt("url")
+    }
+}
+
 dependencies {
 
     //use java library : core
