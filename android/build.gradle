@@ -12,7 +12,9 @@ buildscript {
 }
 
 
-apply from: '../common.gradle'
+ext {
+    timestamp = new Date().format('yyyyMMdd')
+}
 
 subprojects {
 

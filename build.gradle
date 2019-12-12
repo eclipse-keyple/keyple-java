@@ -14,8 +14,9 @@ buildscript {
 }
 
 
-apply from: 'common.gradle'
-
+ext {
+    timestamp = new Date().format('yyyyMMdd')
+}
 
 apply plugin: "com.diffplug.gradle.spotless"
 
@@ -117,7 +118,7 @@ task installStub{
 
 }
 
-task installAllLibrary {
+task installAll {
     group 'keyple'
     description 'Builds and installs all java Keyple library into maven local repository'
     dependsOn installCore
@@ -125,11 +126,10 @@ task installAllLibrary {
     dependsOn installRemotese
     dependsOn installStub
     dependsOn installPcsc
-    
-    doLast {
-        println 'Keyple artifacts have been installed into maven local repo, generally at path : $HOME/.m2'
-    }
 
+    doLast {
+        println 'Keyple artifacts have been installed into maven local repo, generally at path : ' + project.getRepositories().get(0).getAt("url")
+    }
 }
 
 
