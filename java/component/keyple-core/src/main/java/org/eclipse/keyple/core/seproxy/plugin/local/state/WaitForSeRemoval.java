@@ -74,11 +74,6 @@ public class WaitForSeRemoval extends AbstractObservableState {
             default:
                 logger.warn("[{}] Ignore =>  Event {} received in currentState {}",
                         reader.getName(), event, state);
-                if (reader.getPollingMode() == ObservableReader.PollingMode.REPEATING) {
-                    switchState(MonitoringState.WAIT_FOR_SE_INSERTION);
-                } else {
-                    switchState(MonitoringState.WAIT_FOR_START_DETECTION);
-                }
                 break;
         }
     }

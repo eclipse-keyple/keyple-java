@@ -58,7 +58,6 @@ public class WaitForStartDetect extends AbstractObservableState {
             default:
                 logger.warn("[{}] Ignore =>  Event {} received in currentState {}",
                         reader.getName(), event, state);
-                switchState(MonitoringState.WAIT_FOR_START_DETECTION);
                 break;
         }
     }
