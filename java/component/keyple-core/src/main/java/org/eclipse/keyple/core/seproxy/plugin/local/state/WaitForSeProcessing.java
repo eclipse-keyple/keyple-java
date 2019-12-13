@@ -87,6 +87,7 @@ public class WaitForSeProcessing extends AbstractObservableState {
             default:
                 logger.warn("[{}] Ignore =>  Event {} received in currentState {}",
                         reader.getName(), event, state);
+                switchState(MonitoringState.WAIT_FOR_SE_PROCESSING);
                 break;
         }
     }
