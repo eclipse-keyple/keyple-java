@@ -1,18 +1,41 @@
-def version = "0.8.0"
+def versionKeyple = "0.8.0"
 
 if(project.getProperties().containsKey("release") && release=="true"){
-    project.version = version
+    project.version = versionKeyple
 }else{
-    project.version = version+'-'+ timestamp+ '-SNAPSHOT'
+    project.version = versionKeyple +'-'+ timestamp+ '-SNAPSHOT'
 }
 
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
 archivesBaseName = "keyple-android-plugin-cone2"
 
 project.group 'org.eclipse.keyple'
 project.description = 'Keyple Plugin Android C-One²'
+
+publishing {
+    publications {
+        art(MavenPublication) {
+            groupId project.group
+            artifactId archivesBaseName
+            version project.version
+
+            android.libraryVariants.all { variant ->
+                if (variant.buildType.name == "release") {
+                    variant.outputs.all {
+                        logger.info "Artifact : ${it.outputFile}"
+                        artifact(it.outputFile)
+                    }
+                }
+            }
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
+}
 
 android {
     compileSdkVersion 26
