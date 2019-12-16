@@ -9,7 +9,7 @@ if(project.getProperties().containsKey("release") && release=="true"){
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
-archivesBaseName = "keyple-android-plugin-nfc"
+archivesBaseName = "keyple-android-plugin-cone2"
 
 project.group 'org.eclipse.keyple'
 project.description = 'Keyple Plugin Android C-One²'
