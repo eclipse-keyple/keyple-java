@@ -12,7 +12,6 @@
 package org.eclipse.keyple.core.seproxy.plugin.local;
 
 import static org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState.MonitoringState.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -106,8 +105,8 @@ public class WaitForSeInsertionJobExecutorTest extends CoreBaseTest {
         Thread.sleep(20l);
 
         /* Assert */
-        // stay in same state
-        verify(r, times(0)).switchState(any(AbstractObservableState.MonitoringState.class));
+        // switched to the same state to relaunch the monitoring job
+        verify(r, times(1)).switchState(WAIT_FOR_SE_INSERTION);
     }
 
     // @Test
