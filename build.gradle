@@ -88,14 +88,14 @@ task installCore{
     dependsOn ':java:component:keyple-core:installCore'
 }
 
-task installCalypso{
+task installCalypsoExtension{
     group 'keyple'
     description 'Builds and installs  the keyple calypso extension library into maven local repository'
     dependsOn installCore
     dependsOn ':java:component:keyple-calypso:installExtension'
 }
 
-task installPcsc{
+task installPcscPlugin{
     group 'keyple'
     description 'Builds and installs  the keyple pcsc plugin into maven local repository'
     dependsOn installCore
@@ -103,14 +103,14 @@ task installPcsc{
 
 }
 
-task installRemotese{
+task installRemotesePlugin{
     group 'keyple'
     description 'Builds and installs  the keyple remotese plugin into maven local repository'
     dependsOn installCore
     dependsOn ':java:component:keyple-plugin:keyple-plugin-remotese:installPlugin'
 }
 
-task installStub{
+task installStubPlugin{
     group 'keyple'
     description 'Builds and installs  the keyple stub plugin into maven local repository'
     dependsOn installCore
@@ -121,10 +121,10 @@ task installAll {
     group 'keyple'
     description 'Builds and installs all java Keyple library into maven local repository'
     dependsOn installCore
-    dependsOn installCalypso
-    dependsOn installRemotese
-    dependsOn installStub
-    dependsOn installPcsc
+    dependsOn installCalypsoExtension
+    dependsOn installRemotesePlugin
+    dependsOn installStubPlugin
+    dependsOn installPcscPlugin
 
     doLast {
         println 'Keyple artifacts have been installed into maven local repo at path : ' + project.getRepositories().get(0).getAt("url")
@@ -158,44 +158,3 @@ spotless {
         endWithNewline()
     }
 }
-
-
-/*
-//create task to agregate javadoc
-task aggregatedJavadocs(type: Javadoc, description: 'Generate javadocs from all child projects as if it was a single project', group: 'Documentation') {
-    //println 'Create a aggregated javadoc Task to : ' + "$buildDir/docs/javadoc"
-    destinationDir = file("$buildDir/docs/javadoc")
-    title = "$project.name " +  project(":java:component:keyple-core").version + " version API"
-    options.author true
-    options.links  'http://docs.oracle.com/javase/6/docs/api/',
-            "http://d.android.com/reference/",
-            'http://seek-for-android.github.io/javadoc/V4.0.0/'
-
-
-    options.addStringOption 'Xdoclint:none', '-quiet'
-
-    //init source to whatever file to avoid NO-SOURCE
-    source = 'README.MD'
-}
-
-//dynamically configure the source
-aggregatedJavadocs.doFirst {
-
-    //println "DoFirst in task  : aggregatedJavadocs"
-
-    //add Java modules javadoc
-    def aggregatedJavaProjects = [project(":java:component:keyple-core"),
-                                  project(":java:component:keyple-calypso"),
-                                  project(":java:component:keyple-plugin:keyple-plugin-pcsc"),
-                                  project(":java:component:keyple-plugin:keyple-plugin-stub"),
-                                  project(":java:component:keyple-plugin:keyple-plugin-remotese")]
-
-    aggregatedJavaProjects.each { aggregatedJavaProject ->
-        source += aggregatedJavaProject.javadoc.source
-        classpath += aggregatedJavaProject.javadoc.classpath
-        excludes += aggregatedJavaProject.javadoc.excludes
-        includes += aggregatedJavaProject.javadoc.includes
-
-    }
-}
-*/
