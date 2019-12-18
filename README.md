@@ -122,27 +122,22 @@ This guide helps developer that want to contribute to Keyple components base cod
 
 #### Prerequisites
 Here are the prerequisites to build the keyple components (jars)
-- Java JDK 1.6 or newer
+- Java JDK 1.6, 1.7 or 1.8 (Java 11 is not supported yet)
 - Maven (any version) [available here](https://maven.apache.org/install.html)
 - Gradle (any version as we use the gradle wrapper) [available here](https://gradle.org/install/)
 
 
-#### Linux or Macos
-Following commands will build all the artifacts at once. The first command is required to be executed at least once to build the gradle wrapper. Then, the keyple-core artifact is built and installed into the local maven repository as other artifacts depends on it.  
+#### Windows, Linux or Macos
+Following commands will build all the artifacts at once and install them into the local maven repository.  
 ```
 ./gradlew :installAll --info
 ```
 
 
-#### Windows
-Following commands will build all the artifacts at once. The first command is required to be executed at least once to build the gradle wrapper. Then, the keyple-core artifact is built and installed into the local maven repository as other artifacts depends on it.  
-```
-.\gradlew.bat :installAll --info
-```
 
 ### Android components
 If you want to build the keyple android components (aar plugins), you need : 
-- Java JDK 1.8 or newer (OMAPI app requires java 1.8)
+- Java JDK 1.6, 1.7 or 1.8 (Java 11 is not supported yet)
 - Intellij 2018 community version or Android Studio 3.0
 - Android sdk 26 should be installed on your machine [follow those instructions](http://www.androiddocs.com/sdk/installing/index.html)
 - Gradle (any version as we use the gradle wrapper) [available here](https://gradle.org/install/)
