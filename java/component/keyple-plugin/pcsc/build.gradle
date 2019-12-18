@@ -154,6 +154,16 @@ uploadArchives {
     }
 }
 
+task installPlugin{
+    group 'keyple'
+    description 'Builds and installs  the keyple pcsc plugin into maven local repository'
+    dependsOn ':java:component:keyple-plugin:keyple-plugin-pcsc:uploadArchives'
+
+    doLast {
+        println 'Keyple Pcsc Plugin has been installed into maven local repo at path : ' + project.getRepositories().get(0).getAt("url")
+    }
+}
+
 dependencies {
 
     //use keyple library : core

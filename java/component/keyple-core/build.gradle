@@ -161,7 +161,15 @@ uploadArchives {
     }
 }
 
+task installCore{
+    group 'keyple'
+    description 'Builds and installs the keyple core library into maven local repository'
+    dependsOn ':java:component:keyple-core:uploadArchives'
 
+    doLast {
+        println 'Keyple Core library has been installed into maven local repo at path : ' + project.getRepositories().get(0).getAt("url")
+    }
+}
 
 dependencies {
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api

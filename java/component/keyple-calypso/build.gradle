@@ -141,6 +141,16 @@ uploadArchives {
     }
 }
 
+task installExtension{
+    group 'keyple'
+    description 'Builds and installs the keyple calypso extension library into maven local repository'
+    dependsOn ':java:component:keyple-calypso:uploadArchives'
+
+    doLast {
+        println 'Keyple Calypso Extension has been installed into maven local repo at path : ' + project.getRepositories().get(0).getAt("url")
+    }
+}
+
 dependencies {
     //keyple-core project
     //api project(path: ':java:component:keyple-core')

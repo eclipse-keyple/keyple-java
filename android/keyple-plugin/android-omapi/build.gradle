@@ -209,6 +209,12 @@ repositories {
     jcenter()
 }
 
+task installPlugin{
+    group 'keyple'
+    description 'Builds and installs the keyple Android OMAPI plugin library into maven local repository'
+    dependsOn ':keyple-plugin:keyple-plugin-android-omapi:uploadArchives'
+}
+
 dependencies {
     implementation fileTree(include: ['*.jar'], exclude: ['org.simalliance.openmobileapi.jar'], dir: 'libs')
 

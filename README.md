@@ -122,31 +122,22 @@ This guide helps developer that want to contribute to Keyple components base cod
 
 #### Prerequisites
 Here are the prerequisites to build the keyple components (jars)
-- Java JDK 1.6 or newer
+- Java JDK 1.6, 1.7 or 1.8 (Java 11 is not supported yet)
 - Maven (any version) [available here](https://maven.apache.org/install.html)
 - Gradle (any version as we use the gradle wrapper) [available here](https://gradle.org/install/)
 
 
-#### Linux or Macos
-Following commands will build all the artifacts at once. The first command is required to be executed at least once to build the gradle wrapper. Then, the keyple-core artifact is built and installed into the local maven repository as other artifacts depends on it.  
+#### Windows, Linux or Macos
+Following commands will build all the artifacts at once and install them into the local maven repository.  
 ```
-gradle wrapper --gradle-version 4.5.1
-./gradlew :java:component:keyple-core:uploadArchives --info
-./gradlew build  --info
+./gradlew :installAll --info
 ```
 
 
-#### Windows
-Following commands will build all the artifacts at once. The first command is required to be executed at least once to build the gradle wrapper. Then, the keyple-core artifact is built and installed into the local maven repository as other artifacts depends on it.  
-```
-gradle wrapper --gradle-version 4.5.1
-.\gradlew.bat :java:component:keyple-core:uploadArchives --info
-.\gradlew.bat build  --info
-```
 
 ### Android components
 If you want to build the keyple android components (aar plugins), you need : 
-- Java JDK 1.8 or newer (OMAPI app requires java 1.8)
+- Java JDK 1.6, 1.7 or 1.8 (Java 11 is not supported yet)
 - Intellij 2018 community version or Android Studio 3.0
 - Android sdk 26 should be installed on your machine [follow those instructions](http://www.androiddocs.com/sdk/installing/index.html)
 - Gradle (any version as we use the gradle wrapper) [available here](https://gradle.org/install/)
@@ -161,8 +152,7 @@ For instance ``sdk.dir=/Users/user/Library/Android/sdk``
 First, you need to build and install locally the java component keyple-core (see above)
 To build the plugins, execute the following commands in the **/android folder**, the first command is required to be executed at least once to build the gradle wrapper.  
 ```
-gradle wrapper --gradle-version 4.5.1
-./gradlew build
+./gradlew installPlugin
 ```
 
 To build the example app NFC and OMAPI, first, you need to build and install locally the java component keyple-core, keyple-calypso and keyple-android-plugin (see above)
@@ -177,8 +167,7 @@ First, you need to build and install locally the java component keyple-core (see
 To build the plugins, execute the following commands in the **/android folder**, the first command is required to be executed at least once to build the gradle wrapper.  
 
 ```
-gradle wrapper --gradle-version 4.5.1`
-.\gradlew.bat build
+.\gradlew.bat installPlugin
 ```
 
 To build the example app NFC and OMAPI, first, you need to build and install locally the java component keyple-core, keyple-calypso and keyple-android-plugin (see above)
@@ -188,3 +177,8 @@ To build the example app NFC and OMAPI, first, you need to build and install loc
 .\gradlew.bat -b ./example/calypso/nfc/build.gradle assembleDebug 
 .\gradlew.bat -b ./example/calypso/omapi/build.gradle assembleDebug
 ```
+
+### CI and Docker 
+Eclipse CI tools to build and test the components are Open Source too. They can be found in this repository : [Eclipse Keyple Ops](https://www.github.com/eclipse/keyple-ops)
+
+
