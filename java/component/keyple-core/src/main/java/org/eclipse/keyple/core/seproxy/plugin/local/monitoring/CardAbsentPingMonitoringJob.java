@@ -47,18 +47,16 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
      */
     public CardAbsentPingMonitoringJob(AbstractObservableLocalReader reader) {
         this.reader = reader;
-        loop.set(true);
     }
 
     /**
      * Create a job monitor job that ping the SE with the method isSePresentPing()
-     * 
+     *
      * @param reader : reference to the reader
      * @param removalWait : delay between between each APDU sending
      */
     public CardAbsentPingMonitoringJob(AbstractObservableLocalReader reader, long removalWait) {
         this.reader = reader;
-        loop.set(true);
         this.removalWait = removalWait;
     }
 

@@ -44,7 +44,6 @@ public class CardPresentMonitoringJob implements MonitoringJob {
         this.waitTimeout = waitTimeout;
         this.reader = reader;
         this.monitorInsertion = monitorInsertion;
-        loop.set(true);
     }
 
     @Override
@@ -54,11 +53,10 @@ public class CardPresentMonitoringJob implements MonitoringJob {
 
             @Override
             public void run() {
+                logger.debug("[{}] Polling from isSePresent", reader.getName());
 
                 // re-init loop value to true
                 loop.set(true);
-
-                logger.debug("[{}] Polling from isSePresentPing", reader.getName());
                 while (loop.get()) {
                     try {
                         // polls for SE_INSERTED
