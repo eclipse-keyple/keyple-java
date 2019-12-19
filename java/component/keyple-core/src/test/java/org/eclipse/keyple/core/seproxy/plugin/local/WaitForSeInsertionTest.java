@@ -16,6 +16,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import org.eclipse.keyple.core.CoreBaseTest;
+import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeInsertion;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,7 +71,8 @@ public class WaitForSeInsertionTest extends CoreBaseTest {
         /*
          * input SE inserted SE matched
          */
-        doReturn(true).when(r).processSeInserted();
+        doReturn(new ReaderEvent("", "", ReaderEvent.EventType.SE_MATCHED, null)).when(r)
+                .processSeInserted();
 
         /* test */
         waitForInsert.onActivate();
@@ -91,7 +93,8 @@ public class WaitForSeInsertionTest extends CoreBaseTest {
         /*
          * input SE inserted SE doesnt matched Back to Detection
          */
-        doReturn(false).when(r).processSeInserted();
+        doReturn(new ReaderEvent("", "", ReaderEvent.EventType.SE_INSERTED, null)).when(r)
+                .processSeInserted();
 
         /* test */
         waitForInsert.onActivate();
@@ -102,7 +105,7 @@ public class WaitForSeInsertionTest extends CoreBaseTest {
 
 
         // switched to the same state to relaunch the monitoring job
-        verify(r, times(1)).switchState(WAIT_FOR_SE_INSERTION);
+        verify(r, times(1)).switchState(WAIT_FOR_SE_PROCESSING);
     }
 
     // @Test

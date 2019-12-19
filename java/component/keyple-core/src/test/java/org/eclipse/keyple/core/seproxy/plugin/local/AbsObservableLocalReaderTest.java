@@ -93,16 +93,15 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     public void seInserted() throws Exception {
         // empty reader
         AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
-        final CountDownLatch lock = new CountDownLatch(1);
-
-        r.addObserver(onInsertedCountDown(lock));
 
         // test
-        r.processSeInserted();
+        ReaderEvent event = r.processSeInserted();
 
-        // wait
-        lock.await(100, TimeUnit.MILLISECONDS);
-        Assert.assertEquals(0, lock.getCount());
+        Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+        Assert.assertTrue(
+                event.getDefaultSelectionsResponse().getSelectionSeResponseSet().isEmpty());
+        Assert.assertEquals(PLUGIN_NAME, event.getPluginName());
+        Assert.assertEquals(READER_NAME, event.getReaderName());
     }
 
     /*
@@ -111,10 +110,6 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     @Test
     public void seInserted_ALWAYS() throws Exception {
         AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
-        final CountDownLatch lock = new CountDownLatch(1);
-
-        // add a INSERTED observer
-        r.addObserver(onInsertedCountDown(lock));
 
         // configure parameters
         Set<SeRequest> selections = new HashSet<SeRequest>();
@@ -122,18 +117,22 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         ChannelControl channel = ChannelControl.CLOSE_AFTER;
         ObservableReader.NotificationMode mode = ObservableReader.NotificationMode.ALWAYS;
 
-        // return matching selection
-        doReturn(getNotMatchingResponses()).when(r).transmitSet(selections, multi, channel);
-
-        r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel),
-                mode);
+        // mock return matching selection
+        List<SeResponse> responses = getNotMatchingResponses();
+        doReturn(responses).when(r).transmitSet(selections, multi, channel);
 
         // test
-        r.processSeInserted();
+        r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel),
+                mode);
+        ReaderEvent event = r.processSeInserted();
 
-        // wait
-        lock.await(200, TimeUnit.MILLISECONDS);
-        Assert.assertEquals(0, lock.getCount());
+        // assert
+        Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+        Assert.assertEquals(responses,
+                event.getDefaultSelectionsResponse().getSelectionSeResponseSet());
+        Assert.assertEquals(PLUGIN_NAME, event.getPluginName());
+        Assert.assertEquals(READER_NAME, event.getReaderName());
+
     }
 
     /*
@@ -142,10 +141,6 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     @Test
     public void noEvent_MATCHED_ONLY() throws Exception {
         AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
-        final CountDownLatch lock = new CountDownLatch(1);
-
-        // add a EVENT observer
-        r.addObserver(onEventCountDown(lock));
 
         // configure parameters
         Set<SeRequest> selections = new HashSet<SeRequest>();
@@ -153,19 +148,15 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         ChannelControl channel = ChannelControl.CLOSE_AFTER;
         ObservableReader.NotificationMode mode = ObservableReader.NotificationMode.MATCHED_ONLY;
 
-        // return matching selection
+        // mock return matching selection
         doReturn(getNotMatchingResponses()).when(r).transmitSet(selections, multi, channel);
 
+        // test
         r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel),
                 mode);
+        ReaderEvent event = r.processSeInserted();
 
-        // test
-        r.processSeInserted();
-
-        // wait
-        lock.await(200, TimeUnit.MILLISECONDS);
-        Assert.assertEquals(1, lock.getCount());
-        // no event is thrown
+        Assert.assertEquals(null, event);
     }
 
     /*
@@ -174,10 +165,6 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     @Test
     public void seMatched_MATCHED_ONLY() throws Exception {
         AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
-        final CountDownLatch lock = new CountDownLatch(1);
-
-        // add a MATCHED observer
-        r.addObserver(onMatchedCountDown(lock));
 
         // configure parameters
         Set<SeRequest> selections = new HashSet<SeRequest>();
@@ -185,51 +172,24 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         ChannelControl channel = ChannelControl.CLOSE_AFTER;
         ObservableReader.NotificationMode mode = ObservableReader.NotificationMode.MATCHED_ONLY;
 
+        // mock
         // return success selection
-        doReturn(getMatchingResponses()).when(r).transmitSet(selections, multi, channel);
-
-        r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel),
-                mode);
+        List<SeResponse> responses = getMatchingResponses();
+        doReturn(responses).when(r).transmitSet(selections, multi, channel);
 
         // test
-        r.processSeInserted();
-
-        // wait
-        lock.await(100, TimeUnit.MILLISECONDS);
-        Assert.assertEquals(0, lock.getCount());
-    }
-
-    /*
-     * selection is successful
-     */
-    @Test
-    public void seMatched_ALWAYS() throws Exception {
-        AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
-        final CountDownLatch lock = new CountDownLatch(1);
-
-        // add a MATCHED observer
-        r.addObserver(onMatchedCountDown(lock));
-
-        // configure parameters
-        Set<SeRequest> selections = new HashSet<SeRequest>();
-        MultiSeRequestProcessing multi = MultiSeRequestProcessing.PROCESS_ALL;
-        ChannelControl channel = ChannelControl.CLOSE_AFTER;
-        ObservableReader.NotificationMode mode = ObservableReader.NotificationMode.ALWAYS;
-
-        // return success selection
-        doReturn(getMatchingResponses()).when(r).transmitSet(selections, multi, channel);
-
         r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel),
                 mode);
+        ReaderEvent event = r.processSeInserted();
 
+        Assert.assertEquals(ReaderEvent.EventType.SE_MATCHED, event.getEventType());
+        Assert.assertEquals(responses,
+                event.getDefaultSelectionsResponse().getSelectionSeResponseSet());
+        Assert.assertEquals(PLUGIN_NAME, event.getPluginName());
+        Assert.assertEquals(READER_NAME, event.getReaderName());
 
-        // test
-        r.processSeInserted();
-
-        // wait
-        lock.await(100, TimeUnit.MILLISECONDS);
-        Assert.assertEquals(0, lock.getCount());
     }
+
 
     /*
      * Simulate an IOException while selecting Do not throw any event Nor an exception
@@ -238,9 +198,6 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     public void noEvent_IOError() throws Exception {
         AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
         final CountDownLatch lock = new CountDownLatch(1);
-
-        // add a EVENT observer
-        r.addObserver(onEventCountDown(lock));
 
         // configure parameters
         Set<SeRequest> selections = new HashSet<SeRequest>();
@@ -252,16 +209,15 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         doThrow(new KeypleIOReaderException("io error when selecting")).when(r)
                 .transmitSet(selections, multi, channel);
 
-        r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel),
-                mode);
 
         // test
+        r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel),
+                mode);
         r.processSeInserted();
 
-        // wait
-        lock.await(100, TimeUnit.MILLISECONDS);
-        Assert.assertEquals(1, lock.getCount());
-        verify(r, times(1)).closeLogicalAndPhysicalChannels();
+        // test
+        ReaderEvent event = r.processSeInserted();
+        Assert.assertEquals(null, event);
     }
 
     /**
