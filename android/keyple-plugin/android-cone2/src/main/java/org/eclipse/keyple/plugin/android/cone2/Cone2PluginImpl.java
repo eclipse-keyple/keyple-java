@@ -74,15 +74,19 @@ final class Cone2PluginImpl extends AbstractThreadedObservablePlugin implements 
         if (isReaderPoweredOn != null && isReaderPoweredOn.get()) {
             LOG.debug("InitNativeReader() add the unique instance of AndroidCone2Reader");
             readers = new TreeSet<SeReader>();
-            readers.add(new Cone2ContactlessReaderImpl());
+            Cone2ContactlessReaderImpl contactlessReader = new Cone2ContactlessReaderImpl();
+            readers.add(contactlessReader);
+            readersNames.add(contactlessReader.getName());
             Cone2ContactReaderImpl sam1 = new Cone2ContactReaderImpl();
             sam1.setParameter(Cone2ContactReader.CONTACT_INTERFACE_ID
                     , Cone2ContactReader.CONTACT_INTERFACE_ID_SAM_1);
             readers.add(sam1);
+            readersNames.add(sam1.getName());
             Cone2ContactReaderImpl sam2 = new Cone2ContactReaderImpl();
             sam2.setParameter(Cone2ContactReader.CONTACT_INTERFACE_ID,
                     Cone2ContactReader.CONTACT_INTERFACE_ID_SAM_2);
             readers.add(sam2);
+            readersNames.add(sam2.getName());
             return readers;
         } else {
             return null;
@@ -107,6 +111,8 @@ final class Cone2PluginImpl extends AbstractThreadedObservablePlugin implements 
         throw new KeypleReaderException("Reader " + name + " not found!");
     }
 
+    SortedSet<String> readersNames = new TreeSet<String>();
+
     @Override
     public void power(final Context context, final boolean on) {
         ConePeripheral.RFID_ASK_UCM108_GPIO.getDescriptor().power(context, on)
@@ -120,7 +126,7 @@ final class Cone2PluginImpl extends AbstractThreadedObservablePlugin implements 
 
             @Override
             public void onSuccess(CpcResult.RESULT result) {
-                final SortedSet<String> readersNames = new TreeSet<String>();
+                //final SortedSet<String> readersNames = new TreeSet<String>();
                 if (readers != null) {
                     for (SeReader reader : readers) {
                         readersNames.add(reader.getName());
@@ -133,7 +139,6 @@ final class Cone2PluginImpl extends AbstractThreadedObservablePlugin implements 
                         @Override
                         public void onInstanceAvailable(Reader reader) {
                             initNativeReaders();
-                            notifyObservers(new PluginEvent(PLUGIN_NAME, readersNames, PluginEvent.EventType.READER_CONNECTED));
                         }
 
                         @Override
@@ -157,6 +162,6 @@ final class Cone2PluginImpl extends AbstractThreadedObservablePlugin implements 
 
     @Override
     protected SortedSet<String> fetchNativeReadersNames() throws KeypleReaderException {
-        return null;
+        return readersNames;
     }
 }
