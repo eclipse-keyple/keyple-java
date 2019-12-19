@@ -11,13 +11,12 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin.local.monitoring;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState;
 import org.eclipse.keyple.core.seproxy.plugin.local.MonitoringJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Ping the SE to detect removal thanks to the method
@@ -78,7 +77,7 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
             public void run() {
                 logger.debug("[{}] Polling from isSePresentPing", reader.getName());
 
-                //re-init loop value to true
+                // re-init loop value to true
                 loop.set(true);
                 while (loop.get()) {
                     if (!reader.isSePresentPing()) {

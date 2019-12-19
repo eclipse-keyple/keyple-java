@@ -55,7 +55,7 @@ public class CardPresentMonitoringJob implements MonitoringJob {
             @Override
             public void run() {
 
-                //re-init loop value to true
+                // re-init loop value to true
                 loop.set(true);
 
                 logger.debug("[{}] Polling from isSePresentPing", reader.getName());

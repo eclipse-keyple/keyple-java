@@ -1,26 +1,32 @@
+/********************************************************************************
+ * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.event;
 
+import static org.eclipse.keyple.core.seproxy.plugin.local.AbsObservableLocalReaderTest.getNotMatchingResponses;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.plugin.local.AbsLocalReaderSelectionTest;
 import org.eclipse.keyple.core.seproxy.plugin.local.AbsObservableLocalReaderTest;
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableLocalReader;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-
-import static org.eclipse.keyple.core.seproxy.plugin.local.AbsObservableLocalReaderTest.getNotMatchingResponses;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 
 public class DefaultSelectionTest {
 
@@ -35,7 +41,8 @@ public class DefaultSelectionTest {
     @Test
     public void seInserted() throws Exception {
         // empty reader
-        AbstractObservableLocalReader r = AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
+        AbstractObservableLocalReader r =
+                AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
 
         // test
         ReaderEvent event = r.processSeInserted();
@@ -51,7 +58,8 @@ public class DefaultSelectionTest {
      */
     @Test
     public void seInserted_ALWAYS() throws Exception {
-        AbstractObservableLocalReader r = AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
+        AbstractObservableLocalReader r =
+                AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
 
         // configure parameters
         Set<SeRequest> selections = new HashSet<SeRequest>();
@@ -82,7 +90,8 @@ public class DefaultSelectionTest {
      */
     @Test
     public void seMatched_MATCHED_ONLY() throws Exception {
-        AbstractObservableLocalReader r = AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
+        AbstractObservableLocalReader r =
+                AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
 
         // configure parameters
         Set<SeRequest> selections = new HashSet<SeRequest>();
@@ -92,7 +101,7 @@ public class DefaultSelectionTest {
 
         // mock
         // return success selection
-        List<SeResponse> responses =  AbsObservableLocalReaderTest.getMatchingResponses();
+        List<SeResponse> responses = AbsObservableLocalReaderTest.getMatchingResponses();
         doReturn(responses).when(r).transmitSet(selections, multi, channel);
 
         // test
@@ -110,13 +119,13 @@ public class DefaultSelectionTest {
 
 
 
-
     /*
      * selection is not successful
      */
     @Test
     public void noEvent_MATCHED_ONLY() throws Exception {
-        AbstractObservableLocalReader r = AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
+        AbstractObservableLocalReader r =
+                AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
 
         // configure parameters
         Set<SeRequest> selections = new HashSet<SeRequest>();
@@ -137,13 +146,13 @@ public class DefaultSelectionTest {
 
 
 
-
     /*
      * Simulate an IOException while selecting Do not throw any event Nor an exception
      */
     @Test
     public void noEvent_IOError() throws Exception {
-        AbstractObservableLocalReader r = AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
+        AbstractObservableLocalReader r =
+                AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
 
         // configure parameters
         Set<SeRequest> selections = new HashSet<SeRequest>();
