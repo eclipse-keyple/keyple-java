@@ -17,6 +17,8 @@ import org.eclipse.keyple.core.seproxy.plugin.local.MonitoringJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * Ping the SE to detect removal thanks to the method
  * {@link AbstractObservableLocalReader#isSePresentPing()}. This method is invoked in another
@@ -36,7 +38,7 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
 
     private final AbstractObservableLocalReader reader;
     private Runnable job;
-    Boolean loop;
+    final private AtomicBoolean loop = new AtomicBoolean();
     private long removalWait = 200;
 
     /**
@@ -46,7 +48,7 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
      */
     public CardAbsentPingMonitoringJob(AbstractObservableLocalReader reader) {
         this.reader = reader;
-        this.loop = true;
+        loop.set(true);
     }
 
     /**
@@ -57,7 +59,7 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
      */
     public CardAbsentPingMonitoringJob(AbstractObservableLocalReader reader, long removalWait) {
         this.reader = reader;
-        this.loop = true;
+        loop.set(true);
         this.removalWait = removalWait;
     }
 
@@ -75,10 +77,13 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
             @Override
             public void run() {
                 logger.debug("[{}] Polling from isSePresentPing", reader.getName());
-                while (loop) {
+
+                //re-init loop value to true
+                loop.set(true);
+                while (loop.get()) {
                     if (!reader.isSePresentPing()) {
                         logger.debug("[{}] The SE stopped responding", reader.getName());
-                        loop = false;
+                        loop.set(false);
                         state.onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
                         return;
                     }
@@ -93,7 +98,7 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
                     } catch (InterruptedException ignored) {
                         // Restore interrupted state...      
                         Thread.currentThread().interrupt();
-                        loop = false;
+                        loop.set(false);
                     }
                 }
 
@@ -107,6 +112,6 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
     @Override
     public void stop() {
         logger.debug("[{}] Stop Polling ", reader.getName());
-        loop = false;
+        loop.set(false);
     }
 }
