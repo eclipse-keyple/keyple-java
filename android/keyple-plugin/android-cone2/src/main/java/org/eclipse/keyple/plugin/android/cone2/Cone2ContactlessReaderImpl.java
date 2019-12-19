@@ -21,13 +21,14 @@ import org.eclipse.keyple.core.seproxy.plugin.local.SmartInsertionReader;
 import org.eclipse.keyple.core.seproxy.plugin.local.SmartRemovalReader;
 import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.CardAbsentPingMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.SmartInsertionMonitoringJob;
-import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.SmartRemovalMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeInsertion;
 import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeProcessing;
 import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeRemoval;
 import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForStartDetect;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,6 +51,8 @@ public final class Cone2ContactlessReaderImpl extends AbstractObservableLocalRea
         implements Cone2ContactlessReader, SmartInsertionReader, SmartRemovalReader {
     private final Map<String, String> parameters = new HashMap<String, String>();
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(Cone2ContactlessReaderImpl.class);
+
     // ASK reader
     private Reader reader;
     // RFID tag information returned by startDiscovery
@@ -59,6 +62,7 @@ public final class Cone2ContactlessReaderImpl extends AbstractObservableLocalRea
     private AtomicBoolean isPhysicalChannelOpened = new AtomicBoolean(false);
     // This boolean indicates that a card has been discovered
     private AtomicBoolean isCardDiscovered = new AtomicBoolean(false);
+    private AtomicBoolean isWaitingForCard = new AtomicBoolean(false);
 
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -68,6 +72,8 @@ public final class Cone2ContactlessReaderImpl extends AbstractObservableLocalRea
     Cone2ContactlessReaderImpl() {
         super(PLUGIN_NAME, READER_NAME);
 
+        LOGGER.debug("Cone2ContactlessReaderImpl");
+
         // We set parameters to default values
         parameters.put(CHECK_FOR_ABSENCE_TIMEOUT_KEY,
                 CHECK_FOR_ABSENCE_TIMEOUT_DEFAULT);
@@ -75,25 +81,32 @@ public final class Cone2ContactlessReaderImpl extends AbstractObservableLocalRea
                 THREAD_WAIT_TIMEOUT_DEFAULT);
 
         this.reader = Cone2AskReader.getInstance();
+
+        this.stateService = initStateService();
     }
 
     @Override
     public boolean waitForCardPresent() {
-        RfidTag rfidTag = enterHuntPhase();
+        LOGGER.debug("waitForCardPresent");
+        isWaitingForCard.set(true);
 
-        if (rfidTag.getCommunicationMode() != RfidTag.CommunicationMode.Unknown) {
-            isCardDiscovered.set(true);
-            this.rfidTag = rfidTag;
-            return true;
-        }
+        while(isWaitingForCard.get()) {
+            RfidTag rfidTag = enterHuntPhase();
 
-        // At the end of the timeout, we simply stop the discovery if no card has been discovered.
-        // If a card has been discovered, the discovery is automatically stopped.
-        if (reader != null) {
-            reader.stopDiscovery();
+            if (rfidTag.getCommunicationMode() != RfidTag.CommunicationMode.Unknown) {
+                isCardDiscovered.set(true);
+                isWaitingForCard.set(false);
+                this.rfidTag = rfidTag;
+                return true;
+            }
         }
 
         return false;
+    }
+
+    @Override
+    public void stopWaitForCard() {
+        isWaitingForCard.set(false);
     }
 
     /**
@@ -113,6 +126,7 @@ public final class Cone2ContactlessReaderImpl extends AbstractObservableLocalRea
      */
     @Override
     public void setParameter(String key, String value) throws IllegalArgumentException {
+        LOGGER.debug("setParameter");
         if (parameters.containsKey(key)) {
             parameters.put(key, value);
         }
@@ -125,6 +139,7 @@ public final class Cone2ContactlessReaderImpl extends AbstractObservableLocalRea
      */
     @Override
     public TransmissionMode getTransmissionMode() {
+        LOGGER.debug("getTransmissionMode");
         return TransmissionMode.CONTACTLESS;
     }
 
@@ -134,11 +149,13 @@ public final class Cone2ContactlessReaderImpl extends AbstractObservableLocalRea
      */
     @Override
     protected boolean checkSePresence() {
+        LOGGER.debug("checkSePresence");
         return isCardDiscovered.get();
     }
 
     @Override
     protected byte[] getATR() {
+        LOGGER.debug("getAtr");
         if (rfidTag != null) {
             return rfidTag.getAtr();
         }
@@ -164,6 +181,7 @@ public final class Cone2ContactlessReaderImpl extends AbstractObservableLocalRea
 
     @Override
     protected byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
+        LOGGER.debug("transmitApdu");
         byte[] apduAnswer;
 
         try {
@@ -201,6 +219,7 @@ public final class Cone2ContactlessReaderImpl extends AbstractObservableLocalRea
     }
 
     private RfidTag enterHuntPhase() {
+        LOGGER.debug("enterHuntPhase");
         // Thread synchronisation
         try {
             Cone2AskReader.acquireLock();
@@ -244,6 +263,7 @@ public final class Cone2ContactlessReaderImpl extends AbstractObservableLocalRea
 
     @Override
     protected ObservableReaderStateService initStateService() {
+        LOGGER.debug("initStateService");
         Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
                 new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
@@ -267,6 +287,12 @@ public final class Cone2ContactlessReaderImpl extends AbstractObservableLocalRea
 
     @Override
     public boolean waitForCardAbsentNative() throws KeypleIOReaderException {
+        LOGGER.debug("waitForCardAbsentNative");
         return false;
+    }
+
+    @Override
+    public void stopWaitForCardRemoval() {
+
     }
 }
