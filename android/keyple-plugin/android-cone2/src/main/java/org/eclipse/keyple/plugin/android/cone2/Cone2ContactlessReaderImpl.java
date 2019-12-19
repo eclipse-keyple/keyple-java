@@ -198,8 +198,7 @@ public final class Cone2ContactlessReaderImpl extends AbstractObservableLocalRea
             int length = dataReceivedLength[0];
 
             if (length < 2) {
-                // Hopefully, this should not happen
-                apduAnswer = new byte[2];
+                throw new KeypleIOReaderException("Incorrect APDU answer");
             } else {
                 // first byte is always length value. We can ignore it
                 apduAnswer = new byte[length-1];
