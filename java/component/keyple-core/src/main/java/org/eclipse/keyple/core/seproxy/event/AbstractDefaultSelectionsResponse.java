@@ -25,5 +25,5 @@ public abstract class AbstractDefaultSelectionsResponse {
     /**
      * @return the list of {@link SeResponse}
      */
-    protected abstract List<SeResponse> getSelectionSeResponseSet();
+    public abstract List<SeResponse> getSelectionSeResponseSet();
 }
