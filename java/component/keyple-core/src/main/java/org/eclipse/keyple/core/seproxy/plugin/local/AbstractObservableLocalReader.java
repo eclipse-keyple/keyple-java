@@ -273,11 +273,11 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      * the selection (the DefaultSelectionsResponse is however transmitted)
      * </ul>
      * <p>
-     * It returns null if a default selection is defined in MATCHED_ONLY mode but no SE matched
-     * the selection.
+     * It returns null if a default selection is defined in MATCHED_ONLY mode but no SE matched the
+     * selection.
      *
-     * @return ReaderEvent that should be notified to observers, contains the results of the default selection if any, can
-     *         be null if no event should be sent
+     * @return ReaderEvent that should be notified to observers, contains the results of the default
+     *         selection if any, can be null if no event should be sent
      */
     public final ReaderEvent processSeInserted() {
         logger.trace("[{}] processSeInserted => process the inserted se", this.getName());

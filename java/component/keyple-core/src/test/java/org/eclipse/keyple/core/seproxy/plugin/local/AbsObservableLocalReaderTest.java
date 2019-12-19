@@ -13,16 +13,11 @@ package org.eclipse.keyple.core.seproxy.plugin.local;
 
 import static org.mockito.Mockito.*;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.*;
 import org.eclipse.keyple.core.CoreBaseTest;
-import org.eclipse.keyple.core.seproxy.ChannelControl;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.plugin.mock.BlankObservableLocalReader;
 import org.junit.Assert;
@@ -81,7 +76,6 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         Assert.assertTrue(r.isSePresent());
         verify(r, times(0)).processSeRemoved();
     }
-
 
 
 
