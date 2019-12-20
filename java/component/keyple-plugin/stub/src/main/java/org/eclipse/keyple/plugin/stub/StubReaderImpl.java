@@ -178,7 +178,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
      */
 
     public synchronized void insertSe(StubSecureElement _se) {
-        // logger.info("Insert SE {}", _se);
+        logger.debug("Insert SE {}", _se);
         /* clean channels status */
         if (isPhysicalChannelOpen()) {
             try {
@@ -193,6 +193,8 @@ class StubReaderImpl extends AbstractObservableLocalReader
     }
 
     public synchronized void removeSe() {
+        logger.debug("Remove SE {}", se != null ? se : "none");
+
         se = null;
     }
 
