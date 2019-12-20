@@ -332,7 +332,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
      */
     @Override
     public void update(ReaderEvent event) {
-        logger.info("{} SlaveAPI - reader event {}", dtoNode.getNodeId(), event.getEventType());
+        logger.debug("{} SlaveAPI - reader event {}", dtoNode.getNodeId(), event.getEventType());
 
         // construct json data
         String data = JsonParser.getGson().toJson(event);
