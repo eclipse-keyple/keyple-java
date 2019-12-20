@@ -120,7 +120,7 @@ public class Demo_Master {
         ObservablePlugin.PluginObserver remoteSeObserver = new ObservablePlugin.PluginObserver() {
             @Override
             public void update(PluginEvent event) {
-                logger.info("{} UPDATE {} {} {}", node.getNodeId(), event.getEventType(),
+                logger.info("{} event {} {} {}", node.getNodeId(), event.getEventType(),
                         event.getPluginName(), event.getReaderNames().first());
                 switch (event.getEventType()) {
                     case READER_CONNECTED:
