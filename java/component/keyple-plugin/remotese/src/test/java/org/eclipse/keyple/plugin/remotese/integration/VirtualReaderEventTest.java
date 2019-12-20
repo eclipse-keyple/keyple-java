@@ -69,7 +69,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
     }
 
-    //@After
+    @After
     public void tearDown() throws Exception {
         disconnectReader(NATIVE_READER_NAME);
 
