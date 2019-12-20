@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -184,10 +183,11 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
         logger.debug("{} EVENT {} ", this.getName(), event.getEventType());
 
         if (thisReader.countObservers() > 0) {
-            //thisReader.notifyObservers(event);
+            // thisReader.notifyObservers(event);
 
 
-            //launch event another thread to permit blocking method to be used in update methode (such as transmit)
+            // launch event another thread to permit blocking method to be used in update methode
+            // (such as transmit)
             executorService.execute(new Runnable() {
                 @Override
                 public void run() {
