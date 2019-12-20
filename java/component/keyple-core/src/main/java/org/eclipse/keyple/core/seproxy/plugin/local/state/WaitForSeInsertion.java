@@ -58,7 +58,9 @@ public class WaitForSeInsertion extends AbstractObservableState {
                 // process default selection if any, return an event, can be null
                 ReaderEvent seEvent = this.reader.processSeInserted();
                 if (seEvent != null) {
+                    //switch internal state
                     switchState(MonitoringState.WAIT_FOR_SE_PROCESSING);
+                    //notify the external observer of the event
                     reader.notifyObservers(seEvent);
                 } else {
                     // if none event was sent to the application, back to SE detection
