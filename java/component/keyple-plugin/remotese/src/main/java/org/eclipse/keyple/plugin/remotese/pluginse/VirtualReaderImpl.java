@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -42,6 +44,8 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
     protected final RemoteMethodTxEngine rmTxEngine;
     protected final String slaveNodeId;
     protected final TransmissionMode transmissionMode;
+
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     private static final Logger logger = LoggerFactory.getLogger(VirtualReaderImpl.class);
 
@@ -180,6 +184,20 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
 
         if (thisReader.countObservers() > 0) {
             thisReader.notifyObservers(event);
+
+
+            // launch event another thread to permit blocking method to be used in update methode
+            // (such as transmit)
+            /*
+            executorService.execute(new Runnable() {
+                @Override
+                public void run() {
+                    thisReader.notifyObservers(event);
+                }
+            });
+
+             */
+
         } else {
             logger.debug(
                     "An event was received but no observers are declared into VirtualReader : {} {}",
