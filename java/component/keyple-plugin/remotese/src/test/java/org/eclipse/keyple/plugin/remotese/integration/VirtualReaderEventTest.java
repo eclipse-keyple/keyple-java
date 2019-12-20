@@ -48,29 +48,6 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     private VirtualObservableReader virtualReader;
     private StubReader nativeReader;
 
-    /**
-     * Create a new class extending AbstractSeSelectionRequest
-     */
-    private class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
-        TransmissionMode transmissionMode;
-
-        public GenericSeSelectionRequest(SeSelector seSelector) {
-            super(seSelector);
-            transmissionMode = seSelector.getSeProtocol().getTransmissionMode();
-        }
-
-        @Override
-        protected AbstractMatchingSe parse(SeResponse seResponse) {
-            class GenericMatchingSe extends AbstractMatchingSe {
-                public GenericMatchingSe(SeResponse selectionResponse,
-                        TransmissionMode transmissionMode, String extraInfo) {
-                    super(selectionResponse, transmissionMode, extraInfo);
-                }
-            }
-            return new GenericMatchingSe(seResponse, transmissionMode, "Generic Matching SE");
-        }
-    }
-
     /*
      * SE EVENTS
      */
@@ -92,7 +69,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
     }
 
-    @After
+    //@After
     public void tearDown() throws Exception {
         disconnectReader(NATIVE_READER_NAME);
 
@@ -326,8 +303,10 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         Thread.sleep(500);
 
         // test
-        nativeReader.insertSe(StubReaderTest.hoplinkSE());
+        nativeReader.insertSe(hoplinkSE());
 
+        Thread.sleep(100);
+        nativeReader.removeSe();
 
         // lock thread for 2 seconds max to wait for the event
         lock.await(3, TimeUnit.SECONDS);
@@ -399,7 +378,39 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     }
 
     @Test
-    public void testATR() throws InterruptedException {
+    public void processExplicitSelectionByAtr() throws InterruptedException, KeypleReaderException {
+
+        //Insert a SE
+        nativeReader.insertSe(hoplinkSE());
+
+        logger.info("Prepare SE Selection");
+        SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
+                ChannelControl.KEEP_OPEN);
+        GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
+                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                        new SeSelector.AtrFilter("3B.*"), null, "Test " + "ATR"));
+
+        /* Prepare selector, ignore AbstractMatchingSe here */
+        seSelection.prepareSelection(genericSeSelectionRequest);
+
+        logger.info("Process explicit SE Selection");
+
+        SelectionsResult selectionsResult =
+                seSelection.processExplicitSelection(virtualReader);
+
+        logger.info("Explicit SE Selection result : {}", selectionsResult);
+
+        AbstractMatchingSe matchingSe =
+                selectionsResult.getActiveSelection().getMatchingSe();
+
+        nativeReader.removeSe();
+
+        Assert.assertNotNull(matchingSe);
+        Assert.assertTrue(matchingSe.isSelected());
+    }
+
+    @Test
+    public void processExplicitSelection_onEvent() throws InterruptedException {
 
         // CountDown lock
         final CountDownLatch lock = new CountDownLatch(1);
@@ -409,7 +420,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
             public void update(ReaderEvent event) {
 
                 Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
-
+                logger.info("Prepare SE Selection");
                 SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
                         ChannelControl.KEEP_OPEN);
                 GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
@@ -419,18 +430,26 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                 /* Prepare selector, ignore AbstractMatchingSe here */
                 seSelection.prepareSelection(genericSeSelectionRequest);
 
+                logger.info("Process explicit SE Selection");
+
+                SelectionsResult selectionsResult =
+                        null;
                 try {
-                    SelectionsResult selectionsResult =
-                            seSelection.processExplicitSelection(virtualReader);
-
-                    AbstractMatchingSe matchingSe =
-                            selectionsResult.getActiveSelection().getMatchingSe();
-
-                    Assert.assertNotNull(matchingSe);
+                    selectionsResult = seSelection.processExplicitSelection(virtualReader);
 
                 } catch (KeypleReaderException e) {
-                    Assert.fail("Unexcepted exception");
+                    e.printStackTrace();
                 }
+
+                logger.info("Explicit SE Selection result : {}", selectionsResult);
+
+                AbstractMatchingSe matchingSe =
+                        selectionsResult.getActiveSelection().getMatchingSe();
+
+
+                Assert.assertNotNull(matchingSe);
+                Assert.assertTrue(matchingSe.isSelected());
+
                 // unlock thread
                 lock.countDown();
             }
@@ -440,20 +459,50 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         virtualReader.addObserver(obs);
 
         // wait 1 second
-        logger.debug("Wait 1 second before inserting SE");
-        Thread.sleep(500);
+        //Thread.sleep(1000);
 
         // test
-        nativeReader.insertSe(StubReaderTest.hoplinkSE());
+        logger.info("Inserting SE");
+        nativeReader.insertSe(hoplinkSE());
+        // Thread.sleep(2000);
+        // nativeReader.removeSe();
 
-        // lock thread for 2 seconds max to wait for the event
-        lock.await(5, TimeUnit.SECONDS);
+        // lock thread for 5 seconds max to wait for the event
+        logger.info("Lock main thread, wait for event to release this thread");
+        lock.await(2, TimeUnit.MINUTES);
         Assert.assertEquals(0, lock.getCount()); // should be 0 because countDown is called by
 
         // remove observer
-        virtualReader.removeObserver(obs);
+        //virtualReader.removeObserver(obs);
 
     }
 
+
+    /*
+     HeLPERS
+     */
+
+    /**
+     * Create a new class extending AbstractSeSelectionRequest
+     */
+    private class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
+        TransmissionMode transmissionMode;
+
+        public GenericSeSelectionRequest(SeSelector seSelector) {
+            super(seSelector);
+            transmissionMode = seSelector.getSeProtocol().getTransmissionMode();
+        }
+
+        @Override
+        protected AbstractMatchingSe parse(SeResponse seResponse) {
+            class GenericMatchingSe extends AbstractMatchingSe {
+                public GenericMatchingSe(SeResponse selectionResponse,
+                                         TransmissionMode transmissionMode, String extraInfo) {
+                    super(selectionResponse, transmissionMode, extraInfo);
+                }
+            }
+            return new GenericMatchingSe(seResponse, transmissionMode, "Generic Matching SE");
+        }
+    }
 
 }
