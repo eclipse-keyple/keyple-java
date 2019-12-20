@@ -73,7 +73,7 @@ public class WsPRetrofitClientImpl extends Observable implements ClientNode {
      * @param clientNodeId
      */
     private void poll(final String clientNodeId) {
-         logger.trace("Polling from node {}", clientNodeId);
+        logger.trace("Polling from node {}", clientNodeId);
         final WsPRetrofitClientImpl thisClient = this;
         // if poll is activated
         if (this.pollActivated) {

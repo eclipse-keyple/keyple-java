@@ -184,7 +184,7 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
 
         if (thisReader.countObservers() > 0) {
             /*
-            thisReader.notifyObservers(event);
+             * thisReader.notifyObservers(event);
              */
 
 
