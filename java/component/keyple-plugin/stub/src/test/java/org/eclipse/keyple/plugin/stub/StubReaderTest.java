@@ -531,9 +531,12 @@ public class StubReaderTest extends BaseStubTest {
         // test
         reader.insertSe(hoplinkSE());
 
+        Thread.sleep(100);
+        reader.removeSe();
 
         // lock thread for 2 seconds max to wait for the event
         lock.await(100, TimeUnit.MILLISECONDS);
+
         Assert.assertEquals(1, lock.getCount()); // should be 1 because countDown is never called
     }
 
@@ -598,7 +601,7 @@ public class StubReaderTest extends BaseStubTest {
     }
 
     @Test
-    public void testATR() throws Exception {
+    public void testExplicitSelection_onEvent() throws Exception {
         stubPlugin.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
         final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
