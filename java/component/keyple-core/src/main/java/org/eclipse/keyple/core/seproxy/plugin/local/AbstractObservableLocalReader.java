@@ -264,7 +264,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      * e.g. from the monitoring thread in the case of a Pcsc plugin or from the NfcAdapter callback
      * method onTagDiscovered in the case of a Android NFC plugin.
      * <p>
-     * It will fire a ReaderEvent in the following cases:
+     * It will return a ReaderEvent in the following cases:
      * <ul>
      * <li>SE_INSERTED: if no default selection request was defined
      * <li>SE_MATCHED: if a default selection request was defined in any mode and a SE matched the
@@ -273,12 +273,13 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      * the selection (the DefaultSelectionsResponse is however transmitted)
      * </ul>
      * <p>
-     * It will do nothing if a default selection is defined in MATCHED_ONLY mode but no SE matched
-     * the selection.
+     * It returns null if a default selection is defined in MATCHED_ONLY mode but no SE matched the
+     * selection.
      *
-     * @return true if the notification was actually sent to the application, false if not
+     * @return ReaderEvent that should be notified to observers, contains the results of the default
+     *         selection if any, can be null if no event should be sent
      */
-    public final boolean processSeInserted() {
+    public final ReaderEvent processSeInserted() {
         logger.trace("[{}] processSeInserted => process the inserted se", this.getName());
         boolean presenceNotified = false;
         if (defaultSelectionsRequest == null) {
@@ -286,9 +287,9 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                     "[{}] processSeInserted => no default selection request defined, notify SE_INSERTED",
                     this.getName());
             /* no default request is defined, just notify the SE insertion */
-            notifyObservers(new ReaderEvent(this.pluginName, this.name,
-                    ReaderEvent.EventType.SE_INSERTED, null));
             presenceNotified = true;
+            return new ReaderEvent(this.pluginName, this.name, ReaderEvent.EventType.SE_INSERTED,
+                    null);
         } else {
             /*
              * a default request is defined, send it and notify according to the notification mode
@@ -310,27 +311,28 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                     }
                 }
 
-
                 if (notificationMode == ObservableReader.NotificationMode.MATCHED_ONLY) {
                     /* notify only if a SE matched the selection, just ignore if not */
                     if (aSeMatched) {
-                        notifyObservers(new ReaderEvent(this.pluginName, this.name,
-                                ReaderEvent.EventType.SE_MATCHED,
-                                new DefaultSelectionsResponse(seResponseList)));
                         presenceNotified = true;
+                        return new ReaderEvent(this.pluginName, this.name,
+                                ReaderEvent.EventType.SE_MATCHED,
+                                new DefaultSelectionsResponse(seResponseList));
                     } else {
                         logger.trace(
                                 "[{}] processSeInserted => selection hasn't matched"
                                         + " do not thrown any event because of MATCHED_ONLY flag",
                                 this.getName());
+                        return null;
                     }
                 } else {
                     // ObservableReader.NotificationMode.ALWAYS
                     if (aSeMatched) {
+                        presenceNotified = true;
                         /* The SE matched, notify a SE_MATCHED event with the received response */
-                        notifyObservers(new ReaderEvent(this.pluginName, this.name,
+                        return new ReaderEvent(this.pluginName, this.name,
                                 ReaderEvent.EventType.SE_MATCHED,
-                                new DefaultSelectionsResponse(seResponseList)));
+                                new DefaultSelectionsResponse(seResponseList));
                     } else {
                         /*
                          * The SE didn't match, notify an SE_INSERTED event with the received
@@ -339,11 +341,11 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                         logger.trace(
                                 "[{}] processSeInserted => none of {} default selection matched",
                                 this.getName(), seResponseList.size());
-                        notifyObservers(new ReaderEvent(this.pluginName, this.name,
+                        presenceNotified = true;
+                        return new ReaderEvent(this.pluginName, this.name,
                                 ReaderEvent.EventType.SE_INSERTED,
-                                new DefaultSelectionsResponse(seResponseList)));
+                                new DefaultSelectionsResponse(seResponseList));
                     }
-                    presenceNotified = true;
                 }
             } catch (KeypleReaderException e) {
                 /* the last transmission failed, close the logical and physical channels */
@@ -363,8 +365,8 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                 logger.error("Error while closing physical channel. {}", e.getMessage());
             }
         }
-
-        return presenceNotified;
+        // no event returned
+        return null;
     }
 
     /**

@@ -54,6 +54,7 @@ public class Demo_Slave {
 
     static public String STUB_SLAVE = "stubSlave";
 
+    static public long RPC_TIMEOUT = 20000;
 
     /**
      * At startup, create the {@link DtoNode} object, either a {@link ClientNode} or a
@@ -93,7 +94,8 @@ public class Demo_Slave {
                 }.start();
 
                 // if slave is server, must specify which master to connect to
-                slaveAPI = new SlaveAPI(SeProxyService.getInstance(), node, masterNodeId);
+                slaveAPI =
+                        new SlaveAPI(SeProxyService.getInstance(), node, masterNodeId, RPC_TIMEOUT);
 
                 initPoReader();
 

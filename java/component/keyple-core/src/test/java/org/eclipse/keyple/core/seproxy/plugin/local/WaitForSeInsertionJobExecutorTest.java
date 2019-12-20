@@ -18,6 +18,7 @@ import static org.mockito.Mockito.verify;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.CoreBaseTest;
+import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.SmartInsertionMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeInsertion;
 import org.eclipse.keyple.core.seproxy.plugin.mock.BlankSmartInsertionTheadedReader;
@@ -76,7 +77,8 @@ public class WaitForSeInsertionJobExecutorTest extends CoreBaseTest {
          * input SE inserted SE matched
          */
         // se matched
-        doReturn(true).when(r).processSeInserted();
+        doReturn(new ReaderEvent("", "", ReaderEvent.EventType.SE_MATCHED, null)).when(r)
+                .processSeInserted();
         doReturn(true).when(r).waitForCardPresent();
 
         /* test */
@@ -91,12 +93,32 @@ public class WaitForSeInsertionJobExecutorTest extends CoreBaseTest {
     }
 
     @Test
-    public void testInsertSe_Notmatched() throws Exception {
+    public void testInsertSe_NotMatched() throws Exception {
         /*
          * input SE inserted SE doesnt matched
          */
         // se not matched
-        doReturn(false).when(r).processSeInserted();
+        doReturn(new ReaderEvent("", "", ReaderEvent.EventType.SE_INSERTED, null)).when(r)
+                .processSeInserted();
+        doReturn(true).when(r).waitForCardPresent();
+
+        /* test */
+        waitForInsert.onActivate();
+
+        Thread.sleep(20l);
+
+        /* Assert */
+        // switched to the same state to relaunch the monitoring job
+        verify(r, times(1)).switchState(WAIT_FOR_SE_PROCESSING);
+    }
+
+    @Test
+    public void testInsertSe_Error() throws Exception {
+        /*
+         * input SE inserted SE doesnt matched
+         */
+        // se not matched
+        doReturn(null).when(r).processSeInserted();
         doReturn(true).when(r).waitForCardPresent();
 
         /* test */

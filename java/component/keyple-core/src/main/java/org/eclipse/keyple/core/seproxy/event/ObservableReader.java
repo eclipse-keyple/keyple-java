@@ -144,9 +144,9 @@ public interface ObservableReader extends SeReader {
      * Starts the SE detection. Once activated, the application can be notified of the arrival of an
      * SE.
      * 
-     * @param pollingMode indicates the action to be followed after processing the SE: if CONTINUE,
-     *        the SE detection is restarted, if STOP, the SE detection is stopped until a new call
-     *        to startSeDetection is made.
+     * @param pollingMode indicates the action to be followed after processing the SE: if REPEATING,
+     *        the SE detection is restarted, if SINGLESHOT, the SE detection is stopped until a new
+     *        call to startSeDetection is made.
      */
     void startSeDetection(PollingMode pollingMode);
 

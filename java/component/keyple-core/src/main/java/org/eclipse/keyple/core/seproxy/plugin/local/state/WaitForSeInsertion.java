@@ -13,6 +13,7 @@ package org.eclipse.keyple.core.seproxy.plugin.local.state;
 
 import java.util.concurrent.ExecutorService;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState;
 import org.eclipse.keyple.core.seproxy.plugin.local.MonitoringJob;
@@ -54,9 +55,13 @@ public class WaitForSeInsertion extends AbstractObservableState {
          */
         switch (event) {
             case SE_INSERTED:
-                // process default selection if any
-                if (this.reader.processSeInserted()) {
+                // process default selection if any, return an event, can be null
+                ReaderEvent seEvent = this.reader.processSeInserted();
+                if (seEvent != null) {
+                    // switch internal state
                     switchState(MonitoringState.WAIT_FOR_SE_PROCESSING);
+                    // notify the external observer of the event
+                    reader.notifyObservers(seEvent);
                 } else {
                     // if none event was sent to the application, back to SE detection
                     // stay in the same state, however switch to WAIT_FOR_SE_INSERTION to relaunch
