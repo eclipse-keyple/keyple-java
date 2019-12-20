@@ -35,18 +35,29 @@ import org.eclipse.keyple.plugin.remotese.pluginse.VirtualObservableReader;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.plugin.stub.StubReaderTest;
 import org.junit.*;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Test Virtual Reader Service with stub plugin and hoplink SE
  */
+@RunWith(Parameterized.class)
 public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(VirtualReaderEventTest.class);
 
     private VirtualObservableReader virtualReader;
     private StubReader nativeReader;
+
+    static final Integer X_TIMES = 5; // run tests multiple times to reproduce flaky
+
+    @Parameterized.Parameters
+    public static Object[][] data() {
+        return new Object[X_TIMES][0];
+    }
+
 
     /*
      * SE EVENTS
@@ -415,51 +426,50 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         // CountDown lock
         final CountDownLatch lock = new CountDownLatch(1);
 
-        ObservableReader.ReaderObserver obs = new ObservableReader.ReaderObserver() {
+        ObservableReader.ReaderObserver virtualReaderObs = new ObservableReader.ReaderObserver() {
             @Override
-            public void update(ReaderEvent event) {
-
-                Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
-                logger.info("Prepare SE Selection");
-                SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
-                        ChannelControl.KEEP_OPEN);
-                GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
-                        new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                                new SeSelector.AtrFilter("3B.*"), null, "Test " + "ATR"));
-
-                /* Prepare selector, ignore AbstractMatchingSe here */
-                seSelection.prepareSelection(genericSeSelectionRequest);
-
-                logger.info("Process explicit SE Selection");
-
-                SelectionsResult selectionsResult =
-                        null;
-                try {
-                    selectionsResult = seSelection.processExplicitSelection(virtualReader);
-
-                } catch (KeypleReaderException e) {
-                    e.printStackTrace();
-                }
-
-                logger.info("Explicit SE Selection result : {}", selectionsResult);
-
-                AbstractMatchingSe matchingSe =
-                        selectionsResult.getActiveSelection().getMatchingSe();
+            public void update(final ReaderEvent event) {
 
 
-                Assert.assertNotNull(matchingSe);
-                Assert.assertTrue(matchingSe.isSelected());
+                        Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+                        logger.info("Prepare SE Selection");
+                        SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
+                                ChannelControl.KEEP_OPEN);
+                        GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
+                                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                                        new SeSelector.AtrFilter("3B.*"), null, "Test " + "ATR"));
 
-                // unlock thread
-                lock.countDown();
-            }
+                        /* Prepare selector, ignore AbstractMatchingSe here */
+                        seSelection.prepareSelection(genericSeSelectionRequest);
+
+                        logger.info("Process explicit SE Selection");
+
+                        SelectionsResult selectionsResult =
+                                null;
+                        try {
+                            selectionsResult = seSelection.processExplicitSelection(virtualReader);
+
+                        } catch (KeypleReaderException e) {
+                            e.printStackTrace();
+                        }
+
+                        logger.info("Explicit SE Selection result : {}", selectionsResult);
+
+                        AbstractMatchingSe matchingSe =
+                                selectionsResult.getActiveSelection().getMatchingSe();
+
+
+                        Assert.assertNotNull(matchingSe);
+                        Assert.assertTrue(matchingSe.isSelected());
+
+                        // unlock thread
+                        lock.countDown();
+                    }
+
         };
 
         // register observer
-        virtualReader.addObserver(obs);
-
-        // wait 1 second
-        //Thread.sleep(1000);
+        virtualReader.addObserver(virtualReaderObs);
 
         // test
         logger.info("Inserting SE");
