@@ -305,7 +305,6 @@ public class StubReaderTest extends BaseStubTest {
 
     }
 
-    // should not be unstable
     @Test
     public void A_testInsertRemoveTwiceFast() throws Exception {
         stubPlugin.plugStubReader("StubReaderTest", true);
@@ -659,6 +658,63 @@ public class StubReaderTest extends BaseStubTest {
     }
 
 
+    @Test
+    public void testNotifySeProcessed() throws Exception {
+        stubPlugin.plugStubReader("StubReaderTest", true);
+        Assert.assertEquals(1, stubPlugin.getReaders().size());
+        final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+
+
+        reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+
+        // CountDown lock
+        final CountDownLatch lock = new CountDownLatch(1);
+        final String poAid = "A000000291A000000191";
+
+        // add Protocol flag
+        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                StubProtocolSetting.STUB_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+
+        // add observer
+        readerObs = new ObservableReader.ReaderObserver() {
+            @Override
+            public void update(ReaderEvent event) {
+
+                if(ReaderEvent.EventType.SE_MATCHED == event.getEventType()){
+                    logger.info("SE_MATCHED event received");
+                    logger.info("Notify SE processed after 0ms");
+                    reader.notifySeProcessed();
+                    lock.countDown();
+                }
+            }
+        };
+
+        // add observer
+        reader.addObserver(readerObs);
+
+        SeSelection seSelection = new SeSelection();
+
+        PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
+                SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(poAid), null),
+                "AID: " + poAid));
+
+        seSelection.prepareSelection(poSelectionRequest);
+
+        ((ObservableReader) reader).setDefaultSelectionRequest(seSelection.getSelectionOperation(),
+                ObservableReader.NotificationMode.MATCHED_ONLY);
+
+        // test
+        reader.insertSe(hoplinkSE());
+
+        // lock thread for 2 seconds max to wait for the event
+        lock.await(2, TimeUnit.SECONDS);
+        Assert.assertEquals(0, lock.getCount()); // should be 0 because countDown is called by
+        // observer
+
+    }
+
     /*
      * TEST
      *
@@ -666,15 +722,6 @@ public class StubReaderTest extends BaseStubTest {
      *
      */
 
-    /*
-     * //moved to AbstractReader
-     * 
-     * @Test(expected = IllegalArgumentException.class) public void transmit_Hoplink_null() throws
-     * Exception { stubPlugin.plugStubReader("StubReaderTest", true); Assert.assertEquals(1,
-     * stubPlugin.getReaders().size()); StubReader reader = (StubReader)
-     * stubPlugin.getReader("StubReaderTest"); reader.insertSe(hoplinkSE()); ((ProxyReader)
-     * reader).transmitSet(null); // throws exception }
-     */
 
     @Test
     public void transmit_Hoplink_Successful() throws Exception {
