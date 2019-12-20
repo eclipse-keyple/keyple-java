@@ -117,7 +117,7 @@ public abstract class AbstractRemoteMethodTx<T> {
             throw new IllegalStateException(
                     "RemoteMethodTx#execute() can not be used until RemoteMethod is isRegistered in a RemoteMethodEngine, please call RemoteMethodEngine#register");
         }
-        logger.debug("Blocking Get {}", this.getClass().getCanonicalName());
+        // logger.debug("Blocking Get {}", this.getClass().getCanonicalName());
         final AbstractRemoteMethodTx thisInstance = this;
 
         Thread asyncSend = new Thread() {
@@ -127,7 +127,8 @@ public abstract class AbstractRemoteMethodTx<T> {
                     send(new IRemoteMethodTxCallback<T>() {
                         @Override
                         public void get(T response, KeypleRemoteException exception) {
-                            logger.debug("release lock");
+                            logger.debug("Release lock of rm {} {}", thisInstance.getMethodName(),
+                                    thisInstance.id);
                             lock.countDown();
                         }
                     });
@@ -144,7 +145,7 @@ public abstract class AbstractRemoteMethodTx<T> {
             logger.trace("" + "" + "Set callback on RemoteMethodTx {} {}",
                     this.getClass().getCanonicalName(), this.hashCode());
             asyncSend.start();
-            logger.trace("Lock {}, {}", this.getClass().getCanonicalName(), this.hashCode());
+            logger.trace("Lock {}, {}", thisInstance.getMethodName(), this.id);
             boolean responseReceived = lock.await(timeout, TimeUnit.MILLISECONDS);
 
             if (responseReceived) {
