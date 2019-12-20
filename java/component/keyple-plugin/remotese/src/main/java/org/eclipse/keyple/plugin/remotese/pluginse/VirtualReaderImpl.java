@@ -183,12 +183,13 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
         logger.debug("{} EVENT {} ", this.getName(), event.getEventType());
 
         if (thisReader.countObservers() > 0) {
+            /*
             thisReader.notifyObservers(event);
+             */
 
 
             // launch event another thread to permit blocking method to be used in update methode
             // (such as transmit)
-            /*
             executorService.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -196,7 +197,6 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
                 }
             });
 
-             */
 
         } else {
             logger.debug(
