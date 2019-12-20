@@ -58,6 +58,8 @@ public class Demo_Master {
     // DtoNode used as to send and receive KeypleDto to Slaves
     private DtoNode node;
 
+    static public long RPC_TIMEOUT = 20000;
+
     static public String STUB_MASTER = "stubMaster";
 
     /**
@@ -254,7 +256,7 @@ public class Demo_Master {
             // Create masterAPI with a DtoSender
             // Dto Sender is required so masterAPI can send KeypleDTO to Slave
             // In this case, node is used as the dtosender (can be client or server)
-            masterAPI = new MasterAPI(SeProxyService.getInstance(), node);
+            masterAPI = new MasterAPI(SeProxyService.getInstance(), node, RPC_TIMEOUT);
 
             // observe remote se plugin for events
             logger.info("{} Observe SeRemotePlugin for Plugin Events and Reader Events",
