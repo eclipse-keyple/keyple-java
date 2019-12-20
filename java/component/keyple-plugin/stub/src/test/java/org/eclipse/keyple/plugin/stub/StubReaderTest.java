@@ -681,7 +681,7 @@ public class StubReaderTest extends BaseStubTest {
             @Override
             public void update(ReaderEvent event) {
 
-                if(ReaderEvent.EventType.SE_MATCHED == event.getEventType()){
+                if (ReaderEvent.EventType.SE_MATCHED == event.getEventType()) {
                     logger.info("SE_MATCHED event received");
                     logger.info("Notify SE processed after 0ms");
                     reader.notifySeProcessed();
