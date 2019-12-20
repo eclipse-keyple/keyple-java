@@ -45,7 +45,7 @@ public class WaitForSeRemovalJobExecutorTest extends CoreBaseTest {
 
     final Long WAIT = 500l;
 
-    static final Integer X_TIMES = 10; // run tests multiple times to reproduce flaky
+    static final Integer X_TIMES = 5; // run tests multiple times to reproduce flaky
 
     @Parameterized.Parameters
     public static Object[][] data() {

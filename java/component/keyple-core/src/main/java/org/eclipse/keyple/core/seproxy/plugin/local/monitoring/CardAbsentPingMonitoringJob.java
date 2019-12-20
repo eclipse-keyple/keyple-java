@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin.local.monitoring;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState;
 import org.eclipse.keyple.core.seproxy.plugin.local.MonitoringJob;
@@ -36,7 +37,7 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
 
     private final AbstractObservableLocalReader reader;
     private Runnable job;
-    Boolean loop;
+    final private AtomicBoolean loop = new AtomicBoolean();
     private long removalWait = 200;
 
     /**
@@ -46,18 +47,16 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
      */
     public CardAbsentPingMonitoringJob(AbstractObservableLocalReader reader) {
         this.reader = reader;
-        this.loop = true;
     }
 
     /**
      * Create a job monitor job that ping the SE with the method isSePresentPing()
-     * 
+     *
      * @param reader : reference to the reader
      * @param removalWait : delay between between each APDU sending
      */
     public CardAbsentPingMonitoringJob(AbstractObservableLocalReader reader, long removalWait) {
         this.reader = reader;
-        this.loop = true;
         this.removalWait = removalWait;
     }
 
@@ -75,10 +74,13 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
             @Override
             public void run() {
                 logger.debug("[{}] Polling from isSePresentPing", reader.getName());
-                while (loop) {
+
+                // re-init loop value to true
+                loop.set(true);
+                while (loop.get()) {
                     if (!reader.isSePresentPing()) {
                         logger.debug("[{}] The SE stopped responding", reader.getName());
-                        loop = false;
+                        loop.set(false);
                         state.onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
                         return;
                     }
@@ -93,7 +95,7 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
                     } catch (InterruptedException ignored) {
                         // Restore interrupted state...      
                         Thread.currentThread().interrupt();
-                        loop = false;
+                        loop.set(false);
                     }
                 }
 
@@ -107,6 +109,6 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
     @Override
     public void stop() {
         logger.debug("[{}] Stop Polling ", reader.getName());
-        loop = false;
+        loop.set(false);
     }
 }
