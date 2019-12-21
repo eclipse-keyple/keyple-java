@@ -20,7 +20,29 @@ All 4 examples execute the same scenario :
 The ticketing logic is defined in the Master terminal, the slave Terminal acts only as a proxy. All SE inserted in the slave are accessible from the Master.
 
 4 examples of Remote SE plugin :   
-- ``Demo_WebserviceWithRetrofit_MasterClient`` : Execute the demo with a Webservice protocol, the Master device uses a Retrofit client 
-- ``Demo_WebserviceWithRetrofit_MasterServer`` : Execute the demo with a webservice protocol, the Master device uses the webservice server
-- ``DemoWsKMasterServer`` : Execute the demo with a websocket protocol, the master device uses the websocket server
-- ``DemoWsKMasterClient`` : Execute the demo with a websocket protocol, the master device uses the websocket client
+- ``Demo_WebserviceWithRetrofit_MasterClient`` : execute the demo with a Webservice protocol, the Master device uses a Retrofit client 
+- ``Demo_WebserviceWithRetrofit_MasterServer`` : execute the demo with a webservice protocol, the Master device uses the webservice server
+- ``DemoWsKMasterServer`` : execute the demo with a websocket protocol, the master device uses the websocket server
+- ``DemoWsKMasterClient`` : execute the demo with a websocket protocol, the master device uses the websocket client
+
+Executing the Example
+---
+
+###Requirements
+
+Remotese examples requires a specific JDK in order to have the polling working correctly. 
+
+It has been successfully tested with :
+- ``jdk1.8.0_40``
+
+Some issues have been acknowledged with the WebserviceWithRetrofit examples on a newer JDK :
+- ``jdk1.8.0_231`` 
+- ``adoptopenjdk-11.jdk``
+
+###Run
+
+Use the custom gradle tasks :
+- ```./gradlew runWs_MasterClient``` to execute the demo with a Webservice protocol, the Master device uses a Retrofit client  
+- ```./gradlew runWS_MasterServer``` to execute the demo with a webservice protocol, the Master device uses the webservice server
+- ```./gradlew runWsK_MasterClient``` to execute the demo with a websocket protocol, the master device uses the websocket server
+- ```./gradlew runWsK_MasterServer``` to execute the demo with a websocket protocol, the master device uses the websocket client
