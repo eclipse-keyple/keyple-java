@@ -62,9 +62,9 @@ class StubReaderImpl extends AbstractObservableLocalReader
     StubReaderImpl(String pluginName, String readerName) {
         super(pluginName, readerName);
 
-        //create a executor service with one thread whose name is customized
-        executorService = Executors.newSingleThreadExecutor(
-                new NamedThreadFactory("MonitoringThread-"+readerName));
+        // create a executor service with one thread whose name is customized
+        executorService = Executors
+                .newSingleThreadExecutor(new NamedThreadFactory("MonitoringThread-" + readerName));
 
         stateService = initStateService();
 
