@@ -29,6 +29,7 @@ import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeRemoval;
 import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForStartDetect;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +48,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
 
     TransmissionMode transmissionMode = TransmissionMode.CONTACTLESS;
 
-    protected ExecutorService executorService = Executors.newSingleThreadExecutor();
+    final protected ExecutorService executorService;
 
 
     final private AtomicBoolean loopWaitSe = new AtomicBoolean();
@@ -56,11 +57,18 @@ class StubReaderImpl extends AbstractObservableLocalReader
     /**
      * Do not use directly
      * 
-     * @param name
+     * @param readerName
      */
-    StubReaderImpl(String pluginName, String name) {
-        super(pluginName, name);
+    StubReaderImpl(String pluginName, String readerName) {
+        super(pluginName, readerName);
+
+        // create a executor service with one thread whose name is customized
+        executorService = Executors
+                .newSingleThreadExecutor(new NamedThreadFactory("MonitoringThread-" + readerName));
+
         stateService = initStateService();
+
+
     }
 
     /**
