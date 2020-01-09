@@ -22,8 +22,12 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.example.common.ReaderUtilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CalypsoUtilities {
+    private final static Logger logger = LoggerFactory.getLogger(CalypsoUtilities.class);
+
     private static Properties properties;
 
     static {
@@ -111,15 +115,20 @@ public class CalypsoUtilities {
         CalypsoSam calypsoSam;
 
         try {
-            calypsoSam = (CalypsoSam) samSelection.processExplicitSelection(samReader)
-                    .getActiveSelection().getMatchingSe();
-            if (!calypsoSam.isSelected()) {
-                throw new IllegalStateException("Unable to open a logical channel for SAM!");
+            if (samReader.isSePresent()) {
+                calypsoSam = (CalypsoSam) samSelection.processExplicitSelection(samReader)
+                        .getActiveSelection().getMatchingSe();
+                if (!calypsoSam.isSelected()) {
+                    throw new IllegalStateException("Unable to open a logical channel for SAM!");
+                }
             } else {
+                throw new IllegalStateException(
+                        "No SAM is present in the reader " + samReader.getName());
             }
         } catch (KeypleReaderException e) {
             throw new IllegalStateException("Reader exception: " + e.getMessage());
         }
+        logger.info("The SAM resource has been created");
         return new SamResource(samReader, calypsoSam);
     }
 }
