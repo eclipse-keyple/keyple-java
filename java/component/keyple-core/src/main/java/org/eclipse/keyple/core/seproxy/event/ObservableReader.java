@@ -195,6 +195,16 @@ public interface ObservableReader extends SeReader {
      * <p>
      * The action to be continued will be the one defined by the PollingMode used to start the SE
      * detection.
+     * <p>
+     * The call of this method is mandatory only if the current transaction performed via an
+     * observed reader did not end with a call to an operation causing a physical channel closing
+     * (CLOSE_AFTER). The main objective here is to achieve the closing of the physical channel. A
+     * typical use of this method is in handling exceptions (catch) that may occur during a
+     * transaction that would prevent reaching the last operation closing the physical channel.
+     * <p>
+     * The channel closing here refers to the application's intention to no longer communicate with
+     * the SE. This may take the form of an immediate physical channel closing in the case of an
+     * unobserved reader or a delayed closing upon removal of the SE (removal sequence).
      */
     void notifySeProcessed();
 }
