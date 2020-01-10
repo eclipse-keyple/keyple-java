@@ -36,7 +36,7 @@ import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin;
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPluginFactory;
 import android.app.Fragment;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;

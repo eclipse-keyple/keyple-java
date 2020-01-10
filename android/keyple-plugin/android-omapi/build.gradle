@@ -1,3 +1,5 @@
+apply from: "../../build.gradle"
+
 def version = "0.9.0"
 
 if(project.getProperties().containsKey("release") && release=="true"){
@@ -8,27 +10,23 @@ if(project.getProperties().containsKey("release") && release=="true"){
 
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
+
 archivesBaseName = "keyple-android-plugin-omapi"
 
 group 'org.eclipse.keyple'
 project.description = 'Keyple Plugin Android OMAPI'
 
-pmd {
-    ruleSets = [
-            "java-basic",
-            "java-braces",
-    ]
-}
-
 android {
-    compileSdkVersion 26
-    buildToolsVersion '26.0.3'
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
 
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 21
+        targetSdkVersion 29
         versionName project.version
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner " androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -38,8 +36,8 @@ android {
     }
     
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_6
-        targetCompatibility JavaVersion.VERSION_1_6
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     testOptions {
@@ -217,23 +215,20 @@ task installPlugin{
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], exclude: ['org.simalliance.openmobileapi.jar'], dir: 'libs')
+    def kotlin_version = '1.3.31'
+
+    //simalliance omapi definition
+    compileOnly files('libs/org.simalliance.openmobileapi.jar')
+
+    //Kotlin
+    implementation 'androidx.core:core-ktx:1.1.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     //keyple-core project
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: project.version
 
-    //android
-    implementation "com.android.support:support-v4:${android_support_version}"
-    implementation "com.android.support:appcompat-v7:${android_support_version}"
-
     //logging
     implementation "org.slf4j:slf4j-api:${slf4japi_version}"
-
-    //omapi definition
-    compileOnly files('libs/org.simalliance.openmobileapi.jar')
-    /*
-    Tests
-     *
 
     /** Test **/
     testImplementation files('libs/org.simalliance.openmobileapi.jar')

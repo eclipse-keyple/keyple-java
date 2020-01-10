@@ -6,7 +6,8 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:3.4.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.31"
     }
 }
 
@@ -14,17 +15,15 @@ apply plugin: 'com.android.application'
 
 project.group 'org.eclipse.keyple'
 
-
 android {
-    compileSdkVersion 26
-    buildToolsVersion '26.0.3'
+    compileSdkVersion 29
     defaultConfig {
         applicationId "org.eclipse.keyple.example.calyspo.android.omapi"
         minSdkVersion 19
-        targetSdkVersion 26
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -69,7 +68,8 @@ dependencies {
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: '+'
 
     //import the last version of keyple-java-plugin-omapi
-    implementation group: 'org.eclipse.keyple', name: 'keyple-android-plugin-omapi', version: '+'
+    //implementation group: 'org.eclipse.keyple', name: 'keyple-android-plugin-omapi', version: '+'
+    implementation project(':android-omapi')
 
     /*
     OMAPI dependencies
@@ -79,10 +79,9 @@ dependencies {
     /*
     Android components
      */
-    implementation "com.android.support:support-v4:${android_support_version}"
-    implementation "com.android.support:appcompat-v7:${android_support_version}"
-    implementation "com.android.support:design:${android_support_version}"
-    implementation "com.android.support.constraint:constraint-layout:${android_support_constraint_version}"
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
 
     /*
@@ -97,7 +96,7 @@ dependencies {
     Test
      */
     testImplementation "junit:junit:${junit_version}"
-    androidTestImplementation "com.android.support.test:runner:${android_support_test}"
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:${android_support_espresso}"
+    androidTestImplementation 'androidx.test:runner:1.1.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
 
 }
