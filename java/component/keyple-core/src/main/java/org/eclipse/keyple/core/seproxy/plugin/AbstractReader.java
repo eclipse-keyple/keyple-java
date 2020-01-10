@@ -336,7 +336,8 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
             try {
                 // close the physical channel thanks to CLOSE_AFTER flag
                 processSeRequest(null, CLOSE_AFTER);
-                logger.trace("Explicit physical channel closing executed.");
+                logger.trace(
+                        "Explicit communication closing requested, starting removal sequence.");
             } catch (KeypleReaderException e) {
                 logger.error("KeypleReaderException while terminating. {}", e.getMessage());
             }
