@@ -9,9 +9,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.plugin.android.omapi;
+package org.eclipse.keyple.plugin.android.omapi.simalliance;
 
 import java.lang.reflect.InvocationTargetException;
+
 import org.simalliance.openmobileapi.SEService;
 import android.app.Application;
 import android.content.Context;

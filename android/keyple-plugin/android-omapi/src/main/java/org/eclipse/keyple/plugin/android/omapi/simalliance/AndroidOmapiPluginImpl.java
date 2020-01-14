@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.plugin.android.omapi;
+package org.eclipse.keyple.plugin.android.omapi.simalliance;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,8 +17,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleRuntimeException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
+import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin;
 import org.simalliance.openmobileapi.Reader;
 import org.simalliance.openmobileapi.SEService;
 import android.util.Log;
@@ -26,7 +26,7 @@ import android.util.Log;
 /**
  * Loads and configures {@link AndroidOmapiReaderImpl} for each SE Reader in the platform
  */
-final class AndroidOmapiPluginImpl extends AbstractPlugin implements AndroidOmapiPlugin, SEService.CallBack {
+public final class AndroidOmapiPluginImpl extends AbstractPlugin implements AndroidOmapiPlugin, SEService.CallBack {
 
     private static final String TAG = AndroidOmapiPluginImpl.class.getSimpleName();
 

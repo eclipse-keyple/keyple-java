@@ -74,7 +74,7 @@ public class OMAPITestFragment extends Fragment {
 
         /* register Omapi Plugin to the SeProxyService */
         try {
-            seProxyService.registerPlugin(new AndroidOmapiPluginFactory());
+            seProxyService.registerPlugin(new AndroidOmapiPluginFactory(getActivity()));
         } catch (KeyplePluginInstantiationException e) {
             e.printStackTrace();
         }

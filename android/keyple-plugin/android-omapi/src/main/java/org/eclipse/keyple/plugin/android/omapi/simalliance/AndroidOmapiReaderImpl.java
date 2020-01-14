@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.plugin.android.omapi;
+package org.eclipse.keyple.plugin.android.omapi.simalliance;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -27,6 +27,7 @@ import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiReader;
 import org.simalliance.openmobileapi.Channel;
 import org.simalliance.openmobileapi.Reader;
 import org.simalliance.openmobileapi.Session;
@@ -37,6 +38,7 @@ import android.util.Log;
 
 /**
  * Implementation of the {@link AndroidOmapiReader} based on the {@link AbstractLocalReader}
+ * with org.simalliance.omapi
  */
 final class AndroidOmapiReaderImpl extends AbstractLocalReader implements AndroidOmapiReader, SmartSelectionReader {
 
