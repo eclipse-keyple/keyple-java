@@ -1,6 +1,10 @@
 RELEASE NOTE
 ============
 
+0.8.0-20200114
+--------------
+- Fixes issue #1:  When powering off the reader, the API is still waiting for card.
+
 0.8.0-20200108
 --------------
 

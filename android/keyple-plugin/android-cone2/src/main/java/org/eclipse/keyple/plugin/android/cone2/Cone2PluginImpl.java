@@ -115,6 +115,15 @@ final class Cone2PluginImpl extends AbstractThreadedObservablePlugin implements 
 
     @Override
     public void power(final Context context, final boolean on) {
+        // Stops waiting for card when reader is powered off
+        if(!on) {
+            for (SeReader reader:readers) {
+                if (reader.getName().compareTo(Cone2ContactlessReader.READER_NAME) == 0) {
+                    ((Cone2ContactlessReaderImpl)reader).stopWaitForCard();
+                }
+            }
+        }
+
         ConePeripheral.RFID_ASK_UCM108_GPIO.getDescriptor().power(context, on)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
@@ -126,7 +135,6 @@ final class Cone2PluginImpl extends AbstractThreadedObservablePlugin implements 
 
             @Override
             public void onSuccess(CpcResult.RESULT result) {
-                //final SortedSet<String> readersNames = new TreeSet<String>();
                 if (readers != null) {
                     for (SeReader reader : readers) {
                         readersNames.add(reader.getName());
