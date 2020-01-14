@@ -17,33 +17,36 @@ object AndroidSeOmapiPluginImpl: AbstractPlugin(AndroidOmapiPlugin.PLUGIN_NAME),
     private var seService: SEService? = null
 
     fun init(context: Context): AndroidOmapiPlugin{
-        Log.d(TAG, "Init")
-        val seServiceFactory = SeServiceFactoryImpl(context.applicationContext)
-        seService = seServiceFactory.connectToSe(this)
-        Log.i(TAG, "OMAPI SEService version: " + seService?.version)
-        return this
+        return if(seService != null){
+            this
+        }else{
+            Log.d(TAG, "Init")
+            val seServiceFactory = SeServiceFactoryImpl(context.applicationContext)
+            seService = seServiceFactory.connectToSe(this)
+            Log.i(TAG, "OMAPI SEService version: " + seService?.version)
+            this
+        }
     }
 
     override fun initNativeReaders(): SortedSet<SeReader> {
         Log.d(TAG, "initNativeReaders")
-        val readers = sortedSetOf<SeReader>()
-        if (seService?.isConnected == true) {
-            seService?.readers?.forEach {
+        val readers = sortedSetOf<SeReader>() // empty list is returned us service not connected
+        seService?.readers?.let {nativeReaders ->
+            readers.addAll(nativeReaders.map {
                 Log.d(TAG, "Reader available name : " + it.name)
                 Log.d(TAG,
                         "Reader available isSePresent : " + it.isSecureElementPresent)
-                val seReader = AndroidSeOmapiReaderImpl(AndroidOmapiPlugin.PLUGIN_NAME, it, it.name)
-                readers.add(seReader)
-            }
+                AndroidSeOmapiReaderImpl(AndroidOmapiPlugin.PLUGIN_NAME, it, it.name)
+            })
+        }
 
-            return readers
-
-        } else {
+        if(readers.isEmpty()){
             Log.w(TAG, "OMAPI SeService is not connected yet")
-            return readers// empty list
             //throw new KeypleReaderException("OMAPI SeService is not connected yet, try again");
             //can throw an exception to notif
         }
+
+        return readers
     }
 
     /**
