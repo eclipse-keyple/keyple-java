@@ -25,13 +25,13 @@ public class Cone2ContactlessReaderImplTestWithCard extends Cone2ContactlessRead
     @Test
     public void waitForCardPresentTest() {
         // Waits for the card to be detected
-        assertThat(reader.waitForCardPresent(SEARCH_TIMEOUT), is(true));
+        assertThat(reader.waitForCardPresent(), is(true));
     }
 
     @Test
     public void checkSePresenceTest() {
         // Waits for the card to be detected
-        assertThat(reader.waitForCardPresent(SEARCH_TIMEOUT), is(true));
+        assertThat(reader.waitForCardPresent(), is(true));
         // Checks that checkSePresent returns true
         assertThat(reader.checkSePresence(), is(true));
     }

@@ -109,6 +109,10 @@ public final class Cone2ContactlessReaderImpl extends AbstractObservableLocalRea
         isWaitingForCard.set(false);
     }
 
+    boolean isWaitingForCard() {
+        return isWaitingForCard.get();
+    }
+
     /**
      * Get Reader parameters
      *

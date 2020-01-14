@@ -6,6 +6,7 @@ import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import fr.coppernic.sdk.ask.Reader;
@@ -13,8 +14,6 @@ import fr.coppernic.sdk.power.impl.cone.ConePeripheral;
 
 @RunWith(AndroidJUnit4.class)
 public class Cone2ContactlessReaderImplTestBase extends TestBase {
-    protected static final int SEARCH_TIMEOUT = 3000;
-
     private Context context;
     protected Cone2ContactlessReaderImpl reader;
 
@@ -42,6 +41,11 @@ public class Cone2ContactlessReaderImplTestBase extends TestBase {
         block();
         // Reader can now be instantiated
         reader = new Cone2ContactlessReaderImpl();
+    }
+
+    @Test
+    public void dummyTest() {
+
     }
 
     @After
