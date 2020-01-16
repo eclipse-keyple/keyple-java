@@ -71,37 +71,39 @@ public final class Cone2ContactlessReaderImpl extends AbstractObservableLocalRea
      */
     Cone2ContactlessReaderImpl() {
         super(PLUGIN_NAME, READER_NAME);
-
         LOGGER.debug("Cone2ContactlessReaderImpl");
-
         // We set parameters to default values
         parameters.put(CHECK_FOR_ABSENCE_TIMEOUT_KEY,
                 CHECK_FOR_ABSENCE_TIMEOUT_DEFAULT);
         parameters.put(THREAD_WAIT_TIMEOUT_KEY,
                 THREAD_WAIT_TIMEOUT_DEFAULT);
-
+        // Gets ASK reader instance
         this.reader = Cone2AskReader.getInstance();
-
+        // Gets state service
         this.stateService = initStateService();
     }
 
     @Override
     public boolean waitForCardPresent() {
         LOGGER.debug("waitForCardPresent");
+        boolean ret = false;
         isWaitingForCard.set(true);
-
+        Cone2PluginImpl.acquireLock();
+        // Entering a loop with successive hunts for card
         while(isWaitingForCard.get()) {
             RfidTag rfidTag = enterHuntPhase();
 
             if (rfidTag.getCommunicationMode() != RfidTag.CommunicationMode.Unknown) {
+                this.rfidTag = rfidTag;
                 isCardDiscovered.set(true);
                 isWaitingForCard.set(false);
-                this.rfidTag = rfidTag;
-                return true;
+                // This allows synchronisation with PLugin when powering off the reader
+                ret = true;
             }
         }
-
-        return false;
+        // This allows synchronisation with Plugin when powering off the reader
+        Cone2PluginImpl.releaseLock();
+        return ret;
     }
 
     @Override
@@ -289,7 +291,7 @@ public final class Cone2ContactlessReaderImpl extends AbstractObservableLocalRea
     }
 
     @Override
-    public boolean waitForCardAbsentNative() throws KeypleIOReaderException {
+    public boolean waitForCardAbsentNative() {
         LOGGER.debug("waitForCardAbsentNative");
         return false;
     }

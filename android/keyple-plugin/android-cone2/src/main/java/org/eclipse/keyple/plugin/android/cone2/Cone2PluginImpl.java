@@ -12,11 +12,12 @@
 package org.eclipse.keyple.plugin.android.cone2;
 
 import android.content.Context;
+import android.os.SystemClock;
 
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,13 +26,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 
 import fr.coppernic.sdk.ask.Reader;
 import fr.coppernic.sdk.power.impl.cone.ConePeripheral;
 import fr.coppernic.sdk.utils.core.CpcResult;
+import io.reactivex.Completable;
+import io.reactivex.CompletableEmitter;
+import io.reactivex.CompletableOnSubscribe;
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -40,10 +47,13 @@ import io.reactivex.schedulers.Schedulers;
 
 final class Cone2PluginImpl extends AbstractThreadedObservablePlugin implements Cone2Plugin {
     private static final Logger LOG = LoggerFactory.getLogger(Cone2PluginImpl.class);
+    private static final int POWER_OFF_TIMEOUT = 1000;
 
     private final Map<String, String> parameters = new HashMap<String, String>();// not in use in this
     // plugin
     private AtomicBoolean isReaderPoweredOn = new AtomicBoolean(false);
+
+    private static ReentrantLock waitForCardPresentLock = new ReentrantLock();
 
     Cone2PluginImpl() {
         super(PLUGIN_NAME);
@@ -111,65 +121,122 @@ final class Cone2PluginImpl extends AbstractThreadedObservablePlugin implements 
         throw new KeypleReaderException("Reader " + name + " not found!");
     }
 
-    SortedSet<String> readersNames = new TreeSet<String>();
+    private SortedSet<String> readersNames = new TreeSet<String>();
 
     @Override
     public void power(final Context context, final boolean on) {
-        // Stops waiting for card when reader is powered off
-        if(!on) {
-            for (SeReader reader:readers) {
-                if (reader.getName().compareTo(Cone2ContactlessReader.READER_NAME) == 0) {
-                    ((Cone2ContactlessReaderImpl)reader).stopWaitForCard();
-                }
-            }
+        if (on) {
+            powerOn(context);
+        } else {
+            powerOff(context);
         }
-
-        ConePeripheral.RFID_ASK_UCM108_GPIO.getDescriptor().power(context, on)
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .subscribe(new SingleObserver<CpcResult.RESULT>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-
-            }
-
-            @Override
-            public void onSuccess(CpcResult.RESULT result) {
-                if (readers != null) {
-                    for (SeReader reader : readers) {
-                        readersNames.add(reader.getName());
-                    }
-                }
-
-                if (on) {
-                    isReaderPoweredOn.set(true);
-                    Cone2AskReader.getInstance(context, new Cone2AskReader.ReaderListener() {
-                        @Override
-                        public void onInstanceAvailable(Reader reader) {
-                            initNativeReaders();
-                        }
-
-                        @Override
-                        public void onError(int error) {
-
-                        }
-                    });
-                } else {
-                    isReaderPoweredOn.set(false);
-                    Cone2AskReader.clearInstance();
-                    notifyObservers(new PluginEvent(PLUGIN_NAME, readersNames, PluginEvent.EventType.READER_DISCONNECTED));
-                }
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-        });
     }
 
     @Override
-    protected SortedSet<String> fetchNativeReadersNames() throws KeypleReaderException {
+    protected SortedSet<String> fetchNativeReadersNames() {
         return readersNames;
+    }
+
+    /**
+     * Powers on reader.
+     * @param context Context
+     */
+    private void powerOn(final Context context) {
+        ConePeripheral.RFID_ASK_UCM108_GPIO.getDescriptor().power(context, true)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe(new SingleObserver<CpcResult.RESULT>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(CpcResult.RESULT result) {
+                        if (readers != null) {
+                            for (SeReader reader : readers) {
+                                readersNames.add(reader.getName());
+                            }
+                        }
+                        isReaderPoweredOn.set(true);
+                        Cone2AskReader.getInstance(context, new Cone2AskReader.ReaderListener() {
+                            @Override
+                            public void onInstanceAvailable(Reader reader) {
+                                initNativeReaders();
+                            }
+
+                            @Override
+                            public void onError(int error) {
+                                LOG.error("Error trying to get CpcAsk.Reader instance");
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        LOG.error("Error trying to power on the reader");
+                    }
+                });
+    }
+
+    /**
+     * Powers off reader and stops card discovery.
+     * @param context Context
+     */
+    private void powerOff(Context context) {
+        for (SeReader reader : readers) {
+            if (reader.getName().compareTo(Cone2ContactlessReader.READER_NAME) == 0) {
+                final Cone2ContactlessReaderImpl cone2Reader = (Cone2ContactlessReaderImpl) reader;
+                cone2Reader.stopWaitForCard();
+
+                // This completable monitors the waitForCardPresent method. while it is running, it
+                // is waiting for it to finish before powezring off the reader.
+                // If the
+                Completable.create(new CompletableOnSubscribe() {
+                    @Override
+                    public void subscribe(CompletableEmitter emitter) {
+                        acquireLock();
+                        releaseLock();
+                        emitter.onComplete();
+                    }
+                }).timeout(POWER_OFF_TIMEOUT, TimeUnit.MILLISECONDS)
+                        .andThen(ConePeripheral.RFID_ASK_UCM108_GPIO.getDescriptor().power(context, false))
+                        .doOnError(new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) {
+                                releaseLock();
+                                LOG.error("Error trying to power off the reader");
+                            }
+                        })
+                        .subscribe(new SingleObserver<CpcResult.RESULT>() {
+                            @Override
+                            public void onSubscribe(Disposable d) {
+
+                            }
+
+                            @Override
+                            public void onSuccess(CpcResult.RESULT result) {
+                                isReaderPoweredOn.set(false);
+                                Cone2AskReader.clearInstance();
+                                notifyObservers(new PluginEvent(PLUGIN_NAME,
+                                        readersNames,
+                                        PluginEvent.EventType.READER_DISCONNECTED));
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                LOG.error("Error trying to power off the reader");
+                            }
+                        });
+            }
+        }
+    }
+
+    static void acquireLock() {
+        waitForCardPresentLock.lock();
+    }
+
+    static void releaseLock() {
+        waitForCardPresentLock.unlock();
     }
 }
