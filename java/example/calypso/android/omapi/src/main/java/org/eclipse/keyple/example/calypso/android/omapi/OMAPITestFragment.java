@@ -37,11 +37,12 @@ import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPluginFactory;
 import android.app.Fragment;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import timber.log.Timber;
 
 /**
  * View for OMAPI Tests
@@ -67,7 +68,7 @@ public class OMAPITestFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         // initialize SEProxy with Android Plugin
-        Log.d(TAG, "Initialize SEProxy with Android OMAPI Plugin ");
+        Timber.d("Initialize SEProxy with Android OMAPI Plugin ");
 
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
@@ -115,7 +116,7 @@ public class OMAPITestFragment extends Fragment {
                 mText.append("\nTry to reload..");
             } else {
                 for (SeReader aReader : readers) {
-                    Log.d(TAG, "Launching tests for reader : " + aReader.getName());
+                    Timber.d("Launching tests for reader : %s ", aReader.getName());
                     runHoplinkSimpleRead(aReader);
                 }
 
@@ -131,7 +132,7 @@ public class OMAPITestFragment extends Fragment {
      * Run Hoplink Simple read command
      */
     private void runHoplinkSimpleRead(SeReader reader) {
-        Log.d(TAG, "Running HopLink Simple Read Tests");
+        Timber.d("Running HopLink Simple Read Tests");
 
         getActivity().runOnUiThread(new Runnable() {
             @Override
@@ -168,7 +169,7 @@ public class OMAPITestFragment extends Fragment {
                      * attributes to make the selection and read additional information afterwards
                      */
                     PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
-                            new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                            new PoSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
                                     new PoSelector.PoAidSelector(
                                             new SeSelector.AidSelector.IsoAid(poAid),
                                             PoSelector.InvalidatedPo.REJECT),
@@ -185,12 +186,12 @@ public class OMAPITestFragment extends Fragment {
                      */
                     int readEnvironmentParserIndex = poSelectionRequest.prepareReadRecordsCmd(
                             SFIHoplinkEFT2Environment, ReadDataStructure.SINGLE_RECORD_DATA,
-                            (byte) 1, String.format("Hoplink EF T2Environment (SFI=%02X)",
+                            (byte) 1, 32, String.format("Hoplink EF T2Environment (SFI=%02X)",
                                     SFIHoplinkEFT2Environment));
 
                     int readUsageParserIndex = poSelectionRequest.prepareReadRecordsCmd(
                             SFIHoplinkEFT2Environment, ReadDataStructure.SINGLE_RECORD_DATA,
-                            (byte) 1, String.format("Hoplink EF T2Usage (SFI=%02X)",
+                            (byte) 1, 48, String.format("Hoplink EF T2Usage (SFI=%02X)",
                                     SFIHoplinkEFT2Environment));
 
                     /*
@@ -206,12 +207,7 @@ public class OMAPITestFragment extends Fragment {
                      * selection and the file read
                      */
 
-                    SelectionsResult selectionsResult = null;
-                    try {
-                        selectionsResult = seSelection.processExplicitSelection(reader);
-                    } catch (KeypleReaderException e) {
-                        e.printStackTrace();
-                    }
+                    SelectionsResult selectionsResult = seSelection.processExplicitSelection(reader);
 
                     if (selectionsResult.hasActiveSelection()) {
                         MatchingSelection matchingSelection = selectionsResult.getActiveSelection();
@@ -284,9 +280,11 @@ public class OMAPITestFragment extends Fragment {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            e.printStackTrace();
+                            Timber.e(e);
+
                             mText.append("\n ---- \n");
                             mText.append("IOReader Exception : " + e.getMessage());
+                            if(e.getCause() != null) mText.append("\n" + e.getCause().getMessage());
 
                         }
                     });

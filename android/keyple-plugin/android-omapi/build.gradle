@@ -228,7 +228,8 @@ dependencies {
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: project.version
 
     //logging
-    implementation "org.slf4j:slf4j-api:${slf4japi_version}"
+    implementation "org.slf4j:slf4j-api:${slf4japi_version}" //java
+    implementation 'com.jakewharton.timber:timber:4.7.1' //Android
 
     /** Test **/
     testImplementation files('libs/org.simalliance.openmobileapi.jar')

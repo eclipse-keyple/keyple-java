@@ -140,7 +140,7 @@ class AndroidSeOmapiReaderImpl(pluginName: String, private val omapiReader: Read
             session = omapiReader.openSession()
         } catch (e: IOException) {
             Log.e(TAG, "IOException", e)
-            throw KeypleChannelControlException("IOException while opening physical channel.")
+            throw KeypleChannelControlException("IOException while opening physical channel.", e)
         }
     }
 
