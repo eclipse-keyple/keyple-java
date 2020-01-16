@@ -39,6 +39,9 @@ public enum CalypsoPoCommands implements CommandsTable {
     /** The po update record. */
     UPDATE_RECORD("Update Record", (byte) 0xDC),
 
+    /** The po write record. */
+    WRITE_RECORD("Write Record", (byte) 0xD2),
+
     /** The po append record. */
     APPEND_RECORD("Append Record", (byte) 0xE2),
 
