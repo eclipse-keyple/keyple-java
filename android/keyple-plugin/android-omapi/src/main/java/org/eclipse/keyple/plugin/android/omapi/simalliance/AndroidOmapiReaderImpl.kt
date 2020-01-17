@@ -32,6 +32,7 @@ import kotlin.experimental.or
  * Implementation of the [AndroidOmapiReader] based on the [AbstractLocalReader]
  * with org.simalliance.omapi
  */
+private const val P2_SUPPORTED_MIN_VERSION = 3
 internal class AndroidOmapiReaderImpl(private val nativeReader: Reader, pluginName: String,readerName: String)
     : AndroidOmapiReader(pluginName, readerName){
 
@@ -93,7 +94,7 @@ internal class AndroidOmapiReaderImpl(private val nativeReader: Reader, pluginNa
                         if(0 == p2.toInt()){
                             session?.openLogicalChannel(aidSelector.aidToSelect.value)
                         }else{
-                            if(omapiVersion >= 3){
+                            if(omapiVersion >= P2_SUPPORTED_MIN_VERSION){
                                 session?.openLogicalChannel(aidSelector.aidToSelect.value, p2)
                             }else{
                                 throw IOException(String.format("P2 != 00h while opening logical channel is only supported by OMAPI version >= 3.0. Current is %s", omapiVersion.toString()))
@@ -111,8 +112,6 @@ internal class AndroidOmapiReaderImpl(private val nativeReader: Reader, pluginNa
                 Timber.e(e, "SecurityException")
                 throw KeypleChannelControlException("SecurityException while opening logical channel, aid :" + ByteArrayUtil.toHex(aidSelector.aidToSelect.value), e.cause)
             }
-
-            Session::class.java.declaredMethods
 
             if (openChannel == null) {
                 throw KeypleIOReaderException("Failed to open a logical channel.")
