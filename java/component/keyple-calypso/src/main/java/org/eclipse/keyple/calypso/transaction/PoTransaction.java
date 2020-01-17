@@ -2015,11 +2015,12 @@ public final class PoTransaction {
      * Builds an UpdateRecord command and add it to the list of commands to be sent with the next
      * process command
      * <p>
-     * Returns the associated response parser.
+     * Returns the associated response parser index.
      *
      * @param sfi the sfi to select
      * @param recordNumber the record number to update
-     * @param newRecordData the new record data to write
+     * @param newRecordData the new record data. If length &lt; RecSize, bytes beyond length are
+     *        left unchanged.
      * @param extraInfo extra information included in the logs (can be null or empty)
      * @return the command index (input order, starting at 0)
      * @throws IllegalArgumentException - if record number is &lt; 1
@@ -2035,11 +2036,37 @@ public final class PoTransaction {
                 recordNumber, newRecordData, extraInfo));
     }
 
+
+    /**
+     * Builds an WriteRecord command and add it to the list of commands to be sent with the next
+     * process command
+     * <p>
+     * Returns the associated response parser index.
+     *
+     * @param sfi the sfi to select
+     * @param recordNumber the record number to write
+     * @param overwriteRecordData the data to overwrite in the record. If length &lt; RecSize, bytes
+     *        beyond length are left unchanged.
+     * @param extraInfo extra information included in the logs (can be null or empty)
+     * @return the command index (input order, starting at 0)
+     * @throws IllegalArgumentException - if record number is &lt; 1
+     * @throws IllegalArgumentException - if the request is inconsistent
+     */
+    public int prepareWriteRecordCmd(byte sfi, byte recordNumber, byte[] overwriteRecordData,
+            String extraInfo) {
+        /*
+         * create and keep the PoBuilderParser, return the command index
+         */
+
+        return createAndStoreCommandBuilder(new WriteRecordCmdBuild(calypsoPo.getPoClass(), sfi,
+                recordNumber, overwriteRecordData, extraInfo));
+    }
+
     /**
      * Builds a Increase command and add it to the list of commands to be sent with the next process
      * command
      * <p>
-     * Returns the associated response parser.
+     * Returns the associated response parser index.
      *
      * @param counterNumber &gt;= 01h: Counters file, number of the counter. 00h: Simulated Counter
      *        file.
@@ -2065,7 +2092,7 @@ public final class PoTransaction {
      * Builds a Decrease command and add it to the list of commands to be sent with the next process
      * command
      * <p>
-     * Returns the associated response parser.
+     * Returns the associated response parser index.
      *
      * @param counterNumber &gt;= 01h: Counters file, number of the counter. 00h: Simulated Counter
      *        file.
