@@ -86,17 +86,17 @@ internal class AndroidOmapiReaderImpl(private val nativeReader: Reader, pluginNa
                     this.name, ByteArrayUtil.toHex(aidSelector.aidToSelect.value))
             try {
                 //openLogicalChannel of SimAlliance OMAPI is only available for version 3.0+ of the library.
-                //By default the library always pass p2=00h
-                //So if a p2 different of 00h is passed, we must check if omapi support it. otherwise we throw an exception
-                val p2 = aidSelector.fileOccurrence.isoBitMask or aidSelector.fileControlInformation.isoBitMask or 2.toByte()
+                //By default the library always passes p2=00h
+                //So if a p2 different of 00h is requested, we must check if omapi support it. Otherwise we throw an exception.
+                val p2 = aidSelector.fileOccurrence.isoBitMask or aidSelector.fileControlInformation.isoBitMask
                 openChannel =
-                        if("00".toByte() == p2){
+                        if(0 == p2.toInt()){
                             session?.openLogicalChannel(aidSelector.aidToSelect.value)
                         }else{
                             if(omapiVersion >= 3){
                                 session?.openLogicalChannel(aidSelector.aidToSelect.value, p2)
                             }else{
-                                throw IOException(String.format("P2 != 0 while opening logical channel is only supported by OMAPI version >= 3.0. Current is %s", omapiVersion.toString()))
+                                throw IOException(String.format("P2 != 00h while opening logical channel is only supported by OMAPI version >= 3.0. Current is %s", omapiVersion.toString()))
                             }
                         }
 
