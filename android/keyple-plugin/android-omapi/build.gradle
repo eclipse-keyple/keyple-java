@@ -10,8 +10,8 @@ if(project.getProperties().containsKey("release") && release=="true"){
 
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 archivesBaseName = "keyple-android-plugin-omapi"
 

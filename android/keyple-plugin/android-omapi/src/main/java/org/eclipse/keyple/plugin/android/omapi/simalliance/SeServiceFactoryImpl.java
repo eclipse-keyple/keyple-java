@@ -20,6 +20,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.util.Log;
 
+import timber.log.Timber;
 
 
 class SeServiceFactoryImpl implements ISeServiceFactory {
@@ -29,10 +30,10 @@ class SeServiceFactoryImpl implements ISeServiceFactory {
     @Override
     public SEService connectToSe(SEService.CallBack callBack) {
         if (isEnvironmentReady()) {
-            Log.w(TAG, "Environment is ready for OMAPI, connecting to SeService");
+            Timber.w("Environment is ready for OMAPI, connecting to SeService");
             return new SEService(getApplicationContext(), callBack);
         } else {
-            Log.w(TAG, "Environment is not ready for OMAPI");
+            Timber.w("Environment is not ready for OMAPI");
             return null;
         }
     }

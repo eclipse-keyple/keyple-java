@@ -15,8 +15,7 @@ import android.content.Context
 import org.eclipse.keyple.core.seproxy.AbstractPluginFactory
 import org.eclipse.keyple.core.seproxy.ReaderPlugin
 import org.eclipse.keyple.plugin.android.omapi.se.AndroidSeOmapiPluginImpl
-import org.eclipse.keyple.plugin.android.omapi.simalliance.AndroidSaOmapiPluginImpl
-import timber.log.Timber
+import org.eclipse.keyple.plugin.android.omapi.simalliance.AndroidOmapiPluginImpl
 
 /**
  * Build asynchronously the Android OMAPI plugin.
@@ -31,7 +30,7 @@ class AndroidOmapiPluginFactory(val context: Context) : AbstractPluginFactory() 
     //TODO throw error is Android is not compatible with OMAPI
     override fun getPluginInstance(): ReaderPlugin {
         return if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.P) {
-            AndroidSaOmapiPluginImpl.init(context)
+            AndroidOmapiPluginImpl.init(context)
         } else {
             AndroidSeOmapiPluginImpl.init(context)
         }

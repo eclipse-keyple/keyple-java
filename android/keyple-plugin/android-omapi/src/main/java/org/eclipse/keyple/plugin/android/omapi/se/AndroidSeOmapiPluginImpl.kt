@@ -21,10 +21,10 @@ object AndroidSeOmapiPluginImpl: AndroidOmapiPlugin<Reader, SEService>(), SEServ
         return seService?.readers
     }
 
-    override fun mapToSeReader(reader: Reader): SeReader{
-        Timber.d("Reader available name : %s", reader.name)
-        Timber.d("Reader available isSePresent : %S", reader.isSecureElementPresent)
-        return AndroidSeOmapiReaderImpl(PLUGIN_NAME, reader, reader.name)
+    override fun mapToSeReader(nativeReader: Reader): SeReader{
+        Timber.d("Reader available name : %s", nativeReader.name)
+        Timber.d("Reader available isSePresent : %S", nativeReader.isSecureElementPresent)
+        return AndroidSeOmapiReaderImpl(nativeReader, PLUGIN_NAME, nativeReader.name)
     }
 
     /**

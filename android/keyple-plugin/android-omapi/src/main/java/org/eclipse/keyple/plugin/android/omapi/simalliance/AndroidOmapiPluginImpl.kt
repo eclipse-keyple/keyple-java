@@ -7,7 +7,7 @@ import org.simalliance.openmobileapi.Reader
 import org.simalliance.openmobileapi.SEService
 import timber.log.Timber
 
-object AndroidSaOmapiPluginImpl: AndroidOmapiPlugin<Reader, SEService>(), SEService.CallBack {
+object AndroidOmapiPluginImpl: AndroidOmapiPlugin<Reader, SEService>(), SEService.CallBack {
 
     override fun connectToSe(context: Context) {
         val seServiceFactory = SeServiceFactoryImpl()
@@ -19,10 +19,10 @@ object AndroidSaOmapiPluginImpl: AndroidOmapiPlugin<Reader, SEService>(), SEServ
         return seService?.readers
     }
 
-    override fun mapToSeReader(reader: Reader): SeReader {
-        Timber.d("Reader available name : %s", reader.name)
-        Timber.d("Reader available isSePresent : %S", reader.isSecureElementPresent)
-        return AndroidOmapiReaderImpl(PLUGIN_NAME, reader, reader.name)
+    override fun mapToSeReader(nativeReader: Reader): SeReader {
+        Timber.d("Reader available name : %s", nativeReader.name)
+        Timber.d("Reader available isSePresent : %S", nativeReader.isSecureElementPresent)
+        return AndroidOmapiReaderImpl(nativeReader, PLUGIN_NAME, nativeReader.name)
     }
 
     /**
