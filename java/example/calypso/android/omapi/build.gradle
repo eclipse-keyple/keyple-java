@@ -19,6 +19,12 @@ apply plugin: 'kotlin-android'
 
 project.group 'org.eclipse.keyple'
 
+//Loading Keystore specified for SE Access
+Properties properties = new Properties()
+if(project.rootProject.file("local.properties").exists()){
+    properties.load(project.rootProject.file("local.properties").newDataInputStream())
+}
+
 android {
     compileSdkVersion 29
     defaultConfig {
@@ -29,7 +35,25 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
+    signingConfigs {
+        if(properties.containsKey("path_to_se_registered_keystore")){
+            keypleDebug{
+                storeFile file(properties["path_to_se_registered_keystore"])
+                storePassword properties["keystore_password"]
+                keyAlias properties["key_alias"]
+                keyPassword properties["key_password"]
+            }
+        }
+    }
+
+
     buildTypes {
+        if(properties.containsKey("path_to_se_registered_keystore")){
+            debug{
+                signingConfig signingConfigs.keypleDebug
+            }
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
