@@ -107,7 +107,7 @@ public class Cone2AskReader {
      */
     static void clearInstance () {
         if (uniqueAskReaderInstance.get() != null) {
-            uniqueAskReaderInstance.get().cscClose();
+            uniqueAskReaderInstance.get().destroy();
             uniqueAskReaderInstance = new WeakReference<Reader>(null);
         }
     }
