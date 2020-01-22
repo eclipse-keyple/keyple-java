@@ -33,6 +33,7 @@ import org.mockito.Mockito;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.simalliance.openmobileapi.Channel;
 import org.simalliance.openmobileapi.Reader;
+import org.simalliance.openmobileapi.SEService;
 import org.simalliance.openmobileapi.Session;
 
 @RunWith(PowerMockRunner.class)
@@ -53,7 +54,7 @@ public class AndroidOmapiReaderTest {
         omapiReader = mockReader();
 
         // instantiate reader with omapiReader
-        reader = new AndroidOmapiReaderImpl(PLUGIN_NAME, omapiReader, omapiReader.getName());
+        reader = new AndroidOmapiReaderImpl(omapiReader, PLUGIN_NAME, omapiReader.getName());
     }
 
 
@@ -107,7 +108,7 @@ public class AndroidOmapiReaderTest {
 
         // init
         omapiReader = mockReaderWithNoAid();
-        reader = new AndroidOmapiReaderImpl(PLUGIN_NAME, omapiReader, omapiReader.getName());
+        reader = new AndroidOmapiReaderImpl(omapiReader, PLUGIN_NAME, omapiReader.getName());
 
         // test
         List<SeResponse> seResponseList = reader.transmitSet(getSampleSeRequest());
@@ -144,7 +145,7 @@ public class AndroidOmapiReaderTest {
         when(omapiReader.getName()).thenReturn("SIM1");
         when(omapiReader.isSecureElementPresent()).thenReturn(false);
         when(omapiReader.openSession()).thenThrow(new IOException());
-        reader = new AndroidOmapiReaderImpl(PLUGIN_NAME, omapiReader, omapiReader.getName());
+        reader = new AndroidOmapiReaderImpl(omapiReader, PLUGIN_NAME, omapiReader.getName());
 
         // test
         List<SeResponse> seResponseList = reader.transmitSet(getSampleSeRequest());
@@ -164,14 +165,19 @@ public class AndroidOmapiReaderTest {
         Reader omapiReader = Mockito.mock(Reader.class);
         Session session = Mockito.mock(Session.class);
         Channel channel = Mockito.mock(Channel.class);
+        SEService seService = Mockito.mock(SEService.class);
+        String version = "3.2";
 
         when(omapiReader.getName()).thenReturn("SIM1");
         when(omapiReader.isSecureElementPresent()).thenReturn(true);
+        when(omapiReader.getSEService()).thenReturn(seService);
         when(session.openLogicalChannel(ByteArrayUtil.fromHex(poAid), (byte)0x00)).thenReturn(channel);
         when(omapiReader.openSession()).thenReturn(session);
         when(session.getATR()).thenReturn(null);
         when(channel.getSelectResponse()).thenReturn(ByteArrayUtil.fromHex(poAidResponse));
         when(channel.getSession()).thenReturn(session);
+        when(seService.getVersion()).thenReturn(version);
+
 
         when(channel.transmit(ByteArrayUtil.fromHex("00B201A420"))).thenReturn(ByteArrayUtil
                 .fromHex("00000000000000000000000000000000000000000000000000000000000000009000"));
@@ -185,13 +191,16 @@ public class AndroidOmapiReaderTest {
         Reader omapiReader = Mockito.mock(Reader.class);
         Session session = Mockito.mock(Session.class);
         Channel channel = Mockito.mock(Channel.class);
+        SEService seService = Mockito.mock(SEService.class);
+        String version = "2.04";
 
         when(omapiReader.getName()).thenReturn("SIM1");
         when(omapiReader.isSecureElementPresent()).thenReturn(true);
+        when(omapiReader.getSEService()).thenReturn(seService);
         when(omapiReader.openSession()).thenReturn(session);
-        when(session.openLogicalChannel(ByteArrayUtil.fromHex(poAid), (byte)0x00))
+        when(session.openLogicalChannel(ByteArrayUtil.fromHex(poAid)))
                 .thenThrow(new NoSuchElementException(""));
-
+        when(seService.getVersion()).thenReturn(version);
         return omapiReader;
 
     }

@@ -248,4 +248,7 @@ dependencies {
     testImplementation "org.powermock:powermock-api-mockito:${powermock_version}"
     testImplementation "org.powermock:powermock-module-junit4:${powermock_version}"
     /**End of power mock **/
+
+    /** Mockk**/
+    testImplementation "io.mockk:mockk:1.9"
 }
