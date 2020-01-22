@@ -10,7 +10,7 @@ import timber.log.Timber
 object AndroidOmapiPluginImpl: AndroidOmapiPlugin<Reader, SEService>(), SEService.CallBack {
 
     override fun connectToSe(context: Context) {
-        val seServiceFactory = SeServiceFactoryImpl()
+        val seServiceFactory = SeServiceFactoryImpl(context)
         seService = seServiceFactory.connectToSe(this)
         Timber.i("OMAPI SEService version: %s", seService?.version)
     }

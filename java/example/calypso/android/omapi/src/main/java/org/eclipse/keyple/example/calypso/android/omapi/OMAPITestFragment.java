@@ -118,6 +118,7 @@ public class OMAPITestFragment extends Fragment {
                 for (SeReader aReader : readers) {
                     Timber.d("Launching tests for reader : %s ", aReader.getName());
                     runHoplinkSimpleRead(aReader);
+                    runNavigoSimpleRead(aReader);
                 }
 
             }
@@ -126,6 +127,165 @@ public class OMAPITestFragment extends Fragment {
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * Run Hoplink Simple read command
+     */
+    private void runNavigoSimpleRead(SeReader reader) {
+        Timber.d("Running HopLink Simple Read Tests");
+
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                mText.append("\nLaunching tests for reader : " + reader.getName());
+
+                try {
+
+                    String poAid = "A00000040401250901"; //navigo (without version number 01)
+
+                    byte sfiNavigoEFEnvrironment = (byte) 0x07;
+                    byte sfiNavigoEFTransportEvent = (byte) 0x08;
+
+                    /*
+                     * Prepare a Calypso PO selection
+                     */
+                    SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
+                            ChannelControl.KEEP_OPEN);
+
+                    /*
+                     * Setting of an AID based selection of a Calypso REV3 PO
+                     *
+                     * Select the first application matching the selection AID whatever the SE
+                     * communication protocol keep the logical channel open after the selection
+                     */
+
+                    /*
+                     * Calypso selection: configures a PoSelectionRequest with all the desired
+                     * attributes to make the selection and read additional information afterwards
+                     */
+                    PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
+                            new PoSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
+                                    new PoSelector.PoAidSelector(
+                                            new SeSelector.AidSelector.IsoAid(poAid),
+                                            PoSelector.InvalidatedPo.REJECT),
+                                    "AID: " + poAid));
+
+
+                    mText.append("\n");
+                    mText.append("Selecting application : " + poAid);
+                    mText.append("\n");
+
+                    /*
+                     * Prepare the reading order and keep the associated parser for later use once
+                     * the selection has been made.
+                     */
+                    int readEnvironmentParserIndex = poSelectionRequest.prepareReadRecordsCmd(
+                            sfiNavigoEFEnvrironment, ReadDataStructure.SINGLE_RECORD_DATA,
+                            (byte) 1, 29, String.format("Navigo2013 EF environment (SFI=%02X)",
+                                    sfiNavigoEFEnvrironment));
+
+                    int readTransportEventParserIndex = poSelectionRequest.prepareReadRecordsCmd(
+                            sfiNavigoEFTransportEvent, ReadDataStructure.SINGLE_RECORD_DATA,
+                            (byte) 1, 29, String.format("Navigo2013 EF TransportEvent (SFI=%02X)",
+                                    sfiNavigoEFTransportEvent));
+
+                    /*
+                     * Add the selection case to the current selection (we could have added other
+                     * cases here)
+                     *
+                     * Ignore the returned index since we have only one selection here.
+                     */
+                    seSelection.prepareSelection(poSelectionRequest);
+
+                    /*
+                     * Actual PO communication: operate through a single request the Calypso PO
+                     * selection and the file read
+                     */
+
+                    SelectionsResult selectionsResult = seSelection.processExplicitSelection(reader);
+
+                    if (selectionsResult.hasActiveSelection()) {
+                        MatchingSelection matchingSelection = selectionsResult.getActiveSelection();
+
+                        CalypsoPo calypsoPo = (CalypsoPo) matchingSelection.getMatchingSe();
+                        mText.append("The selection of the PO has succeeded.\n");
+
+                        ReadRecordsRespPars readEnvironmentParser =
+                                (ReadRecordsRespPars) matchingSelection
+                                        .getResponseParser(readEnvironmentParserIndex);
+
+                        /*
+                         * Retrieve the data read from the parser updated during the selection
+                         * process (Environment)
+                         */
+                        byte environmentAndHolder[] = (readEnvironmentParser.getRecords()).get(1);
+
+                        /* Log the result */
+                        mText.append("Environment file data: "
+                                + ByteArrayUtil.toHex(environmentAndHolder) + "\n");
+
+                        ReadRecordsRespPars readTransportEventParser =
+                                (ReadRecordsRespPars) matchingSelection
+                                        .getResponseParser(readTransportEventParserIndex);
+
+                        /*
+                         * Retrieve the data read from the parser updated during the selection
+                         * process (Usage)
+                         */
+                        byte transportEvents[] = (readTransportEventParser.getRecords()).get(1);
+
+                        /* Log the result */
+                        mText.append("Transport Event data: " + ByteArrayUtil.toHex(transportEvents) + "\n");
+
+                        /* Go on with the reading of the first record of the EventLog file */
+                        mText.append(
+                                "==================================================================================");
+                        mText.append(
+                                "= Update Transport Event.                                                               =");
+                        mText.append(
+                                "==================================================================================");
+
+                        PoTransaction poTransaction =
+                                new PoTransaction(new PoResource(reader, calypsoPo));
+
+                        /*
+                         * Prepare the update order and keep the associated parser for later use
+                         * once the transaction has been processed.
+                         */
+
+                        int updateT2UsageParserIndex =
+                                poTransaction.prepareUpdateRecordCmd(sfiNavigoEFTransportEvent,
+                                        (byte) 0x01, ByteArrayUtil.fromHex("000001"),
+                                        String.format("Update Transport Event (SFI=%02X, recnbr=%d))",
+                                                sfiNavigoEFTransportEvent, 1));
+
+                        /*
+                         * Actual PO communication: send the prepared read order, then close the
+                         * channel with the PO
+                         */
+                        if (poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER)) {
+                            mText.append("The update of the Event Transport file has succeeded.");
+
+                        }
+                        mText.append("=====================================\n");
+                        mText.append("= End of the Calypso PO processing. =\n");
+                        mText.append("=====================================\n");
+                    }
+                } catch (final KeypleReaderException e) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Timber.e(e);
+                            mText.append("IOReader Exception : " + e.getMessage());
+                            if(e.getCause() != null) mText.append("\n" + e.getCause().getMessage());
+                            mText.append("\n ---- \n");
+                        }
+                    });
+                }
+            }
+        });
     }
 
     /**
@@ -144,6 +304,8 @@ public class OMAPITestFragment extends Fragment {
 
 
                     String poAid = "A000000291A000000191";
+                    //String poAid = "A00000040401250901"; //navigo (without version 01)
+
                     byte SFIHoplinkEFT2Environment = (byte) 0x14;
                     byte SFIHoplinkEFT2Usage = (byte) 0x1A;
 
@@ -281,11 +443,9 @@ public class OMAPITestFragment extends Fragment {
                         @Override
                         public void run() {
                             Timber.e(e);
-
-                            mText.append("\n ---- \n");
                             mText.append("IOReader Exception : " + e.getMessage());
                             if(e.getCause() != null) mText.append("\n" + e.getCause().getMessage());
-
+                            mText.append("\n ---- \n");
                         }
                     });
                 }

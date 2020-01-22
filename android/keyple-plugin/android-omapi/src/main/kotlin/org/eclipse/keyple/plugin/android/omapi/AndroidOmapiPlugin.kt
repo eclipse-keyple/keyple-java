@@ -12,12 +12,9 @@
 package org.eclipse.keyple.plugin.android.omapi
 
 import android.content.Context
-import android.se.omapi.Reader
-import android.se.omapi.SEService
 import org.eclipse.keyple.core.seproxy.ReaderPlugin
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin
-import org.eclipse.keyple.plugin.android.omapi.se.AndroidSeOmapiPluginImpl
 import timber.log.Timber
 import java.util.*
 

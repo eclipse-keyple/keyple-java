@@ -8,13 +8,17 @@
  * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- ********************************************************************************/
-package org.eclipse.keyple.plugin.android.omapi.simalliance;
+ */
+package org.eclipse.keyple.plugin.android.omapi.simalliance
 
-import org.simalliance.openmobileapi.SEService;
+import org.simalliance.openmobileapi.SEService
+import android.content.Context
+import org.eclipse.keyple.plugin.android.omapi.ISeServiceFactory
 
 
-interface ISeServiceFactory {
+internal class SeServiceFactoryImpl(private val applicationContext: Context): ISeServiceFactory<SEService, SEService.CallBack> {
 
-    SEService connectToSe(SEService.CallBack callBack);
+    override fun connectToSe(callBack: SEService.CallBack): SEService {
+        return SEService(applicationContext, callBack)
+    }
 }
