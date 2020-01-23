@@ -7,13 +7,13 @@ Releases:
 ## Keyple Java 20/01
 
 Release train components:
- - [keyple-java-core 0.8](#keyple-java-core-0.8)
- - [keyple-java-calypso 0.8](#keyple-java-calypso-0.8)
- - [keyple-java-plugin-pcsc 0.8](#keyple-java-plugin-pcsc-0.8)
- - [keyple-java-plugin-stub 0.8](#keyple-java-plugin-stub-0.8)
- - [keyple-java-plugin-remotese 0.8](#keyple-java-plugin-remotese-0.8)
- - [keyple-android-plugin-android-nfc 0.8](#keyple-android-plugin-android-nfc-0.8)
- - [keyple-android-plugin-android-omapi 0.8](#keyple-android-plugin-android-omapi-0.8)
+ - [keyple-java-core 0.8](#keyple-java-core-08)
+ - [keyple-java-calypso 0.8](#keyple-java-calypso-08)
+ - [keyple-java-plugin-pcsc 0.8](#keyple-java-plugin-pcsc-08)
+ - [keyple-java-plugin-stub 0.8](#keyple-java-plugin-stub-08)
+ - [keyple-java-plugin-remotese 0.8](#keyple-java-plugin-remotese-08)
+ - [keyple-android-plugin-android-nfc 0.8](#keyple-android-plugin-android-nfc-08)
+ - [keyple-android-plugin-android-omapi 0.8](#keyple-android-plugin-android-omapi-08)
  
 ### keyple-java-core 0.8
 * Se Proxy API
@@ -87,13 +87,13 @@ ___
 ## Keyple Java 19/07
 
 Release train components:
- - [keyple-java-core 0.7](#keyple-java-core-0.7)
- - [keyple-java-calypso 0.7](#keyple-java-calypso-0.7)
- - [keyple-java-plugin-pcsc 0.7](#keyple-java-plugin-pcsc-0.7)
- - [keyple-java-plugin-stub 0.7](#keyple-java-plugin-stub-0.7)
- - [keyple-java-plugin-remotese 0.7](#keyple-java-plugin-remotese-0.7)
- - [keyple-android-plugin-android-nfc 0.7](#keyple-android-plugin-android-nfc-0.7)
- - [keyple-android-plugin-android-omapi 0.7](#keyple-android-plugin-android-omapi-0.7)
+ - [keyple-java-core 0.7](#keyple-java-core-07)
+ - [keyple-java-calypso 0.7](#keyple-java-calypso-07)
+ - [keyple-java-plugin-pcsc 0.7](#keyple-java-plugin-pcsc-07)
+ - [keyple-java-plugin-stub 0.7](#keyple-java-plugin-stub-07)
+ - [keyple-java-plugin-remotese 0.7](#keyple-java-plugin-remotese-07)
+ - [keyple-android-plugin-android-nfc 0.7](#keyple-android-plugin-android-nfc-07)
+ - [keyple-android-plugin-android-omapi 0.7](#keyple-android-plugin-android-omapi-07)
 
 ### keyple-java-core 0.7
 * SE Proxy API: generic universal interface to interface a smartcard reader; transmission of grouped APDU commands; observable reader notification
