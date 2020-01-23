@@ -43,11 +43,12 @@ dependencies {
 
 ## Global Architecture of Keyple
 
-![global architecture](doc/Keyple-components.svg "keyple SDK global architecture")
+![global architecture](docs/img/Keyple-components.svg "keyple SDK global architecture")
 
 The API is currently divided in two major layers:
-- The ‘Keyple Core' : a Secure Element Proxy API which allows managing SE readers in a generic way, whaterver the reader driver or environment, and for standalone or distributed solution.
-- A ‘Calypso Keyple extension' : a high level Calypso Processing API allowing to operate commands with a Calypso Portable Object, and to manage a secure Calypso transaction.
+- The ‘Keyple Core' : a Secure Element Proxy API which allows managing SE readers in a generic way, whaterver the reader driver or environment, and for standalone or distributed solution ([Keyple Core User Guide](https://eclipse.github.io/keyple-java/KeypleCore_UserGuide.html)).
+- A ‘Calypso Keyple extension' : a high level Calypso Processing API allowing to operate commands with a Calypso Portable Object, and to manage a secure Calypso transaction ([Keyple Calypso User Guide](https://eclipse.github.io/keyple-java/KeypleCalypso_UserGuide.html)).
+
 Dedicated reader’s plugins have to be implemented in order to interface the SE Proxy API with the specific reader’s drivers.
 
 ## Supported platforms
@@ -92,11 +93,11 @@ Depending on the targetting usage: implementation of a ticketing **application**
 
 - generic packages for any SE solution
 
-![generic packages](doc/KeyplePackages_Core.svg "Keyple generic packages")
+![generic packages](docs/img/KeyplePackages_Core.svg "Keyple generic packages")
 
 - specific packages for Calypso
 
-![Calypso packages](doc/KeyplePackages_Calypso.svg "Calypso packages")
+![Calypso packages](docs/img/KeyplePackages_Calypso.svg "Calypso packages")
 
 ## JARs
 The Eclipse Keyple Java artifacts are published on the Eclipse Keyple Project page [https://projects.eclipse.org/projects/iot.keyple/downloads] (available also on Maven).
@@ -110,9 +111,6 @@ The Eclipse Keyple Java artifacts are published on the Eclipse Keyple Project pa
   - **'Keyple OMAPI Android plugin AAR'**: to operate the internal contacts readers of an Android Environment supporting the OMAPI 
   - **'Keyple "stub" plugin JAR'**: plugin to simulate the presence of fake readers with or without fake cards
   - **'Keyple "Remote SE" plugin JARs'**: plugin & service to manage a SE remotely in a transparent way.
-
-## Documentation
-The current functional specification [keyple-doc](https://calypsonet.github.io/keyple-doc/) is obsolete.
 
 ## Building the Keyple components
 
