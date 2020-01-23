@@ -1,0 +1,95 @@
+@startuml
+package org.eclipse.keyple.core.seproxy #FFFFFF {
+
++enum FileOccurrence {
+	FIRST
+	LAST
+	NEXT
+	PREVIOUS
+}
+
++enum FileControlInformation {
+	FCI
+	FCP
+	FMD
+	NO_RESPONSE
+}
+
++class "<b>final</b> AidSelector" as AidSelector <<static>> {
+	+{static} final int AID_MIN_LENGTH = 5;
+	+{static} final int AID_MAX_LENGTH = 16;
+
+	+AidSelector(byte[] aidToSelect, Set<Integer> successfulSelectionStatusCodes, FileOccurrence fileOccurrence = FIRST, FileControlInformation fileControlInformation = FCI)
+	+byte[] getAidToSelect()
+	+boolean isSelectNext()
+	+Set<Integer> getSuccessfulSelectionStatusCodes()
+}
+
+AidSelector +-up- FileOccurrence
+AidSelector +-up- FileControlInformation
+AidSelector "1" *-up- "1" FileOccurrence
+AidSelector "1" *-up- "1" FileControlInformation
+
++class "<b>final</b> AtrSelector" as AtrSelector <<static>> {
+	+AtrFilter(String atrRegex)
+	+void setAtrRegex(String atrRegex) ????
+	+String getAtrRegex()
+	+boolean atrMatches(byte[] atr)
+}
+
+package protocol #FFFFFF {
+
+enum SeCommonProtocols {
+	.. contactless ISO standard / NFC compliant ..
+	PROTOCOL_ISO14443_4("ISO 14443-4", CONTACTLESS)
+	PROTOCOL_ISO15693("ISO 15693 Type V", CONTACTLESS)
+	.. contactless proprietary NFC compliant ..
+	PROTOCOL_ISO14443_3A("ISO 14443-3 Type A", CONTACTLESS)
+	PROTOCOL_ISO14443_3B("ISO 14443-3 Type B", CONTACTLESS)
+	PROTOCOL_JIS_6319_4("JIS 6319-4 Felica", CONTACTLESS)
+	PROTOCOL_NDEF("NFC NDEF TAG", CONTACTLESS)
+	PROTOCOL_NDEF_FORMATABLE("NFC NDEF FORMATABLE", CONTACTLESS)
+	PROTOCOL_NFC_BARCODE("NFC BARCODE, CONTACTLESS)
+	PROTOCOL_MIFARE_UL("Mifare Ultra Light", CONTACTLESS)
+	PROTOCOL_MIFARE_CLASSIC("Mifare Classic", CONTACTLESS)
+	PROTOCOL_MIFARE_DESFIRE("Mifare DESFire", CONTACTLESS)
+	.. contactless proprietary not NFC compliant ..
+	PROTOCOL_B_PRIME("Old Calypso card B prime", CONTACTLESS)
+	PROTOCOL_MEMORY_ST25("Memory ST25", CONTACTLESS)
+	.. contacts ISO standard ..
+	PROTOCOL_ISO7816_3("ISO 7816-3", CONTACTS)
+	.. contacts proprietary  ..
+	PROTOCOL_HSP("Old Calypso SAM HSP", CONTACTS)
+}
+
++enum TransmissionMode {
+	CONTACTS
+	CONTACTLESS
+}
+
++interface SeProtocol {
+	+String getName()
+	+TransmissionMode getTransmissionMode()
+}
+
+SeProtocol "1" *-down- "1" TransmissionMode
+SeCommonProtocols .up.|> SeProtocol : implements
+TransmissionMode -right[hidden]- SeCommonProtocols
+
+}
+
++class SeSelector {
+	+SeSelector(SeProtocol seProtocol, AtrFilter atrFilter, AidSelector aidSelector, String extraInfo)
+	+SeProtocol getSeProtocol()
+	+AtrFilter getAtrFilter()
+	+AidSelector getAidSelector()
+	+final String getExtraInfo()
+}
+
+SeSelector +-up- AidSelector
+SeSelector "1" o-up- "0..1" AidSelector
+SeSelector +-right- AtrSelector
+SeSelector "1" o-right- "0..1" AtrSelector
+SeSelector "1" o-down- "0..1" SeProtocol
+}
+@enduml

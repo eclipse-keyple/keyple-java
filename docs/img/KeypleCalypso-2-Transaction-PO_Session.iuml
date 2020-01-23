@@ -1,0 +1,67 @@
+@startuml
+package org.keyple.calypso.transaction #FFFFFF {
+
++class "<b>final</b> PoResource" as PoResource {
+	+PoResource(SeReader seReader, CalypsoPo calypsoPo);
+}
+
++class "<b>final</b> SamResource" as SamResource {
+	+PoResource(SeReader seReader, CalypsoSam calypsoSam);
+}
+
++class "<b>final</b> PoTransaction" as PoTransaction {
+	+PoTransaction(PoResource poResource, SamResource[0..1] samResource, SecuritySettings[0..1] securitySettings)
+
+	+int prepareSelectFileCmd(byte[] path, String extraInfo)
+	+int prepareSelectFileCmd(SelectFileCmdBuild.SelectControl selectControl, String extraInfo)
+	+int prepareReadRecordsCmd(byte sfi, ReadDataStructure readDataStructureEnum, byte firstRecordNumber, int expectedLength, String extraInfo)
+	+int prepareReadRecordsCmd(byte sfi, ReadDataStructure readDataStructureEnum, byte firstRecordNumber, String extraInfo)
+	+int prepareAppendRecordCmd(byte sfi, byte[] newRecordData, String extraInfo)
+	+int prepareUpdateRecordCmd(byte sfi, byte recordNumber, byte[] newRecordData, String extraInfo)
+	+int prepareIncreaseCmd(byte sfi, byte counterNumber, int incValue, String extraInfo)
+	+int prepareDecreaseCmd(byte sfi, byte counterNumber, int decValue, String extraInfo)
+	+AbstractApduResponseParser getResponseParser(int commandIndex)
+
+	+boolean processOpening(ModificationMode modificationMode, SessionAccessLevel accessLevel, byte openingSfiToSelect, byte openingRecordNumberToRead)
+	+byte[] getOpenRecordDataRead()
+	+boolean wasRatified()
+
+	+boolean processPoCommands(ChannelState channelState)
+	+boolean processPoCommandsInSession()
+
+	+boolean processClosing(ChannelState channelState)
+	+boolean isSuccessful()
+	+boolean processCancel(ChannelState channelState)
+
+	+SeResponse processSamCommands(List<SamBuilderParser> samBuilderParsers)
+}
+
++enum SessionState {
+	SESSION_UNITIALIZED,
+	SESSION_OPEN,
+	SESSION_CLOSED
+}
+
++enum SessionAccessLevel {
+	SESSION_LVL_PERSO("perso", byte 0x01),
+	SESSION_LVL_LOAD("load", byte 0x02),
+	SESSION_LVL_DEBIT("debit", byte 0x03)
+}
+
++enum ModificationMode {
+	ATOMIC,
+	MULTIPLE
+}
+
+PoResource -right[hidden]- SamResource
+PoTransaction "1" *-up- "1" PoResource
+PoTransaction "1" *-up- "0..1" SamResource
+
+PoTransaction +-down- SessionState
+PoTransaction *-down- SessionState
+PoTransaction +-down- SessionAccessLevel
+PoTransaction *-down- SessionAccessLevel
+PoTransaction +-down- ModificationMode
+PoTransaction *-down- ModificationMode
+}
+@enduml

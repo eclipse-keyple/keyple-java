@@ -1,0 +1,140 @@
+@startuml
+package org.eclipse.keyple.core #FFFFFF {
+
+package "seproxy" as seproxy_even #FFFFFF {
+
++interface SeReader {
+  +boolean isSePresent();
+  +void addSeProtocolSetting(SeProtocol seProtocol,
+String protocolRule);
+  +void setSeProtocolSetting(Map<SeProtocol,
+String> protocolSetting);
+  +TransmissionMode getTransmissionMode();
+}
+
++enum ChannelControl {
+	KEEP_OPEN
+	CLOSE_AFTER
+}
+
+package event #FFFFFF {
++class AbstractDefaultSelectionsRequest {
+	#AbstractDefaultSelectionsRequest(SeRequestSet
+selectionSeRequestSet)
+	#SeRequestSet getSelectionSeRequestSet()
+}
+
++class AbstractDefaultSelectionsResponse {
+	#SelectionResponse(SeResponseSet
+selectionSeResponseSet)
+	#SeResponseSet getSelectionSeResponseSet()
+}
+}
+}
+
+package selection #FFFFFF {
+
++class "<b>final</b> SeSelection" as SeSelection {
+	+SeSelection()
+	+int prepareSelection(AbstractSeSelectionRequest seSelectionRequest)
+
+	+SelectionsResult processExplicitSelection(SeReader seReader)
+
+	+AbstractDefaultSelectionsRequest getSelectionOperation()
+	+SelectionsResult processDefaultSelection(AbstractDefaultSelectionsResponse selectionResponse)
+}
+
++abstract AbstractSeSelectionRequest {
+	+AbstractSeSelectionRequest(SeSelector seSelector, ChannelState channelState)
+
+	#final void addApduRequest(ApduRequest apduRequest)
+	~final SeRequest getSelectionRequest()
+	{abstract} #AbstractMatchingSe parse(SeResponse seResponse)
+
+	+SeSelector getSeSelector()
+	+AbstractApduResponseParser getCommandParser(SeResponse seResponse,
+int commandIndex)
+}
+
++abstract AbstractMatchingSe {
+	+AbstractMatchingSe(SeResponse selectionResponse,
+TransmissionMode transmissionMode, String extraInfo)
+	+final boolean isSelected()
+	+SelectionStatus getSelectionStatus()
+	+TransmissionMode getTransmissionMode()
+	+String getSelectionExtraInfo()
+}
+
++class "<b>final</b> MatchingSelection" as MatchingSelection {
+	~MatchingSelection(int selectionIndex, AbstractSeSelectionRequest
+seSelectionRequest, AbstractMatchingSe matchingSe, SeResponse selectionSeResponse)
+	+AbstractMatchingSe getMatchingSe()
+	+AbstractApduResponseParser getResponseParser(int commandIndex)
+	+String getExtraInfo()
+	+int getSelectionIndex()
+}
+
++class "<b>final</b> SelectionsResult" as SelectionsResult {
+	~SelectionsResult()
+	~void addMatchingSelection(MatchingSelection matchingSelection)
+
+	+boolean hasActiveSelection()
+	+MatchingSelection getActiveSelection()
+
+	+MatchingSelection getMatchingSelection(int selectionIndex)
+	+List<MatchingSelection> getMatchingSelections()
+}
+
++class "SeResource<T extends AbstractMatchingSe>" as SeResource_T {
+	#SeResource(SeReader seReader, T matchingSe);
+	+SeReader getSeReader();
+	+T getMatchingSe();
+}
+
+SeResource_T "1" *-right- "1" AbstractMatchingSe
+'SeResource_T -right[hidden]- AbstractMatchingSe
+}
+
+package "seproxy" as seproxy_protocol #FFFFFF {
+
+package protocol #FFFFFF {
++enum TransmissionMode {
+	CONTACTS
+	CONTACTLESS
+}
+}
+
++class SeSelector {
+	+SeSelector(SeProtocol seProtocol, AtrFilter atrFilter, AidSelector aidSelector, String extraInfo)
+	+SeProtocol getSeProtocol()
+	+AtrFilter getAtrFilter()
+	+AidSelector getAidSelector()
+	+final String getExtraInfo()
+}
+
+}
+
+SeSelection -up- SeReader : send <
+ChannelControl -- SeSelection : set <
+SelectionsResult -up- SeReader : receives <
+
+SeSelection -up- AbstractDefaultSelectionsRequest : exports >
+SeSelection -up- AbstractDefaultSelectionsResponse : imports >
+
+SeSelection "1" o-down- "*" AbstractSeSelectionRequest
+SeSelection "1" o-left- "0..1" SelectionsResult
+
+AbstractSeSelectionRequest "1" o-down- "1" SeSelector 
+
+SelectionsResult "1" o-down- "*" MatchingSelection
+MatchingSelection "1" o-down- "1" AbstractMatchingSe
+
+AbstractMatchingSe "1" *-down- "0..1" TransmissionMode
+
+AbstractMatchingSe -- SeSelector : selects <
+
+SeReader "0..1" --* "1" SeResource_T : connected to <
+
+protocol -right[hidden]- SeSelector
+}
+@enduml

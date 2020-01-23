@@ -1,0 +1,138 @@
+@startuml
+package org.eclipse.keyple #FFFFFF {
+package core #FFFFFF {
+package seproxy #FFFFFF {
+
++class AidSelector <<static>> {
+	+{static} final int AID_MIN_LENGTH = 5;
+	+{static} final int AID_MAX_LENGTH = 16;
+
+	+AidSelector(byte[] aidToSelect, Set<Integer> successfulSelectionStatusCodes,
+FileOccurrence fileOccurrence = FIRST, FileControlInformation fileControlInformation = FCI)
+	+byte[] getAidToSelect()
+	+boolean isSelectNext()
+	+Set<Integer> getSuccessfulSelectionStatusCodes()
+}
+
++class SeSelector {
+	+SeSelector(SeProtocol seProtocol, AtrFilter atrFilter, AidSelector aidSelector, String extraInfo)
+	+SeProtocol getSeProtocol()
+	+AtrFilter getAtrFilter()
+	+AidSelector getAidSelector()
+	+final String getExtraInfo()
+}
+
+SeSelector +-up- AidSelector
+SeSelector "1" o-up- "0..1" AidSelector
+}
+
+package selection #FFFFFF {
+
++class "<b>final</b> SeSelection" as SeSelection {
+	+SeSelection()
+	+int prepareSelection(AbstractSeSelectionRequest seSelectionRequest)
+
+	+SelectionsResult processExplicitSelection(SeReader seReader)
+
+	+AbstractDefaultSelectionsRequest getSelectionOperation()
+	+SelectionsResult processDefaultSelection(
+AbstractDefaultSelectionsResponse selectionResponse)
+}
+
++abstract AbstractSeSelectionRequest {
+	+AbstractSeSelectionRequest(SeSelector seSelector, ChannelState channelState)
+
+	#final void addApduRequest(ApduRequest apduRequest)
+	~final SeRequest getSelectionRequest()
+	{abstract} #AbstractMatchingSe parse(SeResponse seResponse)
+
+	+SeSelector getSeSelector()
+	+AbstractApduResponseParser getCommandParser(SeResponse seResponse, int commandIndex)
+}
+
++abstract AbstractMatchingSe {
+	+AbstractMatchingSe(SeResponse selectionResponse, String extraInfo)
+	+final boolean isSelected()
+	+SelectionStatus getSelectionStatus()
+	+String getSelectionExtraInfo()
+}
+
++class "SeResource<T extends AbstractMatchingSe>" as SeResource_T {
+	#SeResource(SeReader seReader, T matchingSe);
+	+SeReader getSeReader();
+	+T getMatchingSe();
+}
+
+AbstractSeSelectionRequest -down- AbstractMatchingSe : selects >
+SeSelection "1" o-up- "*" AbstractSeSelectionRequest
+'SeSelection -right[hidden]- AbstractMatchingSe
+SeResource_T "1" *-up- "1" AbstractMatchingSe
+}
+
+AbstractSeSelectionRequest "1" o-up- "1" SeSelector 
+}
+
+package calypso.transaction #FFFFFF {
++enum InvalidatedPo {
+	REJECT
+	ACCEPT
+}
+
++class PoAidSelector <<static>> {
+	+PoAidSelector(byte[] aidToSelect, InvalidatedPo invalidatedPo,
+FileOccurrence fileOccurrence, FileControlInformation fileControlInformation)
+	+PoAidSelector(byte[] aidToSelect, InvalidatedPo invalidatedPo)
+}
+
++class "<b>final</b> PoSelector" as PoSelector {
+    +PoSelector(SeProtocol seProtocol, AtrFilter atrFilter, PoAidSelector poAidSelector, String extraInfo)
+}
+
++class "<b>final</b> PoSelectionRequest" as PoSelectionRequest {
+	+PoSelectionRequest(PoSelector seSelector, ChannelState channelState)
+
+	+int prepareReadRecordsCmd(byte sfi, ReadDataStructure readDataStructureEnum,
+byte firstRecordNumber, int expectedLength, String extraInfo)
+	+int prepareReadRecordsCmd(byte sfi, ReadDataStructure readDataStructureEnum,
+byte firstRecordNumber, String extraInfo)
+	+int prepareSelectFileCmd(byte[] path, String extraInfo)
+	+int prepareSelectFileCmd(SelectFileCmdBuild.SelectControl selectControl, String extraInfo)
+
+	+int preparePoCustomReadCmd(String name, ApduRequest apduRequest)
+	+int preparePoCustomModificationCmd(String name, ApduRequest apduRequest)
+	+AbstractApduResponseParser getCommandParser(SeResponse seResponse, int commandIndex)
+	#CalypsoPo parse(SeResponse seResponse)
+}
+
++class "<b>final</b> CalypsoPo" as CalypsoPo {
+    +CalypsoPo(SeResponse selectionResponse, String extraInfo)
+    +PoRevision getRevision()
+    +byte[] getDfName()
+    +byte[] getApplicationSerialNumber()
+    +byte[] getAtr()
+    +boolean isModificationsCounterInBytes()
+    +int getModificationsCounter()
+    +PoClass getPoClass()
+}
+
++class "<b>final</b> PoResource" as PoResource {
+	+PoResource(SeReader seReader, CalypsoPo calypsoPo);
+}
+
+PoAidSelector +-up- InvalidatedPo
+PoAidSelector "1" *-up- "1" InvalidatedPo
+PoSelector +-up- PoAidSelector
+PoSelector "1" o-up- "0..1" PoAidSelector
+PoSelectionRequest "1" o-up- "1" PoSelector 
+PoSelectionRequest -down- CalypsoPo : selects >
+PoResource "1" *-up- "1" CalypsoPo
+}
+
+
+PoAidSelector -left-|> AidSelector : extends
+PoSelector -left-|> SeSelector : extends
+PoSelectionRequest -left-|> AbstractSeSelectionRequest : extends
+CalypsoPo -left-|> AbstractMatchingSe : extends
+PoResource -left-|> SeResource_T : extends
+}
+@enduml
