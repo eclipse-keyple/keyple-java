@@ -1,7 +1,81 @@
 # 'Eclipse Keyple' Java implementation
 
 This is the repository for the Java implementation of the 'Eclipse [Keyple](https://keyple.org/)' API.
-(In September 2019, the C++ implementation will be hosted on https://github.com/eclipse/keyple-cpp)
+(First quarter of 2020, the C++ implementation will be hosted on https://github.com/eclipse/keyple-cpp)
+
+ - [Global Architecture of Keyple](#global-architecture-of-keyple)
+   - [Supported platforms](#supported-platforms)
+   - [keyple-java repositories structure](#keyple-java-repositories-structure)
+   - [Keyple features and corresponding packages](#keyple-features-and-corresponding-packages)
+   - [Keyple packages and corresponding usages](#keyple-packages-and-corresponding-usages)
+ - [Getting started](#getting-started)
+   - [Cloning this project](#cloning-this-project)
+   - [Import keyple components with Gradle](#import-keyple-components-with-gradle)
+ - [Artifacts](#artifacts)
+ - [Building the Keyple components](#)
+   - [Java components](#java-components)
+   - [Android components](#android-components)
+ - [CI and Docker](#ci-and-docker)
+
+---
+## Global Architecture of Keyple
+
+![global architecture](docs/img/Keyple-components.svg "keyple SDK global architecture")
+
+The API is currently divided in two major layers:
+- The ‘Keyple Core' : a Secure Element Proxy API which allows managing SE readers in a generic way, whaterver the reader driver or environment, and for standalone or distributed solution ([Keyple Core User Guide](https://eclipse.github.io/keyple-java/KeypleCore_UserGuide.html)).
+- A ‘Calypso Keyple extension' : a high level Calypso Processing API allowing to operate commands with a Calypso Portable Object, and to manage a secure Calypso transaction ([Keyple Calypso User Guide](https://eclipse.github.io/keyple-java/KeypleCalypso_UserGuide.html)).
+
+Dedicated reader’s plugins have to be implemented in order to interface the SE Proxy API with the specific reader’s drivers.
+
+### Supported platforms
+- Java SE 1.6 compact2
+- Android 4.4 KitKat API level 19
+
+### keyple-java repositories structure
+
+- Modules that are provided as artifacts
+  - keyple-core: source and unit tests for the SE Proxy module (artifact : keyple-java-core)
+  - keyple-calypso: source and unit tests for the Calypso library (artifact : keyple-java-calypso)
+  - keyple-plugin: source and unit tests for the different plugins: smartcard.io PC/SC, Stub, Android NFC, Android OMAPI, etc.
+- developer support, testing
+  - example: source for Keyple implementation examples, generic or Calypso specific.
+  - integration: source for the integration code (SDK).
+
+### Keyple features and corresponding packages
+
+Keyple features global for any Secure Element solution:
+
+| Features                                     | Packages  |
+| -------------------------------------------- |-------------|
+| Selections of Secure Elements (high level API) | org.eclipse.keyple.core.**selection** |
+| Management of SE readers | org.eclipse.keyple.core.**seproxy** |
+| Notifications of reader plug/unplug, of SE insertion/remove<ul><li>definition of automatic selection request in case of SE insertion on an Observable Reader.</li></ul> | org.eclipse.keyple.core.seproxy.**event** |
+| Communication protocols filters (setting for contactless/contacts SE Reader) | org.eclipse.keyple.core.seproxy.**protocol** |
+| Reader plugins implementation support <ul><li>Utility classes providing generic processing for SE Reader Plugins</li></ul> | org.eclipse.keyple.core.seproxy.**plugin** |
+| Transmition of grouped APDU commands to a SE Reader (low level API) | org.eclipse.keyple.core.seproxy.**message** |
+| SE specific library implementation support <ul><li>generic API to build a SE specific commands library</li></ul> | org.eclipse.keyple.core.**command** |
+
+Keyple features defined to support the Calypso solution:
+
+| Features                                     | Packages  |
+| -------------------------------------------- |-------------|
+| Calypso Portable Object commands and secure transaction management <ul><li>high level CalypsoAPI, commands’ settings are limited to functional parameters</li><li>Calypso SAM (Secure Module) operations automatically processed</li></ul> | org.eclipse.keyple.calypso.**transaction** |
+| Calypso PO responses data parsing | org.eclipse.keyple.calypso.command.**po.parser** |
+| Calypso SAM responses data parsing | org.eclipse.keyple.calypso.command.**sam.parser** |
+| Calypso PO & SAM commands' sets<ul><li>low level Calypso API, commands’ settings include technical parameters specific to Calypso PO revisions or Calypso SAM revisions</li></ul> | <ul><li>org.eclipse.keyple.calypso.**command**</li><li>org.eclipse.keyple.calypso.command.**po**</li><li>org.eclipse.keyple.calypso.command.**po.builder**</li><li>org.eclipse.keyple.calypso.command.**po.parser.session**</li><li>org.eclipse.keyple.calypso.command.**sam.parser.session**</li><li>org.eclipse.keyple.calypso.command.**sam.builder**</li><li>org.eclipse.keyple.calypso.command.**sam**</li></ul> |
+
+### Keyple packages and corresponding usages
+Depending on the targetting usage: implementation of a ticketing **application** (blue circle), a reader **plugin** (red circle), or a **SE library** (green circle), only specific Keyple packages must be imported.
+
+- generic packages for any SE solution
+
+![generic packages](docs/img/KeyplePackages_Core.svg "Keyple generic packages")
+
+- specific packages for Calypso
+
+![Calypso packages](docs/img/KeyplePackages_Calypso.svg "Calypso packages")
+---
 
 ## Getting started
 Releases and snapshots are available from Maven central repositories.
@@ -41,65 +115,7 @@ dependencies {
 }
 ```
 
-## Global Architecture of Keyple
-
-![global architecture](docs/img/Keyple-components.svg "keyple SDK global architecture")
-
-The API is currently divided in two major layers:
-- The ‘Keyple Core' : a Secure Element Proxy API which allows managing SE readers in a generic way, whaterver the reader driver or environment, and for standalone or distributed solution ([Keyple Core User Guide](https://eclipse.github.io/keyple-java/KeypleCore_UserGuide.html)).
-- A ‘Calypso Keyple extension' : a high level Calypso Processing API allowing to operate commands with a Calypso Portable Object, and to manage a secure Calypso transaction ([Keyple Calypso User Guide](https://eclipse.github.io/keyple-java/KeypleCalypso_UserGuide.html)).
-
-Dedicated reader’s plugins have to be implemented in order to interface the SE Proxy API with the specific reader’s drivers.
-
-## Supported platforms
-- Java SE 1.6 compact2
-- Android 4.4 KitKat API level 19
-
-## keyple-java repositories structure
-
-- Modules that are provided as artifacts
-  - keyple-core: source and unit tests for the SE Proxy module (artifact : keyple-java-core)
-  - keyple-calypso: source and unit tests for the Calypso library (artifact : keyple-java-calypso)
-  - keyple-plugin: source and unit tests for the different plugins: smartcard.io PC/SC, Stub, Android NFC, Android OMAPI, etc.
-- developer support, testing
-  - example: source for Keyple implementation examples, generic or Calypso specific.
-  - integration: source for the integration code (SDK).
-
-## Keyple features and corresponding packages
-
-Keyple features global for any Secure Element solution:
-
-| Features                                     | Packages  |
-| -------------------------------------------- |-------------|
-| Selections of Secure Elements (high level API) | org.eclipse.keyple.core.**selection** |
-| Management of SE readers | org.eclipse.keyple.core.**seproxy** |
-| Notifications of reader plug/unplug, of SE insertion/remove<ul><li>definition of automatic selection request in case of SE insertion on an Observable Reader.</li></ul> | org.eclipse.keyple.core.seproxy.**event** |
-| Communication protocols filters (setting for contactless/contacts SE Reader) | org.eclipse.keyple.core.seproxy.**protocol** |
-| Reader plugins implementation support <ul><li>Utility classes providing generic processing for SE Reader Plugins</li></ul> | org.eclipse.keyple.core.seproxy.**plugin** |
-| Transmition of grouped APDU commands to a SE Reader (low level API) | org.eclipse.keyple.core.seproxy.**message** |
-| SE specific library implementation support <ul><li>generic API to build a SE specific commands library</li></ul> | org.eclipse.keyple.core.**command** |
-
-Keyple features defined to support the Calypso solution:
-
-| Features                                     | Packages  |
-| -------------------------------------------- |-------------|
-| Calypso Portable Object commands and secure transaction management <ul><li>high level CalypsoAPI, commands’ settings are limited to functional parameters</li><li>Calypso SAM (Secure Module) operations automatically processed</li></ul> | org.eclipse.keyple.calypso.**transaction** |
-| Calypso PO responses data parsing | org.eclipse.keyple.calypso.command.**po.parser** |
-| Calypso SAM responses data parsing | org.eclipse.keyple.calypso.command.**sam.parser** |
-| Calypso PO & SAM commands' sets<ul><li>low level Calypso API, commands’ settings include technical parameters specific to Calypso PO revisions or Calypso SAM revisions</li></ul> | <ul><li>org.eclipse.keyple.calypso.**command**</li><li>org.eclipse.keyple.calypso.command.**po**</li><li>org.eclipse.keyple.calypso.command.**po.builder**</li><li>org.eclipse.keyple.calypso.command.**po.parser.session**</li><li>org.eclipse.keyple.calypso.command.**sam.parser.session**</li><li>org.eclipse.keyple.calypso.command.**sam.builder**</li><li>org.eclipse.keyple.calypso.command.**sam**</li></ul> |
-
-## Keyple packages and corresponding usages
-Depending on the targetting usage: implementation of a ticketing **application** (blue circle), a reader **plugin** (red circle), or a **SE library** (green circle), only specific Keyple packages must be imported.
-
-- generic packages for any SE solution
-
-![generic packages](docs/img/KeyplePackages_Core.svg "Keyple generic packages")
-
-- specific packages for Calypso
-
-![Calypso packages](docs/img/KeyplePackages_Calypso.svg "Calypso packages")
-
-## JARs
+## Artifacts
 The Eclipse Keyple Java artifacts are published on the Eclipse Keyple Project page [https://projects.eclipse.org/projects/iot.keyple/downloads] (available also on Maven).
 
 - Keyple modules:
@@ -130,8 +146,6 @@ Following commands will build all the artifacts at once and install them into th
 ```
 ./gradlew :installAll --info
 ```
-
-
 
 ### Android components
 If you want to build the keyple android components (aar plugins), you need : 
@@ -178,5 +192,3 @@ To build the example app NFC and OMAPI, first, you need to build and install loc
 
 ### CI and Docker 
 Eclipse CI tools to build and test the components are Open Source too. They can be found in this repository : [Eclipse Keyple Ops](https://www.github.com/eclipse/keyple-ops)
-
-
