@@ -40,7 +40,6 @@ Dedicated reader’s plugins have to be implemented in order to interface the SE
   - keyple-plugin: source and unit tests for the different plugins: smartcard.io PC/SC, Stub, Android NFC, Android OMAPI, etc.
 - developer support, testing
   - example: source for Keyple implementation examples, generic or Calypso specific.
-  - integration: source for the integration code (SDK).
 
 ### Keyple features and corresponding packages
 
