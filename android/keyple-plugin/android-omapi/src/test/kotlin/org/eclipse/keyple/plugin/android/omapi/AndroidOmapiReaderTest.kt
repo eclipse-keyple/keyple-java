@@ -1,23 +1,24 @@
 package org.eclipse.keyple.plugin.android.omapi
 
+import io.mockk.MockKAnnotations
 import io.mockk.unmockkAll
+import org.eclipse.keyple.core.seproxy.ChannelControl
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
 import org.eclipse.keyple.core.seproxy.SeSelector
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.message.ApduRequest
 import org.eclipse.keyple.core.seproxy.message.SeRequest
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode
 import org.eclipse.keyple.core.util.ByteArrayUtil
-import org.eclipse.keyple.plugin.android.omapi.se.AndroidOmapiReaderTest
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import org.junit.*
 import java.io.IOException
 import java.util.*
 import kotlin.NoSuchElementException
 
-abstract class AndroidOmapiReaderTest<T, V: AndroidOmapiReader> {
+internal abstract class AndroidOmapiReaderTest<T, V: AndroidOmapiReader> {
 
     companion object{
         internal const val PLUGIN_NAME = "AndroidOmapiPluginImpl"
@@ -34,11 +35,15 @@ abstract class AndroidOmapiReaderTest<T, V: AndroidOmapiReader> {
     abstract fun mockReaderWithExceptionOnOpenBasicChannel(throwable: Throwable): T
     abstract fun mockReaderWithNullOnOpenBasicChannel(): T
     abstract fun mockReaderWithNoAid(): T
+    abstract fun mockReaderWithExceptionOnOpenSession(throwable: Throwable): T
     abstract fun buildOmapiReaderImpl(nativeReader: T): V
     abstract fun getNativeReaderName(): String
+    abstract fun mockReaderWithExceptionOnCloseChannel(throwable: Throwable): T
+    abstract fun mockReaderWithExceptionWhileTransmittingApdu(throwable: Throwable): T
 
     @Before
     fun setUp(){
+        MockKAnnotations.init(this, relaxUnitFun = true)
         // default reader connected with secure element with poAid
         nativeReader = mockReader()
 
@@ -62,6 +67,11 @@ abstract class AndroidOmapiReaderTest<T, V: AndroidOmapiReader> {
     @Test
     fun getName() {
         Assert.assertEquals(getNativeReaderName(), reader.name)
+    }
+
+    @Test
+    fun getTransmissionMode(){
+        Assert.assertEquals(TransmissionMode.CONTACTS, reader.transmissionMode)
     }
 
     @Test
@@ -181,19 +191,49 @@ abstract class AndroidOmapiReaderTest<T, V: AndroidOmapiReader> {
 
     }
 
-//    @Test(expected = KeypleReaderException::class)
-//    fun transmitNotConnected() {
-//
-//        // init
-//        val omapiReader = mockk<T>()
-//        every { omapiReader.name } returns "SIM1"
-//        every { omapiReader.isSecureElementPresent} returns true
-//        every { omapiReader.openSession() } throws IOException()
-//        reader = buildOmapiReaderImpl(omapiReader)
-//
-//        // test
-//        reader.transmitSet(getSampleSeRequest())
-//    }
+    @Test(expected = KeypleReaderException::class)
+    fun transmitNotConnected() {
+
+        // init
+        val nativeReader = mockReaderWithExceptionOnOpenSession(IOException())
+        reader = buildOmapiReaderImpl(nativeReader)
+
+        // test
+        reader.transmitSet(getSampleSeRequest())
+    }
+
+    @Test
+    fun closeChannelAfterTransmit() {
+
+        // init
+        val nativeReader = mockReader()
+        reader = buildOmapiReaderImpl(nativeReader)
+
+        // test
+        val seResponseList = reader.transmitSet(getSampleSeRequest(), MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER)
+        Assert.assertNotNull(seResponseList)
+    }
+
+    @Test(expected = KeypleIOReaderException::class)
+    @Ignore("Implementation of closePhysicalChannel() may encounter a IOException, it should be catched as a KeypleIOReaderException, it is not")
+    fun exceptionOnChannelAfterTransmit() {
+        // init
+        val nativeReader = mockReaderWithExceptionOnCloseChannel(IOException())
+        reader = buildOmapiReaderImpl(nativeReader)
+
+        // test
+        reader.transmitSet(getSampleSeRequest(), MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER)
+    }
+
+    @Test(expected = KeypleIOReaderException::class)
+    fun exceptionWhileTransmittingApdu() {
+        // init
+        val nativeReader = mockReaderWithExceptionWhileTransmittingApdu(IOException())
+        reader = buildOmapiReaderImpl(nativeReader)
+
+        // test
+        reader.transmitSet(getSampleSeRequest())
+    }
 
     private fun getSampleSeRequest(): Set<SeRequest> {
 
@@ -220,4 +260,5 @@ abstract class AndroidOmapiReaderTest<T, V: AndroidOmapiReader> {
         return seRequestSet
 
     }
+
 }

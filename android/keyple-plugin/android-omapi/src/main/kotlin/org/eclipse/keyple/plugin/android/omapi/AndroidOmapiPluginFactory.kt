@@ -13,6 +13,8 @@ package org.eclipse.keyple.plugin.android.omapi
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
+import androidx.annotation.VisibleForTesting
 import org.eclipse.keyple.core.seproxy.AbstractPluginFactory
 import org.eclipse.keyple.core.seproxy.ReaderPlugin
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException
@@ -23,22 +25,32 @@ import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationExcept
  */
 class AndroidOmapiPluginFactory(private val context: Context) : AbstractPluginFactory() {
 
+    private var sdkVersion: Int = Build.VERSION.SDK_INT
+
     companion object{
-        private const val SIMALLIANCE_OMAPI_PACKAGE_NAME = "org.simalliance.openmobileapi.service"
+        const val SIMALLIANCE_OMAPI_PACKAGE_NAME = "org.simalliance.openmobileapi.service"
     }
+
+    /**
+     *  sdkVersion can be forced for test purpose
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    constructor(context: Context, sdkVersion: Int): this(context){
+        this.sdkVersion = sdkVersion
+    }
+
 
     override fun getPluginName(): String {
         return AndroidOmapiPlugin.PLUGIN_NAME
     }
 
-    //TODO throw error is Android is not compatible with OMAPI
     @Throws(KeyplePluginInstantiationException::class)
     override fun getPluginInstance(): ReaderPlugin{
         return getReaderPluginRegardingOsVersion()
     }
 
     private fun getReaderPluginRegardingOsVersion(): ReaderPlugin{
-        return if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P)
+        return if(sdkVersion >= Build.VERSION_CODES.P)
             org.eclipse.keyple.plugin.android.omapi.se.AndroidOmapiPluginImpl.init(context)
         else
             getReaderPluginRegardingPackages()
@@ -53,6 +65,12 @@ class AndroidOmapiPluginFactory(private val context: Context) : AbstractPluginFa
         } catch (e2: PackageManager.NameNotFoundException) {
             throw KeyplePluginInstantiationException("No OMAPI lib available within the OS")
         }
-
     }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    @Throws(KeyplePluginInstantiationException::class)
+    fun pluginInstance(): ReaderPlugin{
+        return this.pluginInstance
+    }
+
 }

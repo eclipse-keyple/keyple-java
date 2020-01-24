@@ -15,6 +15,7 @@ import org.simalliance.openmobileapi.Channel
 import org.simalliance.openmobileapi.Reader
 import org.simalliance.openmobileapi.SEService
 import org.simalliance.openmobileapi.Session
+import java.io.IOException
 import java.util.*
 import kotlin.NoSuchElementException
 
@@ -89,9 +90,11 @@ internal class AndroidOmapiReaderImplTest: AndroidOmapiReaderTest<Reader, Androi
         every { session.openLogicalChannel(ByteArrayUtil.fromHex(PO_AID)) } returns channel
         every { seService.version } returns version
         every { session.atr} returns null
+        every { session.isClosed} returns false
         every { channel.selectResponse } returns ByteArrayUtil.fromHex(PO_AID_RESPONSE)
         every { channel.session } returns session
-        every { channel.transmit(ByteArrayUtil.fromHex("00B201A420")) } returns ByteArrayUtil.fromHex("00000000000000000000000000000000000000000000000000000000000000009000")
+        every { channel.session.close() } returns Unit
+        every { channel.transmit(any()) } returns ByteArrayUtil.fromHex("00000000000000000000000000000000000000000000000000000000000000009000")
 
         return omapiReader
     }
@@ -195,6 +198,66 @@ internal class AndroidOmapiReaderImplTest: AndroidOmapiReaderTest<Reader, Androi
         every { channel.selectResponse } returns ByteArrayUtil.fromHex(PO_AID_RESPONSE)
         every { channel.session } returns session
         every { channel.transmit(any()) } returns ByteArrayUtil.fromHex("00000000000000000000000000000000000000000000000000000000000000009000")
+
+        return nativeReader
+    }
+
+    override fun mockReaderWithExceptionOnOpenSession(throwable: Throwable): Reader {
+        val nativeReader = mockk<Reader>()
+        val seService = mockk<SEService>()
+        val version = "3.0"
+        every { nativeReader.name } returns "SIM1"
+        every { nativeReader.isSecureElementPresent} returns true
+        every { nativeReader.openSession() } throws throwable
+        every { nativeReader.seService } returns seService
+        every { seService.version } returns version
+        return nativeReader
+    }
+
+    override fun mockReaderWithExceptionOnCloseChannel(throwable: Throwable): Reader {
+
+        val nativeReader = mockk<Reader>()
+        val session = mockk<Session>()
+        val seService = mockk<SEService>()
+        val channel = mockk<Channel>()
+        val version = "3.2"
+
+
+        every { nativeReader.name } returns "SIM1"
+        every { nativeReader.isSecureElementPresent} returns true
+        every { nativeReader.seService } returns seService
+        every { nativeReader.openSession() } returns session
+        every { session.openLogicalChannel(any())} returns channel
+        every { session.isClosed} returns false
+        every { seService.version } returns version
+        every { session.atr} returns null
+        every { channel.selectResponse } returns ByteArrayUtil.fromHex(PO_AID_RESPONSE)
+        every { channel.session } returns session
+        every { channel.session.close() } throws throwable
+        every { channel.transmit(any()) } returns ByteArrayUtil.fromHex("00000000000000000000000000000000000000000000000000000000000000009000")
+
+        return nativeReader
+    }
+
+    override fun mockReaderWithExceptionWhileTransmittingApdu(throwable: Throwable): Reader {
+        val nativeReader = mockk<Reader>()
+        val session = mockk<Session>()
+        val seService = mockk<SEService>()
+        val channel = mockk<Channel>()
+        val version = "3.2"
+
+        every { nativeReader.name } returns "SIM1"
+        every { nativeReader.isSecureElementPresent} returns true
+        every { nativeReader.seService } returns seService
+        every { nativeReader.openSession() } returns session
+        every { session.openLogicalChannel(any())} returns channel
+        every { session.isClosed} returns false
+        every { seService.version } returns version
+        every { session.atr} returns null
+        every { channel.selectResponse } returns ByteArrayUtil.fromHex(PO_AID_RESPONSE)
+        every { channel.session } returns session
+        every { channel.session.close() } returns Unit
+        every { channel.transmit(any()) } throws throwable
 
         return nativeReader
     }

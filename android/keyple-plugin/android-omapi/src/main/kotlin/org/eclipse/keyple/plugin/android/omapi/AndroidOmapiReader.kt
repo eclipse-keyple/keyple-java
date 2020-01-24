@@ -27,7 +27,7 @@ import java.util.HashMap
  * or virtual devices. They can be removable or not. They can contain one SE that can or cannot be
  * removed.
  */
-abstract class AndroidOmapiReader(pluginName: String, readerName: String): AbstractLocalReader(pluginName, readerName), SmartSelectionReader{
+internal abstract class AndroidOmapiReader(pluginName: String, readerName: String): AbstractLocalReader(pluginName, readerName), SmartSelectionReader{
 
     private val parameters: MutableMap<String, String> = HashMap()
 
