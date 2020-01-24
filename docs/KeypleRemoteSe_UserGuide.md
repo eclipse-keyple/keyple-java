@@ -88,28 +88,13 @@ DtoNode can be implemented in top of websocket protocol or http webservice proto
 
 In case of http webservice, a polling mechanism can be implemented so the server can send messages to the client.
 
-
-
-<p id="gdcalert1" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/Remote-SE0.png). Store image on your image server and adjust path/filename if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert2">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
-
 ![alt_text](img/KeypleRemoteSe_DtoNode.png "KeypleRemoteSe_DtoNode.png")
-
-
 
 ## Architecture overview
 
-
-
-<p id="gdcalert2" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/Remote-SE1.png). Store image on your image server and adjust path/filename if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert3">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
-
 ![alt_text](img/KeypleRemoteSe_Architecture.png "image_tooltip")
 
-
-
 ## Quickstart Guide
-
 
 ### Configure Master API with a DtoNode
 
