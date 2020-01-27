@@ -93,6 +93,7 @@ uploadArchives {
             pom.project {
                 name "Keyple Plugin Remotese"
                 description project.description
+                url "https://projects.eclipse.org/projects/iot.keyple"
 
                 organization("Eclipse Keyple"){
                     name "Eclipse Keyple"
