@@ -12,8 +12,8 @@ Release train components:
  - [keyple-java-plugin-pcsc 0.8](#keyple-java-plugin-pcsc-08)
  - [keyple-java-plugin-stub 0.8](#keyple-java-plugin-stub-08)
  - [keyple-java-plugin-remotese 0.8](#keyple-java-plugin-remotese-08)
- - [keyple-android-plugin-android-nfc 0.8](#keyple-android-plugin-android-nfc-08)
- - [keyple-android-plugin-android-omapi 0.8](#keyple-android-plugin-android-omapi-08)
+ - [keyple-android-plugin-nfc 0.8](#keyple-android-plugin-nfc-08)
+ - [keyple-android-plugin-omapi 0.8](#keyple-android-plugin-omapi-08)
  
 ### keyple-java-core 0.8
 * Se Proxy API
@@ -66,13 +66,13 @@ Release train components:
 * Added VirtualReader interface, make RemoteSeReaderImpl package protected
 * Added RemoteSePoolPlugin interface, make RemoteSePoolPluginImpl package protected
 
-### keyple-android-plugin-android-nfc 0.8
+### keyple-android-plugin-nfc 0.8
 * Added AndroidNfcPluginFactory to register plugin to SeProxy
 * Added AndroidNfcPlugin interface, make AndroidNfcPluginImpl package protected
 * Added AndroidNfcReader interface, make AndroidNfcReaderImpl package protected
 * Added a Se Removal detection mecanism via CardAbsentPingMonitoringJob  in WaitForSeRemoval state
 
-### keyple-android-plugin-android-omapi 0.8
+### keyple-android-plugin-omapi 0.8
 * Added AndroidOmapiPluginFactory to register plugin to SeProxy
 * Added AndroidOmapiPlugin interface, make AndroidOmapiPluginImpl package protected
 * Added AndroidOmapiReader interface, make AndroidOmapiReaderImpl package protected
@@ -92,8 +92,8 @@ Release train components:
  - [keyple-java-plugin-pcsc 0.7](#keyple-java-plugin-pcsc-07)
  - [keyple-java-plugin-stub 0.7](#keyple-java-plugin-stub-07)
  - [keyple-java-plugin-remotese 0.7](#keyple-java-plugin-remotese-07)
- - [keyple-android-plugin-android-nfc 0.7](#keyple-android-plugin-android-nfc-07)
- - [keyple-android-plugin-android-omapi 0.7](#keyple-android-plugin-android-omapi-07)
+ - [keyple-android-plugin-nfc 0.7](#keyple-android-plugin-nfc-07)
+ - [keyple-android-plugin-omapi 0.7](#keyple-android-plugin-omapi-07)
 
 ### keyple-java-core 0.7
 * SE Proxy API: generic universal interface to interface a smartcard reader; transmission of grouped APDU commands; observable reader notification
@@ -130,14 +130,14 @@ Release train components:
   * virtualReader#SePresent() API is not implemented
   * Functions to be renamed in accordance with the RPC standard
 
-### keyple-android-plugin-android-nfc 0.7
+### keyple-android-plugin-nfc 0.7
 * Plugin interfacing an observable reader operated through the Android NFC API.
 * Known issues/limits: 
   * AndroidNfcPlugin has a public visibility.
   * Usage of 'fragment' to remove from the plugin code
   * SE remove detection capability added in Android 7.0 not yet supported.
 
-### keyple-android-plugin-android-omapi 0.7
+### keyple-android-plugin-omapi 0.7
 * Plugin interfacing static readers operated through the SIM Alliance / GlobalPlatform OMAPI.
 * Known issues/limits: 
   * OmapiPlugin has a public visibility.
