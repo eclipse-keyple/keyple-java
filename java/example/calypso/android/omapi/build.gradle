@@ -95,8 +95,8 @@ dependencies {
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: '+'
 
     //import the last version of keyple-java-plugin-omapi
-    //implementation group: 'org.eclipse.keyple', name: 'keyple-android-plugin-omapi', version: '+'
-    implementation project(':android-omapi')
+    implementation group: 'org.eclipse.keyple', name: 'keyple-android-plugin-omapi', version: '+'
+    //implementation project(':android-omapi')
 
     /*
     OMAPI dependencies
