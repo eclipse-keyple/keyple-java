@@ -238,7 +238,7 @@ dependencies {
 
     implementation "org.slf4j:slf4j-api:${slf4japi_version}"
 
-    implementation 'fr.coppernic.sdk.ask:CpcAsk:3.5.8-keyple'
+    implementation 'fr.coppernic.sdk.ask:CpcAsk:3.5.9-keyple'
     implementation 'fr.coppernic.sdk.core:CpcCore:1.8.16'
     implementation 'fr.coppernic.sdk.cpcutils:CpcUtilsLib:6.18.4'
 

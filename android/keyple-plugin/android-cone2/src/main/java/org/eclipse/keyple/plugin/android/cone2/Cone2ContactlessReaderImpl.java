@@ -190,6 +190,10 @@ public final class Cone2ContactlessReaderImpl extends AbstractObservableLocalRea
         LOGGER.debug("transmitApdu");
         byte[] apduAnswer;
 
+        if (removalStopped.get()) {
+            throw new KeypleIOReaderException("Removal stopped");
+        }
+
         try {
             Cone2AskReader.acquireLock();
             byte[] dataReceived = new byte[256];
@@ -296,8 +300,11 @@ public final class Cone2ContactlessReaderImpl extends AbstractObservableLocalRea
         return false;
     }
 
+    private AtomicBoolean removalStopped = new AtomicBoolean(false);
+
     @Override
     public void stopWaitForCardRemoval() {
-
+        removalStopped.set(true);
+        stopSeDetection();
     }
 }

@@ -12,11 +12,9 @@
 package org.eclipse.keyple.plugin.android.cone2;
 
 import android.content.Context;
-import android.os.SystemClock;
 
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
 import org.slf4j.Logger;
@@ -188,6 +186,7 @@ final class Cone2PluginImpl extends AbstractThreadedObservablePlugin implements 
             if (reader.getName().compareTo(Cone2ContactlessReader.READER_NAME) == 0) {
                 final Cone2ContactlessReaderImpl cone2Reader = (Cone2ContactlessReaderImpl) reader;
                 cone2Reader.stopWaitForCard();
+                cone2Reader.stopWaitForCardRemoval();
 
                 // This completable monitors the waitForCardPresent method. while it is running, it
                 // is waiting for it to finish before powezring off the reader.
