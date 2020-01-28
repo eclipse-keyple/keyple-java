@@ -17,6 +17,8 @@ task ('printJavaHome') {
     println "Java HOME : " + System.getProperty("java.home")
 }
 
+mainClassName = 'org.eclipse.keyple.example.remote.application.Demo_WebserviceWithRetrofit_MasterClient'
+
 task('runWS_MasterClient', dependsOn: 'classes', type: JavaExec, group:'keyple') {
     main = 'org.eclipse.keyple.example.remote.application.Demo_WebserviceWithRetrofit_MasterClient'
     classpath = sourceSets.main.runtimeClasspath
