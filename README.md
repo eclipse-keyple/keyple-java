@@ -96,21 +96,22 @@ When using gradle, it is fairly simple to import Keyple components into your pro
 
 ```
 repositories {
-        //to import snapshots
-        maven {url 'https://oss.sonatype.org/content/repositories/snapshots' }
         //to import releases
         maven { url 'https://oss.sonatype.org/content/repositories/releases' }
+        
+        //to import snapshots
+        maven {url 'https://oss.sonatype.org/content/repositories/snapshots' }
 }
 
 dependencies {
      //Keyple core is a mandatory library for using Keyple, in this case import the last version of keyple-java-core
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: '+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: '0.8'
 
     //Import Calypso library to support Calypso Portable Object, in this case import the last version of keyple-java-calypso
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: '+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: '0.8'
    
     //Import PCSC library to use a Pcsc reader, in this case import the last version of keyple-java-plugin-pcsc
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-pcsc', version: '+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-pcsc', version: '0.8'
     ...
 }
 ```
