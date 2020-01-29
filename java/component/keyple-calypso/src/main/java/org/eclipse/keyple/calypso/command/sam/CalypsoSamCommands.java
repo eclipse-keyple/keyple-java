@@ -15,9 +15,9 @@ import org.eclipse.keyple.calypso.command.sam.builder.security.*;
 import org.eclipse.keyple.calypso.command.sam.builder.security.SelectDiversifierCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.parser.security.*;
 import org.eclipse.keyple.calypso.command.sam.parser.security.SelectDiversifierRespPars;
-import org.eclipse.keyple.command.AbstractApduCommandBuilder;
-import org.eclipse.keyple.command.AbstractApduResponseParser;
-import org.eclipse.keyple.command.CommandsTable;
+import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
+import org.eclipse.keyple.core.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.command.CommandsTable;
 
 public enum CalypsoSamCommands implements CommandsTable {
 
@@ -52,7 +52,22 @@ public enum CalypsoSamCommands implements CommandsTable {
 
     /** The sam digest authenticate. */
     CARD_GENERATE_KEY("Card Generate Key", (byte) 0x12, CardGenerateKeyCmdBuild.class,
-            CardGenerateKeyRespPars.class);
+            CardGenerateKeyRespPars.class),
+
+    /** The sam unlock. */
+    UNLOCK("Unlock", (byte) 0x20, UnlockCmdBuild.class, UnlockRespPars.class),
+
+    /** The sam write key command. */
+    WRITE_KEY("Write Key", (byte) 0x1A, SamWriteKeyCmdBuild.class, SamWriteKeyRespPars.class),
+
+    READ_KEY_PARAMETERS("Read Key Parameters", (byte) 0xBC, SamReadKeyParametersCmdBuild.class,
+            SamReadKeyParametersRespPars.class),
+
+    READ_EVENT_COUNTER("Read Event Counter", (byte) 0xBE, SamReadEventCounterCmdBuild.class,
+            SamReadEventCounterRespPars.class),
+
+    READ_CEILINGS("Read Ceilings", (byte) 0xBE, SamReadCeilingsCmdBuild.class,
+            SamReadCeilingsRespPars.class);
 
     /** The name. */
     private final String name;

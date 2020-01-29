@@ -11,9 +11,10 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc;
 
-import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import android.content.Intent;
@@ -116,25 +117,29 @@ public class AndroidNfcFragment extends Fragment {
         // Enable Reader Mode for NFC Adapter
         try {
 
+            AndroidNfcReaderImpl reader =
+                    (AndroidNfcReaderImpl) SeProxyService.getInstance().getPlugin(AndroidNfcPlugin.PLUGIN_NAME).getReaders().first();
+
             if (intent.getAction() != null
                     && intent.getAction().equals(NfcAdapter.ACTION_TECH_DISCOVERED)) {
                 LOG.debug("Handle ACTION TECH intent");
 
-                ((AndroidNfcReader) AndroidNfcPlugin.getInstance().getReaders().first())
-                        .processIntent(intent);
+
+                reader.processIntent(intent);
 
             } else {
                 LOG.debug("Intent is not of type ACTION TECH, do not process");
 
             }
 
-            ((AndroidNfcReader) SeProxyService.getInstance().getPlugin(AndroidNfcPlugin.PLUGIN_NAME).getReaders()
-                    .first()).enableNFCReaderMode(getActivity());
+            //enable detection
+            reader.enableNFCReaderMode(getActivity());
 
-        } catch (KeypleReaderException e) {
-            e.printStackTrace();
-            LOG.error("KeypleReaders are not ready");
-        } catch (KeyplePluginNotFoundException e) {
+            //notify reader that se detection has been launched
+            reader.startSeDetection(ObservableReader.PollingMode.REPEATING);
+
+
+        }  catch (KeyplePluginNotFoundException e) {
             e.printStackTrace();
             LOG.error("NFC Plugin not found");
         }
@@ -148,13 +153,19 @@ public class AndroidNfcFragment extends Fragment {
         LOG.info("on Pause Fragment - Stopping Read Write Mode");
 
         try {
-            // Disable Reader Mode for NFC Adapter
-            ((AndroidNfcReader) SeProxyService.getInstance().getPlugins().first().getReaders()
-                    .first()).disableNFCReaderMode(getActivity());
+            AndroidNfcReaderImpl reader =
+                    (AndroidNfcReaderImpl) SeProxyService.getInstance().getPlugin(AndroidNfcPlugin.PLUGIN_NAME).getReaders().first();
 
-        } catch (KeypleReaderException e) {
-            e.printStackTrace();
-            LOG.error("NFC Reader is not ready");
+
+            // Disable Reader Mode for NFC Adapter
+            reader.disableNFCReaderMode(getActivity());
+
+            //notify reader that se detection has been switched off
+            reader.stopSeDetection();
+
+        }catch (KeyplePluginNotFoundException e) {
+            LOG.error("NFC Plugin not found");
+
         }
     }
 

@@ -12,15 +12,18 @@
 package org.eclipse.keyple.plugin.remotese.integration;
 
 
+
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
 import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;
 import org.eclipse.keyple.plugin.remotese.transport.impl.java.LocalTransportFactory;
-import org.eclipse.keyple.plugin.stub.StubPlugin;
-import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
-import org.eclipse.keyple.plugin.stub.StubReader;
-import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
+import org.eclipse.keyple.plugin.stub.*;
 import org.junit.*;
 import org.junit.rules.TestName;
 import org.slf4j.Logger;
@@ -37,25 +40,27 @@ public class VirtualReaderBaseTest {
     private static final Logger logger = LoggerFactory.getLogger(VirtualReaderBaseTest.class);
 
     // Real objects
-    private TransportFactory factory;
-    private SlaveAPI slaveAPI;
-    StubReader nativeReader;
-    VirtualReader virtualReader;
+    protected TransportFactory factory;
 
-    final String NATIVE_READER_NAME = "testStubReader";
-    final String CLIENT_NODE_ID = "testClientNodeId";
-    final String SERVER_NODE_ID = "testServerNodeId";
+    protected final String NATIVE_READER_NAME = "testStubReader";
+    protected final String CLIENT_NODE_ID = "testClientNodeId";
+    protected final String SERVER_NODE_ID = "testServerNodeId";
+
+    protected SeProxyService seProxyService = SeProxyService.getInstance();
+
+    protected final String REMOTE_SE_PLUGIN_NAME = "remoteseplugin1";
+
 
     // Spy Object
-    MasterAPI masterAPI;
+    protected MasterAPI masterAPI;
+    // Spy Object
+    protected SlaveAPI slaveAPI;
 
-    protected void initKeypleServices() throws Exception {
+
+    protected void initMasterNSlave() throws Exception {
         logger.info("------------------------------");
         logger.info("Test {}", name.getMethodName());
         logger.info("------------------------------");
-
-        // assert that there is no stub readers plugged already
-        Assert.assertEquals(0, StubPlugin.getInstance().getReaders().size());
 
         logger.info("*** Init LocalTransportFactory");
         // use a local transport factory for testing purposes (only java calls between client and
@@ -64,44 +69,64 @@ public class VirtualReaderBaseTest {
 
         logger.info("*** Bind Master Services");
         // bind Master services to server
-        masterAPI = Integration.bindMaster(factory.getServer());
+        masterAPI = Integration.createSpyMasterAPI(factory.getServer(), REMOTE_SE_PLUGIN_NAME);
 
         logger.info("*** Bind Slave Services");
         // bind Slave services to client
-        slaveAPI = Integration.bindSlave(factory.getClient(CLIENT_NODE_ID), SERVER_NODE_ID);
-
-
+        slaveAPI = Integration.createSpySlaveAPI(factory.getClient(CLIENT_NODE_ID), SERVER_NODE_ID);
 
     }
 
-    protected void clearStubpluginReaders() throws Exception {
+    protected void clearMasterNSlave() {
+        factory = null;
+        masterAPI = null;
+        slaveAPI = null;
+    }
 
-        logger.info("Cleaning of the stub plugin");
 
-        StubPlugin stubPlugin = StubPlugin.getInstance();
 
-        // if nativeReader was initialized during test, unplug it
-        if (nativeReader != null) {
-            stubPlugin.unplugStubReader(nativeReader.getName(), true);
-            nativeReader.clearObservers();
+    protected void unregisterPlugins() {
+        seProxyService.unregisterPlugin(Integration.SLAVE_POOL_STUB);
+        seProxyService.unregisterPlugin(Integration.SLAVE_STUB);
+        seProxyService.unregisterPlugin(REMOTE_SE_PLUGIN_NAME);
+    }
+
+
+    public void disconnectReader(String readerName) throws KeypleReaderException {
+        logger.info("Remove all readers from stub plugin");
+        StubPlugin stubPlugin = null;
+        try {
+            stubPlugin =
+                    (StubPlugin) SeProxyService.getInstance().getPlugin(Integration.SLAVE_STUB);
+
+            // Set<SeReader> readers = stubPlugin.getReaders();
+
+            /*
+             * unplug each readers and check that there are no observers
+             */
+            /*
+             * for (SeReader reader : readers) { Assert.assertEquals(0, ((ObservableReader)
+             * reader).countObservers()); ((ObservableReader) reader).clearObservers(); }
+             */
+            this.slaveAPI.disconnectReader("", readerName);
+            stubPlugin.unplugStubReader(readerName, true);
+
+        } catch (KeyplePluginNotFoundException e) {
+            // stub plugin is not registered
         }
 
-
-
-        // stubPlugin.removeObserver(stubPluginObserver);
-
-        // Thread.sleep(500);
-
-        logger.info("End of cleaning of the stub plugin");
     }
 
-
-
-    protected StubReader connectStubReader(String readerName, String nodeId) throws Exception {
+    protected StubReader connectStubReader(String readerName, String nodeId,
+            TransmissionMode transmissionMode) throws Exception {
         // configure native reader
-        StubReader nativeReader = (StubReader) Integration.createStubReader(readerName);
-        nativeReader.addSeProtocolSetting(
-                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+        StubReader nativeReader =
+                (StubReader) Integration.createStubReader(readerName, transmissionMode);
+
+        nativeReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                StubProtocolSetting.STUB_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+
         this.slaveAPI.connectReader(nativeReader);
         return nativeReader;
     }
@@ -115,5 +140,6 @@ public class VirtualReaderBaseTest {
         Assert.assertEquals(1, this.masterAPI.getPlugin().getReaders().size());
         return (VirtualReader) this.masterAPI.getPlugin().getReaders().first();
     }
+
 
 }

@@ -1,0 +1,85 @@
+@startuml
+
+together {
+package external.terminalapplication #3399FF {
+  class SpecificTerminal
+}
+
+package java.util #FFFFFF {
+interface Comparable<T> {
+	+int compareTo(T o)
+}
+}
+}
+
+package org.eclipse.keyple.core #FFFFFF {
+package seproxy #FFFFFF {
+
++class "<b>final</b> SeProxyService" as SeProxyService << Singleton >> {
+	+{static}SeProxyService getInstance()
+	+String getVersion()
+	+registerPlugin(AbstractPluginFactory pluginFactory)
+	+boolean isRegistered(String pluginName)
+	+boolean unregisterPlugin(String pluginName)
+	+ReaderPlugin getPlugin(String name)
+	+SortedSet<ReaderPlugin> getPlugins()
+}
+}
+
++interface ReaderPlugin {
+	+SortedSet<String> getReaderNames()
+	+SeReader getReader(String name)
+	+SortedSet<? extends SeReader> getReaders()
+}
+
++interface ReaderPoolPlugin {
+	+SortedSet<String> getReaderGroupReferences()
+	+SeReader allocateReader(String groupReference)
+	+releaseReader(SeReader seReader)
+}
+
++interface SeReader {
+	+boolean isSePresent()
+	+void addSeProtocolSetting(SeProtocol seProtocol,
+String protocolRule);
+	+void setSeProtocolSetting(Map<SeProtocol,
+String> protocolSetting);
+	+TransmissionMode getTransmissionMode();
+}
+
+SeProxyService "1" *-down-> "*" ReaderPlugin : plugins
+ReaderPlugin <|-left- ReaderPoolPlugin : extends
+ReaderPlugin "1" *-right-> "*" SeReader : readers
+}
+
+package util #FFFFFF {
++interface Configurable {
+	+Map<String, String> getParameters();
+	+void setParameter(String key, String value)
+	+void setParameters(Map<String, String> parameters)
+}
+
++interface Nameable {
+	+String getName();
+}
+
+}
+
+
+
+
+SpecificTerminal -down-> SeProxyService : uses >
+
+Nameable <|-up- ReaderPlugin : extends
+Nameable <|-- SeReader : extends
+Configurable <|-up- ReaderPlugin : extends
+Configurable <|-- SeReader : extends
+
+Comparable <|-- ReaderPlugin : extends
+'Comparable <|-up- SeReader : extends
+'Comparable <|-down- SeReader : extends
+Comparable <|-- SeReader : extends
+'SpecificTerminal -[hidden]right- Comparable
+'"external.terminalapplication" -right- "java.util"
+'"java.util" -down- "org.eclipse.keyple.core"
+@enduml

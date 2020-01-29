@@ -11,20 +11,28 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.nativese.method;
 
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTx;
+import org.eclipse.keyple.plugin.remotese.rm.AbstractRemoteMethodTx;
+import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
-public class RmDisconnectReaderTx extends RemoteMethodTx<Boolean> {
+/**
+ * Handle the Disconnect Reader keypleDTO serialization and deserialization
+ */
+public class RmDisconnectReaderTx extends AbstractRemoteMethodTx<Boolean> {
 
     private static final Logger logger = LoggerFactory.getLogger(RmDisconnectReaderTx.class);
+
+    @Override
+    public RemoteMethodName getMethodName() {
+        return RemoteMethodName.READER_DISCONNECT;
+    }
 
 
     public RmDisconnectReaderTx(String sessionId, String nativeReaderName, String slaveNodeId,
@@ -36,14 +44,14 @@ public class RmDisconnectReaderTx extends RemoteMethodTx<Boolean> {
     public Boolean parseResponse(KeypleDto keypleDto) throws KeypleRemoteException {
         // if reader connection thrown an exception
         if (KeypleDtoHelper.containsException(keypleDto)) {
-            logger.trace("KeypleDto contains an exception: {}", keypleDto);
+            // logger.trace("KeypleDto contains an exception: {}", keypleDto);
             KeypleReaderException ex =
                     JsonParser.getGson().fromJson(keypleDto.getBody(), KeypleReaderException.class);
             throw new KeypleRemoteException(
                     "An exception occurs while calling the remote method disconnectReader", ex);
         } else {
             JsonObject body = JsonParser.getGson().fromJson(keypleDto.getBody(), JsonObject.class);
-            return body.get("status").getAsBoolean();
+            return body.has("status") && body.get("status").getAsBoolean();
         }
 
     }
@@ -53,8 +61,8 @@ public class RmDisconnectReaderTx extends RemoteMethodTx<Boolean> {
         JsonObject body = new JsonObject();
         body.addProperty("sessionId", sessionId);
 
-        return new KeypleDto(RemoteMethod.READER_DISCONNECT.getName(),
-                JsonParser.getGson().toJson(body, JsonObject.class), true, null, nativeReaderName,
-                null, "", targetNodeId);
+        return KeypleDtoHelper.buildRequest(getMethodName().getName(),
+                JsonParser.getGson().toJson(body, JsonObject.class), null, nativeReaderName, null,
+                requesterNodeId, targetNodeId, id);
     }
 }

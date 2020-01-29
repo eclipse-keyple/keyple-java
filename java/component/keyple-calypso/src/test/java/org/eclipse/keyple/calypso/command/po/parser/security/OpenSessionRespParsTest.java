@@ -15,11 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.util.TestsUtilsResponseTabByteGenerator;
-import org.eclipse.keyple.seproxy.message.ApduResponse;
-import org.eclipse.keyple.seproxy.message.SeResponse;
-import org.eclipse.keyple.seproxy.message.SeResponseSet;
-import org.eclipse.keyple.seproxy.message.SelectionStatus;
-import org.eclipse.keyple.util.ByteArrayUtils;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,15 +36,15 @@ public class OpenSessionRespParsTest {
 
         // expected response
 
-        ApduResponse responseMockOpenSecureSession = new ApduResponse(ByteArrayUtils.fromHex(
+        ApduResponse responseMockOpenSecureSession = new ApduResponse(ByteArrayUtil.fromHex(
                 "CC 11223344 00112233445566778899AABBCCDDEEFF 00112233445566778899AABBCC 9000"),
                 null);
         List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
         apduResponses.add(responseMockOpenSecureSession);
 
-        SeResponseSet responseMock = new SeResponseSet(new SeResponse(true, true,
-                new SelectionStatus(null, responseMockOpenSecureSession, true), apduResponses));
-        ApduResponse response = responseMock.getSingleResponse().getApduResponses().get(0);
+        SeResponse responseMock = new SeResponse(true, true,
+                new SelectionStatus(null, responseMockOpenSecureSession, true), apduResponses);
+        ApduResponse response = responseMock.getApduResponses().get(0);
 
         check(AbstractOpenSessionRespPars.create(response, PoRevision.REV2_4));
     }
@@ -56,13 +55,13 @@ public class OpenSessionRespParsTest {
         // expected response
 
         ApduResponse responseMockOpenSecureSession =
-                new ApduResponse(ByteArrayUtils.fromHex("CC 11223344 9000"), null);
+                new ApduResponse(ByteArrayUtil.fromHex("CC 11223344 9000"), null);
         List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
         apduResponses.add(responseMockOpenSecureSession);
 
-        SeResponseSet responseMock = new SeResponseSet(new SeResponse(true, true,
-                new SelectionStatus(null, responseMockOpenSecureSession, true), apduResponses));
-        ApduResponse response = responseMock.getSingleResponse().getApduResponses().get(0);
+        SeResponse responseMock = new SeResponse(true, true,
+                new SelectionStatus(null, responseMockOpenSecureSession, true), apduResponses);
+        ApduResponse response = responseMock.getApduResponses().get(0);
 
         check(AbstractOpenSessionRespPars.create(response, PoRevision.REV2_4));
     }
@@ -72,15 +71,15 @@ public class OpenSessionRespParsTest {
 
         // expected response
 
-        ApduResponse responseMockOpenSecureSession = new ApduResponse(ByteArrayUtils.fromHex(
+        ApduResponse responseMockOpenSecureSession = new ApduResponse(ByteArrayUtil.fromHex(
                 "CC 11223344 9999 00112233445566778899AABBCCDDEEFF 00112233445566778899AABBCC 9000"),
                 null);
         List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
         apduResponses.add(responseMockOpenSecureSession);
 
-        SeResponseSet responseMock = new SeResponseSet(new SeResponse(true, true,
-                new SelectionStatus(null, responseMockOpenSecureSession, true), apduResponses));
-        ApduResponse response = responseMock.getSingleResponse().getApduResponses().get(0);
+        SeResponse responseMock = new SeResponse(true, true,
+                new SelectionStatus(null, responseMockOpenSecureSession, true), apduResponses);
+        ApduResponse response = responseMock.getApduResponses().get(0);
 
         check(AbstractOpenSessionRespPars.create(response, PoRevision.REV2_4));
     }
@@ -91,13 +90,13 @@ public class OpenSessionRespParsTest {
         // expected response
 
         ApduResponse responseMockOpenSecureSession =
-                new ApduResponse(ByteArrayUtils.fromHex("CC 11223344 9999 9000"), null);
+                new ApduResponse(ByteArrayUtil.fromHex("CC 11223344 9999 9000"), null);
         List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
         apduResponses.add(responseMockOpenSecureSession);
 
-        SeResponseSet responseMock = new SeResponseSet(new SeResponse(true, true,
-                new SelectionStatus(null, responseMockOpenSecureSession, true), apduResponses));
-        ApduResponse response = responseMock.getSingleResponse().getApduResponses().get(0);
+        SeResponse responseMock = new SeResponse(true, true,
+                new SelectionStatus(null, responseMockOpenSecureSession, true), apduResponses);
+        ApduResponse response = responseMock.getApduResponses().get(0);
 
         check(AbstractOpenSessionRespPars.create(response, PoRevision.REV2_4));
     }
@@ -107,15 +106,15 @@ public class OpenSessionRespParsTest {
 
         // expected response
 
-        ApduResponse responseMockOpenSecureSession = new ApduResponse(ByteArrayUtils.fromHex(
+        ApduResponse responseMockOpenSecureSession = new ApduResponse(ByteArrayUtil.fromHex(
                 "CC 11223344 9999 00112233445566778899AABBCCDDEEFF 00112233445566778899AABBCCDDEEFF 9000"),
                 null);
         List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
         apduResponses.add(responseMockOpenSecureSession);
 
-        SeResponseSet responseMock = new SeResponseSet(new SeResponse(true, true,
-                new SelectionStatus(null, responseMockOpenSecureSession, true), apduResponses));
-        ApduResponse response = responseMock.getSingleResponse().getApduResponses().get(0);
+        SeResponse responseMock = new SeResponse(true, true,
+                new SelectionStatus(null, responseMockOpenSecureSession, true), apduResponses);
+        ApduResponse response = responseMock.getApduResponses().get(0);
 
         check(AbstractOpenSessionRespPars.create(response, PoRevision.REV2_4));
     }
@@ -126,14 +125,14 @@ public class OpenSessionRespParsTest {
         // expected response
 
         ApduResponse responseMockOpenSecureSession = new ApduResponse(
-                ByteArrayUtils.fromHex("CC 11223344 9999 00112233445566778899AABBCCDDEEFF 9000"),
+                ByteArrayUtil.fromHex("CC 11223344 9999 00112233445566778899AABBCCDDEEFF 9000"),
                 null);
         List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
         apduResponses.add(responseMockOpenSecureSession);
 
-        SeResponseSet responseMock = new SeResponseSet(new SeResponse(true, true,
-                new SelectionStatus(null, responseMockOpenSecureSession, true), apduResponses));
-        ApduResponse response = responseMock.getSingleResponse().getApduResponses().get(0);
+        SeResponse responseMock = new SeResponse(true, true,
+                new SelectionStatus(null, responseMockOpenSecureSession, true), apduResponses);
+        ApduResponse response = responseMock.getApduResponses().get(0);
 
         check(AbstractOpenSessionRespPars.create(response, PoRevision.REV2_4));
     }
@@ -148,9 +147,9 @@ public class OpenSessionRespParsTest {
         List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
         apduResponses.add(responseMockFci);
 
-        SeResponseSet responseMock = new SeResponseSet(new SeResponse(true, true,
-                new SelectionStatus(null, responseMockFci, true), apduResponses));
-        ApduResponse response = responseMock.getSingleResponse().getApduResponses().get(0);
+        SeResponse responseMock = new SeResponse(true, true,
+                new SelectionStatus(null, responseMockFci, true), apduResponses);
+        ApduResponse response = responseMock.getApduResponses().get(0);
 
         check(AbstractOpenSessionRespPars.create(response, PoRevision.REV3_1));
     }
@@ -167,9 +166,9 @@ public class OpenSessionRespParsTest {
         List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
         apduResponses.add(responseMockOS);
 
-        SeResponseSet responseMock = new SeResponseSet(new SeResponse(true, true,
-                new SelectionStatus(null, responseMockFci, true), apduResponses));
-        ApduResponse response = responseMock.getSingleResponse().getApduResponses().get(0);
+        SeResponse responseMock = new SeResponse(true, true,
+                new SelectionStatus(null, responseMockFci, true), apduResponses);
+        ApduResponse response = responseMock.getApduResponses().get(0);
 
         check(AbstractOpenSessionRespPars.create(response, PoRevision.REV3_2));
     }

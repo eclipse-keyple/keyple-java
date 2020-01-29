@@ -11,21 +11,23 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.remote.application;
 
-import org.eclipse.keyple.example.calypso.common.stub.se.StubCalypsoClassic;
+import org.eclipse.keyple.example.common.calypso.stub.StubCalypsoClassic;
 import org.eclipse.keyple.example.remote.transport.websocket.WskFactory;
 import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;
 
 /**
- * Demo websocket The master device uses the websocket server whereas the slave device uses the
- * websocket client
+ * Demo websocket
+ *
+ * The master device uses the websocket server whereas the slave device uses the websocket client
+ *
  */
 public class Demo_Websocket_MasterServer {
 
     public static void main(String[] args) throws Exception {
 
 
-        final String CLIENT_NODE_ID = "Demo_Websocket_MasterServerClient1";
-        final String SERVER_NODE_ID = "Demo_Websocket_MasterServer1";
+        final String CLIENT_NODE_ID = "WskMS1";
+        final String SERVER_NODE_ID = "WskMS1Server";
 
 
         // Create the procotol factory
@@ -43,8 +45,8 @@ public class Demo_Websocket_MasterServer {
         // Client is Slave
         Demo_Slave slave = new Demo_Slave(factory, false, CLIENT_NODE_ID, SERVER_NODE_ID);
 
-        // execute slave scenario
-        slave.insertSE(new StubCalypsoClassic(), true);
+        // execute Calypso Transaction Scenario
+        slave.executeScenario(new StubCalypsoClassic(), true);
 
     }
 }

@@ -1,0 +1,8 @@
+rootProject.name = 'calypso-pc-example'
+
+include 'Demo_CalypsoClassic'
+include 'UseCase1_ExplicitSelectionAid'
+include 'UseCase2_DefaultSelectionNotification'
+include 'UseCase3_Rev1Selection'
+include 'UseCase4_PoAuthentication'
+include 'UseCase5_MultipleSession'

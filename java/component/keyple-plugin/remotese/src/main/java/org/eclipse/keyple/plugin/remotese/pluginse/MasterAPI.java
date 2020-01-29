@@ -11,15 +11,18 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
+
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
 import org.eclipse.keyple.plugin.remotese.transport.*;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
-import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.SeReader;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +40,14 @@ public class MasterAPI implements DtoHandler {
     private static final Logger logger = LoggerFactory.getLogger(MasterAPI.class);
 
     private final DtoNode dtoTransportNode;
-    private final RemoteSePlugin plugin;
+    private final RemoteSePluginImpl plugin;
+
+    static public int PLUGIN_TYPE_DEFAULT = 0;
+    static public int PLUGIN_TYPE_POOL = 1;
+
+    private final int pluginType;
+
+    public static final long DEFAULT_RPC_TIMEOUT = 10000;
 
     /**
      * Build a new MasterAPI, Entry point for incoming DTO in Master Manages RemoteSePlugin
@@ -45,16 +55,101 @@ public class MasterAPI implements DtoHandler {
      *
      * @param seProxyService : SeProxyService
      * @param dtoNode : outgoing node to send Dto to Slave
+     * @throws KeyplePluginInstantiationException if plugin does not instantiate
      */
-    public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode) {
+    public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode)
+            throws KeyplePluginInstantiationException {
+        this(seProxyService, dtoNode, DEFAULT_RPC_TIMEOUT);
+    }
+
+    /**
+     * Build a new MasterAPI, Entry point for incoming DTO in Master Manages RemoteSePlugin
+     * lifecycle Manages Master Session Dispatch KeypleDTO
+     *
+     * @param seProxyService : SeProxyService
+     * @param dtoNode : outgoing node to send Dto to Slave
+     * @param rpc_timeout : timeout in milliseconds to wait for an answer from slave before throwing
+     *        an exception
+     * @throws KeyplePluginInstantiationException if plugin does not instantiate
+     */
+    public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode, long rpc_timeout)
+            throws KeyplePluginInstantiationException {
+        this(seProxyService, dtoNode, rpc_timeout, PLUGIN_TYPE_DEFAULT,
+                RemoteSePluginImpl.DEFAULT_PLUGIN_NAME);
+    }
+
+    /**
+     * Build a new MasterAPI, Entry point for incoming DTO in Master Manages RemoteSePlugin
+     * lifecycle Manages Master Session Dispatch KeypleDTO
+     *
+     * @param seProxyService : SeProxyService
+     * @param dtoNode : outgoing node to send Dto to Slave
+     * @param rpcTimeout : timeout in milliseconds to wait for an answer from slave before throwing
+     *        an exception
+     * @param pluginType : either a default plugin or readerPool plugin, use
+     *        {@link #PLUGIN_TYPE_DEFAULT} or @PLUGIN_TYPE_POOL
+     * @param pluginName : specify a name for remoteseplugin
+     * @throws KeyplePluginInstantiationException if plugin does not instantiate
+     *
+     * 
+     */
+    public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode, long rpcTimeout,
+            int pluginType, String pluginName) throws KeyplePluginInstantiationException {
+
+        logger.info("Init MasterAPI with parameters {} {} {} {} {}", seProxyService, dtoNode,
+                rpcTimeout, pluginType, pluginName);
+
+
         this.dtoTransportNode = dtoNode;
+        this.pluginType = pluginType;
+
+        if (pluginName == null || pluginName.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "pluginName should be properly defined (not null, not empty)");
+        }
 
         // Instantiate Session Manager
         VirtualReaderSessionFactory sessionManager = new VirtualReaderSessionFactory();
+        try {
 
-        // Instantiate Plugin
-        this.plugin = new RemoteSePlugin(sessionManager, dtoNode);
-        seProxyService.addPlugin(this.plugin);
+            if (pluginType == PLUGIN_TYPE_DEFAULT) {
+                /*
+                 * // Instantiate Plugin this.plugin = new RemoteSePluginImpl(sessionManager,
+                 * dtoNode, rpcTimeout, RemoteSePluginImpl.DEFAULT_PLUGIN_NAME);
+                 */
+                if (seProxyService.isRegistered(pluginName)) {
+                    throw new IllegalArgumentException(
+                            "plugin name is already registered to the platform : " + pluginName);
+                }
+
+                seProxyService.registerPlugin(
+                        new RemoteSePluginFactory(sessionManager, dtoNode, rpcTimeout, pluginName));
+
+                this.plugin = (RemoteSePluginImpl) seProxyService.getPlugin(pluginName);
+
+            } else if (pluginType == PLUGIN_TYPE_POOL) {
+                /*
+                 * this.plugin = new RemoteSePoolPluginImpl(sessionManager, dtoNode, rpcTimeout,
+                 * RemoteSePluginImpl.DEFAULT_PLUGIN_NAME + "_POOL");
+                 */
+                if (seProxyService.isRegistered(pluginName)) {
+                    throw new IllegalArgumentException(
+                            "plugin name is already registered to the platform : " + pluginName);
+                }
+
+                seProxyService.registerPlugin(new RemoteSePoolPluginFactory(sessionManager, dtoNode,
+                        rpcTimeout, pluginName));
+
+                this.plugin = (RemoteSePoolPluginImpl) seProxyService.getPlugin(pluginName);
+
+            } else {
+                throw new IllegalArgumentException(
+                        "plugin type is not recognized, use static properties defined in MasterAPI#PLUGIN_TYPE_DEFAULT or MasterAPI#PLUGIN_TYPE_POOL");
+            }
+        } catch (KeyplePluginNotFoundException e) {
+            throw new IllegalStateException(
+                    "Unable to register plugin to platform : " + pluginName);
+        }
 
         // Set this service as the Dto Handler for the node
         this.bindDtoEndpoint(dtoNode);
@@ -88,12 +183,16 @@ public class MasterAPI implements DtoHandler {
     public TransportDto onDTO(TransportDto transportDto) {
 
         KeypleDto keypleDTO = transportDto.getKeypleDTO();
-        RemoteMethod method = RemoteMethod.get(keypleDTO.getAction());
+        RemoteMethodName method = RemoteMethodName.get(keypleDTO.getAction());
         logger.trace("onDTO, Remote Method called : {} - isRequest : {} - keypleDto : {}", method,
                 keypleDTO.isRequest(), KeypleDtoHelper.toJson(keypleDTO));
 
 
         switch (method) {
+
+            /*
+             * Requests from slave
+             */
             case READER_CONNECT:
                 if (keypleDTO.isRequest()) {
                     return new RmConnectReaderExecutor(this.plugin, this.dtoTransportNode)
@@ -109,59 +208,65 @@ public class MasterAPI implements DtoHandler {
                     throw new IllegalStateException(
                             "a READER_DISCONNECT response has been received by MasterAPI");
                 }
+
+                /*
+                 * Notifications from slave
+                 */
+
             case READER_EVENT:
-                return new RmEventExecutor(plugin).execute(transportDto);
+                // process response with the Event Reader RmMethod
+                return new RmReaderEventExecutor(plugin).execute(transportDto);
+
+            /*
+             * Response from slave
+             */
+
             case READER_TRANSMIT:
-                // can be more general
-                if (keypleDTO.isRequest()) {
-                    throw new IllegalStateException(
-                            "a READER_TRANSMIT request has been received by MasterAPI");
-                } else {
-                    // dispatch dto to the appropriate reader
-                    try {
-                        // find reader by sessionId
-                        VirtualReader reader = getReaderBySessionId(keypleDTO.getSessionId());
-
-                        // process response with the reader rm method engine
-                        return reader.getRmTxEngine().onDTO(transportDto);
-
-                    } catch (KeypleReaderNotFoundException e) {
-                        // reader not found;
-                        throw new IllegalStateException(
-                                "Virtual Reader was not found while receiving a transmitSet response",
-                                e);
-                    } catch (KeypleReaderException e) {
-                        // reader not found;
-                        throw new IllegalStateException("Readers list has not been initiated", e);
-                    }
-                }
-
+            case READER_TRANSMIT_SET:
             case DEFAULT_SELECTION_REQUEST:
                 if (keypleDTO.isRequest()) {
-                    throw new IllegalStateException(
-                            "a READER_TRANSMIT request has been received by MasterAPI");
-                } else {
-                    // dispatch dto to the appropriate reader
-                    try {
-                        // find reader by sessionId
-                        VirtualReader reader = getReaderBySessionId(keypleDTO.getSessionId());
-
-                        // process response with the reader rmtx engine
-                        return reader.getRmTxEngine().onDTO(transportDto);
-
-                    } catch (KeypleReaderNotFoundException e) {
-                        // reader not found;
-                        throw new IllegalStateException(
-                                "Virtual Reader was not found while receiving a transmitSet response",
-                                e);
-                    } catch (KeypleReaderException e) {
-                        // reader not found;
-                        throw new IllegalStateException("Readers list has not been initiated", e);
-                    }
+                    throw new IllegalStateException("a " + keypleDTO.getAction()
+                            + " request has been received by MasterAPI");
                 }
+
+                // dispatch dto to the appropriate reader
+                try {
+                    // find reader by sessionId
+                    VirtualReaderImpl reader = getReaderBySessionId(keypleDTO.getSessionId());
+
+                    // process response with the reader rmtx engine
+                    return reader.getRmTxEngine().onDTO(transportDto);
+
+                } catch (KeypleReaderNotFoundException e) {
+                    // reader not found;
+                    throw new IllegalStateException(
+                            "Virtual Reader was not found while receiving a "
+                                    + keypleDTO.getAction() + " response",
+                            e);
+                } catch (KeypleReaderException e) {
+                    // reader not found;
+                    throw new IllegalStateException("Readers list has not been initiated", e);
+                }
+
+            case POOL_ALLOCATE_READER:
+            case POOL_RELEASE_READER:
+                if (keypleDTO.isRequest()) {
+                    throw new IllegalStateException("a " + keypleDTO.getAction()
+                            + " request has been received by MasterAPI");
+                }
+                if (pluginType != PLUGIN_TYPE_POOL) {
+                    throw new IllegalStateException("a " + keypleDTO.getAction()
+                            + " request has been received by MasterAPI but plugin is not pool compatible");
+                }
+
+                /*
+                 * dispatch message to plugin
+                 */
+                return ((RemoteSePoolPluginImpl) plugin).getRmTxEngine().onDTO(transportDto);
+
             default:
                 logger.error("Receive a KeypleDto with no recognised action");
-                return transportDto.nextTransportDTO(KeypleDtoHelper.NoResponse());
+                return transportDto.nextTransportDTO(KeypleDtoHelper.NoResponse(keypleDTO.getId()));
         }
     }
 
@@ -174,11 +279,11 @@ public class MasterAPI implements DtoHandler {
      * @return VirtualReader matching the sessionId
      * @throws KeypleReaderNotFoundException : if none reader was found
      */
-    private VirtualReader getReaderBySessionId(String sessionId) throws KeypleReaderException {
+    private VirtualReaderImpl getReaderBySessionId(String sessionId) throws KeypleReaderException {
         for (SeReader reader : plugin.getReaders()) {
 
-            if (((VirtualReader) reader).getSession().getSessionId().equals(sessionId)) {
-                return (VirtualReader) reader;
+            if (((VirtualReaderImpl) reader).getSession().getSessionId().equals(sessionId)) {
+                return (VirtualReaderImpl) reader;
             }
         }
         throw new KeypleReaderNotFoundException(

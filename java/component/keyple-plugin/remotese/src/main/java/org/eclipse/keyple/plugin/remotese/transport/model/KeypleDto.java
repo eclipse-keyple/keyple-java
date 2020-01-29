@@ -12,26 +12,17 @@
 package org.eclipse.keyple.plugin.remotese.transport.model;
 
 /**
- * Data Transfer Object used to common an API call from a Master Reader to a Slave Reader (and vice
- * versa)
+ * Immutable Message used in the RPC protocol.
+ * <p>
+ * It contains the name of the method
+ * {@link org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName}, the parameters
+ *
  */
 public class KeypleDto {
 
-    // Requester Node Id (can be slave or master)
-    private final String requesterNodeId;
-
-
-    // Requester Node Id (can be slave or master)
-    private String targetNodeId;
-
-    // Master reader session
-    private final String sessionId;
-
-    // Slave reader name
-    private final String nativeReaderName;
-
-    // Master reader name
-    private final String virtualReaderName;
+    /*
+     * API call
+     */
 
     // API method to be called
     private final String action;
@@ -42,38 +33,47 @@ public class KeypleDto {
     // Is a request or a response
     private final Boolean isRequest;
 
+    // Id of the request
+    private final String id;
+
+    /*
+     * Metadata
+     */
+
+    // Requester Node Id (can be slave or master)
+    private final String requesterNodeId;
+
+    // Requester Node Id (can be slave or master)
+    private final String targetNodeId;
+
+    // Master reader session
+    private final String sessionId;
+
+    // Slave reader name
+    private final String nativeReaderName;
+
+    // Master reader name
+    private final String virtualReaderName;
+
+
 
     /**
-     * Basic Constructor
+     * Constructor of a KeypleDto
      * 
-     * @param action : API method to be called
-     * @param body : Arguments of the API (json)
-     * @param isRequest : Is a request or a response public KeypleDto(String action, String body,
-     *        Boolean isRequest) { this.action = action; this.body = body; this.isRequest =
-     *        isRequest; }
-     */
-
-    /**
-     * Constructor with a Virtual Reader Session Id
-     *
-     * @param action : API method to be called
-     * @param body : Arguments of the API (json)
-     * @param isRequest : Is a request or a response
-     * @param sessionId : Session Id of current Virtual Reader Session Id public KeypleDto(String
-     *        action, String body, Boolean isRequest, String sessionId) { this.sessionId =
-     *        sessionId; this.action = action; this.body = body; this.isRequest = isRequest; }
-     */
-
-    /**
-     * Constructor with a Virtual Reader Session Id
-     *
      * @param action : API method to be called
      * @param body : Arguments of the API (json)
      * @param isRequest : Is a request or a response
      * @param sessionId : Session Id of current Virtual Reader Session Id
+     * @param nativeReaderName : readerName of the native reader
+     * @param virtualReaderName : readerName of the virtual reader
+     * @param requesterNodeId : node the request is sent from
+     * @param targetNodeId : node the request is sent to
+     * @param id : unique id of this request (null in case of notification)
      */
     public KeypleDto(String action, String body, Boolean isRequest, String sessionId,
-            String nativeReaderName, String virtualReaderName, String requesterNodeId) {
+            String nativeReaderName, String virtualReaderName, String requesterNodeId,
+            String targetNodeId, String id) {
+
         this.sessionId = sessionId;
         this.action = action;
         this.body = body;
@@ -81,23 +81,8 @@ public class KeypleDto {
         this.nativeReaderName = nativeReaderName;
         this.virtualReaderName = virtualReaderName;
         this.requesterNodeId = requesterNodeId;
-    }
-
-    /**
-     * Constructor with a Virtual Reader Session Id
-     *
-     * @param action : API method to be called
-     * @param body : Arguments of the API (json)
-     * @param isRequest : Is a request or a response
-     * @param sessionId : Session Id of current Virtual Reader Session Id
-     */
-    public KeypleDto(String action, String body, Boolean isRequest, String sessionId,
-            String nativeReaderName, String virtualReaderName, String requesterNodeId,
-            String targetNodeId) {
-
-        this(action, body, isRequest, sessionId, nativeReaderName, virtualReaderName,
-                requesterNodeId);
         this.targetNodeId = targetNodeId;
+        this.id = id;
     }
 
     /*
@@ -136,6 +121,9 @@ public class KeypleDto {
         return targetNodeId;
     }
 
+    public String getId() {
+        return id;
+    }
 
     @Override
     public String toString() {

@@ -11,70 +11,70 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.stub;
 
-import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.seproxy.protocol.SeProtocolSettingList;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 
 /**
- * These objects are used by the application to build the SeProtocolsMap
+ * This class contains all the parameters to identify the communication protocols supported by STUB
+ * readers.
+ * <p>
+ * The application can choose to add all parameters or only a subset.
  */
-public enum StubProtocolSetting implements SeProtocolSettingList {
+public class StubProtocolSetting {
 
-    SETTING_PROTOCOL_ISO14443_4(ContactlessProtocols.PROTOCOL_ISO14443_4,
-            ProtocolSetting.REGEX_PROTOCOL_ISO14443_4),
-
-    SETTING_PROTOCOL_B_PRIME(ContactlessProtocols.PROTOCOL_B_PRIME,
-            ProtocolSetting.REGEX_PROTOCOL_B_PRIME),
-
-    SETTING_PROTOCOL_MIFARE_UL(ContactlessProtocols.PROTOCOL_MIFARE_UL,
-            ProtocolSetting.REGEX_PROTOCOL_MIFARE_UL),
-
-    SETTING_PROTOCOL_MIFARE_CLASSIC(ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC,
-            ProtocolSetting.REGEX_PROTOCOL_MIFARE_CLASSIC),
-
-    SETTING_PROTOCOL_MIFARE_DESFIRE(ContactlessProtocols.PROTOCOL_MIFARE_DESFIRE,
-            ProtocolSetting.REGEX_PROTOCOL_MIFARE_DESFIRE),
-
-    SETTING_PROTOCOL_MEMORY_ST25(ContactlessProtocols.PROTOCOL_MEMORY_ST25,
-            ProtocolSetting.REGEX_PROTOCOL_MEMORY_ST25);
+    public static final Map<SeProtocol, String> STUB_PROTOCOL_SETTING;
 
     /**
-     * Regular expressions to match ATRs produced by Stub readers
-     * <p>
-     * To be compared with the StubSE protocol
+     * Associates a protocol and a string defining how to identify it (here a regex to be applied on
+     * the ATR)
      */
-    public interface ProtocolSetting {
-        public static String REGEX_PROTOCOL_ISO14443_4 = "PROTOCOL_ISO14443_4";
+    static {
 
-        public static String REGEX_PROTOCOL_B_PRIME = "PROTOCOL_B_PRIME";
+        Map<SeProtocol, String> map = new HashMap<SeProtocol, String>();
 
-        public static String REGEX_PROTOCOL_MIFARE_UL = "PROTOCOL_MIFARE_UL";
+        map.put(SeCommonProtocols.PROTOCOL_ISO14443_4, "PROTOCOL_ISO14443_4");
 
-        public static String REGEX_PROTOCOL_MIFARE_CLASSIC = "PROTOCOL_MIFARE_CLASSIC";
+        map.put(SeCommonProtocols.PROTOCOL_B_PRIME, "PROTOCOL_B_PRIME");
 
-        public static String REGEX_PROTOCOL_MIFARE_DESFIRE = "PROTOCOL_MIFARE_DESFIRE";
+        map.put(SeCommonProtocols.PROTOCOL_MIFARE_UL, "PROTOCOL_MIFARE_UL");
 
-        public static String REGEX_PROTOCOL_MEMORY_ST25 = "PROTOCOL_MEMORY_ST25";
+        map.put(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC, "PROTOCOL_MIFARE_CLASSIC");
+
+        map.put(SeCommonProtocols.PROTOCOL_MIFARE_DESFIRE, "PROTOCOL_MIFARE_DESFIRE");
+
+        map.put(SeCommonProtocols.PROTOCOL_MEMORY_ST25, "PROTOCOL_MEMORY_ST25");
+
+        map.put(SeCommonProtocols.PROTOCOL_ISO7816_3, "PROTOCOL_ISO7816_3");
+
+        STUB_PROTOCOL_SETTING = Collections.unmodifiableMap(map);
     }
 
-    /* the protocol flag */
-    SeProtocol flag;
+    /**
+     * Return a subset of the settings map
+     *
+     * @param specificProtocols subset of protocols
+     * @return a settings map
+     */
+    public static Map<SeProtocol, String> getSpecificSettings(
+            EnumSet<SeCommonProtocols> specificProtocols) {
+        Map<SeProtocol, String> map = new HashMap<SeProtocol, String>();
+        for (SeCommonProtocols seCommonProtocols : specificProtocols) {
+            map.put(seCommonProtocols, STUB_PROTOCOL_SETTING.get(seCommonProtocols));
+        }
+        return map;
 
-    /* the protocol setting value */
-    String value;
-
-    StubProtocolSetting(SeProtocol flag, String value) {
-        this.flag = flag;
-        this.value = value;
     }
 
-    @Override
-    public SeProtocol getFlag() {
-        return this.flag;
-    }
-
-    @Override
-    public String getValue() {
-        return this.value;
+    /**
+     * Return the whole settings map
+     *
+     * @return a settings map
+     */
+    public static Map<SeProtocol, String> getAllSettings() {
+        return STUB_PROTOCOL_SETTING;
     }
 }

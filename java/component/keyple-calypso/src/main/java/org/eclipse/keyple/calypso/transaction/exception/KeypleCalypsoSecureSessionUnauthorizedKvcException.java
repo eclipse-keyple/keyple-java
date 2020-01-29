@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction.exception;
 
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 
 /**
  * Thrown when the current PO has an unauthorized KVC

@@ -1,0 +1,86 @@
+@startuml
+package org.eclipse.keyple.core.seproxy.event #FFFFFF {
+'---- EVENT_READER -------------------------------------------------------------[
+
++enum "EventType" as EventType_Reader {
+	IO_ERROR("SE Reader IO Error")
+	SE_INSERTED("SE insertion")
+	SE_MATCHED("SE matched")
+	SE_REMOVAL("SE removal")
+
+	+EventType(String name);
+	+String getName();
+}
+
++class "<b>final</b> ReaderEvent" as ReaderEvent {
+	+ReaderEvent(String pluginName, String readerName, EventType eventType,
+DefaultSelectionsResponse defaultSelectionsResponse);
+	+String getPluginName();
+	+String getReaderName();
+	+EventType getEventType();
+	+AbstractDefaultSelectionsResponse getDefaultSelectionsResponse();
+}
+
+'EventType_Reader -up-+ ReaderEvent
+EventType_Reader --+ ReaderEvent
+
++interface ReaderObserver {
+  +update(ReaderEvent event)
+}
+
++enum NotificationMode {
+	ALWAYS("always")
+	MATCHED_ONLY("matched_only")
+
+	+NotificationMode(String name);
+	+String getName();
+	+{static}NotificationMode get(String name);
+}
+
++enum PollingMode {
+	REPEATING,
+	SINGLESHOT
+}
+
++abstract AbstractDefaultSelectionsRequest {
+    {abstract} #Set<SeRequest> getSelectionSeRequestSet()
+    {abstract} #MultiSeRequestProcessing getMultiSeRequestProcessing()
+    {abstract} #ChannelControl getChannelControl()
+}
+
++abstract AbstractDefaultSelectionsResponse {
+    {abstract} #List<SeResponse> getSelectionSeResponseSet()
+}
+
++interface ObservableReader {  
+	+void addObserver(ReaderObserver observer);
+	+void removeObserver(ReaderObserver observer);
+	+void notifyObservers(ReaderEvent event);
+
+	+void setDefaultSelectionRequest(AbstractDefaultSelectionsRequest
+defaultSelectionsRequest, NotificationMode notificationMode);
+	+void setDefaultSelectionRequest(AbstractDefaultSelectionsRequest
+defaultSelectionsRequest, NotificationMode notificationMode,
+PollingMode pollingMode);
+
+	+startSeDetection(PollingMode pollingMode);
+	+stopSeDetection();
+	+notifySeProcessed();
+}
+
+ObservableReader +-down- NotificationMode
+ObservableReader +-down- PollingMode
+'---- EVENT_READER -------------------------------------------------------------]
+
+'---- EVENT_READER_RELATION ----------------------------------------------------[
+ReaderObserver "1" +-down-o "*" ObservableReader : observes <
+(ReaderObserver, ObservableReader) . ReaderEvent
+
+AbstractDefaultSelectionsRequest "1" -left-> "1" ObservableReader : is set >
+AbstractDefaultSelectionsResponse "1" --> "1" ObservableReader : returns <
+AbstractDefaultSelectionsRequest -down[hidden]- AbstractDefaultSelectionsResponse
+'---- EVENT_READER_RELATION ----------------------------------------------------]
+}
+
+'ReaderObserver  -right[hidden]--> EventType_Reader
+@enduml

@@ -1,38 +1,86 @@
-apply plugin: 'java'
-
-sourceCompatibility = 1.6
-
-project.version = '1.0.0-RC4'
-
-
-jar {
-    manifest {
-        attributes 'Implementation-Title': 'Keyple Example Pc',
-                'Implementation-Version': project.version
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "com.diffplug.spotless:spotless-plugin-gradle:3.14.0"
     }
 }
 
-dependencies {
-    //use keyple library : calypso
-    //implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '1.+'
-    implementation project(path:':java:component:keyple-calypso')
+plugins {
+    id 'java'
+}
 
-    //implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '1.+'
-    implementation project(path:':java:component:keyple-core')
+allprojects {
 
-    //use keyple library : plugin stub
-    //implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-stub', version: '1.+'
-    implementation project(path:':java:component:keyple-plugin:keyple-plugin-stub')
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven {
+            url 'https://repo.eclipse.org/service/local/repositories/maven_central/content'
+        }
+        //to import keyple snapshots
+        maven {url 'https://oss.sonatype.org/content/repositories/snapshots' }
+        //to import keyple releases
+        maven { url 'https://oss.sonatype.org/content/repositories/releases' }
 
-    //use keyple library : plugin pcsc
-    //implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-pcsc', version: '1.+'
-    implementation project(path:':java:component:keyple-plugin:keyple-plugin-pcsc')
+    }
 
-    implementation project(path: ':java:example:generic:example-generic-common')
+    apply plugin: "com.diffplug.gradle.spotless"
+    apply plugin: 'pmd'
 
+    group 'org.eclipse.keyple'
 
-    //https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
-    implementation "org.slf4j:slf4j-simple:${slf4jsimple_version}"
-    implementation "org.slf4j:slf4j-ext:${slf4jext_version}"
+    spotless {
+        java {
+            licenseHeaderFile rootProject.file('.build/spotless.license.txt')
+            importOrder 'java', 'javax', 'org', 'com', 'com.diffplug', ''
+            removeUnusedImports()
+            eclipse().configFile rootProject.file('.build/spotless.eclipseformat.xml')
+        }
 
+        format 'misc', {
+            target '**/*.java', '**/*.gradle', '**/*.yml', '**/*.md'
+
+            indentWithSpaces()
+            endWithNewline()
+        }
+    }
+
+    pmd {
+        ruleSets = [
+                "java-basic",
+                "java-braces",
+                "java-strings",
+                "java-imports",
+                "java-unnecessary",
+                "java-unusedcode",
+//                "java-metrics",
+                "java-empty",
+                "java-codesize",
+                "java-clone",
+                "java-typeresolution",
+                "java-strictexception",
+                "java-finalizers",
+                "java-migrating",
+                "java-logging-java",
+//                 "java-controversial",
+                "java-sunsecure",
+                "java-junit",
+                "java-optimizations",
+//                "java-naming",
+                "java-coupling",
+                "java-design",
+                "java-comments"
+        ]
+        // PMD priorities levels:
+        // 1. Change absolutely required. Behavior is critically broken/buggy.
+        // 2. Change highly recommended. Behavior is quite likely to be broken/buggy.
+        // 3. Change recommended. Behavior is confusing, perhaps buggy, and/or against standards/best practices.
+        // 4. Change optional. Behavior is not likely to be buggy, but more just flies in the face of standards/style/good taste.
+        // 5. Change highly optional. Nice to have, such as a consistent naming policy for package/class/fields…
+        rulePriority = 1
+    }
 }

@@ -11,35 +11,45 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.nativese.method;
 
+import java.util.Map;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.nativese.INativeReaderService;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTx;
+import org.eclipse.keyple.plugin.remotese.rm.AbstractRemoteMethodTx;
+import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
-import org.eclipse.keyple.seproxy.event.ObservableReader;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.seproxy.message.ProxyReader;
-import org.eclipse.keyple.seproxy.plugin.AbstractSelectionLocalReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
-public class RmConnectReaderTx extends RemoteMethodTx<String> {
+/**
+ * Handle the Connect Reader keypleDTO serialization and deserialization
+ */
+public class RmConnectReaderTx extends AbstractRemoteMethodTx<String> {
 
 
-    private final ProxyReader localReader;
+    private final SeReader localReader;
     private final INativeReaderService slaveAPI;
+    private final Map<String, String> options;
+
+    @Override
+    public RemoteMethodName getMethodName() {
+        return RemoteMethodName.READER_CONNECT;
+    }
 
 
     public RmConnectReaderTx(String sessionId, String nativeReaderName, String virtualReaderName,
-            String masterNodeId, ProxyReader localReader, String slaveNodeId,
-            INativeReaderService slaveAPI) {
+            String masterNodeId, SeReader localReader, String slaveNodeId,
+            INativeReaderService slaveAPI, Map<String, String> options) {
         super(sessionId, nativeReaderName, virtualReaderName, masterNodeId, slaveNodeId);
         this.localReader = localReader;
         this.slaveAPI = slaveAPI;
+        this.options = options;
     }
 
     private static final Logger logger = LoggerFactory.getLogger(RmConnectReaderTx.class);
@@ -54,7 +64,7 @@ public class RmConnectReaderTx extends RemoteMethodTx<String> {
             KeypleReaderException ex =
                     JsonParser.getGson().fromJson(keypleDto.getBody(), KeypleReaderException.class);
             throw new KeypleRemoteException(
-                    "An exception occurs while calling the remote method connecReader", ex);
+                    "An exception occurs while calling the remote method connectReader", ex);
         } else {
             // if dto does not contain an exception
             try {
@@ -63,13 +73,16 @@ public class RmConnectReaderTx extends RemoteMethodTx<String> {
                  */
 
                 // find the local reader by name
-                ProxyReader localReader = (ProxyReader) slaveAPI.findLocalReader(nativeReaderName);
+                SeReader localReader = slaveAPI.findLocalReader(nativeReaderName);
 
-                if (localReader instanceof AbstractSelectionLocalReader) {
+                if (localReader instanceof ObservableReader) {
                     logger.debug("Register SlaveAPI as an observer for native reader {}",
                             localReader.getName());
-                    ((AbstractSelectionLocalReader) localReader)
+                    ((ObservableReader) localReader)
                             .addObserver((ObservableReader.ReaderObserver) slaveAPI);
+                } else {
+                    logger.debug(
+                            "Connected reader is not observable, do not register observer capabilities to virtual reader");
                 }
 
                 // retrieve sessionId from keypleDto
@@ -90,7 +103,14 @@ public class RmConnectReaderTx extends RemoteMethodTx<String> {
 
     @Override
     public KeypleDto dto() {
-        return new KeypleDto(RemoteMethod.READER_CONNECT.getName(), "{}", true, null,
-                localReader.getName(), null, requesterNodeId, targetNodeId);
+
+        // create response
+        JsonObject body = new JsonObject();
+        body.addProperty("transmissionMode", localReader.getTransmissionMode().name());
+        body.addProperty("isObservable", localReader instanceof ObservableReader);
+        body.addProperty("options", JsonParser.getGson().toJson(options));
+
+        return KeypleDtoHelper.buildRequest(getMethodName().getName(), body.toString(), null,
+                localReader.getName(), null, requesterNodeId, targetNodeId, id);
     }
 }

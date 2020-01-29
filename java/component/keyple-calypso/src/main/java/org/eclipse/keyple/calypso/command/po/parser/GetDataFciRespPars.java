@@ -11,15 +11,18 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.command.po.parser;
 
+import static org.eclipse.keyple.core.util.bertlv.Tag.TagType.CONSTRUCTED;
+import static org.eclipse.keyple.core.util.bertlv.Tag.TagType.PRIMITIVE;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
-import org.eclipse.keyple.command.AbstractApduResponseParser;
-import org.eclipse.keyple.seproxy.message.ApduResponse;
-import org.eclipse.keyple.util.ByteArrayUtils;
+import org.eclipse.keyple.core.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.core.util.bertlv.TLV;
+import org.eclipse.keyple.core.util.bertlv.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.sun.jndi.ldap.BerDecoder;
 
 
 /**
@@ -28,7 +31,7 @@ import com.sun.jndi.ldap.BerDecoder;
  * Provides getter methods for all relevant information.
  */
 public final class GetDataFciRespPars extends AbstractPoResponseParser {
-    protected static final Logger logger = LoggerFactory.getLogger(GetDataFciRespPars.class);
+    private static final Logger logger = LoggerFactory.getLogger(GetDataFciRespPars.class);
 
     private static final Map<Integer, StatusProperties> STATUS_TABLE;
 
@@ -38,7 +41,8 @@ public final class GetDataFciRespPars extends AbstractPoResponseParser {
         m.put(0x6A88, new StatusProperties(false,
                 "Data object not found (optional mode not available)."));
         m.put(0x6B00, new StatusProperties(false,
-                "P1 or P2 value not supported (<>004fh, 0062h, 006Fh, 00C0h, 00D0h, 0185h and 5F52h, according to availabl optional modes)."));
+                "P1 or P2 value not supported (<>004fh, 0062h, 006Fh, 00C0h, 00D0h, 0185h and 5F52h, according to "
+                        + "available optional modes)."));
         m.put(0x6283, new StatusProperties(true,
                 "Successful execution, FCI request and DF is invalidated."));
         STATUS_TABLE = m;
@@ -58,23 +62,23 @@ public final class GetDataFciRespPars extends AbstractPoResponseParser {
 
     /* BER-TLV tags definitions */
     /* FCI Template: application class, constructed, tag number Fh => tag field 6Fh */
-    private static final int TAG_FCI_TEMPLATE = 0x6F;
-
+    private static final Tag TAG_FCI_TEMPLATE = new Tag(0x0F, Tag.APPLICATION, CONSTRUCTED);
     /* DF Name: context-specific class, primitive, tag number 4h => tag field 84h */
-    private static final int TAG_DF_NAME = 0x84;
+    private static final Tag TAG_DF_NAME = new Tag(0x04, Tag.CONTEXT, PRIMITIVE);
     /*
      * FCI Proprietary Template: context-specific class, constructed, tag number 5h => tag field A5h
      */
-    private static final int TAG_FCI_PROPRIETARY_TEMPLATE = 0xA5;
+    private static final Tag TAG_FCI_PROPRIETARY_TEMPLATE = new Tag(0x05, Tag.CONTEXT, CONSTRUCTED);
     /*
      * FCI Issuer Discretionary Data: context-specific class, constructed, tag number Ch => tag
      * field BF0Ch
      */
-    private static final int TAG_FCI_ISSUER_DISCRETIONARY_DATA = 0xBF0C;
+    private static final Tag TAG_FCI_ISSUER_DISCRETIONARY_DATA =
+            new Tag(0x0C, Tag.CONTEXT, CONSTRUCTED);
     /* Application Serial Number: private class, primitive, tag number 7h => tag field C7h */
-    private static final int TAG_APPLICATION_SERIAL_NUMBER = 0xC7;
+    private static final Tag TAG_APPLICATION_SERIAL_NUMBER = new Tag(0x07, Tag.PRIVATE, PRIMITIVE);
     /* Discretionary Data: application class, primitive, tag number 13h => tag field 53h */
-    private static final int TAG_DISCRETIONARY_DATA = 0x53;
+    private static final Tag TAG_DISCRETIONARY_DATA = new Tag(0x13, Tag.APPLICATION, PRIMITIVE);
 
     /** attributes result of th FCI parsing */
     private boolean isDfInvalidated = false;
@@ -82,7 +86,6 @@ public final class GetDataFciRespPars extends AbstractPoResponseParser {
     private boolean isValidCalypsoFCI = false;
     private byte[] dfName = null;
     private byte[] applicationSN = null;
-    private byte[] discretionaryData = null;
     private byte siBufferSizeIndicator = 0;
     private byte siPlatform = 0;
     private byte siApplicationType = 0;
@@ -119,17 +122,14 @@ public final class GetDataFciRespPars extends AbstractPoResponseParser {
      * <p>
      * All fields are pre-initialized to handle the case where the parsing fails.
      * <p>
-     * The TLV processing is done with a standard ASN.1 BerDecoder.
-     * 
-     * @param selectApplicationResponse the selectApplicationResponse from Get Data APDU commmand
+     *
+     * @param selectApplicationResponse the select application response from Get Data APDU command
      */
     public GetDataFciRespPars(ApduResponse selectApplicationResponse) {
         super(selectApplicationResponse);
 
         final byte[] response = selectApplicationResponse.getBytes();
-        byte[] octetString;
-        int[] rlen = new int[1];
-        BerDecoder ber;
+        TLV tlv;
 
         /* check the command status to determine if the DF has been invalidated */
         if (selectApplicationResponse.getStatusCode() == 0x6283) {
@@ -138,61 +138,59 @@ public final class GetDataFciRespPars extends AbstractPoResponseParser {
             isDfInvalidated = true;
         }
 
-        /* parse the raw data with the help of the BerDecoder class */
+        /* parse the raw data with the help of the TLV class */
         try {
-            /* init BerDecoder object */
-            ber = new BerDecoder(response, 0, response.length);
+            /* init TLV object with the raw data and extract the FCI Template */
+            tlv = new TLV(response);
 
-            /* Extract the FCI Template */
-            octetString = ber.parseOctetString(TAG_FCI_TEMPLATE, null);
-
-            ber = new BerDecoder(octetString, 0, octetString.length);
+            /* Get the FCI template */
+            if (!tlv.parse(TAG_FCI_TEMPLATE, 0)) {
+                logger.error("FCI parsing error: FCI template tag not found.");
+                return;
+            }
 
             /* Get the DF Name */
-            dfName = ber.parseOctetString(TAG_DF_NAME, rlen);
+            if (!tlv.parse(TAG_DF_NAME, tlv.getPosition())) {
+                logger.error("FCI parsing error: DF name tag not found.");
+                return;
+            }
+
+            dfName = tlv.getValue();
 
             /* Get the FCI Proprietary Template */
-            ber = new BerDecoder(octetString, rlen[0], octetString.length);
-
-            octetString = ber.parseOctetString(TAG_FCI_PROPRIETARY_TEMPLATE, rlen);
+            if (!tlv.parse(TAG_FCI_PROPRIETARY_TEMPLATE, tlv.getPosition())) {
+                logger.error("FCI parsing error: FCI proprietary template tag not found.");
+                return;
+            }
 
             /* Get the FCI Issuer Discretionary Data */
-            ber = new BerDecoder(octetString, 0, octetString.length);
-
-            /*
-             * We process the TAG_FCI_ISSUER_DISCRETIONARY_DATA tag here in a particular way since
-             * the BerDecoder we use does not support 2-byte tags. We first check the two bytes of
-             * the TAG field and then skip the LENGTH field using an offset value of 3 to obtain the
-             * following data.
-             */
-            byte b = (byte) ber.parseByte();
-            if (b != (byte) (TAG_FCI_ISSUER_DISCRETIONARY_DATA >> 8)) {
-                throw new IllegalStateException(
-                        String.format("Encountered ASN.1 tag %d (expected tag %d)", b,
-                                TAG_FCI_ISSUER_DISCRETIONARY_DATA >> 8));
+            if (!tlv.parse(TAG_FCI_ISSUER_DISCRETIONARY_DATA, tlv.getPosition())) {
+                logger.error("FCI parsing error: FCI issuer discretionary data tag not found.");
+                return;
             }
-
-            b = (byte) ber.parseByte();
-            if (b != (byte) (TAG_FCI_ISSUER_DISCRETIONARY_DATA & 0xFF)) {
-                throw new IllegalStateException(
-                        String.format("Encountered ASN.1 tag %d (expected tag %d)", b,
-                                TAG_FCI_ISSUER_DISCRETIONARY_DATA & 0xFF));
-            }
-
-            ber = new BerDecoder(octetString, 3, octetString.length);
 
             /* Get the Application Serial Number */
-            applicationSN = ber.parseOctetString(TAG_APPLICATION_SERIAL_NUMBER, rlen);
+            if (!tlv.parse(TAG_APPLICATION_SERIAL_NUMBER, tlv.getPosition())) {
+                logger.error("FCI parsing error: serial number tag not found.");
+                return;
+            }
+
+            applicationSN = tlv.getValue();
 
             if (logger.isDebugEnabled()) {
-                logger.debug("Application Serial Number = {}", ByteArrayUtils.toHex(applicationSN));
+                logger.debug("Application Serial Number = {}", ByteArrayUtil.toHex(applicationSN));
             }
 
             /* Get the Discretionary Data */
-            discretionaryData = ber.parseOctetString(TAG_DISCRETIONARY_DATA, null);
+            if (!tlv.parse(TAG_DISCRETIONARY_DATA, tlv.getPosition())) {
+                logger.error("FCI parsing error: discretionary data tag not found.");
+                return;
+            }
+
+            byte[] discretionaryData = tlv.getValue();
 
             if (logger.isDebugEnabled()) {
-                logger.debug("Discretionary Data = {}", ByteArrayUtils.toHex(discretionaryData));
+                logger.debug("Discretionary Data = {}", ByteArrayUtil.toHex(discretionaryData));
             }
 
             /*

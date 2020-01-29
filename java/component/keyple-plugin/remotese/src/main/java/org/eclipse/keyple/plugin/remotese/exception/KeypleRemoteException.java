@@ -11,8 +11,11 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.exception;
 
-import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 
+/**
+ * Exception used when the communication with the other terminal has failed
+ */
 public class KeypleRemoteException extends KeypleBaseException {
 
     public KeypleRemoteException(String message, Throwable cause) {

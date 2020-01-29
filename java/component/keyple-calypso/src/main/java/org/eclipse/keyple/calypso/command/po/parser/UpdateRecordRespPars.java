@@ -14,8 +14,8 @@ package org.eclipse.keyple.calypso.command.po.parser;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
-import org.eclipse.keyple.command.AbstractApduResponseParser;
-import org.eclipse.keyple.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
  * Update Record response parser. See specs: Calypso / page 96 / 9.4.11 - Update Record
@@ -51,6 +51,8 @@ public final class UpdateRecordRespPars extends AbstractPoResponseParser {
 
     /**
      * Instantiates a new UpdateRecordRespPars.
+     * 
+     * @param response the response from the PO
      */
     public UpdateRecordRespPars(ApduResponse response) {
         super(response);

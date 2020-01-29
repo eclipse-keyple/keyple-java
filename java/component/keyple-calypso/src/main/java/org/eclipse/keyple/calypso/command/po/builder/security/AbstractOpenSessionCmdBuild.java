@@ -16,7 +16,7 @@ package org.eclipse.keyple.calypso.command.po.builder.security;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 
 /**
  * The Class AbstractOpenSessionCmdBuild. This class provides the dedicated constructor to build the
