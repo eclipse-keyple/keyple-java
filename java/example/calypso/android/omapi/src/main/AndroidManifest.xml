@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="org.eclipse.keyple.example.calypso.android.omapi">
-
-    <!-- Required for Open Mobile API-->
+    <!-- Required for Open Mobile API -->
     <uses-permission android:name="org.simalliance.openmobileapi.SMARTCARD" />
-
 
     <application
         android:name=".ExampleApplication"
@@ -13,9 +12,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-
-        <!-- Required for Open Mobile API-->
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
+        <!-- Required for Open Mobile API -->
         <uses-library
             android:name="org.simalliance.openmobileapi"
             android:required="true" />
@@ -25,9 +24,9 @@
             android:label="Keyple Android OMAPI">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
     </application>
 

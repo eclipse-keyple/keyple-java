@@ -1,3 +1,9 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+project.group 'org.eclipse.keyple'
+
 buildscript {
     ext.kotlin_version = '1.3.61'
     repositories {
@@ -12,15 +18,10 @@ buildscript {
     }
 }
 
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-
-project.group 'org.eclipse.keyple'
 
 //Loading Keystore specified for SE Access
 Properties properties = new Properties()
-if(project.rootProject.file("local.properties").exists()){
+if (project.rootProject.file("local.properties").exists()) {
     properties.load(project.rootProject.file("local.properties").newDataInputStream())
 }
 
@@ -36,8 +37,8 @@ android {
     }
 
     signingConfigs {
-        if(properties.containsKey("path_to_se_registered_keystore")){
-            keypleDebug{
+        if (properties.containsKey("path_to_se_registered_keystore")) {
+            keypleDebug {
                 storeFile file(properties["path_to_se_registered_keystore"])
                 storePassword properties["keystore_password"]
                 keyAlias properties["key_alias"]
@@ -48,8 +49,8 @@ android {
 
 
     buildTypes {
-        if(properties.containsKey("path_to_se_registered_keystore")){
-            debug{
+        if (properties.containsKey("path_to_se_registered_keystore")) {
+            debug {
                 signingConfig signingConfigs.keypleDebug
             }
         }
@@ -68,6 +69,11 @@ android {
     }
     packagingOptions {
         exclude 'META-INF/NOTICE.md'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
     }
 
 }
@@ -98,11 +104,7 @@ dependencies {
     implementation group: 'org.eclipse.keyple', name: 'keyple-android-plugin-omapi', version: '+'
     //implementation project(':android-omapi')
 
-    /*
-    OMAPI dependencies
-     */
-    compileOnly files('libs/org.simalliance.openmobileapi.jar')
-    
+
     /*
     Android components
      */
@@ -123,9 +125,15 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     /*
+    Coroutines
+     */
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.3'
+
+    /*
     Test
      */
-    testImplementation "junit:junit:${junit_version}"
+    testImplementation "junit:junit:4.12"
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
