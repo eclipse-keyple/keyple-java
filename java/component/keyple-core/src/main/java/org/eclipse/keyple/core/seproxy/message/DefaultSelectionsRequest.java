@@ -11,21 +11,47 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.message;
 
+import java.util.Set;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 
 /**
- * Class containing the {@link org.eclipse.keyple.core.seproxy.message.SeRequestSet} used to make a
- * default selection at the {@link ObservableReader} level.
+ * Class containing the Set of {@link SeRequest} used to make a default selection at the
+ * {@link ObservableReader} level.
  */
 public final class DefaultSelectionsRequest extends AbstractDefaultSelectionsRequest {
 
-    public DefaultSelectionsRequest(SeRequestSet selectionSeRequestSet) {
-        super(selectionSeRequestSet);
+    private Set<SeRequest> selectionSeRequestSet;
+
+    private MultiSeRequestProcessing multiSeRequestProcessing;
+
+    private ChannelControl channelControl;
+
+    public DefaultSelectionsRequest(Set<SeRequest> selectionSeRequestSet,
+            MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl) {
+        this.selectionSeRequestSet = selectionSeRequestSet;
+        this.multiSeRequestProcessing = multiSeRequestProcessing;
+        this.channelControl = channelControl;
+    }
+
+    public DefaultSelectionsRequest(Set<SeRequest> selectionSeRequestSet) {
+        this(selectionSeRequestSet, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
     }
 
     @Override
-    public SeRequestSet getSelectionSeRequestSet() {
+    public MultiSeRequestProcessing getMultiSeRequestProcessing() {
+        return multiSeRequestProcessing;
+    }
+
+    @Override
+    public ChannelControl getChannelControl() {
+        return channelControl;
+    }
+
+    @Override
+    public Set<SeRequest> getSelectionSeRequestSet() {
         return selectionSeRequestSet;
     }
 }

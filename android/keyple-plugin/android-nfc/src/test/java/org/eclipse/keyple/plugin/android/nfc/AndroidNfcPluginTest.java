@@ -27,16 +27,16 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import junit.framework.Assert;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({AndroidNfcReader.class})
+@PrepareForTest({AndroidNfcReaderImpl.class})
 public class AndroidNfcPluginTest {
 
-    AndroidNfcPlugin plugin;
+    AndroidNfcPluginImpl plugin;
 
     // init before each test
     @Before
     public void SetUp() throws IOException {
         // get unique instance
-        plugin = AndroidNfcPlugin.getInstance();
+        plugin = AndroidNfcPluginImpl.getInstance();
     }
 
 
@@ -78,12 +78,12 @@ public class AndroidNfcPluginTest {
     @Test
     public void getReaders() throws KeypleReaderException {
         Assert.assertTrue(plugin.getReaders().size() == 1);
-        assertThat(plugin.getReaders().first(), instanceOf(AndroidNfcReader.class));
+        assertThat(plugin.getReaders().first(), instanceOf(AndroidNfcReaderImpl.class));
     }
 
     @Test
     public void getName() throws Exception {
-        Assert.assertTrue(plugin.getName().equals(AndroidNfcPlugin.PLUGIN_NAME));
+        Assert.assertTrue(plugin.getName().equals(AndroidNfcPluginImpl.PLUGIN_NAME));
     }
 
     /*
@@ -92,14 +92,14 @@ public class AndroidNfcPluginTest {
 
     @Test
     public void getNativeReader() throws Exception {
-        assertThat(plugin.getReader(AndroidNfcReader.READER_NAME),
-                instanceOf(AndroidNfcReader.class));
+        assertThat(plugin.getReader(AndroidNfcReaderImpl.READER_NAME),
+                instanceOf(AndroidNfcReaderImpl.class));
     }
 
     @Test
     public void getNativeReaders() throws Exception {
         Assert.assertTrue(plugin.getReaders().size() == 1);
-        assertThat(plugin.getReaders().first(), instanceOf(AndroidNfcReader.class));
+        assertThat(plugin.getReaders().first(), instanceOf(AndroidNfcReaderImpl.class));
     }
 
 

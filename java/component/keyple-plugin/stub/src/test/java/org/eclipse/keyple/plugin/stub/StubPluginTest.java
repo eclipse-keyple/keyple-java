@@ -17,8 +17,10 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.junit.*;
@@ -40,9 +42,27 @@ public class StubPluginTest extends BaseStubTest {
     }
 
     @After
-    public void clearStub() throws InterruptedException, KeypleReaderException {
+    public void clearStub()
+            throws InterruptedException, KeypleReaderException, KeyplePluginNotFoundException {
         super.clearStub();
     }
+
+
+    @Test
+    public void instantiatePlugin()
+            throws InterruptedException, KeypleReaderException, KeyplePluginNotFoundException {
+        final String PLUGIN_NAME = "test1";
+
+
+
+        StubPluginFactory factory = new StubPluginFactory(PLUGIN_NAME);
+
+        ReaderPlugin plugin = factory.getPluginInstance();
+
+        Assert.assertEquals(PLUGIN_NAME, plugin.getName());
+    }
+
+
 
     /**
      * Plug one reader synchronously Check: Count if created

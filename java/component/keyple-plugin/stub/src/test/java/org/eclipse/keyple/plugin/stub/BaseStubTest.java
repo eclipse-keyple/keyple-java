@@ -12,6 +12,7 @@
 package org.eclipse.keyple.plugin.stub;
 
 
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -21,10 +22,11 @@ import org.slf4j.LoggerFactory;
 
 public class BaseStubTest {
 
-    StubPlugin stubPlugin;
+    StubPluginImpl stubPlugin;
 
     private static final Logger logger = LoggerFactory.getLogger(BaseStubTest.class);
 
+    static public String PLUGIN_NAME = "stub1";
 
     @Rule
     public TestName name = new TestName();
@@ -35,7 +37,7 @@ public class BaseStubTest {
         logger.info("------------------------------");
 
         logger.info("setupStub, assert stubplugin is empty");
-        stubPlugin = StubPlugin.getInstance(); // singleton
+        stubPlugin = (StubPluginImpl) new StubPluginFactory(PLUGIN_NAME).getPluginInstance();
 
         logger.info("Stubplugin readers size {}", stubPlugin.getReaders().size());
         Assert.assertEquals(0, stubPlugin.getReaders().size());
@@ -48,20 +50,14 @@ public class BaseStubTest {
 
     }
 
-    public void clearStub() throws InterruptedException, KeypleReaderException {
+    public void clearStub()
+            throws InterruptedException, KeypleReaderException, KeyplePluginNotFoundException {
         logger.info("---------");
         logger.info("TearDown ");
         logger.info("---------");
 
-        stubPlugin = StubPlugin.getInstance(); // singleton
-
         stubPlugin.unplugStubReaders(stubPlugin.getReaderNames(), true);
-        /*
-         * for (AbstractObservableReader reader : stubPlugin.getReaders()) {
-         * logger.info("Stubplugin unplugStubReader {}", reader.getName());
-         * stubPlugin.unplugStubReader(reader.getName(), true); Thread.sleep(100); //
-         * logger.debug("Stubplugin readers size {}", stubPlugin.getReaders().size()); }
-         */
+
         stubPlugin.clearObservers();
 
     }

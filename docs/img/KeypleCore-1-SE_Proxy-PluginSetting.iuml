@@ -1,0 +1,75 @@
+@startuml
+
+package org.eclipse.keyple.core.seproxy #FFFFFF {
+
++class "<b>final</b> SeProxyService" as SeProxyService << Singleton >> {
+	+{static}SeProxyService getInstance()
+	+String getVersion()
+	+registerPlugin(AbstractPluginFactory pluginFactory)
+	+boolean isRegistered(String pluginName)
+	+boolean unregisterPlugin(String pluginName)
+	+ReaderPlugin getPlugin(String name)
+	+SortedSet<ReaderPlugin> getPlugins()
+}
+
++abstract AbstractPluginFactory {
+	{abstract} #String getPluginName()
+	{abstract} #ReaderPlugin getPluginInstance()
+}
+
++interface ReaderPlugin {
+	+SortedSet<String> getReaderNames()
+	+SeReader getReader(String name)
+	+SortedSet<? extends SeReader> getReaders()
+}
+
++interface SeReader {
+	+boolean isSePresent()
+	+void addSeProtocolSetting(SeProtocol seProtocol, String protocolRule);
+	+void setSeProtocolSetting(Map<SeProtocol, String> protocolSetting);
+	+TransmissionMode getTransmissionMode();
+}
+
+SeProxyService "1" *-down-> "*" ReaderPlugin : plugins
+SeProxyService "1" *--> "*" AbstractPluginFactory : registers
+ReaderPlugin "1" *-right-> "*" SeReader : readers
+AbstractPluginFactory "1" -right-> "1" ReaderPlugin : creates
+}
+
+package plugin.specific #FFCCFF {
+
++class SpecificPluginFactory {
+	#String getPluginName()
+	#ReaderPlugin getPluginInstance()
+}
+
++interface SpecificPlugin {
+}
+
++interface SpecificReader {
+}
+
+~class "<b>final</b> SpecificPluginImpl" as SpecificPluginImpl << Singleton >> {
+	-String name
+	-SpecificPlugin()
+	+{static} SpecificPlugin getInstance()
+	+<b>final</b> String getName()
+'	+<b>final</b> List<SpecificReader> getReaders()
+}
+~class "<b>final</b> SpecificReaderImpl" as SpecificReaderImpl {
+	-String name
+	#SpecificReader()
+	+<b>final</b> String getName()
+}
+}
+
+AbstractPluginFactory <|-- SpecificPluginFactory : extends
+ReaderPlugin <|-- SpecificPlugin : extends
+SeReader <|-- SpecificReader : extends
+
+SpecificPlugin <|.down. SpecificPluginImpl : implements
+SpecificReader <|.. SpecificReaderImpl : implements
+
+SpecificPluginFactory "1" --> "1" SpecificPluginImpl : creates
+SpecificPluginImpl "1" *-right-> "*" SpecificReaderImpl : readers
+@enduml

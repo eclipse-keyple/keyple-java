@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.remote.application.multi;
 
-import org.eclipse.keyple.example.calypso.common.stub.se.StubCalypsoClassic;
+import org.eclipse.keyple.example.common.calypso.stub.StubCalypsoClassic;
 import org.eclipse.keyple.example.remote.application.Demo_Slave;
 import org.eclipse.keyple.example.remote.transport.wspolling.client_retrofit.WsPollingRetrofitFactory;
 import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;

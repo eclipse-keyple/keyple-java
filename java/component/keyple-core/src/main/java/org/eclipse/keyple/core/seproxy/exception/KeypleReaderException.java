@@ -12,19 +12,19 @@
 package org.eclipse.keyple.core.seproxy.exception;
 
 
+import java.util.List;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
 
 /**
  * Base Exceptions thrown in a {@link ProxyReader} context
  */
 public class KeypleReaderException extends KeypleBaseException {
     /*
-     * SeResponseSet and SeResponse objects to carry partial responses in the event of a breakdown
-     * in communication with the SE.
+     * SeResponse and List of SeResponse objects to carry partial responses in the event of a
+     * breakdown in communication with the SE.
      */
-    private SeResponseSet seResponseSet;
+    private List<SeResponse> seResponseList;
     private SeResponse seResponse;
 
     /**
@@ -46,13 +46,13 @@ public class KeypleReaderException extends KeypleBaseException {
         super(message, cause);
     }
 
-    /* Setters and Getters for SeResponseSet and SeResponse */
-    public SeResponseSet getSeResponseSet() {
-        return seResponseSet;
+    /* Setters and Getters for List of SeResponse and SeResponse */
+    public List<SeResponse> getSeResponseSet() {
+        return seResponseList;
     }
 
-    public void setSeResponseSet(SeResponseSet seResponseSet) {
-        this.seResponseSet = seResponseSet;
+    public void setSeResponseSet(List<SeResponse> seResponseList) {
+        this.seResponseList = seResponseList;
     }
 
     public SeResponse getSeResponse() {

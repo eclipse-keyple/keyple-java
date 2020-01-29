@@ -15,13 +15,18 @@ import java.lang.reflect.Type;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import com.google.gson.*;
 
+/**
+ * Gson Adapter to serialize and unserialize byte[] to Hex String
+ */
 public class HexTypeAdapter implements JsonSerializer<byte[]>, JsonDeserializer<byte[]> {
 
+    @Override
     public byte[] deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {
         return ByteArrayUtil.fromHex(json.getAsString());
     }
 
+    @Override
     public JsonElement serialize(byte[] data, Type typeOfSrc, JsonSerializationContext context) {
         return new JsonPrimitive(ByteArrayUtil.toHex(data));
     }

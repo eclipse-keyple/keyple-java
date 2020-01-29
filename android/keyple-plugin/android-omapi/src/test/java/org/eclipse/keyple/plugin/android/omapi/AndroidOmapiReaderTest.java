@@ -14,24 +14,15 @@ package org.eclipse.keyple.plugin.android.omapi;
 
 import static org.powermock.api.mockito.PowerMockito.when;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import org.eclipse.keyple.calypso.command.PoClass;
-import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
-import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
-import org.eclipse.keyple.core.seproxy.ChannelState;
+import java.util.*;
+
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
-import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
-import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
-import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
+import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
@@ -47,13 +38,13 @@ import org.simalliance.openmobileapi.Session;
 @RunWith(PowerMockRunner.class)
 public class AndroidOmapiReaderTest {
 
-    final String PLUGIN_NAME = "AndroidOmapiPlugin";
+    final String PLUGIN_NAME = "AndroidOmapiPluginImpl";
     final String poAid = "A000000291A000000191";
     final String poAidResponse =
             "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000";
 
     Reader omapiReader;
-    ProxyReader proxyReader;
+    AndroidOmapiReaderImpl reader;
 
     // init before each test
     @Before
@@ -61,8 +52,8 @@ public class AndroidOmapiReaderTest {
         // default reader connected with secure element with poAid
         omapiReader = mockReader();
 
-        // instanciate proxyReader with omapiReader
-        proxyReader = new AndroidOmapiReader(PLUGIN_NAME, omapiReader, omapiReader.getName());
+        // instantiate reader with omapiReader
+        reader = new AndroidOmapiReaderImpl(PLUGIN_NAME, omapiReader, omapiReader.getName());
     }
 
 
@@ -72,69 +63,57 @@ public class AndroidOmapiReaderTest {
 
     @Test
     public void getInstance() throws Exception {
-        Assert.assertNotNull(proxyReader);
+        Assert.assertNotNull(reader);
     }
 
     @Test
     public void getName() throws Exception {
-        Assert.assertEquals(omapiReader.getName(), proxyReader.getName());
+        Assert.assertEquals(omapiReader.getName(), reader.getName());
     }
 
     @Test
-    public void isSEPresent() throws NoStackTraceThrowable {
-        Assert.assertEquals(true, proxyReader.isSePresent());
+    public void isSEPresent() throws KeypleIOReaderException {
+        Assert.assertEquals(true, reader.isSePresent());
     }
 
     @Test
-    public void getParameters() throws NoStackTraceThrowable {
-        Assert.assertNotNull(proxyReader.getParameters());
+    public void getParameters() {
+        Assert.assertNotNull(reader.getParameters());
     }
 
     @Test
     public void setParameters() throws KeypleBaseException {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("key1", "value1");
-        proxyReader.setParameters(parameters);
-        Assert.assertTrue(proxyReader.getParameters().size() == 1);
-        Assert.assertTrue(proxyReader.getParameters().get("key1").equals("value1"));
+        reader.setParameters(parameters);
+        Assert.assertTrue(reader.getParameters().size() == 1);
+        Assert.assertTrue(reader.getParameters().get("key1").equals("value1"));
     }
 
     @Test
     public void setParameter() throws KeypleBaseException {
-        proxyReader.setParameter("key2", "value2");
-        Assert.assertTrue(proxyReader.getParameters().size() == 1);
-        Assert.assertTrue(proxyReader.getParameters().get("key2").equals("value2"));
+        reader.setParameter("key2", "value2");
+        Assert.assertTrue(reader.getParameters().size() == 1);
+        Assert.assertTrue(reader.getParameters().get("key2").equals("value2"));
     }
 
     /*
      * TRANSMIT
      */
 
-    @Test
-    public void transmitHoplinkSuccessfull() throws KeypleBaseException {
-        // default init
-
-        // test
-        SeResponseSet seResponse = proxyReader.transmitSet(getCalypsoRequestSample());
-
-        // assert
-        Assert.assertTrue(
-                seResponse.getResponses().get(0).getApduResponses().get(0).isSuccessful());
-
-    }
 
     @Test
     public void transmitNoAid() throws KeypleBaseException, IOException {
 
         // init
         omapiReader = mockReaderWithNoAid();
-        proxyReader = new AndroidOmapiReader(PLUGIN_NAME, omapiReader, omapiReader.getName());
+        reader = new AndroidOmapiReaderImpl(PLUGIN_NAME, omapiReader, omapiReader.getName());
 
         // test
-        SeResponseSet seResponse = proxyReader.transmitSet(getCalypsoRequestSample());
+        List<SeResponse> seResponseList = reader.transmitSet(getSampleSeRequest());
 
         // assert
-        Assert.assertNull(seResponse.getResponses().get(0));
+        Assert.assertNull(seResponseList.get(0));
 
     }
 
@@ -142,20 +121,18 @@ public class AndroidOmapiReaderTest {
     public void transmitWrongProtocol() throws KeypleBaseException {
         // init
         String poAid = "A000000291A000000191";
-        ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoClass.ISO,
-                (byte) 0x14,ReadDataStructure.SINGLE_RECORD_DATA,  (byte) 0x01, true, (byte) 0x20, "Hoplink EF T2Environment");
-        List<ApduRequest> poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
 
         // wrong protocol
         SeRequest seRequest = new SeRequest(new SeSelector( SeCommonProtocols.PROTOCOL_MIFARE_UL, null,
-                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid),null),null), poApduRequestList,
-                ChannelState.CLOSE_AFTER);
+                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid),null),null), new ArrayList<ApduRequest>());
 
         // test
-        SeResponseSet seResponse = proxyReader.transmitSet(new SeRequestSet(seRequest));
+        Set<SeRequest> seRequestSet = new LinkedHashSet<SeRequest>();
+        seRequestSet.add(seRequest);
+        List<SeResponse> seResponseList = reader.transmitSet(seRequestSet);
 
         // assert
-        Assert.assertNull(seResponse.getResponses().get(0));
+        Assert.assertNull(seResponseList.get(0));
 
     }
 
@@ -167,10 +144,10 @@ public class AndroidOmapiReaderTest {
         when(omapiReader.getName()).thenReturn("SIM1");
         when(omapiReader.isSecureElementPresent()).thenReturn(false);
         when(omapiReader.openSession()).thenThrow(new IOException());
-        proxyReader = new AndroidOmapiReader(PLUGIN_NAME, omapiReader, omapiReader.getName());
+        reader = new AndroidOmapiReaderImpl(PLUGIN_NAME, omapiReader, omapiReader.getName());
 
         // test
-        SeResponseSet seResponse = proxyReader.transmitSet(getCalypsoRequestSample());
+        List<SeResponse> seResponseList = reader.transmitSet(getSampleSeRequest());
 
         // expected = KeypleReaderException.class
     }
@@ -219,21 +196,17 @@ public class AndroidOmapiReaderTest {
 
     }
 
-    SeRequestSet getCalypsoRequestSample() {
+    Set<SeRequest> getSampleSeRequest() {
         String poAid = "A000000291A000000191";
 
-        ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoClass.ISO,
-                (byte) 0x14, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true, (byte) 0x20, "Hoplink EF T2Environment");
-
-        List<ApduRequest> poApduRequestList;
-
-        poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
+        List<ApduRequest> poApduRequestList  = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("0000"), true));
 
         SeRequest seRequest = new SeRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
-                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid), null), null), poApduRequestList,
-                ChannelState.CLOSE_AFTER);
+                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid), null), null), poApduRequestList);
 
-        return new SeRequestSet(seRequest);
+        Set<SeRequest> seRequestSet = new LinkedHashSet<SeRequest>();
+        seRequestSet.add(seRequest);
+        return seRequestSet;
 
     }
 

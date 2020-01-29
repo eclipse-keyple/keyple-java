@@ -14,7 +14,6 @@ package org.eclipse.keyple.core.selection;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
@@ -32,15 +31,8 @@ public abstract class AbstractSeSelectionRequest {
     /** optional apdu requests list to be executed following the selection process */
     private final List<ApduRequest> seSelectionApduRequestList = new ArrayList<ApduRequest>();
 
-    /**
-     * the channelState may be accessed from derived classes. Let it with the protected access
-     * level.
-     */
-    private final ChannelState channelState;
-
-    public AbstractSeSelectionRequest(SeSelector seSelector, ChannelState channelState) {
+    public AbstractSeSelectionRequest(SeSelector seSelector) {
         this.seSelector = seSelector;
-        this.channelState = channelState;
     }
 
     /**
@@ -50,7 +42,7 @@ public abstract class AbstractSeSelectionRequest {
      * @return the selection SeRequest
      */
     final SeRequest getSelectionRequest() {
-        return new SeRequest(seSelector, seSelectionApduRequestList, channelState);
+        return new SeRequest(seSelector, seSelectionApduRequestList);
     }
 
     public SeSelector getSeSelector() {

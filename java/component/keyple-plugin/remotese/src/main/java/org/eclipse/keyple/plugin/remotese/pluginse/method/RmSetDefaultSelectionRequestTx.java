@@ -13,25 +13,38 @@ package org.eclipse.keyple.plugin.remotese.pluginse.method;
 
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTx;
+import org.eclipse.keyple.plugin.remotese.rm.AbstractRemoteMethodTx;
+import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import com.google.gson.JsonObject;
 
 /**
- * Handle the DefautSelectionRequest keypleDTO serialization and deserialization
+ * Handle the DefaultSelectionRequest keypleDTO serialization and deserialization
  */
-public class RmSetDefaultSelectionRequestTx extends RemoteMethodTx {
+public class RmSetDefaultSelectionRequestTx extends AbstractRemoteMethodTx {
 
     private final AbstractDefaultSelectionsRequest defaultSelectionsRequest;
     private final ObservableReader.NotificationMode notificationMode;
+    private ObservableReader.PollingMode pollingMode;
 
+    public static String DEFAULT_VALUE;
 
     @Override
-    public RemoteMethod getMethodName() {
-        return RemoteMethod.DEFAULT_SELECTION_REQUEST;
+    public RemoteMethodName getMethodName() {
+        return RemoteMethodName.DEFAULT_SELECTION_REQUEST;
+    }
+
+    public RmSetDefaultSelectionRequestTx(AbstractDefaultSelectionsRequest defaultSelectionsRequest,
+            ObservableReader.NotificationMode notificationMode,
+            ObservableReader.PollingMode pollingMode, String nativeReaderName,
+            String virtualReaderName, String sessionId, String slaveNodeId,
+            String requesterNodeId) {
+        super(sessionId, nativeReaderName, virtualReaderName, slaveNodeId, requesterNodeId);
+        this.defaultSelectionsRequest = defaultSelectionsRequest;
+        this.notificationMode = notificationMode;
+        this.pollingMode = pollingMode;
     }
 
     public RmSetDefaultSelectionRequestTx(AbstractDefaultSelectionsRequest defaultSelectionsRequest,
@@ -41,7 +54,6 @@ public class RmSetDefaultSelectionRequestTx extends RemoteMethodTx {
         super(sessionId, nativeReaderName, virtualReaderName, slaveNodeId, requesterNodeId);
         this.defaultSelectionsRequest = defaultSelectionsRequest;
         this.notificationMode = notificationMode;
-
     }
 
     /*
@@ -56,9 +68,18 @@ public class RmSetDefaultSelectionRequestTx extends RemoteMethodTx {
     @Override
     public KeypleDto dto() {
         JsonObject body = new JsonObject();
+
         body.addProperty("defaultSelectionsRequest",
                 JsonParser.getGson().toJson(defaultSelectionsRequest));
+
         body.addProperty("notificationMode", notificationMode.getName());
+
+        if (pollingMode != null) {
+            body.addProperty("pollingMode", pollingMode.name());
+        } else {
+            body.addProperty("pollingMode", KeypleDtoHelper.notSpecified());
+        }
+
 
         return KeypleDtoHelper.buildRequest(getMethodName().getName(),
                 JsonParser.getGson().toJson(body, JsonObject.class), sessionId, nativeReaderName,

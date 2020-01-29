@@ -12,12 +12,33 @@
 package org.eclipse.keyple.plugin.remotese.transport.model;
 
 /**
- * Data Transfer Object used to common an API call from a Master Reader to a Slave Reader (and vice
- * versa)
+ * Immutable Message used in the RPC protocol.
+ * <p>
+ * It contains the name of the method
+ * {@link org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName}, the parameters
+ *
  */
 public class KeypleDto {
 
+    /*
+     * API call
+     */
+
+    // API method to be called
+    private final String action;
+
+    // Arguments of the API (json)
+    private final String body;
+
+    // Is a request or a response
+    private final Boolean isRequest;
+
+    // Id of the request
     private final String id;
+
+    /*
+     * Metadata
+     */
 
     // Requester Node Id (can be slave or master)
     private final String requesterNodeId;
@@ -34,23 +55,20 @@ public class KeypleDto {
     // Master reader name
     private final String virtualReaderName;
 
-    // API method to be called
-    private final String action;
-
-    // Arguments of the API (json)
-    private final String body;
-
-    // Is a request or a response
-    private final Boolean isRequest;
 
 
     /**
-     * Constructor
-     *
+     * Constructor of a KeypleDto
+     * 
      * @param action : API method to be called
      * @param body : Arguments of the API (json)
      * @param isRequest : Is a request or a response
      * @param sessionId : Session Id of current Virtual Reader Session Id
+     * @param nativeReaderName : readerName of the native reader
+     * @param virtualReaderName : readerName of the virtual reader
+     * @param requesterNodeId : node the request is sent from
+     * @param targetNodeId : node the request is sent to
+     * @param id : unique id of this request (null in case of notification)
      */
     public KeypleDto(String action, String body, Boolean isRequest, String sessionId,
             String nativeReaderName, String virtualReaderName, String requesterNodeId,

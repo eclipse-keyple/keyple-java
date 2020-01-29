@@ -12,13 +12,16 @@
 package org.eclipse.keyple.example.remote.application;
 
 import java.io.IOException;
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.example.calypso.common.stub.se.StubCalypsoClassic;
+import org.eclipse.keyple.example.common.calypso.stub.StubCalypsoClassic;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.nativese.INativeReaderService;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
@@ -26,10 +29,7 @@ import org.eclipse.keyple.plugin.remotese.transport.DtoNode;
 import org.eclipse.keyple.plugin.remotese.transport.factory.ClientNode;
 import org.eclipse.keyple.plugin.remotese.transport.factory.ServerNode;
 import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;
-import org.eclipse.keyple.plugin.stub.StubPlugin;
-import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
-import org.eclipse.keyple.plugin.stub.StubReader;
-import org.eclipse.keyple.plugin.stub.StubSecureElement;
+import org.eclipse.keyple.plugin.stub.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +51,10 @@ public class Demo_Slave {
     private SlaveAPI slaveAPI;
 
     private String nativeReaderName;
+
+    static public String STUB_SLAVE = "stubSlave";
+
+    static public long RPC_TIMEOUT = 20000;
 
     /**
      * At startup, create the {@link DtoNode} object, either a {@link ClientNode} or a
@@ -90,7 +94,8 @@ public class Demo_Slave {
                 }.start();
 
                 // if slave is server, must specify which master to connect to
-                slaveAPI = new SlaveAPI(SeProxyService.getInstance(), node, masterNodeId);
+                slaveAPI =
+                        new SlaveAPI(SeProxyService.getInstance(), node, masterNodeId, RPC_TIMEOUT);
 
                 initPoReader();
 
@@ -113,9 +118,7 @@ public class Demo_Slave {
                 }
 
                 @Override
-                public void onConnectFailure() {
-
-                }
+                public void onConnectFailure() {}
             });
             // if slave is client, master is the configured server
             slaveAPI = new SlaveAPI(SeProxyService.getInstance(), node,
@@ -128,7 +131,7 @@ public class Demo_Slave {
     }
 
     /**
-     * Creates and configures a {@link StubReader} for the PO
+     * Creates and configures a {@link StubReaderImpl} for the PO
      *
      * @throws KeypleReaderException
      * @throws InterruptedException
@@ -139,23 +142,28 @@ public class Demo_Slave {
             logger.info("{} Boot DemoSlave LocalReader ", node.getNodeId());
 
             logger.info("{} Create Local StubPlugin", node.getNodeId());
-            StubPlugin stubPlugin = StubPlugin.getInstance();
 
-            SeProxyService.getInstance().addPlugin(stubPlugin);
+            /* Get the instance of the SeProxyService (Singleton pattern) */
+            SeProxyService seProxyService = SeProxyService.getInstance();
+
+            /* Assign PcscPlugin to the SeProxyService */
+            seProxyService.registerPlugin(new StubPluginFactory(STUB_SLAVE));
+
+            ReaderPlugin stubPlugin = seProxyService.getPlugin(STUB_SLAVE);
 
             ObservablePlugin.PluginObserver observer = new ObservablePlugin.PluginObserver() {
                 @Override
                 public void update(PluginEvent event) {
-                    logger.info("{} Update - pluginEvent from inline observer", node.getNodeId(),
+                    logger.info("{} Update - pluginEvent from inline observer {}", node.getNodeId(),
                             event);
                 }
             };
 
             // add observer to have the reader management done by the monitoring thread
-            stubPlugin.addObserver(observer);
+            ((ObservablePlugin) stubPlugin).addObserver(observer);
             Thread.sleep(100);
 
-            stubPlugin.plugStubReader(nativeReaderName, true);
+            ((StubPlugin) stubPlugin).plugStubReader(nativeReaderName, true);
 
             Thread.sleep(1000);
 
@@ -170,6 +178,10 @@ public class Demo_Slave {
             e.printStackTrace();
         } catch (KeypleReaderNotFoundException e) {
             e.printStackTrace();
+        } catch (KeyplePluginNotFoundException e) {
+            e.printStackTrace();
+        } catch (KeyplePluginInstantiationException e) {
+            e.printStackTrace();
         }
 
 
@@ -177,7 +189,7 @@ public class Demo_Slave {
 
 
     /**
-     * Creates a {@link StubReader} and connects it to the Master terminal via the
+     * Creates a {@link StubReaderImpl} and connects it to the Master terminal via the
      * {@link INativeReaderService}
      * 
      * @throws KeypleReaderException

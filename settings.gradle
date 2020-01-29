@@ -9,7 +9,6 @@
 
 
 rootProject.name = 'keyple-java'
-//println '** ' + rootProject.name + ' initialization phase.'
 
 
 /*
@@ -28,27 +27,3 @@ project(':java:component:keyple-plugin:stub').name = "keyple-plugin-stub"
 include ':java:component:keyple-plugin:remotese'
 project(':java:component:keyple-plugin:remotese').name = "keyple-plugin-remotese"
 
-
-/*
- * Non published projects
- */
-
-include ':java:integration'
-
-include ':java:example:generic:common'
-project(':java:example:generic:common').name = "example-generic-common"
-// 
-include ':java:example:generic:pc'
-project(':java:example:generic:pc').name = "example-generic-pc"
-//
-include ':java:example:calypso:common'
-project(':java:example:calypso:common').name = "example-calypso-common"
-//
-include ':java:example:calypso:pc'
-project(':java:example:calypso:pc').name = "example-calypso-pc"
-//
-include ':java:example:calypso:remotese'
-project(':java:example:calypso:remotese').name = "example-remotese"
-
-
-//println "rootProject : " + startParameter

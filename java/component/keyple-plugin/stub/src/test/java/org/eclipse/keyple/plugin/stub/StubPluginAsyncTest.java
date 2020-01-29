@@ -19,6 +19,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.junit.*;
@@ -40,7 +41,8 @@ public class StubPluginAsyncTest extends BaseStubTest {
     }
 
     @After
-    public void clearStub() throws InterruptedException, KeypleReaderException {
+    public void clearStub()
+            throws InterruptedException, KeypleReaderException, KeyplePluginNotFoundException {
         super.clearStub();
     }
 
@@ -133,7 +135,7 @@ public class StubPluginAsyncTest extends BaseStubTest {
                 new HashSet<String>(Arrays.asList("E_Reader1", "E_Reader2", "E_Reader3"));
 
         // lock test until message is received
-        final CountDownLatch readerConnected = new CountDownLatch(1);
+        final CountDownLatch readerConnected = new CountDownLatch(3);
 
         // add READER_CONNECTED assert observer
         stubPlugin.addObserver(new ObservablePlugin.PluginObserver() {
@@ -142,13 +144,13 @@ public class StubPluginAsyncTest extends BaseStubTest {
                 logger.info("event {} #readers {}", event.getEventType(),
                         event.getReaderNames().size());
                 Assert.assertEquals(PluginEvent.EventType.READER_CONNECTED, event.getEventType());
-                Assert.assertEquals(3, event.getReaderNames().size());
-                Assert.assertEquals(READERS, event.getReaderNames());
-                readerConnected.countDown();
+                Assert.assertTrue(event.getReaderNames().size() >= 1);// can be one or three
+                // we are waiting for 3 notifications of reader insertion
+                for (int i = 0; i < event.getReaderNames().size(); i++) {
+                    readerConnected.countDown();
+                }
             }
-
         });
-
 
         // connect readers
         stubPlugin.plugStubReaders(READERS, false);

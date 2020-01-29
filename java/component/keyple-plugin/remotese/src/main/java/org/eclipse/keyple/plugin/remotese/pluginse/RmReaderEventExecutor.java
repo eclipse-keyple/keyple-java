@@ -13,8 +13,8 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodExecutor;
+import org.eclipse.keyple.plugin.remotese.rm.IRemoteMethodExecutor;
+import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
@@ -23,15 +23,16 @@ import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 /**
  * Transform and propagate the reader event to the virtual reader
  */
-class RmReaderEventExecutor implements RemoteMethodExecutor {
+class RmReaderEventExecutor implements IRemoteMethodExecutor {
 
-    private final RemoteSePlugin remoteSePlugin;
+    private final RemoteSePluginImpl remoteSePlugin;
 
-    public RemoteMethod getMethodName() {
-        return RemoteMethod.READER_EVENT;
+    @Override
+    public RemoteMethodName getMethodName() {
+        return RemoteMethodName.READER_EVENT;
     }
 
-    public RmReaderEventExecutor(RemoteSePlugin remoteSePlugin) {
+    public RmReaderEventExecutor(RemoteSePluginImpl remoteSePlugin) {
         this.remoteSePlugin = remoteSePlugin;
     }
 
@@ -44,7 +45,7 @@ class RmReaderEventExecutor implements RemoteMethodExecutor {
 
         // substitute native reader name by virtual reader name
         ReaderEvent virtualEvent = new ReaderEvent(remoteSePlugin.getName(),
-                RemoteSePlugin.generateReaderName(event.getReaderName(),
+                RemoteSePluginImpl.generateReaderName(event.getReaderName(),
                         keypleDto.getRequesterNodeId()),
                 event.getEventType(), event.getDefaultSelectionsResponse());
 

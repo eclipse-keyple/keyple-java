@@ -13,8 +13,8 @@ package org.eclipse.keyple.plugin.remotese.nativese.method;
 
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTx;
+import org.eclipse.keyple.plugin.remotese.rm.AbstractRemoteMethodTx;
+import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
@@ -25,13 +25,13 @@ import com.google.gson.JsonObject;
 /**
  * Handle the Disconnect Reader keypleDTO serialization and deserialization
  */
-public class RmDisconnectReaderTx extends RemoteMethodTx<Boolean> {
+public class RmDisconnectReaderTx extends AbstractRemoteMethodTx<Boolean> {
 
     private static final Logger logger = LoggerFactory.getLogger(RmDisconnectReaderTx.class);
 
     @Override
-    public RemoteMethod getMethodName() {
-        return RemoteMethod.READER_DISCONNECT;
+    public RemoteMethodName getMethodName() {
+        return RemoteMethodName.READER_DISCONNECT;
     }
 
 

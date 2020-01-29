@@ -12,9 +12,19 @@
 package org.eclipse.keyple.core.seproxy;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.SortedSet;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
+import org.eclipse.keyple.core.seproxy.plugin.mock.MockAbstractThreadedPlugin;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,25 +43,33 @@ public class SeProxyServiceTest {
     // class to test
     SeProxyService proxyService;
 
+    AbstractPlugin plugin1 = new MockAbstractThreadedPlugin(PLUGIN_NAME_1);
+
+    AbstractPlugin plugin2 = new MockAbstractThreadedPlugin(PLUGIN_NAME_2);;
+
     @Mock
-    ReaderPlugin plugin1;
+    AbstractPluginFactory factory1;
+
+    @Mock
+    AbstractPluginFactory factory2;
 
 
-    static String PLUGIN_NAME = "plugin1";
+    static String PLUGIN_NAME_1 = "plugin1";
+    static String PLUGIN_NAME_2 = "plugin2";
 
     @Before
-    public void setupBeforeEach() {
+    public void setupBeforeEach() throws KeyplePluginInstantiationException {
 
         // init class to test
         proxyService = SeProxyService.getInstance();
-    }
 
+        Assert.assertEquals(0, proxyService.getPlugins().size());
 
-    @Test
-    public void testGetInstance() {
-        // test
-        assertNotNull(proxyService);
-        // assertNull(proxyService);
+        when(factory1.getPluginInstance()).thenReturn(plugin1);
+        when(factory2.getPluginInstance()).thenReturn(plugin2);
+
+        when(factory1.getPluginName()).thenReturn(PLUGIN_NAME_1);
+        when(factory2.getPluginName()).thenReturn(PLUGIN_NAME_2);
 
     }
 
@@ -66,62 +84,191 @@ public class SeProxyServiceTest {
         assertTrue(version.matches(regex));
     }
 
-    @Test
-    public void testGetSetPlugins() {
-        // init
-        ConcurrentSkipListSet<ReaderPlugin> plugins = getPluginList();
+    @Test(expected = KeyplePluginInstantiationException.class)
+    public void testFailingPlugin() throws KeyplePluginInstantiationException {
 
-        // test
-        proxyService.setPlugins(plugins);
-        assertArrayEquals(plugins.toArray(), proxyService.getPlugins().toArray());
+        doThrow(new KeyplePluginInstantiationException("")).when(factory1).getPluginInstance();
+
+        proxyService.registerPlugin(factory1);
     }
 
     @Test
-    public void testGetPlugin() throws KeyplePluginNotFoundException {
-        // init
+    public void testRegisterPlugin()
+            throws KeyplePluginNotFoundException, KeyplePluginInstantiationException {
 
-        ConcurrentSkipListSet<ReaderPlugin> plugins = getPluginList();
+        // register plugin1 by its factory
+        proxyService.registerPlugin(factory1);
 
-        proxyService.setPlugins(plugins);
+        // results
+        ReaderPlugin testPlugin = proxyService.getPlugin(PLUGIN_NAME_1);
+        SortedSet testPlugins = proxyService.getPlugins();
 
-        // test
-        assertEquals(plugin1, proxyService.getPlugin(PLUGIN_NAME));
+        Assert.assertNotNull(testPlugin);
+        Assert.assertEquals(PLUGIN_NAME_1, testPlugin.getName());
+        Assert.assertEquals(1, testPlugins.size());
+
+        // unregister
+        proxyService.unregisterPlugin(PLUGIN_NAME_1);
+
+
+    }
+
+    @Test
+    public void testRegisterTwicePlugin() throws KeyplePluginInstantiationException {
+
+        // register plugin1 by its factory
+        proxyService.registerPlugin(factory1);
+        proxyService.registerPlugin(factory1);
+
+        // should not be added twice
+        SortedSet testPlugins = proxyService.getPlugins();
+        Assert.assertEquals(1, testPlugins.size());
+
+        // unregister
+        proxyService.unregisterPlugin(PLUGIN_NAME_1);
+
+    }
+
+    @Test
+    public void testRegisterTwoPlugins() throws KeyplePluginInstantiationException {
+
+        // register plugin1 by its factory
+        proxyService.registerPlugin(factory1);
+        proxyService.registerPlugin(factory2);
+
+        // should not be added twice
+        SortedSet testPlugins = proxyService.getPlugins();
+        Assert.assertEquals(2, testPlugins.size());
+
+        // unregister
+        proxyService.unregisterPlugin(PLUGIN_NAME_1);
+        proxyService.unregisterPlugin(PLUGIN_NAME_2);
+
     }
 
     @Test(expected = KeyplePluginNotFoundException.class)
     public void testGetPluginFail() throws Exception {
-
-        // init
-        ConcurrentSkipListSet<ReaderPlugin> plugins = getPluginList();
-        proxyService.setPlugins(plugins);
-
-        // test
         proxyService.getPlugin("unknown");// Throw exception
 
-
     }
 
 
-    /*
-     * HELPERS
+    /**
+     * Test that a plugin can not be added twice with multi thread
+     * 
+     * @throws Exception
      */
+    @Test
+    public void testRegister_MultiThread() throws Exception {
 
-    private ConcurrentSkipListSet<ReaderPlugin> getPluginList() {
+        final MockObservablePluginFactory factory = new MockObservablePluginFactory(PLUGIN_NAME_1);
+        final CountDownLatch latch = new CountDownLatch(1);
 
-        // ReaderPlugin plugin2 = Mockito.mock(ReaderPlugin.class);
-        // when(plugin2.getName()).thenReturn(PLUGIN_NAME_2);
+        final AtomicBoolean running = new AtomicBoolean();
+        final AtomicInteger overlaps = new AtomicInteger();
 
-        when(plugin1.getName()).thenReturn(PLUGIN_NAME);
-        ConcurrentSkipListSet<ReaderPlugin> plugins = new ConcurrentSkipListSet<ReaderPlugin>();
+        int threads = 10;
+        ExecutorService service = Executors.newFixedThreadPool(threads);
+        Collection<Future> futures = new ArrayList(threads);
+
+        for (int t = 0; t < threads; ++t) {
+            futures.add(service.submit(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        /*
+                         * All thread wait for the countdown
+                         */
+                        latch.await();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if (running.get()) {
+                        overlaps.incrementAndGet();
+                    }
+                    running.set(true);
+                    try {
+                        proxyService.registerPlugin(factory);
+                    } catch (KeyplePluginInstantiationException e) {
+                        e.printStackTrace();
+                    }
+                    running.set(false);
+
+                }
+            }));
+        }
+        /*
+         * Release all thread at once
+         */
+        latch.countDown();
+        /*
+         * wait for execution
+         */
+        Thread.sleep(500);
+        logger.info("Overlap {}", overlaps);
+        assertEquals(1, proxyService.getPlugins().size());
+
+        // unregister
+        proxyService.unregisterPlugin(PLUGIN_NAME_1);
 
 
-        plugins.add(plugin1);
-        // plugins.add(plugin2);
-
-        assertEquals(1, plugins.size()); // impossible to add 2 ReaderPlugin mocks
-
-        return plugins;
     }
 
+    /**
+     * Test that a plugin can not be added twice with multi thread
+     *
+     * @throws Exception
+     */
+    @Test
+    public void unregisterMultiThread() throws Exception {
+
+        final MockObservablePluginFactory factory = new MockObservablePluginFactory(PLUGIN_NAME_1);
+
+        // add a plugin
+        proxyService.registerPlugin(factory);
+
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        final AtomicBoolean running = new AtomicBoolean();
+        final AtomicInteger overlaps = new AtomicInteger();
+
+        int threads = 10;
+        ExecutorService service = Executors.newFixedThreadPool(threads);
+        Collection<Future> futures = new ArrayList(threads);
+
+        for (int t = 0; t < threads; ++t) {
+            futures.add(service.submit(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        /*
+                         * All thread wait for the countdown
+                         */
+                        latch.await();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if (running.get()) {
+                        overlaps.incrementAndGet();
+                    }
+                    running.set(true);
+                    proxyService.unregisterPlugin(factory.getPluginName());
+                    running.set(false);
+                }
+            }));
+        }
+        /*
+         * Release all thread at once
+         */
+        latch.countDown();
+        Thread.sleep(500);
+        logger.info("Overlap {}", overlaps);
+        assertEquals(0, proxyService.getPlugins().size());
+        // unregister
+        proxyService.unregisterPlugin(PLUGIN_NAME_1);
+
+
+    }
 
 }

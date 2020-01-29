@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information regarding copyright
  * ownership.
@@ -11,240 +11,23 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
-import java.util.HashMap;
-import java.util.Map;
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
-import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
-import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
-import org.eclipse.keyple.plugin.remotese.pluginse.method.RmSetDefaultSelectionRequestTx;
-import org.eclipse.keyple.plugin.remotese.pluginse.method.RmTransmitSetTx;
-import org.eclipse.keyple.plugin.remotese.pluginse.method.RmTransmitTx;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTxEngine;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.eclipse.keyple.core.seproxy.SeReader;
 
 /**
- * Virtual Reader is a proxy to a Native Reader on the slave terminal Use it like a local reader,
- * all API call will be transferred to the Native Reader with a RPC session
+ * Define a Virtual Reader (non observable)
  */
-public final class VirtualReader extends AbstractObservableReader {
-
-    private final VirtualReaderSession session;
-    private final String nativeReaderName;
-    private final RemoteMethodTxEngine rmTxEngine;
-    private final String slaveNodeId;
-    private final TransmissionMode transmissionMode;
-
-    private static final Logger logger = LoggerFactory.getLogger(VirtualReader.class);
-
-    private Map<String, String> parameters = new HashMap<String, String>();
-
+public interface VirtualReader extends SeReader {
     /**
-     * Create a new Virtual Reader (only called by @{@link RemoteSePlugin})
+     * Name of the Native Reader on the slave device
      * 
-     * @param session : session associated to the reader
-     * @param nativeReaderName : native reader name on slave terminal
-     * @param rmTxEngine : processor for remote method
-     * @param transmissionMode : transmission mode of the native reader on slave terminal
-     */
-    VirtualReader(VirtualReaderSession session, String nativeReaderName,
-            RemoteMethodTxEngine rmTxEngine, String slaveNodeId, TransmissionMode transmissionMode,
-            Map<String, String> options) {
-        super(RemoteSePlugin.DEFAULT_PLUGIN_NAME,
-                RemoteSePlugin.generateReaderName(nativeReaderName, slaveNodeId));
-        this.session = session;
-        this.nativeReaderName = nativeReaderName;
-        this.rmTxEngine = rmTxEngine;
-        this.slaveNodeId = slaveNodeId;
-        this.transmissionMode = transmissionMode;
-        this.parameters = options;
-        logger.info(
-                "A new virtual reader was created with name:{}, sessionId:{}, transmissionMode:{}, options:{}",
-                name, session, transmissionMode, options);
-    }
-
-    /**
-     * @return the current transmission mode
-     */
-    public TransmissionMode getTransmissionMode() {
-        return transmissionMode;
-    }
-
-    /**
-     * Name of the Native Reader
-     *
      * @return local name of the native reader (on slave device)
      */
-    public String getNativeReaderName() {
-        return nativeReaderName;
-    }
-
-    VirtualReaderSession getSession() {
-        return session;
-    }
-
-    RemoteMethodTxEngine getRmTxEngine() {
-        return rmTxEngine;
-    }
-
-
-    @Override
-    public boolean isSePresent() {
-        logger.error("isSePresent is not implemented yet");
-        return false;// not implemented
-    }
+    String getNativeReaderName();
 
     /**
-     * Blocking TransmitSet
+     * Return Virtual Reader Session that contains informations about master and slave nodes
      * 
-     * @param seRequestSet : SeRequestSet to be transmitted to SE
-     * @return seResponseSet : SeResponseSet from SE
-     * @throws IllegalArgumentException
-     * @throws KeypleReaderException
+     * @return virtual reader session
      */
-    @Override
-    protected SeResponseSet processSeRequestSet(SeRequestSet seRequestSet)
-            throws IllegalArgumentException, KeypleReaderException {
-
-        RmTransmitSetTx transmit = new RmTransmitSetTx(seRequestSet, session.getSessionId(),
-                this.getNativeReaderName(), this.getName(), session.getMasterNodeId(),
-                session.getSlaveNodeId());
-        try {
-            rmTxEngine.add(transmit);
-
-            // blocking call
-            return transmit.getResponse();
-        } catch (KeypleRemoteException e) {
-            if (e.getCause() != null) {
-                // KeypleReaderException is inside the KeypleRemoteException
-                throw (KeypleReaderException) e.getCause();
-
-            } else {
-                // create a new KeypleReaderException
-                throw new KeypleReaderException(e.getMessage());
-            }
-        }
-    }
-
-    /**
-     * Blocking Transmit
-     * 
-     * @param seRequest : SeRequest to be transmitted to SE
-     * @return seResponse : SeResponse from SE
-     * @throws IllegalArgumentException
-     * @throws KeypleReaderException
-     */
-    @Override
-    protected SeResponse processSeRequest(SeRequest seRequest)
-            throws IllegalArgumentException, KeypleReaderException {
-
-        RmTransmitTx transmit =
-                new RmTransmitTx(seRequest, session.getSessionId(), this.getNativeReaderName(),
-                        this.getName(), session.getMasterNodeId(), session.getSlaveNodeId());
-        try {
-            rmTxEngine.add(transmit);
-
-            // blocking call
-            return transmit.getResponse();
-        } catch (KeypleRemoteException e) {
-            e.printStackTrace();
-            throw (KeypleReaderException) e.getCause();
-        }
-
-    }
-
-    @Override
-    protected void startObservation() {
-        logger.trace("startObservation is not used in this plugin");
-    }
-
-    @Override
-    protected void stopObservation() {
-        logger.trace("stopObservation is not used in this plugin");
-    }
-
-
-    @Override
-    public void addSeProtocolSetting(SeProtocol seProtocol, String protocolRule) {
-        logger.error("{} addSeProtocolSetting is not implemented yet", this.getName());
-    }
-
-    @Override
-    public void setSeProtocolSetting(Map<SeProtocol, String> protocolSetting) {
-        logger.error("setSeProtocolSetting is not implemented yet");
-    }
-
-    /*
-     * PACKAGE PRIVATE
-     */
-
-    /**
-     * When an event occurs on the Remote LocalReader, notify Observers
-     * 
-     * @param event
-     */
-    void onRemoteReaderEvent(final ReaderEvent event) {
-        final VirtualReader thisReader = this;
-
-        logger.debug("{} EVENT {} ", this.getName(), event.getEventType());
-
-        if (thisReader.countObservers() > 0) {
-            thisReader.notifyObservers(event);
-        } else {
-            logger.debug(
-                    "An event was received but no observers are declared into VirtualReader : {} {}",
-                    thisReader.getName(), event.getEventType());
-        }
-
-    }
-
-
-    /**
-     *
-     * HELPERS
-     */
-
-
-    @Override
-    public Map<String, String> getParameters() {
-        return parameters;
-    }
-
-    @Override
-    public void setParameter(String key, String value) throws IllegalArgumentException {
-        parameters.put(key, value);
-    }
-
-    @Override
-    public void setDefaultSelectionRequest(
-            AbstractDefaultSelectionsRequest defaultSelectionsRequest,
-            NotificationMode notificationMode) {
-
-        RmSetDefaultSelectionRequestTx setDefaultSelectionRequest =
-                new RmSetDefaultSelectionRequestTx(defaultSelectionsRequest, notificationMode,
-                        this.getNativeReaderName(), this.getName(),
-                        this.getSession().getSessionId(), session.getSlaveNodeId(),
-                        session.getMasterNodeId());
-
-        try {
-            rmTxEngine.add(setDefaultSelectionRequest);
-
-            // blocking call
-            setDefaultSelectionRequest.getResponse();
-        } catch (KeypleRemoteException e) {
-            logger.error(
-                    "setDefaultSelectionRequest encounters an exception while communicating with slave",
-                    e);
-        }
-    }
-
-
+    public VirtualReaderSession getSession();
 }

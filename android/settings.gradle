@@ -11,11 +11,6 @@
 rootProject.name = 'keyple-android'
 println '** ' + rootProject.name + ' initialization phase.'
 
-include ':java:component:keyple-core'
-project(':java:component:keyple-core').projectDir = new File("../java/component/keyple-core")
-
-include ':java:component:keyple-calypso'
-project(':java:component:keyple-calypso').projectDir = new File("../java/component/keyple-calypso")
 
 include ':keyple-plugin:android-nfc'
 project(':keyple-plugin:android-nfc').name = "keyple-plugin-android-nfc"

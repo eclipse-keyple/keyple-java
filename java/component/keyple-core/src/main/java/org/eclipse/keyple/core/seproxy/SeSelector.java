@@ -174,6 +174,8 @@ public class SeSelector {
          * @param aidToSelect IsoAid
          * @param successfulSelectionStatusCodes list of successful status codes for the select
          *        application response
+         * @param fileOccurrence the occurrence parameter (see ISO7816-4 definition)
+         * @param fileControlInformation the file control information (see ISO7816-4 definition)
          */
         public AidSelector(IsoAid aidToSelect, Set<Integer> successfulSelectionStatusCodes,
                 FileOccurrence fileOccurrence, FileControlInformation fileControlInformation) {
@@ -237,6 +239,7 @@ public class SeSelector {
          *
          * @return a string
          */
+        @Override
         public String toString() {
             return String.format("AID:%s, OCCURRENCE:%s",
                     aidToSelect == null ? "null" : ByteArrayUtil.toHex(aidToSelect.getValue()),
@@ -305,6 +308,7 @@ public class SeSelector {
          *
          * @return a string
          */
+        @Override
         public String toString() {
             return String.format("ATR regex:%s", atrRegex.length() != 0 ? atrRegex : "empty");
         }

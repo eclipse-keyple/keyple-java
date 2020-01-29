@@ -13,8 +13,10 @@ package org.eclipse.keyple.plugin.remotese.integration;
 
 
 
+import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
+import org.eclipse.keyple.plugin.stub.StubReader;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -29,18 +31,25 @@ public class VirtualReaderParameterTest extends VirtualReaderBaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(VirtualReaderParameterTest.class);
     private VirtualReader virtualReader;
+    private StubReader nativeReader;
 
     @Before
     public void setUp() throws Exception {
-        // restore plugin state
-        clearStubpluginReader();
+        Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
 
-        initKeypleServices();
+        initMasterNSlave();
+
     }
 
     @After
     public void tearDown() throws Exception {
-        clearStubpluginReader();
+        disconnectReader(NATIVE_READER_NAME);
+
+        clearMasterNSlave();
+
+        unregisterPlugins();
+
+        Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
     }
 
     @Test

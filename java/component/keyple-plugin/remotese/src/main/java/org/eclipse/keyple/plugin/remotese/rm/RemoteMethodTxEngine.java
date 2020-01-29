@@ -21,15 +21,15 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Manages the transaction (request/response) for remote method invocation It holds
- * the @{@link RemoteMethodTx} untils the answer is received
+ * the @{@link AbstractRemoteMethodTx} untils the answer is received
  */
-public class RemoteMethodTxEngine implements DtoHandler {
+public class RemoteMethodTxEngine implements DtoHandler, IRemoteMethodTxEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteMethodTxEngine.class);
 
 
     // waiting transaction, supports only one at the time
-    private RemoteMethodTx remoteMethodTx;
+    private AbstractRemoteMethodTx remoteMethodTx;
 
     // Dto Sender
     private final DtoSender sender;
@@ -97,8 +97,9 @@ public class RemoteMethodTxEngine implements DtoHandler {
      * 
      * @param rm : RemoteMethodTx to be executed
      */
-    public void add(final RemoteMethodTx rm) {
-        logger.debug("Register rm to engine : {}", rm);
+    @Override
+    public void register(final AbstractRemoteMethodTx rm) {
+        logger.debug("Register rm to engine : {} {}", rm.getMethodName(), rm.id);
         rm.setRegistered(true);
         remoteMethodTx = rm;
         rm.setDtoSender(sender);

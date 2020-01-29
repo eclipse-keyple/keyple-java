@@ -11,18 +11,38 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.event;
 
-import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
+import java.util.Set;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.message.SeRequest;
 
 /**
- * The {@link AbstractDefaultSelectionsRequest} class is dedicated to
+ * The abstract class defining the default selection request to be processed when an SE is inserted
+ * in an observable reader.
+ * <p>
+ * The default selection is defined by:
+ * <ul>
+ * <li>a set of requests corresponding to one or more selection cases
+ * <li>a {@link MultiSeRequestProcessing} indicator specifying whether all planned selections are to
+ * be executed or whether to stop at the first one that is successful
+ * <li>an indicator to control the physical channel to stipulate whether it should be closed or left
+ * open at the end of the selection process
+ * </ul>
  */
+
 public abstract class AbstractDefaultSelectionsRequest {
-    /** The {@link org.eclipse.keyple.core.seproxy.message.SeRequestSet} */
-    protected final SeRequestSet selectionSeRequestSet;
+    /**
+     * @return the selection request set
+     */
+    protected abstract Set<SeRequest> getSelectionSeRequestSet();
 
-    protected AbstractDefaultSelectionsRequest(SeRequestSet selectionSeRequestSet) {
-        this.selectionSeRequestSet = selectionSeRequestSet;
-    }
+    /**
+     * @return the multi SE request mode
+     */
+    protected abstract MultiSeRequestProcessing getMultiSeRequestProcessing();
 
-    protected abstract SeRequestSet getSelectionSeRequestSet();
+    /**
+     * @return the channel control
+     */
+    protected abstract ChannelControl getChannelControl();
 }

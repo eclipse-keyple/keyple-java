@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 /**
  * Utils around byte arrays
  */
-public class ByteArrayUtil {
+public final class ByteArrayUtil {
     /* byte to hex string conversion table */
     private static final String[] byteToHex = new String[] {"00", "01", "02", "03", "04", "05",
             "06", "07", "08", "09", "0A", "0B", "0C", "0D", "0E", "0F", "10", "11", "12", "13",
@@ -43,6 +43,10 @@ public class ByteArrayUtil {
      * Chars we will ignore when loading a sample HEX string. It allows to copy/paste the specs APDU
      */
     private static final Pattern HEX_IGNORED_CHARS = Pattern.compile(" |h");
+
+    private ByteArrayUtil() {
+        throw new IllegalStateException("ByteArray utility class");
+    }
 
     /**
      * Create a byte array from an hexa string. This method allows spaces and "h".

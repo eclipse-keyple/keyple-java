@@ -1,4 +1,4 @@
-def version = "0.7.0"
+def version = "0.8.0"
 
 if(project.getProperties().containsKey("release") && release=="true"){
     project.version = version
@@ -94,6 +94,7 @@ uploadArchives {
             pom.project {
                 name project.description
                 description project.description
+                url "https://projects.eclipse.org/projects/iot.keyple"
 
                 organization("Eclipse Keyple"){
                     name "Eclipse Keyple"
@@ -141,9 +142,20 @@ uploadArchives {
     }
 }
 
+task installExtension{
+    group 'keyple'
+    description 'Builds and installs the keyple calypso extension library into maven local repository'
+    dependsOn ':java:component:keyple-calypso:uploadArchives'
+
+    doLast {
+        println 'Keyple Calypso Extension has been installed into maven local repo at path : ' + project.getRepositories().get(0).getAt("url")
+    }
+}
+
 dependencies {
     //keyple-core project
-    api project(path: ':java:component:keyple-core')
+    //api project(path: ':java:component:keyple-core')
+    api group: 'org.eclipse.keyple', name: 'keyple-java-core', version: project.version
 
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
     api "org.slf4j:slf4j-api:${slf4japi_version}"

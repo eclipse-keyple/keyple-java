@@ -1,4 +1,4 @@
-def version = "0.7.0"
+def version = "0.8.0"
 
 if(project.getProperties().containsKey("release") && release=="true"){
     project.version = version
@@ -93,6 +93,7 @@ uploadArchives {
             pom.project {
                 name "Keyple Plugin Remotese"
                 description project.description
+                url "https://projects.eclipse.org/projects/iot.keyple"
 
                 organization("Eclipse Keyple"){
                     name "Eclipse Keyple"
@@ -141,9 +142,20 @@ uploadArchives {
     }
 }
 
+task installPlugin{
+    group 'keyple'
+    description 'Builds and installs  the keyple remotese plugin into maven local repository'
+    dependsOn ':java:component:keyple-plugin:keyple-plugin-remotese:uploadArchives'
+
+    doLast {
+        println 'Keyple Remote SE Plugin has been installed into maven local repo at path : ' + project.getRepositories().get(0).getAt("url")
+    }
+}
+
 dependencies {
     //use java library : keyple core
-    api project(path:':java:component:keyple-core')
+    //api project(path:':java:component:keyple-core')
+    api group: 'org.eclipse.keyple', name: 'keyple-java-core', version: project.version
 
     implementation "com.google.code.gson:gson:${gson_version}"
 

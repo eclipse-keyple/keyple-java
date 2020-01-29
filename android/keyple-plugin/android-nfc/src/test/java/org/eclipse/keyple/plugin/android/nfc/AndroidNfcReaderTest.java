@@ -11,28 +11,16 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc;
 
-import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.assertArrayEquals;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import org.eclipse.keyple.calypso.command.PoClass;
-import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
-import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
-import org.eclipse.keyple.core.seproxy.ChannelState;
-import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import android.app.Activity;
+import android.content.Intent;
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
+import junit.framework.Assert;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.message.ApduRequest;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
-import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
-import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
+import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,17 +28,18 @@ import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import android.app.Activity;
-import android.content.Intent;
-import android.nfc.NfcAdapter;
-import android.nfc.Tag;
-import junit.framework.Assert;
+
+import java.io.IOException;
+
+import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertArrayEquals;
+import static org.mockito.Mockito.*;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({TagProxy.class, NfcAdapter.class})
 public class AndroidNfcReaderTest {
 
-    AndroidNfcReader reader;
+    AndroidNfcReaderImpl reader;
     NfcAdapter nfcAdapter;
     Tag tag;
     TagProxy tagProxy;
@@ -66,6 +55,7 @@ public class AndroidNfcReaderTest {
         intent = Mockito.mock(Intent.class);
         activity = Mockito.mock(Activity.class);
         nfcAdapter = Mockito.mock(NfcAdapter.class);
+        tag = Mockito.mock(Tag.class);
 
         // mock TagProxy Factory
         PowerMockito.mockStatic(TagProxy.class);
@@ -76,300 +66,62 @@ public class AndroidNfcReaderTest {
         when(NfcAdapter.getDefaultAdapter(activity)).thenReturn(nfcAdapter);
 
         // instantiate a new Reader for each test
-        reader = new AndroidNfcReader();
+        reader = new AndroidNfcReaderImpl();
     }
 
-
-    /*
-     * TEST HIGH LEVEL METHOD TRANSMIT
-     */
-
-    @Test
-    public void transmitSuccessfull() throws KeypleBaseException, IOException {
-
-        // config
-        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
-
-        // input
-        SeRequestSet requests = getRequestIsoDepSetSample();
-
-        // init Mock
-        when(tagProxy.transceive(ByteArrayUtil.fromHex("00A404000AA000000291A00000019100")))
-                .thenReturn(ByteArrayUtil.fromHex(
-                        "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000"));
-        when(tagProxy.transceive(ByteArrayUtil.fromHex("00B201A420"))).thenReturn(ByteArrayUtil
-                .fromHex("00000000000000000000000000000000000000000000000000000000000000009000"));
-        when(tagProxy.getTech())
-                .thenReturn(AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
-        when(tagProxy.isConnected()).thenReturn(true);
-
-        // test
-        insertSe();
-        SeResponseSet seResponse = reader.transmitSet(requests);
-
-        // assert
-        Assert.assertTrue(
-                seResponse.getSingleResponse().getSelectionStatus().getFci().isSuccessful());
-
-    }
-
-    @Test
-    public void transmitWrongProtocols() throws KeypleBaseException, IOException {
-
-        // config reader with Isodep protocols
-        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4, AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
-
-        // input
-        SeRequestSet requests = getRequestIsoDepSetSample();
-
-        // init Mock with Mifare Classic Smart card
-        when(tagProxy.transceive(ByteArrayUtil.fromHex("00A404000AA000000291A00000019100")))
-                .thenReturn(ByteArrayUtil.fromHex(
-                        "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000"));
-        when(tagProxy.transceive(ByteArrayUtil.fromHex("00B201A420"))).thenReturn(ByteArrayUtil
-                .fromHex("00000000000000000000000000000000000000000000000000000000000000009000"));
-        when(tagProxy.getTech())
-                .thenReturn(AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC));
-        when(tagProxy.isConnected()).thenReturn(true);
-
-        // test
-        insertSe();
-        SeResponseSet seResponse = reader.transmitSet(requests);
-
-        // assert the only seRequest is null
-        Assert.assertTrue(seResponse.getSingleResponse() == null);
-
-    }
-
-    @Test
-    public void transmitWrongProtocol2() throws KeypleBaseException, IOException {
-
-        // config reader with Mifare protocols
-        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC, AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC));
-
-        // input
-        SeRequestSet requests = getRequestIsoDepSetSample();
-
-        // init Mock with Isodep Classic Smart card
-        when(tagProxy.transceive(ByteArrayUtil.fromHex("00A404000AA000000291A00000019100")))
-                .thenReturn(ByteArrayUtil.fromHex(
-                        "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000"));
-        when(tagProxy.transceive(ByteArrayUtil.fromHex("00B201A420"))).thenReturn(ByteArrayUtil
-                .fromHex("00000000000000000000000000000000000000000000000000000000000000009000"));
-        when(tagProxy.getTech())
-                .thenReturn(AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
-        when(tagProxy.isConnected()).thenReturn(true);
-
-        // test
-        insertSe();
-        SeResponseSet seResponse = reader.transmitSet(requests);
-
-        // assert the only seRequest is null
-        Assert.assertTrue(seResponse.getSingleResponse() == null);
-
-    }
-
-    @Test(expected = KeypleReaderException.class)
-    public void transmitCardNotConnected() throws KeypleBaseException, IOException {
-
-        // config reader with Isodep protocols
-        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4, AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
-
-        // input
-        SeRequestSet requests = getRequestIsoDepSetSample();
-
-        // init Mock with Isodep Classic Smart card
-        when(tagProxy.transceive(ByteArrayUtil.fromHex("00A404000AA000000291A00000019100")))
-                .thenReturn(ByteArrayUtil.fromHex(
-                        "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000"));
-        when(tagProxy.transceive(ByteArrayUtil.fromHex("00B201A420"))).thenReturn(ByteArrayUtil
-                .fromHex("00000000000000000000000000000000000000000000000000000000000000009000"));
-        when(tagProxy.getTech())
-                .thenReturn(AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
-
-
-        // card is not connected
-        when(tagProxy.isConnected()).thenReturn(false);
-
-        // test
-        insertSe();
-        SeResponseSet seResponse = reader.transmitSet(requests);
-
-        // wait for exception
-    }
-
-    @Test
-    public void transmitUnkownCard() throws KeypleBaseException, IOException {
-
-        // config reader with Isodep protocols
-        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
-
-        // input
-        SeRequestSet requests = getRequestIsoDepSetSample();
-
-        // init Mock with Isodep Classic Smart card
-        when(tagProxy.transceive(ByteArrayUtil.fromHex("00A404000AA000000291A00000019100")))
-                .thenReturn(ByteArrayUtil.fromHex(
-                        "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000"));
-        when(tagProxy.transceive(ByteArrayUtil.fromHex("00B201A420"))).thenReturn(ByteArrayUtil
-                .fromHex("00000000000000000000000000000000000000000000000000000000000000009000"));
-        when(tagProxy.isConnected()).thenReturn(false);
-
-        // unknown card
-        when(tagProxy.getTech()).thenReturn("Unknown card");
-
-        // test
-        insertSe();
-        SeResponseSet seResponse = reader.transmitSet(requests);
-
-        // assert the only seRequest is null
-        Assert.assertTrue(seResponse.getSingleResponse() == null);
-    }
+    // ---- INIT READER TESTS ----------- //
 
 
     @Test
-    public void transmitUnknownApplication() throws KeypleBaseException, IOException {
-
-        // config reader with Isodep protocols
-        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
-
-        // input
-        SeRequestSet requests = getRequestIsoDepSetSample();
-
-        // init Mock with Isodep Classic Smart card
-        when(tagProxy.transceive(ByteArrayUtil.fromHex("00B201A420"))).thenReturn(ByteArrayUtil
-                .fromHex("00000000000000000000000000000000000000000000000000000000000000009000"));
-        when(tagProxy.isConnected()).thenReturn(false);
-        when(tagProxy.getTech()).thenReturn("Unknown card");
-
-        // unknown Application
-        when(tagProxy.transceive(ByteArrayUtil.fromHex("00A404000AA000000291A00000019100")))
-                .thenReturn(ByteArrayUtil.fromHex("0000"));
-
-        // test
-        insertSe();
-        SeResponseSet seResponse = reader.transmitSet(requests);
-
-        // assert the only seRequest is null
-        Assert.assertTrue(seResponse.getSingleResponse() == null);
+    public void initReaderTest(){
+        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
+                reader.getCurrentMonitoringState());
+        Assert.assertEquals(TransmissionMode.CONTACTLESS, reader.getTransmissionMode());
+        Assert.assertEquals(AndroidNfcPlugin.PLUGIN_NAME, reader.getPluginName());
+        Assert.assertEquals(AndroidNfcReader.READER_NAME, reader.getName());
+        Assert.assertTrue(reader.getParameters().isEmpty());
     }
 
-    /*
-     * Test PUBLIC methods
-     */
 
-    @Test(expected = IllegalArgumentException.class)
-    public void setUnknownParameter() throws IllegalArgumentException {
-        reader.setParameter("dsfsdf", "sdfdsf");
-    }
+
+    // ---- TAG EVENTS  TESTS ----------- //
 
 
     @Test
-    public void setCorrectParameter() throws IllegalArgumentException {
-        reader.setParameter(AndroidNfcReader.FLAG_READER_NO_PLATFORM_SOUNDS, "1");
-        Assert.assertEquals(NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS, reader.getFlags());
-        reader.setParameter(AndroidNfcReader.FLAG_READER_NO_PLATFORM_SOUNDS, "0");
-        Assert.assertEquals(0, reader.getFlags());
-        reader.setParameter(AndroidNfcReader.FLAG_READER_SKIP_NDEF_CHECK, "1");
-        Assert.assertEquals(NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK, reader.getFlags());
-        reader.setParameter(AndroidNfcReader.FLAG_READER_SKIP_NDEF_CHECK, "0");
-        Assert.assertEquals(0, reader.getFlags());
-        reader.setParameter(AndroidNfcReader.FLAG_READER_PRESENCE_CHECK_DELAY, "10");
-        /*
-         * Fail because android.os.Bundle is not present in the JVM, roboelectric is needed to play
-         * this test Assert.assertEquals(10,
-         * reader.getOptions().get(NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY));
-         * Assert.assertEquals(3, reader.getParameters().size());
-         */
-
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void setUnCorrectParameter() throws IllegalArgumentException {
-        reader.setParameter(AndroidNfcReader.FLAG_READER_NO_PLATFORM_SOUNDS, "A");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void setUnCorrectParameter2() throws IllegalArgumentException {
-        reader.setParameter(AndroidNfcReader.FLAG_READER_SKIP_NDEF_CHECK, "2");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void setUnCorrectParameter3() throws IllegalArgumentException {
-        reader.setParameter(AndroidNfcReader.FLAG_READER_PRESENCE_CHECK_DELAY, "-1");
+    public void checkSePresenceTest(){
+        doReturn(true).when(tagProxy).isConnected();
+        
+        presentMockTag();
+        Assert.assertTrue(reader.checkSePresence());
     }
 
     @Test
-    public void setIsoDepProtocol() {
-        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
-        assertEquals(NfcAdapter.FLAG_READER_NFC_B | NfcAdapter.FLAG_READER_NFC_A,
-                reader.getFlags());
+    public void processIntent() {
+        reader.processIntent(intent);
+        Assert.assertTrue(true);// no test
     }
-
-    @Test
-    public void setMifareProtocol() {
-        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC,
-                AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC));
-        assertEquals(NfcAdapter.FLAG_READER_NFC_A, reader.getFlags());
-    }
-
-    @Test
-    public void setMifareULProtocol() {
-        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL,
-                AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_MIFARE_UL));
-        assertEquals(NfcAdapter.FLAG_READER_NFC_A, reader.getFlags());
-    }
-
-
-    @Test
-    public void insertEvent() {
-
-        reader.addObserver(new ObservableReader.ReaderObserver() {
-            @Override
-            public void update(ReaderEvent event) {
-                assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
-            }
-        });
-
-        insertSe();
-    }
-
-    @Test
-    public void isConnected() {
-        insertSe();
-        when(tagProxy.isConnected()).thenReturn(true);
-        assertEquals(true, reader.checkSePresence());
-    }
-
-
-
-    /*
-     * Test internal methods
-     */
-
 
     @Test
     public void getATR() {
-        insertSe();
+        presentMockTag();
         byte[] atr = new byte[] {(byte) 0x90, 0x00};
         when(tagProxy.getATR()).thenReturn(atr);
         assertEquals(atr, reader.getATR());
     }
 
+    // ---- PHYSICAL CHANNEL TESTS ----------- //
+
+
     @Test
     public void isPhysicalChannelOpen() {
-        insertSe();
+        presentMockTag();
         when(tagProxy.isConnected()).thenReturn(true);
         assertEquals(true, reader.isPhysicalChannelOpen());
     }
 
     @Test
     public void openPhysicalChannelSuccess() throws KeypleReaderException {
-        insertSe();
+        presentMockTag();
         when(tagProxy.isConnected()).thenReturn(false);
         reader.openPhysicalChannel();
     }
@@ -377,7 +129,7 @@ public class AndroidNfcReaderTest {
     @Test(expected = KeypleReaderException.class)
     public void openPhysicalChannelError() throws KeypleBaseException, IOException {
         // init
-        insertSe();
+        presentMockTag();
         when(tagProxy.isConnected()).thenReturn(false);
         doThrow(new IOException()).when(tagProxy).connect();
 
@@ -388,12 +140,11 @@ public class AndroidNfcReaderTest {
     @Test
     public void closePhysicalChannelSuccess() throws KeypleReaderException {
         // init
-        insertSe();
+        presentMockTag();
         when(tagProxy.isConnected()).thenReturn(true);
 
         // test
         reader.closePhysicalChannel();
-
         // no exception
 
     }
@@ -401,21 +152,22 @@ public class AndroidNfcReaderTest {
     @Test(expected = KeypleReaderException.class)
     public void closePhysicalChannelError() throws KeypleBaseException, IOException {
         // init
-        insertSe();
+        presentMockTag();
         when(tagProxy.isConnected()).thenReturn(true);
         doThrow(new IOException()).when(tagProxy).close();
 
         // test
         reader.closePhysicalChannel();
-
         // throw exception
 
     }
 
+    // ---- TRANSMIT TEST ----------- //
+
     @Test
     public void transmitAPDUSuccess() throws KeypleBaseException, IOException {
         // init
-        insertSe();
+        presentMockTag();
         byte[] in = new byte[] {(byte) 0x90, 0x00};
         byte[] out = new byte[] {(byte) 0x90, 0x00};
         when(tagProxy.transceive(in)).thenReturn(out);
@@ -430,7 +182,7 @@ public class AndroidNfcReaderTest {
     @Test(expected = KeypleReaderException.class)
     public void transmitAPDUError() throws KeypleBaseException, IOException {
         // init
-        insertSe();
+        presentMockTag();
         byte[] in = new byte[] {(byte) 0x90, 0x00};
         byte[] out = new byte[] {(byte) 0x90, 0x00};
         when(tagProxy.transceive(in)).thenThrow(new IOException(""));
@@ -444,7 +196,7 @@ public class AndroidNfcReaderTest {
     @Test
     public void protocolFlagMatchesTrue() throws KeypleBaseException, IOException {
         // init
-        insertSe();
+        presentMockTag();
         reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
                 AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
         when(tagProxy.getTech())
@@ -454,67 +206,50 @@ public class AndroidNfcReaderTest {
         Assert.assertTrue(reader.protocolFlagMatches(SeCommonProtocols.PROTOCOL_ISO14443_4));
     }
 
-    @Test
-    public void processIntent() {
-        reader.processIntent(intent);
-        Assert.assertTrue(true);// no test
-    }
+
+
+    // ----- TEST PARAMETERS ------ //
 
     @Test
-    public void printTagId() {
-        reader.printTagId();
-        Assert.assertTrue(true);// no test
+    public void setCorrectParameter() throws IllegalArgumentException {
+        reader.setParameter(AndroidNfcReaderImpl.FLAG_READER_NO_PLATFORM_SOUNDS, "1");
+        Assert.assertEquals(NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS, reader.getFlags());
+        reader.setParameter(AndroidNfcReaderImpl.FLAG_READER_NO_PLATFORM_SOUNDS, "0");
+        Assert.assertEquals(0, reader.getFlags());
+        reader.setParameter(AndroidNfcReaderImpl.FLAG_READER_SKIP_NDEF_CHECK, "1");
+        Assert.assertEquals(NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK, reader.getFlags());
+        reader.setParameter(AndroidNfcReaderImpl.FLAG_READER_SKIP_NDEF_CHECK, "0");
+        Assert.assertEquals(0, reader.getFlags());
+        reader.setParameter(AndroidNfcReaderImpl.FLAG_READER_PRESENCE_CHECK_DELAY, "10");
+        /*
+         * Fail because android.os.Bundle is not present in the JVM, roboelectric is needed to play
+         * this test Assert.assertEquals(10,
+         * reader.getOptions().get(NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY));
+         * Assert.assertEquals(3, reader.getParameters().size());
+         */
     }
 
-    @Test
-    public void enableReaderMode() {
-        // init instumented test
-
-        // test
-        reader.enableNFCReaderMode(activity);
-
-        // nothing to assert
-        Assert.assertTrue(true);
+    @Test(expected = IllegalArgumentException.class)
+    public void setUnCorrectParameter() throws IllegalArgumentException {
+        reader.setParameter(AndroidNfcReaderImpl.FLAG_READER_NO_PLATFORM_SOUNDS, "A");
     }
 
-    @Test
-    public void disableReaderMode() {
-        // init
-        reader.enableNFCReaderMode(activity);
+    @Test(expected = IllegalArgumentException.class)
+    public void setUnCorrectParameter2() throws IllegalArgumentException {
+        reader.setParameter(AndroidNfcReaderImpl.FLAG_READER_SKIP_NDEF_CHECK, "2");
+    }
 
-        // test
-        reader.disableNFCReaderMode(activity);
-
-        // nothing to assert
-        Assert.assertTrue(true);
+    @Test(expected = IllegalArgumentException.class)
+    public void setUnCorrectParameter3() throws IllegalArgumentException {
+        reader.setParameter(AndroidNfcReaderImpl.FLAG_READER_PRESENCE_CHECK_DELAY, "-1");
     }
 
 
-    /*
-     * Helper method
-     */
 
-    private void insertSe() {
+    // -------- helpers ---------- //
+
+    private void presentMockTag() {
         reader.onTagDiscovered(tag);
     }
 
-    private SeRequestSet getRequestIsoDepSetSample() {
-        String poAid = "A000000291A000000191";
-
-        ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoClass.ISO,
-                (byte) 0x14, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true, (byte) 0x20, "Hoplink EF " +
-                "T2Environment");
-
-        List<ApduRequest> poApduRequestList;
-
-        poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
-
-        // TODO change this with the use of the selection API
-        SeRequest seRequest = new SeRequest(new SeSelector( SeCommonProtocols.PROTOCOL_ISO14443_4,null,
-                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid), null), null), poApduRequestList,
-                ChannelState.CLOSE_AFTER);
-
-        return new SeRequestSet(seRequest);
-
-    }
 }

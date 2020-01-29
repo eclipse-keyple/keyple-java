@@ -14,13 +14,12 @@ package org.eclipse.keyple.plugin.remotese.rm.json;
 
 import java.io.IOException;
 import java.util.*;
-import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
@@ -35,7 +34,7 @@ public class SampleFactory {
         return new KeypleReaderException("Keyple Reader Exception");
     }
 
-    public static DefaultSelectionsRequest getSelectionRequest() {
+    public static AbstractDefaultSelectionsRequest getSelectionRequest() {
         return new DefaultSelectionsRequest(getASeRequestSet_ISO14443_4());
     }
 
@@ -43,7 +42,7 @@ public class SampleFactory {
         return ObservableReader.NotificationMode.ALWAYS;
     }
 
-    public static SeRequestSet getASeRequestSet_ISO14443_4() {
+    public static Set<SeRequest> getASeRequestSet_ISO14443_4() {
         String poAid = "A000000291A000000191";
 
         List<ApduRequest> poApduRequestList;
@@ -52,23 +51,30 @@ public class SampleFactory {
         SeSelector seSelector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                 new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid), null), null);
 
-        SeRequest seRequest =
-                new SeRequest(seSelector, poApduRequestList, ChannelState.CLOSE_AFTER);
+        SeRequest seRequest = new SeRequest(seSelector, poApduRequestList);
 
-        return new SeRequestSet(seRequest);
+        Set<SeRequest> seRequestSet = new LinkedHashSet<SeRequest>();
+
+        seRequestSet.add(seRequest);
+
+        return seRequestSet;
 
     }
 
 
-    public static SeRequestSet getASeRequestSet() {
+    public static Set<SeRequest> getASeRequestSet() {
         String poAid = "A000000291A000000191";
 
         List<ApduRequest> poApduRequestList;
         poApduRequestList = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
-        SeRequest seRequest = new SeRequest(poApduRequestList, ChannelState.CLOSE_AFTER);
+        SeRequest seRequest = new SeRequest(poApduRequestList);
 
-        return new SeRequestSet(seRequest);
+        Set<SeRequest> seRequestSet = new LinkedHashSet<SeRequest>();
+
+        seRequestSet.add(seRequest);
+
+        return seRequestSet;
 
     }
 
@@ -81,8 +87,7 @@ public class SampleFactory {
         SeSelector seSelector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                 new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid), null), null);
 
-        SeRequest seRequest =
-                new SeRequest(seSelector, poApduRequestList, ChannelState.CLOSE_AFTER);
+        SeRequest seRequest = new SeRequest(seSelector, poApduRequestList);
         return seRequest;
 
     }
@@ -93,12 +98,12 @@ public class SampleFactory {
         List<ApduRequest> poApduRequestList;
         poApduRequestList = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
-        SeRequest seRequest = new SeRequest(poApduRequestList, ChannelState.CLOSE_AFTER);
+        SeRequest seRequest = new SeRequest(poApduRequestList);
         return seRequest;
 
     }
 
-    public static SeRequestSet getCompleteRequestSet() {
+    public static Set<SeRequest> getCompleteRequestSet() {
         String poAid = "A000000291A000000191";
 
         List<ApduRequest> poApduRequestList;
@@ -111,22 +116,24 @@ public class SampleFactory {
         SeSelector atrSelector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3,
                 new SeSelector.AtrFilter("/regex/"), null, null);
 
-        SeRequest seRequest =
-                new SeRequest(aidSelector, poApduRequestList, ChannelState.CLOSE_AFTER);
+        SeRequest seRequest = new SeRequest(aidSelector, poApduRequestList);
 
-        SeRequest seRequest2 =
-                new SeRequest(atrSelector, poApduRequestList, ChannelState.KEEP_OPEN);
+        SeRequest seRequest2 = new SeRequest(atrSelector, poApduRequestList);
 
         Set<SeRequest> seRequests = new HashSet<SeRequest>();
         seRequests.add(seRequest);
         seRequests.add(seRequest2);
 
-        return new SeRequestSet(seRequests);
+        Set<SeRequest> seRequestSet = new LinkedHashSet<SeRequest>();
+
+        seRequestSet.add(seRequest);
+
+        return seRequestSet;
 
 
     }
 
-    public static SeResponseSet getCompleteResponseSet() {
+    public static List<SeResponse> getCompleteResponseSet() {
         List<SeResponse> seResponses = new ArrayList<SeResponse>();
 
         ApduResponse apdu = new ApduResponse(ByteArrayUtil.fromHex("9000"), new HashSet<Integer>());
@@ -142,7 +149,7 @@ public class SampleFactory {
         seResponses.add(
                 new SeResponse(true, true, new SelectionStatus(null, apdu, true), apduResponses));
 
-        return new SeResponseSet(seResponses);
+        return seResponses;
 
 
     }

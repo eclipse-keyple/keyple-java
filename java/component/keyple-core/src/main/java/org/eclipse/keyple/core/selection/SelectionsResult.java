@@ -40,7 +40,8 @@ public final class SelectionsResult {
     void addMatchingSelection(MatchingSelection matchingSelection) {
         matchingSelectionList.add(matchingSelection);
         /* test if the current selection is active */
-        if (matchingSelection.getMatchingSe().isSelected()) {
+        if (matchingSelection.getMatchingSe() != null
+                && matchingSelection.getMatchingSe().isSelected()) {
             hasActiveSelection = true;
         }
     }

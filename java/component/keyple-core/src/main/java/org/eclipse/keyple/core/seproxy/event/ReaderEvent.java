@@ -11,7 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.event;
 
-
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 
 /**
@@ -29,18 +28,20 @@ public final class ReaderEvent {
     private final String readerName;
 
     /**
-     * The response to the selection request
+     * The response to the selection request Note: although the object is instantiated externally,
+     * we use DefaultSelectionsResponse here to keep ReaderEvent serializable
      */
     private final DefaultSelectionsResponse defaultResponseSet;
 
     /**
-     * The different types of reader event
+     * The different types of reader events, reflecting the status of the reader regarding the
+     * presence of the card
      */
     public enum EventType {
         /**
-         * An io error occurred.
+         * An timeout error occurred.
          */
-        IO_ERROR("SE Reader IO Error"),
+        TIMEOUT_ERROR("SE Reader timeout Error"),
 
         /**
          * A SE has been inserted.
@@ -48,14 +49,14 @@ public final class ReaderEvent {
         SE_INSERTED("SE insertion"),
 
         /**
-         * A SE has been inserted and the default requests process has been operated.
+         * A SE has been inserted and the default requests process has been successfully operated.
          */
         SE_MATCHED("SE matched"),
 
         /**
-         * The SE has been removed.
+         * The SE has been removed and is no longer able to communicate with the reader
          */
-        SE_REMOVAL("SE removal");
+        SE_REMOVED("SE removed");
 
         /** The event name. */
         private String name;
@@ -80,8 +81,8 @@ public final class ReaderEvent {
      * @param pluginName the name of the current plugin
      * @param readerName the name of the current reader
      * @param eventType the type of event
-     * @param defaultSelectionsResponse the response to the default DefaultSelectionsRequest (may be
-     *        null)
+     * @param defaultSelectionsResponse the response to the default AbstractDefaultSelectionsRequest
+     *        (may be null)
      */
     public ReaderEvent(String pluginName, String readerName, EventType eventType,
             AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
