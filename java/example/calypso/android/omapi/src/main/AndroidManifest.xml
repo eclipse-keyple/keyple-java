@@ -14,13 +14,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".activity.CalypsoExamplesActivity"/>
+        <activity android:name=".activity.CoreExamplesActivity" />
         <!-- Required for Open Mobile API -->
         <uses-library
             android:name="org.simalliance.openmobileapi"
             android:required="true" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:label="Keyple Android OMAPI">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

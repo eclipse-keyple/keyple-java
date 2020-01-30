@@ -5,4 +5,7 @@
     <string name="alert_dialog_title">Connecting OMAPI</string>
     <string name="alert_dialog_message">Error: %s</string>
     <string name="error_no_reader_found">No reader found after %d tries</string>
+    <string name="core_examples">Keyple-core Examples</string>
+    <string name="calypso_examples">Keyple-calypso Examples</string>
+    <string name="case_explicit_selection">Explicit Selection Aid</string>
 </resources>

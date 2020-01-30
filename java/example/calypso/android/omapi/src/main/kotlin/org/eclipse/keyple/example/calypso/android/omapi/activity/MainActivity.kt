@@ -1,21 +1,20 @@
-package org.eclipse.keyple.example.calypso.android.omapi
+package org.eclipse.keyple.example.calypso.android.omapi.activity
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AlertDialog
 import kotlinx.coroutines.*
 import org.eclipse.keyple.core.seproxy.SeProxyService
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin
-import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPluginFactory
 import timber.log.Timber
 import java.util.*
 import kotlinx.android.synthetic.main.activity_main.*
+import org.eclipse.keyple.example.calypso.android.omapi.R
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BasicActivity(), View.OnClickListener {
 
     companion object{
         private const val MAX_TRIES = 10
@@ -24,18 +23,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        initActionBar()
+        initActionBar(toolbar,"OMAPI Plugin", "Examples application")
 
-        /* Get the instance of the SeProxyService (Singleton pattern) */
-        val seProxyService = SeProxyService.getInstance()
-
-        /* register Omapi Plugin to the SeProxyService */
-        try {
-            seProxyService.registerPlugin(AndroidOmapiPluginFactory(this))
-        } catch (e: KeyplePluginInstantiationException) {
-            e.printStackTrace()
-        }
-
+        coreExamplesButton.setOnClickListener(this)
+        calypsoExampleButton.setOnClickListener(this)
     }
 
     override fun onResume() {
@@ -49,6 +40,7 @@ class MainActivity : AppCompatActivity() {
                 val readers = connectOmapi()
                 //readers are initialized, we can show the menu
                 connectOmapiTV.visibility = View.GONE
+                menuLayout.visibility = View.VISIBLE
             } catch (e: KeyplePluginNotFoundException) {
                 Timber.e(e)
                 showAlertDialog(e)
@@ -59,16 +51,6 @@ class MainActivity : AppCompatActivity() {
                 progressBar.visibility = View.INVISIBLE
             }
         }
-    }
-
-    private fun initActionBar(){
-        setSupportActionBar(toolbar)
-        val actionBar = supportActionBar
-        actionBar?.title = "Hello APP"
-        actionBar?.subtitle = "App subtitle"
-        actionBar?.setDisplayShowHomeEnabled(true)
-        actionBar?.setLogo(R.mipmap.ic_launcher)
-        actionBar?.setDisplayUseLogoEnabled(true)
     }
 
 
@@ -91,12 +73,13 @@ class MainActivity : AppCompatActivity() {
         readers ?: throw KeyplePluginInstantiationException(getString(R.string.error_no_reader_found, MAX_TRIES))
     }
 
-    private fun showAlertDialog(t: Throwable){
-        val builder = AlertDialog.Builder(this@MainActivity)
-        builder.setTitle(R.string.alert_dialog_title)
-        builder.setMessage(getString(R.string.alert_dialog_message, t.message))
-        val dialog = builder.create()
-        dialog.show()
-
+    override fun onClick(v: View?) {
+        v?.let {
+            when(it.id){
+                R.id.calypsoExampleButton -> startActivity(Intent(this, CalypsoExamplesActivity::class.java))
+                R.id.coreExamplesButton -> startActivity(Intent(this, CoreExamplesActivity::class.java))
+                else -> {}
+            }
+        }
     }
 }
