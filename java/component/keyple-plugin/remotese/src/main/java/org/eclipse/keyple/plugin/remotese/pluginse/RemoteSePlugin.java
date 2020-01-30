@@ -23,6 +23,8 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
  */
 public interface RemoteSePlugin extends ReaderPlugin, ObservablePlugin {
 
+    String DEFAULT_PLUGIN_NAME = "RemoteSePlugin";
+
     /**
      * Retrieve a {@link VirtualReader} by its native reader name and slave Node Id
      *

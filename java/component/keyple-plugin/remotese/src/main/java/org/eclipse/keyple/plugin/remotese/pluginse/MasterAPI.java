@@ -75,7 +75,7 @@ public class MasterAPI implements DtoHandler {
     public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode, long rpc_timeout)
             throws KeyplePluginInstantiationException {
         this(seProxyService, dtoNode, rpc_timeout, PLUGIN_TYPE_DEFAULT,
-                RemoteSePluginImpl.DEFAULT_PLUGIN_NAME);
+                RemoteSePlugin.DEFAULT_PLUGIN_NAME);
     }
 
     /**
