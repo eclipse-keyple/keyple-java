@@ -36,12 +36,9 @@ import org.slf4j.LoggerFactory;
 class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteSePluginImpl.class);
-    public static final String DEFAULT_PLUGIN_NAME = "RemoteSePlugin";
 
     // in milliseconds, throw an exception if slave hasn't answer during this time
-    public final long rpc_timeout;
-
-    // private final VirtualReaderSessionFactory sessionManager;
+    private final long rpc_timeout;
 
     private final VirtualReaderSessionFactory sessionManager;
     protected final DtoSender dtoSender;
