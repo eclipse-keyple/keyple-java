@@ -309,93 +309,17 @@ public class Demo_Master {
 
     }
 
-
-
-    private void executeReadEventLog(SelectionsResult selectionsResult, String virtualReaderName) {
-
-
-        if (selectionsResult.hasActiveSelection()) {
-            try {
-                SeReader poReader = masterAPI.getPlugin().getReader(virtualReaderName);
-
-                AbstractMatchingSe selectedSe =
-                        selectionsResult.getActiveSelection().getMatchingSe();
-
-                logger.info("{} Observer notification: the selection of the PO has succeeded.",
-                        node.getNodeId());
-
-                /* Go on with the reading of the first record of the EventLog file */
-                logger.info(
-                        "==================================================================================");
-                logger.info(
-                        "{} = 2nd PO exchange: reading transaction of the EventLog file.                     =",
-                        node.getNodeId());
-                logger.info(
-                        "==================================================================================");
-
-                PoTransaction poTransaction =
-                        new PoTransaction(new PoResource(poReader, (CalypsoPo) selectedSe));
-
-                /*
-                 * Prepare the reading order and keep the associated parser for later use once the
-                 * transaction has been processed.
-                 */
-                int readEventLogParserIndex = poTransaction.prepareReadRecordsCmd(
-                        CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
-                        CalypsoClassicInfo.RECORD_NUMBER_1,
-                        String.format("EventLog (SFI=%02X, recnbr=%d))",
-                                CalypsoClassicInfo.SFI_EventLog,
-                                CalypsoClassicInfo.RECORD_NUMBER_1));
-
-                /*
-                 * Actual PO communication: send the prepared read order, then close the channel
-                 * with the PO
-                 */
-
-                if (poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER)) {
-                    logger.info("{} The reading of the EventLog has succeeded.", node.getNodeId());
-
-                    /*
-                     * Retrieve the data read from the parser updated during the transaction process
-                     */
-                    ReadRecordsRespPars readEventLogParser = (ReadRecordsRespPars) poTransaction
-                            .getResponseParser(readEventLogParserIndex);
-                    byte eventLog[] = (readEventLogParser.getRecords())
-                            .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
-
-                    /* Log the result */
-                    logger.info("{} EventLog file data: {} ", node.getNodeId(),
-                            ByteArrayUtil.toHex(eventLog));
-                }
-            } catch (KeypleReaderException e) {
-                e.printStackTrace();
-            }
-            logger.info(
-                    "==================================================================================");
-            logger.info(
-                    "{} = End of the Calypso PO processing.                                              =",
-                    node.getNodeId());
-            logger.info(
-                    "==================================================================================");
-        } else {
-            logger.error(
-                    "{} The selection of the PO has failed. Should not have occurred due to the MATCHED_ONLY selection mode.",
-                    node.getNodeId());
-        }
-    }
-
-
     private void executeCalypso4_PoAuthentication(SamResource samResource,
             String virtualReaderName) {
 
         try {
             SeReader poReader = masterAPI.getPlugin().getReader(virtualReaderName);
 
-            logger.info(
+            logger.warn(
                     "==================================================================================");
-            logger.info(
+            logger.warn(
                     "= 1st PO exchange: AID based selection with reading of Environment file.         =");
-            logger.info(
+            logger.warn(
                     "==================================================================================");
 
             /*
@@ -445,11 +369,11 @@ public class Demo_Master {
                 logger.info("The selection of the PO has succeeded.");
 
                 /* Go on with the reading of the first record of the EventLog file */
-                logger.info(
+                logger.warn(
                         "==================================================================================");
-                logger.info(
+                logger.warn(
                         "= 2nd PO exchange: open and close a secure session to perform authentication.    =");
-                logger.info(
+                logger.warn(
                         "==================================================================================");
 
                 PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo),
@@ -512,10 +436,10 @@ public class Demo_Master {
                 /*
                  * Close the Secure Session.
                  */
-                if (logger.isInfoEnabled()) {
-                    logger.info(
-                            "================= PO Calypso session ======= Closing ============================");
-                }
+
+                logger.warn(
+                        "================= PO Calypso session ======= Closing ============================");
+
 
                 /*
                  * A ratification command will be sent (CONTACTLESS_MODE).
@@ -526,11 +450,11 @@ public class Demo_Master {
                     throw new IllegalStateException("processClosing failure.");
                 }
 
-                logger.info(
+                logger.warn(
                         "==================================================================================");
-                logger.info(
+                logger.warn(
                         "= End of the Calypso PO processing.                                              =");
-                logger.info(
+                logger.warn(
                         "==================================================================================");
             } else {
                 logger.error("The selection of the PO has failed.");
