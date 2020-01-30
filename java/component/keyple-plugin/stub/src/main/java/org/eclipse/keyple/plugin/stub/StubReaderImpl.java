@@ -156,16 +156,8 @@ class StubReaderImpl extends AbstractObservableLocalReader
     }
 
     @Override
-    public void setParameter(String name, String value) throws KeypleReaderException {
-        if (name.equals(ALLOWED_PARAMETER_1) || name.equals(ALLOWED_PARAMETER_2)) {
-            parameters.put(name, value);
-        } else if (name.equals(CONTACTS_PARAMETER)) {
-            transmissionMode = TransmissionMode.CONTACTS;
-        } else if (name.equals(CONTACTLESS_PARAMETER)) {
-            transmissionMode = TransmissionMode.CONTACTLESS;
-        } else {
-            throw new KeypleReaderException("parameter name not supported : " + name);
-        }
+    public void setParameter(String name, String value) {
+        parameters.put(name, value);
     }
 
     @Override
