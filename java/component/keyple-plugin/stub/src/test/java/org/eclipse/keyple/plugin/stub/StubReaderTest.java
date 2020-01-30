@@ -1047,26 +1047,6 @@ public class StubReaderTest extends BaseStubTest {
         Assert.assertNotNull(reader.getName());
     }
 
-    // Set wrong parameter
-    @Test(expected = KeypleReaderException.class)
-    public void testSetWrongParameter() throws Exception {
-        stubPlugin.plugStubReader("StubReaderTest", true);
-        Assert.assertEquals(1, stubPlugin.getReaders().size());
-        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
-        reader.setParameter("WRONG_PARAMETER", "a");
-    }
-
-    // Set wrong parameters
-    @Test(expected = KeypleReaderException.class)
-    public void testSetWrongParameters() throws Exception {
-        stubPlugin.plugStubReader("StubReaderTest", true);
-        Assert.assertEquals(1, stubPlugin.getReaders().size());
-        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
-        Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put("WRONG_PARAMETER", "d");
-        parameters.put(StubReader.ALLOWED_PARAMETER_1, "a");
-        reader.setParameters(parameters);
-    }
 
     // Set correct parameters
     @Test
@@ -1076,10 +1056,9 @@ public class StubReaderTest extends BaseStubTest {
         StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
         Map<String, String> p1 = new HashMap<String, String>();
-        p1.put(StubReader.ALLOWED_PARAMETER_1, "a");
-        p1.put(StubReader.ALLOWED_PARAMETER_2, "a");
-
+        p1.put("aParameter", "a");
         reader.setParameters(p1);
+
         Map<String, String> p2 = reader.getParameters();
         assert (p1.equals(p2));
     }
