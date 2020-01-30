@@ -25,9 +25,10 @@ import com.sun.net.httpserver.HttpServer;
 
 /**
  * Start a Web Service Server to receive and send {@link KeypleDto} from clients
- *<p>
- *     Sending {@link KeypleDto} to clients is achieve by a polling mechanism held by the web service client
- *     (see {@link org.eclipse.keyple.example.remote.transport.wspolling.client_retrofit.WsPRetrofitClientImpl#poll(String)}
+ * <p>
+ * Sending {@link KeypleDto} to clients is achieve by a polling mechanism held by the web service
+ * client (see
+ * {@link org.eclipse.keyple.example.remote.transport.wspolling.client_retrofit.WsPRetrofitClientImpl#poll(String)}
  */
 public class WsPServer implements ServerNode {
 

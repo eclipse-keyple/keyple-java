@@ -194,9 +194,9 @@ public class WsPRetrofitClientImpl extends Observable implements ClientNode {
         logger.trace("Ws Client send DTO {}", KeypleDtoHelper.toJson(keypleDto));
 
         if (KeypleDtoHelper.isNoResponse(transportDto.getKeypleDTO())) {
-            //do not send a NoResponse keypleDto
-        }else{
-            //send it
+            // do not send a NoResponse keypleDto
+        } else {
+            // send it
             Call<KeypleDto> call = getRetrofitClient(baseUrl).postDto(keypleDto);
 
             // post Keyple DTO
