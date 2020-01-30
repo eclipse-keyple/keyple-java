@@ -1,0 +1,35 @@
+@startuml
+start
+partition "Reader initialization" {
+	:register plugin;
+	:get SE reader;
+	:prepare SE selection request;
+}
+
+if (transaction mode?) then (explicit selection)
+	:test SE presence;
+	:process explicit selection;
+else (default selection)
+	partition "Observer: observable reader setting" {
+	:default selection reader setting;
+	:reader notification subscribtion;
+	:"wait SE detection";
+	}
+	detach
+	fork
+		:polling SE presence);
+		detach
+		:SE insertion;
+		:process default selection;
+		:notifies SE inserted & selected;
+	end fork
+	detach
+	partition "Observer: reader notification processing" {
+		:process selection response;
+	}
+endif
+	:get selected SE;
+-[#green,dashed]-> Then specific operations could
+  be processed with the SE...;
+	:send APDU commands to the SE;
+@enduml

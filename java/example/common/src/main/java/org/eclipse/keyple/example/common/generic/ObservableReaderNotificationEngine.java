@@ -65,7 +65,7 @@ public class ObservableReaderNotificationEngine {
 
         public void update(ReaderEvent event) {
             switch (event.getEventType()) {
-                case SE_INSERTED:
+
                 case SE_MATCHED:
                     /**
                      * Informs the underlying layer of the end of the SE processing, in order to
@@ -80,6 +80,12 @@ public class ObservableReaderNotificationEngine {
                     } catch (KeyplePluginNotFoundException e) {
                         e.printStackTrace();
                     }
+                    break;
+
+                case SE_INSERTED:
+                    /**
+                     * end of the SE processing is automatically done
+                     */
                     break;
             }
 

@@ -21,7 +21,8 @@ public enum ChannelControl {
      */
     KEEP_OPEN,
     /**
-     * closes the physical channel
+     * terminates the communication with the SE (instantaneously closes the physical channel or
+     * initiates the SE removal sequence depending on the observation mode)
      */
     CLOSE_AFTER
 }

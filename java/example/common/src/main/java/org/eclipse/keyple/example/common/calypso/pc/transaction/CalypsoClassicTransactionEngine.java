@@ -357,7 +357,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
                 profiler.stop();
                 logger.warn(System.getProperty("line.separator") + "{}", profiler);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Exception raised: {}", e.getMessage());
             }
         }
     }

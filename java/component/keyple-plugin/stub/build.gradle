@@ -1,4 +1,4 @@
-def version = "0.8.0"
+def version = "0.9.0"
 
 if(project.getProperties().containsKey("release") && release=="true"){
     project.version = version
@@ -110,6 +110,7 @@ uploadArchives {
             pom.project {
                 name project.description
                 description project.description
+                url "https://projects.eclipse.org/projects/iot.keyple"
 
                 organization("Eclipse Keyple"){
                     name "Eclipse Keyple"
@@ -154,6 +155,16 @@ uploadArchives {
 
             }
         }
+    }
+}
+
+task installPlugin{
+    group 'keyple'
+    description 'Builds and installs  the keyple stub plugin into maven local repository'
+    dependsOn ':java:component:keyple-plugin:keyple-plugin-stub:uploadArchives'
+    
+    doLast {
+        println 'Keyple Stub Plugin has been installed into maven local repo at path : ' + project.getRepositories().get(0).getAt("url")
     }
 }
 

@@ -122,7 +122,10 @@ public abstract class AbstractObservableState {
 
         // cancel the monitoringJob is necessary
         if (monitoringEvent != null && !monitoringEvent.isDone()) {
-            boolean canceled = monitoringEvent.cancel(true);
+            monitoringJob.stop();
+
+            // TODO this could be inside the stop method?
+            boolean canceled = monitoringEvent.cancel(false);
             logger.trace(
                     "[{}] onDeactivate => cancel runnable waitForCarPresent by thead interruption {}",
                     reader.getName(), canceled);

@@ -58,6 +58,8 @@ public class Demo_Master {
     // DtoNode used as to send and receive KeypleDto to Slaves
     private DtoNode node;
 
+    static public long RPC_TIMEOUT = 20000;
+
     static public String STUB_MASTER = "stubMaster";
 
     /**
@@ -120,7 +122,7 @@ public class Demo_Master {
         ObservablePlugin.PluginObserver remoteSeObserver = new ObservablePlugin.PluginObserver() {
             @Override
             public void update(PluginEvent event) {
-                logger.info("{} UPDATE {} {} {}", node.getNodeId(), event.getEventType(),
+                logger.info("{} event {} {} {}", node.getNodeId(), event.getEventType(),
                         event.getPluginName(), event.getReaderNames().first());
                 switch (event.getEventType()) {
                     case READER_CONNECTED:
@@ -254,7 +256,7 @@ public class Demo_Master {
             // Create masterAPI with a DtoSender
             // Dto Sender is required so masterAPI can send KeypleDTO to Slave
             // In this case, node is used as the dtosender (can be client or server)
-            masterAPI = new MasterAPI(SeProxyService.getInstance(), node);
+            masterAPI = new MasterAPI(SeProxyService.getInstance(), node, RPC_TIMEOUT);
 
             // observe remote se plugin for events
             logger.info("{} Observe SeRemotePlugin for Plugin Events and Reader Events",

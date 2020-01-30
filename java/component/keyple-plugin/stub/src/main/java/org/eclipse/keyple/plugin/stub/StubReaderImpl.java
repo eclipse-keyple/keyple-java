@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
@@ -28,6 +29,7 @@ import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeRemoval;
 import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForStartDetect;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,16 +48,27 @@ class StubReaderImpl extends AbstractObservableLocalReader
 
     TransmissionMode transmissionMode = TransmissionMode.CONTACTLESS;
 
-    protected ExecutorService executorService = Executors.newSingleThreadExecutor();
+    final protected ExecutorService executorService;
+
+
+    final private AtomicBoolean loopWaitSe = new AtomicBoolean();
+    final private AtomicBoolean loopWaitSeRemoval = new AtomicBoolean();
 
     /**
      * Do not use directly
      * 
-     * @param name
+     * @param readerName
      */
-    StubReaderImpl(String pluginName, String name) {
-        super(pluginName, name);
+    StubReaderImpl(String pluginName, String readerName) {
+        super(pluginName, readerName);
+
+        // create a executor service with one thread whose name is customized
+        executorService = Executors
+                .newSingleThreadExecutor(new NamedThreadFactory("MonitoringThread-" + readerName));
+
         stateService = initStateService();
+
+
     }
 
     /**
@@ -173,7 +186,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
      */
 
     public synchronized void insertSe(StubSecureElement _se) {
-        // logger.info("Insert SE {}", _se);
+        logger.debug("Insert SE {}", _se);
         /* clean channels status */
         if (isPhysicalChannelOpen()) {
             try {
@@ -188,6 +201,8 @@ class StubReaderImpl extends AbstractObservableLocalReader
     }
 
     public synchronized void removeSe() {
+        logger.debug("Remove SE {}", se != null ? se : "none");
+
         se = null;
     }
 
@@ -202,8 +217,8 @@ class StubReaderImpl extends AbstractObservableLocalReader
      */
     @Override
     public boolean waitForCardPresent() {
-        // for (int i = 0; i < timeout / 10; i++) {
-        while (true) {
+        loopWaitSe.set(true);
+        while (loopWaitSe.get()) {
             if (checkSePresence()) {
                 return true;
             }
@@ -213,8 +228,14 @@ class StubReaderImpl extends AbstractObservableLocalReader
                 logger.debug("Sleep was interrupted");
             }
         }
+        return false;
         // logger.trace("[{}] no card was inserted", this.getName());
         // return false;
+    }
+
+    @Override
+    public void stopWaitForCard() {
+        loopWaitSe.set(false);
     }
 
     /**
@@ -225,8 +246,8 @@ class StubReaderImpl extends AbstractObservableLocalReader
      */
     @Override
     public boolean waitForCardAbsentNative() {
-        // for (int i = 0; i < timeout / 10; i++) {
-        while (true) {
+        loopWaitSeRemoval.set(true);
+        while (loopWaitSeRemoval.get()) {
             if (!checkSePresence()) {
                 logger.trace("[{}] card removed", this.getName());
                 return true;
@@ -237,8 +258,14 @@ class StubReaderImpl extends AbstractObservableLocalReader
                 logger.debug("Sleep was interrupted");
             }
         }
+        return false;
         // logger.trace("[{}] no card was removed", this.getName());
         // return false;
+    }
+
+    @Override
+    public void stopWaitForCardRemoval() {
+        loopWaitSeRemoval.set(false);
     }
 
     @Override

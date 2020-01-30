@@ -80,13 +80,20 @@ public class SequentialMultiSelection_Pcsc {
 
             SeSelection seSelection;
 
-            seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
-                    ChannelControl.CLOSE_AFTER);
+            /*
+             * operate SE AID selection (change the AID prefix here to adapt it to the SE used for
+             * the test [the SE should have at least two applications matching the AID prefix])
+             */
+            String seAidPrefix = "315449432E494341";
 
-            /* operate SE selection (change the AID here to adapt it to the SE used for the test) */
-            String seAidPrefix = "A000000404012509";
+            /* First selection case */
+            seSelection =
+                    new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
-            /* AID based selection */
+            /*
+             * AID based selection: get the first application occurrence matching the AID, keep the
+             * physical channel open
+             */
             seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector(
                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                     new SeSelector.AidSelector(
@@ -95,12 +102,16 @@ public class SequentialMultiSelection_Pcsc {
                             SeSelector.AidSelector.FileControlInformation.FCI),
                     "Initial selection #1")));
 
+            /* Do the selection and display the result */
             doAndAnalyseSelection(seReader, seSelection, 1);
 
+            /*
+             * New selection: get the next application occurrence matching the same AID, close the
+             * physical channel after
+             */
             seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
                     ChannelControl.CLOSE_AFTER);
 
-            /* next selection */
             seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector(
                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                     new SeSelector.AidSelector(
@@ -109,22 +120,8 @@ public class SequentialMultiSelection_Pcsc {
                             SeSelector.AidSelector.FileControlInformation.FCI),
                     "Next selection #2")));
 
+            /* Do the selection and display the result */
             doAndAnalyseSelection(seReader, seSelection, 2);
-
-            seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
-                    ChannelControl.CLOSE_AFTER);
-
-
-            /* next selection */
-            seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector(
-                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                    new SeSelector.AidSelector(
-                            new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAidPrefix)),
-                            null, SeSelector.AidSelector.FileOccurrence.NEXT,
-                            SeSelector.AidSelector.FileControlInformation.FCI),
-                    "Next selection #3")));
-
-            doAndAnalyseSelection(seReader, seSelection, 3);
 
         } else {
             logger.error("No SE were detected.");

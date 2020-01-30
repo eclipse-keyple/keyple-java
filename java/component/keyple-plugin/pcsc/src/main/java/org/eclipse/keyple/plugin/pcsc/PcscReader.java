@@ -33,5 +33,4 @@ public interface PcscReader extends ObservableReader {
     String SETTING_DISCONNECT_UNPOWER = "unpower";
     String SETTING_DISCONNECT_LEAVE = "leave";
     String SETTING_DISCONNECT_EJECT = "eject";
-    String SETTING_KEY_LOGGING = "logging";
 }

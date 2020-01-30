@@ -1,4 +1,4 @@
-def version = "0.8.0"
+def version = "0.9.0"
 
 if(project.getProperties().containsKey("release") && release=="true"){
     project.version = version
@@ -153,6 +153,7 @@ uploadArchives  {
             pom.project {
                 name project.description
                 description project.description
+                url "https://projects.eclipse.org/projects/iot.keyple"
                 packaging "aar"
 
                 organization("Eclipse Keyple"){
@@ -207,6 +208,12 @@ repositories {
     mavenCentral()
     google()
     jcenter()
+}
+
+task installPlugin{
+    group 'keyple'
+    description 'Builds and installs the keyple Android OMAPI plugin library into maven local repository'
+    dependsOn ':keyple-plugin:keyple-plugin-android-omapi:uploadArchives'
 }
 
 dependencies {
