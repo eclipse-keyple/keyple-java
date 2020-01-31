@@ -127,7 +127,7 @@ public abstract class AbstractRemoteMethodTx<T> {
                     send(new IRemoteMethodTxCallback<T>() {
                         @Override
                         public void get(T response, KeypleRemoteException exception) {
-                            logger.debug("Release lock of rm {} {}", thisInstance.getMethodName(),
+                            logger.trace("Release lock of rm {} {}", thisInstance.getMethodName(),
                                     thisInstance.id);
                             lock.countDown();
                         }
