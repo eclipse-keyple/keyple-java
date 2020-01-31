@@ -76,12 +76,12 @@ public class RmConnectReaderTx extends AbstractRemoteMethodTx<String> {
                 SeReader localReader = slaveAPI.findLocalReader(nativeReaderName);
 
                 if (localReader instanceof ObservableReader) {
-                    logger.debug("Register SlaveAPI as an observer for native reader {}",
+                    logger.trace("Register SlaveAPI as an observer for native reader {}",
                             localReader.getName());
                     ((ObservableReader) localReader)
                             .addObserver((ObservableReader.ReaderObserver) slaveAPI);
                 } else {
-                    logger.debug(
+                    logger.trace(
                             "Connected reader is not observable, do not register observer capabilities to virtual reader");
                 }
 
