@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * @Deprecated
  *
  *             Use
- *             {@link org.eclipse.keyple.example.remote.transport.wspolling.client_retrofit.WsPollingRetrofitFactory}
+ *             {@link org.eclipse.keyple.example.remote.transport.wspolling.client_retrofit.WsPollingFactory}
  *             instead
  */
 @Deprecated

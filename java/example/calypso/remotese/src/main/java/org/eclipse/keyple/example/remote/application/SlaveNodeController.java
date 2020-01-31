@@ -15,15 +15,14 @@ import java.io.IOException;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.example.common.calypso.stub.StubCalypsoClassic;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
-import org.eclipse.keyple.plugin.remotese.nativese.INativeReaderService;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.transport.DtoNode;
 import org.eclipse.keyple.plugin.remotese.transport.factory.ClientNode;
@@ -34,12 +33,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Demo_Slave is where slave readers are physically located, it connects one native reader to the
- * master to delegate control of it
+ * SlaveNodeController is where slave readers are physically located, it connects one native reader
+ * to the master to delegate control of it. In this example, Slave nodes listen for Calypso Portable
+ * Object (PO) while the SAM resource is connected to the Master Node.
  */
-public class Demo_Slave {
+public class SlaveNodeController {
 
-    private static final Logger logger = LoggerFactory.getLogger(Demo_Slave.class);
+    private static final Logger logger = LoggerFactory.getLogger(SlaveNodeController.class);
 
     // physical reader, in this case a StubReader
     private StubReader localReader;
@@ -57,6 +57,10 @@ public class Demo_Slave {
     static public long RPC_TIMEOUT = 20000;
 
     /**
+     * Create a new SlaveNodeController
+     *
+     * Starts a new thread that can be server or client
+     *
      * At startup, create the {@link DtoNode} object, either a {@link ClientNode} or a
      * {@link ServerNode}
      * 
@@ -64,17 +68,13 @@ public class Demo_Slave {
      *        webservice...)
      * @param isServer : true if a Server is wanted
      */
-    public Demo_Slave(final TransportFactory transportFactory, Boolean isServer,
+    public SlaveNodeController(final TransportFactory transportFactory, Boolean isServer,
             final String slaveNodeId, String masterNodeId) {
 
 
         nativeReaderName = "STUB_READER" + slaveNodeId;
 
-        logger.info(
-                "*****************************************************************************");
-        logger.info("{} Create DemoSlave    ", slaveNodeId);
-        logger.info(
-                "*****************************************************************************");
+        logger.info("|{}| Create DemoSlave    ", slaveNodeId);
 
         if (isServer) {
             // Slave is a server, start Server and wait for Master clients
@@ -89,7 +89,7 @@ public class Demo_Slave {
                     @Override
                     public void run() {
                         ((ServerNode) node).start();
-                        logger.info("{} Waits for remote connections", slaveNodeId);
+                        logger.info("|{}| Waits for remote connections", slaveNodeId);
                     }
                 }.start();
 
@@ -114,7 +114,7 @@ public class Demo_Slave {
             ((ClientNode) node).connect(new ClientNode.ConnectCallback() {
                 @Override
                 public void onConnectSuccess() {
-                    logger.info("{} onConnectSuccess ", slaveNodeId);
+                    logger.trace("|{}| onConnectSuccess ", slaveNodeId);
                 }
 
                 @Override
@@ -131,7 +131,7 @@ public class Demo_Slave {
     }
 
     /**
-     * Creates and configures a {@link StubReaderImpl} for the PO
+     * Creates and configures a {@link StubReader} for the PO
      *
      * @throws KeypleReaderException
      * @throws InterruptedException
@@ -139,9 +139,9 @@ public class Demo_Slave {
     final private void initPoReader() {
 
         try {
-            logger.info("{} Boot DemoSlave LocalReader ", node.getNodeId());
+            logger.info("||{}|| Boot DemoSlave LocalReader ", node.getNodeId());
 
-            logger.info("{} Create Local StubPlugin", node.getNodeId());
+            logger.info("|{}| Create Local StubPlugin", node.getNodeId());
 
             /* Get the instance of the SeProxyService (Singleton pattern) */
             SeProxyService seProxyService = SeProxyService.getInstance();
@@ -154,8 +154,8 @@ public class Demo_Slave {
             ObservablePlugin.PluginObserver observer = new ObservablePlugin.PluginObserver() {
                 @Override
                 public void update(PluginEvent event) {
-                    logger.info("{} Update - pluginEvent from inline observer {}", node.getNodeId(),
-                            event);
+                    logger.info("|{}| Update - pluginEvent from inline observer {}",
+                            node.getNodeId(), event);
                 }
             };
 
@@ -170,9 +170,13 @@ public class Demo_Slave {
             // get the created proxy reader
             localReader = (StubReader) stubPlugin.getReader(nativeReaderName);
 
+            // configure the procotol settings
             localReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
                     StubProtocolSetting.STUB_PROTOCOL_SETTING
                             .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+
+            // start se detectino in REPEATING MODE
+            localReader.startSeDetection(ObservableReader.PollingMode.REPEATING);
 
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -187,63 +191,19 @@ public class Demo_Slave {
 
     }
 
-
-    /**
-     * Creates a {@link StubReaderImpl} and connects it to the Master terminal via the
-     * {@link INativeReaderService}
-     * 
-     * @throws KeypleReaderException
-     * @throws InterruptedException
-     */
-    public String connectPoReader() throws KeypleReaderException {
-
-        // connect a reader to Remote Plugin
-        logger.info(
-                "*****************************************************************************");
-        logger.info("{} Connect remotely the Native Reader ", node.getNodeId());
-        return slaveAPI.connectReader(localReader);
-
-    }
-
-    public void insertCalypsoSE() {
-        logger.info(
-                "*****************************************************************************");
-        logger.info("{} Start DEMO - insert Calypso  ", node.getNodeId());
-
-        // logger.info("{} Insert CalypsoSE into Local StubReader",node.getNodeId());
-
-        /* Create 'virtual' Calypso PO */
-        StubSecureElement calypsoStubSe = new StubCalypsoClassic();
-
-        localReader.insertSe(calypsoStubSe);
-    }
-
     public void insertStubSe(StubSecureElement se) {
-        logger.info(
-                "*****************************************************************************");
-        logger.info("{} Start DEMO - insert HoplinkSE  ", node.getNodeId());
-
-        // logger.info("{} Insert HoplinkStubSE into Local StubReader",node.getNodeId());
+        logger.info("|{}| insert SE  ", node.getNodeId());
         localReader.insertSe(se);
     }
 
     public void removeSe() {
-
-        logger.info("{} remove SE ", node.getNodeId());
-        logger.info(
-                "*****************************************************************************");
-
+        logger.info("|{}| remove SE ", node.getNodeId());
         localReader.removeSe();
-
     }
 
     public void disconnect(String sessionId, String nativeReaderName)
             throws KeypleReaderException, KeypleRemoteException {
-
-        logger.info("{} Disconnect native reader ", node.getNodeId());
-        logger.info(
-                "*****************************************************************************");
-
+        logger.info("|{}| Disconnect native reader ", node.getNodeId());
         slaveAPI.disconnectReader(sessionId, localReader.getName());
     }
 
@@ -251,27 +211,28 @@ public class Demo_Slave {
             throws KeypleReaderNotFoundException, InterruptedException, KeypleReaderException,
             KeypleRemoteException {
         // logger.info("------------------------");
-        logger.info("{} Connect Reader to Master", node.getNodeId());
+        logger.info("|{}| **Start Scenario** - Connect Reader to Master", node.getNodeId());
         // logger.info("------------------------");
 
-        Thread.sleep(2000);
-        String sessionId = this.connectPoReader();
+        // Thread.sleep(1000);
+        logger.info("|{}| Connect remotely the Native Reader ", node.getNodeId());
+        String sessionId = slaveAPI.connectReader(localReader);
+
         // logger.info("--------------------------------------------------");
-        logger.info("{} Session created on server {}", node.getNodeId(), sessionId);
+        logger.info("|{}| Session created on server {}", node.getNodeId(), sessionId);
         // logger.info("Wait 2 seconds, then insert SE");
         // logger.info("--------------------------------------------------");
-        logger.info("{} Inserting SE", node.getNodeId());
         this.insertStubSe(se);
-        logger.info("{} Wait 2 seconds, then remove SE", node.getNodeId());
+        logger.info("|{}| Wait 2 seconds for PO read/session, then remove SE", node.getNodeId());
         Thread.sleep(2000);
         this.removeSe();
-        logger.info("{} Wait 2 seconds, then disconnect reader", node.getNodeId());
         Thread.sleep(2000);
+        logger.info("|{}| Disconnect reader", node.getNodeId());
         this.disconnect(sessionId, null);
 
         if (killAtEnd) {
-            logger.info("{} Wait 2 seconds, then shutdown jvm", node.getNodeId());
-            Thread.sleep(2000);
+            logger.info("|{}| Shutdown jvm", node.getNodeId());
+            Thread.sleep(500);
 
             Runtime.getRuntime().exit(0);
 

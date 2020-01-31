@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * Android and Java
  */
 @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
-public class WsPollingRetrofitFactory extends TransportFactory {
+public class WsPollingFactory extends TransportFactory {
 
     // default values
     final private String pollingUrl = "/polling";
@@ -36,21 +36,20 @@ public class WsPollingRetrofitFactory extends TransportFactory {
     private String protocol = "http://";
     private String serverNodeId;
 
-    private static final Logger logger = LoggerFactory.getLogger(WsPollingRetrofitFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(WsPollingFactory.class);
 
-    public WsPollingRetrofitFactory(String serverNodeId) {
+    public WsPollingFactory(String serverNodeId) {
         this.serverNodeId = serverNodeId;
     }
 
-    public WsPollingRetrofitFactory(String serverNodeId, String protocol, String hostname,
-            Integer port) {
+    public WsPollingFactory(String serverNodeId, String protocol, String hostname, Integer port) {
         this.port = port;
         this.serverNodeId = serverNodeId;
         this.hostname = hostname;
         this.protocol = protocol;
     }
 
-    public WsPollingRetrofitFactory(Properties serverProp, String serverNodeId) {
+    public WsPollingFactory(Properties serverProp, String serverNodeId) {
         if (serverProp.containsKey("server.port")) {
             this.port = Integer.decode(serverProp.getProperty("server.port"));
         }

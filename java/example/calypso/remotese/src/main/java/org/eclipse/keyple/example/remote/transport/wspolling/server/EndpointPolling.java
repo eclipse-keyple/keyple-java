@@ -110,7 +110,7 @@ class EndpointPolling implements HttpHandler, DtoNode {
 
     @Override
     public void sendDTO(KeypleDto message) {
-        logger.debug("Using polling to send keypleDTO this action : {}", message.getAction());
+        // logger.trace("Using polling to send keypleDTO this action : {}", message.getAction());
         logger.trace("Using polling to send keypleDTO : {}", message);
 
         PublishQueue keypleDtoQueue = publishQueueManager.get(message.getTargetNodeId());
@@ -144,8 +144,7 @@ class EndpointPolling implements HttpHandler, DtoNode {
             OutputStream os = t.getResponseBody();
             os.write(responseBody.getBytes());
             os.close();
-            logger.trace("Outcoming Response Code {} ", responseCode);
-            logger.trace("Outcoming Response Body {} ", responseBody);
+            logger.trace("Outcoming Response Code {} Body {} ", responseCode, responseBody);
         } else {
             String responseBody = "{}";
             Integer responseCode = 200;
