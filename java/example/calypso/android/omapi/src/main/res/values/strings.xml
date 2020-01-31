@@ -8,4 +8,6 @@
     <string name="core_examples">Keyple-core Examples</string>
     <string name="calypso_examples">Keyple-calypso Examples</string>
     <string name="case_explicit_selection">Explicit Selection Aid</string>
+    <string name="get_readers_infos">Get Readers Infos</string>
+    <string name="read_env_and_usage">Read environment and usage</string>
 </resources>
