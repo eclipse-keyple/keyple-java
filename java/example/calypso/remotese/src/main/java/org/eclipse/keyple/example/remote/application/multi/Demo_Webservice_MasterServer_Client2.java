@@ -11,41 +11,38 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.remote.application.multi;
 
+import static org.eclipse.keyple.example.remote.application.multi.Demo_Webservice_MasterServer_Server.*;
 import org.eclipse.keyple.example.common.calypso.stub.StubCalypsoClassic;
-import org.eclipse.keyple.example.remote.application.Demo_Slave;
-import org.eclipse.keyple.example.remote.transport.wspolling.client_retrofit.WsPollingRetrofitFactory;
+import org.eclipse.keyple.example.remote.application.SlaveNodeController;
+import org.eclipse.keyple.example.remote.transport.wspolling.client_retrofit.WsPollingFactory;
 import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;
 
 /**
  * Demo Web Service with Retrofit http client library (Android friendly) The master device uses the
  * websocket master whereas the slave device uses the websocket client
  */
-public class Demo_WebserviceWithRetrofit_MasterServer_Client1 {
+public class Demo_Webservice_MasterServer_Client2 {
 
 
     public static void main(String[] args) throws Exception {
 
 
         final String SERVER_NODE_ID = "RSEServer1";
-        final String CLIENT_NODE_ID2 = "RSEClient1";
+        final String CLIENT_NODE_ID2 = "RSEClient2";
 
 
-        final Integer port = 8888;
-        final String hostname = "0.0.0.0";
-        final String protocol = "http://";
 
         // Create the procotol factory
-        TransportFactory factory =
-                new WsPollingRetrofitFactory(SERVER_NODE_ID, protocol, hostname, port);
+        TransportFactory factory = new WsPollingFactory(SERVER_NODE_ID, protocol, hostname, port);
 
 
-        // Launch the client 1
-        Demo_Slave slave = new Demo_Slave(factory, false, CLIENT_NODE_ID2, SERVER_NODE_ID);
+        // Launch the client 2
+        SlaveNodeController slave2 =
+                new SlaveNodeController(factory, false, CLIENT_NODE_ID2, SERVER_NODE_ID);
 
+        // execute Calypso Transaction Scenario 10 Times
         for (int i = 0; i < 10; i++) {
-            // execute Calypso Transaction Scenario
-            slave.executeScenario(new StubCalypsoClassic(), false);
-            Thread.sleep(5000);
+            slave2.executeScenario(new StubCalypsoClassic(), false);
         }
 
     }
