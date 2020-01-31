@@ -74,7 +74,7 @@ public class ObservableReaderStateService {
         // switch currentState
         currentState = this.states.get(stateId);
 
-        logger.debug("[{}] New currentState {}", this.reader.getName(),
+        logger.trace("[{}] New currentState {}", this.reader.getName(),
                 currentState.getMonitoringState());
 
         // onActivate the new current state
