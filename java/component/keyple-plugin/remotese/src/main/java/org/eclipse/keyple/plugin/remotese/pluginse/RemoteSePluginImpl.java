@@ -100,7 +100,7 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
 
 
         // check if reader is not already connected (by localReaderName)
-        logger.debug(
+        logger.trace(
                 "Create a new Virtual Reader with localReaderName {} with session {} isObservable {}  for slaveNodeId {}",
                 nativeReaderName, session.getSessionId(), isObservable, slaveNodeId);
 
@@ -142,7 +142,7 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
         final VirtualReaderImpl virtualReader =
                 this.getReaderByRemoteName(nativeReaderName, slaveNodeId);
 
-        logger.info("Remove VirtualReader with name {} with slaveNodeId {}", nativeReaderName,
+        logger.trace("Remove VirtualReader with name {} with slaveNodeId {}", nativeReaderName,
                 slaveNodeId);
 
         // remove observers of reader
@@ -162,7 +162,7 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
      */
 
     void onReaderEvent(ReaderEvent event) throws KeypleReaderNotFoundException {
-        logger.debug("Dispatch ReaderEvent to the appropriate Reader : {}", event.getReaderName());
+        logger.trace("Dispatch ReaderEvent to the appropriate Reader : {}", event.getReaderName());
 
         VirtualReaderImpl virtualReader = (VirtualReaderImpl) getReader(event.getReaderName());
         virtualReader.onRemoteReaderEvent(event);

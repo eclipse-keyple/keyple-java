@@ -180,7 +180,7 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
     void onRemoteReaderEvent(final ReaderEvent event) {
         final VirtualReaderImpl thisReader = this;
 
-        logger.debug("{} EVENT {} ", this.getName(), event.getEventType());
+        logger.trace("{} EVENT {} ", this.getName(), event.getEventType());
 
         if (thisReader.countObservers() > 0) {
             /*
@@ -199,7 +199,7 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
 
 
         } else {
-            logger.debug(
+            logger.trace(
                     "An event was received but no observers are declared into VirtualReader : {} {}",
                     thisReader.getName(), event.getEventType());
         }
