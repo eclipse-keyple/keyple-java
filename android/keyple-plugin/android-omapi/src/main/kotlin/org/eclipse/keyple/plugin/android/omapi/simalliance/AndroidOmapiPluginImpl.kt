@@ -7,7 +7,7 @@ import org.simalliance.openmobileapi.Reader
 import org.simalliance.openmobileapi.SEService
 import timber.log.Timber
 
-object AndroidOmapiPluginImpl: AndroidOmapiPlugin<Reader, SEService>(), SEService.CallBack {
+object AndroidOmapiPluginImpl : AndroidOmapiPlugin<Reader, SEService>(), SEService.CallBack {
 
     override fun connectToSe(context: Context) {
         val seServiceFactory = SeServiceFactoryImpl(context)
@@ -39,5 +39,4 @@ object AndroidOmapiPluginImpl: AndroidOmapiPlugin<Reader, SEService>(), SEServic
         // init readers
         readers = initNativeReaders()
     }
-
 }

@@ -8,20 +8,19 @@ import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import java.util.HashMap
 
-abstract class AndroidOmapiPluginTest<T,V>{
+abstract class AndroidOmapiPluginTest<T, V> {
 
     companion object {
-        private val READERS_TO_MOCK= mapOf(Pair("SIM1", true), Pair("SIM2", false))
+        private val READERS_TO_MOCK = mapOf(Pair("SIM1", true), Pair("SIM2", false))
     }
 
     lateinit var context: Context
-    abstract var androidOmapiPlugin: AndroidOmapiPlugin<T,V>
+    abstract var androidOmapiPlugin: AndroidOmapiPlugin<T, V>
 
-    abstract fun buildAndroidOmapiPlugin(context: Context): AndroidOmapiPlugin<T,V>
+    abstract fun buildAndroidOmapiPlugin(context: Context): AndroidOmapiPlugin<T, V>
     abstract fun mockReader(name: String, isPresent: Boolean): T
-    abstract fun mockGetNativeReaders(androidOmapiPlugin: AndroidOmapiPlugin<T,V>, readersToMock: Map<String, Boolean>)
+    abstract fun mockGetNativeReaders(androidOmapiPlugin: AndroidOmapiPlugin<T, V>, readersToMock: Map<String, Boolean>)
     abstract fun triggerOnConnected()
 
     @Before
@@ -60,7 +59,7 @@ abstract class AndroidOmapiPluginTest<T,V>{
 
     @Test
     fun mapToSeReader() {
-        Companion.READERS_TO_MOCK.forEach{
+        Companion.READERS_TO_MOCK.forEach {
             val reader = mockReader(it.key, it.value)
             val seReader = androidOmapiPlugin.mapToSeReader(reader)
             Assert.assertNotNull(seReader)
@@ -74,13 +73,12 @@ abstract class AndroidOmapiPluginTest<T,V>{
         Assert.assertNotNull(androidOmapiPlugin.readers)
         Assert.assertEquals(0, androidOmapiPlugin.readers.size)
         androidOmapiPlugin.connectToSe(context)
-        triggerOnConnected() //Thanks to the object mockk we can simulate readers retrieval
+        triggerOnConnected() // Thanks to the object mockk we can simulate readers retrieval
         Assert.assertEquals(Companion.READERS_TO_MOCK.size, androidOmapiPlugin.readers.size)
-
     }
 
-    private fun mockContext(): Context{
-        val context= mockk<Context>()
+    private fun mockContext(): Context {
+        val context = mockk<Context>()
         every { context.applicationContext } returns context
         every { context.bindService(any(), any(), any()) } returns true
         return context

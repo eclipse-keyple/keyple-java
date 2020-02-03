@@ -12,16 +12,16 @@
 package org.eclipse.keyple.plugin.android.omapi
 
 import android.content.Context
+import java.util.SortedSet
 import org.eclipse.keyple.core.seproxy.ReaderPlugin
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin
 import timber.log.Timber
-import java.util.*
 
 /**
  * The AndroidOmapiPlugin interface provides the public elements used to manage the Android OMAPI plugin.
  */
-abstract class AndroidOmapiPlugin<T, V>: AbstractPlugin(PLUGIN_NAME), ReaderPlugin {
+abstract class AndroidOmapiPlugin<T, V> : AbstractPlugin(PLUGIN_NAME), ReaderPlugin {
 
     companion object {
         const val PLUGIN_NAME = "AndroidOmapiPlugin"
@@ -37,31 +37,30 @@ abstract class AndroidOmapiPlugin<T, V>: AbstractPlugin(PLUGIN_NAME), ReaderPlug
     /**
      * Initialize plugin by connecting to {@link SEService}
      */
-    fun init(context: Context): AndroidOmapiPlugin<T, V>{
-        return if(seService != null){
+    fun init(context: Context): AndroidOmapiPlugin<T, V> {
+        return if (seService != null) {
             this
-        }else{
+        } else {
             Timber.d("Connect to SE")
             connectToSe(context.applicationContext)
             this
         }
     }
 
-
     override fun initNativeReaders(): SortedSet<SeReader> {
 
         Timber.d("initNativeReaders")
         val readers = sortedSetOf<SeReader>() // empty list is returned us service not connected
         getNativeReaders()?.let { nativeReaders ->
-            readers.addAll(nativeReaders.map {nativeReader ->
+            readers.addAll(nativeReaders.map { nativeReader ->
                 mapToSeReader(nativeReader)
             })
         }
 
-        if(readers.isEmpty()){
+        if (readers.isEmpty()) {
             Timber.w("OMAPI SeService is not connected yet")
-            //throw new KeypleReaderException("OMAPI SeService is not connected yet, try again");
-            //can throw an exception to notif
+            // throw new KeypleReaderException("OMAPI SeService is not connected yet, try again");
+            // can throw an exception to notif
         }
 
         return readers
@@ -71,7 +70,6 @@ abstract class AndroidOmapiPlugin<T, V>: AbstractPlugin(PLUGIN_NAME), ReaderPlug
         Timber.w("Android OMAPI Plugin does not support parameters, see OMAPINfcReader instead")
         return params
     }
-
 
     override fun setParameter(key: String, value: String) {
         Timber.w("Android OMAPI Plugin does not support parameters, see OMAPINfcReader instead")

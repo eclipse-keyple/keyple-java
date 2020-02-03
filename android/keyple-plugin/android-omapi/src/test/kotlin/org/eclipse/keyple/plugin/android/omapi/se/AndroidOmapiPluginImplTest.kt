@@ -9,7 +9,7 @@ import io.mockk.mockkObject
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPluginTest
 
-class AndroidOmapiPluginImplTest: AndroidOmapiPluginTest<Reader, SEService>() {
+class AndroidOmapiPluginImplTest : AndroidOmapiPluginTest<Reader, SEService>() {
 
     override lateinit var androidOmapiPlugin: AndroidOmapiPlugin<Reader, SEService>
 
@@ -17,8 +17,8 @@ class AndroidOmapiPluginImplTest: AndroidOmapiPluginTest<Reader, SEService>() {
         return AndroidOmapiPluginImpl.init(context) as AndroidOmapiPluginImpl
     }
 
-    override fun mockReader(name: String, isPresent: Boolean): Reader{
-        val reader= mockk<Reader>()
+    override fun mockReader(name: String, isPresent: Boolean): Reader {
+        val reader = mockk<Reader>()
         every { reader.isSecureElementPresent } returns isPresent
         every { reader.name } returns name
         return reader

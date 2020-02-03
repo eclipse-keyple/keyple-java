@@ -8,8 +8,8 @@ import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin
 import timber.log.Timber
 
-@RequiresApi(android.os.Build.VERSION_CODES.P) //OS version providing android.se.omapi package
-object AndroidOmapiPluginImpl: AndroidOmapiPlugin<Reader, SEService>(), SEService.OnConnectedListener {
+@RequiresApi(android.os.Build.VERSION_CODES.P) // OS version providing android.se.omapi package
+object AndroidOmapiPluginImpl : AndroidOmapiPlugin<Reader, SEService>(), SEService.OnConnectedListener {
 
     override fun connectToSe(context: Context) {
         val seServiceFactory = SeServiceFactoryImpl(context.applicationContext)
@@ -17,11 +17,11 @@ object AndroidOmapiPluginImpl: AndroidOmapiPlugin<Reader, SEService>(), SEServic
         Timber.i("OMAPI SEService version: %s", seService?.version)
     }
 
-    override fun getNativeReaders(): Array<Reader>?{
+    override fun getNativeReaders(): Array<Reader>? {
         return seService?.readers
     }
 
-    override fun mapToSeReader(nativeReader: Reader): SeReader{
+    override fun mapToSeReader(nativeReader: Reader): SeReader {
         Timber.d("Reader available name : %s", nativeReader.name)
         Timber.d("Reader available isSePresent : %S", nativeReader.isSecureElementPresent)
         return AndroidOmapiReaderImpl(nativeReader, PLUGIN_NAME, nativeReader.name)

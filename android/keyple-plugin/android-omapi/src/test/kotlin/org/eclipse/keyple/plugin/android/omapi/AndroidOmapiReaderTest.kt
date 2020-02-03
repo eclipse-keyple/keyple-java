@@ -2,6 +2,8 @@ package org.eclipse.keyple.plugin.android.omapi
 
 import io.mockk.MockKAnnotations
 import io.mockk.unmockkAll
+import java.io.IOException
+import kotlin.NoSuchElementException
 import org.eclipse.keyple.core.seproxy.ChannelControl
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
 import org.eclipse.keyple.core.seproxy.SeSelector
@@ -13,14 +15,15 @@ import org.eclipse.keyple.core.seproxy.message.SeRequest
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode
 import org.eclipse.keyple.core.util.ByteArrayUtil
-import org.junit.*
-import java.io.IOException
-import java.util.*
-import kotlin.NoSuchElementException
+import org.junit.After
+import org.junit.Assert
+import org.junit.Before
+import org.junit.Ignore
+import org.junit.Test
 
-internal abstract class AndroidOmapiReaderTest<T, V: AndroidOmapiReader> {
+internal abstract class AndroidOmapiReaderTest<T, V : AndroidOmapiReader> {
 
-    companion object{
+    companion object {
         internal const val PLUGIN_NAME = "AndroidOmapiPluginImpl"
         internal const val PO_AID = "A000000291A000000191"
         internal const val PO_AID_RESPONSE = "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000"
@@ -42,7 +45,7 @@ internal abstract class AndroidOmapiReaderTest<T, V: AndroidOmapiReader> {
     abstract fun mockReaderWithExceptionWhileTransmittingApdu(throwable: Throwable): T
 
     @Before
-    fun setUp(){
+    fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
         // default reader connected with secure element with poAid
         nativeReader = mockReader()
@@ -70,7 +73,7 @@ internal abstract class AndroidOmapiReaderTest<T, V: AndroidOmapiReader> {
     }
 
     @Test
-    fun getTransmissionMode(){
+    fun getTransmissionMode() {
         Assert.assertEquals(TransmissionMode.CONTACTS, reader.transmissionMode)
     }
 
@@ -101,7 +104,7 @@ internal abstract class AndroidOmapiReaderTest<T, V: AndroidOmapiReader> {
     }
 
     @Test(expected = KeypleIOReaderException::class)
-    fun transmitIOException(){
+    fun transmitIOException() {
         nativeReader = mockReaderWithExceptionOnOpenLogicalChannel(IOException())
         reader = buildOmapiReaderImpl(nativeReader)
         // test
@@ -109,7 +112,7 @@ internal abstract class AndroidOmapiReaderTest<T, V: AndroidOmapiReader> {
     }
 
     @Test(expected = KeypleChannelControlException::class)
-    fun transmitSecurityException(){
+    fun transmitSecurityException() {
         nativeReader = mockReaderWithExceptionOnOpenLogicalChannel(SecurityException())
         reader = buildOmapiReaderImpl(nativeReader)
         // test
@@ -117,16 +120,16 @@ internal abstract class AndroidOmapiReaderTest<T, V: AndroidOmapiReader> {
     }
 
     @Test
-    fun transmitNoSuchElementException(){
+    fun transmitNoSuchElementException() {
         nativeReader = mockReaderWithExceptionOnOpenLogicalChannel(NoSuchElementException())
         reader = buildOmapiReaderImpl(nativeReader)
         // test
         val seResponseList = reader.transmitSet(getSampleSeRequest())
-        Assert.assertNull(seResponseList[0]) //If container is not found a null responsed is returned
+        Assert.assertNull(seResponseList[0]) // If container is not found a null responsed is returned
     }
 
     @Test(expected = KeypleIOReaderException::class)
-    fun transmitOpenChannelFailed(){
+    fun transmitOpenChannelFailed() {
         nativeReader = mockReaderWithNullOnOpenLogicalChannel()
         reader = buildOmapiReaderImpl(nativeReader)
         // test
@@ -134,7 +137,7 @@ internal abstract class AndroidOmapiReaderTest<T, V: AndroidOmapiReader> {
     }
 
     @Test(expected = KeypleIOReaderException::class)
-    fun transmitNoAidOpenChannelFailed(){
+    fun transmitNoAidOpenChannelFailed() {
         nativeReader = mockReaderWithNullOnOpenBasicChannel()
         reader = buildOmapiReaderImpl(nativeReader)
         // test
@@ -142,7 +145,7 @@ internal abstract class AndroidOmapiReaderTest<T, V: AndroidOmapiReader> {
     }
 
     @Test(expected = KeypleIOReaderException::class)
-    fun transmitNoAidIOException(){
+    fun transmitNoAidIOException() {
         nativeReader = mockReaderWithExceptionOnOpenBasicChannel(IOException())
         reader = buildOmapiReaderImpl(nativeReader)
         // test
@@ -150,7 +153,7 @@ internal abstract class AndroidOmapiReaderTest<T, V: AndroidOmapiReader> {
     }
 
     @Test(expected = KeypleChannelControlException::class)
-    fun transmitNoAidSecurityException(){
+    fun transmitNoAidSecurityException() {
         nativeReader = mockReaderWithExceptionOnOpenBasicChannel(SecurityException())
         reader = buildOmapiReaderImpl(nativeReader)
         // test
@@ -169,7 +172,6 @@ internal abstract class AndroidOmapiReaderTest<T, V: AndroidOmapiReader> {
 
         // assert
         Assert.assertNull(seResponseList[0])
-
     }
 
     @Test
@@ -188,7 +190,6 @@ internal abstract class AndroidOmapiReaderTest<T, V: AndroidOmapiReader> {
 
         // assert
         Assert.assertNull(seResponseList[0])
-
     }
 
     @Test(expected = KeypleReaderException::class)
@@ -237,7 +238,7 @@ internal abstract class AndroidOmapiReaderTest<T, V: AndroidOmapiReader> {
 
     private fun getSampleSeRequest(): Set<SeRequest> {
 
-        val poApduRequestList = Arrays.asList(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
+        val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
         val seRequest = SeRequest(SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
                 SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(PO_AID), null), null), poApduRequestList)
@@ -245,12 +246,11 @@ internal abstract class AndroidOmapiReaderTest<T, V: AndroidOmapiReader> {
         val seRequestSet = LinkedHashSet<SeRequest>()
         seRequestSet.add(seRequest)
         return seRequestSet
-
     }
 
     private fun getNoAidSampleSeRequest(): Set<SeRequest> {
 
-        val poApduRequestList = Arrays.asList(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
+        val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
         val seRequest = SeRequest(SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
                 SeSelector.AidSelector(null, null), null), poApduRequestList)
@@ -258,7 +258,5 @@ internal abstract class AndroidOmapiReaderTest<T, V: AndroidOmapiReader> {
         val seRequestSet = LinkedHashSet<SeRequest>()
         seRequestSet.add(seRequest)
         return seRequestSet
-
     }
-
 }

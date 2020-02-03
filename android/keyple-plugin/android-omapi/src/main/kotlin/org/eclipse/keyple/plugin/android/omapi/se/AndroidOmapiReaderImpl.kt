@@ -4,6 +4,9 @@ import android.se.omapi.Channel
 import android.se.omapi.Reader
 import android.se.omapi.Session
 import androidx.annotation.RequiresApi
+import java.io.IOException
+import java.util.NoSuchElementException
+import kotlin.experimental.or
 import org.eclipse.keyple.core.seproxy.SeSelector
 import org.eclipse.keyple.core.seproxy.exception.KeypleApplicationSelectionException
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException
@@ -12,17 +15,14 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiReader
 import timber.log.Timber
-import java.io.IOException
-import java.util.NoSuchElementException
-import kotlin.experimental.or
 
 /**
  * Implementation of the {@link AndroidOmapiReader} based on the {@link AbstractLocalReader}
  * with android.se.omapi
  */
 @RequiresApi(android.os.Build.VERSION_CODES.P)
-internal class AndroidOmapiReaderImpl(private val nativeReader: Reader, pluginName: String, readerName: String)
-    : AndroidOmapiReader(pluginName, readerName){
+internal class AndroidOmapiReaderImpl(private val nativeReader: Reader, pluginName: String, readerName: String) :
+    AndroidOmapiReader(pluginName, readerName) {
 
     private var session: Session? = null
     private var openChannel: Channel? = null
@@ -54,7 +54,7 @@ internal class AndroidOmapiReaderImpl(private val nativeReader: Reader, pluginNa
      * @throws KeypleChannelControlException
      * @throws KeypleApplicationSelectionException
      */
-    @Throws(KeypleIOReaderException::class,KeypleChannelControlException::class,KeypleApplicationSelectionException::class)
+    @Throws(KeypleIOReaderException::class, KeypleChannelControlException::class, KeypleApplicationSelectionException::class)
     override fun openChannelForAid(aidSelector: SeSelector.AidSelector): ApduResponse {
         if (aidSelector.aidToSelect == null) {
             try {

@@ -14,9 +14,9 @@ class SeServiceFactoryImplTest {
     lateinit var seServiceFactory: SeServiceFactoryImpl
 
     @Before
-    fun setUp(){
-        val context= mockk<Context>()
-        seServiceFactory= SeServiceFactoryImpl(context)
+    fun setUp() {
+        val context = mockk<Context>()
+        seServiceFactory = SeServiceFactoryImpl(context)
     }
 
     @After
@@ -25,7 +25,7 @@ class SeServiceFactoryImplTest {
     }
 
     @Test
-    fun connectToSe(){
+    fun connectToSe() {
         val seService = seServiceFactory.connectToSe(SEService.OnConnectedListener {})
         Assert.assertNotNull(seService)
     }

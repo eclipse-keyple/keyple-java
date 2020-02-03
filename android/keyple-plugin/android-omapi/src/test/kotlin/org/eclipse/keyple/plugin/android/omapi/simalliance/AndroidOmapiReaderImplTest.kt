@@ -2,6 +2,8 @@ package org.eclipse.keyple.plugin.android.omapi.simalliance
 
 import io.mockk.every
 import io.mockk.mockk
+import kotlin.NoSuchElementException
+import kotlin.collections.LinkedHashSet
 import org.eclipse.keyple.core.seproxy.SeSelector
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException
 import org.eclipse.keyple.core.seproxy.message.ApduRequest
@@ -15,11 +17,8 @@ import org.simalliance.openmobileapi.Channel
 import org.simalliance.openmobileapi.Reader
 import org.simalliance.openmobileapi.SEService
 import org.simalliance.openmobileapi.Session
-import java.io.IOException
-import java.util.*
-import kotlin.NoSuchElementException
 
-internal class AndroidOmapiReaderImplTest: AndroidOmapiReaderTest<Reader, AndroidOmapiReaderImpl>() {
+internal class AndroidOmapiReaderImplTest : AndroidOmapiReaderTest<Reader, AndroidOmapiReaderImpl>() {
 
     override lateinit var nativeReader: Reader
     override lateinit var reader: AndroidOmapiReaderImpl
@@ -33,12 +32,12 @@ internal class AndroidOmapiReaderImplTest: AndroidOmapiReaderTest<Reader, Androi
     }
 
     @Test(expected = KeypleIOReaderException::class)
-    fun notUsingDefaultFOAndFCIOnPreSimAlliance30(){
+    fun notUsingDefaultFOAndFCIOnPreSimAlliance30() {
 
         nativeReader = mockReaderForP2Test("2.04")
         reader = buildOmapiReaderImpl(nativeReader)
 
-        val poApduRequestList = Arrays.asList(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
+        val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
         val seRequest = SeRequest(SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
                 SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(PO_AID), null,
@@ -53,11 +52,11 @@ internal class AndroidOmapiReaderImplTest: AndroidOmapiReaderTest<Reader, Androi
     }
 
     @Test
-    fun usingP2InPostSimAlliance30(){
+    fun usingP2InPostSimAlliance30() {
         nativeReader = mockReaderForP2Test("3")
         reader = buildOmapiReaderImpl(nativeReader)
 
-        val poApduRequestList = Arrays.asList(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
+        val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
         val seRequest = SeRequest(SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
                 SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(PO_AID), null,
@@ -82,15 +81,14 @@ internal class AndroidOmapiReaderImplTest: AndroidOmapiReaderTest<Reader, Androi
         val channel = mockk<Channel>()
         val version = "3.2"
 
-
         every { omapiReader.name } returns "SIM1"
-        every { omapiReader.isSecureElementPresent} returns true
+        every { omapiReader.isSecureElementPresent } returns true
         every { omapiReader.seService } returns seService
         every { omapiReader.openSession() } returns session
         every { session.openLogicalChannel(ByteArrayUtil.fromHex(PO_AID)) } returns channel
         every { seService.version } returns version
-        every { session.atr} returns null
-        every { session.isClosed} returns false
+        every { session.atr } returns null
+        every { session.isClosed } returns false
         every { channel.selectResponse } returns ByteArrayUtil.fromHex(PO_AID_RESPONSE)
         every { channel.session } returns session
         every { channel.session.close() } returns Unit
@@ -107,7 +105,7 @@ internal class AndroidOmapiReaderImplTest: AndroidOmapiReaderTest<Reader, Androi
 
         every { omapiReader.name } returns "SIM1"
         every { session.isClosed } returns false
-        every { session.atr} returns null
+        every { session.atr } returns null
         every { session.openLogicalChannel(ByteArrayUtil.fromHex(PO_AID)) } throws throwable
         every { omapiReader.openSession() } returns session
         every { omapiReader.seService } returns seService
@@ -123,7 +121,7 @@ internal class AndroidOmapiReaderImplTest: AndroidOmapiReaderTest<Reader, Androi
 
         every { omapiReader.name } returns "SIM1"
         every { session.isClosed } returns false
-        every { session.atr} returns null
+        every { session.atr } returns null
         every { session.openLogicalChannel(ByteArrayUtil.fromHex(PO_AID)) } returns null
         every { omapiReader.openSession() } returns session
         every { omapiReader.seService } returns seService
@@ -139,7 +137,7 @@ internal class AndroidOmapiReaderImplTest: AndroidOmapiReaderTest<Reader, Androi
 
         every { omapiReader.name } returns "SIM1"
         every { session.isClosed } returns false
-        every { session.atr} returns null
+        every { session.atr } returns null
         every { session.openBasicChannel(null) } throws throwable
         every { omapiReader.openSession() } returns session
         every { omapiReader.seService } returns seService
@@ -155,7 +153,7 @@ internal class AndroidOmapiReaderImplTest: AndroidOmapiReaderTest<Reader, Androi
 
         every { omapiReader.name } returns "SIM1"
         every { session.isClosed } returns false
-        every { session.atr} returns null
+        every { session.atr } returns null
         every { session.openBasicChannel(null) } returns null
         every { omapiReader.openSession() } returns session
         every { omapiReader.seService } returns seService
@@ -170,9 +168,9 @@ internal class AndroidOmapiReaderImplTest: AndroidOmapiReaderTest<Reader, Androi
         val version = "2.04"
 
         every { omapiReader.name } returns "SIM1"
-        every { omapiReader.isSecureElementPresent} returns true
+        every { omapiReader.isSecureElementPresent } returns true
         every { session.isClosed } returns false
-        every { session.atr} returns null
+        every { session.atr } returns null
         every { session.openLogicalChannel(ByteArrayUtil.fromHex(PO_AID)) } throws NoSuchElementException("")
         every { omapiReader.seService } returns seService
         every { omapiReader.openSession() } returns session
@@ -180,16 +178,16 @@ internal class AndroidOmapiReaderImplTest: AndroidOmapiReaderTest<Reader, Androi
         return omapiReader
     }
 
-    fun mockReaderForP2Test(omapiVersion: String): Reader{
+    fun mockReaderForP2Test(omapiVersion: String): Reader {
         val nativeReader = mockk<Reader>()
         val session = mockk<Session>()
         val seService = mockk<SEService>()
         val channel = mockk<Channel>()
 
         every { nativeReader.name } returns "SIM1"
-        every { nativeReader.isSecureElementPresent} returns true
+        every { nativeReader.isSecureElementPresent } returns true
         every { session.isClosed } returns false
-        every { session.atr} returns null
+        every { session.atr } returns null
         every { session.openLogicalChannel(ByteArrayUtil.fromHex(PO_AID)) } returns channel
         every { session.openLogicalChannel(ByteArrayUtil.fromHex(PO_AID), any()) } returns channel
         every { nativeReader.seService } returns seService
@@ -207,7 +205,7 @@ internal class AndroidOmapiReaderImplTest: AndroidOmapiReaderTest<Reader, Androi
         val seService = mockk<SEService>()
         val version = "3.0"
         every { nativeReader.name } returns "SIM1"
-        every { nativeReader.isSecureElementPresent} returns true
+        every { nativeReader.isSecureElementPresent } returns true
         every { nativeReader.openSession() } throws throwable
         every { nativeReader.seService } returns seService
         every { seService.version } returns version
@@ -222,15 +220,14 @@ internal class AndroidOmapiReaderImplTest: AndroidOmapiReaderTest<Reader, Androi
         val channel = mockk<Channel>()
         val version = "3.2"
 
-
         every { nativeReader.name } returns "SIM1"
-        every { nativeReader.isSecureElementPresent} returns true
+        every { nativeReader.isSecureElementPresent } returns true
         every { nativeReader.seService } returns seService
         every { nativeReader.openSession() } returns session
-        every { session.openLogicalChannel(any())} returns channel
-        every { session.isClosed} returns false
+        every { session.openLogicalChannel(any()) } returns channel
+        every { session.isClosed } returns false
         every { seService.version } returns version
-        every { session.atr} returns null
+        every { session.atr } returns null
         every { channel.selectResponse } returns ByteArrayUtil.fromHex(PO_AID_RESPONSE)
         every { channel.session } returns session
         every { channel.session.close() } throws throwable
@@ -247,13 +244,13 @@ internal class AndroidOmapiReaderImplTest: AndroidOmapiReaderTest<Reader, Androi
         val version = "3.2"
 
         every { nativeReader.name } returns "SIM1"
-        every { nativeReader.isSecureElementPresent} returns true
+        every { nativeReader.isSecureElementPresent } returns true
         every { nativeReader.seService } returns seService
         every { nativeReader.openSession() } returns session
-        every { session.openLogicalChannel(any())} returns channel
-        every { session.isClosed} returns false
+        every { session.openLogicalChannel(any()) } returns channel
+        every { session.isClosed } returns false
         every { seService.version } returns version
-        every { session.atr} returns null
+        every { session.atr } returns null
         every { channel.selectResponse } returns ByteArrayUtil.fromHex(PO_AID_RESPONSE)
         every { channel.session } returns session
         every { channel.session.close() } returns Unit
@@ -261,5 +258,4 @@ internal class AndroidOmapiReaderImplTest: AndroidOmapiReaderTest<Reader, Androi
 
         return nativeReader
     }
-
 }

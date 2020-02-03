@@ -15,10 +15,10 @@ class SeServiceFactoryImplTest {
     private lateinit var seServiceFactory: SeServiceFactoryImpl
 
     @Before
-    fun setUp(){
-        val context= mockk<Context>()
+    fun setUp() {
+        val context = mockk<Context>()
         every { context.bindService(any(), any(), any()) } returns false
-        seServiceFactory= SeServiceFactoryImpl(context)
+        seServiceFactory = SeServiceFactoryImpl(context)
     }
 
     @After
@@ -27,8 +27,8 @@ class SeServiceFactoryImplTest {
     }
 
     @Test
-    fun connectToSe(){
-        val seService = seServiceFactory.connectToSe(SEService.CallBack {  })
+    fun connectToSe() {
+        val seService = seServiceFactory.connectToSe(SEService.CallBack { })
         Assert.assertNotNull(seService)
     }
 }

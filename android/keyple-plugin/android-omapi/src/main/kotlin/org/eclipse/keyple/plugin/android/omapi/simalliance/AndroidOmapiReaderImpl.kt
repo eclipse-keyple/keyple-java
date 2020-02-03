@@ -13,12 +13,12 @@ package org.eclipse.keyple.plugin.android.omapi.simalliance
 
 import java.io.IOException
 import java.util.NoSuchElementException
-
+import kotlin.experimental.or
 import org.eclipse.keyple.core.seproxy.SeSelector
 import org.eclipse.keyple.core.seproxy.exception.KeypleApplicationSelectionException
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException
-import org.eclipse.keyple.core.seproxy.message.*
+import org.eclipse.keyple.core.seproxy.message.ApduResponse
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractLocalReader
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiReader
@@ -26,16 +26,15 @@ import org.simalliance.openmobileapi.Channel
 import org.simalliance.openmobileapi.Reader
 import org.simalliance.openmobileapi.Session
 import timber.log.Timber
-import kotlin.experimental.or
 
 /**
  * Implementation of the [AndroidOmapiReader] based on the [AbstractLocalReader]
  * with org.simalliance.omapi
  */
-internal class AndroidOmapiReaderImpl(private val nativeReader: Reader, pluginName: String,readerName: String)
-    : AndroidOmapiReader(pluginName, readerName){
+internal class AndroidOmapiReaderImpl(private val nativeReader: Reader, pluginName: String, readerName: String) :
+    AndroidOmapiReader(pluginName, readerName) {
 
-    companion object{
+    companion object {
         private const val P2_SUPPORTED_MIN_VERSION = 3
     }
 
@@ -89,21 +88,20 @@ internal class AndroidOmapiReaderImpl(private val nativeReader: Reader, pluginNa
             Timber.i("[%s] openLogicalChannel => Select Application with AID = %s",
                     this.name, ByteArrayUtil.toHex(aidSelector.aidToSelect.value))
             try {
-                //openLogicalChannel of SimAlliance OMAPI is only available for version 3.0+ of the library.
-                //By default the library always passes p2=00h
-                //So if a p2 different of 00h is requested, we must check if omapi support it. Otherwise we throw an exception.
+                // openLogicalChannel of SimAlliance OMAPI is only available for version 3.0+ of the library.
+                // By default the library always passes p2=00h
+                // So if a p2 different of 00h is requested, we must check if omapi support it. Otherwise we throw an exception.
                 val p2 = aidSelector.fileOccurrence.isoBitMask or aidSelector.fileControlInformation.isoBitMask
                 openChannel =
-                        if(0 == p2.toInt()){
+                        if (0 == p2.toInt()) {
                             session?.openLogicalChannel(aidSelector.aidToSelect.value)
-                        }else{
-                            if(omapiVersion >= P2_SUPPORTED_MIN_VERSION){
+                        } else {
+                            if (omapiVersion >= P2_SUPPORTED_MIN_VERSION) {
                                 session?.openLogicalChannel(aidSelector.aidToSelect.value, p2)
-                            }else{
+                            } else {
                                 throw IOException(String.format("P2 != 00h while opening logical channel is only supported by OMAPI version >= 3.0. Current is %s", omapiVersion.toString()))
                             }
                         }
-
             } catch (e: IOException) {
                 Timber.e(e, "IOException")
                 throw KeypleIOReaderException("IOException while opening logical channel.", e)
@@ -136,7 +134,6 @@ internal class AndroidOmapiReaderImpl(private val nativeReader: Reader, pluginNa
             Timber.e(e, "IOException")
             throw KeypleChannelControlException("IOException while opening physical channel.", e)
         }
-
     }
 
     /**

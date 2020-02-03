@@ -5,6 +5,7 @@ apply plugin: 'maven'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'org.jetbrains.dokka'
+apply plugin: "com.diffplug.gradle.spotless"
 
 def version = "0.9.0"
 
@@ -242,4 +243,11 @@ dependencies {
 
     /** Mockk**/
     testImplementation "io.mockk:mockk:1.9"
+}
+
+spotless {
+    kotlin {
+        target "**/*.kt"
+        ktlint()
+    }
 }

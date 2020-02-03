@@ -27,7 +27,7 @@ class AndroidOmapiPluginFactory(private val context: Context) : AbstractPluginFa
 
     private var sdkVersion: Int = Build.VERSION.SDK_INT
 
-    companion object{
+    companion object {
         const val SIMALLIANCE_OMAPI_PACKAGE_NAME = "org.simalliance.openmobileapi.service"
     }
 
@@ -35,29 +35,28 @@ class AndroidOmapiPluginFactory(private val context: Context) : AbstractPluginFa
      *  sdkVersion can be forced for test purpose
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    constructor(context: Context, sdkVersion: Int): this(context){
+    constructor(context: Context, sdkVersion: Int) : this(context) {
         this.sdkVersion = sdkVersion
     }
-
 
     override fun getPluginName(): String {
         return AndroidOmapiPlugin.PLUGIN_NAME
     }
 
     @Throws(KeyplePluginInstantiationException::class)
-    override fun getPluginInstance(): ReaderPlugin{
+    override fun getPluginInstance(): ReaderPlugin {
         return getReaderPluginRegardingOsVersion()
     }
 
-    private fun getReaderPluginRegardingOsVersion(): ReaderPlugin{
-        return if(sdkVersion >= Build.VERSION_CODES.P)
+    private fun getReaderPluginRegardingOsVersion(): ReaderPlugin {
+        return if (sdkVersion >= Build.VERSION_CODES.P)
             org.eclipse.keyple.plugin.android.omapi.se.AndroidOmapiPluginImpl.init(context)
         else
             getReaderPluginRegardingPackages()
     }
 
     @Throws(KeyplePluginInstantiationException::class)
-    private fun getReaderPluginRegardingPackages(): ReaderPlugin{
+    private fun getReaderPluginRegardingPackages(): ReaderPlugin {
         return try {
             context.packageManager
                     .getPackageInfo(SIMALLIANCE_OMAPI_PACKAGE_NAME, 0)
@@ -69,8 +68,7 @@ class AndroidOmapiPluginFactory(private val context: Context) : AbstractPluginFa
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     @Throws(KeyplePluginInstantiationException::class)
-    fun pluginInstance(): ReaderPlugin{
+    fun pluginInstance(): ReaderPlugin {
         return this.pluginInstance
     }
-
 }

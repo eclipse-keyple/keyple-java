@@ -11,14 +11,13 @@
  */
 package org.eclipse.keyple.plugin.android.omapi
 
-import org.eclipse.keyple.core.seproxy.SeReader
+import java.util.HashMap
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractLocalReader
 import org.eclipse.keyple.core.seproxy.plugin.local.SmartSelectionReader
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode
 import timber.log.Timber
-import java.util.HashMap
 
 /**
  * Communicates with Android readers throught the Open Mobile API see org.simalliance.openmobileapi.Reader
@@ -27,7 +26,7 @@ import java.util.HashMap
  * or virtual devices. They can be removable or not. They can contain one SE that can or cannot be
  * removed.
  */
-internal abstract class AndroidOmapiReader(pluginName: String, readerName: String): AbstractLocalReader(pluginName, readerName), SmartSelectionReader{
+internal abstract class AndroidOmapiReader(pluginName: String, readerName: String) : AbstractLocalReader(pluginName, readerName), SmartSelectionReader {
 
     private val parameters: MutableMap<String, String> = HashMap()
 
