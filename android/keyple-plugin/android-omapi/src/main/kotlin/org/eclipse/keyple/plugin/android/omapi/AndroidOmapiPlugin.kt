@@ -12,11 +12,11 @@
 package org.eclipse.keyple.plugin.android.omapi
 
 import android.content.Context
-import java.util.SortedSet
 import org.eclipse.keyple.core.seproxy.ReaderPlugin
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin
 import timber.log.Timber
+import java.util.*
 
 /**
  * The AndroidOmapiPlugin interface provides the public elements used to manage the Android OMAPI plugin.
@@ -25,7 +25,7 @@ internal abstract class AndroidOmapiPlugin<T, V> : AbstractPlugin(PLUGIN_NAME), 
 
     abstract fun connectToSe(context: Context)
     abstract fun getNativeReaders(): Array<T>?
-    abstract fun mapToSeReader(reader: T): SeReader
+    abstract fun mapToSeReader(nativeReader: T): SeReader
 
     protected var seService: V? = null
     private val params = mutableMapOf<String, String>()

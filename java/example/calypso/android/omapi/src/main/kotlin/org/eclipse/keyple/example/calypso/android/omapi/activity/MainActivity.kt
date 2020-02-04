@@ -3,16 +3,16 @@ package org.eclipse.keyple.example.calypso.android.omapi.activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
 import org.eclipse.keyple.core.seproxy.SeProxyService
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException
-import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin
+import org.eclipse.keyple.example.calypso.android.omapi.R
+import org.eclipse.keyple.plugin.android.omapi.PLUGIN_NAME
 import timber.log.Timber
 import java.util.*
-import kotlinx.android.synthetic.main.activity_main.*
-import org.eclipse.keyple.example.calypso.android.omapi.R
 
 class MainActivity : BasicActivity(), View.OnClickListener {
 
@@ -37,7 +37,7 @@ class MainActivity : BasicActivity(), View.OnClickListener {
 
         CoroutineScope(Dispatchers.Main).launch{
             try {
-                val readers = connectOmapi()
+                connectOmapi()
                 //readers are initialized, we can show the menu
                 connectOmapiTV.visibility = View.GONE
                 menuLayout.visibility = View.VISIBLE
@@ -59,7 +59,7 @@ class MainActivity : BasicActivity(), View.OnClickListener {
         var readers : SortedSet<SeReader>? = null
         for(x in 1..MAX_TRIES){
             readers = SeProxyService.getInstance()
-                    .getPlugin(AndroidOmapiPlugin.PLUGIN_NAME).readers
+                    .getPlugin(PLUGIN_NAME).readers
             if(readers == null|| readers.size < 1) {
                 Timber.d("No readers found in OMAPI Keyple Plugin")
                 Timber.d("Retrying in 1 second")

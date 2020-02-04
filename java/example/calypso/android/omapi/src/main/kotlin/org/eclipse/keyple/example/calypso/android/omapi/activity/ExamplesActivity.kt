@@ -7,7 +7,7 @@ import org.eclipse.keyple.core.seproxy.SeProxyService
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.example.calypso.android.omapi.adapter.EventAdapter
 import org.eclipse.keyple.example.calypso.android.omapi.model.EventModel
-import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin
+import org.eclipse.keyple.plugin.android.omapi.PLUGIN_NAME
 import timber.log.Timber
 import java.util.*
 
@@ -29,7 +29,7 @@ abstract class ExamplesActivity: BasicActivity() {
         /**
          * Get OMAPI Readers
          */
-        readers = SeProxyService.getInstance().getPlugin(AndroidOmapiPlugin.PLUGIN_NAME).readers
+        readers = SeProxyService.getInstance().getPlugin(PLUGIN_NAME).readers
     }
 
     protected fun clearEvents(){

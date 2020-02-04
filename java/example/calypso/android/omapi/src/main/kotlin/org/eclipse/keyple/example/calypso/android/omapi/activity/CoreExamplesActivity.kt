@@ -2,25 +2,16 @@ package org.eclipse.keyple.example.calypso.android.omapi.activity
 
 import android.os.Bundle
 import android.view.View
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_core_examples.*
 import kotlinx.android.synthetic.main.activity_main.toolbar
-import org.eclipse.keyple.core.seproxy.SeProxyService
-import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.SeSelector
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
-import org.eclipse.keyple.example.calypso.android.omapi.R
-import org.eclipse.keyple.example.calypso.android.omapi.adapter.EventAdapter
-import org.eclipse.keyple.example.calypso.android.omapi.model.EventModel
-import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin
-import timber.log.Timber
-import java.util.*
-import org.eclipse.keyple.core.seproxy.message.ApduRequest
 import org.eclipse.keyple.core.seproxy.message.ProxyReader
 import org.eclipse.keyple.core.seproxy.message.SeRequest
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
+import org.eclipse.keyple.example.calypso.android.omapi.R
 import org.eclipse.keyple.example.calypso.android.omapi.utils.AidEnum
+import java.util.*
 
 
 class CoreExamplesActivity : ExamplesActivity(), View.OnClickListener {

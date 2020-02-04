@@ -6,22 +6,17 @@ import kotlinx.android.synthetic.main.activity_calypso_example.*
 import kotlinx.android.synthetic.main.activity_core_examples.*
 import kotlinx.android.synthetic.main.activity_core_examples.eventRecyclerView
 import kotlinx.android.synthetic.main.activity_core_examples.explicitSelectionAidButton
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.toolbar
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars
-import org.eclipse.keyple.calypso.transaction.CalypsoPo
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest
 import org.eclipse.keyple.calypso.transaction.PoSelector
 import org.eclipse.keyple.core.selection.SeSelection
-import org.eclipse.keyple.core.seproxy.*
+import org.eclipse.keyple.core.seproxy.SeSelector
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.example.calypso.android.omapi.R
 import org.eclipse.keyple.example.calypso.android.omapi.utils.AidEnum
-import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin
-import java.util.*
-import kotlin.NoSuchElementException
 
 class CalypsoExamplesActivity : ExamplesActivity(), View.OnClickListener {
 
