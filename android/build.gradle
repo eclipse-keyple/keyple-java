@@ -19,10 +19,12 @@ ext {
     timestamp = new Date().format('yyyyMMdd')
 }
 
-subprojects {
+allprojects {
 
     group 'org.eclipse.keyple'
     apply plugin: 'pmd'
+    apply plugin: 'org.jetbrains.dokka'
+    apply plugin: "com.diffplug.gradle.spotless"
 
     repositories {
         mavenLocal()
@@ -43,10 +45,46 @@ subprojects {
                 "java-braces",
         ]
     }
-    
 }
 
+subprojects{
 
+    dokka {
+        outputFormat = 'html'
+        outputDirectory = "$buildDir/javadoc"
+    }
+
+    spotless {
+        kotlin {
+            target "**/*.kt"
+            ktlint()
+
+            // also supports license headers
+            licenseHeader '/********************************************************************************\n' +
+                    ' * Copyright (c) $YEAR Calypso Networks Association https://www.calypsonet-asso.org/\n' +
+                    ' *\n' +
+                    ' * See the NOTICE file(s) distributed with this work for additional information regarding copyright\n' +
+                    ' * ownership.\n' +
+                    ' *\n' +
+                    ' * This program and the accompanying materials are made available under the terms of the Eclipse\n' +
+                    ' * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0\n' +
+                    ' *\n' +
+                    ' * SPDX-License-Identifier: EPL-2.0\n' +
+                    ' ********************************************************************************/'
+        }
+    }
+}
+
+task javadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
+    outputFormat = 'javadoc'
+    outputDirectory = dokka.outputDirectory
+    inputs.dir 'src/main/kotlin'
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from dokka.outputDirectory
+}
 
 //create task for to agragate javadoc
 /*

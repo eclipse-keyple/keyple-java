@@ -4,8 +4,6 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'org.jetbrains.dokka'
-apply plugin: "com.diffplug.gradle.spotless"
 
 def version = "0.9.0"
 
@@ -49,11 +47,6 @@ android {
 
     lintOptions {
         abortOnError false
-    }
-
-    dokka {
-        outputFormat = 'html'
-        outputDirectory = "$buildDir/javadoc"
     }
 
     //generate output aar with a qualified name : with version number
@@ -103,17 +96,6 @@ android {
         test.java.srcDirs += 'src/test/kotlin'
     }
 
-}
-
-task javadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
-    outputFormat = 'javadoc'
-    outputDirectory = dokka.outputDirectory
-    inputs.dir 'src/main/kotlin'
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from dokka.outputDirectory
 }
 
 //build sources jar
@@ -243,11 +225,4 @@ dependencies {
 
     /** Mockk**/
     testImplementation "io.mockk:mockk:1.9"
-}
-
-spotless {
-    kotlin {
-        target "**/*.kt"
-        ktlint()
-    }
 }
