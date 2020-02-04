@@ -193,8 +193,10 @@ public class WsPRetrofitClientImpl extends Observable implements ClientNode {
         KeypleDto keypleDto = transportDto.getKeypleDTO();
         logger.trace("Ws Client send DTO {}", KeypleDtoHelper.toJson(keypleDto));
 
-        if (!KeypleDtoHelper.isNoResponse(transportDto.getKeypleDTO())) {
-
+        if (KeypleDtoHelper.isNoResponse(transportDto.getKeypleDTO())) {
+            // do not send a NoResponse keypleDto
+        } else {
+            // send it
             Call<KeypleDto> call = getRetrofitClient(baseUrl).postDto(keypleDto);
 
             // post Keyple DTO
@@ -212,7 +214,7 @@ public class WsPRetrofitClientImpl extends Observable implements ClientNode {
                 @Override
                 public void onFailure(Call<KeypleDto> call, Throwable t) {
                     // Log error here since request failed
-                    logger.trace("Receive failure from sendDto {}", t.getCause());
+                    logger.trace("Receive failure from sendDto", t.getCause());
                     // startPollingWorker(nodeId);
                 }
             });

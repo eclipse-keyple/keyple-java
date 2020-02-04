@@ -17,16 +17,16 @@ task ('printJavaHome') {
     println "Java HOME : " + System.getProperty("java.home")
 }
 
-mainClassName = 'org.eclipse.keyple.example.remote.application.Demo_WebserviceWithRetrofit_MasterClient'
+mainClassName = 'org.eclipse.keyple.example.remote.application.Demo_Webservice_MasterClient'
 
 task('runWS_MasterClient', dependsOn: 'classes', type: JavaExec, group:'keyple') {
-    main = 'org.eclipse.keyple.example.remote.application.Demo_WebserviceWithRetrofit_MasterClient'
+    main = 'org.eclipse.keyple.example.remote.application.Demo_Webservice_MasterClient'
     classpath = sourceSets.main.runtimeClasspath
     dependsOn printJavaHome
 }
 
 task('runWS_MasterServer', dependsOn: 'classes', type: JavaExec, group:'keyple') {
-    main = 'org.eclipse.keyple.example.remote.application.Demo_WebserviceWithRetrofit_MasterServer'
+    main = 'org.eclipse.keyple.example.remote.application.Demo_Webservice_MasterServer'
     classpath = sourceSets.main.runtimeClasspath
     dependsOn printJavaHome
 }

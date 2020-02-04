@@ -18,13 +18,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Manages the KeypleDto polling publish queue
+ * Manages the KeypleDto polling publish queue Support multi client
  */
 public class PublishQueueManager {
 
     private final Logger logger = LoggerFactory.getLogger(PublishQueueManager.class);
 
-    // clientId
+    // clientId, publishQueue
     final Map<String, PublishQueue<KeypleDto>> queues;
 
     public PublishQueueManager() {

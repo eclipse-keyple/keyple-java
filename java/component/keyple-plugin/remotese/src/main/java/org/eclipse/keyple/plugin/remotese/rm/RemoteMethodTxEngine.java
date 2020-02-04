@@ -99,7 +99,7 @@ public class RemoteMethodTxEngine implements DtoHandler, IRemoteMethodTxEngine {
      */
     @Override
     public void register(final AbstractRemoteMethodTx rm) {
-        logger.debug("Register rm to engine : {} {}", rm.getMethodName(), rm.id);
+        logger.trace("Register rm to engine : {} {}", rm.getMethodName(), rm.id);
         rm.setRegistered(true);
         remoteMethodTx = rm;
         rm.setDtoSender(sender);

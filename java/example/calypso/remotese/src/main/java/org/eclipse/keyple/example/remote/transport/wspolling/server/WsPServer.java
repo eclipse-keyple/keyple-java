@@ -23,7 +23,15 @@ import org.slf4j.LoggerFactory;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
+/**
+ * Start a Web Service Server to receive and send {@link KeypleDto} from clients
+ * <p>
+ * Sending {@link KeypleDto} to clients is achieve by a polling mechanism held by the web service
+ * client (see
+ * {@link org.eclipse.keyple.example.remote.transport.wspolling.client_retrofit.WsPRetrofitClientImpl#poll(String)}
+ */
 public class WsPServer implements ServerNode {
+
 
 
     private InetSocketAddress inet;
@@ -38,12 +46,6 @@ public class WsPServer implements ServerNode {
     private static final Logger logger = LoggerFactory.getLogger(WsPServer.class);
 
     private PublishQueueManager publishQueueManager = new PublishQueueManager();
-    // private PublishQueue<KeypleDto> keypleDtoQueue = new PublishQueue<KeypleDto>();
-
-    /*
-     * private final BlockingQueue<HttpExchange> requestQueue = new
-     * LinkedBlockingQueue<HttpExchange>();
-     */
 
     /**
      * Constructor
@@ -63,13 +65,10 @@ public class WsPServer implements ServerNode {
         this.pollingUrl = pollingUrl;
 
         // Create Endpoint for polling DTO
-        // pollingEndpoint = new EndpointPolling(requestQueue, nodeId);
         pollingEndpoint = new EndpointPolling(publishQueueManager, serverNodeId);
 
         // Create Endpoint for sending DTO
         keypleDTOEndpoint = new EndpointKeypleDTO((DtoSender) pollingEndpoint, serverNodeId);
-
-
 
         // deploy endpoint
         this.inet = new InetSocketAddress(Inet4Address.getByName(url), port);

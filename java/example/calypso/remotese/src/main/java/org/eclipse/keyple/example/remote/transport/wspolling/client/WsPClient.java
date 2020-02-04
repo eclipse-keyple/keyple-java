@@ -18,6 +18,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
 import org.eclipse.keyple.example.remote.transport.wspolling.WsPTransportDTO;
+import org.eclipse.keyple.example.remote.transport.wspolling.client_retrofit.WsPollingFactory;
 import org.eclipse.keyple.plugin.remotese.transport.*;
 import org.eclipse.keyple.plugin.remotese.transport.factory.ClientNode;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
@@ -34,9 +35,7 @@ import com.google.gson.JsonObject;
  *
  * @Deprecated
  *
- *             Use
- *             {@link org.eclipse.keyple.example.remote.transport.wspolling.client_retrofit.WsPollingRetrofitFactory}
- *             instead
+ *             Use {@link WsPollingFactory} instead
  */
 @Deprecated
 public class WsPClient implements ClientNode {

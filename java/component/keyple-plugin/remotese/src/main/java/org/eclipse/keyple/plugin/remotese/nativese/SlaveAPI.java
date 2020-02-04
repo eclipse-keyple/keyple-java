@@ -122,7 +122,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
         logger.trace("{} onDto {}", dtoNode.getNodeId(), KeypleDtoHelper.toJson(keypleDTO));
 
         RemoteMethodName method = RemoteMethodName.get(keypleDTO.getAction());
-        logger.debug("{} Remote Method called : {} - isRequest : {}", dtoNode.getNodeId(), method,
+        logger.trace("{} Remote Method called : {} - isRequest : {}", dtoNode.getNodeId(), method,
                 keypleDTO.isRequest());
 
         switch (method) {
@@ -252,7 +252,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
             options = new HashMap<String, String>();
         }
 
-        logger.info("{} connectReader {} from device {}", dtoNode.getNodeId(),
+        logger.trace("{} connectReader {} from device {}", dtoNode.getNodeId(),
                 localReader.getName(), dtoNode.getNodeId());
 
         RmConnectReaderTx connect = new RmConnectReaderTx(null, localReader.getName(), null,
@@ -277,7 +277,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
     @Override
     public void disconnectReader(String sessionId, String nativeReaderName)
             throws KeypleReaderException {
-        logger.info("{} disconnectReader {} from device {}", dtoNode.getNodeId(), nativeReaderName,
+        logger.trace("{} disconnectReader {} from device {}", dtoNode.getNodeId(), nativeReaderName,
                 dtoNode.getNodeId());
 
         RmDisconnectReaderTx disconnect = new RmDisconnectReaderTx(sessionId, nativeReaderName,
@@ -288,12 +288,12 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
             disconnect.execute(rmTxEngine);
             SeReader nativeReader = findLocalReader(nativeReaderName);
             if (nativeReader instanceof ObservableReader) {
-                logger.debug("Disconnected reader is observable, removing slaveAPI observer");
+                logger.trace("Disconnected reader is observable, removing slaveAPI observer");
 
                 // stop propagating the local reader events
                 ((ObservableReader) nativeReader).removeObserver(this);
             } else {
-                logger.debug("Disconnected reader is not observable");
+                logger.trace("Disconnected reader is not observable");
             }
         } catch (KeypleRemoteException e) {
             throw new KeypleReaderException("An error occurred while calling disconnectReader", e);
@@ -332,7 +332,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
      */
     @Override
     public void update(ReaderEvent event) {
-        logger.debug("{} SlaveAPI - reader event {}", dtoNode.getNodeId(), event.getEventType());
+        logger.trace("{} SlaveAPI - reader event {}", dtoNode.getNodeId(), event.getEventType());
 
         // construct json data
         String data = JsonParser.getGson().toJson(event);

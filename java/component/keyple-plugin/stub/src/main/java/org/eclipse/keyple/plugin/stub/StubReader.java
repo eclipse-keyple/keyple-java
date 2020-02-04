@@ -15,11 +15,6 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 
 public interface StubReader extends ObservableReader {
 
-    String ALLOWED_PARAMETER_1 = "parameter1";
-    String ALLOWED_PARAMETER_2 = "parameter2";
-    String CONTACTLESS_PARAMETER = "contactless";
-    String CONTACTS_PARAMETER = "contacts";
-
     /**
      * Insert a stub se into the reader. Will raise a SE_INSERTED event.
      *

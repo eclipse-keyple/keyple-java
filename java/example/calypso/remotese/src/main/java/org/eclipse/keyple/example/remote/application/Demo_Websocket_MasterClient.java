@@ -35,14 +35,15 @@ public class Demo_Websocket_MasterClient {
 
         // Launch the Server thread
         // Server is slave
-        Demo_Slave slave = new Demo_Slave(factory, true, factory.getServerNodeId(), CLIENT_NODE_ID);
-
-        Thread.sleep(1000);
+        SlaveNodeController slave =
+                new SlaveNodeController(factory, true, factory.getServerNodeId(), CLIENT_NODE_ID);
 
         // Launch the client
         // Client is Master
-        Demo_Master master = new Demo_Master(factory, false, CLIENT_NODE_ID);
+        MasterNodeController master = new MasterNodeController(factory, false, CLIENT_NODE_ID);
         master.boot();
+
+        Thread.sleep(1000);// wait for the server to boot
 
         // execute Calypso Transaction Scenario
         slave.executeScenario(new StubCalypsoClassic(), true);
