@@ -17,10 +17,11 @@ import android.se.omapi.SEService
 import androidx.annotation.RequiresApi
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin
+import org.eclipse.keyple.plugin.android.omapi.PLUGIN_NAME
 import timber.log.Timber
 
 @RequiresApi(android.os.Build.VERSION_CODES.P) // OS version providing android.se.omapi package
-object AndroidOmapiPluginImpl : AndroidOmapiPlugin<Reader, SEService>(), SEService.OnConnectedListener {
+internal object AndroidOmapiPluginImpl : AndroidOmapiPlugin<Reader, SEService>(), SEService.OnConnectedListener {
 
     override fun connectToSe(context: Context) {
         val seServiceFactory = SeServiceFactoryImpl(context.applicationContext)

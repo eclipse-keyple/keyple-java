@@ -46,7 +46,7 @@ class AndroidOmapiPluginFactoryTest {
     @Test
     fun getPluginName() {
         androidOmapiPluginFactory = AndroidOmapiPluginFactory(context)
-        Assert.assertEquals(AndroidOmapiPlugin.PLUGIN_NAME, androidOmapiPluginFactory.pluginName)
+        Assert.assertEquals(PLUGIN_NAME, androidOmapiPluginFactory.pluginName)
     }
     @Test
     fun getPluginInstanceForOSSup28() {

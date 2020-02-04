@@ -22,7 +22,7 @@ import org.junit.Test
 
 class SeServiceFactoryImplTest {
 
-    lateinit var seServiceFactory: SeServiceFactoryImpl
+    private lateinit var seServiceFactory: SeServiceFactoryImpl
 
     @Before
     fun setUp() {

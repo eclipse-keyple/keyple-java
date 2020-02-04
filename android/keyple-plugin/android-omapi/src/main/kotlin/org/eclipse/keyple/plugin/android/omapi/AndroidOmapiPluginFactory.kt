@@ -40,7 +40,7 @@ class AndroidOmapiPluginFactory(private val context: Context) : AbstractPluginFa
     }
 
     override fun getPluginName(): String {
-        return AndroidOmapiPlugin.PLUGIN_NAME
+        return PLUGIN_NAME
     }
 
     @Throws(KeyplePluginInstantiationException::class)

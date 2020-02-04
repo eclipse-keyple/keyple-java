@@ -27,11 +27,11 @@ abstract class AndroidOmapiPluginTest<T, V> {
     }
 
     lateinit var context: Context
-    abstract var androidOmapiPlugin: AndroidOmapiPlugin<T, V>
+    internal abstract var androidOmapiPlugin: AndroidOmapiPlugin<T, V>
 
-    abstract fun buildAndroidOmapiPlugin(context: Context): AndroidOmapiPlugin<T, V>
+    internal abstract fun buildAndroidOmapiPlugin(context: Context): AndroidOmapiPlugin<T, V>
     abstract fun mockReader(name: String, isPresent: Boolean): T
-    abstract fun mockGetNativeReaders(androidOmapiPlugin: AndroidOmapiPlugin<T, V>, readersToMock: Map<String, Boolean>)
+    internal abstract fun mockGetNativeReaders(androidOmapiPlugin: AndroidOmapiPlugin<T, V>, readersToMock: Map<String, Boolean>)
     abstract fun triggerOnConnected()
 
     @Before

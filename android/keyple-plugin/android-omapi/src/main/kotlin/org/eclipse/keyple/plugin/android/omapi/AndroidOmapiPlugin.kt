@@ -21,11 +21,7 @@ import timber.log.Timber
 /**
  * The AndroidOmapiPlugin interface provides the public elements used to manage the Android OMAPI plugin.
  */
-abstract class AndroidOmapiPlugin<T, V> : AbstractPlugin(PLUGIN_NAME), ReaderPlugin {
-
-    companion object {
-        const val PLUGIN_NAME = "AndroidOmapiPlugin"
-    }
+internal abstract class AndroidOmapiPlugin<T, V> : AbstractPlugin(PLUGIN_NAME), ReaderPlugin {
 
     abstract fun connectToSe(context: Context)
     abstract fun getNativeReaders(): Array<T>?

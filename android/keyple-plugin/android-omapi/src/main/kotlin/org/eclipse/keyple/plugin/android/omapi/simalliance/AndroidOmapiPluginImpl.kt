@@ -14,11 +14,12 @@ package org.eclipse.keyple.plugin.android.omapi.simalliance
 import android.content.Context
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin
+import org.eclipse.keyple.plugin.android.omapi.PLUGIN_NAME
 import org.simalliance.openmobileapi.Reader
 import org.simalliance.openmobileapi.SEService
 import timber.log.Timber
 
-object AndroidOmapiPluginImpl : AndroidOmapiPlugin<Reader, SEService>(), SEService.CallBack {
+internal object AndroidOmapiPluginImpl : AndroidOmapiPlugin<Reader, SEService>(), SEService.CallBack {
 
     override fun connectToSe(context: Context) {
         val seServiceFactory = SeServiceFactoryImpl(context)
