@@ -301,10 +301,11 @@ public class SamResourceManager {
                             }
 
                             if (samReader instanceof ObservableReader && readerObserver != null) {
-                                logger.info("Add observer READERNAME = {}", samReader.getName());
+                                logger.info("Add observer and start detection READERNAME = {}", samReader.getName());
                                 ((ObservableReader) samReader).addObserver(readerObserver);
+                                ((ObservableReader) samReader).startSeDetection(ObservableReader.PollingMode.REPEATING);
                             } else {
-                                logger.info("No observer to add READERNAME = {}",
+                                logger.info("Sam Reader is not an ObservableReader = {}",
                                         samReader.getName());
                                 try {
                                     if (samReader.isSePresent()) {
@@ -337,8 +338,9 @@ public class SamResourceManager {
                             logger.info("Reader removed. READERNAME = {}", readerName);
                             if (samReader instanceof ObservableReader) {
                                 if (readerObserver != null) {
-                                    logger.info("Remove observer READERNAME = {}", readerName);
+                                    logger.info("Remove observer and stop detection READERNAME = {}", readerName);
                                     ((ObservableReader) samReader).removeObserver(readerObserver);
+                                    ((ObservableReader) samReader).stopSeDetection();
                                 } else {
                                     removeResource(samReader);
                                     logger.info(
