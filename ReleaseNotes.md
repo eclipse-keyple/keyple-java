@@ -1,8 +1,26 @@
 # Keyple - Release Notes
 
 Releases:
- - [Keyple Java 20/01](#keyple-java-2001)
- - [Keyple Java 19/07](#keyple-java-1907)
+ - Alpha [Keyple Java 20/next](#keyple-java-20next)
+ - Master [Keyple Java 20/01](#keyple-java-2001)
+ - Master [Keyple Java 19/07](#keyple-java-1907)
+
+## Keyple Java 20/next
+ - [keyple-java-core 0.9a](#keyple-java-core-09a)
+ - [keyple-java-calypso 0.9a](#keyple-java-calypso-09a)
+ - [keyple-java-plugin-pcsc 0.9a](#keyple-java-plugin-pcsc-09a)
+ - [keyple-java-plugin-stub 0.9a](#keyple-java-plugin-stub-09a)
+ - [keyple-java-plugin-remotese 0.9a](#keyple-java-plugin-remotese-09a)
+ - [keyple-android-plugin-android-nfc 0.9a](#keyple-android-plugin-android-nfc-09a)
+ - [keyple-android-plugin-android-omapi 0.9a](#keyple-android-plugin-android-omapi-09a)
+
+### keyple-java-core 0.9a
+### keyple-java-calypso 0.9a
+### keyple-java-plugin-pcsc 0.9a
+### keyple-java-plugin-stub 0.9a
+### keyple-java-plugin-remotese 0.9a
+### keyple-android-plugin-android-nfc 0.9a
+### keyple-android-plugin-android-omapi 0.9a
 
 ## Keyple Java 20/01
 
