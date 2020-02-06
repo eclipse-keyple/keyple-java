@@ -18,6 +18,7 @@ Releases:
 ### keyple-java-calypso 0.9a
 ### keyple-java-plugin-pcsc 0.9a
 ### keyple-java-plugin-stub 0.9a
+* any parameters can be set in the stub reader
 ### keyple-java-plugin-remotese 0.9a
 ### keyple-android-plugin-android-nfc 0.9a
 ### keyple-android-plugin-android-omapi 0.9a
