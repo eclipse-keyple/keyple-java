@@ -11,37 +11,31 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
-import static org.eclipse.keyple.calypso.transaction.AbstractSamResourceManager.MAX_BLOCKING_TIME;
+import static org.eclipse.keyple.calypso.transaction.SamResourceManagerFactory.MAX_BLOCKING_TIME;
+import static org.eclipse.keyple.calypso.transaction.SamResourceManagerFactory.createSamResource;
+
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SamResourceManagerPool extends AbstractSamResourceManager {
+public class SamResourceManagerPool implements SamResourceManager{
     private static final Logger logger = LoggerFactory.getLogger(SamResourceManagerPool.class);
 
+    protected final ReaderPlugin samReaderPlugin;
 
-    /**
-     * Instantiate a new SamResourceManager.
-     * <p>
-     * The samReaderPlugin is used to retrieve the available SAM according to the provided filter.
-     * <p>
-     * Setup a plugin observer if the reader plugin is observable.
-     *
-     * @param samReaderPoolPlugin the plugin through which SAM readers are accessible
-     */
-    public SamResourceManagerPool(ReaderPoolPlugin samReaderPoolPlugin) {
-        super(samReaderPoolPlugin);
+
+    protected SamResourceManagerPool(ReaderPoolPlugin samReaderPoolPlugin) {
+        this.samReaderPlugin = samReaderPoolPlugin;
         logger.info("Create SAM resource manager from reader pool plugin: {}",
-                samReaderPlugin.getName());
+        samReaderPlugin.getName());
         // HSM reader plugin type
     }
 
-
-
-    public SamResource allocateSamResource(AbstractSamResourceManager.AllocationMode allocationMode,
-            SamIdentifier samIdentifier) throws KeypleReaderException {
+    public SamResource allocateSamResource(SamResourceManagerFactory.AllocationMode allocationMode,
+                                           SamIdentifier samIdentifier) throws KeypleReaderException {
         long maxBlockingDate = System.currentTimeMillis() + MAX_BLOCKING_TIME;
         boolean noSamResourceLogged = false;
         logger.debug("Allocating SAM reader channel...");
@@ -56,7 +50,7 @@ public class SamResourceManagerPool extends AbstractSamResourceManager {
             }
 
             // loop until MAX_BLOCKING_TIME in blocking mode, only once in non-blocking mode
-            if (allocationMode == AbstractSamResourceManager.AllocationMode.NON_BLOCKING) {
+            if (allocationMode == SamResourceManagerFactory.AllocationMode.NON_BLOCKING) {
                 logger.trace("No SAM resources available at the moment.");
                 break;
             } else {
