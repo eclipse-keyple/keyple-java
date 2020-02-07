@@ -11,18 +11,15 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
-import static org.eclipse.keyple.calypso.command.sam.SamRevision.AUTO;
+
 import java.util.*;
 import java.util.regex.Pattern;
-import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.*;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,18 +30,11 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Provides methods fot the allocation/deallocation of SAM resources
  */
-public class SamResourceManager {
+public class SamResourceManager extends AbstractSamResourceManager {
     private static final Logger logger = LoggerFactory.getLogger(SamResourceManager.class);
 
-    public enum AllocationMode {
-        BLOCKING, NON_BLOCKING
-    }
-
-    /* the maximum time (in tenths of a second) during which the BLOCKING mode will wait */
-    private final static int MAX_BLOCKING_TIME = 1000; // 10 sec
-    private final ReaderPlugin samReaderPlugin;
     private final List<SamResource> localSamResources = new ArrayList<SamResource>();
-    private final boolean dynamicAllocationPlugin;
+    final SamResourceManager.ReaderObserver readerObserver;// used with observable readers
 
     /**
      * Instantiate a new SamResourceManager.
@@ -53,127 +43,86 @@ public class SamResourceManager {
      * <p>
      * Setup a plugin observer if the reader plugin is observable.
      *
-     * @param samReaderPlugin the plugin through which SAM readers are accessible
+     * @param readerPlugin the plugin through which SAM readers are accessible
      * @param samReaderFilter the regular expression defining how to identify SAM readers among
      *        others.
      * @throws KeypleReaderException throw if an error occurs while getting the readers list.
      */
-    public SamResourceManager(ReaderPlugin samReaderPlugin, String samReaderFilter)
+    public SamResourceManager(ReaderPlugin readerPlugin, String samReaderFilter)
             throws KeypleReaderException {
-        this.samReaderPlugin = samReaderPlugin;
-        if (samReaderPlugin instanceof ReaderPoolPlugin) {
-            logger.info("Create SAM resource manager from reader pool plugin: {}",
-                    samReaderPlugin.getName());
-            // HSM reader plugin type
-            dynamicAllocationPlugin = true;
-        } else {
-            logger.info("Create SAM resource manager from reader plugin: {}",
-                    samReaderPlugin.getName());
-            // Local readers plugin type
-            dynamicAllocationPlugin = false;
+        super(readerPlugin);
 
-            if (samReaderPlugin instanceof ObservablePlugin) {
-                // add an observer to monitor reader and SAM insertions
-                ReaderObserver readerObserver = new ReaderObserver();
-                PluginObserver pluginObserver = new PluginObserver(readerObserver, samReaderFilter);
-                logger.info("Add observer PLUGINNAME = {}", samReaderPlugin.getName());
-                ((ObservablePlugin) samReaderPlugin).addObserver(pluginObserver);
+        readerObserver = new SamResourceManager.ReaderObserver();
+
+        logger.info(
+                "PLUGINNAME = {} initialize the localSamResources with the {} connected readers filtered by {}",
+                samReaderPlugin.getName(), samReaderPlugin.getReaders().size(), samReaderFilter);
+
+        SortedSet<? extends SeReader> samReaders = samReaderPlugin.getReaders();
+        for (SeReader samReader : samReaders) {
+            String readerName = samReader.getName();
+            Pattern p = Pattern.compile(samReaderFilter);
+            if (p.matcher(readerName).matches()) {
+                logger.debug("Add reader: {}", readerName);
+                initSamReader(samReader, readerObserver);
             } else {
-                // the plugin isn't observable, just add resources from the current readers if any
-                logger.info("PLUGINNAME = {} isn't observable. Add available readers.",
-                        samReaderPlugin.getName());
-                SortedSet<? extends SeReader> samReaders = samReaderPlugin.getReaders();
-                for (SeReader samReader : samReaders) {
-                    String readerName = samReader.getName();
-                    Pattern p = Pattern.compile(samReaderFilter);
-                    if (p.matcher(readerName).matches()) {
-                        logger.debug("Add reader: {}", readerName);
-                        localSamResources.add(createSamResource(samReader));
-                    } else {
-                        logger.debug("Reader not matching: {}", readerName);
-                    }
+                logger.debug("Reader not matching: {}", readerName);
+            }
+        }
+
+        if (readerPlugin instanceof ObservablePlugin) {
+
+            // add an observer to monitor reader and SAM insertions
+
+            SamResourceManager.PluginObserver pluginObserver =
+                    new SamResourceManager.PluginObserver(readerObserver, samReaderFilter);
+            logger.info("Add observer PLUGINNAME = {}", samReaderPlugin.getName());
+            ((ObservablePlugin) samReaderPlugin).addObserver(pluginObserver);
+        }
+
+    }
+
+    /**
+     * Remove a {@link SamResource}from the current SamResource list
+     *
+     * @param samReader the SAM reader of the resource to remove from the list.
+     */
+    protected void removeResource(SeReader samReader) {
+        ListIterator<SamResource> iterator = localSamResources.listIterator();
+        while (iterator.hasNext()) {
+            SamResource currentSamResource = iterator.next();
+            if (currentSamResource.getSeReader().equals(samReader)) {
+                if (logger.isInfoEnabled()) {
+                    logger.info(
+                            "Freed SAM resource: READER = {}, SAM_REVISION = {}, SAM_SERIAL_NUMBER = {}",
+                            samReader.getName(),
+                            currentSamResource.getMatchingSe().getSamRevision(), ByteArrayUtil
+                                    .toHex(currentSamResource.getMatchingSe().getSerialNumber()));
                 }
+                iterator.remove();
             }
         }
     }
 
-    /**
-     * Create a SAM resource from the provided SAM reader.
-     * <p>
-     * Proceed with the SAM selection and combine the SAM reader and the Calypso SAM resulting from
-     * the selection.
-     * 
-     * @param samReader the SAM reader with which the APDU exchanges will be done.
-     * @return a {@link SamResource}
-     * @throws KeypleReaderException if an reader error occurs while doing the selection
-     */
-    private SamResource createSamResource(SeReader samReader) throws KeypleReaderException {
-        logger.trace("Create SAM resource from reader NAME = {}", samReader.getName());
 
-        samReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO7816_3, ".*");
-
-        SeSelection samSelection = new SeSelection();
-
-        SamSelector samSelector = new SamSelector(new SamIdentifier(AUTO, null, null), "SAM");
-
-        /* Prepare selector, ignore MatchingSe here */
-        samSelection.prepareSelection(new SamSelectionRequest(samSelector));
-
-        SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
-        if (!selectionsResult.hasActiveSelection()) {
-            throw new IllegalStateException("Unable to open a logical channel for SAM!");
-        }
-        CalypsoSam calypsoSam = (CalypsoSam) selectionsResult.getActiveSelection().getMatchingSe();
-        return new SamResource(samReader, calypsoSam);
-    }
-
-    /**
-     * Allocate a SAM resource from the specified SAM group.
-     * <p>
-     * In the case where the allocation mode is BLOCKING, this method will wait until a SAM resource
-     * becomes free and then return the reference to the allocated resource. However, the BLOCKING
-     * mode will wait a maximum time defined in tenths of a second by MAX_BLOCKING_TIME.
-     * <p>
-     * In the case where the allocation mode is NON_BLOCKING and no SAM resource is available, this
-     * method will return null.
-     * <p>
-     * If the samGroup argument is null, the first available SAM resource will be selected and
-     * returned regardless of its group.
-     *
-     * @param allocationMode the blocking/non-blocking mode
-     * @param samIdentifier the targeted SAM identifier
-     * @return a SAM resource
-     * @throws KeypleReaderException if a reader error occurs
-     */
     public SamResource allocateSamResource(AllocationMode allocationMode,
             SamIdentifier samIdentifier) throws KeypleReaderException {
         long maxBlockingDate = System.currentTimeMillis() + MAX_BLOCKING_TIME;
         boolean noSamResourceLogged = false;
         logger.debug("Allocating SAM reader channel...");
         while (true) {
-            if (dynamicAllocationPlugin) {
-                // virtually infinite number of readers
-                SeReader samReader = ((ReaderPoolPlugin) samReaderPlugin)
-                        .allocateReader(samIdentifier.getGroupReference());
-                if (samReader != null) {
-                    SamResource samResource = createSamResource(samReader);
-                    logger.debug("Allocation succeeded. SAM resource created.");
-                    return samResource;
-                }
-            } else {
-                synchronized (localSamResources) {
-                    for (SamResource samResource : localSamResources) {
-                        if (samResource.isSamResourceFree()) {
-                            if (samResource.isSamMatching(samIdentifier)) {
-                                samResource
-                                        .setSamResourceStatus(SamResource.SamResourceStatus.BUSY);
-                                logger.debug("Allocation succeeded. SAM resource created.");
-                                return samResource;
-                            }
+            synchronized (localSamResources) {
+                for (SamResource samResource : localSamResources) {
+                    if (samResource.isSamResourceFree()) {
+                        if (samResource.isSamMatching(samIdentifier)) {
+                            samResource.setSamResourceStatus(SamResource.SamResourceStatus.BUSY);
+                            logger.debug("Allocation succeeded. SAM resource created.");
+                            return samResource;
                         }
                     }
                 }
             }
+
             // loop until MAX_BLOCKING_TIME in blocking mode, only once in non-blocking mode
             if (allocationMode == AllocationMode.NON_BLOCKING) {
                 logger.trace("No SAM resources available at the moment.");
@@ -206,37 +155,9 @@ public class SamResourceManager {
      * @param samResource the SAM resource reference to free
      */
     public void freeSamResource(SamResource samResource) {
-        if (dynamicAllocationPlugin) {
-            // virtually infinite number of readers
-            logger.debug("Freeing HSM SAM resource.");
-            ((ReaderPoolPlugin) samReaderPlugin).releaseReader(samResource.getSeReader());
-        } else {
-            synchronized (localSamResources) {
-                logger.debug("Freeing local SAM resource.");
-                samResource.setSamResourceStatus(SamResource.SamResourceStatus.FREE);
-            }
-        }
-    }
-
-    /**
-     * Remove a {@link SamResource}from the current SamResource list
-     *
-     * @param samReader the SAM reader of the resource to remove from the list.
-     */
-    private void removeResource(SeReader samReader) {
-        ListIterator<SamResource> iterator = localSamResources.listIterator();
-        while (iterator.hasNext()) {
-            SamResource currentSamResource = iterator.next();
-            if (currentSamResource.getSeReader().equals(samReader)) {
-                if (logger.isInfoEnabled()) {
-                    logger.info(
-                            "Freed SAM resource: READER = {}, SAM_REVISION = {}, SAM_SERIAL_NUMBER = {}",
-                            samReader.getName(),
-                            currentSamResource.getMatchingSe().getSamRevision(), ByteArrayUtil
-                                    .toHex(currentSamResource.getMatchingSe().getSerialNumber()));
-                }
-                iterator.remove();
-            }
+        synchronized (localSamResources) {
+            logger.debug("Freeing local SAM resource.");
+            samResource.setSamResourceStatus(SamResource.SamResourceStatus.FREE);
         }
     }
 
@@ -260,7 +181,7 @@ public class SamResourceManager {
 
         /**
          * Handle {@link PluginEvent}
-         * 
+         *
          * @param event the plugin event
          */
         @Override
@@ -281,7 +202,17 @@ public class SamResourceManager {
                 }
                 switch (event.getEventType()) {
                     case READER_CONNECTED:
-                        logger.info("New reader! READERNAME = {}", samReader.getName());
+                        if (containsReader(localSamResources, readerName)) {
+                            logger.trace(
+                                    "Reader is already present in the local samResources -  READERNAME = {}",
+                                    readerName);
+                            // do nothing
+                            return;
+                        }
+
+                        logger.trace("New reader! READERNAME = {}", samReader.getName());
+
+
                         /*
                          * We are informed here of a connection of a reader.
                          *
@@ -290,36 +221,7 @@ public class SamResourceManager {
                         p = Pattern.compile(samReaderFilter);
                         if (p.matcher(readerName).matches()) {
                             /* Enable logging */
-                            try {
-                                /* contactless SE works with T0 protocol */
-                                samReader.setParameter("protocol", "T0");
-
-                                /* Shared mode */
-                                samReader.setParameter("mode", "shared");
-                            } catch (KeypleBaseException e) {
-                                logger.error("Wrong parameter", e);
-                            }
-
-                            if (samReader instanceof ObservableReader && readerObserver != null) {
-                                logger.info("Add observer and start detection READERNAME = {}", samReader.getName());
-                                ((ObservableReader) samReader).addObserver(readerObserver);
-                                ((ObservableReader) samReader).startSeDetection(ObservableReader.PollingMode.REPEATING);
-                            } else {
-                                logger.info("Sam Reader is not an ObservableReader = {}",
-                                        samReader.getName());
-                                try {
-                                    if (samReader.isSePresent()) {
-                                        logger.debug("Create SAM resource: {}", readerName);
-                                        synchronized (localSamResources) {
-                                            localSamResources.add(createSamResource(samReader));
-                                        }
-                                    }
-                                } catch (KeypleIOReaderException e) {
-                                    logger.error("Error in reader", e);
-                                } catch (KeypleReaderException e) {
-                                    logger.error("Error in reader", e);
-                                }
-                            }
+                            initSamReader(samReader, readerObserver);
                         } else {
                             logger.debug("Reader not matching: {}", readerName);
                         }
@@ -338,7 +240,9 @@ public class SamResourceManager {
                             logger.info("Reader removed. READERNAME = {}", readerName);
                             if (samReader instanceof ObservableReader) {
                                 if (readerObserver != null) {
-                                    logger.info("Remove observer and stop detection READERNAME = {}", readerName);
+                                    logger.info(
+                                            "Remove observer and stop detection READERNAME = {}",
+                                            readerName);
                                     ((ObservableReader) samReader).removeObserver(readerObserver);
                                     ((ObservableReader) samReader).stopSeDetection();
                                 } else {
@@ -359,6 +263,9 @@ public class SamResourceManager {
                 }
             }
         }
+
+
+
     }
 
     /**
@@ -374,7 +281,7 @@ public class SamResourceManager {
          * Handle {@link ReaderEvent}
          * <p>
          * Create {@link SamResource}
-         * 
+         *
          * @param event the reader event
          */
         @Override
@@ -420,6 +327,51 @@ public class SamResourceManager {
                         break;
                 }
             }
+        }
+    }
+
+    /*
+     * Helper
+     */
+    static private boolean containsReader(List<SamResource> samResources, String readerName) {
+        for (SamResource resource : samResources) {
+            if (readerName.equals(resource.getSeReader().getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void initSamReader(SeReader samReader, ReaderObserver readerObserver) {
+        try {
+            /* contactless SE works with T0 protocol */
+            samReader.setParameter("protocol", "T0");
+
+            /* Shared mode */
+            samReader.setParameter("mode", "shared");
+        } catch (KeypleBaseException e) {
+            logger.error("Wrong parameter", e);
+        }
+
+        try {
+            if (samReader.isSePresent()) {
+                logger.debug("Create SAM resource: {}", samReader.getName());
+                synchronized (localSamResources) {
+                    localSamResources.add(createSamResource(samReader));
+                }
+            }
+        } catch (KeypleIOReaderException e) {
+            logger.error("Error in reader", e);
+        } catch (KeypleReaderException e) {
+            logger.error("Error in reader", e);
+        }
+
+        if (samReader instanceof ObservableReader && readerObserver != null) {
+            logger.info("Add observer and start detection READERNAME = {}", samReader.getName());
+            ((ObservableReader) samReader).addObserver(readerObserver);
+            ((ObservableReader) samReader).startSeDetection(ObservableReader.PollingMode.REPEATING);
+        } else {
+            logger.info("Sam Reader is not an ObservableReader = {}", samReader.getName());
         }
     }
 }

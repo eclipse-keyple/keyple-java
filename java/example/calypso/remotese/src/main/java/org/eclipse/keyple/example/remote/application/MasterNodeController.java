@@ -116,13 +116,10 @@ public class MasterNodeController {
             /* Get the instance of the Stub plugin */
             ReaderPlugin samStubPlugin = SeProxyService.getInstance().getPlugin(STUB_MASTER);
 
-            /*
-             * Configure a Sam Resource Manager
-             */
-            samResourceManager = new SamResourceManager(samStubPlugin, ".*");
 
             /* Plug the SAM stub reader. */
             ((StubPlugin) samStubPlugin).plugStubReader("samReader", true);
+
 
             SeReader samReader = samStubPlugin.getReader("samReader");
 
@@ -135,6 +132,11 @@ public class MasterNodeController {
 
             ((StubReader) samReader).insertSe(calypsoSamStubSe);
             logger.info("Stub SAM inserted");
+
+            /*
+             * Configure a Sam Resource Manager
+             */
+            samResourceManager = new SamResourceManager(samStubPlugin, ".*");
 
 
             /*
