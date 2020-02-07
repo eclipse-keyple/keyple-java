@@ -4,6 +4,10 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 
 public interface SamResourceManager {
 
+    public enum AllocationMode {
+        BLOCKING, NON_BLOCKING
+    }
+
     /**
      * Allocate a SAM resource from the specified SAM group.
      * <p>
@@ -22,7 +26,7 @@ public interface SamResourceManager {
      * @return a SAM resource
      * @throws KeypleReaderException if a reader error occurs
      */
-     SamResource allocateSamResource(SamResourceManagerFactory.AllocationMode allocationMode,
+     SamResource allocateSamResource(AllocationMode allocationMode,
                                      SamIdentifier samIdentifier) throws KeypleReaderException;
 
     /**

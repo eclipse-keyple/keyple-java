@@ -25,10 +25,6 @@ import org.slf4j.LoggerFactory;
 public abstract class SamResourceManagerFactory {
     private static final Logger logger = LoggerFactory.getLogger(SamResourceManagerFactory.class);
 
-    public enum AllocationMode {
-        BLOCKING, NON_BLOCKING
-    }
-
     /* the maximum time (in tenths of a second) during which the BLOCKING mode will wait */
     protected final static int MAX_BLOCKING_TIME = 1000; // 10 sec
 
@@ -73,6 +69,7 @@ public abstract class SamResourceManagerFactory {
      * @param samReaderFilter the regular expression defining how to identify SAM readers among
      *        others.
      * @throws KeypleReaderException throw if an error occurs while getting the readers list.
+     * @return SamResourceManager working with a default plugin
      */
     static public SamResourceManager instantiate(ReaderPlugin readerPlugin, String samReaderFilter) throws KeypleReaderException {
         return new SamResourceManagerDefault(readerPlugin, samReaderFilter);
@@ -81,11 +78,12 @@ public abstract class SamResourceManagerFactory {
     /**
      * Instantiate a new SamResourceManager.
      * <p>
-     * The samReaderPlugin is used to retrieve the available SAM according to the provided filter.
+     * The samReaderPlugin is used to retrieve the available SAM in the ReaderPoolPlugin.
      * <p>
      * Setup a plugin observer if the reader plugin is observable.
      *
      * @param samReaderPoolPlugin the plugin through which SAM readers are accessible
+     * @return SamResourceManager working with a pool plugin
      */
     static public SamResourceManager instantiate(ReaderPoolPlugin samReaderPoolPlugin) {
         return new SamResourceManagerPool(samReaderPoolPlugin);

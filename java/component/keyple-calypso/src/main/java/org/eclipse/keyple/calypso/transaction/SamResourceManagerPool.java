@@ -34,7 +34,7 @@ public class SamResourceManagerPool implements SamResourceManager{
         // HSM reader plugin type
     }
 
-    public SamResource allocateSamResource(SamResourceManagerFactory.AllocationMode allocationMode,
+    public SamResource allocateSamResource(AllocationMode allocationMode,
                                            SamIdentifier samIdentifier) throws KeypleReaderException {
         long maxBlockingDate = System.currentTimeMillis() + MAX_BLOCKING_TIME;
         boolean noSamResourceLogged = false;
@@ -50,7 +50,7 @@ public class SamResourceManagerPool implements SamResourceManager{
             }
 
             // loop until MAX_BLOCKING_TIME in blocking mode, only once in non-blocking mode
-            if (allocationMode == SamResourceManagerFactory.AllocationMode.NON_BLOCKING) {
+            if (allocationMode == AllocationMode.NON_BLOCKING) {
                 logger.trace("No SAM resources available at the moment.");
                 break;
             } else {
