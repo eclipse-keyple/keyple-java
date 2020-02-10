@@ -13,6 +13,7 @@ package org.eclipse.keyple.example.remote.application;
 
 import java.io.IOException;
 import org.eclipse.keyple.calypso.transaction.SamResourceManager;
+import org.eclipse.keyple.calypso.transaction.SamResourceManagerFactory;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -136,7 +137,7 @@ public class MasterNodeController {
             /*
              * Configure a Sam Resource Manager
              */
-            samResourceManager = new SamResourceManager(samStubPlugin, ".*");
+            samResourceManager = SamResourceManagerFactory.instantiate(samStubPlugin, ".*");
 
 
             /*

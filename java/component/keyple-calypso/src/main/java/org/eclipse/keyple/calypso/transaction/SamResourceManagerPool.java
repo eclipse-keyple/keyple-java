@@ -11,8 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
-import static org.eclipse.keyple.calypso.transaction.SamResourceManagerFactory.MAX_BLOCKING_TIME;
-import static org.eclipse.keyple.calypso.transaction.SamResourceManagerFactory.createSamResource;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -23,7 +21,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Implementation of Sam Resource Manager working a {@link ReaderPoolPlugin}
  */
-public class SamResourceManagerPool implements SamResourceManager {
+public class SamResourceManagerPool extends SamResourceManager {
     private static final Logger logger = LoggerFactory.getLogger(SamResourceManagerPool.class);
 
     protected final ReaderPlugin samReaderPlugin;
@@ -73,7 +71,7 @@ public class SamResourceManagerPool implements SamResourceManager {
                 }
                 if (System.currentTimeMillis() >= maxBlockingDate) {
                     logger.error("The allocation process failed. Timeout {} sec exceeded .",
-                            (MAX_BLOCKING_TIME / 100.0));
+                            (MAX_BLOCKING_TIME / 1000.0));
                     return null;
                 }
             }

@@ -22,42 +22,10 @@ import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ *  Factory that builds a SamResourceManager depending on the plugin used
+ */
 public abstract class SamResourceManagerFactory {
-    private static final Logger logger = LoggerFactory.getLogger(SamResourceManagerFactory.class);
-
-    /* the maximum time (in tenths of a second) during which the BLOCKING mode will wait */
-    protected final static int MAX_BLOCKING_TIME = 1000; // 10 sec
-
-    /**
-     * Create a SAM resource from the provided SAM reader.
-     * <p>
-     * Proceed with the SAM selection and combine the SAM reader and the Calypso SAM resulting from
-     * the selection.
-     *
-     * @param samReader the SAM reader with which the APDU exchanges will be done.
-     * @return a {@link SamResource}
-     * @throws KeypleReaderException if an reader error occurs while doing the selection
-     */
-    static protected SamResource createSamResource(SeReader samReader)
-            throws KeypleReaderException {
-        logger.trace("Create SAM resource from reader NAME = {}", samReader.getName());
-
-        samReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO7816_3, ".*");
-
-        SeSelection samSelection = new SeSelection();
-
-        SamSelector samSelector = new SamSelector(new SamIdentifier(AUTO, null, null), "SAM");
-
-        /* Prepare selector, ignore MatchingSe here */
-        samSelection.prepareSelection(new SamSelectionRequest(samSelector));
-
-        SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
-        if (!selectionsResult.hasActiveSelection()) {
-            throw new IllegalStateException("Unable to open a logical channel for SAM!");
-        }
-        CalypsoSam calypsoSam = (CalypsoSam) selectionsResult.getActiveSelection().getMatchingSe();
-        return new SamResource(samReader, calypsoSam);
-    }
 
     /**
      * Instantiate a new SamResourceManager.

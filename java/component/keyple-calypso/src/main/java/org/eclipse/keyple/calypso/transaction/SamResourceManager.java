@@ -11,14 +11,23 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
+import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.SelectionsResult;
+import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+
+import static org.eclipse.keyple.calypso.command.sam.SamRevision.AUTO;
 
 /**
  * Management of SAM resources:
  * <p>
  * Provides methods fot the allocation/deallocation of SAM resources
  */
-public interface SamResourceManager {
+public abstract class SamResourceManager {
+
+    /* the maximum time (in milliseconds) during which the BLOCKING mode will wait */
+    protected final static int MAX_BLOCKING_TIME = 10000; // 10 sec
 
     public enum AllocationMode {
         BLOCKING, NON_BLOCKING
@@ -42,7 +51,7 @@ public interface SamResourceManager {
      * @return a SAM resource
      * @throws KeypleReaderException if a reader error occurs
      */
-    SamResource allocateSamResource(AllocationMode allocationMode, SamIdentifier samIdentifier)
+    abstract public SamResource allocateSamResource(AllocationMode allocationMode, SamIdentifier samIdentifier)
             throws KeypleReaderException;
 
     /**
@@ -50,6 +59,36 @@ public interface SamResourceManager {
      *
      * @param samResource the SAM resource reference to free
      */
-    void freeSamResource(SamResource samResource);
+    abstract public void freeSamResource(SamResource samResource);
+
+    /**
+     * Create a SAM resource from the provided SAM reader.
+     * <p>
+     * Proceed with the SAM selection and combine the SAM reader and the Calypso SAM resulting from
+     * the selection.
+     *
+     * @param samReader the SAM reader with which the APDU exchanges will be done.
+     * @return a {@link SamResource}
+     * @throws KeypleReaderException if an reader error occurs while doing the selection
+     */
+    protected SamResource createSamResource(SeReader samReader)
+            throws KeypleReaderException {
+
+        samReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO7816_3, ".*");
+
+        SeSelection samSelection = new SeSelection();
+
+        SamSelector samSelector = new SamSelector(new SamIdentifier(AUTO, null, null), "SAM");
+
+        /* Prepare selector, ignore MatchingSe here */
+        samSelection.prepareSelection(new SamSelectionRequest(samSelector));
+
+        SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
+        if (!selectionsResult.hasActiveSelection()) {
+            throw new IllegalStateException("Unable to open a logical channel for SAM!");
+        }
+        CalypsoSam calypsoSam = (CalypsoSam) selectionsResult.getActiveSelection().getMatchingSe();
+        return new SamResource(samReader, calypsoSam);
+    }
 
 }
