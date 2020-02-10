@@ -9,7 +9,10 @@
     android:layout_margin="2dp"
     android:layout_marginTop="4dp"
     android:layout_marginBottom="4dp"
-    app:cardElevation="2dp"
+    app:cardBackgroundColor="@color/colorSecondaryDark"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="5dp"
+    app:cardUseCompatPadding="true"
     app:contentPadding="8dp"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
@@ -27,6 +30,7 @@
             android:layout_height="match_parent"
             android:textAlignment="center"
             android:textSize="18sp"
+            android:textColor="@color/textColorPrimary"
             tools:text="Ceci est un test" />
 
         <RadioGroup

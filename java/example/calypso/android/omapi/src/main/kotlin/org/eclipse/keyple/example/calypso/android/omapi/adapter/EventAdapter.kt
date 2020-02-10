@@ -54,6 +54,7 @@ class EventAdapter(private val events: ArrayList<EventModel>): RecyclerView.Adap
                     button.setOnClickListener {
                         event.callback(choice)
                     }
+                    button.setTextColor(R.color.textColorPrimary)
                     choiceRadioGroup.addView(button)
                 }
             }
