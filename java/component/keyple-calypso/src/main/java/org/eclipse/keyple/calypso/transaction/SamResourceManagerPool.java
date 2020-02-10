@@ -13,7 +13,6 @@ package org.eclipse.keyple.calypso.transaction;
 
 import static org.eclipse.keyple.calypso.transaction.SamResourceManagerFactory.MAX_BLOCKING_TIME;
 import static org.eclipse.keyple.calypso.transaction.SamResourceManagerFactory.createSamResource;
-
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -21,21 +20,28 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SamResourceManagerPool implements SamResourceManager{
+/**
+ * Implementation of Sam Resource Manager working a {@link ReaderPoolPlugin}
+ */
+public class SamResourceManagerPool implements SamResourceManager {
     private static final Logger logger = LoggerFactory.getLogger(SamResourceManagerPool.class);
 
     protected final ReaderPlugin samReaderPlugin;
 
-
+    /**
+     * Protected constructor, use the {@link SamResourceManagerFactory}
+     * @param samReaderPoolPlugin
+     */
     protected SamResourceManagerPool(ReaderPoolPlugin samReaderPoolPlugin) {
         this.samReaderPlugin = samReaderPoolPlugin;
         logger.info("Create SAM resource manager from reader pool plugin: {}",
-        samReaderPlugin.getName());
+                samReaderPlugin.getName());
         // HSM reader plugin type
     }
 
+    @Override
     public SamResource allocateSamResource(AllocationMode allocationMode,
-                                           SamIdentifier samIdentifier) throws KeypleReaderException {
+            SamIdentifier samIdentifier) throws KeypleReaderException {
         long maxBlockingDate = System.currentTimeMillis() + MAX_BLOCKING_TIME;
         boolean noSamResourceLogged = false;
         logger.debug("Allocating SAM reader channel...");

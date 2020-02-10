@@ -12,6 +12,8 @@
 package org.eclipse.keyple.calypso.transaction;
 
 
+import static org.eclipse.keyple.calypso.transaction.SamResourceManagerFactory.MAX_BLOCKING_TIME;
+import static org.eclipse.keyple.calypso.transaction.SamResourceManagerFactory.createSamResource;
 import java.util.*;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.core.seproxy.*;
@@ -24,23 +26,22 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.eclipse.keyple.calypso.transaction.SamResourceManagerFactory.MAX_BLOCKING_TIME;
-import static org.eclipse.keyple.calypso.transaction.SamResourceManagerFactory.createSamResource;
-
-
 /**
- * Management of SAM resources:
- * <p>
- * Provides methods fot the allocation/deallocation of SAM resources
+ * Implementation of Sam Resource Manager working a {@link ReaderPlugin}
  */
-public class SamResourceManagerDefault implements SamResourceManager{
+public class SamResourceManagerDefault implements SamResourceManager {
     private static final Logger logger = LoggerFactory.getLogger(SamResourceManagerDefault.class);
 
     private final List<SamResource> localSamResources = new ArrayList<SamResource>();
     final SamResourceManagerDefault.ReaderObserver readerObserver;// used with observable readers
     protected final ReaderPlugin samReaderPlugin;
 
-
+    /**
+     * Protected constructor, use the {@link SamResourceManagerFactory}
+     * @param readerPlugin
+     * @param samReaderFilter
+     * @throws KeypleReaderException
+     */
     protected SamResourceManagerDefault(ReaderPlugin readerPlugin, String samReaderFilter)
             throws KeypleReaderException {
         this.samReaderPlugin = readerPlugin;
@@ -96,9 +97,9 @@ public class SamResourceManagerDefault implements SamResourceManager{
         }
     }
 
-
+    @Override
     public SamResource allocateSamResource(AllocationMode allocationMode,
-                                           SamIdentifier samIdentifier) throws KeypleReaderException {
+            SamIdentifier samIdentifier) throws KeypleReaderException {
         long maxBlockingDate = System.currentTimeMillis() + MAX_BLOCKING_TIME;
         boolean noSamResourceLogged = false;
         logger.debug("Allocating SAM reader channel...");
@@ -141,11 +142,7 @@ public class SamResourceManagerDefault implements SamResourceManager{
         return null;
     }
 
-    /**
-     * Free a previously allocated SAM resource.
-     *
-     * @param samResource the SAM resource reference to free
-     */
+    @Override
     public void freeSamResource(SamResource samResource) {
         synchronized (localSamResources) {
             logger.debug("Freeing local SAM resource.");

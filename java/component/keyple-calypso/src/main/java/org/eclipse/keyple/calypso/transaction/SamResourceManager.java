@@ -1,7 +1,23 @@
+/********************************************************************************
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 
+/**
+ * Management of SAM resources:
+ * <p>
+ * Provides methods fot the allocation/deallocation of SAM resources
+ */
 public interface SamResourceManager {
 
     public enum AllocationMode {
@@ -26,14 +42,14 @@ public interface SamResourceManager {
      * @return a SAM resource
      * @throws KeypleReaderException if a reader error occurs
      */
-     SamResource allocateSamResource(AllocationMode allocationMode,
-                                     SamIdentifier samIdentifier) throws KeypleReaderException;
+    SamResource allocateSamResource(AllocationMode allocationMode, SamIdentifier samIdentifier)
+            throws KeypleReaderException;
 
     /**
      * Free a previously allocated SAM resource.
      *
      * @param samResource the SAM resource reference to free
      */
-     void freeSamResource(SamResource samResource);
+    void freeSamResource(SamResource samResource);
 
 }

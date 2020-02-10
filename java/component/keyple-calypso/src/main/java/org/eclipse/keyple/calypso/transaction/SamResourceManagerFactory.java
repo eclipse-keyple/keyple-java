@@ -38,7 +38,8 @@ public abstract class SamResourceManagerFactory {
      * @return a {@link SamResource}
      * @throws KeypleReaderException if an reader error occurs while doing the selection
      */
-    static protected SamResource createSamResource(SeReader samReader) throws KeypleReaderException {
+    static protected SamResource createSamResource(SeReader samReader)
+            throws KeypleReaderException {
         logger.trace("Create SAM resource from reader NAME = {}", samReader.getName());
 
         samReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO7816_3, ".*");
@@ -71,7 +72,8 @@ public abstract class SamResourceManagerFactory {
      * @throws KeypleReaderException throw if an error occurs while getting the readers list.
      * @return SamResourceManager working with a default plugin
      */
-    static public SamResourceManager instantiate(ReaderPlugin readerPlugin, String samReaderFilter) throws KeypleReaderException {
+    static public SamResourceManager instantiate(ReaderPlugin readerPlugin, String samReaderFilter)
+            throws KeypleReaderException {
         return new SamResourceManagerDefault(readerPlugin, samReaderFilter);
     }
 
