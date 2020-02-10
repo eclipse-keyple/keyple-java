@@ -1,10 +1,15 @@
 package org.eclipse.keyple.example.calypso.android.omapi.activity
 
 import android.os.Bundle
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.navigation.NavigationView
+import kotlinx.android.synthetic.main.activity_core_examples.*
 import org.eclipse.keyple.core.seproxy.SeProxyService
 import org.eclipse.keyple.core.seproxy.SeReader
+import org.eclipse.keyple.example.calypso.android.omapi.R
 import org.eclipse.keyple.example.calypso.android.omapi.adapter.EventAdapter
 import org.eclipse.keyple.example.calypso.android.omapi.model.ChoiceEventModel
 import org.eclipse.keyple.example.calypso.android.omapi.model.EventModel
@@ -12,26 +17,48 @@ import org.eclipse.keyple.plugin.android.omapi.PLUGIN_NAME
 import timber.log.Timber
 import java.util.*
 
-abstract class ExamplesActivity: BasicActivity() {
+abstract class ExamplesActivity: BasicActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     /**
      * Variables for event window
      */
     protected lateinit var readers : SortedSet<SeReader>
-    protected lateinit var adapter: RecyclerView.Adapter<*>
-    protected lateinit var layoutManager: RecyclerView.LayoutManager
+    private lateinit var adapter: RecyclerView.Adapter<*>
+    private lateinit var layoutManager: RecyclerView.LayoutManager
     protected val events= arrayListOf<EventModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         adapter = EventAdapter(events)
         layoutManager = LinearLayoutManager(this)
+        initContentView()
+
+        /**
+         * Init menu
+         */
+        navigationView.setNavigationItemSelectedListener(this)
+        val toggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_navigation_drawer, R.string.close_navigation_drawer)
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
 
         /**
          * Get OMAPI Readers
          */
         readers = SeProxyService.getInstance().getPlugin(PLUGIN_NAME).readers
+
+        eventRecyclerView.layoutManager = layoutManager
+        eventRecyclerView.adapter = adapter
     }
+
+    override fun onResume() {
+        super.onResume()
+        clearEvents()
+        if(!drawerLayout.isDrawerOpen(GravityCompat.START)){
+            drawerLayout.openDrawer(GravityCompat.START)
+        }
+    }
+
+    abstract fun initContentView()
 
     protected fun clearEvents(){
         events.clear()
@@ -60,5 +87,13 @@ abstract class ExamplesActivity: BasicActivity() {
         events.add(ChoiceEventModel(title, choices, callback))
         adapter.notifyItemInserted(events.lastIndex)
         Timber.d("Choice: %s: %s", title, choices.toString())
+    }
+
+    override fun onBackPressed() {
+        if(drawerLayout.isDrawerOpen(GravityCompat.START)){
+            drawerLayout.closeDrawer(GravityCompat.START)
+        }else{
+            super.onBackPressed()
+        }
     }
 }

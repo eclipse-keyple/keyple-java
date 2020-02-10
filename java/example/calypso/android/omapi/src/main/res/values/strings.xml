@@ -12,4 +12,7 @@
     <string name="sequentialMultiSelection">Sequential MultiSelection</string>
     <string name="get_readers_infos">Get Readers Infos</string>
     <string name="read_env_and_usage">Read environment and usage</string>
+
+    <string name="open_navigation_drawer">Open menu</string>
+    <string name="close_navigation_drawer">Close Menu</string>
 </resources>

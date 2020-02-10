@@ -11,6 +11,9 @@
         android:layout_margin="2dp"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="4dp"
+        app:cardBackgroundColor="@color/colorPrimaryLight"
+        app:cardCornerRadius="2dp"
+        app:cardUseCompatPadding="true"
         app:cardElevation="2dp"
         app:contentPadding="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -24,6 +27,7 @@
             android:layout_height="match_parent"
             android:textAlignment="center"
             android:textSize="18sp"
+            android:textColor="@color/textColorPrimary"
             tools:text="Ceci est un test" />
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,11 +1,11 @@
 package org.eclipse.keyple.example.calypso.android.omapi.activity
 
-import android.os.Bundle
-import android.view.View
+import android.view.MenuItem
+import androidx.core.view.GravityCompat
 import kotlinx.android.synthetic.main.activity_calypso_example.*
+import kotlinx.android.synthetic.main.activity_calypso_example.drawerLayout
 import kotlinx.android.synthetic.main.activity_core_examples.*
 import kotlinx.android.synthetic.main.activity_core_examples.eventRecyclerView
-import kotlinx.android.synthetic.main.activity_core_examples.explicitSelectionAidButton
 import kotlinx.android.synthetic.main.activity_main.toolbar
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars
@@ -18,24 +18,11 @@ import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.example.calypso.android.omapi.R
 import org.eclipse.keyple.example.calypso.android.omapi.utils.AidEnum
 
-class CalypsoExamplesActivity : ExamplesActivity(), View.OnClickListener {
+class CalypsoExamplesActivity : ExamplesActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun initContentView() {
         setContentView(R.layout.activity_calypso_example)
         initActionBar(toolbar,"keyple-calypso", "Shows usage of Keyple Calypso")
-
-        /**
-         * Set event window
-         */
-        eventRecyclerView.layoutManager = layoutManager
-        eventRecyclerView.adapter = adapter
-
-        /**
-         * Init Menu buttons
-         */
-        explicitSelectionAidButton.setOnClickListener(this)
-        readEnvironnementAndUsageButton.setOnClickListener(this)
     }
 
     private fun explicitSectionAid(){
@@ -172,13 +159,14 @@ class CalypsoExamplesActivity : ExamplesActivity(), View.OnClickListener {
         }
     }
 
-
-    override fun onClick(v: View?) {
-        v?.let {
-            when(it.id){
-                explicitSelectionAidButton.id -> explicitSectionAid()
-                readEnvironnementAndUsageButton.id -> readEnvironmentAndUsage()
-            }
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.explicitSelectionAidButton -> explicitSectionAid()
+            R.id.readEnvironnementAndUsageButton -> readEnvironmentAndUsage()
         }
+        if(drawerLayout.isDrawerOpen(GravityCompat.START)){
+            drawerLayout.closeDrawer(GravityCompat.START)
+        }
+        return true
     }
 }

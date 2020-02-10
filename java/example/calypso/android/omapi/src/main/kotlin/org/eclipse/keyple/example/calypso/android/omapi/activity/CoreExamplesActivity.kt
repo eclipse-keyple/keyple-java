@@ -1,7 +1,7 @@
 package org.eclipse.keyple.example.calypso.android.omapi.activity
 
-import android.os.Bundle
-import android.view.View
+import android.view.MenuItem
+import androidx.core.view.GravityCompat
 import kotlinx.android.synthetic.main.activity_core_examples.*
 import kotlinx.android.synthetic.main.activity_main.toolbar
 import org.eclipse.keyple.core.selection.SeSelection
@@ -21,33 +21,11 @@ import org.eclipse.keyple.example.calypso.android.omapi.utils.GenericSeSelection
 /**
  * Activity execution Keple-Core based examples.
  */
-class CoreExamplesActivity : ExamplesActivity(), View.OnClickListener {
+class CoreExamplesActivity : ExamplesActivity(){
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun initContentView() {
         setContentView(R.layout.activity_core_examples)
         initActionBar(toolbar,"keyple-core", "Shows usage of Keyple Core")
-
-        /**
-         * Set event window
-         */
-        eventRecyclerView.layoutManager = layoutManager
-        eventRecyclerView.adapter = adapter
-
-        /**
-         * Init Menu buttons
-         */
-        getReadersInfosButton.setOnClickListener(this)
-        explicitSelectionAidButton.setOnClickListener(this)
-        groupedMultiselectionButton.setOnClickListener(this)
-        sequentialMultiSelectionButton.setOnClickListener(this)
-
-        //What to do with core?
-    }
-
-    override fun onResume() {
-        super.onResume()
-        clearEvents()
     }
 
     private fun getReadersInfos(){
@@ -176,6 +154,7 @@ class CoreExamplesActivity : ExamplesActivity(), View.OnClickListener {
                 }
             }
         }
+        eventRecyclerView.smoothScrollToPosition(events.size-1)
     }
 
     /**
@@ -232,6 +211,7 @@ class CoreExamplesActivity : ExamplesActivity(), View.OnClickListener {
                 }
             }
         }
+        eventRecyclerView.smoothScrollToPosition(events.size-1)
     }
 
     @Throws(KeypleReaderException::class)
@@ -250,17 +230,16 @@ class CoreExamplesActivity : ExamplesActivity(), View.OnClickListener {
         }
     }
 
-
-    override fun onClick(v: View?) {
-        v?.let {
-            when(it.id){
-                getReadersInfosButton.id -> getReadersInfos()
-                explicitSelectionAidButton.id -> explicitSectionAid()
-                groupedMultiselectionButton.id -> groupedMultiSelection()
-                sequentialMultiSelectionButton.id -> sequentialMultiSelection()
-            }
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.getReadersInfosButton -> getReadersInfos()
+            R.id.explicitSelectionAidButton -> explicitSectionAid()
+            R.id.groupedMultiselectionButton -> groupedMultiSelection()
+            R.id.sequentialMultiSelectionButton -> sequentialMultiSelection()
         }
+        if(drawerLayout.isDrawerOpen(GravityCompat.START)){
+            drawerLayout.closeDrawer(GravityCompat.START)
+        }
+        return true
     }
-
-
 }

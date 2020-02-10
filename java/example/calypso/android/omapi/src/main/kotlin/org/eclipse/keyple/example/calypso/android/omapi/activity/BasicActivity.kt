@@ -25,9 +25,6 @@ abstract class BasicActivity : AppCompatActivity() {
         val actionBar = supportActionBar
         actionBar?.title = title
         actionBar?.subtitle = subtitle
-        actionBar?.setDisplayShowHomeEnabled(true)
-        actionBar?.setLogo(R.mipmap.ic_launcher)
-        actionBar?.setDisplayUseLogoEnabled(true)
     }
 
     fun showAlertDialog(t: Throwable){
