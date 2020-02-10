@@ -11,19 +11,13 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
-import static org.eclipse.keyple.calypso.command.sam.SamRevision.AUTO;
-import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.selection.SelectionsResult;
+
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- *  Factory that builds a SamResourceManager depending on the plugin used
+ * Factory that builds a SamResourceManager depending on the plugin used
  */
 public abstract class SamResourceManagerFactory {
 

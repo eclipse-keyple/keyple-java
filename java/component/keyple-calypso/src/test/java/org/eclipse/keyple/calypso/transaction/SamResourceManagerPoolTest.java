@@ -11,6 +11,9 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
+import static org.eclipse.keyple.calypso.transaction.SamResourceManager.MAX_BLOCKING_TIME;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import org.eclipse.keyple.calypso.CalypsoBaseTest;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
@@ -24,10 +27,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.eclipse.keyple.calypso.transaction.SamResourceManager.MAX_BLOCKING_TIME;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SamResourceManagerPoolTest extends CalypsoBaseTest {
@@ -44,68 +43,66 @@ public class SamResourceManagerPoolTest extends CalypsoBaseTest {
 
     @Test
     public void waitResources() throws KeypleReaderException {
-        //init
+        // init
         SamResourceManagerPool srmSpy = srmSpy();
-        //doReturn(null).when(srmSpy).createSamResource(any(SeReader.class));
+        // doReturn(null).when(srmSpy).createSamResource(any(SeReader.class));
         long start = System.currentTimeMillis();
 
-        //test
-        SamResource out = srmSpy.allocateSamResource(
-                SamResourceManager.AllocationMode.BLOCKING,
-                new SamIdentifier(SamRevision.AUTO, "any","any"));
+        // test
+        SamResource out = srmSpy.allocateSamResource(SamResourceManager.AllocationMode.BLOCKING,
+                new SamIdentifier(SamRevision.AUTO, "any", "any"));
 
         long stop = System.currentTimeMillis();
 
 
-        //assert results
+        // assert results
         Assert.assertNull(out);
-        Assert.assertTrue(stop-start > MAX_BLOCKING_TIME);
+        Assert.assertTrue(stop - start > MAX_BLOCKING_TIME);
     }
 
     @Test
     public void getResource() throws KeypleReaderException {
-        //init plugin
+        // init plugin
         ReaderPoolPlugin poolPlugin = Mockito.mock(ReaderPoolPlugin.class);
         doReturn(seReaderMock()).when(poolPlugin).allocateReader(any(String.class));
 
-        //init SamResourceManagerPool with custom pool plugin
+        // init SamResourceManagerPool with custom pool plugin
         SamResourceManagerPool srmSpy = srmSpy(poolPlugin);
         doReturn(samResourceMock()).when(srmSpy).createSamResource(any(SeReader.class));
 
         long start = System.currentTimeMillis();
 
-        //test
-        SamResource out = srmSpy.allocateSamResource(
-                SamResourceManager.AllocationMode.BLOCKING,
-                new SamIdentifier(SamRevision.AUTO, "any","any"));
+        // test
+        SamResource out = srmSpy.allocateSamResource(SamResourceManager.AllocationMode.BLOCKING,
+                new SamIdentifier(SamRevision.AUTO, "any", "any"));
 
         long stop = System.currentTimeMillis();
 
-        //assert results
+        // assert results
         Assert.assertNotNull(out);
-        Assert.assertTrue(stop-start < MAX_BLOCKING_TIME);
+        Assert.assertTrue(stop - start < MAX_BLOCKING_TIME);
     }
 
     /*
      * Helpers
      */
-    //get a srm spy with a custom mock reader
+    // get a srm spy with a custom mock reader
     SamResourceManagerPool srmSpy(ReaderPoolPlugin poolPlugin) throws KeypleReaderException {
         return Mockito.spy(new SamResourceManagerPool(poolPlugin));
     }
 
-    //get a srm spy with a default mock reader
+    // get a srm spy with a default mock reader
     SamResourceManagerPool srmSpy() throws KeypleReaderException {
         ReaderPoolPlugin poolPlugin = Mockito.mock(ReaderPoolPlugin.class);
         return Mockito.spy(new SamResourceManagerPool(poolPlugin));
     }
 
-    SamResource samResourceMock(){
+    SamResource samResourceMock() {
         SamResource mock = Mockito.mock(SamResource.class);
         return mock;
     }
 
-    SeReader seReaderMock(){
+    SeReader seReaderMock() {
         SeReader mock = Mockito.mock(SeReader.class);
         return mock;
     }

@@ -28,6 +28,7 @@ public class SamResourceManagerPool extends SamResourceManager {
 
     /**
      * Protected constructor, use the {@link SamResourceManagerFactory}
+     * 
      * @param samReaderPoolPlugin
      */
     protected SamResourceManagerPool(ReaderPoolPlugin samReaderPoolPlugin) {

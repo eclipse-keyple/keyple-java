@@ -31,11 +31,13 @@ public class SamResourceManagerDefault extends SamResourceManager {
     private static final Logger logger = LoggerFactory.getLogger(SamResourceManagerDefault.class);
 
     private final List<SamResource> localSamResources = new ArrayList<SamResource>();
-    final SamResourceManagerDefault.ReaderObserver readerObserver;// only used with observable readers
+    final SamResourceManagerDefault.ReaderObserver readerObserver;// only used with observable
+                                                                  // readers
     protected final ReaderPlugin samReaderPlugin;
 
     /**
      * Protected constructor, use the {@link SamResourceManagerFactory}
+     * 
      * @param readerPlugin
      * @param samReaderFilter
      * @throws KeypleReaderException

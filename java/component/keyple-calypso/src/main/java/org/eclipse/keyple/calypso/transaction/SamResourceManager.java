@@ -11,13 +11,12 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
+import static org.eclipse.keyple.calypso.command.sam.SamRevision.AUTO;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-
-import static org.eclipse.keyple.calypso.command.sam.SamRevision.AUTO;
 
 /**
  * Management of SAM resources:
@@ -51,8 +50,8 @@ public abstract class SamResourceManager {
      * @return a SAM resource
      * @throws KeypleReaderException if a reader error occurs
      */
-    abstract public SamResource allocateSamResource(AllocationMode allocationMode, SamIdentifier samIdentifier)
-            throws KeypleReaderException;
+    abstract public SamResource allocateSamResource(AllocationMode allocationMode,
+            SamIdentifier samIdentifier) throws KeypleReaderException;
 
     /**
      * Free a previously allocated SAM resource.
@@ -71,8 +70,7 @@ public abstract class SamResourceManager {
      * @return a {@link SamResource}
      * @throws KeypleReaderException if an reader error occurs while doing the selection
      */
-    protected SamResource createSamResource(SeReader samReader)
-            throws KeypleReaderException {
+    protected SamResource createSamResource(SeReader samReader) throws KeypleReaderException {
 
         samReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO7816_3, ".*");
 
