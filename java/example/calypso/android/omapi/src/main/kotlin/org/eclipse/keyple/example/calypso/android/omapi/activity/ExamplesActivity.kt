@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import org.eclipse.keyple.core.seproxy.SeProxyService
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.example.calypso.android.omapi.adapter.EventAdapter
+import org.eclipse.keyple.example.calypso.android.omapi.model.ChoiceEventModel
 import org.eclipse.keyple.example.calypso.android.omapi.model.EventModel
 import org.eclipse.keyple.plugin.android.omapi.PLUGIN_NAME
 import timber.log.Timber
@@ -53,5 +54,11 @@ abstract class ExamplesActivity: BasicActivity() {
         events.add(EventModel(EventModel.TYPE_RESULT, message))
         adapter.notifyItemInserted(events.lastIndex)
         Timber.d("Result: %s", message)
+    }
+
+    protected fun addChoiceEvent(title: String, choices: List<String>, callback: (choice: String) -> Unit){
+        events.add(ChoiceEventModel(title, choices, callback))
+        adapter.notifyItemInserted(events.lastIndex)
+        Timber.d("Choice: %s: %s", title, choices.toString())
     }
 }

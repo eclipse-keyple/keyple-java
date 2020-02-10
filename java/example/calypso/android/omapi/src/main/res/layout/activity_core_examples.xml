@@ -40,6 +40,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/case_explicit_selection" />
+        <Button
+            android:id="@+id/groupedMultiselectionButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/groupedMultiSelection" />
+
+        <Button
+            android:id="@+id/sequentialMultiSelectionButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/sequentialMultiSelection" />
 
     </LinearLayout>
 

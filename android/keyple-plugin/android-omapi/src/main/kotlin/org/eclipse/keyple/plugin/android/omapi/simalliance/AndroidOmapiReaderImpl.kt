@@ -11,9 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.omapi.simalliance
 
-import java.io.IOException
-import java.util.NoSuchElementException
-import kotlin.experimental.or
 import org.eclipse.keyple.core.seproxy.SeSelector
 import org.eclipse.keyple.core.seproxy.exception.KeypleApplicationSelectionException
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException
@@ -26,6 +23,9 @@ import org.simalliance.openmobileapi.Channel
 import org.simalliance.openmobileapi.Reader
 import org.simalliance.openmobileapi.Session
 import timber.log.Timber
+import java.io.IOException
+import java.util.*
+import kotlin.experimental.or
 
 /**
  * Implementation of the [AndroidOmapiReader] based on the [AbstractLocalReader]
@@ -99,7 +99,7 @@ internal class AndroidOmapiReaderImpl(private val nativeReader: Reader, pluginNa
                             if (omapiVersion >= P2_SUPPORTED_MIN_VERSION) {
                                 session?.openLogicalChannel(aidSelector.aidToSelect.value, p2)
                             } else {
-                                throw IOException(String.format("P2 != 00h while opening logical channel is only supported by OMAPI version >= 3.0. Current is %s", omapiVersion.toString()))
+                                throw KeypleIOReaderException("P2 != 00h while opening logical channel is only supported by OMAPI version >= 3.0. Current is $omapiVersion")
                             }
                         }
             } catch (e: IOException) {

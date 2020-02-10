@@ -19,7 +19,7 @@
         <!-- Required for Open Mobile API -->
         <uses-library
             android:name="org.simalliance.openmobileapi"
-            android:required="true" />
+            android:required="false" />
 
         <activity
             android:name=".activity.MainActivity"
