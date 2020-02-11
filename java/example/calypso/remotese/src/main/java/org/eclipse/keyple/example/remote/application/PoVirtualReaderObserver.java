@@ -14,6 +14,7 @@ package org.eclipse.keyple.example.remote.application;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
+import org.eclipse.keyple.calypso.exception.NoResourceAvailableException;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
@@ -101,7 +102,9 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
                     e.printStackTrace();
                 } catch (KeypleReaderException e) {
                     e.printStackTrace();
-                } finally {
+                } catch (NoResourceAvailableException e) {
+                    e.printStackTrace();
+                }finally {
                     /**
                      * Release SamResource
                      */
@@ -126,6 +129,8 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
                 logger.info("{} TIMEOUT_ERROR {} {}", nodeId, event.getPluginName(),
                         event.getReaderName());
                 break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + event.getEventType());
         }
     }
 
