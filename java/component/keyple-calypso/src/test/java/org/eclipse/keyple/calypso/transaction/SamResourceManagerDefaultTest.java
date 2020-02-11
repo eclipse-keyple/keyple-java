@@ -11,6 +11,11 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
+import static org.eclipse.keyple.calypso.transaction.SamResourceManagerPool.MAX_BLOCKING_TIME;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
+import java.util.*;
 import org.eclipse.keyple.calypso.CalypsoBaseTest;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.exception.NoResourceAvailableException;
@@ -27,18 +32,12 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-
-import static org.eclipse.keyple.calypso.transaction.SamResourceManagerPool.MAX_BLOCKING_TIME;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
-
 @RunWith(MockitoJUnitRunner.class)
 public class SamResourceManagerDefaultTest extends CalypsoBaseTest {
 
 
-    private static final Logger logger = LoggerFactory.getLogger(SamResourceManagerDefaultTest.class);
+    private static final Logger logger =
+            LoggerFactory.getLogger(SamResourceManagerDefaultTest.class);
 
     private static final String SAM_READER_NAME = "sam-reader-name";
 
@@ -54,7 +53,7 @@ public class SamResourceManagerDefaultTest extends CalypsoBaseTest {
         // init SamResourceManager with a not mathching filter
         SamResourceManagerDefault srmSpy = srmSpy("notMatchingFilter");
         long start = System.currentTimeMillis();
-        Boolean exceptionThrown =false;
+        Boolean exceptionThrown = false;
 
         // test
         SamResource out = null;
@@ -63,7 +62,7 @@ public class SamResourceManagerDefaultTest extends CalypsoBaseTest {
                     new SamIdentifier(SamRevision.AUTO, "any", "any"));
 
         } catch (NoResourceAvailableException e) {
-            exceptionThrown=true;
+            exceptionThrown = true;
         }
         long stop = System.currentTimeMillis();
 
@@ -78,7 +77,7 @@ public class SamResourceManagerDefaultTest extends CalypsoBaseTest {
 
         // init SamResourceManager with a mathching filter
         SamResourceManagerDefault srmSpy = srmSpy(".*");
-        //doReturn(samResourceMock()).when(srmSpy).createSamResource(any(SeReader.class));
+        // doReturn(samResourceMock()).when(srmSpy).createSamResource(any(SeReader.class));
 
         long start = System.currentTimeMillis();
 
@@ -95,21 +94,15 @@ public class SamResourceManagerDefaultTest extends CalypsoBaseTest {
 
 
 
-
-
-
-
-
-
-
     /*
      * Helpers
      */
 
-    SeResponse samSelectionSuccess(){
+    SeResponse samSelectionSuccess() {
         SelectionStatus selectionStatus = Mockito.mock(SelectionStatus.class);
         when(selectionStatus.hasMatched()).thenReturn(true);
-        when(selectionStatus.getAtr()).thenReturn(new AnswerToReset(ByteArrayUtil.fromHex(CalypsoSamTest.ATR1)));
+        when(selectionStatus.getAtr())
+                .thenReturn(new AnswerToReset(ByteArrayUtil.fromHex(CalypsoSamTest.ATR1)));
 
         SeResponse seResponse = Mockito.mock(SeResponse.class);
         when(seResponse.getSelectionStatus()).thenReturn(selectionStatus);
@@ -125,17 +118,18 @@ public class SamResourceManagerDefaultTest extends CalypsoBaseTest {
         List<SeResponse> selectionResponses = new ArrayList<SeResponse>();
         selectionResponses.add(samSelectionSuccess());
 
-        //create a mock reader
+        // create a mock reader
         ProxyReader reader = Mockito.mock(ProxyReader.class);
         when(reader.getName()).thenReturn(SAM_READER_NAME);
         when(reader.isSePresent()).thenReturn(true);
-        doReturn(selectionResponses).when(reader).transmitSet(any(Set.class),any(MultiSeRequestProcessing.class),any(ChannelControl.class));
+        doReturn(selectionResponses).when(reader).transmitSet(any(Set.class),
+                any(MultiSeRequestProcessing.class), any(ChannelControl.class));
 
-        //create a list of mock readers
+        // create a list of mock readers
         SortedSet<SeReader> readers = new TreeSet<SeReader>();
         readers.add(reader);
 
-        //create the mock plugin
+        // create the mock plugin
         ReaderPlugin plugin = Mockito.mock(ReaderPlugin.class);
         when(plugin.getReaders()).thenReturn(readers);
 

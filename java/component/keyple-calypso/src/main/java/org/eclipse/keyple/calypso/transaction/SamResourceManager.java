@@ -12,14 +12,11 @@
 package org.eclipse.keyple.calypso.transaction;
 
 import static org.eclipse.keyple.calypso.command.sam.SamRevision.AUTO;
-
 import org.eclipse.keyple.calypso.exception.NoResourceAvailableException;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 
 /**
  * Management of SAM resources:
@@ -77,10 +74,9 @@ public abstract class SamResourceManager {
 
         SeSelection samSelection = new SeSelection();
 
-        /* Prepare selector*/
-        samSelection.prepareSelection(
-                new SamSelectionRequest(
-                        new SamSelector(new SamIdentifier(AUTO, null, null), "SAM")));
+        /* Prepare selector */
+        samSelection.prepareSelection(new SamSelectionRequest(
+                new SamSelector(new SamIdentifier(AUTO, null, null), "SAM")));
 
         SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
 

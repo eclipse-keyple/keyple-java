@@ -14,7 +14,6 @@ package org.eclipse.keyple.calypso.transaction;
 
 import java.util.*;
 import java.util.regex.Pattern;
-
 import org.eclipse.keyple.calypso.exception.NoResourceAvailableException;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
@@ -28,8 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implementation of Sam Resource Manager working a {@link ReaderPlugin} (either Stub or Pcsc)
- * It is meant to work with a Keyple Pcsc Plugin or a Keyple Stub Plugin.
+ * Implementation of Sam Resource Manager working a {@link ReaderPlugin} (either Stub or Pcsc) It is
+ * meant to work with a Keyple Pcsc Plugin or a Keyple Stub Plugin.
  */
 public class SamResourceManagerDefault extends SamResourceManager {
     private static final Logger logger = LoggerFactory.getLogger(SamResourceManagerDefault.class);
@@ -47,7 +46,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
      * @param readerPlugin
      * @param samReaderFilter
      */
-    protected SamResourceManagerDefault(ReaderPlugin readerPlugin, String samReaderFilter){
+    protected SamResourceManagerDefault(ReaderPlugin readerPlugin, String samReaderFilter) {
 
         this.samReaderPlugin = readerPlugin;
 
@@ -128,7 +127,9 @@ public class SamResourceManagerDefault extends SamResourceManager {
             // loop until MAX_BLOCKING_TIME in blocking mode, only once in non-blocking mode
             if (allocationMode == AllocationMode.NON_BLOCKING) {
                 logger.trace("No SAM resources available at the moment.");
-                throw new NoResourceAvailableException("No Sam resource could be allocated for samIdentifier +"+ samIdentifier.getGroupReference());
+                throw new NoResourceAvailableException(
+                        "No Sam resource could be allocated for samIdentifier +"
+                                + samIdentifier.getGroupReference());
             } else {
                 if (!noSamResourceLogged) {
                     /* log once the first time */
@@ -144,7 +145,10 @@ public class SamResourceManagerDefault extends SamResourceManager {
                 if (System.currentTimeMillis() >= maxBlockingDate) {
                     logger.error("The allocation process failed. Timeout {} sec exceeded .",
                             (MAX_BLOCKING_TIME / 1000.0));
-                    throw new NoResourceAvailableException("No Sam resource could be allocated within timeout of "+MAX_BLOCKING_TIME+"ms for samIdentifier "+ samIdentifier.getGroupReference());
+                    throw new NoResourceAvailableException(
+                            "No Sam resource could be allocated within timeout of "
+                                    + MAX_BLOCKING_TIME + "ms for samIdentifier "
+                                    + samIdentifier.getGroupReference());
                 }
             }
         }
@@ -193,9 +197,11 @@ public class SamResourceManagerDefault extends SamResourceManager {
                     samReader = SeProxyService.getInstance().getPlugin(event.getPluginName())
                             .getReader(readerName);
                 } catch (KeyplePluginNotFoundException e) {
-                    logger.error("Plugin not found {}", event.getPluginName()); return;
+                    logger.error("Plugin not found {}", event.getPluginName());
+                    return;
                 } catch (KeypleReaderNotFoundException e) {
-                    logger.error("Reader not found {}", readerName); return;
+                    logger.error("Reader not found {}", readerName);
+                    return;
                 }
                 switch (event.getEventType()) {
                     case READER_CONNECTED:
@@ -221,7 +227,8 @@ public class SamResourceManagerDefault extends SamResourceManager {
                             try {
                                 initSamReader(samReader, readerObserver);
                             } catch (KeypleReaderException e) {
-                                logger.error("Unable to init Sam reader {}", samReader.getName(), e.getCause());
+                                logger.error("Unable to init Sam reader {}", samReader.getName(),
+                                        e.getCause());
                             }
                         } else {
                             logger.trace("Reader not matching: {}", readerName);
@@ -343,12 +350,13 @@ public class SamResourceManagerDefault extends SamResourceManager {
         return false;
     }
 
-    private void initSamReader(SeReader samReader, ReaderObserver readerObserver) throws KeypleReaderException {
-            samReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO7816_3, ".*");
+    private void initSamReader(SeReader samReader, ReaderObserver readerObserver)
+            throws KeypleReaderException {
+        samReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO7816_3, ".*");
 
-            /*
-             * Specific to PCSC reader (no effect on Stub)
-             */
+        /*
+         * Specific to PCSC reader (no effect on Stub)
+         */
 
         try {
             /* contactless SE works with T0 protocol */
@@ -357,7 +365,8 @@ public class SamResourceManagerDefault extends SamResourceManager {
             /* Shared mode */
             samReader.setParameter("mode", "shared");
         } catch (KeypleBaseException e) {
-            throw new IllegalArgumentException("Parameters are not supported for this reader : protocol:TO, mode:shared");
+            throw new IllegalArgumentException(
+                    "Parameters are not supported for this reader : protocol:TO, mode:shared");
         }
 
         if (samReader.isSePresent()) {

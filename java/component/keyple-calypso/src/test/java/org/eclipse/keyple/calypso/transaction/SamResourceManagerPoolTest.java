@@ -47,7 +47,7 @@ public class SamResourceManagerPoolTest extends CalypsoBaseTest {
         // init
         SamResourceManagerPool srmSpy = srmSpy();
         long start = System.currentTimeMillis();
-        Boolean exceptionThrown =false;
+        Boolean exceptionThrown = false;
 
         // test
         try {
@@ -55,7 +55,7 @@ public class SamResourceManagerPoolTest extends CalypsoBaseTest {
                     new SamIdentifier(SamRevision.AUTO, "any", "any"));
 
         } catch (NoResourceAvailableException e) {
-            exceptionThrown=true;
+            exceptionThrown = true;
         }
         long stop = System.currentTimeMillis();
 
@@ -97,7 +97,7 @@ public class SamResourceManagerPoolTest extends CalypsoBaseTest {
     }
 
     // get a srm spy with a default mock reader
-    SamResourceManagerPool srmSpy(){
+    SamResourceManagerPool srmSpy() {
         ReaderPoolPlugin poolPlugin = Mockito.mock(ReaderPoolPlugin.class);
         return Mockito.spy(new SamResourceManagerPool(poolPlugin));
     }
