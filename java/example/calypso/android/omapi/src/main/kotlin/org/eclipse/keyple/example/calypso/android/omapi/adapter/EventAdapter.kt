@@ -1,3 +1,14 @@
+/********************************************************************************
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.eclipse.keyple.example.calypso.android.omapi.adapter
 
 import android.view.LayoutInflater
@@ -6,12 +17,13 @@ import android.view.ViewGroup
 import android.widget.RadioButton
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.card_action_event.view.cardActionTextView
-import kotlinx.android.synthetic.main.card_choice_event.view.*
+import kotlinx.android.synthetic.main.card_choice_event.view.choiceRadioGroup
 import org.eclipse.keyple.example.calypso.android.omapi.R
 import org.eclipse.keyple.example.calypso.android.omapi.model.ChoiceEventModel
 import org.eclipse.keyple.example.calypso.android.omapi.model.EventModel
+import org.eclipse.keyple.example.calypso.android.omapi.utils.getColorResource
 
-class EventAdapter(private val events: ArrayList<EventModel>): RecyclerView.Adapter<EventAdapter.ViewHolder>() {
+class EventAdapter(private val events: ArrayList<EventModel>) : RecyclerView.Adapter<EventAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return when (viewType) {
@@ -34,19 +46,19 @@ class EventAdapter(private val events: ArrayList<EventModel>): RecyclerView.Adap
         return events[position].type
     }
 
-    open class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
-        open fun bind(event: EventModel){
-            with(itemView){
+    open class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        open fun bind(event: EventModel) {
+            with(itemView) {
                 cardActionTextView.text = event.text
             }
         }
-
     }
 
-    class ChoiceViewHolder(itemView: View): ViewHolder(itemView){
-        override fun bind(event: EventModel){
+    class ChoiceViewHolder(itemView: View) : ViewHolder(itemView) {
+        override fun bind(event: EventModel) {
             super.bind(event)
-            with(itemView){
+            with(itemView) {
+                choiceRadioGroup.removeAllViews()
                 (event as ChoiceEventModel).choices.forEachIndexed { index, choice ->
                     val button = RadioButton(this.context)
                     button.text = choice
@@ -54,11 +66,10 @@ class EventAdapter(private val events: ArrayList<EventModel>): RecyclerView.Adap
                     button.setOnClickListener {
                         event.callback(choice)
                     }
-                    button.setTextColor(R.color.textColorPrimary)
+                    button.setTextColor(context.getColorResource(R.color.textColorPrimary))
                     choiceRadioGroup.addView(button)
                 }
             }
-
         }
     }
 }

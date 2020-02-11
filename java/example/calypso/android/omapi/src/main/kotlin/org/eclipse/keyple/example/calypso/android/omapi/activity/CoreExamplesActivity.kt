@@ -1,9 +1,19 @@
+/********************************************************************************
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.eclipse.keyple.example.calypso.android.omapi.activity
 
 import android.view.MenuItem
-import androidx.core.view.GravityCompat
-import kotlinx.android.synthetic.main.activity_core_examples.*
-import kotlinx.android.synthetic.main.activity_main.toolbar
+import kotlinx.android.synthetic.main.activity_core_examples.eventRecyclerView
+import kotlinx.android.synthetic.main.activity_core_examples.toolbar
 import org.eclipse.keyple.core.selection.SeSelection
 import org.eclipse.keyple.core.seproxy.ChannelControl
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
@@ -21,14 +31,14 @@ import org.eclipse.keyple.example.calypso.android.omapi.utils.GenericSeSelection
 /**
  * Activity execution Keple-Core based examples.
  */
-class CoreExamplesActivity : ExamplesActivity(){
+class CoreExamplesActivity : ExamplesActivity() {
 
     override fun initContentView() {
         setContentView(R.layout.activity_core_examples)
-        initActionBar(toolbar,"keyple-core", "Shows usage of Keyple Core")
+        initActionBar(toolbar, "keyple-core", "Shows usage of Keyple Core")
     }
 
-    private fun getReadersInfos(){
+    private fun getReadersInfos() {
         addHeaderEvent("Readers found ${readers.size}, getting infos")
 
         readers.forEach {
@@ -42,22 +52,22 @@ class CoreExamplesActivity : ExamplesActivity(){
             addResultEvent("ReaderIsPresent: [$isSePresent]")
         }
 
-        eventRecyclerView.smoothScrollToPosition(events.size-1)
-
+        eventRecyclerView.smoothScrollToPosition(events.size - 1)
     }
 
-    private fun explicitSectionAid(){
+    private fun explicitSectionAid() {
 
         addHeaderEvent("UseCase Generic #1: AID based explicit selection")
 
         val aids = AidEnum.values().map { it.name }
 
         addChoiceEvent("Choose an Application:", aids) { selectedApp ->
+            eventRecyclerView.smoothScrollToPosition(events.size - 1)
             val poAid = AidEnum.valueOf(selectedApp).aid
 
-            if(readers.size <1) {
+            if (readers.size <1) {
                 addResultEvent("No readers available")
-            }else{
+            } else {
                 readers.forEach {
                     addHeaderEvent("Starting explicitAidSelection with $poAid on Reader ${it.name}")
 
@@ -66,31 +76,28 @@ class CoreExamplesActivity : ExamplesActivity(){
                     val seRequest = SeRequest(seSelector, null)
 
                     addActionEvent("Sending SeRequest to select: $poAid")
-                    try{
+                    try {
                         val seResponse = (it as ProxyReader).transmit(seRequest)
 
-                        if(seResponse?.selectionStatus?.hasMatched() == true){
+                        if (seResponse?.selectionStatus?.hasMatched() == true) {
                             addResultEvent("The selection of the PO has succeeded.")
                             addResultEvent("Application FCI = ${ByteArrayUtil.toHex(seResponse.selectionStatus.fci.bytes)}")
-                        }else{
+                        } else {
                             addResultEvent("The selection of the PO Failed")
                         }
-                    }catch (e: Exception){
+                    } catch (e: Exception) {
                         addResultEvent("The selection of the PO Failed: ${e.message}")
                     }
                 }
             }
-
-            eventRecyclerView.smoothScrollToPosition(events.size-1)
+            eventRecyclerView.smoothScrollToPosition(events.size - 1)
         }
-        eventRecyclerView.smoothScrollToPosition(events.size-1)
-
     }
 
     /**
      * Next may not be supported, depends on OMAPI implementation
      */
-    private fun groupedMultiSelection(){
+    private fun groupedMultiSelection() {
         addHeaderEvent("UseCase Generic #3: AID based grouped explicit multiple selection")
 
         /* CLOSE_AFTER in order to secure selection of all applications */
@@ -127,15 +134,15 @@ class CoreExamplesActivity : ExamplesActivity(){
         /*
          * Actual SE communication: operate through a single request the SE selection
          */
-        if(readers.size <1) {
+        if (readers.size <1) {
             addResultEvent("No readers available")
-        }else{
-            readers.forEach {seReader: SeReader ->
-                if(seReader.isSePresent){
+        } else {
+            readers.forEach { seReader: SeReader ->
+                if (seReader.isSePresent) {
                     addActionEvent("Sending multiSelection request based on AID Prefix $seAidPrefix to ${seReader.name}")
-                    try{
+                    try {
                         val selectionsResult = seSelection.processExplicitSelection(seReader)
-                        if(selectionsResult.matchingSelections.size>0){
+                        if (selectionsResult.matchingSelections.size> 0) {
                             selectionsResult.matchingSelections.forEach {
                                 val matchingSe = it.matchingSe
                                 addResultEvent("Selection status for selection ${it.extraInfo} " +
@@ -143,32 +150,32 @@ class CoreExamplesActivity : ExamplesActivity(){
                                         "ATR: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.atr.bytes)}\n\t\t" +
                                         "FCI: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.fci.dataOut)}")
                             }
-                        }else {
+                        } else {
                             addResultEvent("No SE matched the selection.")
                         }
-                    }catch (e: Exception){
+                    } catch (e: Exception) {
                         addResultEvent("The selection of the PO Failed: ${e.message}")
                     }
-                }else{
+                } else {
                     addResultEvent("No SE were detected")
                 }
             }
         }
-        eventRecyclerView.smoothScrollToPosition(events.size-1)
+        eventRecyclerView.smoothScrollToPosition(events.size - 1)
     }
 
     /**
      * Next may not be supported, depends on OMAPI implementation
      */
-    private fun sequentialMultiSelection(){
+    private fun sequentialMultiSelection() {
         addHeaderEvent("UseCase Generic #4: AID based sequential explicit multiple selection")
 
         /* operate SE selection (change the AID here to adapt it to the SE used for the test) */
         val seAidPrefix = "A000000404012509"
 
-        if(readers.size <1) {
+        if (readers.size <1) {
             addResultEvent("No readers available")
-        }else{
+        } else {
             readers.forEach { seReader: SeReader ->
                 if (seReader.isSePresent) {
 
@@ -206,12 +213,12 @@ class CoreExamplesActivity : ExamplesActivity(){
 
                     /* Do the selection and display the result */
                     doAndAnalyseSelection(seReader, seSelection, 2, seAidPrefix)
-                }else{
+                } else {
                     addResultEvent("No SE were detected")
                 }
             }
         }
-        eventRecyclerView.smoothScrollToPosition(events.size-1)
+        eventRecyclerView.smoothScrollToPosition(events.size - 1)
     }
 
     @Throws(KeypleReaderException::class)
@@ -231,14 +238,12 @@ class CoreExamplesActivity : ExamplesActivity(){
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
+        super.onNavigationItemSelected(item)
+        when (item.itemId) {
             R.id.getReadersInfosButton -> getReadersInfos()
             R.id.explicitSelectionAidButton -> explicitSectionAid()
             R.id.groupedMultiselectionButton -> groupedMultiSelection()
             R.id.sequentialMultiSelectionButton -> sequentialMultiSelection()
-        }
-        if(drawerLayout.isDrawerOpen(GravityCompat.START)){
-            drawerLayout.closeDrawer(GravityCompat.START)
         }
         return true
     }

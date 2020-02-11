@@ -1,3 +1,14 @@
+/********************************************************************************
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.eclipse.keyple.example.calypso.android.omapi.activity
 
 import android.os.Bundle
@@ -20,19 +31,18 @@ abstract class BasicActivity : AppCompatActivity() {
             e.printStackTrace()
         }
     }
-    fun initActionBar(toolbar: Toolbar, title: String, subtitle: String){
+    fun initActionBar(toolbar: Toolbar, title: String, subtitle: String) {
         setSupportActionBar(toolbar)
         val actionBar = supportActionBar
         actionBar?.title = title
         actionBar?.subtitle = subtitle
     }
 
-    fun showAlertDialog(t: Throwable){
+    fun showAlertDialog(t: Throwable) {
         val builder = AlertDialog.Builder(this@BasicActivity)
         builder.setTitle(R.string.alert_dialog_title)
         builder.setMessage(getString(R.string.alert_dialog_message, t.message))
         val dialog = builder.create()
         dialog.show()
-
     }
 }
