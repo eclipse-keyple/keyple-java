@@ -23,13 +23,23 @@ import org.junit.Test;
 
 
 public class CalypsoSamTest {
+
+    static public String ATR1 =  "3B001122805A0180D002030411223344829000";
+    static public String ATR2 =  "3B001122805A0180D102030411223344829000";
+    static public String ATR3 =  "3B001122805A0180D202030411223344829000";
+    static public String ATR4 =  "3B001122805A0180C102030411223344829000";
+    static public String ATR5 =  "3B001122805A0180E102030411223344829000";
+    static public String ATR6 =  "3B001122805A0180E202030411223344829000";
+    static public String ATR7 =  "3B001122805A0180E202030411223344820000";
+
+
     /** basic CalypsoSam test: nominal ATR parsing */
     @Test
     public void test_CalypsoSam_1() {
         SamSelector samSelector = new SamSelector(AUTO, null, "Dummy SeSelector");
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
         SelectionStatus selectionStatus = new SelectionStatus(
-                new AnswerToReset(ByteArrayUtil.fromHex("3B001122805A0180D002030411223344829000")),
+                new AnswerToReset(ByteArrayUtil.fromHex(ATR1)),
                 null, true);
         CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null),
                 TransmissionMode.CONTACTS, "Dummy SeSlector");
@@ -49,7 +59,7 @@ public class CalypsoSamTest {
         SamSelector samSelector = new SamSelector(AUTO, null, "Dummy SeSelector");
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
         SelectionStatus selectionStatus = new SelectionStatus(
-                new AnswerToReset(ByteArrayUtil.fromHex("3B001122805A0180D102030411223344829000")),
+                new AnswerToReset(ByteArrayUtil.fromHex(ATR2)),
                 null, true);
         CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null),
                 TransmissionMode.CONTACTS, "Dummy SeSlector");
@@ -63,7 +73,7 @@ public class CalypsoSamTest {
         SamSelector samSelector = new SamSelector(AUTO, null, "Dummy SeSelector");
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
         SelectionStatus selectionStatus = new SelectionStatus(
-                new AnswerToReset(ByteArrayUtil.fromHex("3B001122805A0180D202030411223344829000")),
+                new AnswerToReset(ByteArrayUtil.fromHex(ATR3)),
                 null, true);
         CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null),
                 TransmissionMode.CONTACTS, "Dummy SeSlector");
@@ -77,7 +87,7 @@ public class CalypsoSamTest {
         SamSelector samSelector = new SamSelector(AUTO, null, "Dummy SeSelector");
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
         SelectionStatus selectionStatus = new SelectionStatus(
-                new AnswerToReset(ByteArrayUtil.fromHex("3B001122805A0180C102030411223344829000")),
+                new AnswerToReset(ByteArrayUtil.fromHex(ATR4)),
                 null, true);
         CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null),
                 TransmissionMode.CONTACTS, "Dummy SeSlector");
@@ -91,7 +101,7 @@ public class CalypsoSamTest {
         SamSelector samSelector = new SamSelector(AUTO, null, "Dummy SeSelector");
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
         SelectionStatus selectionStatus = new SelectionStatus(
-                new AnswerToReset(ByteArrayUtil.fromHex("3B001122805A0180E102030411223344829000")),
+                new AnswerToReset(ByteArrayUtil.fromHex(ATR5)),
                 null, true);
         CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null),
                 TransmissionMode.CONTACTS, "Dummy SeSlector");
@@ -105,7 +115,7 @@ public class CalypsoSamTest {
         SamSelector samSelector = new SamSelector(AUTO, null, "Dummy SeSelector");
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
         SelectionStatus selectionStatus = new SelectionStatus(
-                new AnswerToReset(ByteArrayUtil.fromHex("3B001122805A0180E202030411223344829000")),
+                new AnswerToReset(ByteArrayUtil.fromHex(ATR6)),
                 null, true);
         CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null),
                 TransmissionMode.CONTACTS, "Dummy SeSlector");
@@ -117,7 +127,7 @@ public class CalypsoSamTest {
         SamSelector samSelector = new SamSelector(AUTO, null, "Dummy SeSelector");
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
         SelectionStatus selectionStatus = new SelectionStatus(
-                new AnswerToReset(ByteArrayUtil.fromHex("3B001122805A0180E202030411223344820000")),
+                new AnswerToReset(ByteArrayUtil.fromHex(ATR7)),
                 null, true);
         CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null),
                 TransmissionMode.CONTACTS, "Dummy SeSlector");

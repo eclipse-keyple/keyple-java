@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
+import org.eclipse.keyple.calypso.exception.NoResourceAvailableException;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -25,6 +26,8 @@ public class SamResourceManagerPool extends SamResourceManager {
     private static final Logger logger = LoggerFactory.getLogger(SamResourceManagerPool.class);
 
     protected final ReaderPlugin samReaderPlugin;
+    protected final static int MAX_BLOCKING_TIME = 10000; // 10 sec
+    protected final static int POLLING_TIME = 10; // 10 ms
 
     /**
      * Protected constructor, use the {@link SamResourceManagerFactory}
@@ -40,7 +43,7 @@ public class SamResourceManagerPool extends SamResourceManager {
 
     @Override
     public SamResource allocateSamResource(AllocationMode allocationMode,
-            SamIdentifier samIdentifier) throws KeypleReaderException {
+            SamIdentifier samIdentifier) throws KeypleReaderException, NoResourceAvailableException {
         long maxBlockingDate = System.currentTimeMillis() + MAX_BLOCKING_TIME;
         boolean noSamResourceLogged = false;
         logger.debug("Allocating SAM reader channel...");
@@ -57,7 +60,7 @@ public class SamResourceManagerPool extends SamResourceManager {
             // loop until MAX_BLOCKING_TIME in blocking mode, only once in non-blocking mode
             if (allocationMode == AllocationMode.NON_BLOCKING) {
                 logger.trace("No SAM resources available at the moment.");
-                break;
+                throw new NoResourceAvailableException("No Sam resource could be allocated for samIdentifier +"+ samIdentifier.getGroupReference());
             } else {
                 if (!noSamResourceLogged) {
                     /* log once the first time */
@@ -65,7 +68,7 @@ public class SamResourceManagerPool extends SamResourceManager {
                     noSamResourceLogged = true;
                 }
                 try {
-                    Thread.sleep(10);
+                    Thread.sleep(POLLING_TIME);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt(); // set interrupt flag
                     logger.error("Interrupt exception in Thread.sleep.");
@@ -73,11 +76,10 @@ public class SamResourceManagerPool extends SamResourceManager {
                 if (System.currentTimeMillis() >= maxBlockingDate) {
                     logger.error("The allocation process failed. Timeout {} sec exceeded .",
                             (MAX_BLOCKING_TIME / 1000.0));
-                    return null;
+                    throw new NoResourceAvailableException("No Sam resource could be allocated within timeout of "+MAX_BLOCKING_TIME+"ms for samIdentifier "+ samIdentifier.getGroupReference());
                 }
             }
         }
-        return null;
     }
 
     @Override

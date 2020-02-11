@@ -12,10 +12,13 @@
 package org.eclipse.keyple.calypso.transaction;
 
 import static org.eclipse.keyple.calypso.command.sam.SamRevision.AUTO;
+
+import org.eclipse.keyple.calypso.exception.NoResourceAvailableException;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 
 /**
@@ -26,7 +29,6 @@ import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 public abstract class SamResourceManager {
 
     /* the maximum time (in milliseconds) during which the BLOCKING mode will wait */
-    protected final static int MAX_BLOCKING_TIME = 10000; // 10 sec
 
     public enum AllocationMode {
         BLOCKING, NON_BLOCKING
@@ -37,10 +39,10 @@ public abstract class SamResourceManager {
      * <p>
      * In the case where the allocation mode is BLOCKING, this method will wait until a SAM resource
      * becomes free and then return the reference to the allocated resource. However, the BLOCKING
-     * mode will wait a maximum time defined in tenths of a second by MAX_BLOCKING_TIME.
+     * mode will wait a maximum time defined in milliseconds by MAX_BLOCKING_TIME.
      * <p>
      * In the case where the allocation mode is NON_BLOCKING and no SAM resource is available, this
-     * method will return null.
+     * method will return an exception.
      * <p>
      * If the samGroup argument is null, the first available SAM resource will be selected and
      * returned regardless of its group.
@@ -48,10 +50,11 @@ public abstract class SamResourceManager {
      * @param allocationMode the blocking/non-blocking mode
      * @param samIdentifier the targeted SAM identifier
      * @return a SAM resource
+     * @throws NoResourceAvailableException if no resource is available
      * @throws KeypleReaderException if a reader error occurs
      */
     abstract public SamResource allocateSamResource(AllocationMode allocationMode,
-            SamIdentifier samIdentifier) throws KeypleReaderException;
+            SamIdentifier samIdentifier) throws KeypleReaderException, NoResourceAvailableException;
 
     /**
      * Free a previously allocated SAM resource.
@@ -72,20 +75,20 @@ public abstract class SamResourceManager {
      */
     protected SamResource createSamResource(SeReader samReader) throws KeypleReaderException {
 
-        samReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO7816_3, ".*");
-
         SeSelection samSelection = new SeSelection();
 
-        SamSelector samSelector = new SamSelector(new SamIdentifier(AUTO, null, null), "SAM");
-
-        /* Prepare selector, ignore MatchingSe here */
-        samSelection.prepareSelection(new SamSelectionRequest(samSelector));
+        /* Prepare selector*/
+        samSelection.prepareSelection(
+                new SamSelectionRequest(
+                        new SamSelector(new SamIdentifier(AUTO, null, null), "SAM")));
 
         SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
+
         if (!selectionsResult.hasActiveSelection()) {
-            throw new IllegalStateException("Unable to open a logical channel for SAM!");
+            throw new KeypleReaderException("Unable to open a logical channel for SAM!");
         }
         CalypsoSam calypsoSam = (CalypsoSam) selectionsResult.getActiveSelection().getMatchingSe();
+
         return new SamResource(samReader, calypsoSam);
     }
 

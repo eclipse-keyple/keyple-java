@@ -11,11 +11,12 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
-import static org.eclipse.keyple.calypso.transaction.SamResourceManager.MAX_BLOCKING_TIME;
+import static org.eclipse.keyple.calypso.transaction.SamResourceManagerPool.MAX_BLOCKING_TIME;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import org.eclipse.keyple.calypso.CalypsoBaseTest;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
+import org.eclipse.keyple.calypso.exception.NoResourceAvailableException;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -45,23 +46,27 @@ public class SamResourceManagerPoolTest extends CalypsoBaseTest {
     public void waitResources() throws KeypleReaderException {
         // init
         SamResourceManagerPool srmSpy = srmSpy();
-        // doReturn(null).when(srmSpy).createSamResource(any(SeReader.class));
         long start = System.currentTimeMillis();
+        Boolean exceptionThrown =false;
 
         // test
-        SamResource out = srmSpy.allocateSamResource(SamResourceManager.AllocationMode.BLOCKING,
-                new SamIdentifier(SamRevision.AUTO, "any", "any"));
+        try {
+            SamResource out = srmSpy.allocateSamResource(SamResourceManager.AllocationMode.BLOCKING,
+                    new SamIdentifier(SamRevision.AUTO, "any", "any"));
 
+        } catch (NoResourceAvailableException e) {
+            exceptionThrown=true;
+        }
         long stop = System.currentTimeMillis();
 
 
-        // assert results
-        Assert.assertNull(out);
+        // assert an exception is thrown after MAX_BLOCKING_TIME
+        Assert.assertTrue(exceptionThrown);
         Assert.assertTrue(stop - start > MAX_BLOCKING_TIME);
     }
 
     @Test
-    public void getResource() throws KeypleReaderException {
+    public void getResource() throws KeypleReaderException, NoResourceAvailableException {
         // init plugin
         ReaderPoolPlugin poolPlugin = Mockito.mock(ReaderPoolPlugin.class);
         doReturn(seReaderMock()).when(poolPlugin).allocateReader(any(String.class));
@@ -92,7 +97,7 @@ public class SamResourceManagerPoolTest extends CalypsoBaseTest {
     }
 
     // get a srm spy with a default mock reader
-    SamResourceManagerPool srmSpy() throws KeypleReaderException {
+    SamResourceManagerPool srmSpy(){
         ReaderPoolPlugin poolPlugin = Mockito.mock(ReaderPoolPlugin.class);
         return Mockito.spy(new SamResourceManagerPool(poolPlugin));
     }

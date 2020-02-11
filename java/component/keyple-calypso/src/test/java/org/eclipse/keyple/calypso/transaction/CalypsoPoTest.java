@@ -27,8 +27,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CalypsoPoTest {
-    private final static String ATR_VALUE = "3B8F8001805A08030400020011223344829000F3";
-    private final static String ATR_VALUE_2 = "3B8F8001805A08030400020011223344829000";
+    public final static String ATR_VALUE = "3B8F8001805A08030400020011223344829000F3";
+    public final static String ATR_VALUE_2 = "3B8F8001805A08030400020011223344829000";
     /*
     // @formatter:off
     Rev 3.1 FCI sample data
