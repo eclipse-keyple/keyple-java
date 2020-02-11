@@ -109,7 +109,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
             readers.forEach { seReader: SeReader ->
                 if (aidEnum == AidEnum.NAVIGO2013) {
 
-                    val poAid = AidEnum.NAVIGO2013.aid
+                    val poAid = aidEnum.aid
                     val sfiNavigoEFEnvironment = 0x07.toByte()
                     val sfiNavigoEFTransportEvent = 0x08.toByte()
 
@@ -181,16 +181,18 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                              */
                             val transportEvents = readTransportEventParser.records[1]
                             addResultEvent("Transport Event file data: ${ByteArrayUtil.toHex(transportEvents)}")
+                        }else{
+                            addResultEvent("The selection of the PO Failed")
                         }
                     } catch (e: Exception) {
                         addResultEvent("The selection of the PO Failed: ${e.message}")
                     }
                 } else if (aidEnum == AidEnum.HOPLINK) {
-                    val poAid = AidEnum.NAVIGO2013.aid
+                    val poAid = aidEnum.aid
                     val sfiHoplinkEFEnvironment = 0x14.toByte()
                     val sfiHoplinkEFUsage = 0x1A.toByte()
 
-                    addHeaderEvent("Starting readEnvironmentAndUsage with: $poAid")
+                    addHeaderEvent("Starting readEnvironmentAndUsage with: $poAid on Reader ${seReader.name}")
 
                     val t2UsageRecord1_dataFill = ("0102030405060708090A0B0C0D0E0F10" + "1112131415161718191A1B1C1D1E1F20" +
                             "2122232425262728292A2B2C2D2E2F30")
@@ -273,6 +275,8 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                              */
                             val transportEvents = readUsageParser.records[1]
                             addResultEvent("Transport Event file data: ${ByteArrayUtil.toHex(transportEvents)}")
+                        }else{
+                            addResultEvent("The selection of the PO Failed")
                         }
                     } catch (e: Exception) {
                         addResultEvent("The selection of the PO Failed: ${e.message}")
