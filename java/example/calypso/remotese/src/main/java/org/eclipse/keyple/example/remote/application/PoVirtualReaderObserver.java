@@ -104,7 +104,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
                     e.printStackTrace();
                 } catch (NoResourceAvailableException e) {
                     e.printStackTrace();
-                }finally {
+                } finally {
                     /**
                      * Release SamResource
                      */
