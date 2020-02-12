@@ -223,6 +223,6 @@ dependencies {
     testImplementation "junit:junit:4.12"
     testImplementation files('libs/org.simalliance.openmobileapi.jar')
 
-    /** Mockk**/
+    /** Mocking for tests **/
     testImplementation "io.mockk:mockk:1.9"
 }
