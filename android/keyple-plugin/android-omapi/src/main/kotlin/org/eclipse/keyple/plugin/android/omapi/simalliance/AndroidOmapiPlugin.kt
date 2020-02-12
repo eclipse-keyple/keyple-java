@@ -19,6 +19,10 @@ import org.simalliance.openmobileapi.Reader
 import org.simalliance.openmobileapi.SEService
 import timber.log.Timber
 
+/**
+ * Allow to provide an implementation of AbstractAndroidOmapiPlugin using the Simalliance
+ * OMAPI implementation of Reader and SeService objects.
+ */
 internal object AndroidOmapiPlugin : AbstractAndroidOmapiPlugin<Reader, SEService>(), SEService.CallBack {
 
     override fun connectToSe(context: Context) {
