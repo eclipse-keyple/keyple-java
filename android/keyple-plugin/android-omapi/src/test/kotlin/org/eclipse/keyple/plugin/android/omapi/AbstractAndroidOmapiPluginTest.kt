@@ -20,18 +20,18 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
-abstract class AndroidOmapiPluginTest<T, V> {
+internal abstract class AbstractAndroidOmapiPluginTest<T, V> {
 
     companion object {
         private val READERS_TO_MOCK = mapOf(Pair("SIM1", true), Pair("SIM2", false))
     }
 
     lateinit var context: Context
-    internal abstract var androidOmapiPlugin: AndroidOmapiPlugin<T, V>
+    internal abstract var androidOmapiPlugin: AbstractAndroidOmapiPlugin<T, V>
 
-    internal abstract fun buildAndroidOmapiPlugin(context: Context): AndroidOmapiPlugin<T, V>
+    internal abstract fun buildAndroidOmapiPlugin(context: Context): AbstractAndroidOmapiPlugin<T, V>
     abstract fun mockReader(name: String, isPresent: Boolean): T
-    internal abstract fun mockGetNativeReaders(androidOmapiPlugin: AndroidOmapiPlugin<T, V>, readersToMock: Map<String, Boolean>)
+    internal abstract fun mockGetNativeReaders(androidOmapiPlugin: AbstractAndroidOmapiPlugin<T, V>, readersToMock: Map<String, Boolean>)
     abstract fun triggerOnConnected()
 
     @Before

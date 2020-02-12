@@ -11,6 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.omapi
 
-internal interface ISeServiceFactory<T, V> {
+internal interface SeServiceFactory<T, V> {
     fun connectToSe(callBack: V): T
 }

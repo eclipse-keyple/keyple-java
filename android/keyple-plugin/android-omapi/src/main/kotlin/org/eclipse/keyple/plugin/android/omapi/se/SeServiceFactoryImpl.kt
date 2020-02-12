@@ -14,10 +14,10 @@ package org.eclipse.keyple.plugin.android.omapi.se
 import android.content.Context
 import android.se.omapi.SEService
 import androidx.annotation.RequiresApi
-import org.eclipse.keyple.plugin.android.omapi.ISeServiceFactory
+import org.eclipse.keyple.plugin.android.omapi.SeServiceFactory
 import java.util.concurrent.Executors
 
-internal class SeServiceFactoryImpl(private val applicationContext: Context) : ISeServiceFactory<SEService, SEService.OnConnectedListener> {
+internal class SeServiceFactoryImpl(private val applicationContext: Context) : SeServiceFactory<SEService, SEService.OnConnectedListener> {
 
     @RequiresApi(android.os.Build.VERSION_CODES.P)
     override fun connectToSe(callBack: SEService.OnConnectedListener): SEService {

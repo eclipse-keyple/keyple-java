@@ -17,17 +17,16 @@ import android.se.omapi.SEService
 import android.se.omapi.Session
 import io.mockk.every
 import io.mockk.mockk
-import kotlin.NoSuchElementException
 import org.eclipse.keyple.core.util.ByteArrayUtil
-import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiReaderTest
+import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiReaderTest
 
-internal class AndroidOmapiReaderImplTest : AndroidOmapiReaderTest<Reader, AndroidOmapiReaderImpl>() {
+internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, AndroidOmapiReader>() {
 
     override lateinit var nativeReader: Reader
-    override lateinit var reader: AndroidOmapiReaderImpl
+    override lateinit var reader: AndroidOmapiReader
 
-    override fun buildOmapiReaderImpl(nativeReader: Reader): AndroidOmapiReaderImpl {
-        return AndroidOmapiReaderImpl(nativeReader, PLUGIN_NAME, nativeReader.name)
+    override fun buildOmapiReaderImpl(nativeReader: Reader): AndroidOmapiReader {
+        return AndroidOmapiReader(nativeReader, PLUGIN_NAME, nativeReader.name)
     }
 
     override fun getNativeReaderName(): String {
@@ -88,7 +87,7 @@ internal class AndroidOmapiReaderImplTest : AndroidOmapiReaderTest<Reader, Andro
         return nativeReader
     }
 
-    override fun mockReaderWithExceptionOnOpenLogicalChannel(exception: Throwable): Reader {
+    override fun mockReaderWithExceptionOnOpenLogicalChannel(throwable: Throwable): Reader {
 
         val nativeReader = mockk<Reader>()
         val session = mockk<Session>()
@@ -96,7 +95,7 @@ internal class AndroidOmapiReaderImplTest : AndroidOmapiReaderTest<Reader, Andro
         every { nativeReader.name } returns "SIM1"
         every { session.isClosed } returns false
         every { session.atr } returns null
-        every { session.openLogicalChannel(ByteArrayUtil.fromHex(PO_AID), 0) } throws exception
+        every { session.openLogicalChannel(ByteArrayUtil.fromHex(PO_AID), 0) } throws throwable
         every { nativeReader.openSession() } returns session
         return nativeReader
     }
@@ -114,7 +113,7 @@ internal class AndroidOmapiReaderImplTest : AndroidOmapiReaderTest<Reader, Andro
         return nativeReader
     }
 
-    override fun mockReaderWithExceptionOnOpenBasicChannel(exception: Throwable): Reader {
+    override fun mockReaderWithExceptionOnOpenBasicChannel(throwable: Throwable): Reader {
 
         val nativeReader = mockk<Reader>()
         val session = mockk<Session>()
@@ -122,7 +121,7 @@ internal class AndroidOmapiReaderImplTest : AndroidOmapiReaderTest<Reader, Andro
         every { nativeReader.name } returns "SIM1"
         every { session.isClosed } returns false
         every { session.atr } returns null
-        every { session.openBasicChannel(null) } throws exception
+        every { session.openBasicChannel(null) } throws throwable
         every { nativeReader.openSession() } returns session
         return nativeReader
     }

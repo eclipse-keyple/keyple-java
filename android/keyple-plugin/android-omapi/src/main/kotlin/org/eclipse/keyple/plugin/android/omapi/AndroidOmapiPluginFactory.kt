@@ -50,7 +50,7 @@ class AndroidOmapiPluginFactory(private val context: Context) : AbstractPluginFa
 
     private fun getReaderPluginRegardingOsVersion(): ReaderPlugin {
         return if (sdkVersion >= Build.VERSION_CODES.P)
-            org.eclipse.keyple.plugin.android.omapi.se.AndroidOmapiPluginImpl.init(context)
+            org.eclipse.keyple.plugin.android.omapi.se.AndroidOmapiPlugin.init(context)
         else
             getReaderPluginRegardingPackages()
     }
@@ -60,7 +60,7 @@ class AndroidOmapiPluginFactory(private val context: Context) : AbstractPluginFa
         return try {
             context.packageManager
                     .getPackageInfo(SIMALLIANCE_OMAPI_PACKAGE_NAME, 0)
-            org.eclipse.keyple.plugin.android.omapi.simalliance.AndroidOmapiPluginImpl.init(context)
+            org.eclipse.keyple.plugin.android.omapi.simalliance.AndroidOmapiPlugin.init(context)
         } catch (e2: PackageManager.NameNotFoundException) {
             throw KeyplePluginInstantiationException("No OMAPI lib available within the OS")
         }

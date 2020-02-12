@@ -17,15 +17,15 @@ import android.se.omapi.SEService
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
-import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin
-import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPluginTest
+import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiPlugin
+import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiPluginTest
 
-class AndroidOmapiPluginImplTest : AndroidOmapiPluginTest<Reader, SEService>() {
+internal class AndroidOmapiPluginTest : AbstractAndroidOmapiPluginTest<Reader, SEService>() {
 
-    override lateinit var androidOmapiPlugin: AndroidOmapiPlugin<Reader, SEService>
+    override lateinit var androidOmapiPlugin: AbstractAndroidOmapiPlugin<Reader, SEService>
 
-    override fun buildAndroidOmapiPlugin(context: Context): AndroidOmapiPlugin<Reader, SEService> {
-        return AndroidOmapiPluginImpl.init(context) as AndroidOmapiPluginImpl
+    override fun buildAndroidOmapiPlugin(context: Context): AbstractAndroidOmapiPlugin<Reader, SEService> {
+        return AndroidOmapiPlugin.init(context) as AndroidOmapiPlugin
     }
 
     override fun mockReader(name: String, isPresent: Boolean): Reader {
@@ -35,13 +35,13 @@ class AndroidOmapiPluginImplTest : AndroidOmapiPluginTest<Reader, SEService>() {
         return reader
     }
 
-    override fun mockGetNativeReaders(androidOmapiPlugin: AndroidOmapiPlugin<Reader, SEService>, readersToMock: Map<String, Boolean>) {
+    override fun mockGetNativeReaders(androidOmapiPlugin: AbstractAndroidOmapiPlugin<Reader, SEService>, readersToMock: Map<String, Boolean>) {
         mockkObject(androidOmapiPlugin)
         val readers = readersToMock.map { mockReader(it.key, it.value) }.toTypedArray()
         every { androidOmapiPlugin.getNativeReaders() } returns readers
     }
 
     override fun triggerOnConnected() {
-        (androidOmapiPlugin as AndroidOmapiPluginImpl).onConnected()
+        (androidOmapiPlugin as AndroidOmapiPlugin).onConnected()
     }
 }

@@ -15,17 +15,17 @@ import android.content.Context
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
-import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin
-import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPluginTest
+import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiPlugin
+import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiPluginTest
 import org.simalliance.openmobileapi.Reader
 import org.simalliance.openmobileapi.SEService
 
-class AndroidOmapiPluginImplTest : AndroidOmapiPluginTest<Reader, SEService>() {
+internal class AndroidOmapiPluginTest : AbstractAndroidOmapiPluginTest<Reader, SEService>() {
 
-    override lateinit var androidOmapiPlugin: AndroidOmapiPlugin<Reader, SEService>
+    override lateinit var androidOmapiPlugin: AbstractAndroidOmapiPlugin<Reader, SEService>
 
-    override fun buildAndroidOmapiPlugin(context: Context): AndroidOmapiPluginImpl {
-        return AndroidOmapiPluginImpl.init(context) as AndroidOmapiPluginImpl
+    override fun buildAndroidOmapiPlugin(context: Context): AndroidOmapiPlugin {
+        return AndroidOmapiPlugin.init(context) as AndroidOmapiPlugin
     }
 
     override fun mockReader(name: String, isPresent: Boolean): Reader {
@@ -39,7 +39,7 @@ class AndroidOmapiPluginImplTest : AndroidOmapiPluginTest<Reader, SEService>() {
         return reader
     }
 
-    override fun mockGetNativeReaders(androidOmapiPlugin: AndroidOmapiPlugin<Reader, SEService>, readersToMock: Map<String, Boolean>) {
+    override fun mockGetNativeReaders(androidOmapiPlugin: AbstractAndroidOmapiPlugin<Reader, SEService>, readersToMock: Map<String, Boolean>) {
         mockkObject(androidOmapiPlugin)
         val readers = readersToMock.map { mockReader(it.key, it.value) }.toTypedArray()
         every { androidOmapiPlugin.getNativeReaders() } returns readers
@@ -47,6 +47,6 @@ class AndroidOmapiPluginImplTest : AndroidOmapiPluginTest<Reader, SEService>() {
 
     override fun triggerOnConnected() {
         val seService = mockk<SEService>()
-        (androidOmapiPlugin as AndroidOmapiPluginImpl).serviceConnected(seService)
+        (androidOmapiPlugin as AndroidOmapiPlugin).serviceConnected(seService)
     }
 }

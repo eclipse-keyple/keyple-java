@@ -12,10 +12,10 @@
 package org.eclipse.keyple.plugin.android.omapi.simalliance
 
 import android.content.Context
-import org.eclipse.keyple.plugin.android.omapi.ISeServiceFactory
+import org.eclipse.keyple.plugin.android.omapi.SeServiceFactory
 import org.simalliance.openmobileapi.SEService
 
-internal class SeServiceFactoryImpl(private val applicationContext: Context) : ISeServiceFactory<SEService, SEService.CallBack> {
+internal class SeServiceFactoryImpl(private val applicationContext: Context) : SeServiceFactory<SEService, SEService.CallBack> {
 
     override fun connectToSe(callBack: SEService.CallBack): SEService {
         return SEService(applicationContext, callBack)

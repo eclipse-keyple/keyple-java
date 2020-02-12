@@ -13,13 +13,13 @@ package org.eclipse.keyple.plugin.android.omapi.simalliance
 
 import android.content.Context
 import org.eclipse.keyple.core.seproxy.SeReader
-import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin
+import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiPlugin
 import org.eclipse.keyple.plugin.android.omapi.PLUGIN_NAME
 import org.simalliance.openmobileapi.Reader
 import org.simalliance.openmobileapi.SEService
 import timber.log.Timber
 
-internal object AndroidOmapiPluginImpl : AndroidOmapiPlugin<Reader, SEService>(), SEService.CallBack {
+internal object AndroidOmapiPlugin : AbstractAndroidOmapiPlugin<Reader, SEService>(), SEService.CallBack {
 
     override fun connectToSe(context: Context) {
         val seServiceFactory = SeServiceFactoryImpl(context)
@@ -34,14 +34,14 @@ internal object AndroidOmapiPluginImpl : AndroidOmapiPlugin<Reader, SEService>()
     override fun mapToSeReader(nativeReader: Reader): SeReader {
         Timber.d("Reader available name : %s", nativeReader.name)
         Timber.d("Reader available isSePresent : %S", nativeReader.isSecureElementPresent)
-        return AndroidOmapiReaderImpl(nativeReader, PLUGIN_NAME, nativeReader.name)
+        return AndroidOmapiReader(nativeReader, PLUGIN_NAME, nativeReader.name)
     }
 
     /**
      * Warning. Do not call this method directly.
      *
      * Invoked by Open Mobile {@link SEService} when connected
-     * Instantiates {@link AndroidOmapiReaderImpl} for each SE Reader detected in the platform
+     * Instantiates {@link AndroidOmapiReader} for each SE Reader detected in the platform
      *
      * @param seService : connected omapi service
      */

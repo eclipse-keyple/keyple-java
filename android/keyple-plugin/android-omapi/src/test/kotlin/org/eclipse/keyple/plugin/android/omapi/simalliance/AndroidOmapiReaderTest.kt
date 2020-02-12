@@ -13,15 +13,13 @@ package org.eclipse.keyple.plugin.android.omapi.simalliance
 
 import io.mockk.every
 import io.mockk.mockk
-import kotlin.NoSuchElementException
-import kotlin.collections.LinkedHashSet
 import org.eclipse.keyple.core.seproxy.SeSelector
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException
 import org.eclipse.keyple.core.seproxy.message.ApduRequest
 import org.eclipse.keyple.core.seproxy.message.SeRequest
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
-import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiReaderTest
+import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiReaderTest
 import org.junit.Assert
 import org.junit.Test
 import org.simalliance.openmobileapi.Channel
@@ -29,13 +27,13 @@ import org.simalliance.openmobileapi.Reader
 import org.simalliance.openmobileapi.SEService
 import org.simalliance.openmobileapi.Session
 
-internal class AndroidOmapiReaderImplTest : AndroidOmapiReaderTest<Reader, AndroidOmapiReaderImpl>() {
+internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, AndroidOmapiReader>() {
 
     override lateinit var nativeReader: Reader
-    override lateinit var reader: AndroidOmapiReaderImpl
+    override lateinit var reader: AndroidOmapiReader
 
-    override fun buildOmapiReaderImpl(nativeReader: Reader): AndroidOmapiReaderImpl {
-        return AndroidOmapiReaderImpl(nativeReader, PLUGIN_NAME, nativeReader.name)
+    override fun buildOmapiReaderImpl(nativeReader: Reader): AndroidOmapiReader {
+        return AndroidOmapiReader(nativeReader, PLUGIN_NAME, nativeReader.name)
     }
 
     override fun getNativeReaderName(): String {

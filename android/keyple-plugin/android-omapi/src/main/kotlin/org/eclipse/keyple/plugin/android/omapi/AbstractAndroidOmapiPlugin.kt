@@ -16,12 +16,14 @@ import org.eclipse.keyple.core.seproxy.ReaderPlugin
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin
 import timber.log.Timber
-import java.util.*
+import java.util.SortedSet
 
 /**
  * The AndroidOmapiPlugin interface provides the public elements used to manage the Android OMAPI plugin.
  */
-internal abstract class AndroidOmapiPlugin<T, V> : AbstractPlugin(PLUGIN_NAME), ReaderPlugin {
+const val PLUGIN_NAME = "AndroidOmapiPlugin"
+
+internal abstract class AbstractAndroidOmapiPlugin<T, V> : AbstractPlugin(PLUGIN_NAME), ReaderPlugin {
 
     abstract fun connectToSe(context: Context)
     abstract fun getNativeReaders(): Array<T>?
@@ -33,7 +35,7 @@ internal abstract class AndroidOmapiPlugin<T, V> : AbstractPlugin(PLUGIN_NAME), 
     /**
      * Initialize plugin by connecting to {@link SEService}
      */
-    fun init(context: Context): AndroidOmapiPlugin<T, V> {
+    fun init(context: Context): AbstractAndroidOmapiPlugin<T, V> {
         return if (seService != null) {
             this
         } else {
