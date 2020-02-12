@@ -22,6 +22,13 @@ Releases:
 ### keyple-java-plugin-remotese 0.9a
 ### keyple-android-plugin-android-nfc 0.9a
 ### keyple-android-plugin-android-omapi 0.9a
+* Conversion of the Java code to Kotlin
+* Removal of Supports Library usage
+* OMAPI compliance improvement to the SIM Alliance 
+* OMAPI implementation and to the Android 9.0 native OMAPI implementation.
+* OMAPI Plugin may now support NEXT instruction on SimAlliance OMAPI 3+
+* Updated versions of Android sdk support and dependencies
+* Various improvements of OMAP's example application
 
 ## Keyple Java 20/01
 
