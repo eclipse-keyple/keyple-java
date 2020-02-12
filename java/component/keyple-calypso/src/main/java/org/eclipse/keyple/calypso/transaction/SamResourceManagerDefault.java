@@ -304,6 +304,14 @@ public class SamResourceManagerDefault extends SamResourceManager {
                 switch (event.getEventType()) {
                     case SE_MATCHED:
                     case SE_INSERTED:
+                        if (containsReader(localSamResources, samReader.getName())) {
+                            logger.trace(
+                                    "Reader is already present in the local samResources -  READERNAME = {}",
+                                    samReader.getName());
+                            // do nothing
+                            return;
+                        }
+
                         SamResource newSamResource = null;
                         try {
                             /*
