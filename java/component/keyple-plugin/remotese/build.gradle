@@ -1,14 +1,7 @@
-def version = "0.9.0"
-
-if(project.getProperties().containsKey("release") && release=="true"){
-    project.version = version
-}else{
-    project.version = version+'-'+ timestamp+ '-SNAPSHOT'
-}
-
 apply plugin: 'java'
 apply plugin: 'java-library'
 apply plugin: 'maven'
+apply plugin: 'org.eclipse.keyple'
 
 project.description ='Keyple Remote SE Plugin Master and Slave'
 archivesBaseName = "keyple-java-plugin-remotese"

@@ -1,15 +1,7 @@
-def version = "0.9.0"
-
-if(project.getProperties().containsKey("release") && release=="true"){
-    project.version = version
-}else{
-    project.version = version+'-'+ timestamp+ '-SNAPSHOT'
-}
-
-
 apply plugin: 'java'
 apply plugin: 'java-library'
 apply plugin: 'maven'
+apply plugin: 'org.eclipse.keyple'
 
 sourceCompatibility = 1.6
 archivesBaseName = "keyple-java-core"
@@ -168,7 +160,7 @@ task installCore{
     dependsOn ':java:component:keyple-core:uploadArchives'
 
     doLast {
-        println 'Keyple Core library has been installed into maven local repo at path : ' + project.getRepositories().get(0).getAt("url")
+        println "Keyple Core library ${project.version} has been installed into maven local repo at path : " + project.getRepositories().get(0).getAt("url")
     }
 }
 
