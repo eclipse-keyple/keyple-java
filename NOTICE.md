@@ -67,7 +67,7 @@ Junit (4.12)
 
 ####Specific for Android plugins
 
-SEEK for Android (plugin OMAPI)
+SEEK for Android (plugin OMAPI) (3.2):
 
  * License: Apache Software License, 2.0
 
@@ -75,18 +75,18 @@ Android Open Source Project
 
  * License: Apache Software License, 2.0
  
- Timber
+Timber (4.7.1):
  
  * Licence: Apache Software License, 2.0
  
- Mockk: 
+Mockk (1.9): 
  
  * Licence: Apache Software License, 2.0
  
-  Kotlin Standard Library
+Kotlin Standard Library (1.3.50):
   
   * Licence: Apache Software License, 2.0
  
- Kotlinx Coroutines core
+Kotlinx Coroutines core (1.3.3):
  
  * Licence: Apache Software License, 2.0
