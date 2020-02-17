@@ -120,6 +120,8 @@ dependencies {
     //slf4j logback for android - https://github.com/tony19/logback-android
     implementation "org.slf4j:slf4j-api:${slf4japi_version}"
     implementation "com.github.tony19:logback-android:${android_logback_version}"
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+
 
 
     /*

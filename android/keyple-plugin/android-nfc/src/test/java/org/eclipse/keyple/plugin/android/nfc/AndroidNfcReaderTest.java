@@ -15,7 +15,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+
 import junit.framework.Assert;
+
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState;
@@ -33,7 +35,9 @@ import java.io.IOException;
 
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({TagProxy.class, NfcAdapter.class})
@@ -77,8 +81,8 @@ public class AndroidNfcReaderTest {
         Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
                 reader.getCurrentMonitoringState());
         Assert.assertEquals(TransmissionMode.CONTACTLESS, reader.getTransmissionMode());
-        Assert.assertEquals(AndroidNfcPlugin.PLUGIN_NAME, reader.getPluginName());
-        Assert.assertEquals(AndroidNfcReader.READER_NAME, reader.getName());
+        Assert.assertEquals(AndroidNfcPlugin.Companion.getPLUGIN_NAME(), reader.getPluginName());
+        Assert.assertEquals(AndroidNfcReader.Companion.getREADER_NAME(), reader.getName());
         Assert.assertTrue(reader.getParameters().isEmpty());
     }
 
@@ -198,9 +202,9 @@ public class AndroidNfcReaderTest {
         // init
         presentMockTag();
         reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+                AndroidNfcProtocolSettings.INSTANCE.getAllSettings().get(SeCommonProtocols.PROTOCOL_ISO14443_4));
         when(tagProxy.getTech())
-                .thenReturn(AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+                .thenReturn(AndroidNfcProtocolSettings.INSTANCE.getAllSettings().get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         // test
         Assert.assertTrue(reader.protocolFlagMatches(SeCommonProtocols.PROTOCOL_ISO14443_4));
@@ -212,15 +216,15 @@ public class AndroidNfcReaderTest {
 
     @Test
     public void setCorrectParameter() throws IllegalArgumentException {
-        reader.setParameter(AndroidNfcReaderImpl.FLAG_READER_NO_PLATFORM_SOUNDS, "1");
+        reader.setParameter(AndroidNfcReaderImpl.Companion.getFLAG_READER_NO_PLATFORM_SOUNDS(), "1");
         Assert.assertEquals(NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS, reader.getFlags());
-        reader.setParameter(AndroidNfcReaderImpl.FLAG_READER_NO_PLATFORM_SOUNDS, "0");
+        reader.setParameter(AndroidNfcReaderImpl.Companion.getFLAG_READER_NO_PLATFORM_SOUNDS(), "0");
         Assert.assertEquals(0, reader.getFlags());
-        reader.setParameter(AndroidNfcReaderImpl.FLAG_READER_SKIP_NDEF_CHECK, "1");
+        reader.setParameter(AndroidNfcReaderImpl.Companion.getFLAG_READER_SKIP_NDEF_CHECK(), "1");
         Assert.assertEquals(NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK, reader.getFlags());
-        reader.setParameter(AndroidNfcReaderImpl.FLAG_READER_SKIP_NDEF_CHECK, "0");
+        reader.setParameter(AndroidNfcReaderImpl.Companion.getFLAG_READER_SKIP_NDEF_CHECK(), "0");
         Assert.assertEquals(0, reader.getFlags());
-        reader.setParameter(AndroidNfcReaderImpl.FLAG_READER_PRESENCE_CHECK_DELAY, "10");
+        reader.setParameter(AndroidNfcReaderImpl.Companion.getFLAG_READER_PRESENCE_CHECK_DELAY(), "10");
         /*
          * Fail because android.os.Bundle is not present in the JVM, roboelectric is needed to play
          * this test Assert.assertEquals(10,
@@ -231,17 +235,17 @@ public class AndroidNfcReaderTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void setUnCorrectParameter() throws IllegalArgumentException {
-        reader.setParameter(AndroidNfcReaderImpl.FLAG_READER_NO_PLATFORM_SOUNDS, "A");
+        reader.setParameter(AndroidNfcReaderImpl.Companion.getFLAG_READER_NO_PLATFORM_SOUNDS(), "A");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void setUnCorrectParameter2() throws IllegalArgumentException {
-        reader.setParameter(AndroidNfcReaderImpl.FLAG_READER_SKIP_NDEF_CHECK, "2");
+        reader.setParameter(AndroidNfcReaderImpl.Companion.getFLAG_READER_SKIP_NDEF_CHECK(), "2");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void setUnCorrectParameter3() throws IllegalArgumentException {
-        reader.setParameter(AndroidNfcReaderImpl.FLAG_READER_PRESENCE_CHECK_DELAY, "-1");
+        reader.setParameter(AndroidNfcReaderImpl.Companion.getFLAG_READER_PRESENCE_CHECK_DELAY(), "-1");
     }
 
 

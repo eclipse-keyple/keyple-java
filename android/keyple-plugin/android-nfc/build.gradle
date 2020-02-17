@@ -211,7 +211,7 @@ dependencies {
 
     //logging
     implementation "org.slf4j:slf4j-api:${slf4japi_version}"
-
+    implementation 'com.jakewharton.timber:timber:4.7.1' //Android
 
     /*
     Tests

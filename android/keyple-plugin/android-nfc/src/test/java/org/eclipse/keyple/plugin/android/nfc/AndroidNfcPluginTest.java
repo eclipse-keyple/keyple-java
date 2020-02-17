@@ -12,11 +12,8 @@
 package org.eclipse.keyple.plugin.android.nfc;
 
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import junit.framework.Assert;
+
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.junit.Before;
@@ -24,7 +21,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import junit.framework.Assert;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({AndroidNfcReaderImpl.class})
@@ -83,7 +86,7 @@ public class AndroidNfcPluginTest {
 
     @Test
     public void getName() throws Exception {
-        Assert.assertTrue(plugin.getName().equals(AndroidNfcPluginImpl.PLUGIN_NAME));
+        Assert.assertTrue(plugin.getName().equals(AndroidNfcPluginImpl.Companion.getPLUGIN_NAME()));
     }
 
     /*
@@ -92,7 +95,7 @@ public class AndroidNfcPluginTest {
 
     @Test
     public void getNativeReader() throws Exception {
-        assertThat(plugin.getReader(AndroidNfcReaderImpl.READER_NAME),
+        assertThat(plugin.getReader(AndroidNfcReaderImpl.Companion.getREADER_NAME()),
                 instanceOf(AndroidNfcReaderImpl.class));
     }
 

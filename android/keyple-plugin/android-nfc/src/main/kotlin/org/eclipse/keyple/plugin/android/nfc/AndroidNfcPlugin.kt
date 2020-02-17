@@ -8,14 +8,16 @@
  * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- ********************************************************************************/
-package org.eclipse.keyple.plugin.android.nfc;
+ */
+package org.eclipse.keyple.plugin.android.nfc
 
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+import org.eclipse.keyple.core.seproxy.ReaderPlugin
 
 /**
  * The PcscPlugin interface provides the public elements used to manage the Android OMAPI plugin.
  */
-public interface AndroidNfcPlugin extends ReaderPlugin {
-    String PLUGIN_NAME = "AndroidNfcPlugin";
+interface AndroidNfcPlugin : ReaderPlugin{
+    companion object {
+        const val PLUGIN_NAME = "AndroidNfcPlugin"
+    }
 }
