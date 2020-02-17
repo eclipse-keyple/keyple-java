@@ -145,11 +145,13 @@ public abstract class AbstractRemoteMethodTx<T> {
             logger.trace("" + "" + "Set callback on RemoteMethodTx {} {}",
                     this.getClass().getCanonicalName(), this.hashCode());
             asyncSend.start();
-            logger.trace("Lock {}, {}", thisInstance.getMethodName(), this.id);
+            logger.trace("Lock name:{}, id{}", thisInstance.getMethodName(), this.id);
+
+            // lock until response is received
             boolean responseReceived = lock.await(timeout, TimeUnit.MILLISECONDS);
 
             if (responseReceived) {
-                logger.trace("Unlock {}, {}", this.getClass().getCanonicalName(), this.hashCode());
+                logger.trace("Unlock name:{}, id{}", thisInstance.getMethodName(), this.id);
                 if (this.remoteException != null) {
                     throw remoteException;
                 } else {
