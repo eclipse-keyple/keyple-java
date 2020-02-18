@@ -11,6 +11,7 @@
  */
 package org.eclipse.keyple.plugin.android.nfc
 
+import android.app.Activity
 import android.content.Intent
 import android.nfc.NfcAdapter
 
@@ -40,6 +41,10 @@ interface AndroidNfcReader : ObservableReader {
      * @param intent : Intent received and filterByProtocol by xml tech_list
      */
     fun processIntent(intent: Intent)
+
+    fun enableNFCReaderMode(activity: Activity)
+
+    fun disableNFCReaderMode(activity: Activity)
 
     companion object {
 

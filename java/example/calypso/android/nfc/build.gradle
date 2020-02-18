@@ -33,7 +33,7 @@ android {
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -108,10 +108,10 @@ dependencies {
     /*
     Android components
      */
-    implementation "com.android.support:support-v4:${android_support_version}"
-    implementation "com.android.support:appcompat-v7:${android_support_version}"
-    implementation "com.android.support:design:${android_support_version}"
-    implementation "com.android.support.constraint:constraint-layout:${android_support_constraint_version}"
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
 
     /*
@@ -122,13 +122,23 @@ dependencies {
     implementation "com.github.tony19:logback-android:${android_logback_version}"
     implementation 'com.jakewharton.timber:timber:4.7.1'
 
+    /*
+    Kotlin
+     */
+    implementation 'androidx.core:core-ktx:1.2.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
+    /*
+    Coroutines
+     */
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.3'
 
     /*
     Test
      */
     testImplementation "junit:junit:${junit_version}"
-    androidTestImplementation "com.android.support.test:runner:${android_support_test}"
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:${android_support_espresso}"
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
 }

@@ -11,19 +11,20 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc;
 
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.fragment.app.Fragment;
+
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Add this {@link Fragment} to the Android application Activity {@link Fragment#onCreate(Bundle)}
@@ -143,8 +144,6 @@ public class AndroidNfcFragment extends Fragment {
             e.printStackTrace();
             LOG.error("NFC Plugin not found");
         }
-
-
     }
 
     @Override

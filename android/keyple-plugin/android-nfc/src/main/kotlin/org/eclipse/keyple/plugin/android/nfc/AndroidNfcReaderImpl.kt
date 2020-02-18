@@ -60,7 +60,7 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
 
     private val executorService: ExecutorService
 
-    const val NO_TAG = "no-tag"
+    private const val NO_TAG = "no-tag"
 
 
     /**
@@ -321,13 +321,13 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
                 // build a user friendly TechList
                 val techList = tag.techList.joinToString(separator = ", ") { it.replace("android.nfc.tech.", "") }
                 // build a hexa TechId
-                val tagId = tag.id.joinToString { String.format("%02X ", it) }
+                val tagId = tag.id.joinToString(separator = " ") { String.format("%02X", it) }
                 "$tagId - $techList"
             }
         }
     }
 
-    fun enableNFCReaderMode(activity: Activity) {
+    override fun enableNFCReaderMode(activity: Activity) {
         if (nfcAdapter == null) {
             nfcAdapter = NfcAdapter.getDefaultAdapter(activity)
         }
@@ -336,7 +336,6 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
 
         val options = options
 
-
         Timber.i("Enabling Read Write Mode with flags : $flags and options : $options")
 
         // Reader mode for NFC reader allows to listen to NFC events without the Intent mechanism.
@@ -344,7 +343,7 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
         nfcAdapter?.enableReaderMode(activity, this, flags, options)
     }
 
-    fun disableNFCReaderMode(activity: Activity) {
+    override fun disableNFCReaderMode(activity: Activity) {
         nfcAdapter?.disableReaderMode(activity)
 
     }
