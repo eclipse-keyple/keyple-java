@@ -1,3 +1,10 @@
+apply from: "../../build.gradle"
+
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
 def version = "0.9.0"
 
 if(project.getProperties().containsKey("release") && release=="true"){
@@ -6,29 +13,20 @@ if(project.getProperties().containsKey("release") && release=="true"){
     project.version = version+'-'+ timestamp+ '-SNAPSHOT'
 }
 
-apply plugin: 'com.android.library'
-apply plugin: 'maven'
 archivesBaseName = "keyple-android-plugin-omapi"
 
 group 'org.eclipse.keyple'
 project.description = 'Keyple Plugin Android OMAPI'
 
-pmd {
-    ruleSets = [
-            "java-basic",
-            "java-braces",
-    ]
-}
-
 android {
-    compileSdkVersion 26
-    buildToolsVersion '26.0.3'
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
 
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 21
+        targetSdkVersion 29
         versionName project.version
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner " androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -93,21 +91,11 @@ android {
 
     }
 
-}
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
+    }
 
-
-//build javadoc
-task javadoc(type: Javadoc) {
-    failOnError false
-    source = android.sourceSets.main.java.sourceFiles
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    classpath += configurations.compile
-}
-
-// build a jar with javadoc
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
 }
 
 //build sources jar
@@ -217,34 +205,24 @@ task installPlugin{
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], exclude: ['org.simalliance.openmobileapi.jar'], dir: 'libs')
+    //simalliance omapi definition
+    compileOnly files('libs/org.simalliance.openmobileapi.jar')
+
+    //Kotlin
+    implementation 'androidx.core:core-ktx:1.2.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     //keyple-core project
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: project.version
 
-    //android
-    implementation "com.android.support:support-v4:${android_support_version}"
-    implementation "com.android.support:appcompat-v7:${android_support_version}"
-
     //logging
-    implementation "org.slf4j:slf4j-api:${slf4japi_version}"
-
-    //omapi definition
-    compileOnly files('libs/org.simalliance.openmobileapi.jar')
-    /*
-    Tests
-     *
+    implementation "org.slf4j:slf4j-api:1.7.25" //java
+    implementation 'com.jakewharton.timber:timber:4.7.1' //Android
 
     /** Test **/
+    testImplementation "junit:junit:4.12"
     testImplementation files('libs/org.simalliance.openmobileapi.jar')
 
-    /**Power mock**/
-    androidTestImplementation "org.mockito:mockito-android:${mockito_android_version}"
-    androidTestImplementation "org.powermock:powermock-api-mockito:${powermock_version}"
-    androidTestImplementation "org.powermock:powermock-module-junit4:${powermock_version}"
-
-    testImplementation "junit:junit:${junit_version}"
-    testImplementation "org.powermock:powermock-api-mockito:${powermock_version}"
-    testImplementation "org.powermock:powermock-module-junit4:${powermock_version}"
-    /**End of power mock **/
+    /** Mocking for tests **/
+    testImplementation "io.mockk:mockk:1.9"
 }
