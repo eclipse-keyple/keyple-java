@@ -11,13 +11,13 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.omapi
 
+import java.util.HashMap
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractLocalReader
 import org.eclipse.keyple.core.seproxy.plugin.local.SmartSelectionReader
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode
 import timber.log.Timber
-import java.util.HashMap
 
 /**
  * Communicates with Android readers throught the Open Mobile API see org.simalliance.openmobileapi.Reader

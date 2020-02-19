@@ -15,6 +15,9 @@ import android.se.omapi.Channel
 import android.se.omapi.Reader
 import android.se.omapi.Session
 import androidx.annotation.RequiresApi
+import java.io.IOException
+import java.util.NoSuchElementException
+import kotlin.experimental.or
 import org.eclipse.keyple.core.seproxy.SeSelector
 import org.eclipse.keyple.core.seproxy.exception.KeypleApplicationSelectionException
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException
@@ -23,9 +26,6 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiReader
 import timber.log.Timber
-import java.io.IOException
-import java.util.NoSuchElementException
-import kotlin.experimental.or
 
 /**
  * Implementation of the {@link AndroidOmapiReader} based on the {@link AbstractLocalReader}

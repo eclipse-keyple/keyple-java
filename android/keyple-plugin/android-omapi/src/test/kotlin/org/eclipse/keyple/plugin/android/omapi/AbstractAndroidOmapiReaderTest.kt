@@ -13,6 +13,7 @@ package org.eclipse.keyple.plugin.android.omapi
 
 import io.mockk.MockKAnnotations
 import io.mockk.unmockkAll
+import java.io.IOException
 import org.eclipse.keyple.core.seproxy.ChannelControl
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
 import org.eclipse.keyple.core.seproxy.SeSelector
@@ -29,7 +30,6 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
-import java.io.IOException
 
 internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOmapiReader> {
 
