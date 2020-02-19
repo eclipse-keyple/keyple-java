@@ -181,7 +181,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                              */
                             val transportEvents = readTransportEventParser.records[1]
                             addResultEvent("Transport Event file data: ${ByteArrayUtil.toHex(transportEvents)}")
-                        }else{
+                        } else {
                             addResultEvent("The selection of the PO Failed")
                         }
                     } catch (e: Exception) {
@@ -275,7 +275,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                              */
                             val transportEvents = readUsageParser.records[1]
                             addResultEvent("Transport Event file data: ${ByteArrayUtil.toHex(transportEvents)}")
-                        }else{
+                        } else {
                             addResultEvent("The selection of the PO Failed")
                         }
                     } catch (e: Exception) {
