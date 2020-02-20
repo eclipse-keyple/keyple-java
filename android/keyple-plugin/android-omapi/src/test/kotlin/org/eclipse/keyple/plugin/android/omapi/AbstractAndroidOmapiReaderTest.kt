@@ -13,6 +13,7 @@ package org.eclipse.keyple.plugin.android.omapi
 
 import io.mockk.MockKAnnotations
 import io.mockk.unmockkAll
+import java.io.IOException
 import org.eclipse.keyple.core.seproxy.ChannelControl
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
 import org.eclipse.keyple.core.seproxy.SeSelector
@@ -24,8 +25,11 @@ import org.eclipse.keyple.core.seproxy.message.SeRequest
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode
 import org.eclipse.keyple.core.util.ByteArrayUtil
-import org.junit.*
-import java.io.IOException
+import org.junit.After
+import org.junit.Assert
+import org.junit.Before
+import org.junit.Ignore
+import org.junit.Test
 
 internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOmapiReader> {
 

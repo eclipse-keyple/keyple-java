@@ -12,11 +12,11 @@
 package org.eclipse.keyple.plugin.android.omapi
 
 import android.content.Context
+import java.util.SortedSet
 import org.eclipse.keyple.core.seproxy.ReaderPlugin
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin
 import timber.log.Timber
-import java.util.SortedSet
 
 /**
  * The AndroidOmapiPlugin interface provides the public elements used to manage the Android OMAPI plugin.
