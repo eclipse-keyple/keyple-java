@@ -13,6 +13,7 @@ package org.eclipse.keyple.example.remote.application;
 
 import java.io.IOException;
 import org.eclipse.keyple.calypso.transaction.SamResourceManager;
+import org.eclipse.keyple.calypso.transaction.SamResourceManagerFactory;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -116,13 +117,10 @@ public class MasterNodeController {
             /* Get the instance of the Stub plugin */
             ReaderPlugin samStubPlugin = SeProxyService.getInstance().getPlugin(STUB_MASTER);
 
-            /*
-             * Configure a Sam Resource Manager
-             */
-            samResourceManager = new SamResourceManager(samStubPlugin, ".*");
 
             /* Plug the SAM stub reader. */
             ((StubPlugin) samStubPlugin).plugStubReader("samReader", true);
+
 
             SeReader samReader = samStubPlugin.getReader("samReader");
 
@@ -135,6 +133,11 @@ public class MasterNodeController {
 
             ((StubReader) samReader).insertSe(calypsoSamStubSe);
             logger.info("Stub SAM inserted");
+
+            /*
+             * Configure a Sam Resource Manager
+             */
+            samResourceManager = SamResourceManagerFactory.instantiate(samStubPlugin, ".*");
 
 
             /*

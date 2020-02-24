@@ -160,4 +160,6 @@ dependencies {
     testImplementation "junit:junit:${junit_version}"
     // https://mvnrepository.com/artifact/org.mockito/mockito-core
     testImplementation "org.mockito:mockito-core:${mockitocore_version}"
+    //add slf4j simple logger implementation
+    testImplementation "org.slf4j:slf4j-simple:${slf4jsimple_version}"
 }
