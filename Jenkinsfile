@@ -15,7 +15,7 @@ pipeline {
     stages {
         stage('Import keyring'){
             when {
-                expression { env.GIT_URL == 'https://github.com/eclipse/keyple-java.git' && env.GIT_BRANCH == "develop" && keypleVersion ==~ /.*-SNAPSHOT$/ }
+                expression { env.GIT_URL == 'https://github.com/eclipse/keyple-java.git' }
             }
             steps{
                 container('java-builder') {
