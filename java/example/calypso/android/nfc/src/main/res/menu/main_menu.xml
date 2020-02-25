@@ -2,9 +2,33 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/usecase1"
+            android:icon="@drawable/ic_nfc_black_24dp"
+            android:title="Explicit Selection"
+            android:checked="true"
+            />
+        <item
+            android:id="@+id/usecase2"
+            android:icon="@drawable/ic_nfc_black_24dp"
+            android:title="Default selection notification"
+            android:checked="true"
+            />
+        <item
+            android:id="@+id/usecase3"
+            android:icon="@drawable/ic_nfc_black_24dp"
+            android:title="Grouped Multi Selection"
+            android:checked="true"
+            />
+        <item
+            android:id="@+id/usecase4"
+            android:icon="@drawable/ic_nfc_black_24dp"
+            android:title="Sequential Multi Selection"
+            android:checked="true"
+            />
+        <item
             android:id="@+id/start_scan"
             android:icon="@drawable/ic_nfc_black_24dp"
-            android:title="NFC"
+            android:title="Read Env"
             android:checked="true"
             />
     </group>

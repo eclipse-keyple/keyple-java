@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information regarding copyright
  * ownership.
@@ -8,7 +8,7 @@
  * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- */
+ ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
 import org.eclipse.keyple.core.seproxy.SeReader
@@ -17,7 +17,6 @@ import timber.log.Timber
 import java.util.HashMap
 import java.util.SortedSet
 import java.util.TreeSet
-
 
 /**
  * Enables Keyple to communicate with the the Android device embedded NFC reader. In the Android
@@ -30,9 +29,9 @@ import java.util.TreeSet
  *
  *
  */
-internal object AndroidNfcPluginImpl: AbstractPlugin(AndroidNfcPlugin.PLUGIN_NAME), AndroidNfcPlugin{
+internal object AndroidNfcPluginImpl : AbstractPlugin(AndroidNfcPlugin.PLUGIN_NAME), AndroidNfcPlugin {
 
-    private val parameters = HashMap<String, String>()// not in use in
+    private val parameters = HashMap<String, String>() // not in use in
 
     override fun getParameters(): Map<String, String> {
 
@@ -45,7 +44,6 @@ internal object AndroidNfcPluginImpl: AbstractPlugin(AndroidNfcPlugin.PLUGIN_NAM
         parameters[key] = value
     }
 
-
     /**
      * For an Android NFC device, the Android NFC Plugin manages only one @[AndroidNfcReaderImpl].
      *
@@ -55,7 +53,7 @@ internal object AndroidNfcPluginImpl: AbstractPlugin(AndroidNfcPlugin.PLUGIN_NAM
     override fun initNativeReaders(): SortedSet<SeReader> {
         Timber.d("InitNativeReader() add the unique instance of AndroidNfcReaderImpl")
 
-        //Nfc android adapter availability is checked in AndroidNfcFragment
+        // Nfc android adapter availability is checked in AndroidNfcFragment
         val readers = TreeSet<SeReader>()
         readers.add(AndroidNfcReaderImpl)
         return readers

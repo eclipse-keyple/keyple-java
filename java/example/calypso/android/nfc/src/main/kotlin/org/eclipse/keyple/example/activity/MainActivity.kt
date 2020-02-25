@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information regarding copyright
  * ownership.
@@ -8,7 +8,7 @@
  * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- */
+ ********************************************************************************/
 package org.eclipse.keyple.example.activity
 
 import android.graphics.Color
@@ -42,19 +42,23 @@ import org.eclipse.keyple.calypso.transaction.PoSelector
 import org.eclipse.keyple.calypso.transaction.PoTransaction
 import org.eclipse.keyple.core.selection.SeSelection
 import org.eclipse.keyple.core.seproxy.ChannelControl
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
 import org.eclipse.keyple.core.seproxy.SeProxyService
+import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.SeSelector
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse
 import org.eclipse.keyple.core.seproxy.event.ObservableReader
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.example.calypso.android.nfc.R
 import org.eclipse.keyple.example.util.CalypsoClassicInfo
+import org.eclipse.keyple.example.util.configFlags
+import org.eclipse.keyple.example.util.configProtocol
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPluginFactory
-import org.eclipse.keyple.plugin.android.nfc.AndroidNfcProtocolSettings
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader
 import timber.log.Timber
 import java.io.IOException
@@ -75,9 +79,17 @@ import java.io.IOException
  */
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, ObservableReader.ReaderObserver {
 
-    private lateinit var reader: AndroidNfcReader
+    /**
+     * Use to modify event update behaviour reguarding current use case execution
+     */
+    interface UseCase {
+        fun onEventUpdate(event: ReaderEvent?)
+    }
+
     private lateinit var seSelection: SeSelection
+    private lateinit var reader: AndroidNfcReader
     private var readEnvironmentParserIndex: Int = 0
+    private var useCase: UseCase? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,24 +120,37 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
          *  remove the observer if it already exist
          */
         reader = SeProxyService.getInstance().plugins.first().readers.first() as AndroidNfcReader
+        reader.configFlags(presenceCheckDelay = 100, noPlateformSound = 0, skipNdefCheck = 0)
 
         (reader as ObservableReader).addObserver(this)
 
-        seSelection = SeSelection()
+        // with this protocol settings we activate the nfc for ISO1443_4 protocol
+        reader.configProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-
     }
 
     override fun onResume() {
         super.onResume()
-        initTextView()
         try {
             checkNfcAvailability()
-            if (!drawerLayout.isDrawerOpen(GravityCompat.START)) {
-                drawerLayout.openDrawer(GravityCompat.START)
+            if (intent.action != null && intent.action == NfcAdapter.ACTION_TECH_DISCOVERED) run {
+                configureUseCase0()
+
+                Timber.d("Handle ACTION TECH intent")
+                // notify reader that se detection has been launched
+                reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT)
+                initFromBackgroundTextView()
+                reader.processIntent(intent)
+            } else {
+                initWaitingTextView()
+                if (!drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    drawerLayout.openDrawer(GravityCompat.START)
+                }
+                // enable detection
+                reader.enableNFCReaderMode(this)
             }
-        }catch (e: IOException){
+        } catch (e: IOException) {
             showErrorDialog(e)
         }
     }
@@ -133,15 +158,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onPause() {
         Timber.i("on Pause Fragment - Stopping Read Write Mode")
         try {
-            // Disable Reader Mode for NFC Adapter
-            reader.disableNFCReaderMode(this)
 
-            //notify reader that se detection has been switched off
+            // notify reader that se detection has been switched off
             reader.stopSeDetection()
 
+            // Disable Reader Mode for NFC Adapter
+            reader.disableNFCReaderMode(this)
         } catch (e: KeyplePluginNotFoundException) {
-            Timber.e(e,"NFC Plugin not found")
-
+            Timber.e(e, "NFC Plugin not found")
         }
 
         super.onPause()
@@ -164,13 +188,29 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
         }
-        when(item.itemId){
-            R.id.start_scan -> startScan()
+        when (item.itemId) {
+            R.id.usecase1 -> {
+                configureUseCase1ExplicitSelectionAid()
+            }
+            R.id.usecase2 -> {
+                configureUseCase2DefaultSelectionNotification()
+            }
+            R.id.usecase3 -> {
+                configureUseCase3GroupedMultiSelection()
+            }
+            R.id.usecase4 -> {
+                configureUseCase4SequentialMultiSelection()
+            }
+            R.id.start_scan -> {
+                configureUseCase0()
+                // notify reader that se detection has been launched
+                reader.startSeDetection(ObservableReader.PollingMode.REPEATING)
+            }
         }
         return true
     }
 
-    private fun showErrorDialog(t: Throwable){
+    private fun showErrorDialog(t: Throwable) {
         Timber.e(t)
         val builder = AlertDialog.Builder(this)
         builder.setTitle(R.string.alert_dialog_title)
@@ -180,7 +220,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     @Throws(IOException::class)
-    private fun checkNfcAvailability(){
+    private fun checkNfcAvailability() {
         val nfcAdapter = NfcAdapter.getDefaultAdapter(this)
 
         if (nfcAdapter == null) {
@@ -192,21 +232,279 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private fun startScan(){
-        // define task as an observer for ReaderEvents
-        Timber.d("Define this view as an observer for ReaderEvents")
-        val reader = SeProxyService.getInstance().plugins.first().readers.first() as AndroidNfcReader
-        reader.setParameter("FLAG_READER_PRESENCE_CHECK_DELAY", "100")
-        reader.setParameter("FLAG_READER_NO_PLATFORM_SOUNDS", "0")
-        reader.setParameter("FLAG_READER_SKIP_NDEF_CHECK", "0")
+    private fun configureUseCase4SequentialMultiSelection() {
+        appendColoredText(text, "\nUseCase Generic #4: AID based sequential explicit multiple selection ", Color.BLACK)
+        appendColoredText(text, "\nSE Reader  NAME = ${reader.name}", Color.BLACK)
 
-        // with this protocol settings we activate the nfc for ISO1443_4 protocol
-        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4))
+        /*Check if a SE is present in the reader */
+        // if (reader.isSePresent) {
+        if (true) {
+            /*
+              * operate SE AID selection (change the AID prefix here to adapt it to the SE used for
+              * the test [the SE should have at least two applications matching the AID prefix])
+              */
+            val seAidPrefix = CalypsoClassicInfo.AID_PREFIX
+
+            /* First selection case */
+            seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+
+            /* AID based selection (1st selection, later indexed 0) */
+            val selectionRequest1st = PoSelectionRequest(PoSelector(
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null, PoSelector.PoAidSelector(
+                    SeSelector.AidSelector.IsoAid(seAidPrefix), null,
+                    SeSelector.AidSelector.FileOccurrence.FIRST,
+                    SeSelector.AidSelector.FileControlInformation.FCI), "Initial selection #1"))
+
+            seSelection.prepareSelection(selectionRequest1st)
+
+            /* Do the selection and display the result */
+            doAndAnalyseSelection(reader, seSelection, 1)
+
+            /*
+              * New selection: get the next application occurrence matching the same AID, close the
+              * physical channel after
+              */
+            seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER)
+
+            val selectionRequest2nd = PoSelectionRequest(PoSelector(
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null, PoSelector.PoAidSelector(
+                    SeSelector.AidSelector.IsoAid(seAidPrefix), null,
+                    SeSelector.AidSelector.FileOccurrence.NEXT,
+                    SeSelector.AidSelector.FileControlInformation.FCI), "Initial selection #2"))
+
+            seSelection.prepareSelection(selectionRequest2nd)
+
+            /* Do the selection and display the result */
+            doAndAnalyseSelection(reader, seSelection, 2)
+        } else {
+            appendColoredText(text, "\nNo SE were detected.", Color.RED)
+        }
+    }
+
+    private fun doAndAnalyseSelection(reader: SeReader, seSelection: SeSelection, index: Int) {
+        val selectionsResult = seSelection.processExplicitSelection(reader)
+        if (selectionsResult.hasActiveSelection()) {
+            with(selectionsResult.getMatchingSelection(0)) {
+                val matchingSe = this.matchingSe
+                appendColoredText(text, "\n\nSelection status for selection ${this.extraInfo} " +
+                        "(indexed ${this.selectionIndex}): \n\t\t" +
+                        "ATR: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.atr.bytes)}\n\t\t" +
+                        "FCI: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.fci.bytes)}",
+                        Color.BLUE)
+            }
+        } else {
+            appendColoredText(text, "\nThe selection did not match for case $index.", Color.RED)
+        }
+    }
+
+    private fun configureUseCase3GroupedMultiSelection() {
+
+        appendColoredText(text, "\nUseCase Generic #3: AID based grouped explicit multiple selection", Color.BLACK)
+        appendColoredText(text, "\nSE Reader  NAME = ${reader.name}", Color.BLACK)
+
+        /* CLOSE_AFTER to force selection of all applications*/
+        seSelection = SeSelection(MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER)
+
+        /* operate SE selection (change the AID here to adapt it to the SE used for the test) */
+        val seAidPrefix = "A000000404012509"
+
+        // if (reader.isSePresent) {
+        if (true) {
+            /* AID based selection (1st selection, later indexed 0) */
+            val selectionRequest1st = PoSelectionRequest(PoSelector(
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null, PoSelector.PoAidSelector(
+                    SeSelector.AidSelector.IsoAid(seAidPrefix), null,
+                    SeSelector.AidSelector.FileOccurrence.FIRST,
+                    SeSelector.AidSelector.FileControlInformation.FCI), "Initial selection #1"))
+
+            seSelection.prepareSelection(selectionRequest1st)
+
+            /* next selection (2nd selection, later indexed 1) */
+            val selectionRequest2nd = PoSelectionRequest(PoSelector(
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null, PoSelector.PoAidSelector(
+                    SeSelector.AidSelector.IsoAid(seAidPrefix), null,
+                    SeSelector.AidSelector.FileOccurrence.NEXT,
+                    SeSelector.AidSelector.FileControlInformation.FCI), "Next selection #2"))
+
+            seSelection.prepareSelection(selectionRequest2nd)
+
+            /* next selection (3rd selection, later indexed 2) */
+            val selectionRequest3rd = PoSelectionRequest(PoSelector(
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null, PoSelector.PoAidSelector(
+                    SeSelector.AidSelector.IsoAid(seAidPrefix), null,
+                    SeSelector.AidSelector.FileOccurrence.NEXT,
+                    SeSelector.AidSelector.FileControlInformation.FCI), "Next selection #3"))
+
+            seSelection.prepareSelection(selectionRequest3rd)
+
+            /*
+            * Actual SE communication: operate through a single request the SE selection
+            */
+            val selectionResult = seSelection.processExplicitSelection(reader)
+
+            if (selectionResult.matchingSelections.size > 0) {
+                selectionResult.matchingSelections.forEach {
+                    val matchingSe = it.matchingSe
+                    appendColoredText(text, "\nSelection status for selection ${it.extraInfo} " +
+                            "(indexed ${it.selectionIndex}): \n\t\t" +
+                            "ATR: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.atr.bytes)}\n\t\t" +
+                            "FCI: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.fci.bytes)}",
+                            Color.BLACK)
+                }
+            } else {
+                appendColoredText(text, "\nNo SE matched the selection.", Color.RED)
+            }
+        } else {
+            appendColoredText(text, "\nNo SE were detected.", Color.RED)
+        }
+
+        useCase = null
+    }
+
+    private fun configureUseCase2DefaultSelectionNotification() {
+        /*
+        * Prepare a a new Calypso PO selection
+        */
+        seSelection = SeSelection()
+
+        val aid = CalypsoClassicInfo.AID
+
+        appendColoredText(text, "\n== UseCase Generic #2: AID based default selection ==", Color.BLACK)
+        appendColoredText(text, "\n= SE Reader  NAME = ${reader.name}", Color.BLACK)
 
         /*
-             * Prepare a Calypso PO selection
+        * Setting of an AID based selection
+        *
+        * Select the first application matching the selection AID whatever the SE communication
+        * protocol keep the logical channel open after the selection
+        */
+
+        /*
+         * Generic selection: configures a SeSelector with all the desired attributes to make the
+         * selection
+         */
+        val selectionRequest = PoSelectionRequest(PoSelector(
+                SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                PoSelector.PoAidSelector(
+                        SeSelector.AidSelector.IsoAid(aid), null),
+                "AID: $aid"))
+
+        /*
+        * Add the selection case to the current selection (we could have added other cases here)
+        */
+        seSelection.prepareSelection(selectionRequest)
+
+        /*
+         * Provide the SeReader with the selection operation to be processed when a SE is inserted.
+         */
+        (reader as ObservableReader).setDefaultSelectionRequest(seSelection.selectionOperation,
+                ObservableReader.NotificationMode.MATCHED_ONLY, ObservableReader.PollingMode.REPEATING)
+
+        // (reader as ObservableReader).addObserver(this) //ALready done in onCreate
+
+        appendColoredText(text, "\n==============", Color.BLACK)
+        appendColoredText(text, "\n= Wait for a SE. The default AID based selection to be processed as soon as the SE is detected.", Color.BLACK)
+        appendColoredText(text, "\n==============", Color.BLACK)
+
+        useCase = object : UseCase {
+            override fun onEventUpdate(event: ReaderEvent?) {
+                CoroutineScope(Dispatchers.Main).launch {
+                    when (event?.eventType) {
+                        ReaderEvent.EventType.SE_MATCHED -> {
+                            Timber.d("Tag detected - SE MATCHED")
+                            val selectedSe = seSelection.processDefaultSelection(event.defaultSelectionsResponse).activeSelection.matchingSe
+                            if (selectedSe != null) {
+                                appendColoredText(text, "\nObserver notification: the selection of the SE has succeeded.", Color.BLUE)
+                                appendColoredText(text, "\n==============", Color.BLUE)
+                                appendColoredText(text, "\n= End of the SE processing.", Color.BLUE)
+                                appendColoredText(text, "\n==============", Color.BLUE)
+                            } else {
+                                appendColoredText(text, "\nThe selection of the SE has failed. Should not have occurred due to the MATCHED_ONLY selection mode.", Color.RED)
+                            }
+                        }
+
+                        ReaderEvent.EventType.SE_INSERTED -> {
+                            Timber.d("SE Inserted")
+                            appendColoredText(text, "\nSE_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.", Color.GREEN)
+                        }
+
+                        ReaderEvent.EventType.SE_REMOVED -> {
+                            Timber.d("SE removed")
+                            appendColoredText(text, "\nThere is no PO inserted anymore. Return to the waiting state...", Color.GREEN)
+                        }
+
+                        else -> {
+                        }
+                    }
+                }
+                if (event?.eventType == ReaderEvent.EventType.SE_INSERTED || event?.eventType == ReaderEvent.EventType.SE_MATCHED) {
+                    /*
+                     * Informs the underlying layer of the end of the SE processing, in order to manage the
+                     * removal sequence. <p>If closing has already been requested, this method will do
+                     * nothing.
+                     */
+                    try {
+                        (SeProxyService.getInstance().getPlugin(event.pluginName).getReader(event.readerName) as ObservableReader).notifySeProcessed()
+                    } catch (e: KeypleReaderNotFoundException) {
+                        Timber.e(e)
+                    } catch (e: KeyplePluginNotFoundException) {
+                        Timber.e(e)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun configureUseCase1ExplicitSelectionAid() {
+        /*
+        * Prepare a a new Calypso PO selection
+        */
+        seSelection = SeSelection()
+
+        val aid = CalypsoClassicInfo.AID
+
+        // if (reader.isSePresent) {
+        if (true) {
+            /**
+             * configure Protocol
              */
+            val selectionRequest = PoSelectionRequest(PoSelector(
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                    PoSelector.PoAidSelector(
+                            SeSelector.AidSelector.IsoAid(aid), null),
+                    "AID: $aid"))
+
+            /**
+             * Prepare Selection
+             */
+            seSelection.prepareSelection(selectionRequest)
+
+            /**
+             * We won't be listening for event update within this use case
+             */
+            useCase = null
+
+            val selectionsResult = seSelection.processExplicitSelection(reader)
+
+            if (selectionsResult.hasActiveSelection()) {
+                val matchedSe = selectionsResult.activeSelection.matchingSe
+                text.append("\n-- Calypso PO selection: ")
+                appendColoredText(text, "The selection of the SE has succeeded.", Color.BLUE)
+                text.append("\n-- Application FCI = ${matchedSe.selectionStatus.fci}")
+                appendColoredText(text, "End of the generic SE processing.", Color.BLACK)
+            } else {
+                appendColoredText(text, "The selection of the SE has failed.", Color.RED)
+            }
+        } else {
+            appendColoredText(text, "\nNo SE were detected.", Color.RED)
+        }
+    }
+
+    private fun configureUseCase0() {
+        // define task as an observer for ReaderEvents
+        /*
+         * Prepare a a new Calypso PO selection
+         */
         seSelection = SeSelection()
 
         /*
@@ -250,17 +548,44 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         (reader as ObservableReader).setDefaultSelectionRequest(
                 seSelection.selectionOperation, ObservableReader.NotificationMode.ALWAYS)
 
-        //uncomment to active protocol listening for Mifare ultralight
-        //reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL, AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL))
+        // uncomment to active protocol listening for Mifare ultralight
+        // reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL, AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL))
+        reader.configProtocol(SeCommonProtocols.PROTOCOL_MIFARE_UL)
 
-        //uncomment to active protocol listening for Mifare ultralight
-        //reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC, AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC))
+        // uncomment to active protocol listening for Mifare ultralight
+        // reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC, AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC))
+        reader.configProtocol(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC)
 
-        //enable detection
-        reader.enableNFCReaderMode(this)
+        useCase = object : UseCase {
+            override fun onEventUpdate(event: ReaderEvent?) {
+                CoroutineScope(Dispatchers.Main).launch {
+                    when (event?.eventType) {
+                        ReaderEvent.EventType.SE_MATCHED -> {
+                            text.append("\nTag detected - SE MATCHED")
+                            executeCommands(event.defaultSelectionsResponse)
+                            (reader as ObservableReader).notifySeProcessed()
+                            Timber.d("Tag detected - SE MATCHED")
+                        }
 
-        //notify reader that se detection has been launched
-        reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT)
+                        ReaderEvent.EventType.SE_INSERTED -> {
+                            text.append("\nPO detected but AID didn't match with " + CalypsoClassicInfo.AID)
+                            (reader as ObservableReader).notifySeProcessed()
+                            Timber.d("PO detected but AID didn't match with ${CalypsoClassicInfo.AID}")
+                        }
+
+                        ReaderEvent.EventType.SE_REMOVED -> {
+                            text.append("\nTag removed")
+                            Timber.d("Tag removed")
+                        }
+
+                        ReaderEvent.EventType.TIMEOUT_ERROR -> {
+                            text.append("\nError reading card")
+                            Timber.d("Error reading card")
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -269,7 +594,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
      * @param defaultSelectionsResponse
      */
     private fun executeCommands(
-            defaultSelectionsResponse: AbstractDefaultSelectionsResponse) {
+        defaultSelectionsResponse: AbstractDefaultSelectionsResponse
+    ) {
 
         Timber.d("Running Calypso Simple Read transaction")
 
@@ -282,7 +608,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             appendColoredText(text, "\n\n1st PO exchange: aid selection", Color.BLACK)
 
             if (selectionsResult.hasActiveSelection()) {
-                val calypsoPo = selectionsResult.getActiveSelection().getMatchingSe() as CalypsoPo
+                val calypsoPo = selectionsResult.activeSelection.matchingSe as CalypsoPo
 
                 text.append("\n-- Calypso PO selection: ")
                 appendColoredText(text, "SUCCESS", Color.BLUE)
@@ -339,8 +665,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 text.append("\n ----")
                 appendColoredText(text, "\nYou can remove the card now", Color.BLUE)
                 text.append("\n ----")
-
-
             } else {
                 appendColoredText(text,
                         "The selection of the PO has failed. Should not have occurred due to the MATCHED_ONLY selection mode.",
@@ -353,45 +677,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             appendColoredText(text, "\nException: " + e.message, Color.RED)
             e.fillInStackTrace()
         }
-
     }
 
     override fun update(event: ReaderEvent?) {
         Timber.i("New ReaderEvent received : $event")
-        CoroutineScope(Dispatchers.Main).launch {
-            when (event?.eventType) {
-                ReaderEvent.EventType.SE_MATCHED -> {
-                    text.append("\nTag detected - SE MATCHED")
-                    executeCommands(event.defaultSelectionsResponse)
-                    (reader  as ObservableReader).notifySeProcessed()
-                    Timber.d("Tag detected - SE MATCHED")
-                }
-
-                ReaderEvent.EventType.SE_INSERTED -> {
-                    text.append("\nPO detected but AID didn't match with " + CalypsoClassicInfo.AID)
-                    (reader as ObservableReader).notifySeProcessed()
-                    Timber.d("PO detected but AID didn't match with ${CalypsoClassicInfo.AID}")
-                }
-
-                ReaderEvent.EventType.SE_REMOVED -> {
-                    text.append("\nTag removed")
-                    Timber.d("Tag removed")
-                }
-
-                ReaderEvent.EventType.TIMEOUT_ERROR -> {
-                    text.append("\nError reading card")
-                    Timber.d("Error reading card")
-                }
-            }
-        }
+        useCase?.onEventUpdate(event)
     }
 
     /**
      * Initialize display
      */
-    private fun initTextView() {
-        text.setText("")// reset
+    private fun initWaitingTextView() {
+        text.setText("") // reset
         appendColoredText(text, "Waiting for a smartcard...", Color.BLUE)
+        text.append("\n ---- ")
+    }
+
+    private fun initFromBackgroundTextView() {
+        text.setText("") // reset
+        appendColoredText(text, "Smartcard detected while in background...", Color.BLUE)
         text.append("\n ---- ")
     }
 

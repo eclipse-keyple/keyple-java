@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information regarding copyright
  * ownership.
@@ -8,14 +8,15 @@
  * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- */
+ ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
-
+import android.annotation.TargetApi
 import android.app.Activity
 import android.content.Intent
 import android.nfc.NfcAdapter
 import android.nfc.Tag
+import android.os.Build
 import android.os.Bundle
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException
@@ -43,7 +44,6 @@ import java.util.HashMap
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-
 /**
  * Implementation of [AndroidNfcReader] based on keyple core abstract classes [AbstractObservableLocalReader]
  * and
@@ -56,12 +56,11 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
     // keep state between session if required
     private var tagProxy: TagProxy? = null
 
-    private val parameters = HashMap<String, String>()
+    private val parameters = HashMap<String, String?>()
 
     private val executorService: ExecutorService
 
     private const val NO_TAG = "no-tag"
-
 
     /**
      * Build Reader Mode flags Integer from parameters
@@ -87,7 +86,6 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
             for (seProtocol in this.protocolsMap.keys) {
                 if (SeCommonProtocols.PROTOCOL_ISO14443_4 == seProtocol) {
                     flags = flags or NfcAdapter.FLAG_READER_NFC_B or NfcAdapter.FLAG_READER_NFC_A
-
                 } else if (seProtocol === SeCommonProtocols.PROTOCOL_MIFARE_UL || seProtocol === SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC) {
                     flags = flags or NfcAdapter.FLAG_READER_NFC_A
                 }
@@ -140,7 +138,7 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
      *
      * @return parameters
      */
-    override fun getParameters(): Map<String, String> {
+    override fun getParameters(): Map<String, String?> {
         return parameters
     }
 
@@ -163,10 +161,9 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
                 parameters[AndroidNfcReader.FLAG_READER_NO_PLATFORM_SOUNDS],
                 parameters[AndroidNfcReader.FLAG_READER_PRESENCE_CHECK_DELAY])
 
-        val correctParameter = (key == AndroidNfcReader.FLAG_READER_SKIP_NDEF_CHECK && value == "1" || value == "0"
-                || key == AndroidNfcReader.FLAG_READER_NO_PLATFORM_SOUNDS && value == "1" || value == "0"
-                || key == AndroidNfcReader.FLAG_READER_PRESENCE_CHECK_DELAY && Integer.parseInt(value) > -1)
-
+        val correctParameter = (key == AndroidNfcReader.FLAG_READER_SKIP_NDEF_CHECK && value == "1" || value == "0" ||
+                key == AndroidNfcReader.FLAG_READER_NO_PLATFORM_SOUNDS && value == "1" || value == "0" ||
+                key == AndroidNfcReader.FLAG_READER_PRESENCE_CHECK_DELAY && Integer.parseInt(value) > -1)
 
         if (correctParameter) {
             Timber.w("Adding parameter : $key - $value")
@@ -175,7 +172,6 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
             Timber.w("Unrecognized parameter : $key")
             throw IllegalArgumentException("Unrecognized parameter $key : $value")
         }
-
     }
 
     /**
@@ -187,7 +183,6 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
         return TransmissionMode.CONTACTLESS
     }
 
-
     /**
      * Callback function invoked by @[NfcAdapter] when a @[Tag] is discovered A
      * TagTransceiver is created based on the Tag technology see [TagProxy.getTagProxy]
@@ -196,16 +191,27 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
      * @param tag : detected tag
      */
     override fun onTagDiscovered(tag: Tag?) {
-        Timber.i("Received Tag Discovered event")
-        //nfcAdapter.ignore(tag, 1000, onTagRemoved, Handler(Looper.getMainLooper()));
+        Timber.i("Received Tag Discovered event $tag")
+        // addRemovedListener(tag)
         tag?.let {
             try {
+                Timber.i("Getting tag proxy")
                 tagProxy = TagProxy.getTagProxy(tag)
                 onEvent(InternalEvent.SE_INSERTED)
-
             } catch (e: KeypleReaderException) {
-                e.printStackTrace()
+                Timber.e(e)
             }
+        }
+    }
+
+    @TargetApi(24)
+    private fun addRemovedListener(tag: Tag?) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            nfcAdapter?.ignore(tag, 1000, {
+                Timber.i("Tag Proxy removed")
+                tagProxy = null
+            }, null)
         }
     }
 
@@ -214,7 +220,9 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
      * @return true if a SE is present
      */
     public override fun checkSePresence(): Boolean {
-        return tagProxy != null && tagProxy!!.isConnected
+        val result = tagProxy != null && tagProxy?.isConnected == true
+        Timber.d("checkSePresence: $result $tagProxy")
+        return result
         // TODO: the right implementation is:
         // return tagProxy != null;
         // To be updated when the onTagRemoved will be available
@@ -223,7 +231,7 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
     public override fun getATR(): ByteArray? {
         val atr = tagProxy?.atr
         Timber.d("ATR : ${ByteArrayUtil.toHex(atr)}")
-        return if(atr?.isNotEmpty() == true) atr else null
+        return if (atr?.isNotEmpty() == true) atr else null
     }
 
     public override fun isPhysicalChannelOpen(): Boolean {
@@ -237,12 +245,10 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
                 Timber.d("Connect to tag..")
                 tagProxy?.connect()
                 Timber.i("Tag connected successfully : ${printTagId()}")
-
             } catch (e: IOException) {
                 Timber.e(e, "Error while connecting to Tag ")
                 throw KeypleChannelControlException("Error while opening physical channel", e)
             }
-
         } else {
             Timber.i("Tag is already connected to : ${printTagId()}")
         }
@@ -273,24 +279,24 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
     @Throws(KeypleIOReaderException::class)
     public override fun transmitApdu(apduIn: ByteArray): ByteArray {
         Timber.d("Send data to card : ${apduIn.size} bytes")
-        return with(tagProxy){
-            if(this == null){
+        return with(tagProxy) {
+            if (this == null) {
                 throw KeypleIOReaderException(
                         "Error while transmitting APDU, invalid out data buffer")
-            }else{
+            } else {
                 try {
                     val bytes = transceive(apduIn)
-                    if(bytes.size<2){
+                    if (bytes.size <2) {
                         throw KeypleIOReaderException(
                                 "Error while transmitting APDU, invalid out data buffer")
-                    }else{
+                    } else {
                         Timber.d("Receive data from card : ${ByteArrayUtil.toHex(bytes)}")
                         bytes
                     }
-                }catch (e: IOException){
+                } catch (e: IOException) {
                     throw KeypleIOReaderException(
                             "Error while transmitting APDU, invalid out data buffer", e)
-                }catch (e: NoSuchElementException){
+                } catch (e: NoSuchElementException) {
                     throw KeypleReaderException("Error while transmitting APDU, no such Element", e)
                 }
             }
@@ -314,10 +320,10 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
     }
 
     override fun printTagId(): String {
-        return with(tagProxy){
-            if(this == null){
+        return with(tagProxy) {
+            if (this == null) {
                 NO_TAG
-            }else{
+            } else {
                 // build a user friendly TechList
                 val techList = tag.techList.joinToString(separator = ", ") { it.replace("android.nfc.tech.", "") }
                 // build a hexa TechId
@@ -345,6 +351,5 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
 
     override fun disableNFCReaderMode(activity: Activity) {
         nfcAdapter?.disableReaderMode(activity)
-
     }
 }

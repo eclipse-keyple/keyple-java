@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information regarding copyright
  * ownership.
@@ -8,12 +8,11 @@
  * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- */
+ ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol
-
 import java.util.EnumSet
 
 /**
@@ -48,9 +47,9 @@ object AndroidNfcProtocolSettings {
      * @return a settings map
      */
     @Throws(NoSuchElementException::class)
-    fun getSpecificSettings(specificProtocols: EnumSet<SeCommonProtocols>)
-            : Map<SeProtocol, String> {
-        return specificProtocols.filter { allSettings[it] != null }.associateBy({it}, { getSetting(it)})
+    fun getSpecificSettings(specificProtocols: EnumSet<SeCommonProtocols>):
+            Map<SeProtocol, String> {
+        return specificProtocols.filter { allSettings[it] != null }.associateBy({ it }, { getSetting(it) })
     }
 
     /**
@@ -61,7 +60,7 @@ object AndroidNfcProtocolSettings {
      * @throws No such Element Exception if protocol not found in settings
      */
     @Throws(NoSuchElementException::class)
-    fun getSetting(seProtocol: SeProtocol): String{
+    fun getSetting(seProtocol: SeProtocol): String {
         return allSettings.getValue(seProtocol)
     }
 }

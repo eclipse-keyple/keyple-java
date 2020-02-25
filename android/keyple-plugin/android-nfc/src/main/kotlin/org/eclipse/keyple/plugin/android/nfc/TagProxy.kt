@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information regarding copyright
  * ownership.
@@ -8,7 +8,7 @@
  * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- */
+ ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
 import android.nfc.Tag
@@ -61,7 +61,6 @@ internal class TagProxy private constructor(private val tagTechnology: TagTechno
             AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4) -> (tagTechnology as IsoDep).transceive(data)
             else -> throw NoSuchElementException("Protocol $tech not found in plugin's settings.")
         }
-
     }
 
     override fun getTag(): Tag {
@@ -99,11 +98,11 @@ internal class TagProxy private constructor(private val tagTechnology: TagTechno
             LOG.info("Matching Tag Type : $tag")
 
             return tag.techList.firstOrNull {
-                it == AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC)
-                        || it == AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL)
-                        || it == AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                it == AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC) ||
+                        it == AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL) ||
+                        it == AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4)
             }.let {
-                when(it){
+                when (it) {
                     AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC) -> {
                         LOG.debug("Tag embedded into MifareClassic")
                         TagProxy(MifareClassic.get(tag),
@@ -120,10 +119,10 @@ internal class TagProxy private constructor(private val tagTechnology: TagTechno
                                 AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4))
                     }
                     else -> {
-                        throw KeypleReaderException("Keyple Android Reader supports only : "
-                                + AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC) + ", "
-                                + AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL) + ", "
-                                + AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4))
+                        throw KeypleReaderException("Keyple Android Reader supports only : " +
+                                AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC) + ", " +
+                                AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL) + ", " +
+                                AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4))
                     }
                 }
             }
