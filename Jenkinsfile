@@ -41,8 +41,6 @@ pipeline {
                     sh './gradlew installAll --info'
                     sh './gradlew check --info'
 
-                    archiveArtifacts 'java/component/**/build/reports/tests/test/**'
-                    
                     script {
                         keypleVersion = sh(script: 'grep version java/component/keyple-core/gradle.properties | cut -d= -f2 | tr -d "[:space:]"', returnStdout: true)
                     }
@@ -62,7 +60,7 @@ pipeline {
         stage('Keyple Examples: Build and Test') {
             steps{
                 container('java-builder') {
-                    sh './gradlew -b java/example/calypso/remotese/build.gradle check'
+                    sh "./gradlew -b java/example/calypso/remotese/build.gradle check -P keyple_version=${keypleVersion}"
                 }
             }
         }

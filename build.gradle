@@ -4,6 +4,7 @@ apply plugin: 'maven'
 
 buildscript {
     repositories {
+        mavenLocal()
         jcenter()
         //use a mirror of maven_central to speed up CI build
         maven {
@@ -11,7 +12,6 @@ buildscript {
         }
         mavenCentral()
         maven {url 'https://oss.sonatype.org/content/repositories/snapshots' }
-        mavenLocal()
     }
     dependencies {
         classpath "com.diffplug.spotless:spotless-plugin-gradle:3.14.0"
