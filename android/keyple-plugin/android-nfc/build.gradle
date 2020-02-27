@@ -34,7 +34,10 @@ android {
     }
 
     testOptions {
-        unitTests.returnDefaultValues = true//mock Log Android object
+        unitTests {
+            returnDefaultValues = true//mock Log Android object
+            includeAndroidResources = true
+        }
     }
 
 
@@ -216,16 +219,13 @@ dependencies {
     /*
     Tests
      */
+    /** Test **/
+    testImplementation "junit:junit:4.12"
 
-    testImplementation "junit:junit:${junit_version}"
+    /** Mocking for tests **/
+    testImplementation "io.mockk:mockk:1.9"
 
-    /**Power mock**/
-    androidTestImplementation "org.mockito:mockito-android:${mockito_android_version}"
-    androidTestImplementation "org.powermock:powermock-api-mockito:${powermock_version}"
-    androidTestImplementation "org.powermock:powermock-module-junit4:${powermock_version}"
-
-    testImplementation "org.powermock:powermock-api-mockito:${powermock_version}"
-    testImplementation "org.powermock:powermock-module-junit4:${powermock_version}"
-    /**End of power mock **/
+    /** Allow to use Android SDK in JVM */
+    testImplementation 'org.robolectric:robolectric:4.3.1'
 
 }

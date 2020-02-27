@@ -58,7 +58,7 @@ public class GroupedMultiSelection_Pcsc {
         /* Check if a SE is present in the reader */
         if (seReader.isSePresent()) {
 
-            /* CLOSE_AFTER pour assurer la sélection de toutes les applications */
+            /* CLOSE_AFTER to force selection of all applications */
             SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.PROCESS_ALL,
                     ChannelControl.CLOSE_AFTER);
 

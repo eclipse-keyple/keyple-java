@@ -11,12 +11,10 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
-import android.annotation.TargetApi
 import android.app.Activity
 import android.content.Intent
 import android.nfc.NfcAdapter
 import android.nfc.Tag
-import android.os.Build
 import android.os.Bundle
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException
@@ -204,16 +202,16 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
         }
     }
 
-    @TargetApi(24)
-    private fun addRemovedListener(tag: Tag?) {
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            nfcAdapter?.ignore(tag, 1000, {
-                Timber.i("Tag Proxy removed")
-                tagProxy = null
-            }, null)
-        }
-    }
+//    @TargetApi(24)
+//    private fun addRemovedListener(tag: Tag?) {
+//
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//            nfcAdapter?.ignore(tag, 1000, {
+//                Timber.i("Tag Proxy removed")
+//                tagProxy = null
+//            }, null)
+//        }
+//    }
 
     /**
      *
