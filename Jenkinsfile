@@ -31,9 +31,12 @@ pipeline {
                         sh 'gpg1 --version'
                         sh 'for fpr in $(gpg1 --list-keys --with-colons  | awk -F: \'/fpr:/ {print $10}\' | sort -u); do echo -e "5\ny\n" |  gpg1 --batch --command-fd 0 --expert --edit-key ${fpr} trust; done'
                         sh 'ls -l  /home/jenkins/.gnupg/'
-
+                    }
+                    configFileProvider(
+                        [configFile(fileId: 'gradle.properties',
+                            targetLocation: '/home/jenkins/agent/gradle.properties')]) {
                         /* Read key Id in gradle.properties */
-                        sh 'head -1  ${GRADLE_USER_HOME}/gradle.properties'
+                        sh 'head -1 /home/jenkins/.gradle/gradle.properties'
                     }
                 }
             }
