@@ -115,9 +115,11 @@ pipeline {
                     sh 'mkdir -p "./java/example/calypso/android/omapi/?/.android/"'
                     sh 'keytool -genkey -v -keystore ./java/example/calypso/android/nfc/?/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"'
                     sh 'keytool -genkey -v -keystore ./java/example/calypso/android/omapi/?/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"'
-                    dir('android') {
-                        sh './gradlew -b ../java/example/calypso/android/nfc/build.gradle assembleDebug'
-                        sh './gradlew -b ../java/example/calypso/android/omapi/build.gradle assembleDebug'
+                    dir('java/example/calypso/android/nfc/') {
+                        sh '../../../../../gradlew assembleDebug'
+                    }
+                    dir('java/example/calypso/android/omapi') {
+                        sh './gradlew assembleDebug'
                     }
                 }
             }
