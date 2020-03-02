@@ -4,7 +4,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'org.eclipse.keyple'
+//apply plugin: 'org.eclipse.keyple'
 
 archivesBaseName = "keyple-android-plugin-nfc"
 
