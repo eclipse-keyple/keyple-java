@@ -15,7 +15,7 @@ import android.app.Activity
 import android.content.Intent
 import android.nfc.NfcAdapter
 import org.eclipse.keyple.core.seproxy.SeReader
-import org.eclipse.keyple.core.seproxy.event.ObservableReader
+import org.eclipse.keyple.core.seproxy.plugin.local.SmartRemovalReader
 
 /**
  * [SeReader] to communicate with NFC Tag though
@@ -25,7 +25,7 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader
  *
  * Optimized for android 4.4 (API 19) to  6.0 (API 23)
  */
-interface AndroidNfcReader : ObservableReader {
+interface AndroidNfcReader : SmartRemovalReader {
     /**
      * Gets a string describing the low level description of the current tag.
      *

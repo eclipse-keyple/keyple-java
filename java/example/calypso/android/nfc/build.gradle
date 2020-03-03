@@ -117,10 +117,9 @@ dependencies {
     /*
     Log
      */
-    //slf4j logback for android - https://github.com/tony19/logback-android
-    implementation "org.slf4j:slf4j-api:${slf4japi_version}"
-    implementation "com.github.tony19:logback-android:${android_logback_version}"
+    implementation "org.slf4j:slf4j-api:1.7.25"
     implementation 'com.jakewharton.timber:timber:4.7.1'
+    implementation 'com.arcao:slf4j-timber:3.1@aar' //SLF4J binding for Timber
 
     /*
     Kotlin

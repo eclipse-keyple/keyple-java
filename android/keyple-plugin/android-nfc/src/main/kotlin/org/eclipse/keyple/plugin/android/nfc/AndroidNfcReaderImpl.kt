@@ -11,10 +11,12 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
+import android.annotation.TargetApi
 import android.app.Activity
 import android.content.Intent
 import android.nfc.NfcAdapter
 import android.nfc.Tag
+import android.os.Build
 import android.os.Bundle
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException
@@ -28,6 +30,7 @@ import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState.Moni
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION
 import org.eclipse.keyple.core.seproxy.plugin.local.ObservableReaderStateService
 import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.CardAbsentPingMonitoringJob
+import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.SmartRemovalMonitoringJob
 import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeInsertion
 import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeProcessing
 import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeRemoval
@@ -59,6 +62,9 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
     private val executorService: ExecutorService
 
     private const val NO_TAG = "no-tag"
+
+    private var isWatingForRemoval = false
+    private val syncWaitRemoval = Object()
 
     /**
      * Build Reader Mode flags Integer from parameters
@@ -126,9 +132,18 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
         states[WAIT_FOR_START_DETECTION] = WaitForStartDetect(this)
         states[WAIT_FOR_SE_INSERTION] = WaitForSeInsertion(this)
         states[WAIT_FOR_SE_PROCESSING] = WaitForSeProcessing(this)
-        states[WAIT_FOR_SE_REMOVAL] = WaitForSeRemoval(this, CardAbsentPingMonitoringJob(this), executorService)
+        states[WAIT_FOR_SE_REMOVAL] = initWaitForRemoval()
 
         return ObservableReaderStateService(this, states, WAIT_FOR_START_DETECTION)
+    }
+
+    private fun initWaitForRemoval(): WaitForSeRemoval {
+        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            WaitForSeRemoval(this, CardAbsentPingMonitoringJob(this), executorService)
+        }else{
+            //this.waitForCardAbsentNative will only be used on API>= N
+            WaitForSeRemoval(this, SmartRemovalMonitoringJob(this), executorService)
+        }
     }
 
     /**
@@ -201,17 +216,6 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
             }
         }
     }
-
-//    @TargetApi(24)
-//    private fun addRemovedListener(tag: Tag?) {
-//
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//            nfcAdapter?.ignore(tag, 1000, {
-//                Timber.i("Tag Proxy removed")
-//                tagProxy = null
-//            }, null)
-//        }
-//    }
 
     /**
      *
@@ -349,5 +353,33 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
 
     override fun disableNFCReaderMode(activity: Activity) {
         nfcAdapter?.disableReaderMode(activity)
+    }
+
+    override fun stopWaitForCardRemoval() {
+        Timber.d("stopWaitForCardRemoval")
+        isWatingForRemoval = false
+        synchronized(syncWaitRemoval){
+            syncWaitRemoval.notify()
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.N)
+    override fun waitForCardAbsentNative(): Boolean {
+        Timber.d("waitForCardAbsentNative")
+        var isRemoved = false
+        if(!isWatingForRemoval){
+            isWatingForRemoval = true
+            nfcAdapter?.ignore(tagProxy?.tag, 1000, {
+                isRemoved = true
+                synchronized(syncWaitRemoval){
+                    syncWaitRemoval.notify()
+                }
+            }, null)
+
+            synchronized(syncWaitRemoval){
+                syncWaitRemoval.wait(10000)
+            }
+        }
+        return isRemoved
     }
 }
