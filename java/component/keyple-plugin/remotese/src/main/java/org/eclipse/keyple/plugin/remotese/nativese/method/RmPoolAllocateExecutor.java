@@ -25,14 +25,16 @@ import com.google.gson.JsonObject;
 public class RmPoolAllocateExecutor implements IRemoteMethodExecutor {
 
     ReaderPoolPlugin poolPlugin;
+    String slaveNodeId;
 
     @Override
     public RemoteMethodName getMethodName() {
         return RemoteMethodName.POOL_ALLOCATE_READER;
     }
 
-    public RmPoolAllocateExecutor(ReaderPoolPlugin poolPlugin) {
+    public RmPoolAllocateExecutor(ReaderPoolPlugin poolPlugin, String slaveNodeId) {
         this.poolPlugin = poolPlugin;
+        this.slaveNodeId = slaveNodeId;
     }
 
     @Override
@@ -54,9 +56,15 @@ public class RmPoolAllocateExecutor implements IRemoteMethodExecutor {
         bodyResp.addProperty("nativeReaderName", seReader.getName());
         bodyResp.addProperty("transmissionMode", seReader.getTransmissionMode().name());
 
-        out = transportDto.nextTransportDTO(KeypleDtoHelper.buildResponse(getMethodName().getName(),
-                bodyResp.toString(), null, seReader.getName(), null, keypleDto.getTargetNodeId(),
-                keypleDto.getRequesterNodeId(), keypleDto.getId()));
+        out = transportDto.nextTransportDTO(KeypleDtoHelper.buildResponse(getMethodName().getName(), //
+                bodyResp.toString(), //
+                null, // no session yet
+                seReader.getName(), //
+                null, // no virtualreader yet
+                keypleDto.getTargetNodeId(), //
+                slaveNodeId, // nodeId of the actual slave dtoNode, useful for load
+                             // balancing
+                keypleDto.getId()));
 
         return out;
     }

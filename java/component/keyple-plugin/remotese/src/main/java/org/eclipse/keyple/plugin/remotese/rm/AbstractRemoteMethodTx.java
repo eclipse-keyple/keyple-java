@@ -151,7 +151,7 @@ public abstract class AbstractRemoteMethodTx<T> {
             boolean responseReceived = lock.await(timeout, TimeUnit.MILLISECONDS);
 
             if (responseReceived) {
-                logger.trace("Unlock name:{}, id{}", thisInstance.getMethodName(), this.id);
+                logger.trace("Unlock {}, {}", this.getClass().getCanonicalName(), this.hashCode());
                 if (this.remoteException != null) {
                     throw remoteException;
                 } else {

@@ -38,7 +38,9 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
     private static final Logger logger = LoggerFactory.getLogger(RemoteSePluginImpl.class);
 
     // in milliseconds, throw an exception if slave hasn't answer during this time
-    private final long rpc_timeout;
+    public final long rpc_timeout;
+
+    // private final VirtualReaderSessionFactory sessionManager;
 
     private final VirtualReaderSessionFactory sessionManager;
     protected final DtoSender dtoSender;
