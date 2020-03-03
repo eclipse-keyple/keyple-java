@@ -4,25 +4,25 @@
         <item
             android:id="@+id/usecase1"
             android:icon="@drawable/ic_nfc_black_24dp"
-            android:title="Explicit Selection"
+            android:title="UC1: Explicit Selection"
             android:checked="true"
             />
         <item
             android:id="@+id/usecase2"
             android:icon="@drawable/ic_nfc_black_24dp"
-            android:title="Default selection notification"
+            android:title="UC2: Default selection notification"
             android:checked="true"
             />
         <item
             android:id="@+id/usecase3"
             android:icon="@drawable/ic_nfc_black_24dp"
-            android:title="Grouped Multi Selection"
+            android:title="UC3: Grouped Multi Selection"
             android:checked="true"
             />
         <item
             android:id="@+id/usecase4"
             android:icon="@drawable/ic_nfc_black_24dp"
-            android:title="Sequential Multi Selection"
+            android:title="UC4: Sequential Multi Selection"
             android:checked="true"
             />
         <item

@@ -11,6 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.util
 
+import android.content.Context
+import android.os.Build
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcProtocolSettings
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader
@@ -26,4 +28,12 @@ fun AndroidNfcReader.configFlags(presenceCheckDelay: Int? = null, noPlateformSou
 
 fun AndroidNfcReader.configProtocol(seCommonProtocols: SeCommonProtocols) {
     this.addSeProtocolSetting(seCommonProtocols, AndroidNfcProtocolSettings.getSetting(seCommonProtocols))
+}
+
+fun Context.getColorResource(id: Int): Int {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        resources.getColor(id, null)
+    } else {
+        resources.getColor(id)
+    }
 }

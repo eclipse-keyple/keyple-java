@@ -11,24 +11,20 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.activity
 
-import android.graphics.Color
 import android.nfc.NfcAdapter
 import android.os.Bundle
-import android.text.Spannable
-import android.text.style.ForegroundColorSpan
-import android.text.style.RelativeSizeSpan
-import android.text.style.TypefaceSpan
 import android.view.MenuItem
 import android.view.WindowManager
-import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.drawerLayout
+import kotlinx.android.synthetic.main.activity_main.eventRecyclerView
 import kotlinx.android.synthetic.main.activity_main.navigationView
-import kotlinx.android.synthetic.main.activity_main.text
 import kotlinx.android.synthetic.main.activity_main.toolbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -54,7 +50,10 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
+import org.eclipse.keyple.example.adapter.EventAdapter
 import org.eclipse.keyple.example.calypso.android.nfc.R
+import org.eclipse.keyple.example.model.ChoiceEventModel
+import org.eclipse.keyple.example.model.EventModel
 import org.eclipse.keyple.example.util.CalypsoClassicInfo
 import org.eclipse.keyple.example.util.configFlags
 import org.eclipse.keyple.example.util.configProtocol
@@ -91,6 +90,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var readEnvironmentParserIndex: Int = 0
     private var useCase: UseCase? = null
 
+    private lateinit var adapter: RecyclerView.Adapter<*>
+    private lateinit var layoutManager: RecyclerView.LayoutManager
+    private val events = arrayListOf<EventModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -102,6 +105,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val actionBar = supportActionBar
         actionBar?.title = "NFC Plugins"
         actionBar?.subtitle = "Examples application"
+
+        /**
+         * Init recycler view
+         */
+        adapter = EventAdapter(events)
+        layoutManager = LinearLayoutManager(this)
+        eventRecyclerView.layoutManager = layoutManager
+        eventRecyclerView.adapter = adapter
 
         /**
          * Init menu
@@ -143,7 +154,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 initFromBackgroundTextView()
                 reader.processIntent(intent)
             } else {
-                initWaitingTextView()
                 if (!drawerLayout.isDrawerOpen(GravityCompat.START)) {
                     drawerLayout.openDrawer(GravityCompat.START)
                 }
@@ -190,18 +200,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         when (item.itemId) {
             R.id.usecase1 -> {
+                clearEvents()
                 configureUseCase1ExplicitSelectionAid()
             }
             R.id.usecase2 -> {
+                clearEvents()
                 configureUseCase2DefaultSelectionNotification()
             }
             R.id.usecase3 -> {
+                clearEvents()
                 configureUseCase3GroupedMultiSelection()
             }
             R.id.usecase4 -> {
+                clearEvents()
                 configureUseCase4SequentialMultiSelection()
             }
             R.id.start_scan -> {
+                clearEvents()
                 configureUseCase0()
                 // notify reader that se detection has been launched
                 reader.startSeDetection(ObservableReader.PollingMode.REPEATING)
@@ -233,8 +248,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun configureUseCase4SequentialMultiSelection() {
-        appendColoredText(text, "\nUseCase Generic #4: AID based sequential explicit multiple selection ", Color.BLACK)
-        appendColoredText(text, "\nSE Reader  NAME = ${reader.name}", Color.BLACK)
+        addHeaderEvent("UseCase Generic #4: AID based sequential explicit multiple selection")
+        addHeaderEvent("SE Reader  NAME = ${reader.name}")
 
         /*Check if a SE is present in the reader */
         // if (reader.isSePresent) {
@@ -258,6 +273,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             seSelection.prepareSelection(selectionRequest1st)
 
             /* Do the selection and display the result */
+            addActionEvent("FIRST MATCH Calypso PO selection for prefix: $seAidPrefix")
             doAndAnalyseSelection(reader, seSelection, 1)
 
             /*
@@ -275,10 +291,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             seSelection.prepareSelection(selectionRequest2nd)
 
             /* Do the selection and display the result */
+                    addActionEvent("NEXT MATCH Calypso PO selection for prefix: $seAidPrefix")
             doAndAnalyseSelection(reader, seSelection, 2)
         } else {
-            appendColoredText(text, "\nNo SE were detected.", Color.RED)
+            addResultEvent("No SE were detected.")
         }
+        eventRecyclerView.smoothScrollToPosition(events.size - 1)
     }
 
     private fun doAndAnalyseSelection(reader: SeReader, seSelection: SeSelection, index: Int) {
@@ -286,27 +304,27 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (selectionsResult.hasActiveSelection()) {
             with(selectionsResult.getMatchingSelection(0)) {
                 val matchingSe = this.matchingSe
-                appendColoredText(text, "\n\nSelection status for selection ${this.extraInfo} " +
+                addResultEvent( "Selection status for selection ${this.extraInfo} " +
                         "(indexed ${this.selectionIndex}): \n\t\t" +
                         "ATR: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.atr.bytes)}\n\t\t" +
-                        "FCI: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.fci.bytes)}",
-                        Color.BLUE)
+                        "FCI: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.fci.bytes)}")
             }
         } else {
-            appendColoredText(text, "\nThe selection did not match for case $index.", Color.RED)
+            addResultEvent("The selection did not match for case $index.")
         }
     }
 
     private fun configureUseCase3GroupedMultiSelection() {
-
-        appendColoredText(text, "\nUseCase Generic #3: AID based grouped explicit multiple selection", Color.BLACK)
-        appendColoredText(text, "\nSE Reader  NAME = ${reader.name}", Color.BLACK)
+        addHeaderEvent("UseCase Generic #3: AID based grouped explicit multiple selection")
+        addHeaderEvent("SE Reader  NAME = ${reader.name}")
 
         /* CLOSE_AFTER to force selection of all applications*/
         seSelection = SeSelection(MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER)
 
         /* operate SE selection (change the AID here to adapt it to the SE used for the test) */
-        val seAidPrefix = "A000000404012509"
+        val seAidPrefix = CalypsoClassicInfo.AID_PREFIX
+
+        useCase = null
 
         // if (reader.isSePresent) {
         if (true) {
@@ -337,6 +355,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             seSelection.prepareSelection(selectionRequest3rd)
 
+            addActionEvent("Calypso PO selection for prefix: $seAidPrefix")
+
             /*
             * Actual SE communication: operate through a single request the SE selection
             */
@@ -345,32 +365,33 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             if (selectionResult.matchingSelections.size > 0) {
                 selectionResult.matchingSelections.forEach {
                     val matchingSe = it.matchingSe
-                    appendColoredText(text, "\nSelection status for selection ${it.extraInfo} " +
+                    addResultEvent("Selection status for selection ${it.extraInfo} " +
                             "(indexed ${it.selectionIndex}): \n\t\t" +
                             "ATR: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.atr.bytes)}\n\t\t" +
-                            "FCI: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.fci.bytes)}",
-                            Color.BLACK)
+                            "FCI: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.fci.bytes)}")
                 }
+                addResultEvent("End of selection")
             } else {
-                appendColoredText(text, "\nNo SE matched the selection.", Color.RED)
+                addResultEvent("No SE matched the selection.")
+                addResultEvent("SE must be in the field when starting this use case")
             }
         } else {
-            appendColoredText(text, "\nNo SE were detected.", Color.RED)
+            addResultEvent("No SE were detected.")
         }
 
-        useCase = null
+        eventRecyclerView.smoothScrollToPosition(events.size - 1)
     }
 
     private fun configureUseCase2DefaultSelectionNotification() {
+        addHeaderEvent("UseCase Generic #2: AID based default selection")
+        addHeaderEvent("SE Reader  NAME = ${reader.name}")
+
         /*
         * Prepare a a new Calypso PO selection
         */
         seSelection = SeSelection()
 
         val aid = CalypsoClassicInfo.AID
-
-        appendColoredText(text, "\n== UseCase Generic #2: AID based default selection ==", Color.BLACK)
-        appendColoredText(text, "\n= SE Reader  NAME = ${reader.name}", Color.BLACK)
 
         /*
         * Setting of an AID based selection
@@ -402,39 +423,32 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         // (reader as ObservableReader).addObserver(this) //ALready done in onCreate
 
-        appendColoredText(text, "\n==============", Color.BLACK)
-        appendColoredText(text, "\n= Wait for a SE. The default AID based selection to be processed as soon as the SE is detected.", Color.BLACK)
-        appendColoredText(text, "\n==============", Color.BLACK)
+        addActionEvent("Waiting for a SE... The default AID based selection to be processed as soon as the SE is detected.")
 
         useCase = object : UseCase {
             override fun onEventUpdate(event: ReaderEvent?) {
                 CoroutineScope(Dispatchers.Main).launch {
                     when (event?.eventType) {
                         ReaderEvent.EventType.SE_MATCHED -> {
-                            Timber.d("Tag detected - SE MATCHED")
+                            addResultEvent("SE_MATCHED event: A SE corresponding to request has been detected")
                             val selectedSe = seSelection.processDefaultSelection(event.defaultSelectionsResponse).activeSelection.matchingSe
                             if (selectedSe != null) {
-                                appendColoredText(text, "\nObserver notification: the selection of the SE has succeeded.", Color.BLUE)
-                                appendColoredText(text, "\n==============", Color.BLUE)
-                                appendColoredText(text, "\n= End of the SE processing.", Color.BLUE)
-                                appendColoredText(text, "\n==============", Color.BLUE)
+                                addResultEvent("Observer notification: the selection of the SE has succeeded. End of the SE processing.")
+                                addResultEvent("Application FCI = ${ByteArrayUtil.toHex(selectedSe.selectionStatus.fci.bytes)}")
                             } else {
-                                appendColoredText(text, "\nThe selection of the SE has failed. Should not have occurred due to the MATCHED_ONLY selection mode.", Color.RED)
+                                addResultEvent("The selection of the SE has failed. Should not have occurred due to the MATCHED_ONLY selection mode.")
                             }
                         }
 
                         ReaderEvent.EventType.SE_INSERTED -> {
-                            Timber.d("SE Inserted")
-                            appendColoredText(text, "\nSE_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.", Color.GREEN)
+                            addResultEvent("SE_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.")
                         }
 
                         ReaderEvent.EventType.SE_REMOVED -> {
-                            Timber.d("SE removed")
-                            appendColoredText(text, "\nThere is no PO inserted anymore. Return to the waiting state...", Color.GREEN)
+                            addResultEvent("SE_REMOVED event: There is no PO inserted anymore. Return to the waiting state...")
                         }
 
-                        else -> {
-                        }
+                        else -> { }
                     }
                 }
                 if (event?.eventType == ReaderEvent.EventType.SE_INSERTED || event?.eventType == ReaderEvent.EventType.SE_MATCHED) {
@@ -447,15 +461,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         (SeProxyService.getInstance().getPlugin(event.pluginName).getReader(event.readerName) as ObservableReader).notifySeProcessed()
                     } catch (e: KeypleReaderNotFoundException) {
                         Timber.e(e)
+                        addResultEvent("Error: ${e.message}")
                     } catch (e: KeyplePluginNotFoundException) {
                         Timber.e(e)
+                        addResultEvent("Error: ${e.message}")
                     }
                 }
+                eventRecyclerView.smoothScrollToPosition(events.size - 1)
             }
         }
     }
 
     private fun configureUseCase1ExplicitSelectionAid() {
+        addHeaderEvent("UseCase Generic #1: Explicit AID selection")
+        addHeaderEvent("SE Reader  NAME = ${reader.name}")
+
         /*
         * Prepare a a new Calypso PO selection
         */
@@ -465,6 +485,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         // if (reader.isSePresent) {
         if (true) {
+
             /**
              * configure Protocol
              */
@@ -484,20 +505,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
              */
             useCase = null
 
+            addActionEvent("Calypso PO selection: $aid")
             val selectionsResult = seSelection.processExplicitSelection(reader)
 
             if (selectionsResult.hasActiveSelection()) {
                 val matchedSe = selectionsResult.activeSelection.matchingSe
-                text.append("\n-- Calypso PO selection: ")
-                appendColoredText(text, "The selection of the SE has succeeded.", Color.BLUE)
-                text.append("\n-- Application FCI = ${matchedSe.selectionStatus.fci}")
-                appendColoredText(text, "End of the generic SE processing.", Color.BLACK)
+                addResultEvent("The selection of the SE has succeeded.")
+                addResultEvent("Application FCI = ${ByteArrayUtil.toHex(matchedSe.selectionStatus.fci.bytes)}")
+                addResultEvent("End of the generic SE processing.")
             } else {
-                appendColoredText(text, "The selection of the SE has failed.", Color.RED)
+                addResultEvent("The selection of the SE has failed.")
+                addResultEvent("SE must be in the field when starting this use case")
             }
         } else {
-            appendColoredText(text, "\nNo SE were detected.", Color.RED)
+            addResultEvent("No SE were detected.")
         }
+        eventRecyclerView.smoothScrollToPosition(events.size - 1)
     }
 
     private fun configureUseCase0() {
@@ -561,31 +584,28 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 CoroutineScope(Dispatchers.Main).launch {
                     when (event?.eventType) {
                         ReaderEvent.EventType.SE_MATCHED -> {
-                            text.append("\nTag detected - SE MATCHED")
+                            addResultEvent("Tag detected - SE MATCHED")
                             executeCommands(event.defaultSelectionsResponse)
                             (reader as ObservableReader).notifySeProcessed()
-                            Timber.d("Tag detected - SE MATCHED")
                         }
 
                         ReaderEvent.EventType.SE_INSERTED -> {
-                            text.append("\nPO detected but AID didn't match with " + CalypsoClassicInfo.AID)
+                            addResultEvent("PO detected but AID didn't match with ${CalypsoClassicInfo.AID}")
                             (reader as ObservableReader).notifySeProcessed()
-                            Timber.d("PO detected but AID didn't match with ${CalypsoClassicInfo.AID}")
                         }
 
                         ReaderEvent.EventType.SE_REMOVED -> {
-                            text.append("\nTag removed")
-                            Timber.d("Tag removed")
+                            addResultEvent("Tag detected - SE SE_REMOVED")
                         }
 
                         ReaderEvent.EventType.TIMEOUT_ERROR -> {
-                            text.append("\nError reading card")
-                            Timber.d("Error reading card")
+                            addResultEvent("Tag detected - SE TIMEOUT_ERROR")
                         }
                     }
                 }
             }
         }
+        eventRecyclerView.smoothScrollToPosition(events.size - 1)
     }
 
     /**
@@ -594,40 +614,35 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
      * @param defaultSelectionsResponse
      */
     private fun executeCommands(
-        defaultSelectionsResponse: AbstractDefaultSelectionsResponse
-    ) {
+        defaultSelectionsResponse: AbstractDefaultSelectionsResponse) {
 
-        Timber.d("Running Calypso Simple Read transaction")
+        //addHeaderEvent("Running Calypso Simple Read transaction")
 
         try {
             /*
              * print tag info in View
              */
-            text.append("\nTag Id :" + reader.printTagId())
+            addHeaderEvent("Tag Id : ${reader.printTagId()}")
             val selectionsResult = seSelection.processDefaultSelection(defaultSelectionsResponse)
-            appendColoredText(text, "\n\n1st PO exchange: aid selection", Color.BLACK)
+            addResultEvent("1st PO exchange: aid selection")
 
             if (selectionsResult.hasActiveSelection()) {
                 val calypsoPo = selectionsResult.activeSelection.matchingSe as CalypsoPo
 
-                text.append("\n-- Calypso PO selection: ")
-                appendColoredText(text, "SUCCESS", Color.BLUE)
-                text.append("\n-- AID: ")
-                appendHexBuffer(text, ByteArrayUtil.fromHex(CalypsoClassicInfo.AID))
+                addResultEvent("Calypso PO selection: ")
+                addResultEvent("AID: ${ByteArrayUtil.fromHex(CalypsoClassicInfo.AID)}")
 
                 /*
                  * Retrieve the data read from the parser updated during the selection process
                  */
                 val readEnvironmentParser = selectionsResult
-                        .getActiveSelection().getResponseParser(readEnvironmentParserIndex) as ReadRecordsRespPars
+                        .activeSelection.getResponseParser(readEnvironmentParserIndex) as ReadRecordsRespPars
 
                 val environmentAndHolder = readEnvironmentParser.records[CalypsoClassicInfo.RECORD_NUMBER_1.toInt()]
 
-                text.append("\n-- Environment and Holder file: ")
-                appendHexBuffer(text, environmentAndHolder!!)
+                addResultEvent("Environment and Holder file: $environmentAndHolder")
 
-                appendColoredText(text, "\n\n2nd PO exchange: read the event log file",
-                        Color.BLACK)
+                addResultEvent("2nd PO exchange: read the event log file")
                 val poTransaction = PoTransaction(PoResource(reader, calypsoPo))
 
                 /*
@@ -645,9 +660,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                  * Actual PO communication: send the prepared read order, then close the channel
                  * with the PO
                  */
+                addActionEvent("processPoCommands")
                 if (poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER)) {
-                    text.append("\n-- Transaction: ")
-                    appendColoredText(text, "SUCCESS", Color.BLUE)
+                    addResultEvent("SUCCESS")
 
                     /*
                      * Retrieve the data read from the parser updated during the transaction process
@@ -658,24 +673,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     val eventLog = readEventLogParser.records[CalypsoClassicInfo.RECORD_NUMBER_1.toInt()]
 
                     /* Log the result */
-                    text.append("\n-- EventLog file:")
-                    appendHexBuffer(text, eventLog!!)
+                    addResultEvent("EventLog file: ${ByteArrayUtil.toHex(eventLog)}")
                 }
-                appendColoredText(text, "\n\nEnd of the Calypso PO processing.", Color.BLACK)
-                text.append("\n ----")
-                appendColoredText(text, "\nYou can remove the card now", Color.BLUE)
-                text.append("\n ----")
+                addResultEvent("End of the Calypso PO processing.")
+                addResultEvent("You can remove the card now")
             } else {
-                appendColoredText(text,
-                        "The selection of the PO has failed. Should not have occurred due to the MATCHED_ONLY selection mode.",
-                        Color.RED)
+                addResultEvent("The selection of the PO has failed. Should not have occurred due to the MATCHED_ONLY selection mode.")
             }
         } catch (e1: KeypleReaderException) {
             e1.fillInStackTrace()
         } catch (e: Exception) {
-            Timber.d("Exception: " + e.message)
-            appendColoredText(text, "\nException: " + e.message, Color.RED)
-            e.fillInStackTrace()
+            Timber.e(e)
+            addResultEvent("Exception: ${e.message}")
         }
     }
 
@@ -688,51 +697,39 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
      * Initialize display
      */
     private fun initWaitingTextView() {
-        text.setText("") // reset
-        appendColoredText(text, "Waiting for a smartcard...", Color.BLUE)
-        text.append("\n ---- ")
+        addActionEvent("Waiting for a smartcard...")
     }
 
     private fun initFromBackgroundTextView() {
-        text.setText("") // reset
-        appendColoredText(text, "Smartcard detected while in background...", Color.BLUE)
-        text.append("\n ---- ")
+        addResultEvent("Smartcard detected while in background...")
     }
 
-    /**
-     * Append to tv a string containing an hex representation of the byte array provided in
-     * argument.
-     *
-     *
-     * The font used is monospaced.
-     *
-     * @param tv TextView
-     * @param ba byte array
-     */
-    private fun appendHexBuffer(tv: TextView, ba: ByteArray) {
-        val start = tv.text.length
-        tv.append(ByteArrayUtil.toHex(ba))
-        val end = tv.text.length
-
-        val spannableText = tv.text as Spannable
-
-        spannableText.setSpan(TypefaceSpan("monospace"), start, end, 0)
-        spannableText.setSpan(RelativeSizeSpan(0.70f), start, end, 0)
+    private fun clearEvents() {
+        events.clear()
+        adapter.notifyDataSetChanged()
     }
 
-    /**
-     * Append to tv a text colored according to the provided argument
-     *
-     * @param tv TextView
-     * @param text string
-     * @param color color value
-     */
-    private fun appendColoredText(tv: TextView, text: String, color: Int) {
-        val start = tv.text.length
-        tv.append(text)
-        val end = tv.text.length
+    private fun addHeaderEvent(message: String) {
+        events.add(EventModel(EventModel.TYPE_HEADER, message))
+        adapter.notifyItemInserted(events.lastIndex)
+        Timber.d("Header: %s", message)
+    }
 
-        val spannableText = tv.text as Spannable
-        spannableText.setSpan(ForegroundColorSpan(color), start, end, 0)
+    private fun addActionEvent(message: String) {
+        events.add(EventModel(EventModel.TYPE_ACTION, message))
+        adapter.notifyItemInserted(events.lastIndex)
+        Timber.d("Action: %s", message)
+    }
+
+    private fun addResultEvent(message: String) {
+        events.add(EventModel(EventModel.TYPE_RESULT, message))
+        adapter.notifyItemInserted(events.lastIndex)
+        Timber.d("Result: %s", message)
+    }
+
+    private fun addChoiceEvent(title: String, choices: List<String>, callback: (choice: String) -> Unit) {
+        events.add(ChoiceEventModel(title, choices, callback))
+        adapter.notifyItemInserted(events.lastIndex)
+        Timber.d("Choice: %s: %s", title, choices.toString())
     }
 }
