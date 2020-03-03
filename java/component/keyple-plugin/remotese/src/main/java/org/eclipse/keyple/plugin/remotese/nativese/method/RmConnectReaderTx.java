@@ -110,7 +110,10 @@ public class RmConnectReaderTx extends AbstractRemoteMethodTx<String> {
         body.addProperty("isObservable", localReader instanceof ObservableReader);
         body.addProperty("options", JsonParser.getGson().toJson(options));
 
-        return KeypleDtoHelper.buildRequest(getMethodName().getName(), body.toString(), null,
-                localReader.getName(), null, requesterNodeId, targetNodeId, id);
+        return KeypleDtoHelper.buildRequest(getMethodName().getName(), body.toString(), null, // no
+                                                                                              // session
+                                                                                              // yet
+                localReader.getName(), null, // no virtualreader yet
+                requesterNodeId, targetNodeId, id);
     }
 }

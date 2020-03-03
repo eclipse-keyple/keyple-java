@@ -94,7 +94,8 @@ class RemoteSePoolPluginImpl extends RemoteSePluginImpl implements RemoteSePoolP
 
         // call remote method for allocateReader
         RmPoolReleaseTx releaseTx = new RmPoolReleaseTx(virtualReader.getNativeReaderName(),
-                virtualReader.getName(), this, this.dtoSender, slaveNodeId, dtoSender.getNodeId());
+                virtualReader.getName(), this, this.dtoSender,
+                virtualReader.getSession().getSessionId(), slaveNodeId, dtoSender.getNodeId());
 
         try {
             // blocking call
