@@ -140,8 +140,8 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
     private fun initWaitForRemoval(): WaitForSeRemoval {
         return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             WaitForSeRemoval(this, CardAbsentPingMonitoringJob(this), executorService)
-        }else{
-            //this.waitForCardAbsentNative will only be used on API>= N
+        } else {
+            // this.waitForCardAbsentNative will only be used on API>= N
             WaitForSeRemoval(this, SmartRemovalMonitoringJob(this), executorService)
         }
     }
@@ -358,7 +358,7 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
     override fun stopWaitForCardRemoval() {
         Timber.d("stopWaitForCardRemoval")
         isWatingForRemoval = false
-        synchronized(syncWaitRemoval){
+        synchronized(syncWaitRemoval) {
             syncWaitRemoval.notify()
         }
     }
@@ -367,16 +367,16 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
     override fun waitForCardAbsentNative(): Boolean {
         Timber.d("waitForCardAbsentNative")
         var isRemoved = false
-        if(!isWatingForRemoval){
+        if (!isWatingForRemoval) {
             isWatingForRemoval = true
             nfcAdapter?.ignore(tagProxy?.tag, 1000, {
                 isRemoved = true
-                synchronized(syncWaitRemoval){
+                synchronized(syncWaitRemoval) {
                     syncWaitRemoval.notify()
                 }
             }, null)
 
-            synchronized(syncWaitRemoval){
+            synchronized(syncWaitRemoval) {
                 syncWaitRemoval.wait(10000)
             }
         }

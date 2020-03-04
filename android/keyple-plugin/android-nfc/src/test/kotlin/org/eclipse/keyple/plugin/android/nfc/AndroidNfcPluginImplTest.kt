@@ -1,3 +1,14 @@
+/********************************************************************************
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException
@@ -20,11 +31,9 @@ class AndroidNfcPluginImplTest {
         plugin = AndroidNfcPluginImpl
     }
 
-
     /*
      * TEST PUBLIC METHODS
      */
-
 
     @Test
     @Throws(IOException::class)
@@ -33,7 +42,7 @@ class AndroidNfcPluginImplTest {
     }
 
     @Test
-    fun pluginName(){
+    fun pluginName() {
         Assert.assertEquals("AndroidNfcPlugin", AndroidNfcPlugin.PLUGIN_NAME)
     }
 
@@ -46,7 +55,6 @@ class AndroidNfcPluginImplTest {
         plugin.parameters = parameters
         Assert.assertTrue(plugin.parameters.isNotEmpty())
         Assert.assertEquals("value1", plugin.parameters["key1"])
-
     }
 
     @Test
@@ -54,7 +62,6 @@ class AndroidNfcPluginImplTest {
     fun getParameters() {
         Assert.assertNotNull(plugin.parameters)
     }
-
 
     @Test
     @Throws(IOException::class)
@@ -93,6 +100,4 @@ class AndroidNfcPluginImplTest {
         Assert.assertEquals(1, plugin.readers.size)
         Assert.assertTrue(plugin.readers.first() is AndroidNfcReaderImpl)
     }
-
-
 }

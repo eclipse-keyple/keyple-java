@@ -1,3 +1,14 @@
+/********************************************************************************
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
 import android.nfc.Tag
@@ -17,7 +28,7 @@ import org.junit.Ignore
 import org.junit.Test
 import java.util.Arrays
 
-//@RunWith(RobolectricTestRunner.class)
+// @RunWith(RobolectricTestRunner.class)
 class TagProxyTest {
 
     @MockK
@@ -40,7 +51,7 @@ class TagProxyTest {
 
         mockkStatic(IsoDep::class)
         every { tagIso.techList } returns arrayOf("android.nfc.tech.IsoDep", "android.nfc.tech.NfcB")
-        every { IsoDep.get(tagIso)  } returns isoDep
+        every { IsoDep.get(tagIso) } returns isoDep
 
         mockkStatic(MifareClassic::class)
         every { tagMifare.techList } returns arrayOf("android.nfc.tech.MifareClassic", "android.nfc.tech.NfcA")
@@ -52,77 +63,77 @@ class TagProxyTest {
     }
 
     @Test
-    fun getTagProxyIsoDep(){
+    fun getTagProxyIsoDep() {
         val tagProxy = TagProxy.getTagProxy(tagIso)
         Assert.assertEquals("android.nfc.tech.IsoDep", tagProxy.tech)
     }
 
     @Test
-    fun getTagProxyMifareClassic(){
+    fun getTagProxyMifareClassic() {
         val tagProxy = TagProxy.getTagProxy(tagMifare)
         Assert.assertEquals("android.nfc.tech.MifareClassic", tagProxy.tech)
     }
 
     @Test
-    fun getTagProxyMifareUltralight(){
+    fun getTagProxyMifareUltralight() {
         val tagProxy = TagProxy.getTagProxy(tagMifareUL)
         Assert.assertEquals("android.nfc.tech.MifareUltralight", tagProxy.tech)
     }
 
     @Test(expected = KeypleReaderException::class)
-    fun getTagProxyNull(){
+    fun getTagProxyNull() {
         val tag = mockk<Tag>()
         every { tag.techList } returns arrayOf("unknown tag")
         TagProxy.getTagProxy(tag)
     }
 
     @Test
-    fun getTag(){
+    fun getTag() {
         TagProxy.getTagProxy(tagIso)
     }
 
     @Test
-    fun connect(){
+    fun connect() {
         val tagProxy = TagProxy.getTagProxy(tagIso)
-        tagProxy.connect() //Should no throw errors
+        tagProxy.connect() // Should no throw errors
     }
 
     @Test
-    fun close(){
+    fun close() {
         val tagProxy = TagProxy.getTagProxy(tagIso)
-        tagProxy.close() //Should no throw errors
-    }
-
-    @Test
-    @Ignore
-    fun isConnected(){
-        val tagProxy = TagProxy.getTagProxy(tagIso)
-        tagProxy.isConnected //Should no throw errors
+        tagProxy.close() // Should no throw errors
     }
 
     @Test
     @Ignore
-    fun tranceive(){
+    fun isConnected() {
         val tagProxy = TagProxy.getTagProxy(tagIso)
-        tagProxy.transceive("0000".toByteArray()) //Should no throw errors
+        tagProxy.isConnected // Should no throw errors
     }
 
     @Test
-    fun getATRMifare(){
+    @Ignore
+    fun tranceive() {
+        val tagProxy = TagProxy.getTagProxy(tagIso)
+        tagProxy.transceive("0000".toByteArray()) // Should no throw errors
+    }
+
+    @Test
+    fun getATRMifare() {
         val tagProxy = TagProxy.getTagProxy(tagMifare)
-        Assert.assertTrue(Arrays.equals(ByteArrayUtil.fromHex("3B8F8001804F0CA000000306030001000000006A"),tagProxy.atr))
+        Assert.assertTrue(Arrays.equals(ByteArrayUtil.fromHex("3B8F8001804F0CA000000306030001000000006A"), tagProxy.atr))
     }
 
     @Test
     @Ignore
-    fun getATRIsodep(){
+    fun getATRIsodep() {
         val tagProxy = TagProxy.getTagProxy(tagIso)
         Assert.assertNull(tagProxy.atr)
     }
 
     @Test
-    fun getATRMifareUL(){
+    fun getATRMifareUL() {
         val tagProxy = TagProxy.getTagProxy(tagMifareUL)
-        Assert.assertTrue(Arrays.equals(ByteArrayUtil.fromHex("3B8F8001804F0CA0000003060300030000000068"),tagProxy.atr))
+        Assert.assertTrue(Arrays.equals(ByteArrayUtil.fromHex("3B8F8001804F0CA0000003060300030000000068"), tagProxy.atr))
     }
 }

@@ -304,7 +304,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (selectionsResult.hasActiveSelection()) {
             with(selectionsResult.getMatchingSelection(0)) {
                 val matchingSe = this.matchingSe
-                addResultEvent( "Selection status for selection ${this.extraInfo} " +
+                addResultEvent("Selection status for selection ${this.extraInfo} " +
                         "(indexed ${this.selectionIndex}): \n\t\t" +
                         "ATR: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.atr.bytes)}\n\t\t" +
                         "FCI: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.fci.bytes)}")
@@ -614,9 +614,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
      * @param defaultSelectionsResponse
      */
     private fun executeCommands(
-        defaultSelectionsResponse: AbstractDefaultSelectionsResponse) {
+        defaultSelectionsResponse: AbstractDefaultSelectionsResponse
+    ) {
 
-        //addHeaderEvent("Running Calypso Simple Read transaction")
+        // addHeaderEvent("Running Calypso Simple Read transaction")
 
         try {
             /*

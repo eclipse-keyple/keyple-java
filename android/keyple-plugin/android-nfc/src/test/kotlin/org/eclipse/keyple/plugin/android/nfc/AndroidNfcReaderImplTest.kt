@@ -1,3 +1,14 @@
+/********************************************************************************
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
 import android.app.Activity
@@ -38,13 +49,13 @@ class AndroidNfcReaderImplTest {
     internal lateinit var tagProxy: TagProxy
 
     @Before
-    fun setUp(){
+    fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
         val app = RuntimeEnvironment.application
 
         reader = AndroidNfcReaderImpl
 
-        //We need to mock tag.* because it's called in printTagId() called when channel is closed
+        // We need to mock tag.* because it's called in printTagId() called when channel is closed
         every { tagProxy.tag } returns tag
         every { tag.techList } returns arrayOf("android.nfc.tech.IsoDep")
         every { tag.id } returns "00".toByteArray()
@@ -63,7 +74,7 @@ class AndroidNfcReaderImplTest {
     }
 
     @Test
-    fun aInitReaderTest(){ //Must be ran in 1st position as AndroidNfcReaderImpl is a singleton
+    fun aInitReaderTest() { // Must be ran in 1st position as AndroidNfcReaderImpl is a singleton
         Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION, reader.currentMonitoringState)
         Assert.assertEquals(TransmissionMode.CONTACTLESS, reader.transmissionMode)
         Assert.assertEquals(AndroidNfcPlugin.PLUGIN_NAME, reader.pluginName)
@@ -74,16 +85,16 @@ class AndroidNfcReaderImplTest {
     // ---- TAG EVENTS  TESTS ----------- //
 
     @Test
-    fun checkSePresenceTest(){
+    fun checkSePresenceTest() {
         every { tagProxy.isConnected } returns true
         presentMockTag()
         Assert.assertTrue(reader.checkSePresence())
     }
 
     @Test
-    fun processIntent(){
+    fun processIntent() {
         reader.processIntent(Intent())
-        Assert.assertTrue(true)// no test?
+        Assert.assertTrue(true) // no test?
     }
 
     @Test
@@ -131,7 +142,6 @@ class AndroidNfcReaderImplTest {
         reader.closePhysicalChannel()
         // no exception
         Assert.assertTrue(true)
-
     }
 
     @Test(expected = KeypleReaderException::class)
@@ -144,7 +154,6 @@ class AndroidNfcReaderImplTest {
         // test
         reader.closePhysicalChannel()
         // throw exception
-
     }
 
     // ---- TRANSMIT TEST ----------- //
@@ -188,14 +197,14 @@ class AndroidNfcReaderImplTest {
         every { tagProxy.tech } returns AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4)
 
         // test
-       Assert.assertTrue(reader.protocolFlagMatches(SeCommonProtocols.PROTOCOL_ISO14443_4))
+        Assert.assertTrue(reader.protocolFlagMatches(SeCommonProtocols.PROTOCOL_ISO14443_4))
     }
 
     // ----- TEST PARAMETERS ------ //
 
     @Test
     @Throws(IllegalArgumentException::class)
-    fun bSetCorrectParameter() { //Must be ran in 2nd position as AndroidNfcReaderImpl is a singleton
+    fun bSetCorrectParameter() { // Must be ran in 2nd position as AndroidNfcReaderImpl is a singleton
         reader.setParameter(AndroidNfcReader.FLAG_READER_NO_PLATFORM_SOUNDS, "1")
         Assert.assertEquals(NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS, reader.flags)
         reader.setParameter(AndroidNfcReader.FLAG_READER_NO_PLATFORM_SOUNDS, "0")
@@ -232,9 +241,9 @@ class AndroidNfcReaderImplTest {
     }
 
     @Test
-    fun onTagReceivedException(){
+    fun onTagReceivedException() {
         every { TagProxy.getTagProxy(tag) } throws KeypleReaderException("")
-        reader.onTagDiscovered(tag) //Should not throw an exception
+        reader.onTagDiscovered(tag) // Should not throw an exception
     }
 
     // -------- helpers ---------- //
@@ -243,6 +252,5 @@ class AndroidNfcReaderImplTest {
         reader.onTagDiscovered(tag)
     }
 
-
-    class MyActivity: Activity()
+    class MyActivity : Activity()
 }
