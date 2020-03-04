@@ -74,9 +74,10 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
             try {
                 openChannel = session?.openBasicChannel(null)
             } catch (e: IOException) {
-                e.printStackTrace()
+                Timber.e(e)
                 throw KeypleIOReaderException("IOException while opening basic channel.")
             } catch (e: SecurityException) {
+                Timber.e(e)
                 throw KeypleChannelControlException("Error while opening basic channel, SE_SELECTOR = $aidSelector", e.cause)
             }
 
@@ -159,8 +160,8 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
         Timber.d("Data in : %s", ByteArrayUtil.toHex(apduIn))
         var dataOut = byteArrayOf(0)
         try {
-            openChannel?.let {
-                dataOut = it.transmit(apduIn)
+            openChannel.let {
+                dataOut = it?.transmit(apduIn) ?: throw IOException("Channel is not open")
             }
         } catch (e: IOException) {
             throw KeypleIOReaderException("Error while transmitting APDU", e)

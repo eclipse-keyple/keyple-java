@@ -142,8 +142,8 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
         Timber.d("Data in : " + ByteArrayUtil.toHex(apduIn))
         var dataOut = byteArrayOf(0)
         try {
-            openChannel?.let {
-                dataOut = it.transmit(apduIn)
+            openChannel.let {
+                dataOut = it?.transmit(apduIn) ?: throw IOException("Channel is not open")
             }
         } catch (e: IOException) {
             throw KeypleIOReaderException("Error while transmitting APDU", e)
