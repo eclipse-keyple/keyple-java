@@ -21,6 +21,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
+import java.io.IOException
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState
@@ -35,7 +36,6 @@ import org.junit.runner.RunWith
 import org.junit.runners.MethodSorters
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
-import java.io.IOException
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(RobolectricTestRunner::class)

@@ -22,6 +22,7 @@ import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
+import java.io.IOException
 import kotlinx.android.synthetic.main.activity_main.drawerLayout
 import kotlinx.android.synthetic.main.activity_main.eventRecyclerView
 import kotlinx.android.synthetic.main.activity_main.navigationView
@@ -60,7 +61,6 @@ import org.eclipse.keyple.example.util.configProtocol
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPluginFactory
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader
 import timber.log.Timber
-import java.io.IOException
 
 /**
  * Example of @[SeProxyService] implementation based on the @[AndroidNfcPlugin]

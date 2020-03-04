@@ -18,6 +18,10 @@ import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.os.Build
 import android.os.Bundle
+import java.io.IOException
+import java.util.HashMap
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
@@ -40,10 +44,6 @@ import org.eclipse.keyple.core.seproxy.protocol.SeProtocol
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import timber.log.Timber
-import java.io.IOException
-import java.util.HashMap
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 
 /**
  * Implementation of [AndroidNfcReader] based on keyple core abstract classes [AbstractObservableLocalReader]

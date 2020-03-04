@@ -11,12 +11,12 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
-import org.eclipse.keyple.core.seproxy.SeReader
-import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin
-import timber.log.Timber
 import java.util.HashMap
 import java.util.SortedSet
 import java.util.TreeSet
+import org.eclipse.keyple.core.seproxy.SeReader
+import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin
+import timber.log.Timber
 
 /**
  * Enables Keyple to communicate with the the Android device embedded NFC reader. In the Android

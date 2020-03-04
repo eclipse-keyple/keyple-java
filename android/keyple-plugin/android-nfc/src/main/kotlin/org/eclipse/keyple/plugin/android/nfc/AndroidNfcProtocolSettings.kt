@@ -11,9 +11,9 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
+import java.util.EnumSet
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol
-import java.util.EnumSet
 
 /**
  * This class contains all the parameters to identify the communication protocols supported by NFC

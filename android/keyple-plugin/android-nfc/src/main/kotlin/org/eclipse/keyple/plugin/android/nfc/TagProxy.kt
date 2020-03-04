@@ -16,11 +16,11 @@ import android.nfc.tech.IsoDep
 import android.nfc.tech.MifareClassic
 import android.nfc.tech.MifareUltralight
 import android.nfc.tech.TagTechnology
+import java.io.IOException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.slf4j.LoggerFactory
-import java.io.IOException
 
 /**
  * Proxy Tag for [IsoDep], [MifareClassic], [MifareUltralight] Invoke

@@ -11,13 +11,13 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
+import java.io.IOException
+import java.util.HashMap
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import java.io.IOException
-import java.util.HashMap
 
 class AndroidNfcPluginImplTest {
 

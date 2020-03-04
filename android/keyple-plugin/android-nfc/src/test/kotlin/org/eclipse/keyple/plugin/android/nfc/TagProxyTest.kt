@@ -20,13 +20,13 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import java.util.Arrays
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
-import java.util.Arrays
 
 // @RunWith(RobolectricTestRunner.class)
 class TagProxyTest {
