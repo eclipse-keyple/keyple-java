@@ -218,8 +218,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.start_scan -> {
                 clearEvents()
                 configureUseCase0()
-                // notify reader that se detection has been launched
-                reader.startSeDetection(ObservableReader.PollingMode.REPEATING)
             }
         }
         return true
@@ -300,17 +298,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun doAndAnalyseSelection(reader: SeReader, seSelection: SeSelection, index: Int) {
-        val selectionsResult = seSelection.processExplicitSelection(reader)
-        if (selectionsResult.hasActiveSelection()) {
-            with(selectionsResult.getMatchingSelection(0)) {
-                val matchingSe = this.matchingSe
-                addResultEvent("Selection status for selection ${this.extraInfo} " +
-                        "(indexed ${this.selectionIndex}): \n\t\t" +
-                        "ATR: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.atr.bytes)}\n\t\t" +
-                        "FCI: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.fci.bytes)}")
+        try{
+            val selectionsResult = seSelection.processExplicitSelection(reader)
+            if (selectionsResult.hasActiveSelection()) {
+                with(selectionsResult.getMatchingSelection(0)) {
+                    val matchingSe = this.matchingSe
+                    addResultEvent("Selection status for selection ${this.extraInfo} " +
+                            "(indexed ${this.selectionIndex}): \n\t\t" +
+                            "ATR: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.atr.bytes)}\n\t\t" +
+                            "FCI: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.fci.bytes)}")
+                }
+            } else {
+                addResultEvent("The selection did not match for case $index.")
             }
-        } else {
-            addResultEvent("The selection did not match for case $index.")
+        }catch (e: KeypleReaderException){
+            addResultEvent("Error: ${e.message}")
         }
     }
 
@@ -360,20 +362,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             /*
             * Actual SE communication: operate through a single request the SE selection
             */
-            val selectionResult = seSelection.processExplicitSelection(reader)
+            try{
+                val selectionResult = seSelection.processExplicitSelection(reader)
 
-            if (selectionResult.matchingSelections.size > 0) {
-                selectionResult.matchingSelections.forEach {
-                    val matchingSe = it.matchingSe
-                    addResultEvent("Selection status for selection ${it.extraInfo} " +
-                            "(indexed ${it.selectionIndex}): \n\t\t" +
-                            "ATR: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.atr.bytes)}\n\t\t" +
-                            "FCI: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.fci.bytes)}")
+                if (selectionResult.matchingSelections.size > 0) {
+                    selectionResult.matchingSelections.forEach {
+                        val matchingSe = it.matchingSe
+                        addResultEvent("Selection status for selection ${it.extraInfo} " +
+                                "(indexed ${it.selectionIndex}): \n\t\t" +
+                                "ATR: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.atr.bytes)}\n\t\t" +
+                                "FCI: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.fci.bytes)}")
+                    }
+                    addResultEvent("End of selection")
+                } else {
+                    addResultEvent("No SE matched the selection.")
+                    addResultEvent("SE must be in the field when starting this use case")
                 }
-                addResultEvent("End of selection")
-            } else {
-                addResultEvent("No SE matched the selection.")
-                addResultEvent("SE must be in the field when starting this use case")
+            }catch (e: KeypleReaderException){
+                addResultEvent("Error: ${e.message}")
             }
         } else {
             addResultEvent("No SE were detected.")
@@ -500,22 +506,33 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
              */
             seSelection.prepareSelection(selectionRequest)
 
+            /*
+             * Provide the SeReader with the selection operation to be processed when a SE is inserted.
+             */
+            (reader as ObservableReader).setDefaultSelectionRequest(seSelection.selectionOperation,
+                    ObservableReader.NotificationMode.MATCHED_ONLY, ObservableReader.PollingMode.SINGLESHOT)
+
             /**
              * We won't be listening for event update within this use case
              */
             useCase = null
 
             addActionEvent("Calypso PO selection: $aid")
-            val selectionsResult = seSelection.processExplicitSelection(reader)
+            try {
+                val selectionsResult = seSelection.processExplicitSelection(reader)
 
-            if (selectionsResult.hasActiveSelection()) {
-                val matchedSe = selectionsResult.activeSelection.matchingSe
-                addResultEvent("The selection of the SE has succeeded.")
-                addResultEvent("Application FCI = ${ByteArrayUtil.toHex(matchedSe.selectionStatus.fci.bytes)}")
-                addResultEvent("End of the generic SE processing.")
-            } else {
-                addResultEvent("The selection of the SE has failed.")
-                addResultEvent("SE must be in the field when starting this use case")
+                if (selectionsResult.hasActiveSelection()) {
+                    val matchedSe = selectionsResult.activeSelection.matchingSe
+                    addResultEvent("The selection of the SE has succeeded.")
+                    addResultEvent("Application FCI = ${ByteArrayUtil.toHex(matchedSe.selectionStatus.fci.bytes)}")
+                    addResultEvent("End of the generic SE processing.")
+                } else {
+                    addResultEvent("The selection of the SE has failed.")
+                    addResultEvent("SE must be in the field when starting this use case")
+                }
+            }catch (e: KeypleReaderException){
+                Timber.e(e)
+                addResultEvent("Error: ${e.message}")
             }
         } else {
             addResultEvent("No SE were detected.")
@@ -603,9 +620,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         }
                     }
                 }
+                eventRecyclerView.smoothScrollToPosition(events.size - 1)
             }
         }
-        eventRecyclerView.smoothScrollToPosition(events.size - 1)
+        // notify reader that se detection has been launched
+        reader.startSeDetection(ObservableReader.PollingMode.REPEATING)
     }
 
     /**
@@ -681,8 +700,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             } else {
                 addResultEvent("The selection of the PO has failed. Should not have occurred due to the MATCHED_ONLY selection mode.")
             }
-        } catch (e1: KeypleReaderException) {
-            e1.fillInStackTrace()
+        } catch (e: KeypleReaderException) {
+            Timber.e(e)
+            addResultEvent("Exception: ${e.message}")
         } catch (e: Exception) {
             Timber.e(e)
             addResultEvent("Exception: ${e.message}")
