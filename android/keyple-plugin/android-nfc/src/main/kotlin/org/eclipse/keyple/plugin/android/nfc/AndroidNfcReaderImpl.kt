@@ -205,7 +205,6 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
      */
     override fun onTagDiscovered(tag: Tag?) {
         Timber.i("Received Tag Discovered event $tag")
-        // addRemovedListener(tag)
         tag?.let {
             try {
                 Timber.i("Getting tag proxy")
@@ -222,12 +221,7 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
      * @return true if a SE is present
      */
     public override fun checkSePresence(): Boolean {
-        val result = tagProxy != null && tagProxy?.isConnected == true
-        Timber.d("checkSePresence: $result $tagProxy")
-        return result
-        // TODO: the right implementation is:
-        // return tagProxy != null;
-        // To be updated when the onTagRemoved will be available
+        return tagProxy != null
     }
 
     public override fun getATR(): ByteArray? {
@@ -242,7 +236,7 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
 
     @Throws(KeypleChannelControlException::class)
     public override fun openPhysicalChannel() {
-        if (!checkSePresence()) {
+        if (tagProxy?.isConnected != true) {
             try {
                 Timber.d("Connect to tag..")
                 tagProxy?.connect()

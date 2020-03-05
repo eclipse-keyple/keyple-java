@@ -250,8 +250,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         addHeaderEvent("SE Reader  NAME = ${reader.name}")
 
         /*Check if a SE is present in the reader */
-        // if (reader.isSePresent) {
-        if (true) {
+        if (reader.isSePresent) {
             /*
               * operate SE AID selection (change the AID prefix here to adapt it to the SE used for
               * the test [the SE should have at least two applications matching the AID prefix])
@@ -289,7 +288,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             seSelection.prepareSelection(selectionRequest2nd)
 
             /* Do the selection and display the result */
-                    addActionEvent("NEXT MATCH Calypso PO selection for prefix: $seAidPrefix")
+            addActionEvent("NEXT MATCH Calypso PO selection for prefix: $seAidPrefix")
             doAndAnalyseSelection(reader, seSelection, 2)
         } else {
             addResultEvent("No SE were detected.")
@@ -298,7 +297,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun doAndAnalyseSelection(reader: SeReader, seSelection: SeSelection, index: Int) {
-        try{
+        try {
             val selectionsResult = seSelection.processExplicitSelection(reader)
             if (selectionsResult.hasActiveSelection()) {
                 with(selectionsResult.getMatchingSelection(0)) {
@@ -311,7 +310,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             } else {
                 addResultEvent("The selection did not match for case $index.")
             }
-        }catch (e: KeypleReaderException){
+        } catch (e: KeypleReaderException) {
             addResultEvent("Error: ${e.message}")
         }
     }
@@ -328,8 +327,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         useCase = null
 
-        // if (reader.isSePresent) {
-        if (true) {
+        if (reader.isSePresent) {
             /* AID based selection (1st selection, later indexed 0) */
             val selectionRequest1st = PoSelectionRequest(PoSelector(
                     SeCommonProtocols.PROTOCOL_ISO14443_4, null, PoSelector.PoAidSelector(
@@ -362,7 +360,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             /*
             * Actual SE communication: operate through a single request the SE selection
             */
-            try{
+            try {
                 val selectionResult = seSelection.processExplicitSelection(reader)
 
                 if (selectionResult.matchingSelections.size > 0) {
@@ -378,7 +376,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     addResultEvent("No SE matched the selection.")
                     addResultEvent("SE must be in the field when starting this use case")
                 }
-            }catch (e: KeypleReaderException){
+            } catch (e: KeypleReaderException) {
                 addResultEvent("Error: ${e.message}")
             }
         } else {
@@ -485,13 +483,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         /*
         * Prepare a a new Calypso PO selection
         */
-        seSelection = SeSelection()
+        seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER)
 
         val aid = CalypsoClassicInfo.AID
 
-        // if (reader.isSePresent) {
-        if (true) {
-
+        if (reader.isSePresent) {
             /**
              * configure Protocol
              */
@@ -528,14 +524,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     addResultEvent("End of the generic SE processing.")
                 } else {
                     addResultEvent("The selection of the SE has failed.")
-                    addResultEvent("SE must be in the field when starting this use case")
                 }
-            }catch (e: KeypleReaderException){
+            } catch (e: KeypleReaderException) {
                 Timber.e(e)
                 addResultEvent("Error: ${e.message}")
             }
         } else {
             addResultEvent("No SE were detected.")
+            addResultEvent("SE must be in the field when starting this use case")
         }
         eventRecyclerView.smoothScrollToPosition(events.size - 1)
     }
