@@ -11,13 +11,13 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.command.sam.parser.security;
 
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
+import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
  * Unlock response parser.
  */
-public class UnlockRespPars extends AbstractApduResponseParser {
+public class UnlockRespPars extends AbstractSamResponseParser {
     /**
      * Instantiates a new {@link UnlockRespPars}.
      *

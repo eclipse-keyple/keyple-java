@@ -11,13 +11,14 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.command.sam.parser.security;
 
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
+import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
  * SAM Write Key response parser.
  */
-public class SamWriteKeyRespPars extends AbstractApduResponseParser {
+public class SamWriteKeyRespPars extends AbstractSamResponseParser {
+
     /**
      * Instantiates a new {@link UnlockRespPars}.
      *
