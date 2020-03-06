@@ -35,7 +35,7 @@ public class ChangeKeyRespPars extends AbstractPoResponseParser {
                 "Decrypted message incorrect (key algorithm not supported, incorrect padding, etc.)."));
         m.put(0x6A87, new StatusProperties(false, "Lc not compatible with P2."));
         m.put(0x6B00, new StatusProperties(false, "Incorrect P1, P2."));
-        m.put(0x9000, new StatusProperties(false, "Successful execution."));
+        m.put(0x9000, new StatusProperties(true, "Successful execution."));
         STATUS_TABLE = m;
     }
 
