@@ -60,9 +60,10 @@ public final class CloseSessionRespPars extends AbstractApduResponseParser {
     }
 
     private void parse(byte[] response) {
+        // TODO add support for REV3.2 (long signature)
         if (response.length == 8) {
             signatureLo = Arrays.copyOfRange(response, 4, 8);
-            postponedData = Arrays.copyOfRange(response, 0, 4);
+            postponedData = Arrays.copyOfRange(response, 1, 4);
         } else if (response.length == 4) {
             signatureLo = Arrays.copyOfRange(response, 0, 4);
         } else {
