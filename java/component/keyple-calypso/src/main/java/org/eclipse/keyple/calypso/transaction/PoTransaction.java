@@ -1393,7 +1393,12 @@ public final class PoTransaction {
                 throw new IllegalStateException("Commands list and responses list mismatch! ");
             }
             PoCommand poCommand = commandIterator.next();
+            // the following line is kept for compatibility reasons until the update is completed.
+            // It will be removed soon.
             poCommand.setResponseParser((AbstractPoResponseParser) (poCommand.getCommandBuilder()
+                    .createResponseParser(apduResponse)));
+            /* update the CalypsoPo object with the received responses */
+            updateCalypsoPo((AbstractPoResponseParser) (poCommand.getCommandBuilder()
                     .createResponseParser(apduResponse)));
             if (!apduResponse.isSuccessful()) {
                 allSuccessfulCommands = false;
@@ -1724,5 +1729,48 @@ public final class PoTransaction {
      */
     public String getLastError() {
         return lastError;
+    }
+
+    /**
+     * Updates the {@link CalypsoPo} object with the responses received from the PO
+     * <p>
+     * These operations are specific to each command, so the command type is retrieved from the
+     * parser to call the right CalypsoPo setters.
+     */
+    private void updateCalypsoPo(AbstractPoResponseParser poResponseParser) {
+        switch (poResponseParser.getCommand()) {
+            case GET_DATA_FCI:
+                break;
+            case OPEN_SESSION_10:
+                break;
+            case OPEN_SESSION_24:
+                break;
+            case OPEN_SESSION_31:
+                break;
+            case OPEN_SESSION_32:
+                break;
+            case CLOSE_SESSION:
+                break;
+            case READ_RECORDS:
+                break;
+            case UPDATE_RECORD:
+                break;
+            case WRITE_RECORD:
+                break;
+            case APPEND_RECORD:
+                break;
+            case GET_CHALLENGE:
+                break;
+            case INCREASE:
+                break;
+            case DECREASE:
+                break;
+            case SELECT_FILE:
+                break;
+            case CHANGE_KEY:
+                break;
+            case GET_DATA_TRACE:
+                break;
+        }
     }
 }
