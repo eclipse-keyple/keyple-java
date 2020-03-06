@@ -12,6 +12,7 @@
 package org.eclipse.keyple.core.command;
 
 
+import java.util.Set;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 
 /**
@@ -76,10 +77,12 @@ public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandB
      * @param le maximum number of bytes expected in the data field of the response to the command
      *        (set to 0 is the case where ingoing and outgoing are present. Let the lower layer to
      *        handle the actual length [case4])
+     * @param successfulStatusCodes the list of additional successful status codes for the current
+     *        ApduRequest
      * @return an ApduRequest
      */
     protected ApduRequest setApduRequest(byte cla, CommandsTable command, byte p1, byte p2,
-            byte[] dataIn, Byte le) {
+            byte[] dataIn, Byte le, Set<Integer> successfulStatusCodes) {
         boolean case4;
         /* sanity check */
         if (dataIn != null && le != null && le != 0) {
@@ -130,6 +133,28 @@ public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandB
             case4 = false;
         }
 
-        return new ApduRequest(command.getName(), apdu, case4);
+        return new ApduRequest(command.getName(), apdu, case4, successfulStatusCodes);
+    }
+
+    /**
+     * Alternative API for setApduRequest without successful code list (set to null)
+     * <p>
+     * This variant is useful for all commands that do not have an additional successful status
+     * code.
+     * 
+     * @param cla class of instruction
+     * @param command instruction code
+     * @param p1 instruction parameter 1
+     * @param p2 instruction parameter 2
+     * @param dataIn bytes sent in the data field of the command. dataIn.limit will be Lc (Number of
+     *        bytes present in the data field of the command)
+     * @param le maximum number of bytes expected in the data field of the response to the command
+     *        (set to 0 is the case where ingoing and outgoing are present. Let the lower layer to
+     *        handle the actual length [case4])
+     * @return an ApduRequest
+     */
+    protected ApduRequest setApduRequest(byte cla, CommandsTable command, byte p1, byte p2,
+            byte[] dataIn, Byte le) {
+        return this.setApduRequest(cla, command, p1, p2, dataIn, le, null);
     }
 }
