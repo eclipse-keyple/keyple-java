@@ -14,6 +14,7 @@ package org.eclipse.keyple.calypso.command.po.parser.security;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
+import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
@@ -37,6 +38,14 @@ public class ChangeKeyRespPars extends AbstractPoResponseParser {
         m.put(0x6B00, new StatusProperties(false, "Incorrect P1, P2."));
         m.put(0x9000, new StatusProperties(true, "Successful execution."));
         STATUS_TABLE = m;
+    }
+
+    /**
+     * @return the current command identifier
+     */
+    @Override
+    public CalypsoPoCommands getCommand() {
+        return CalypsoPoCommands.CHANGE_KEY;
     }
 
     /**

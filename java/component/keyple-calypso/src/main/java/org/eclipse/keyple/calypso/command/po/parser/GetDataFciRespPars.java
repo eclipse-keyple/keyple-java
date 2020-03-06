@@ -16,6 +16,7 @@ import static org.eclipse.keyple.core.util.bertlv.Tag.TagType.PRIMITIVE;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
+import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -99,6 +100,14 @@ public final class GetDataFciRespPars extends AbstractPoResponseParser {
     private final static byte APP_TYPE_WITH_CALYPSO_SV = 0x02;
     private final static byte APP_TYPE_RATIFICATION_COMMAND_REQUIRED = 0x04;
     private final static byte APP_TYPE_CALYPSO_REV_32_MODE = 0x08;
+
+    /**
+     * @return the current command identifier
+     */
+    @Override
+    public CalypsoPoCommands getCommand() {
+        return CalypsoPoCommands.GET_DATA_FCI;
+    }
 
     /**
      * Instantiates a new GetDataFciRespPars from the ApduResponse to a selection application

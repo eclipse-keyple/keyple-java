@@ -14,6 +14,7 @@ package org.eclipse.keyple.calypso.command.po.parser;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
+import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
@@ -23,6 +24,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 public final class AppendRecordRespPars extends AbstractPoResponseParser {
 
     private static final Map<Integer, StatusProperties> STATUS_TABLE;
+
 
     static {
         Map<Integer, StatusProperties> m =
@@ -38,6 +40,14 @@ public final class AppendRecordRespPars extends AbstractPoResponseParser {
         m.put(0x6986, new StatusProperties(false, "Command not allowed (no current EF)."));
         m.put(0x6A82, new StatusProperties(false, "File not found."));
         STATUS_TABLE = m;
+    }
+
+    /**
+     * @return the current command identifier
+     */
+    @Override
+    public CalypsoPoCommands getCommand() {
+        return CalypsoPoCommands.APPEND_RECORD;
     }
 
     /**

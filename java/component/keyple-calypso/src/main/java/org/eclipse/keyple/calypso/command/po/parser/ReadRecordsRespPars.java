@@ -13,6 +13,7 @@ package org.eclipse.keyple.calypso.command.po.parser;
 
 import java.util.*;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
+import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -54,6 +55,14 @@ public final class ReadRecordsRespPars extends AbstractPoResponseParser {
     private ReadDataStructure readDataStructure;
     /** Number of the first record read */
     private byte recordNumber;
+
+    /**
+     * @return the current command identifier
+     */
+    @Override
+    public CalypsoPoCommands getCommand() {
+        return CalypsoPoCommands.READ_RECORDS;
+    }
 
     /**
      * Instantiates a new ReadRecordsRespPars.

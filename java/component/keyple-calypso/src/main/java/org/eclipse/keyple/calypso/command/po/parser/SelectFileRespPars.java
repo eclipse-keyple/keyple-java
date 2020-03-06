@@ -14,6 +14,7 @@ package org.eclipse.keyple.calypso.command.po.parser;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
+import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -86,6 +87,14 @@ public final class SelectFileRespPars extends AbstractPoResponseParser {
     private byte[] kifInfo;
 
     private boolean selectionSuccessful;
+
+    /**
+     * @return the current command identifier
+     */
+    @Override
+    public CalypsoPoCommands getCommand() {
+        return CalypsoPoCommands.SELECT_FILE;
+    }
 
     /**
      * Method extracting the various fields from the FCI structure returned by the PO.

@@ -23,4 +23,12 @@ public abstract class AbstractPoResponseParser extends AbstractApduResponseParse
     public AbstractPoResponseParser(ApduResponse response) {
         super(response);
     }
+
+
+    /**
+     * Retrieves the command from an abstract parser.
+     * 
+     * @return the {@link CalypsoPoCommands} enum
+     */
+    public abstract CalypsoPoCommands getCommand();
 }

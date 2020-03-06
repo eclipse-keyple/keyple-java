@@ -12,10 +12,19 @@
 package org.eclipse.keyple.calypso.command.po.parser.security;
 
 import java.util.Arrays;
+import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 public final class OpenSession32RespPars extends AbstractOpenSessionRespPars {
+
+    /**
+     * @return the current command identifier
+     */
+    @Override
+    public CalypsoPoCommands getCommand() {
+        return CalypsoPoCommands.OPEN_SESSION_32;
+    }
 
     public OpenSession32RespPars(ApduResponse response) {
         super(response, PoRevision.REV3_2);

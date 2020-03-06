@@ -12,10 +12,10 @@
 package org.eclipse.keyple.calypso.command;
 
 
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.command.AbstractIso7816CommandBuilder;
+import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
+import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 
-public interface CalypsoBuilderParser<B extends AbstractIso7816CommandBuilder, P extends AbstractApduResponseParser> {
+public interface CalypsoBuilderParser<B extends AbstractPoCommandBuilder, P extends AbstractPoResponseParser> {
     B getCommandBuilder();
 
     P getResponseParser();

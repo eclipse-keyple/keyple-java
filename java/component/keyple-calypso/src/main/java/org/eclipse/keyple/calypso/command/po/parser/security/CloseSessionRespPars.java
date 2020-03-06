@@ -15,6 +15,8 @@ package org.eclipse.keyple.calypso.command.po.parser.security;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
+import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
@@ -22,7 +24,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  * Close Secure Session (008E) response parser. See specs: Calypso / page 104 / 9.5.2 - Close Secure
  * Session
  */
-public final class CloseSessionRespPars extends AbstractApduResponseParser {
+public final class CloseSessionRespPars extends AbstractPoResponseParser {
 
     private static final Map<Integer, StatusProperties> STATUS_TABLE;
 
@@ -48,6 +50,14 @@ public final class CloseSessionRespPars extends AbstractApduResponseParser {
 
     /** The postponed data. */
     private byte[] postponedData;
+
+    /**
+     * @return the current command identifier
+     */
+    @Override
+    public CalypsoPoCommands getCommand() {
+        return CalypsoPoCommands.CLOSE_SESSION;
+    }
 
     /**
      * Instantiates a new CloseSessionRespPars from the response.

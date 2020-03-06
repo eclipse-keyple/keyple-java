@@ -14,6 +14,7 @@ package org.eclipse.keyple.calypso.command.po.parser;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
+import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -41,6 +42,14 @@ public final class GetDataTraceRespPars extends AbstractPoResponseParser {
     }
 
     /**
+     * @return the current command identifier
+     */
+    @Override
+    public CalypsoPoCommands getCommand() {
+        return CalypsoPoCommands.GET_DATA_TRACE;
+    }
+
+    /**
      * Instantiates a new GetDataTraceRespPars from the ApduResponse to a selection application
      * command.
      *
@@ -49,6 +58,7 @@ public final class GetDataTraceRespPars extends AbstractPoResponseParser {
     public GetDataTraceRespPars(ApduResponse response) {
         super(response);
     }
+
 
     @Override
     protected Map<Integer, StatusProperties> getStatusTable() {

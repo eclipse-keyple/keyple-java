@@ -14,6 +14,7 @@ package org.eclipse.keyple.calypso.command.po.parser;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
+import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
@@ -47,6 +48,14 @@ public final class DecreaseRespPars extends AbstractPoResponseParser {
     @Override
     protected Map<Integer, StatusProperties> getStatusTable() {
         return STATUS_TABLE;
+    }
+
+    /**
+     * @return the current command identifier
+     */
+    @Override
+    public CalypsoPoCommands getCommand() {
+        return CalypsoPoCommands.DECREASE;
     }
 
     /**
