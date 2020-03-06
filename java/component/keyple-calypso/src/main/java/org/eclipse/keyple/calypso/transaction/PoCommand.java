@@ -9,21 +9,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.calypso.command.po;
+package org.eclipse.keyple.calypso.transaction;
 
 import org.eclipse.keyple.calypso.command.CalypsoBuilderParser;
+import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
+import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
+import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
 
 /**
  * The PoBuilderParser class contains the builder of a {@link PoSendableInSession} command
  * <p>
  * A setter allows to associate the parser object.
  */
-public class PoBuilderParser<T>
+public class PoCommand<T>
         implements CalypsoBuilderParser<AbstractPoCommandBuilder, AbstractPoResponseParser> {
     private final AbstractPoCommandBuilder poCommandBuilder;
     private AbstractPoResponseParser poResponseParser;
 
-    public PoBuilderParser(AbstractPoCommandBuilder poCommandBuilder) {
+    public PoCommand(AbstractPoCommandBuilder poCommandBuilder) {
         this.poCommandBuilder = poCommandBuilder;
     }
 
