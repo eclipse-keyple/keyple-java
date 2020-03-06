@@ -16,6 +16,7 @@ import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.transaction.*;
+import org.eclipse.keyple.calypso.transaction.exception.KeypleCalypsoSecurityException;
 import org.eclipse.keyple.core.selection.*;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
@@ -128,7 +129,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
      * @throws KeypleReaderException reader exception (defined as public for purposes of javadoc)
      */
     public void doCalypsoReadWriteTransaction(PoTransaction poTransaction, boolean closeSeChannel)
-            throws KeypleReaderException {
+            throws KeypleReaderException, KeypleCalypsoSecurityException {
 
         boolean poProcessStatus;
 
@@ -158,8 +159,9 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
          * Open Session for the debit key - with reading of the first record of the cyclic EF of
          * Environment and Holder file
          */
-        poProcessStatus = poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
-                PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT,
+        poProcessStatus = poTransaction.processOpening(
+                PoTransaction.SessionSetting.ModificationMode.ATOMIC,
+                PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT,
                 CalypsoClassicInfo.SFI_EnvironmentAndHolder, CalypsoClassicInfo.RECORD_NUMBER_1);
 
         logger.info("Parsing Read EventLog file: "

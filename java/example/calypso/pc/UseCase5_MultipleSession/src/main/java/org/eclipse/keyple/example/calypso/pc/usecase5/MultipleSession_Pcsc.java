@@ -161,8 +161,9 @@ public class MultipleSession_Pcsc {
                  * Open Session for the debit key
                  */
                 boolean poProcessStatus = poTransaction.processOpening(
-                        PoTransaction.ModificationMode.MULTIPLE,
-                        PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0, (byte) 0);
+                        PoTransaction.SessionSetting.ModificationMode.MULTIPLE,
+                        PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT, (byte) 0,
+                        (byte) 0);
 
                 if (!poProcessStatus) {
                     throw new IllegalStateException("processingOpening failure.");

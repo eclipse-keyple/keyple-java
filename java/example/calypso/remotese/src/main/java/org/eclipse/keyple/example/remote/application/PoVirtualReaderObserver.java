@@ -16,6 +16,7 @@ import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.exception.NoResourceAvailableException;
 import org.eclipse.keyple.calypso.transaction.*;
+import org.eclipse.keyple.calypso.transaction.exception.KeypleCalypsoSecurityException;
 import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
@@ -187,6 +188,8 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
             }
         } catch (KeypleReaderException e) {
             e.printStackTrace();
+        } catch (KeypleCalypsoSecurityException e) {
+            e.printStackTrace();
         }
         logger.warn(
                 "==================================================================================");
@@ -221,9 +224,9 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
             /*
              * Open Session for the debit key
              */
-            boolean poProcessStatus =
-                    poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
-                            PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0, (byte) 0);
+            boolean poProcessStatus = poTransaction.processOpening(
+                    PoTransaction.SessionSetting.ModificationMode.ATOMIC,
+                    PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT, (byte) 0, (byte) 0);
 
             if (!poProcessStatus) {
                 throw new IllegalStateException("processingOpening failure.");
@@ -284,6 +287,8 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
                     "==================================================================================");
 
         } catch (KeypleReaderException e) {
+            e.printStackTrace();
+        } catch (KeypleCalypsoSecurityException e) {
             e.printStackTrace();
         }
     }
