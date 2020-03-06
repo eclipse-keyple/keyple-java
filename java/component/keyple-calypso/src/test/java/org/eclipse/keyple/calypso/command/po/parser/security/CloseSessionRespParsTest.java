@@ -13,7 +13,8 @@ package org.eclipse.keyple.calypso.command.po.parser.security;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
+import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
+import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
@@ -39,8 +40,11 @@ public class CloseSessionRespParsTest {
                                 new ApduResponse(ByteArrayUtil.fromHex("9000"), null), true),
                         responses);
 
-        AbstractApduResponseParser apduResponseParser =
+        AbstractPoResponseParser apduResponseParser =
                 new CloseSessionRespPars(seResponse.getApduResponses().get(0));
+
+        Assert.assertEquals(CalypsoPoCommands.CLOSE_SESSION, apduResponseParser.getCommand());
+
         Assert.assertArrayEquals(response, apduResponseParser.getApduResponse().getBytes());
     }
 

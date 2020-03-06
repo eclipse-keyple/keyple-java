@@ -13,6 +13,7 @@ package org.eclipse.keyple.calypso.command.po.parser.security;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.util.TestsUtilsResponseTabByteGenerator;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
@@ -27,7 +28,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class OpenSessionRespParsTest {
 
-    private void check(AbstractOpenSessionRespPars resp) {
+    private void check(CalypsoPoCommands command, AbstractOpenSessionRespPars resp) {
+        Assert.assertEquals(command, resp.getCommand());
         Assert.assertTrue(resp.isSuccessful());
     }
 
@@ -46,7 +48,8 @@ public class OpenSessionRespParsTest {
                 new SelectionStatus(null, responseMockOpenSecureSession, true), apduResponses);
         ApduResponse response = responseMock.getApduResponses().get(0);
 
-        check(AbstractOpenSessionRespPars.create(response, PoRevision.REV2_4));
+        check(CalypsoPoCommands.OPEN_SESSION_24,
+                AbstractOpenSessionRespPars.create(response, PoRevision.REV2_4));
     }
 
     @Test
@@ -63,7 +66,8 @@ public class OpenSessionRespParsTest {
                 new SelectionStatus(null, responseMockOpenSecureSession, true), apduResponses);
         ApduResponse response = responseMock.getApduResponses().get(0);
 
-        check(AbstractOpenSessionRespPars.create(response, PoRevision.REV2_4));
+        check(CalypsoPoCommands.OPEN_SESSION_24,
+                AbstractOpenSessionRespPars.create(response, PoRevision.REV2_4));
     }
 
     @Test
@@ -81,7 +85,8 @@ public class OpenSessionRespParsTest {
                 new SelectionStatus(null, responseMockOpenSecureSession, true), apduResponses);
         ApduResponse response = responseMock.getApduResponses().get(0);
 
-        check(AbstractOpenSessionRespPars.create(response, PoRevision.REV2_4));
+        check(CalypsoPoCommands.OPEN_SESSION_24,
+                AbstractOpenSessionRespPars.create(response, PoRevision.REV2_4));
     }
 
     @Test
@@ -98,7 +103,8 @@ public class OpenSessionRespParsTest {
                 new SelectionStatus(null, responseMockOpenSecureSession, true), apduResponses);
         ApduResponse response = responseMock.getApduResponses().get(0);
 
-        check(AbstractOpenSessionRespPars.create(response, PoRevision.REV2_4));
+        check(CalypsoPoCommands.OPEN_SESSION_24,
+                AbstractOpenSessionRespPars.create(response, PoRevision.REV2_4));
     }
 
     @Test(expected = IllegalStateException.class)
@@ -116,7 +122,8 @@ public class OpenSessionRespParsTest {
                 new SelectionStatus(null, responseMockOpenSecureSession, true), apduResponses);
         ApduResponse response = responseMock.getApduResponses().get(0);
 
-        check(AbstractOpenSessionRespPars.create(response, PoRevision.REV2_4));
+        check(CalypsoPoCommands.OPEN_SESSION_24,
+                AbstractOpenSessionRespPars.create(response, PoRevision.REV2_4));
     }
 
     @Test(expected = IllegalStateException.class)
@@ -134,7 +141,8 @@ public class OpenSessionRespParsTest {
                 new SelectionStatus(null, responseMockOpenSecureSession, true), apduResponses);
         ApduResponse response = responseMock.getApduResponses().get(0);
 
-        check(AbstractOpenSessionRespPars.create(response, PoRevision.REV2_4));
+        check(CalypsoPoCommands.OPEN_SESSION_24,
+                AbstractOpenSessionRespPars.create(response, PoRevision.REV2_4));
     }
 
     @Test
@@ -151,7 +159,8 @@ public class OpenSessionRespParsTest {
                 new SelectionStatus(null, responseMockFci, true), apduResponses);
         ApduResponse response = responseMock.getApduResponses().get(0);
 
-        check(AbstractOpenSessionRespPars.create(response, PoRevision.REV3_1));
+        check(CalypsoPoCommands.OPEN_SESSION_31,
+                AbstractOpenSessionRespPars.create(response, PoRevision.REV3_1));
     }
 
     @Test
@@ -170,7 +179,8 @@ public class OpenSessionRespParsTest {
                 new SelectionStatus(null, responseMockFci, true), apduResponses);
         ApduResponse response = responseMock.getApduResponses().get(0);
 
-        check(AbstractOpenSessionRespPars.create(response, PoRevision.REV3_2));
+        check(CalypsoPoCommands.OPEN_SESSION_32,
+                AbstractOpenSessionRespPars.create(response, PoRevision.REV3_2));
     }
 
 }

@@ -12,6 +12,7 @@
 package org.eclipse.keyple.calypso.command.po.parser;
 
 
+import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
@@ -42,6 +43,7 @@ public class GetDataRespParsTest {
                 null);
 
         GetDataFciRespPars parser = new GetDataFciRespPars(apduResponse);
+        Assert.assertEquals(CalypsoPoCommands.GET_DATA_FCI, parser.getCommand());
 
         /* valid Calypso FCI */
         Assert.assertTrue(parser.isValidCalypsoFCI());
