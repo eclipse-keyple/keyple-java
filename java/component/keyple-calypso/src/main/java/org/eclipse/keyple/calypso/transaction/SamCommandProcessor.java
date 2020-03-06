@@ -207,7 +207,7 @@ class SamCommandProcessor {
      * @param digestData a first packet of data to digest.
      * @return true if the initialization is successful
      */
-    boolean initializeDigester(PoTransaction.SessionAccessLevel accessLevel,
+    boolean initializeDigester(PoTransaction.SessionSetting.AccessLevel accessLevel,
             boolean sessionEncryption, boolean verificationMode,
             SecuritySettings.DefaultKeyInfo workKeyRecordNumber, byte workKeyKif, byte workKeyKVC,
             byte[] digestData) {

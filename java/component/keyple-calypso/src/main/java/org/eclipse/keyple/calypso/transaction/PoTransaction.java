@@ -12,6 +12,7 @@
 package org.eclipse.keyple.calypso.transaction;
 
 import java.util.*;
+import org.eclipse.keyple.calypso.SelectFileControl;
 import org.eclipse.keyple.calypso.command.po.*;
 import org.eclipse.keyple.calypso.command.po.builder.*;
 import org.eclipse.keyple.calypso.command.po.builder.security.AbstractOpenSessionCmdBuild;
@@ -73,9 +74,9 @@ public final class PoTransaction {
     /** The data read at opening */
     private byte[] openRecordDataRead;
     /** The current secure session modification mode: ATOMIC or MULTIPLE */
-    private ModificationMode currentModificationMode;
+    private SessionSetting.ModificationMode currentModificationMode;
     /** The current secure session access level: PERSO, RELOAD, DEBIT */
-    private SessionAccessLevel currentAccessLevel;
+    private SessionSetting.AccessLevel currentAccessLevel;
     /* modifications counter management */
     private boolean modificationsCounterIsInBytes;
     private int modificationsCounterMax;
@@ -168,8 +169,8 @@ public final class PoTransaction {
      *         Secure Session" command
      * @throws KeypleReaderException the IO reader exception
      */
-    private SeResponse processAtomicOpening(SessionAccessLevel accessLevel, byte openingSfiToSelect,
-            byte openingRecordNumberToRead, List<PoCommand> poCommands)
+    private SeResponse processAtomicOpening(SessionSetting.AccessLevel accessLevel,
+            byte openingSfiToSelect, byte openingRecordNumberToRead, List<PoCommand> poCommands)
             throws KeypleReaderException, KeypleCalypsoSecurityException {
         int splitCommandIndex;
         // gets the terminal challenge
@@ -718,49 +719,60 @@ public final class PoTransaction {
     }
 
     /**
-     * The PO Transaction Access Level: personalization, loading or debiting.
+     * Collection of enums used to set up the Secure Session
      */
-    public enum SessionAccessLevel {
-        /** Session Access Level used for personalization purposes. */
-        SESSION_LVL_PERSO("perso", (byte) 0x01),
-        /** Session Access Level used for reloading purposes. */
-        SESSION_LVL_LOAD("load", (byte) 0x02),
-        /** Session Access Level used for validating and debiting purposes. */
-        SESSION_LVL_DEBIT("debit", (byte) 0x03);
-
-        private final String name;
-        private final byte sessionKey;
-
-        SessionAccessLevel(String name, byte sessionKey) {
-            this.name = name;
-            this.sessionKey = sessionKey;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public byte getSessionKey() {
-            return sessionKey;
-        }
-    }
-
-    /**
-     * The modification mode indicates whether the secure session can be closed and reopened to
-     * manage the limitation of the PO buffer memory.
-     */
-    public enum ModificationMode {
+    public static class SessionSetting {
         /**
-         * The secure session is atomic. The consistency of the content of the resulting PO memory
-         * is guaranteed.
+         * The PO Transaction Access Level: personalization, loading or debiting.
          */
-        ATOMIC,
+        public enum AccessLevel {
+            /**
+             * Session Access Level used for personalization purposes.
+             */
+            SESSION_LVL_PERSO("perso", (byte) 0x01),
+            /**
+             * Session Access Level used for reloading purposes.
+             */
+            SESSION_LVL_LOAD("load", (byte) 0x02),
+            /**
+             * Session Access Level used for validating and debiting purposes.
+             */
+            SESSION_LVL_DEBIT("debit", (byte) 0x03);
+
+            private final String name;
+            private final byte sessionKey;
+
+            AccessLevel(String name, byte sessionKey) {
+                this.name = name;
+                this.sessionKey = sessionKey;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public byte getSessionKey() {
+                return sessionKey;
+            }
+        }
+
         /**
-         * Several secure sessions can be chained (to manage the writing of large amounts of data).
-         * The resulting content of the PO's memory can be inconsistent if the PO is removed during
-         * the process.
+         * The modification mode indicates whether the secure session can be closed and reopened to
+         * manage the limitation of the PO buffer memory.
          */
-        MULTIPLE
+        public enum ModificationMode {
+            /**
+             * The secure session is atomic. The consistency of the content of the resulting PO
+             * memory is guaranteed.
+             */
+            ATOMIC,
+            /**
+             * Several secure sessions can be chained (to manage the writing of large amounts of
+             * data). The resulting content of the PO's memory can be inconsistent if the PO is
+             * removed during the process.
+             */
+            MULTIPLE
+        }
     }
 
     /**
@@ -973,7 +985,7 @@ public final class PoTransaction {
      * </ul>
      *
      * @param modificationMode the modification mode: ATOMIC or MULTIPLE (see
-     *        {@link ModificationMode})
+     *        {@link SessionSetting.ModificationMode})
      * @param accessLevel access level of the session (personalization, load or debit).
      * @param openingSfiToSelect SFI of the file to select (0 means no file to select)
      * @param openingRecordNumberToRead number of the record to read
@@ -981,8 +993,9 @@ public final class PoTransaction {
      * @throws KeypleReaderException the IO reader exception
      * @throws KeypleCalypsoSecurityException if the cryptographic computations show a problem
      */
-    public boolean processOpening(ModificationMode modificationMode, SessionAccessLevel accessLevel,
-            byte openingSfiToSelect, byte openingRecordNumberToRead)
+    public boolean processOpening(SessionSetting.ModificationMode modificationMode,
+            SessionSetting.AccessLevel accessLevel, byte openingSfiToSelect,
+            byte openingRecordNumberToRead)
             throws KeypleReaderException, KeypleCalypsoSecurityException {
         currentModificationMode = modificationMode;
         currentAccessLevel = accessLevel;
@@ -1002,7 +1015,7 @@ public final class PoTransaction {
                 /* This command affects the PO modifications buffer */
                 if (willOverflowBuffer(
                         (PoModificationCommand) poCommandElement.getCommandBuilder())) {
-                    if (currentModificationMode == ModificationMode.ATOMIC) {
+                    if (currentModificationMode == SessionSetting.ModificationMode.ATOMIC) {
                         throw new IllegalStateException(
                                 "ATOMIC mode error! This command would overflow the PO modifications buffer: "
                                         + poCommandElement.getCommandBuilder().toString());
@@ -1135,7 +1148,7 @@ public final class PoTransaction {
             } else {
                 /* This command affects the PO modifications buffer */
                 if (willOverflowBuffer(((PoModificationCommand) poCommand.getCommandBuilder()))) {
-                    if (currentModificationMode == ModificationMode.ATOMIC) {
+                    if (currentModificationMode == SessionSetting.ModificationMode.ATOMIC) {
                         throw new IllegalStateException(
                                 "ATOMIC mode error! This command would overflow the PO modifications buffer: "
                                         + poCommand.getCommandBuilder().toString());
@@ -1237,7 +1250,7 @@ public final class PoTransaction {
             } else {
                 /* This command affects the PO modifications buffer */
                 if (willOverflowBuffer((PoModificationCommand) poCommand.getCommandBuilder())) {
-                    if (currentModificationMode == ModificationMode.ATOMIC) {
+                    if (currentModificationMode == SessionSetting.ModificationMode.ATOMIC) {
                         throw new IllegalStateException(
                                 "ATOMIC mode error! This command would overflow the PO modifications buffer: "
                                         + poCommand.getCommandBuilder().toString());
@@ -1471,8 +1484,7 @@ public final class PoTransaction {
      * @param extraInfo extra information included in the logs (can be null or empty)
      * @return the command index (input order, starting at 0)
      */
-    public int prepareSelectFileCmd(SelectFileCmdBuild.SelectControl selectControl,
-            String extraInfo) {
+    public int prepareSelectFileCmd(SelectFileControl selectControl, String extraInfo) {
         if (logger.isTraceEnabled()) {
             logger.trace("Navigate: CONTROL = {}", selectControl);
         }
