@@ -11,6 +11,15 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso;
 
+/**
+ * Definitions governing the expected behavior of the selection command (see the specifics of this
+ * command in the ISO7816-4 standard and the Calypso specification)
+ */
 public enum SelectFileControl {
-    FIRST_EF, NEXT_EF, CURRENT_DF
+    /** The first EF of the current Calypso DF */
+    FIRST_EF,
+    /** The next EF of the current Calypso DF */
+    NEXT_EF,
+    /** The Calypso DF */
+    CURRENT_DF
 }
