@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.android.cone2;
 import android.content.Context;
 
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.PluginEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
 import org.slf4j.Logger;
@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
@@ -50,11 +50,13 @@ final class Cone2PluginImpl extends AbstractThreadedObservablePlugin implements 
     private final Map<String, String> parameters = new HashMap<String, String>();// not in use in this
     // plugin
     private AtomicBoolean isReaderPoweredOn = new AtomicBoolean(false);
+    private AtomicBoolean isReaderInstanceAvailable = new AtomicBoolean(false);
 
     private static ReentrantLock waitForCardPresentLock = new ReentrantLock();
 
     Cone2PluginImpl() {
         super(PLUGIN_NAME);
+        threadWaitTimeout = 100;
     }
 
     @Override
@@ -79,26 +81,23 @@ final class Cone2PluginImpl extends AbstractThreadedObservablePlugin implements 
      */
     @Override
     protected SortedSet<SeReader> initNativeReaders() {
-        if (isReaderPoweredOn != null && isReaderPoweredOn.get()) {
-            LOG.debug("InitNativeReader() add the unique instance of AndroidCone2Reader");
-            readers = new TreeSet<SeReader>();
+        if ((readers == null || readers.isEmpty())
+                && isReaderPoweredOn != null && isReaderPoweredOn.get()
+                && isReaderInstanceAvailable != null && isReaderInstanceAvailable.get()) {
+            readers = new ConcurrentSkipListSet<SeReader>();
             Cone2ContactlessReaderImpl contactlessReader = new Cone2ContactlessReaderImpl();
             readers.add(contactlessReader);
-            readersNames.add(contactlessReader.getName());
             Cone2ContactReaderImpl sam1 = new Cone2ContactReaderImpl();
             sam1.setParameter(Cone2ContactReader.CONTACT_INTERFACE_ID
                     , Cone2ContactReader.CONTACT_INTERFACE_ID_SAM_1);
             readers.add(sam1);
-            readersNames.add(sam1.getName());
             Cone2ContactReaderImpl sam2 = new Cone2ContactReaderImpl();
             sam2.setParameter(Cone2ContactReader.CONTACT_INTERFACE_ID,
                     Cone2ContactReader.CONTACT_INTERFACE_ID_SAM_2);
             readers.add(sam2);
-            readersNames.add(sam2.getName());
-            return readers;
-        } else {
-            return null;
         }
+
+        return readers;
     }
 
     /**
@@ -119,10 +118,8 @@ final class Cone2PluginImpl extends AbstractThreadedObservablePlugin implements 
         throw new KeypleReaderException("Reader " + name + " not found!");
     }
 
-    private SortedSet<String> readersNames = new TreeSet<String>();
-
     @Override
-    public void power(final Context context, final boolean on) {
+    public void power(final Context context, final boolean on) throws KeyplePluginException {
         if (on) {
             powerOn(context);
         } else {
@@ -132,7 +129,18 @@ final class Cone2PluginImpl extends AbstractThreadedObservablePlugin implements 
 
     @Override
     protected SortedSet<String> fetchNativeReadersNames() {
-        return readersNames;
+        initNativeReaders();
+        SortedSet<String> nativeReadersNames = new ConcurrentSkipListSet<String>();
+
+        if (readers != null) {
+            if (isReaderPoweredOn.get()) {
+                for (SeReader reader : readers) {
+                    nativeReadersNames.add(reader.getName());
+                }
+            }
+        }
+
+        return nativeReadersNames;
     }
 
     /**
@@ -151,16 +159,11 @@ final class Cone2PluginImpl extends AbstractThreadedObservablePlugin implements 
 
                     @Override
                     public void onSuccess(CpcResult.RESULT result) {
-                        if (readers != null) {
-                            for (SeReader reader : readers) {
-                                readersNames.add(reader.getName());
-                            }
-                        }
                         isReaderPoweredOn.set(true);
                         Cone2AskReader.getInstance(context, new Cone2AskReader.ReaderListener() {
                             @Override
                             public void onInstanceAvailable(Reader reader) {
-                                initNativeReaders();
+                                isReaderInstanceAvailable.set(true);
                             }
 
                             @Override
@@ -181,53 +184,55 @@ final class Cone2PluginImpl extends AbstractThreadedObservablePlugin implements 
      * Powers off reader and stops card discovery.
      * @param context Context
      */
-    private void powerOff(Context context) {
-        for (SeReader reader : readers) {
-            if (reader.getName().compareTo(Cone2ContactlessReader.READER_NAME) == 0) {
-                final Cone2ContactlessReaderImpl cone2Reader = (Cone2ContactlessReaderImpl) reader;
-                cone2Reader.stopWaitForCard();
-                cone2Reader.stopWaitForCardRemoval();
+    private void powerOff(Context context) throws KeyplePluginException {
+        if (readers != null && !readers.isEmpty()) {
+            for (SeReader reader : readers) {
+                if (reader.getName().compareTo(Cone2ContactlessReader.READER_NAME) == 0) {
+                    final Cone2ContactlessReaderImpl cone2Reader = (Cone2ContactlessReaderImpl) reader;
+                    cone2Reader.stopWaitForCard();
+                    cone2Reader.stopWaitForCardRemoval();
 
-                // This completable monitors the waitForCardPresent method. while it is running, it
-                // is waiting for it to finish before powezring off the reader.
-                // If the
-                Completable.create(new CompletableOnSubscribe() {
-                    @Override
-                    public void subscribe(CompletableEmitter emitter) {
-                        acquireLock();
-                        releaseLock();
-                        emitter.onComplete();
-                    }
-                }).timeout(POWER_OFF_TIMEOUT, TimeUnit.MILLISECONDS)
-                        .andThen(ConePeripheral.RFID_ASK_UCM108_GPIO.getDescriptor().power(context, false))
-                        .doOnError(new Consumer<Throwable>() {
-                            @Override
-                            public void accept(Throwable throwable) {
-                                releaseLock();
-                                LOG.error("Error trying to power off the reader");
-                            }
-                        })
-                        .subscribe(new SingleObserver<CpcResult.RESULT>() {
-                            @Override
-                            public void onSubscribe(Disposable d) {
+                    // This completable monitors the waitForCardPresent method. while it is running, it
+                    // is waiting for it to finish before powering off the reader.
+                    // If the
+                    Completable.create(new CompletableOnSubscribe() {
+                        @Override
+                        public void subscribe(CompletableEmitter emitter) {
+                            acquireLock();
+                            releaseLock();
+                            emitter.onComplete();
+                        }
+                    }).timeout(POWER_OFF_TIMEOUT, TimeUnit.MILLISECONDS)
+                            .andThen(ConePeripheral.RFID_ASK_UCM108_GPIO.getDescriptor().power(context, false))
+                            .doOnError(new Consumer<Throwable>() {
+                                @Override
+                                public void accept(Throwable throwable) {
+                                    releaseLock();
+                                    LOG.error("Error trying to power off the reader");
+                                }
+                            })
+                            .subscribe(new SingleObserver<CpcResult.RESULT>() {
+                                @Override
+                                public void onSubscribe(Disposable d) {
 
-                            }
+                                }
 
-                            @Override
-                            public void onSuccess(CpcResult.RESULT result) {
-                                isReaderPoweredOn.set(false);
-                                Cone2AskReader.clearInstance();
-                                notifyObservers(new PluginEvent(PLUGIN_NAME,
-                                        readersNames,
-                                        PluginEvent.EventType.READER_DISCONNECTED));
-                            }
+                                @Override
+                                public void onSuccess(CpcResult.RESULT result) {
+                                    isReaderPoweredOn.set(false);
+                                    Cone2AskReader.clearInstance();
+                                    isReaderInstanceAvailable.set(false);
+                                }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                LOG.error("Error trying to power off the reader");
-                            }
-                        });
+                                @Override
+                                public void onError(Throwable e) {
+                                    LOG.error("Error trying to power off the reader");
+                                }
+                            });
+                }
             }
+        } else {
+            throw new KeyplePluginException("Cannot power off readers yet");
         }
     }
 

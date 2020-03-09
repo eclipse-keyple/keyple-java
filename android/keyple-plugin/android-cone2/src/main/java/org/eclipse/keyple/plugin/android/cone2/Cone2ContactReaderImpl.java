@@ -23,7 +23,7 @@ import static fr.coppernic.sdk.ask.Defines.RCSC_Ok;
  *
  */
 public class Cone2ContactReaderImpl extends AbstractLocalReader implements Cone2ContactReader {
-    private static int readerNumber = 1;
+    private static int readerNumber = 0;
 
     private static final Logger LOG = LoggerFactory.getLogger(Cone2ContactlessReaderImpl.class);
 
@@ -36,7 +36,7 @@ public class Cone2ContactReaderImpl extends AbstractLocalReader implements Cone2
     private AtomicBoolean isPhysicalChannelOpened = new AtomicBoolean(false);
 
     protected Cone2ContactReaderImpl() {
-        super(PLUGIN_NAME, READER_NAME + "_" + readerNumber);
+        super(PLUGIN_NAME, READER_NAME + "_" + readerNumber%2);
         readerNumber++;
 
         reader = Cone2AskReader.getInstance();

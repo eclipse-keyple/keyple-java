@@ -1,0 +1,124 @@
+apply plugin: 'maven-publish'
+apply plugin: 'org.jetbrains.dokka-android'
+
+String v = "$project.versioning.info.display"
+String t = "$project.versioning.info.tag"
+
+task androidJavadocsJar(type: Jar, dependsOn: "dokka") {
+    classifier = 'javadoc'    
+}
+
+def pomConfig = {
+    licenses {
+        license {
+            name POM_LICENCE_NAME
+            url POM_LICENCE_URL
+            distribution POM_LICENCE_DIST
+        }
+    }
+    developers {
+        developer {
+            id POM_DEVELOPER_ID
+            name POM_DEVELOPER_NAME
+        }
+    }
+    scm {
+        url POM_SCM_URL
+        connection POM_SCM_CONNECTION
+    }
+}
+
+publishing {
+    publications {
+        art(MavenPublication) {
+            groupId GROUP
+            artifactId "$project.name"
+            version versioning.info.display
+
+            android.libraryVariants.all { variant ->
+                if (variant.buildType.name == "release") {
+                    variant.outputs.all {
+                        logger.info "Artifact : ${it.outputFile}"
+                        artifact(it.outputFile)
+                    }
+                }
+            }
+
+            artifact androidSourcesJar
+            artifact androidJavadocsJar
+
+            // Customize pom with dependencies
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', POM_DESCRIPTION)
+                root.appendNode('name', rootProject.name)
+                root.appendNode('url', POM_URL)
+                root.children().last() + pomConfig
+                def dependenciesNode = root.appendNode('dependencies')
+
+                project.configurations.implementation.allDependencies.each {
+                    if (it instanceof ExternalModuleDependency
+                            && it.group != null
+                            && it.name != null) {
+
+                        logger.info "dependency : ${it}\nartifact : " +
+                                "${it.getArtifacts().collect { a -> "${a.name}, ${a.type}, ${a.url}, ${a.extension}, ${a.classifier}" }.join(', ')}"
+
+                        def dependencyNode = dependenciesNode.appendNode('dependency')
+                        dependencyNode.appendNode('groupId', it.group)
+                        dependencyNode.appendNode('artifactId', it.name)
+                        dependencyNode.appendNode('version', it.version)
+
+                        if (it.getArtifacts().size() > 0) {
+                            dependencyNode.appendNode('type', it.getArtifacts()[0].type)
+                        }
+
+                        //If there are any exclusions in dependency
+                        if (it.excludeRules.size() > 0) {
+                            def exclusionsNode = dependencyNode.appendNode('exclusions')
+                            it.excludeRules.each { rule ->
+                                def exclusionNode = exclusionsNode.appendNode('exclusion')
+                                exclusionNode.appendNode('groupId', rule.group)
+                                exclusionNode.appendNode('artifactId', rule.module)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+bintray {
+    user = project.hasProperty("bintray_user") ? project.bintray_user : ""
+    key = project.hasProperty("bintray_key") ? project.bintray_key : ""
+    // publish only if code is not dirty
+    publish = !project.versioning.info.dirty
+    pkg {
+        repo = BINTRAY_REPO
+        // We are using Root project because there are several artifacts but for the same project !
+        name = rootProject.name
+        userOrg = BINTRAY_ORG
+        licenses = ["Apache-2.0"]
+        labels = BINTRAY_LABELS.split(",")
+        vcsUrl = POM_SCM_URL
+        websiteUrl = POM_URL
+        issueTrackerUrl = POM_ISSUES_URL
+        githubRepo = GITHUB_REPO //Optional Github repository
+        githubReleaseNotesFile = GITHUB_README //Optional Github readme file
+        version {
+            name = v
+            desc = POM_DESCRIPTION
+            released = new Date()
+            vcsTag = t
+        }
+    }
+    publications = ['art']
+}
+
+// Add publications to bintray
+afterEvaluate {
+    bintray.publications = project.publishing.publications.collect {
+        it.name
+    }
+}
