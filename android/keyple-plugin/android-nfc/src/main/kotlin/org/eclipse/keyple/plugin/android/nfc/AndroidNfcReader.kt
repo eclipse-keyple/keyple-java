@@ -57,13 +57,13 @@ interface AndroidNfcReader : SmartRemovalReader {
         val READER_NAME = "AndroidNfcReaderImpl"
         val PLUGIN_NAME = AndroidNfcPlugin.PLUGIN_NAME
 
-        //FLAG_READER_SKIP_NDEF_CHECK Prevent the platform from performing any NDEF checks in reader mode. Must be 0 or 1.
+        // FLAG_READER_SKIP_NDEF_CHECK Prevent the platform from performing any NDEF checks in reader mode. Must be 0 or 1.
         val FLAG_READER_SKIP_NDEF_CHECK = "FLAG_READER_SKIP_NDEF_CHECK"
 
-        //Allows the caller to prevent the platform from playing sounds when it discovers a tag. Must be 0 or 1.
+        // Allows the caller to prevent the platform from playing sounds when it discovers a tag. Must be 0 or 1.
         val FLAG_READER_NO_PLATFORM_SOUNDS = "FLAG_READER_NO_PLATFORM_SOUNDS"
 
-        //Allows the calling application to specify the delay that the platform will use for performing presence checks on any discovered tag.
+        // Allows the calling application to specify the delay that the platform will use for performing presence checks on any discovered tag.
         val FLAG_READER_PRESENCE_CHECK_DELAY = "FLAG_READER_PRESENCE_CHECK_DELAY"
     }
 }
