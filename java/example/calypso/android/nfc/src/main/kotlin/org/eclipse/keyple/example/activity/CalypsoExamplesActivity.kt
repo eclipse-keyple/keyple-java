@@ -12,21 +12,12 @@
 package org.eclipse.keyple.example.activity
 
 import android.nfc.NfcAdapter
-import android.os.Bundle
 import android.view.MenuItem
-import android.view.WindowManager
-import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.navigation.NavigationView
 import java.io.IOException
-import kotlinx.android.synthetic.main.activity_main.drawerLayout
-import kotlinx.android.synthetic.main.activity_main.eventRecyclerView
-import kotlinx.android.synthetic.main.activity_main.navigationView
-import kotlinx.android.synthetic.main.activity_main.toolbar
+import kotlinx.android.synthetic.main.activity_calypso_examples.drawerLayout
+import kotlinx.android.synthetic.main.activity_calypso_examples.eventRecyclerView
+import kotlinx.android.synthetic.main.activity_calypso_examples.toolbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -51,15 +42,9 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
-import org.eclipse.keyple.example.adapter.EventAdapter
 import org.eclipse.keyple.example.calypso.android.nfc.R
-import org.eclipse.keyple.example.model.ChoiceEventModel
-import org.eclipse.keyple.example.model.EventModel
 import org.eclipse.keyple.example.util.CalypsoClassicInfo
-import org.eclipse.keyple.example.util.configFlags
 import org.eclipse.keyple.example.util.configProtocol
-import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPluginFactory
-import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader
 import timber.log.Timber
 
 /**
@@ -76,7 +61,7 @@ import timber.log.Timber
  * encoding="utf-8"?> <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2"> <tech-list>
  * <tech>android.nfc.tech.IsoDep</tech> <tech>android.nfc.tech.NfcA</tech> </tech-list> </resources>
  */
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, ObservableReader.ReaderObserver {
+class CalypsoExamplesActivity : AbstractExampleActivity() {
 
     /**
      * Use to modify event update behaviour reguarding current use case execution
@@ -86,60 +71,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private lateinit var seSelection: SeSelection
-    private lateinit var reader: AndroidNfcReader
     private var readEnvironmentParserIndex: Int = 0
     private var useCase: UseCase? = null
-
-    private lateinit var adapter: RecyclerView.Adapter<*>
-    private lateinit var layoutManager: RecyclerView.LayoutManager
-    private val events = arrayListOf<EventModel>()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        /**
-         * Init Action Bar
-         */
-        setSupportActionBar(toolbar)
-        val actionBar = supportActionBar
-        actionBar?.title = "NFC Plugins"
-        actionBar?.subtitle = "Examples application"
-
-        /**
-         * Init recycler view
-         */
-        adapter = EventAdapter(events)
-        layoutManager = LinearLayoutManager(this)
-        eventRecyclerView.layoutManager = layoutManager
-        eventRecyclerView.adapter = adapter
-
-        /**
-         * Init menu
-         */
-        navigationView.setNavigationItemSelectedListener(this)
-        val toggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_navigation_drawer, R.string.close_navigation_drawer)
-        drawerLayout.addDrawerListener(toggle)
-        toggle.syncState()
-
-        /**
-         * Register AndroidNfc plugin
-         */
-        SeProxyService.getInstance().registerPlugin(AndroidNfcPluginFactory())
-
-        /**
-         *  remove the observer if it already exist
-         */
-        reader = SeProxyService.getInstance().plugins.first().readers.first() as AndroidNfcReader
-        reader.configFlags(presenceCheckDelay = 100, noPlateformSound = 0, skipNdefCheck = 0)
-
-        (reader as ObservableReader).addObserver(this)
-
-        // with this protocol settings we activate the nfc for ISO1443_4 protocol
-        reader.configProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
-
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-    }
 
     override fun onResume() {
         super.onResume()
@@ -161,7 +94,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 reader.enableNFCReaderMode(this)
             }
         } catch (e: IOException) {
-            showErrorDialog(e)
+            showAlertDialog(e)
         }
     }
 
@@ -223,13 +156,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    private fun showErrorDialog(t: Throwable) {
-        Timber.e(t)
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle(R.string.alert_dialog_title)
-        builder.setMessage(getString(R.string.alert_dialog_message, t.message))
-        val dialog = builder.create()
-        dialog.show()
+    override fun initContentView() {
+        setContentView(R.layout.activity_calypso_examples)
+        initActionBar(toolbar, "NFC Plugins", "Examples application")
     }
 
     @Throws(IOException::class)
@@ -708,45 +637,5 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun update(event: ReaderEvent?) {
         Timber.i("New ReaderEvent received : $event")
         useCase?.onEventUpdate(event)
-    }
-
-    /**
-     * Initialize display
-     */
-    private fun initWaitingTextView() {
-        addActionEvent("Waiting for a smartcard...")
-    }
-
-    private fun initFromBackgroundTextView() {
-        addResultEvent("Smartcard detected while in background...")
-    }
-
-    private fun clearEvents() {
-        events.clear()
-        adapter.notifyDataSetChanged()
-    }
-
-    private fun addHeaderEvent(message: String) {
-        events.add(EventModel(EventModel.TYPE_HEADER, message))
-        adapter.notifyItemInserted(events.lastIndex)
-        Timber.d("Header: %s", message)
-    }
-
-    private fun addActionEvent(message: String) {
-        events.add(EventModel(EventModel.TYPE_ACTION, message))
-        adapter.notifyItemInserted(events.lastIndex)
-        Timber.d("Action: %s", message)
-    }
-
-    private fun addResultEvent(message: String) {
-        events.add(EventModel(EventModel.TYPE_RESULT, message))
-        adapter.notifyItemInserted(events.lastIndex)
-        Timber.d("Result: %s", message)
-    }
-
-    private fun addChoiceEvent(title: String, choices: List<String>, callback: (choice: String) -> Unit) {
-        events.add(ChoiceEventModel(title, choices, callback))
-        adapter.notifyItemInserted(events.lastIndex)
-        Timber.d("Choice: %s: %s", title, choices.toString())
     }
 }
