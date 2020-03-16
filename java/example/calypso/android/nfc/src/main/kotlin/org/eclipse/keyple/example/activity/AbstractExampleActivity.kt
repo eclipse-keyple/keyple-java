@@ -1,21 +1,35 @@
+/********************************************************************************
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.eclipse.keyple.example.activity
 
-import androidx.appcompat.app.AppCompatActivity
+import android.nfc.NfcAdapter
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
+import java.io.IOException
 import kotlinx.android.synthetic.main.activity_calypso_examples.drawerLayout
 import kotlinx.android.synthetic.main.activity_calypso_examples.eventRecyclerView
 import kotlinx.android.synthetic.main.activity_calypso_examples.navigationView
 import kotlinx.android.synthetic.main.activity_calypso_examples.toolbar
+import org.eclipse.keyple.core.selection.SeSelection
 import org.eclipse.keyple.core.seproxy.SeProxyService
-import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.event.ObservableReader
+import org.eclipse.keyple.core.seproxy.event.ReaderEvent
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.example.adapter.EventAdapter
 import org.eclipse.keyple.example.calypso.android.nfc.R
@@ -26,19 +40,27 @@ import org.eclipse.keyple.example.util.configProtocol
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPluginFactory
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader
 import timber.log.Timber
-import java.util.SortedSet
 
 abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, ObservableReader.ReaderObserver {
 
     /**
+     * Use to modify event update behaviour reguarding current use case execution
+     */
+    interface UseCase {
+        fun onEventUpdate(event: ReaderEvent?)
+    }
+
+    /**
      * Variables for event window
      */
-    protected lateinit var readers: SortedSet<SeReader>
     private lateinit var adapter: RecyclerView.Adapter<*>
     private lateinit var layoutManager: RecyclerView.LayoutManager
     protected val events = arrayListOf<EventModel>()
 
     protected lateinit var reader: AndroidNfcReader
+
+    protected var useCase: UseCase? = null
+    protected lateinit var seSelection: SeSelection
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,7 +81,6 @@ abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnN
         val toggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_navigation_drawer, R.string.close_navigation_drawer)
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
-
 
         /**
          * Register AndroidNfc plugin
@@ -126,6 +147,19 @@ abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnN
         events.add(ChoiceEventModel(title, choices, callback))
         adapter.notifyItemInserted(events.lastIndex)
         Timber.d("Choice: %s: %s", title, choices.toString())
+    }
+
+    @Throws(IOException::class)
+    protected fun checkNfcAvailability() {
+        val nfcAdapter = NfcAdapter.getDefaultAdapter(this)
+
+        if (nfcAdapter == null) {
+            throw IOException("Your device does not support NFC")
+        } else {
+            if (!nfcAdapter.isEnabled) {
+                throw IOException("Please enable NFC to communicate with NFC Elements\"")
+            }
+        }
     }
 
     abstract fun initContentView()

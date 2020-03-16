@@ -16,16 +16,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="org.eclipse.keyple.example.activity.AbstractExampleActivity"></activity>
-        <activity
-            android:name="org.eclipse.keyple.example.activity.CalypsoExamplesActivity"
-            android:label="Keyple Android NFC"
-            android:screenOrientation="portrait">
+        <activity android:name="org.eclipse.keyple.example.activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name="org.eclipse.keyple.example.activity.CoreExamplesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="org.eclipse.keyple.example.activity.CalypsoExamplesActivity"
+            android:screenOrientation="portrait">
             <!-- Required for NFC KEYPLE -->
             <intent-filter>
                 <action android:name="android.nfc.action.TECH_DISCOVERED" />

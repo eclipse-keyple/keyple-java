@@ -63,16 +63,7 @@ import timber.log.Timber
  */
 class CalypsoExamplesActivity : AbstractExampleActivity() {
 
-    /**
-     * Use to modify event update behaviour reguarding current use case execution
-     */
-    interface UseCase {
-        fun onEventUpdate(event: ReaderEvent?)
-    }
-
-    private lateinit var seSelection: SeSelection
     private var readEnvironmentParserIndex: Int = 0
-    private var useCase: UseCase? = null
 
     override fun onResume() {
         super.onResume()
@@ -158,20 +149,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
 
     override fun initContentView() {
         setContentView(R.layout.activity_calypso_examples)
-        initActionBar(toolbar, "NFC Plugins", "Examples application")
-    }
-
-    @Throws(IOException::class)
-    private fun checkNfcAvailability() {
-        val nfcAdapter = NfcAdapter.getDefaultAdapter(this)
-
-        if (nfcAdapter == null) {
-            throw IOException("Your device does not support NFC")
-        } else {
-            if (!nfcAdapter.isEnabled) {
-                throw IOException("Please enable NFC to communicate with NFC Elements\"")
-            }
-        }
+        initActionBar(toolbar, "NFC Plugins", "Calypso Examples")
     }
 
     private fun configureUseCase4SequentialMultiSelection() {
@@ -383,6 +361,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
 
                         else -> { }
                     }
+                    eventRecyclerView.smoothScrollToPosition(events.size - 1)
                 }
                 if (event?.eventType == ReaderEvent.EventType.SE_INSERTED || event?.eventType == ReaderEvent.EventType.SE_MATCHED) {
                     /*
