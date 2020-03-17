@@ -254,11 +254,6 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
     public override fun closePhysicalChannel() {
         try {
             tagProxy?.close()
-            /*
-            done in method AbstractObservableLocalReader#processSeRemoved()
-            notifyObservers(new ReaderEvent(PLUGIN_NAME, READER_NAME,
-                    ReaderEvent.EventType.SE_REMOVED, null));
-            */
             Timber.i("Disconnected tag : ${printTagId()}")
         } catch (e: IOException) {
             Timber.e(e, "Disconnecting error")
