@@ -253,17 +253,13 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
     @Throws(KeypleChannelControlException::class)
     public override fun closePhysicalChannel() {
         try {
-            if (tagProxy != null) {
-                tagProxy?.close()
-                /*
-                done in method AbstractObservableLocalReader#processSeRemoved()
-                notifyObservers(new ReaderEvent(PLUGIN_NAME, READER_NAME,
-                        ReaderEvent.EventType.SE_REMOVED, null));
-                */
-                Timber.i("Disconnected tag : ${printTagId()}")
-            } else {
-                Timber.i("Tag is already disconnected")
-            }
+            tagProxy?.close()
+            /*
+            done in method AbstractObservableLocalReader#processSeRemoved()
+            notifyObservers(new ReaderEvent(PLUGIN_NAME, READER_NAME,
+                    ReaderEvent.EventType.SE_REMOVED, null));
+            */
+            Timber.i("Disconnected tag : ${printTagId()}")
         } catch (e: IOException) {
             Timber.e(e, "Disconnecting error")
             throw KeypleChannelControlException("Error while closing physical channel", e)

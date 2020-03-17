@@ -15,17 +15,19 @@ import android.nfc.Tag
 import android.nfc.tech.IsoDep
 import android.nfc.tech.MifareClassic
 import android.nfc.tech.MifareUltralight
+import android.nfc.tech.NfcBarcode
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import io.mockk.unmockkAll
 import java.util.Arrays
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.util.ByteArrayUtil
+import org.junit.After
 import org.junit.Assert
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 
 // @RunWith(RobolectricTestRunner.class)
@@ -37,6 +39,8 @@ class TagProxyTest {
     lateinit var tagMifare: Tag
     @MockK
     lateinit var tagMifareUL: Tag
+    @MockK
+    lateinit var tagNfcBarcode: Tag
 
     @MockK
     lateinit var isoDep: IsoDep
@@ -44,6 +48,8 @@ class TagProxyTest {
     lateinit var mifare: MifareClassic
     @MockK
     lateinit var mifareUL: MifareUltralight
+    @MockK
+    lateinit var nfcBarcode: NfcBarcode
 
     @Before
     fun setUp() {
@@ -60,6 +66,15 @@ class TagProxyTest {
         mockkStatic(MifareUltralight::class)
         every { tagMifareUL.techList } returns arrayOf("android.nfc.tech.MifareUltralight", "android.nfc.tech.NfcA")
         every { MifareUltralight.get(tagMifareUL) } returns mifareUL
+
+        mockkStatic(NfcBarcode::class)
+        every { tagNfcBarcode.techList } returns arrayOf("android.nfc.tech.NfcBarcode")
+        every { NfcBarcode.get(tagNfcBarcode) } returns nfcBarcode
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
     }
 
     @Test
@@ -89,7 +104,9 @@ class TagProxyTest {
 
     @Test
     fun getTag() {
-        TagProxy.getTagProxy(tagIso)
+        val tagProxy = TagProxy.getTagProxy(tagIso)
+        every { isoDep.tag } returns tagIso
+        Assert.assertEquals(tagIso, tagProxy.tag)
     }
 
     @Test
@@ -105,16 +122,16 @@ class TagProxyTest {
     }
 
     @Test
-    @Ignore
     fun isConnected() {
         val tagProxy = TagProxy.getTagProxy(tagIso)
-        tagProxy.isConnected // Should no throw errors
+        every { isoDep.isConnected } returns true
+        Assert.assertTrue(tagProxy.isConnected) // Should no throw errors
     }
 
     @Test
-    @Ignore
     fun tranceive() {
         val tagProxy = TagProxy.getTagProxy(tagIso)
+        every { isoDep.transceive(any()) } returns ByteArrayUtil.fromHex("9000")
         tagProxy.transceive("0000".toByteArray()) // Should no throw errors
     }
 
@@ -125,15 +142,30 @@ class TagProxyTest {
     }
 
     @Test
-    @Ignore
-    fun getATRIsodep() {
+    fun getATRIsodepHiLayerNotNull() {
         val tagProxy = TagProxy.getTagProxy(tagIso)
-        Assert.assertNull(tagProxy.atr)
+        every { isoDep.hiLayerResponse } returns ByteArrayUtil.fromHex("3B8F8001804F0CA0000003060300030000000068")
+        Assert.assertTrue(Arrays.equals(ByteArrayUtil.fromHex("3B8F8001804F0CA0000003060300030000000068"), tagProxy.atr))
+    }
+
+    @Test
+    fun getATRIsodepHiLayerNull() {
+        val tagProxy = TagProxy.getTagProxy(tagIso)
+        every { isoDep.tag } returns tagIso
+        every { isoDep.hiLayerResponse } returns null
+        every { isoDep.historicalBytes } returns ByteArrayUtil.fromHex("3B8F8001804F0CA0000003060300030000000068")
+        Assert.assertTrue(Arrays.equals(ByteArrayUtil.fromHex("3B8F8001804F0CA0000003060300030000000068"), tagProxy.atr))
     }
 
     @Test
     fun getATRMifareUL() {
         val tagProxy = TagProxy.getTagProxy(tagMifareUL)
+        every { isoDep.hiLayerResponse } returns ByteArrayUtil.fromHex("3B8F8001804F0CA0000003060300030000000068")
         Assert.assertTrue(Arrays.equals(ByteArrayUtil.fromHex("3B8F8001804F0CA0000003060300030000000068"), tagProxy.atr))
+    }
+
+    @Test(expected = KeypleReaderException::class)
+    fun getTagProxyUnknownTagType() {
+        TagProxy.getTagProxy(tagNfcBarcode) // KeypleReaderException
     }
 }

@@ -45,8 +45,9 @@ class AndroidNfcReaderImplTest {
 
     @MockK
     internal lateinit var tag: Tag
+
     @MockK
-    internal lateinit var tagProxy: TagProxy
+    internal var tagProxy: TagProxy? = null
 
     @Before
     fun setUp() {
@@ -56,12 +57,12 @@ class AndroidNfcReaderImplTest {
         reader = AndroidNfcReaderImpl
 
         // We need to mock tag.* because it's called in printTagId() called when channel is closed
-        every { tagProxy.tag } returns tag
+        every { tagProxy?.tag } returns tag
         every { tag.techList } returns arrayOf("android.nfc.tech.IsoDep")
         every { tag.id } returns "00".toByteArray()
         mockkStatic(TagProxy::class)
         mockkObject(TagProxy.Companion)
-        every { TagProxy.getTagProxy(tag) } returns tagProxy
+        every { TagProxy.getTagProxy(tag) } returns tagProxy!!
 
         mockkStatic(NfcAdapter::class)
         val nfcAdapter = NfcAdapter.getDefaultAdapter(app)
@@ -86,7 +87,7 @@ class AndroidNfcReaderImplTest {
 
     @Test
     fun checkSePresenceTest() {
-        every { tagProxy.isConnected } returns true
+        every { tagProxy?.isConnected } returns true
         presentMockTag()
         Assert.assertTrue(reader.checkSePresence())
     }
@@ -101,7 +102,7 @@ class AndroidNfcReaderImplTest {
     fun getATR() {
         presentMockTag()
         val atr = byteArrayOf(0x90.toByte(), 0x00)
-        every { tagProxy.atr } returns atr
+        every { tagProxy?.atr } returns atr
         Assert.assertEquals(atr, reader.atr)
     }
 
@@ -110,14 +111,14 @@ class AndroidNfcReaderImplTest {
     @Test
     fun isPhysicalChannelOpen() {
         presentMockTag()
-        every { tagProxy.isConnected } returns true
+        every { tagProxy?.isConnected } returns true
         Assert.assertEquals(true, reader.isPhysicalChannelOpen)
     }
 
     @Test
     fun openPhysicalChannelSuccess() {
         presentMockTag()
-        every { tagProxy.isConnected } returns true
+        every { tagProxy?.isConnected } returns true
         reader.openPhysicalChannel()
     }
 
@@ -125,8 +126,8 @@ class AndroidNfcReaderImplTest {
     fun openPhysicalChannelError() {
         // init
         presentMockTag()
-        every { tagProxy.isConnected } returns false
-        every { tagProxy.connect() } throws IOException()
+        every { tagProxy?.isConnected } returns false
+        every { tagProxy?.connect() } throws IOException()
 
         // test
         reader.openPhysicalChannel()
@@ -136,7 +137,7 @@ class AndroidNfcReaderImplTest {
     fun closePhysicalChannelSuccess() {
         // init
         presentMockTag()
-        every { tagProxy.isConnected } returns true
+        every { tagProxy?.isConnected } returns true
 
         // test
         reader.closePhysicalChannel()
@@ -148,8 +149,8 @@ class AndroidNfcReaderImplTest {
     fun closePhysicalChannelError() {
         // init
         presentMockTag()
-        every { tagProxy.isConnected } returns true
-        every { tagProxy.close() } throws IOException()
+        every { tagProxy?.isConnected } returns true
+        every { tagProxy?.close() } throws IOException()
 
         // test
         reader.closePhysicalChannel()
@@ -164,7 +165,7 @@ class AndroidNfcReaderImplTest {
         presentMockTag()
         val `in` = byteArrayOf(0x90.toByte(), 0x00)
         val out = byteArrayOf(0x90.toByte(), 0x00)
-        every { tagProxy.transceive(`in`) } returns out
+        every { tagProxy?.transceive(`in`) } returns out
 
         // test
         val outBB = reader.transmitApdu(`in`)
@@ -178,8 +179,7 @@ class AndroidNfcReaderImplTest {
         // init
         presentMockTag()
         val `in` = byteArrayOf(0x90.toByte(), 0x00)
-        val out = byteArrayOf(0x90.toByte(), 0x00)
-        every { tagProxy.transceive(`in`) } throws IOException()
+        every { tagProxy?.transceive(`in`) } throws IOException()
 
         // test
         reader.transmitApdu(`in`)
@@ -194,7 +194,7 @@ class AndroidNfcReaderImplTest {
         presentMockTag()
         reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
                 AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4))
-        every { tagProxy.tech } returns AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4)
+        every { tagProxy?.tech } returns AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4)
 
         // test
         Assert.assertTrue(reader.protocolFlagMatches(SeCommonProtocols.PROTOCOL_ISO14443_4))
@@ -246,6 +246,16 @@ class AndroidNfcReaderImplTest {
         reader.onTagDiscovered(tag) // Should not throw an exception
     }
 
+    @Test
+    fun waitForCardAbsentNative() {
+        Assert.assertFalse(reader.waitForCardAbsentNative())
+    }
+
+    @Test
+    fun stopWaitForCardRemoval() {
+        reader.stopWaitForCardRemoval()
+        Assert.assertTrue(true) // Previous call didn't throw any exception
+    }
     // -------- helpers ---------- //
 
     private fun presentMockTag() {
