@@ -19,14 +19,8 @@ import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin
 import timber.log.Timber
 
 /**
- * Enables Keyple to communicate with the the Android device embedded NFC reader. In the Android
- * platform, NFC reader must be link to an application activity.
- *
- *
- * To activate NFC Keyple capabilities, add [AndroidNfcFragment] to the application activity.
- * getFragmentManager().beginTransaction().add(AndroidNfcFragment.newInstance(),
- * "myFragmentId").commit();
- *
+ * Enables Keyple to communicate with the the Android device by providing access to the
+ * implementation of SeReader.
  *
  */
 internal object AndroidNfcPluginImpl : AbstractPlugin(AndroidNfcPlugin.PLUGIN_NAME), AndroidNfcPlugin {

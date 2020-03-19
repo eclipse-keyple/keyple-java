@@ -83,7 +83,7 @@ abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnN
         toggle.syncState()
 
         /**
-         * Register AndroidNfc plugin
+         * Register AndroidNfc plugin Factory
          */
         SeProxyService.getInstance().registerPlugin(AndroidNfcPluginFactory())
 
