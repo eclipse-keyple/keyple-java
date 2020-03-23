@@ -1,5 +1,4 @@
 #!groovy
-@Library('java-builder') _
 def keypleVersion
 pipeline {
     agent {
@@ -81,7 +80,7 @@ pipeline {
             steps {
                 catchError(buildResult: 'SUCCESS', message: 'Unable to log code quality to Sonar.', stageResult: 'FAILURE') {
                     container('java-builder') {
-                        withSonarQubeEnv('Eclipse Sonar') {
+                        withCredentials([string(credentialsId: 'sonar_eclipse_keyple-java', variable: 'SONAR_LOGIN')]) {
                             sh './gradlew codeQuality --info'
                         }
                     }
@@ -96,7 +95,7 @@ pipeline {
                 catchError(buildResult: 'SUCCESS', message: 'Unable to log code quality to Sonar.', stageResult: 'FAILURE') {
                     container('java-builder') {
                         dir('android') {
-                            withSonarQubeEnv('Eclipse Sonar') {
+                            withCredentials([string(credentialsId: 'sonar_eclipse_keyple-java', variable: 'SONAR_LOGIN')]) {
                                 sh './gradlew codeQuality'
                             }
                         }
@@ -118,6 +117,7 @@ pipeline {
                         sh './gradlew :java:component:keyple-plugin:keyple-plugin-pcsc:uploadArchives ${uploadParams}'
                         sh './gradlew :java:component:keyple-plugin:keyple-plugin-remotese:uploadArchives ${uploadParams}'
                         sh './gradlew :java:component:keyple-plugin:keyple-plugin-stub:uploadArchives ${uploadParams}'
+                        sh './gradlew --stop'
                     }
                 }
             }
@@ -132,23 +132,18 @@ pipeline {
                         [configFile(fileId: 'gradle.properties',
                             targetLocation: '/home/jenkins/agent/gradle.properties')]) {
                         dir('android') {
-                            sh './gradlew :keyple-plugin:keyple-plugin-android-nfc:uploadArchives ${uploadParams}'
-                            sh './gradlew :keyple-plugin:keyple-plugin-android-omapi:uploadArchives ${uploadParams}'
+                            sh './gradlew :keyple-plugin:keyple-plugin-android-nfc:uploadArchives ${uploadParams} -P keyple_version=${keypleVersion}'
+                            sh './gradlew :keyple-plugin:keyple-plugin-android-omapi:uploadArchives ${uploadParams} -P keyple_version=${keypleVersion}'
+                            sh './gradlew --stop'
                         }
                     }
                 }
             }
         }
         stage('Keyple Java: Generate apks') {
-            when {
-                expression { env.GIT_URL == 'https://github.com/eclipse/keyple-java.git' && (env.GIT_BRANCH == "develop" || env.GIT_BRANCH.startsWith('release-0.9')) && env.CHANGE_ID == null && keypleVersion ==~ /.*-SNAPSHOT$/ }
-            }
             steps{
                 container('java-builder') {
-                    sh 'mkdir -p "./java/example/calypso/android/nfc/?/.android/"'
-                    sh 'mkdir -p "./java/example/calypso/android/omapi/?/.android/"'
-                    sh 'keytool -genkey -v -keystore ./java/example/calypso/android/nfc/?/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"'
-                    sh 'keytool -genkey -v -keystore ./java/example/calypso/android/omapi/?/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"'
+                    sh 'keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 90'
                     dir('java/example/calypso/android/nfc/') {
                         sh './gradlew assembleDebug'
                     }

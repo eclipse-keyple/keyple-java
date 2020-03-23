@@ -202,3 +202,12 @@ jacocoTestReport {
 
 test.include 'org/**'
 test.finalizedBy jacocoTestReport
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "eclipse_keyple-plugin_stub"
+        property "sonar.organization", "eclipse"
+        property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.login", System.getenv('SONAR_LOGIN')
+    }
+}
