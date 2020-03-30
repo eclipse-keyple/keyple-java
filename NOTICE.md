@@ -78,6 +78,10 @@ Android Open Source Project
 Timber (4.7.1):
  
  * Licence: Apache Software License, 2.0
+
+slf4j Timber (3.1):
+ 
+ * Licence: Apache Software License, 2.0
  
 Mockk (1.9): 
  

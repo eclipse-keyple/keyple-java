@@ -353,7 +353,7 @@ public class SeSelector {
         }
         if (logger.isTraceEnabled()) {
             logger.trace("Selection data: AID = {}, ATRREGEX = {}, EXTRAINFO = {}",
-                    this.aidSelector == null ? "null"
+                    (this.aidSelector == null || this.aidSelector.getAidToSelect() == null) ? "null"
                             : ByteArrayUtil.toHex(this.aidSelector.getAidToSelect().getValue()),
                     this.atrFilter == null ? "null" : this.atrFilter.getAtrRegex(), extraInfo);
         }

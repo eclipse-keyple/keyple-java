@@ -164,12 +164,8 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
                     logger.error(
                             "The selection of the SE has failed. Should not have occurred due to the MATCHED_ONLY selection mode.");
                 }
-                logger.error(
-                        "SE_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.");
                 break;
             case SE_INSERTED:
-                logger.error(
-                        "SE_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.");
                 logger.error(
                         "SE_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.");
                 break;

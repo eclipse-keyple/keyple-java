@@ -1,21 +1,25 @@
+apply from: "../../build.gradle"
+
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
-apply plugin: 'org.eclipse.keyple'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+//apply plugin: 'org.eclipse.keyple'
 
 archivesBaseName = "keyple-android-plugin-nfc"
 
-project.group 'org.eclipse.keyple'
+group 'org.eclipse.keyple'
 project.description = 'Keyple Plugin Android Nfc'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion '26.0.3'
+    compileSdkVersion 29
+    buildToolsVersion '29.0.2'
 
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 26
+        targetSdkVersion 29
         versionName project.version
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -30,7 +34,10 @@ android {
     }
 
     testOptions {
-        unitTests.returnDefaultValues = true//mock Log Android object
+        unitTests {
+            returnDefaultValues = true//mock Log Android object
+            includeAndroidResources = true
+        }
     }
 
 
@@ -80,24 +87,14 @@ android {
 
     }
 
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
+    }
 
 }
 
-//build javadoc
-task javadoc(type: Javadoc) {
-    failOnError false
-    source = android.sourceSets.main.java.sourceFiles
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    classpath += configurations.compile
-}
-
-// build a jar with javadoc
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-//build source jar
+//build sources jar
 task androidSourcesJar(type: Jar) {
     classifier = 'sources'
     from android.sourceSets.main.java.sourceFiles
@@ -212,26 +209,24 @@ dependencies {
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: project.version
 
     //android
-    implementation "com.android.support:support-v4:${android_support_version}"
-    implementation "com.android.support:appcompat-v7:${android_support_version}"
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
 
     //logging
-    implementation "org.slf4j:slf4j-api:${slf4japi_version}"
-
+    implementation "org.slf4j:slf4j-api:1.7.25"
+    implementation 'com.jakewharton.timber:timber:4.7.1' //Android
+    implementation 'com.arcao:slf4j-timber:3.1@aar' //SLF4J binding for Timber
 
     /*
     Tests
      */
+    /** Test **/
+    testImplementation "junit:junit:4.12"
 
-    testImplementation "junit:junit:${junit_version}"
+    /** Mocking for tests **/
+    testImplementation "io.mockk:mockk:1.9"
 
-    /**Power mock**/
-    androidTestImplementation "org.mockito:mockito-android:${mockito_android_version}"
-    androidTestImplementation "org.powermock:powermock-api-mockito:${powermock_version}"
-    androidTestImplementation "org.powermock:powermock-module-junit4:${powermock_version}"
-
-    testImplementation "org.powermock:powermock-api-mockito:${powermock_version}"
-    testImplementation "org.powermock:powermock-module-junit4:${powermock_version}"
-    /**End of power mock **/
+    /** Allow to use Android SDK in JVM */
+    testImplementation 'org.robolectric:robolectric:4.3.1'
 
 }

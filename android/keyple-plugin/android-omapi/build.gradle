@@ -4,7 +4,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'org.eclipse.keyple'
+//apply plugin: 'org.eclipse.keyple'
 
 archivesBaseName = "keyple-android-plugin-omapi"
 
@@ -211,6 +211,7 @@ dependencies {
     //logging
     implementation "org.slf4j:slf4j-api:1.7.25" //java
     implementation 'com.jakewharton.timber:timber:4.7.1' //Android
+    implementation 'com.arcao:slf4j-timber:3.1@aar' //SLF4J binding for Timber
 
     /** Test **/
     testImplementation "junit:junit:4.12"
