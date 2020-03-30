@@ -12,6 +12,7 @@
 package org.eclipse.keyple.calypso.transaction;
 
 import java.util.*;
+import org.eclipse.keyple.calypso.SelectFileControl;
 import org.eclipse.keyple.calypso.command.CalypsoBuilderParser;
 import org.eclipse.keyple.calypso.command.po.*;
 import org.eclipse.keyple.calypso.command.po.builder.*;
@@ -1891,8 +1892,7 @@ public final class PoTransaction {
      * @param extraInfo extra information included in the logs (can be null or empty)
      * @return the command index (input order, starting at 0)
      */
-    public int prepareSelectFileCmd(SelectFileCmdBuild.SelectControl selectControl,
-            String extraInfo) {
+    public int prepareSelectFileCmd(SelectFileControl selectControl, String extraInfo) {
         if (logger.isTraceEnabled()) {
             logger.trace("Navigate: CONTROL = {}", selectControl);
         }

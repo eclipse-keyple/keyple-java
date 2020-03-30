@@ -14,6 +14,7 @@ package org.eclipse.keyple.calypso.transaction;
 
 
 import java.util.*;
+import org.eclipse.keyple.calypso.SelectFileControl;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.PoCustomModificationCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoCustomReadCommandBuilder;
@@ -194,8 +195,7 @@ public final class PoSelectionRequest extends AbstractSeSelectionRequest {
      * @param extraInfo extra information included in the logs (can be null or empty)
      * @return the command index indicating the order of the command in the command list
      */
-    public int prepareSelectFileCmd(SelectFileCmdBuild.SelectControl selectControl,
-            String extraInfo) {
+    public int prepareSelectFileCmd(SelectFileControl selectControl, String extraInfo) {
         addApduRequest(new SelectFileCmdBuild(poClass, selectControl).getApduRequest());
         if (logger.isTraceEnabled()) {
             logger.trace("Navigate: CONTROL = {}", selectControl);
