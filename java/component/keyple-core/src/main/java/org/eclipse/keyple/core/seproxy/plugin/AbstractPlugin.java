@@ -200,12 +200,12 @@ public abstract class AbstractPlugin extends Observable<PluginEvent>
      * See {@link #setParameter(String, String)} for more details
      *
      * @param parameters the new parameters
-     * @throws KeypleBaseException This method can fail when disabling the exclusive mode as it's
+     * @throws KeypleException This method can fail when disabling the exclusive mode as it's
      *         executed instantly
      */
     @Override
     public final void setParameters(Map<String, String> parameters)
-            throws IllegalArgumentException, KeypleBaseException {
+            throws IllegalArgumentException, KeypleException {
         for (Map.Entry<String, String> en : parameters.entrySet()) {
             setParameter(en.getKey(), en.getValue());
         }

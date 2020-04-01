@@ -14,7 +14,7 @@ package org.eclipse.keyple.core.seproxy.exception;
 /**
  * Base Exceptions thrown in a {@link org.eclipse.keyple.core.seproxy.ReaderPlugin} context
  */
-public class KeyplePluginException extends KeypleBaseException {
+public class KeyplePluginException extends KeypleException {
 
     /**
      * New plugin exception to be thrown

@@ -16,7 +16,7 @@ import java.util.Set;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
@@ -83,15 +83,15 @@ public class JsonParserTest {
      */
     @Test
     public void testSimpleKeypleException() {
-        KeypleBaseException exception = SampleFactory.getASimpleKeypleException();
-        testSerializeDeserializeObj(exception, KeypleBaseException.class);
+        KeypleException exception = SampleFactory.getASimpleKeypleException();
+        testSerializeDeserializeObj(exception, KeypleException.class);
 
     }
 
     @Test
     public void testStackedKeypleException() {
-        KeypleBaseException exception = SampleFactory.getAStackedKeypleException();
-        testSerializeDeserializeObj(exception, KeypleBaseException.class);
+        KeypleException exception = SampleFactory.getAStackedKeypleException();
+        testSerializeDeserializeObj(exception, KeypleException.class);
 
     }
 

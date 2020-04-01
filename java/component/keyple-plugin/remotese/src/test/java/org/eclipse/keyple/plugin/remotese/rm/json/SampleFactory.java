@@ -17,7 +17,7 @@ import java.util.*;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
@@ -25,12 +25,12 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 public class SampleFactory {
 
-    public static KeypleBaseException getAStackedKeypleException() {
+    public static KeypleException getAStackedKeypleException() {
         return new KeypleReaderException("Keyple Reader Exception", new IOException("IO Error",
                 new IOException("IO Error2", new RuntimeException("sdfsdf"))));
     }
 
-    public static KeypleBaseException getASimpleKeypleException() {
+    public static KeypleException getASimpleKeypleException() {
         return new KeypleReaderException("Keyple Reader Exception");
     }
 

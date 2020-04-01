@@ -372,7 +372,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
 
             /* Shared mode */
             samReader.setParameter("mode", "shared");
-        } catch (KeypleBaseException e) {
+        } catch (KeypleException e) {
             throw new IllegalArgumentException(
                     "Parameters are not supported for this reader : protocol:TO, mode:shared");
         }

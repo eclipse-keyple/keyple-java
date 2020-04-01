@@ -102,7 +102,7 @@ public class BlankSmartPresenceTheadedReader extends AbstractObservableLocalRead
 
     @Override
     public void setParameter(String key, String value)
-            throws IllegalArgumentException, KeypleBaseException {
+            throws IllegalArgumentException, KeypleException {
 
     }
 

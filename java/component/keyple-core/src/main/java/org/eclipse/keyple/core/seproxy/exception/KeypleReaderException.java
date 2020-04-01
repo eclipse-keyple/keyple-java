@@ -11,7 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.exception;
 
-
 import java.util.List;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
@@ -19,7 +18,7 @@ import org.eclipse.keyple.core.seproxy.message.SeResponse;
 /**
  * Base Exceptions thrown in a {@link ProxyReader} context
  */
-public class KeypleReaderException extends KeypleBaseException {
+public class KeypleReaderException extends KeypleException {
     /*
      * SeResponse and List of SeResponse objects to carry partial responses in the event of a
      * breakdown in communication with the SE.

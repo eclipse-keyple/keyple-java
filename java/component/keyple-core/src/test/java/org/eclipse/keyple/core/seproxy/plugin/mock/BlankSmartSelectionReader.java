@@ -81,7 +81,7 @@ public class BlankSmartSelectionReader extends AbstractLocalReader implements Sm
 
     @Override
     public void setParameter(String key, String value)
-            throws IllegalArgumentException, KeypleBaseException {
+            throws IllegalArgumentException, KeypleException {
 
     }
 }

@@ -21,8 +21,8 @@ import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
@@ -375,11 +375,11 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
      * See {@link #setParameter(String, String)} for more details
      *
      * @param parameters a Map &lt;String, String&gt; parameter set
-     * @throws KeypleBaseException if one of the parameters could not be set up
+     * @throws KeypleException if one of the parameters could not be set up
      */
     @Override
     public final void setParameters(Map<String, String> parameters)
-            throws IllegalArgumentException, KeypleBaseException {
+            throws IllegalArgumentException, KeypleException {
         for (Map.Entry<String, String> en : parameters.entrySet()) {
             setParameter(en.getKey(), en.getValue());
         }

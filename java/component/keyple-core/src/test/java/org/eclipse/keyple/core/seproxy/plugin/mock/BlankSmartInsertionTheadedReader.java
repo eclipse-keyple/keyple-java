@@ -150,7 +150,7 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
 
     @Override
     public void setParameter(String key, String value)
-            throws IllegalArgumentException, KeypleBaseException {
+            throws IllegalArgumentException, KeypleException {
 
     }
 

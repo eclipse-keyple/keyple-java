@@ -104,7 +104,7 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
 
     @Override
     public void setParameter(String key, String value)
-            throws IllegalArgumentException, KeypleBaseException {
+            throws IllegalArgumentException, KeypleException {
 
     }
 

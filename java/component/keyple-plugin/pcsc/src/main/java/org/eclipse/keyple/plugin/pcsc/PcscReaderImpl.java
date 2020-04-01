@@ -99,7 +99,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
             setParameter(SETTING_KEY_PROTOCOL, null);
             setParameter(SETTING_KEY_MODE, null);
             setParameter(SETTING_KEY_DISCONNECT, null);
-        } catch (KeypleBaseException ex) {
+        } catch (KeypleException ex) {
             // can not fail with null value
         }
     }
@@ -371,7 +371,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
      *
      * @param name Parameter name
      * @param value Parameter value
-     * @throws KeypleBaseException This method can fail when disabling the exclusive mode as it's
+     * @throws KeypleException This method can fail when disabling the exclusive mode as it's
      *         executed instantly
      * @throws IllegalArgumentException when parameter is wrong
      *
@@ -379,7 +379,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
      */
     @Override
     public void setParameter(String name, String value)
-            throws IllegalArgumentException, KeypleBaseException {
+            throws IllegalArgumentException, KeypleException {
 
         logger.debug("[{}] setParameter => PCSC: Set a parameter. NAME = {}, VALUE = {}",
                 this.getName(), name, value);

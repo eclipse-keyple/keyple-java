@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.exception;
 
-public class KeyplePluginInstantiationException extends KeypleBaseException {
+public class KeyplePluginInstantiationException extends KeypleException {
 
 
     public KeyplePluginInstantiationException(String message) {

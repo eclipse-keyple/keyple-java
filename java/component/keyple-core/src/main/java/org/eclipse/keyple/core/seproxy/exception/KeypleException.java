@@ -11,30 +11,27 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.exception;
 
-
-
 /**
- * Base Exception for all Keyple Checked Exception
+ * Parent Exception for all Keyple Checked Exception
  */
-public class KeypleBaseException extends Exception {
-    private static final long serialVersionUID = -500856379312027085L;
+public class KeypleException extends Exception {
 
     /**
      * New exception to be thrown
      * 
-     * @param message : message to identify the exception and the context
+     * @param message message to identify the exception and the context
      */
-    public KeypleBaseException(String message) {
+    public KeypleException(String message) {
         super(message);
     }
 
     /**
      * Encapsulate a lower level exception (ie CardException, IOException, HostNotFoundException..)
      * 
-     * @param message : message to identify the exception and the context
-     * @param cause : lower level exception
+     * @param message message to identify the exception and the context
+     * @param cause lower level exception
      */
-    public KeypleBaseException(String message, Throwable cause) {
+    public KeypleException(String message, Throwable cause) {
         super(message, cause);
     }
 }

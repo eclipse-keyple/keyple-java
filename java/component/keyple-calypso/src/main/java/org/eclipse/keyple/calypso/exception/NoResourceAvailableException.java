@@ -11,9 +11,9 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.exception;
 
-import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 
-public class NoResourceAvailableException extends KeypleBaseException {
+public class NoResourceAvailableException extends KeypleException {
 
 
     public NoResourceAvailableException(String message) {
