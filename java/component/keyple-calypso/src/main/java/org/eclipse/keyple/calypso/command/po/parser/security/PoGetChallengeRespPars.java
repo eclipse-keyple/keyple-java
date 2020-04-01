@@ -12,13 +12,13 @@
 package org.eclipse.keyple.calypso.command.po.parser.security;
 
 
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
+import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
  * PO Get challenge response parser. See specs: Calypso / page 108 / 9.54 - Get challenge
  */
-public final class PoGetChallengeRespPars extends AbstractApduResponseParser {
+public final class PoGetChallengeRespPars extends AbstractPoResponseParser {
 
     /**
      * Instantiates a new PoGetChallengeRespPars.
