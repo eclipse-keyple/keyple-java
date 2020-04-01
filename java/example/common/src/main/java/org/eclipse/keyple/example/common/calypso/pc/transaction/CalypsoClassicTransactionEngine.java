@@ -158,7 +158,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
          * Open Session for the debit key - with reading of the first record of the cyclic EF of
          * Environment and Holder file
          */
-        poProcessStatus = poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
+        poProcessStatus = poTransaction.processOpening(PoTransaction.SessionModificationMode.ATOMIC,
                 PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT,
                 CalypsoClassicInfo.SFI_EnvironmentAndHolder, CalypsoClassicInfo.RECORD_NUMBER_1);
 
