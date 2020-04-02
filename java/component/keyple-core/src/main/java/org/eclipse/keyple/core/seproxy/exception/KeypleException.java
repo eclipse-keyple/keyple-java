@@ -12,14 +12,12 @@
 package org.eclipse.keyple.core.seproxy.exception;
 
 /**
- * Parent Exception for all Keyple Checked Exception
+ * The exception KeypleException is the parent class of all Keyple checked exceptions.
  */
 public class KeypleException extends Exception {
 
     /**
-     * New exception to be thrown
-     * 
-     * @param message message to identify the exception and the context
+     * @param message the message to identify the exception context
      */
     public KeypleException(String message) {
         super(message);
@@ -27,9 +25,9 @@ public class KeypleException extends Exception {
 
     /**
      * Encapsulate a lower level exception (ie CardException, IOException, HostNotFoundException..)
-     * 
-     * @param message message to identify the exception and the context
-     * @param cause lower level exception
+     *
+     * @param message message to identify the exception context
+     * @param cause the cause
      */
     public KeypleException(String message, Throwable cause) {
         super(message, cause);

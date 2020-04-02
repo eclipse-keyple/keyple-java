@@ -11,19 +11,18 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.exception;
 
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+
 /**
- * Exception thrown when {@link org.eclipse.keyple.core.seproxy.ReaderPlugin} is not found
+ * The exception KeyplePluginNotFoundException indicates that the plugin is not found, generally
+ * when it has not been previously registered to the {@link SeProxyService}.
  */
 public class KeyplePluginNotFoundException extends KeyplePluginException {
 
     /**
-     * Exception thrown when {@link org.eclipse.keyple.core.seproxy.ReaderPlugin} is not found
-     * 
-     * @param pluginName : pluginName that has not been found
+     * @param pluginName the name of the plugin that has not been found
      */
     public KeyplePluginNotFoundException(String pluginName) {
         super("Plugin with name " + pluginName + " was not found");
     }
-
-
 }
