@@ -13,7 +13,7 @@ package org.eclipse.keyple.calypso.transaction;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.keyple.calypso.command.po.builder.SelectFileCmdBuild;
+import org.eclipse.keyple.calypso.SelectFileControl;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.SelectFileRespPars;
@@ -135,12 +135,12 @@ public class PoSelectionRequestTest {
 
     @Test
     public void prepareSelectFileCmd1() {
-        int selectIndex1 = poSelectionRequest
-                .prepareSelectFileCmd(SelectFileCmdBuild.SelectControl.CURRENT_DF, "CurrentDF");
-        int selectIndex2 = poSelectionRequest
-                .prepareSelectFileCmd(SelectFileCmdBuild.SelectControl.FIRST, "First");
-        int selectIndex3 = poSelectionRequest
-                .prepareSelectFileCmd(SelectFileCmdBuild.SelectControl.NEXT, "Next");
+        int selectIndex1 =
+                poSelectionRequest.prepareSelectFileCmd(SelectFileControl.CURRENT_DF, "CurrentDF");
+        int selectIndex2 =
+                poSelectionRequest.prepareSelectFileCmd(SelectFileControl.FIRST_EF, "First");
+        int selectIndex3 =
+                poSelectionRequest.prepareSelectFileCmd(SelectFileControl.NEXT_EF, "Next");
 
         Assert.assertEquals(selectIndex1, 0);
         Assert.assertEquals(selectIndex2, 1);

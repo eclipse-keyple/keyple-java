@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.command.po.builder;
 
+import org.eclipse.keyple.calypso.SelectFileControl;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
@@ -27,10 +28,6 @@ public final class SelectFileCmdBuild extends AbstractPoCommandBuilder<SelectFil
 
     private static final CalypsoPoCommands command = CalypsoPoCommands.SELECT_FILE;
 
-    public enum SelectControl {
-        FIRST, NEXT, CURRENT_DF
-    }
-
     /**
      * Instantiates a new SelectFileCmdBuild to select the first, next or current file in the
      * current DF.
@@ -38,17 +35,17 @@ public final class SelectFileCmdBuild extends AbstractPoCommandBuilder<SelectFil
      * @param poClass indicates which CLA byte should be used for the Apdu
      * @param selectControl the selection mode control: FIRST, NEXT or CURRENT
      */
-    public SelectFileCmdBuild(PoClass poClass, SelectControl selectControl) {
+    public SelectFileCmdBuild(PoClass poClass, SelectFileControl selectControl) {
         super(command, null);
         byte p1;
         byte p2;
         byte[] selectData = new byte[] {0x00, 0x00};
         switch (selectControl) {
-            case FIRST:
+            case FIRST_EF:
                 p1 = (byte) 0x02;
                 p2 = (byte) 0x00;
                 break;
-            case NEXT:
+            case NEXT_EF:
                 p1 = (byte) 0x02;
                 p2 = (byte) 0x02;
                 break;

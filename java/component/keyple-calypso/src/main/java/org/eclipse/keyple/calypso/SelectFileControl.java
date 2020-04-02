@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information regarding copyright
  * ownership.
@@ -9,16 +9,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.calypso.command;
+package org.eclipse.keyple.calypso;
 
-
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.command.AbstractIso7816CommandBuilder;
-
-public interface CalypsoBuilderParser<B extends AbstractIso7816CommandBuilder, P extends AbstractApduResponseParser> {
-    B getCommandBuilder();
-
-    P getResponseParser();
-
-    void setResponseParser(P parser);
+/**
+ * Definitions governing the expected behavior of the selection command (see the specifics of this
+ * command in the ISO7816-4 standard and the Calypso specification)
+ */
+public enum SelectFileControl {
+    /** The first EF of the current Calypso DF */
+    FIRST_EF,
+    /** The next EF of the current Calypso DF */
+    NEXT_EF,
+    /** The Calypso DF */
+    CURRENT_DF
 }
