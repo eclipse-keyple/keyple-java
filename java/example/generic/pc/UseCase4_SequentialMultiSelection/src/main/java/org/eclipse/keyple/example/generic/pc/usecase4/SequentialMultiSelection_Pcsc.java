@@ -14,7 +14,7 @@ package org.eclipse.keyple.example.generic.pc.usecase4;
 import java.io.IOException;
 import org.eclipse.keyple.core.selection.*;
 import org.eclipse.keyple.core.seproxy.*;
-import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -49,7 +49,7 @@ public class SequentialMultiSelection_Pcsc {
     }
 
     public static void main(String[] args)
-            throws KeypleBaseException, InterruptedException, IOException {
+            throws KeypleException, InterruptedException, IOException {
 
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();

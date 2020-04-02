@@ -19,7 +19,7 @@ import java.util.Properties;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.slf4j.Logger;
@@ -56,9 +56,9 @@ public class CalypsoUtilities {
      * Get the default reader for PO communications
      * 
      * @return a SeReader object
-     * @throws KeypleBaseException if an error occurred
+     * @throws KeypleException if an error occurred
      */
-    public static SeReader getDefaultPoReader() throws KeypleBaseException {
+    public static SeReader getDefaultPoReader() throws KeypleException {
         SeReader poReader =
                 ReaderUtilities.getReaderByName(properties.getProperty("po.reader.regex"));
 
@@ -71,9 +71,9 @@ public class CalypsoUtilities {
      * Get the default reader for SAM communications
      * 
      * @return a {@link SamResource} object
-     * @throws KeypleBaseException if an error occurred
+     * @throws KeypleException if an error occurred
      */
-    public static SamResource getDefaultSamResource() throws KeypleBaseException {
+    public static SamResource getDefaultSamResource() throws KeypleException {
         SeReader samReader =
                 ReaderUtilities.getReaderByName(properties.getProperty("sam.reader.regex"));
 

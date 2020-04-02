@@ -12,7 +12,7 @@
 package org.eclipse.keyple.core.seproxy.exception;
 
 /**
- * The exception KeypleException is the parent class of all Keyple checked exceptions.
+ * The exception <code>KeypleException</code> is the parent class of all Keyple checked exceptions.
  */
 public class KeypleException extends Exception {
 

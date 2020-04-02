@@ -18,7 +18,7 @@ import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.*;
 import org.eclipse.keyple.core.seproxy.*;
-import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
 public class PoAuthentication_Pcsc {
     private static final Logger logger = LoggerFactory.getLogger(PoAuthentication_Pcsc.class);
 
-    public static void main(String[] args) throws KeypleBaseException {
+    public static void main(String[] args) throws KeypleException {
 
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();

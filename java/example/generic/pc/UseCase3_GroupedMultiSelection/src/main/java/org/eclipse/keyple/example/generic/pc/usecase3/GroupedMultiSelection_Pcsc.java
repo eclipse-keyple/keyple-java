@@ -14,7 +14,7 @@ package org.eclipse.keyple.example.generic.pc.usecase3;
 import java.io.IOException;
 import org.eclipse.keyple.core.selection.*;
 import org.eclipse.keyple.core.seproxy.*;
-import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
@@ -32,7 +32,7 @@ public class GroupedMultiSelection_Pcsc {
             LoggerFactory.getLogger(GroupedMultiSelection_Pcsc.class);
 
     public static void main(String[] args)
-            throws KeypleBaseException, InterruptedException, IOException {
+            throws KeypleException, InterruptedException, IOException {
 
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();

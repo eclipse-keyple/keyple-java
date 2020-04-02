@@ -12,7 +12,7 @@
 package org.eclipse.keyple.core.seproxy.exception;
 
 /**
- * The exception KeyplePluginInstantiationException indicates that the plugin cannot be
+ * The exception <code>KeyplePluginInstantiationException</code> indicates that the plugin cannot be
  * instantiated, possibly due to a problem with one of the associated readers.
  */
 public class KeyplePluginInstantiationException extends KeyplePluginException {

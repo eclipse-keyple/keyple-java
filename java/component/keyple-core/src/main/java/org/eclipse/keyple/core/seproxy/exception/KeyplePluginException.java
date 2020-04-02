@@ -12,7 +12,7 @@
 package org.eclipse.keyple.core.seproxy.exception;
 
 /**
- * The exception KeyplePluginException is the parent class of all Keyple plugins exceptions.
+ * The exception <code>KeyplePluginException</code> is the parent class of all Keyple plugins exceptions.
  */
 public class KeyplePluginException extends KeypleException {
 

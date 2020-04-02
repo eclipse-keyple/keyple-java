@@ -18,7 +18,7 @@ import java.util.EnumSet;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.example.common.PcscReadersSettings;
 import org.eclipse.keyple.example.common.ReaderUtilities;
@@ -41,9 +41,9 @@ public class Demo_SeProtocolDetection_Pcsc {
      *
      * @param args the program arguments
      * @throws IllegalArgumentException in case of a bad argument
-     * @throws KeypleBaseException if a reader error occurs
+     * @throws KeypleException if a reader error occurs
      */
-    public static void main(String[] args) throws IllegalArgumentException, KeypleBaseException {
+    public static void main(String[] args) throws IllegalArgumentException, KeypleException {
         /* get the SeProxyService instance */
         SeProxyService seProxyService = SeProxyService.getInstance();
 

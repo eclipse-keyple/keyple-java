@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
@@ -67,7 +67,7 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
      */
     private static final Object waitForEnd = new Object();
 
-    public DefaultSelectionNotification_Stub() throws KeypleBaseException, InterruptedException {
+    public DefaultSelectionNotification_Stub() throws KeypleException, InterruptedException {
 
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
@@ -306,7 +306,7 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
     /**
      * main program entry
      */
-    public static void main(String[] args) throws InterruptedException, KeypleBaseException {
+    public static void main(String[] args) throws InterruptedException, KeypleException {
         /* Create the observable object to handle the PO processing */
         DefaultSelectionNotification_Stub m = new DefaultSelectionNotification_Stub();
     }
