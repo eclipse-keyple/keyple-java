@@ -89,11 +89,16 @@ public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandB
 
         /* Buffer allocation */
         int length = 4; // header
-        if (dataIn != null) {
-            length += dataIn.length + 1; // Lc + data
-        }
-        if (le != null) {
+        if (dataIn == null && le == null) {
+            // case 1: 5-byte apdu, le=0
             length += 1; // Le
+        } else {
+            if (dataIn != null) {
+                length += dataIn.length + 1; // Lc + data
+            }
+            if (le != null) {
+                length += 1; // Le
+            }
         }
         byte[] apdu = new byte[length];
 
