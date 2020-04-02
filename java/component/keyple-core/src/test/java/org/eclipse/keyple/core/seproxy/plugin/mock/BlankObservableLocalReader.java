@@ -88,7 +88,7 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
     }
 
     @Override
-    public byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
+    public byte[] transmitApdu(byte[] apduIn) throws KeypleReaderIOException {
         return new byte[0];
     }
 

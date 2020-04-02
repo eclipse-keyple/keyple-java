@@ -32,8 +32,8 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.*;
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -445,7 +445,7 @@ public class StubReaderTest extends BaseStubTest {
                 byte[] fci = null;
                 try {
                     fci = hoplinkSE().processApdu(selectApplicationCommand);
-                } catch (KeypleIOReaderException e) {
+                } catch (KeypleReaderIOException e) {
                     e.printStackTrace();
                 }
 
@@ -1240,7 +1240,7 @@ public class StubReaderTest extends BaseStubTest {
         return new StubSecureElement() {
 
             @Override
-            public byte[] processApdu(byte[] apduIn) throws KeypleIOReaderException {
+            public byte[] processApdu(byte[] apduIn) throws KeypleReaderIOException {
                 addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00",
                         "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
 
@@ -1271,7 +1271,7 @@ public class StubReaderTest extends BaseStubTest {
     static public StubSecureElement revision1SE() {
         return new StubSecureElement() {
             @Override
-            public byte[] processApdu(byte[] apduIn) throws KeypleIOReaderException {
+            public byte[] processApdu(byte[] apduIn) throws KeypleReaderIOException {
                 addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00",
                         "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
 
@@ -1301,7 +1301,7 @@ public class StubReaderTest extends BaseStubTest {
         return new StubSecureElement() {
 
             @Override
-            public byte[] processApdu(byte[] apduIn) throws KeypleIOReaderException {
+            public byte[] processApdu(byte[] apduIn) throws KeypleReaderIOException {
 
                 addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00",
                         "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
@@ -1325,7 +1325,7 @@ public class StubReaderTest extends BaseStubTest {
     static public StubSecureElement partialSE() {
         return new StubSecureElement() {
             @Override
-            public byte[] processApdu(byte[] apduIn) throws KeypleIOReaderException {
+            public byte[] processApdu(byte[] apduIn) throws KeypleReaderIOException {
 
                 addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00",
                         "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
@@ -1375,8 +1375,8 @@ public class StubReaderTest extends BaseStubTest {
             }
 
             @Override
-            public byte[] processApdu(byte[] apduIn) throws KeypleIOReaderException {
-                throw new KeypleIOReaderException("Error while transmitting apdu");
+            public byte[] processApdu(byte[] apduIn) throws KeypleReaderIOException {
+                throw new KeypleReaderIOException("Error while transmitting apdu");
             }
 
             @Override

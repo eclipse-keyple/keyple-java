@@ -58,13 +58,13 @@ public class BlankSmartSelectionReader extends AbstractLocalReader implements Sm
     }
 
     @Override
-    public byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
+    public byte[] transmitApdu(byte[] apduIn) throws KeypleReaderIOException {
         return new byte[0];
     }
 
     @Override
     public ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector)
-            throws KeypleIOReaderException, KeypleChannelControlException,
+            throws KeypleReaderIOException, KeypleChannelControlException,
             KeypleReaderIllegalArgumentException {
         return null;
     }

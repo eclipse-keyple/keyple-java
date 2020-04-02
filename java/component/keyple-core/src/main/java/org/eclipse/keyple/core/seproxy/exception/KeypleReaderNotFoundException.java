@@ -11,20 +11,16 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.exception;
 
-import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-
-/*
- * Exception thrown when {@link org.eclipse.keyple.core.seproxy.message.ProxyReader} is not found
+/**
+ * The exception <code>KeypleReaderNotFoundException</code> indicates that the reader is not found
+ * by its name, generally when it is not connected to the terminal.
  */
 public class KeypleReaderNotFoundException extends KeypleReaderException {
 
     /**
-     * Exception thrown when @{@link ProxyReader} is not found
-     * 
-     * @param readerName : readerName that has not been found
+     * @param readerName the name of the reader that has not been found
      */
     public KeypleReaderNotFoundException(String readerName) {
         super("Reader with name " + readerName + " was not found");
     }
-
 }

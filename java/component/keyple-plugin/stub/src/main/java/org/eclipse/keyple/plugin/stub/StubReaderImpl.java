@@ -18,8 +18,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.plugin.local.*;
 import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.SmartInsertionMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.SmartRemovalMonitoringJob;
@@ -108,9 +108,9 @@ class StubReaderImpl extends AbstractObservableLocalReader
     }
 
     @Override
-    public byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
+    public byte[] transmitApdu(byte[] apduIn) throws KeypleReaderIOException {
         if (se == null) {
-            throw new KeypleIOReaderException("No SE available.");
+            throw new KeypleReaderIOException("No SE available.");
         }
         return se.processApdu(apduIn);
     }

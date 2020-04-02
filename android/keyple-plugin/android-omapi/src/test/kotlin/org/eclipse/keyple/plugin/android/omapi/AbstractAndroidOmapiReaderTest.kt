@@ -18,7 +18,7 @@ import org.eclipse.keyple.core.seproxy.ChannelControl
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
 import org.eclipse.keyple.core.seproxy.SeSelector
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException
-import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.message.ApduRequest
 import org.eclipse.keyple.core.seproxy.message.SeRequest
@@ -113,7 +113,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         Assert.assertTrue(reader.parameters["key2"] == "value2")
     }
 
-    @Test(expected = KeypleIOReaderException::class)
+    @Test(expected = KeypleReaderIOException::class)
     fun transmitIOException() {
         nativeReader = mockReaderWithExceptionOnOpenLogicalChannel(IOException())
         reader = buildOmapiReaderImpl(nativeReader)
@@ -138,7 +138,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         Assert.assertNull(seResponseList[0]) // If container is not found a null responsed is returned
     }
 
-    @Test(expected = KeypleIOReaderException::class)
+    @Test(expected = KeypleReaderIOException::class)
     fun transmitOpenChannelFailed() {
         nativeReader = mockReaderWithNullOnOpenLogicalChannel()
         reader = buildOmapiReaderImpl(nativeReader)
@@ -146,7 +146,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader.transmitSet(getSampleSeRequest())
     }
 
-    @Test(expected = KeypleIOReaderException::class)
+    @Test(expected = KeypleReaderIOException::class)
     fun transmitNoAidOpenChannelFailed() {
         nativeReader = mockReaderWithNullOnOpenBasicChannel()
         reader = buildOmapiReaderImpl(nativeReader)
@@ -154,7 +154,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader.transmitSet(getNoAidSampleSeRequest())
     }
 
-    @Test(expected = KeypleIOReaderException::class)
+    @Test(expected = KeypleReaderIOException::class)
     fun transmitNoAidIOException() {
         nativeReader = mockReaderWithExceptionOnOpenBasicChannel(IOException())
         reader = buildOmapiReaderImpl(nativeReader)
@@ -225,8 +225,8 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         Assert.assertNotNull(seResponseList)
     }
 
-    @Test(expected = KeypleIOReaderException::class)
-    @Ignore("Implementation of closePhysicalChannel() may encounter a IOException, it should be catched as a KeypleIOReaderException, it is not")
+    @Test(expected = KeypleReaderIOException::class)
+    @Ignore("Implementation of closePhysicalChannel() may encounter a IOException, it should be catched as a KeypleReaderIOException, it is not")
     fun exceptionOnChannelAfterTransmit() {
         // init
         val nativeReader = mockReaderWithExceptionOnCloseChannel(IOException())
@@ -236,7 +236,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader.transmitSet(getSampleSeRequest(), MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER)
     }
 
-    @Test(expected = KeypleIOReaderException::class)
+    @Test(expected = KeypleReaderIOException::class)
     fun exceptionWhileTransmittingApdu() {
         // init
         val nativeReader = mockReaderWithExceptionWhileTransmittingApdu(IOException())

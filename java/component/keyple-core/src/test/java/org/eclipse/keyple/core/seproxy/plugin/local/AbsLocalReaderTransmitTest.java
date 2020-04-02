@@ -20,8 +20,8 @@ import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.plugin.mock.BlankAbstractLocalReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
@@ -384,7 +384,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
         doReturn(RESP_FAIL).when(r).transmitApdu(APDU_FAIL);
 
         // io exception apdu
-        doThrow(new KeypleIOReaderException("io exception at transmitting " + APDU_IOEXC)).when(r)
+        doThrow(new KeypleReaderIOException("io exception at transmitting " + APDU_IOEXC)).when(r)
                 .transmitApdu(APDU_IOEXC);
 
         // aid selection

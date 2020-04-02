@@ -92,7 +92,7 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
                     if (BlankSmartInsertionTheadedReader.this.waitForCardPresent()) {
                         onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
                     }
-                } catch (KeypleIOReaderException e) {
+                } catch (KeypleReaderIOException e) {
                     logger.trace(
                             "[{}] waitForCardPresent => Error while polling card with waitForCardPresent",
                             BlankSmartInsertionTheadedReader.this.getName());
@@ -134,7 +134,7 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
     }
 
     @Override
-    public byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
+    public byte[] transmitApdu(byte[] apduIn) throws KeypleReaderIOException {
         return new byte[0];
     }
 
@@ -161,7 +161,7 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
      */
 
     @Override
-    public boolean waitForCardPresent() throws KeypleIOReaderException {
+    public boolean waitForCardPresent() throws KeypleReaderIOException {
         detectCount++;
         try {
             Thread.sleep(10);

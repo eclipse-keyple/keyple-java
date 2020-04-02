@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.stub;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 public abstract class StubSecureElement {
@@ -77,9 +77,9 @@ public abstract class StubSecureElement {
      *
      * @param apduIn : commands to be processed
      * @return APDU response
-     * @throws KeypleIOReaderException if the transmission fails
+     * @throws KeypleReaderIOException if the transmission fails
      */
-    public byte[] processApdu(byte[] apduIn) throws KeypleIOReaderException {
+    public byte[] processApdu(byte[] apduIn) throws KeypleReaderIOException {
 
         if (apduIn == null) {
             return null;
@@ -93,7 +93,7 @@ public abstract class StubSecureElement {
             return ByteArrayUtil.fromHex(hexCommands.get(hexApdu));
         }
 
-        // throw a KeypleIOReaderException if not found
-        throw new KeypleIOReaderException("No response available for this request.");
+        // throw a KeypleReaderIOException if not found
+        throw new KeypleReaderIOException("No response available for this request.");
     }
 }

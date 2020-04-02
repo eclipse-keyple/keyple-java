@@ -115,7 +115,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     }
 
-    @Test(expected = KeypleIOReaderException.class)
+    @Test(expected = KeypleReaderIOException.class)
     public void select_byAtr_null() throws Exception {
         AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
         // mock ATR

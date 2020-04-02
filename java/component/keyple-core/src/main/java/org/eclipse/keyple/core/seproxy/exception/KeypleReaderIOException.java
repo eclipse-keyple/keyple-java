@@ -11,29 +11,26 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.exception;
 
-import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-
 /**
- * Exception thrown when IO operations failed in a {@link ProxyReader}
+ * The exception <code>KeypleReaderIOException</code> indicates that some IO operations with the
+ * reader have failed, generally when the reader was suddenly disconnected.
  */
-public class KeypleIOReaderException extends KeypleReaderException {
+public class KeypleReaderIOException extends KeypleReaderException {
 
     /**
-     * New exception to be thrown
-     *
-     * @param message : message to identify the exception and the context
+     * @param message the message to identify the exception context
      */
-    public KeypleIOReaderException(String message) {
+    public KeypleReaderIOException(String message) {
         super(message);
     }
 
     /**
-     * Encapsulate a lower level reader exception
+     * Encapsulates a lower level reader exception
      *
-     * @param message : message to add some context to the exception
-     * @param cause : lower level exception
+     * @param message message to identify the exception context
+     * @param cause the cause
      */
-    public KeypleIOReaderException(String message, Throwable cause) {
+    public KeypleReaderIOException(String message, Throwable cause) {
         super(message, cause);
     }
 }

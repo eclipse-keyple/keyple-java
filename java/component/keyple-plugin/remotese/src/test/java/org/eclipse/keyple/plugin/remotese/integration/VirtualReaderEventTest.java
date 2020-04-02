@@ -24,8 +24,8 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
@@ -226,7 +226,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                 byte[] fci = null;
                 try {
                     fci = hoplinkSE().processApdu(selectApplicationCommand);
-                } catch (KeypleIOReaderException e) {
+                } catch (KeypleReaderIOException e) {
                     e.printStackTrace();
                 }
 

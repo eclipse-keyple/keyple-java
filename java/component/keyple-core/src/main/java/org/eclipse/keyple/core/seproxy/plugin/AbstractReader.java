@@ -23,8 +23,8 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
@@ -179,7 +179,7 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
                     this.getName(), elapsedMs);
             /* Throw an exception with the responses collected so far. */
             throw ex;
-        } catch (KeypleIOReaderException ex) {
+        } catch (KeypleReaderIOException ex) {
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
@@ -272,7 +272,7 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
                     elapsedMs);
             /* Throw an exception with the responses collected so far (ex.getSeResponse()). */
             throw ex;
-        } catch (KeypleIOReaderException ex) {
+        } catch (KeypleReaderIOException ex) {
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;

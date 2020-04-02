@@ -158,13 +158,13 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     }
 
     @Override
-    protected boolean checkSePresence() throws KeypleIOReaderException {
+    protected boolean checkSePresence() throws KeypleReaderIOException {
         try {
             return terminal.isCardPresent();
         } catch (CardException e) {
             logger.debug("[{}] Exception occurred in isSePresent. Message: {}", this.getName(),
                     e.getMessage());
-            throw new KeypleIOReaderException("Exception occurred in isSePresent", e);
+            throw new KeypleReaderIOException("Exception occurred in isSePresent", e);
         }
     }
 
@@ -172,7 +172,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
      * Implements from SmartInsertionReader
      */
     @Override
-    public boolean waitForCardPresent() throws KeypleIOReaderException {
+    public boolean waitForCardPresent() throws KeypleReaderIOException {
         logger.debug("[{}] waitForCardPresent => loop with latency of {} ms.", this.getName(),
                 insertLatency);
 
@@ -199,7 +199,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
             // if loop was stopped
             return false;
         } catch (CardException e) {
-            throw new KeypleIOReaderException(
+            throw new KeypleReaderIOException(
                     "[" + this.getName() + "] Exception occurred in waitForCardPresent. "
                             + "Message: " + e.getMessage());
         } catch (Throwable t) {
@@ -226,7 +226,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
      * @return true if the card is removed within the delay
      */
     @Override
-    public boolean waitForCardAbsentNative() throws KeypleIOReaderException {
+    public boolean waitForCardAbsentNative() throws KeypleReaderIOException {
         logger.debug("[{}] waitForCardAbsentNative => loop with latency of {} ms.", this.getName(),
                 removalLatency);
 
@@ -251,7 +251,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
             }
             return false;
         } catch (CardException e) {
-            throw new KeypleIOReaderException(
+            throw new KeypleReaderIOException(
                     "[" + this.getName() + "] Exception occurred in waitForCardAbsentNative. "
                             + "Message: " + e.getMessage());
         } catch (Throwable t) {
@@ -275,24 +275,24 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
      *
      * @param apduIn APDU in buffer
      * @return apduOut buffer
-     * @throws KeypleIOReaderException if the transmission failed
+     * @throws KeypleReaderIOException if the transmission failed
      */
     @Override
-    protected byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
+    protected byte[] transmitApdu(byte[] apduIn) throws KeypleReaderIOException {
         ResponseAPDU apduResponseData;
 
         if (channel != null) {
             try {
                 apduResponseData = channel.transmit(new CommandAPDU(apduIn));
             } catch (CardException e) {
-                throw new KeypleIOReaderException(this.getName() + ":" + e.getMessage());
+                throw new KeypleReaderIOException(this.getName() + ":" + e.getMessage());
             } catch (IllegalArgumentException e) {
                 // card could have been removed prematurely
-                throw new KeypleIOReaderException(this.getName() + ":" + e.getMessage());
+                throw new KeypleReaderIOException(this.getName() + ":" + e.getMessage());
             }
         } else {
             // could occur if the SE was removed
-            throw new KeypleIOReaderException(this.getName() + ": null channel.");
+            throw new KeypleReaderIOException(this.getName() + ": null channel.");
         }
         return apduResponseData.getBytes();
     }

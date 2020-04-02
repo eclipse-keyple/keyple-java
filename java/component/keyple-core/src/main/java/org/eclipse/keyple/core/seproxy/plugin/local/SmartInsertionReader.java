@@ -12,7 +12,7 @@
 package org.eclipse.keyple.core.seproxy.plugin.local;
 
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 
 public interface SmartInsertionReader extends ObservableReader {
     /**
@@ -24,10 +24,10 @@ public interface SmartInsertionReader extends ObservableReader {
      * Returns false if no SE is detected.
      *
      * @return presence status
-     * @throws KeypleIOReaderException in the event of a communication failure with the reader
+     * @throws KeypleReaderIOException in the event of a communication failure with the reader
      *         (disconnection)
      */
-    boolean waitForCardPresent() throws KeypleIOReaderException;
+    boolean waitForCardPresent() throws KeypleReaderIOException;
 
 
     /**

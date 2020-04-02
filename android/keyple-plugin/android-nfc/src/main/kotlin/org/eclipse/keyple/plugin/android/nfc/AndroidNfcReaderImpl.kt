@@ -23,7 +23,7 @@ import java.util.HashMap
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException
-import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableLocalReader
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState
@@ -263,25 +263,25 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
         }
     }
 
-    @Throws(KeypleIOReaderException::class)
+    @Throws(KeypleReaderIOException::class)
     public override fun transmitApdu(apduIn: ByteArray): ByteArray {
         Timber.d("Send data to card : ${apduIn.size} bytes")
         return with(tagProxy) {
             if (this == null) {
-                throw KeypleIOReaderException(
+                throw KeypleReaderIOException(
                         "Error while transmitting APDU, invalid out data buffer")
             } else {
                 try {
                     val bytes = transceive(apduIn)
                     if (bytes.size <2) {
-                        throw KeypleIOReaderException(
+                        throw KeypleReaderIOException(
                                 "Error while transmitting APDU, invalid out data buffer")
                     } else {
                         Timber.d("Receive data from card : ${ByteArrayUtil.toHex(bytes)}")
                         bytes
                     }
                 } catch (e: IOException) {
-                    throw KeypleIOReaderException(
+                    throw KeypleReaderIOException(
                             "Error while transmitting APDU, invalid out data buffer", e)
                 } catch (e: NoSuchElementException) {
                     throw KeypleReaderException("Error while transmitting APDU, no such Element", e)

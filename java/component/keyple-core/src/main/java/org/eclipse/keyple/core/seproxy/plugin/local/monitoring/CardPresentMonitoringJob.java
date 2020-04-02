@@ -13,7 +13,7 @@ package org.eclipse.keyple.core.seproxy.plugin.local.monitoring;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState;
 import org.eclipse.keyple.core.seproxy.plugin.local.MonitoringJob;
@@ -74,7 +74,7 @@ public class CardPresentMonitoringJob implements MonitoringJob {
                             return;
                         }
 
-                    } catch (KeypleIOReaderException e) {
+                    } catch (KeypleReaderIOException e) {
                         loop.set(false);
                         // what do do here
                     }
