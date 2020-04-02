@@ -227,11 +227,11 @@ public abstract class AbstractLocalReader extends AbstractReader {
      *         matching status flag).
      * @throws KeypleIOReaderException if a reader error occurs
      * @throws KeypleChannelControlException if a channel control exception occurs
-     * @throws KeypleApplicationSelectionException if a selection exception occurs
+     * @throws KeypleReaderIllegalArgumentException if a selection exception occurs
      */
     protected SelectionStatus openLogicalChannel(SeSelector seSelector)
             throws KeypleIOReaderException, KeypleChannelControlException,
-            KeypleApplicationSelectionException {
+            KeypleReaderIllegalArgumentException {
         byte[] atr = getATR();
         boolean selectionHasMatched = true;
         SelectionStatus selectionStatus;
@@ -316,16 +316,16 @@ public abstract class AbstractLocalReader extends AbstractReader {
      *         but they can't be both null at the same time.
      * @throws KeypleIOReaderException if a reader error occurs
      * @throws KeypleChannelControlException if a channel control exception occurs
-     * @throws KeypleApplicationSelectionException if a selection exception occurs
+     * @throws KeypleReaderIllegalArgumentException if a selection exception occurs
      */
     protected final SelectionStatus openLogicalChannelAndSelect(SeSelector seSelector)
             throws KeypleChannelControlException, KeypleIOReaderException,
-            KeypleApplicationSelectionException {
+            KeypleReaderIllegalArgumentException {
 
         SelectionStatus selectionStatus;
 
         if (seSelector == null) {
-            throw new KeypleApplicationSelectionException(
+            throw new KeypleReaderIllegalArgumentException(
                     "Try to open logical channel without selector.");
         }
 
@@ -698,7 +698,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
                     selectionStatus = openLogicalChannelAndSelect(seRequest.getSeSelector());
                     logger.trace("[{}] processSeRequest => Logical channel opening success.",
                             this.getName());
-                } catch (KeypleApplicationSelectionException e) {
+                } catch (KeypleReaderIllegalArgumentException e) {
                     logger.debug("[{}] processSeRequest => Logical channel opening failure",
                             this.getName());
                     closeLogicalChannel();

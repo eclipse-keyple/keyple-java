@@ -65,7 +65,7 @@ public class BlankSmartSelectionReader extends AbstractLocalReader implements Sm
     @Override
     public ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector)
             throws KeypleIOReaderException, KeypleChannelControlException,
-            KeypleApplicationSelectionException {
+            KeypleReaderIllegalArgumentException {
         return null;
     }
 

@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.android.omapi.simalliance
 import java.io.IOException
 import kotlin.experimental.or
 import org.eclipse.keyple.core.seproxy.SeSelector
-import org.eclipse.keyple.core.seproxy.exception.KeypleApplicationSelectionException
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIllegalArgumentException
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException
 import org.eclipse.keyple.core.seproxy.message.ApduResponse
@@ -66,9 +66,9 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
      * @return a ApduResponse built from the FCI data resulting from the application selection
      * @throws KeypleIOReaderException
      * @throws KeypleChannelControlException
-     * @throws KeypleApplicationSelectionException
+     * @throws KeypleReaderIllegalArgumentException
      */
-    @Throws(KeypleIOReaderException::class, KeypleChannelControlException::class, KeypleApplicationSelectionException::class)
+    @Throws(KeypleIOReaderException::class, KeypleChannelControlException::class, KeypleReaderIllegalArgumentException::class)
     override fun openChannelForAid(aidSelector: SeSelector.AidSelector): ApduResponse {
         if (aidSelector.aidToSelect == null) {
             try {
@@ -107,7 +107,7 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
                 throw KeypleIOReaderException("IOException while opening logical channel.", e)
             } catch (e: NoSuchElementException) {
                 Timber.e(e, "NoSuchElementException")
-                throw KeypleApplicationSelectionException(
+                throw KeypleReaderIllegalArgumentException(
                         "NoSuchElementException: " + ByteArrayUtil.toHex(aidSelector.aidToSelect.value), e)
             } catch (e: SecurityException) {
                 Timber.e(e, "SecurityException")
