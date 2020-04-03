@@ -262,16 +262,18 @@ public final class PoSelectionRequest extends AbstractSeSelectionRequest {
         Class<? extends AbstractApduResponseParser> parsingClass =
                 parsingClassList.get(commandIndex);
         AbstractApduResponseParser parser;
-        if (parsingClass == ReadRecordsRespPars.class) {
-            parser = new ReadRecordsRespPars(seResponse.getApduResponses().get(commandIndex),
-                    readRecordDataStructureMap.get(commandIndex),
-                    readRecordFirstRecordNumberMap.get(commandIndex));
-        } else if (parsingClass == SelectFileRespPars.class) {
-            parser = new SelectFileRespPars(seResponse.getApduResponses().get(commandIndex));
-        } else {
-            throw new IllegalArgumentException("No parser available for this command.");
-        }
-        return parser;
+        // TODO Update this with the new builder/parser API
+        // if (parsingClass == ReadRecordsRespPars.class) {
+        // parser = new ReadRecordsRespPars(seResponse.getApduResponses().get(commandIndex),
+        // readRecordDataStructureMap.get(commandIndex),
+        // readRecordFirstRecordNumberMap.get(commandIndex));
+        // } else if (parsingClass == SelectFileRespPars.class) {
+        // parser = new SelectFileRespPars(seResponse.getApduResponses().get(commandIndex));
+        // } else {
+        // throw new IllegalArgumentException("No parser available for this command.");
+        // }
+        // return parser;
+        return null;
     }
 
     /**

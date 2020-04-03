@@ -83,7 +83,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
         if (selectionResponse.getSelectionStatus().getFci().isSuccessful()) {
             ApduResponse fci = selectionResponse.getSelectionStatus().getFci();
             /* Parse PO FCI - to retrieve Calypso Revision, Serial Number, &amp; DF Name (AID) */
-            GetDataFciRespPars poFciRespPars = new GetDataFciRespPars(fci);
+            GetDataFciRespPars poFciRespPars = new GetDataFciRespPars(fci, null);
 
             /*
              * Resolve the PO revision from the application type byte:

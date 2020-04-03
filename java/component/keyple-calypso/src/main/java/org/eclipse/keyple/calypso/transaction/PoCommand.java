@@ -11,13 +11,12 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
-import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
-import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
+import org.eclipse.keyple.calypso.command.po.AbstractPoUserCommandBuilder;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
- * The PoCommand class contains the builder of a {@link PoSendableInSession} command
+ * The PoCommand class contains the low level builder used to create the corresponding ApduRequest
  * <p>
  * A setter is used to define the response to the command received from the PO and then create the
  * parser to access the resulting data..
@@ -26,7 +25,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  * by "prepare" methods and containing their results..
  */
 class PoCommand {
-    private AbstractPoCommandBuilder poCommandBuilder;
+    private AbstractPoUserCommandBuilder poCommandBuilder;
     private AbstractPoResponseParser poResponseParser;
 
     /**
@@ -34,7 +33,7 @@ class PoCommand {
      *
      * @param poCommandBuilder the command builder to be stored
      */
-    public PoCommand(AbstractPoCommandBuilder poCommandBuilder) {
+    public PoCommand(AbstractPoUserCommandBuilder poCommandBuilder) {
         this.poCommandBuilder = poCommandBuilder;
         this.poResponseParser = null;
     }
@@ -46,7 +45,7 @@ class PoCommand {
      *
      * @return the builder
      */
-    public AbstractPoCommandBuilder getCommandBuilder() {
+    public AbstractPoUserCommandBuilder getCommandBuilder() {
         return poCommandBuilder;
     }
 
