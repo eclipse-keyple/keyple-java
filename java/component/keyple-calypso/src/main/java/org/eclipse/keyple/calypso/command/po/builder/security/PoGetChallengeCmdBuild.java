@@ -42,6 +42,6 @@ public final class PoGetChallengeCmdBuild extends AbstractPoCommandBuilder<PoGet
 
     @Override
     public PoGetChallengeRespPars createResponseParser(ApduResponse apduResponse) {
-        return new PoGetChallengeRespPars(apduResponse);
+        return new PoGetChallengeRespPars(apduResponse, this);
     }
 }

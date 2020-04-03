@@ -13,12 +13,19 @@ package org.eclipse.keyple.calypso.command.po.parser.security;
 
 import java.util.Arrays;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
+import org.eclipse.keyple.calypso.command.po.builder.security.OpenSession10CmdBuild;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 public final class OpenSession10RespPars extends AbstractOpenSessionRespPars {
 
-    public OpenSession10RespPars(ApduResponse response) {
-        super(response, PoRevision.REV1_0);
+    /**
+     * Instantiates a new OpenSession10RespPars from the response.
+     *
+     * @param response from OpenSession10RespPars
+     * @param builderReference the reference to the builder that created this parser
+     */
+    public OpenSession10RespPars(ApduResponse response, OpenSession10CmdBuild builderReference) {
+        super(response, builderReference, PoRevision.REV1_0);
     }
 
     @Override

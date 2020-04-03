@@ -44,6 +44,6 @@ public class ChangeKeyCmdBuild extends AbstractPoCommandBuilder<ChangeKeyRespPar
 
     @Override
     public ChangeKeyRespPars createResponseParser(ApduResponse apduResponse) {
-        return new ChangeKeyRespPars(apduResponse);
+        return new ChangeKeyRespPars(apduResponse, this);
     }
 }

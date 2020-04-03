@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
+import org.eclipse.keyple.calypso.command.po.builder.security.CloseSessionCmdBuild;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
@@ -54,9 +55,10 @@ public final class CloseSessionRespPars extends AbstractPoResponseParser {
      * Instantiates a new CloseSessionRespPars from the response.
      *
      * @param response from CloseSessionCmdBuild
+     * @param builderReference the reference to the builder that created this parser
      */
-    public CloseSessionRespPars(ApduResponse response) {
-        super(response);
+    public CloseSessionRespPars(ApduResponse response, CloseSessionCmdBuild builderReference) {
+        super(response, builderReference);
         parse(response.getDataOut());
     }
 

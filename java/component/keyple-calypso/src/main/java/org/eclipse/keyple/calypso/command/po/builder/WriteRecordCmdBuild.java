@@ -13,25 +13,25 @@ package org.eclipse.keyple.calypso.command.po.builder;
 
 
 import org.eclipse.keyple.calypso.command.PoClass;
-import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
+import org.eclipse.keyple.calypso.command.po.AbstractPoUserCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
-import org.eclipse.keyple.calypso.command.po.PoModificationCommand;
-import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
 import org.eclipse.keyple.calypso.command.po.parser.WriteRecordRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
-
-// TODO: Auto-generated Javadoc
 
 /**
  * The Class WriteRecordCmdBuild. This class provides the dedicated constructor to build the Write
  * Record APDU command.
  *
  */
-public final class WriteRecordCmdBuild extends AbstractPoCommandBuilder<WriteRecordRespPars>
-        implements PoSendableInSession, PoModificationCommand {
+public final class WriteRecordCmdBuild extends AbstractPoUserCommandBuilder<WriteRecordRespPars> {
 
     /** The command. */
     private static final CalypsoPoCommands command = CalypsoPoCommands.WRITE_RECORD;
+
+    /* Construction arguments */
+    private final int sfi;
+    private final int recordNumber;
+    private final byte[] data;
 
     /**
      * Instantiates a new WriteRecordCmdBuild.
@@ -50,10 +50,16 @@ public final class WriteRecordCmdBuild extends AbstractPoCommandBuilder<WriteRec
         if (recordNumber < 1) {
             throw new IllegalArgumentException("Bad record number (< 1)");
         }
+
+        // TODO complete argument checking
+        byte cla = poClass.getValue();
+        this.sfi = sfi;
+        this.recordNumber = recordNumber;
+        this.data = newRecordData;
+
         byte p2 = (sfi == 0) ? (byte) 0x04 : (byte) ((byte) (sfi * 8) + 4);
 
-        this.request =
-                setApduRequest(poClass.getValue(), command, recordNumber, p2, newRecordData, null);
+        this.request = setApduRequest(cla, command, recordNumber, p2, newRecordData, null);
         if (extraInfo != null) {
             this.addSubName(extraInfo);
         }
@@ -61,6 +67,28 @@ public final class WriteRecordCmdBuild extends AbstractPoCommandBuilder<WriteRec
 
     @Override
     public WriteRecordRespPars createResponseParser(ApduResponse apduResponse) {
-        return new WriteRecordRespPars(apduResponse);
+        return new WriteRecordRespPars(apduResponse, this);
+    }
+
+    /**
+     * This command consumes 6 + data length bytes in the session buffer
+     * 
+     * @return the number of bytes consumed
+     */
+    @Override
+    public int getSessionBufferSizeConsumed() {
+        return 6 + data.length;
+    }
+
+    public int getSfi() {
+        return sfi;
+    }
+
+    public int getRecordNumber() {
+        return recordNumber;
+    }
+
+    public byte[] getData() {
+        return data;
     }
 }

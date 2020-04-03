@@ -52,6 +52,6 @@ public final class OpenSession31CmdBuild
 
     @Override
     public OpenSession31RespPars createResponseParser(ApduResponse apduResponse) {
-        return new OpenSession31RespPars(apduResponse);
+        return new OpenSession31RespPars(apduResponse, this);
     }
 }

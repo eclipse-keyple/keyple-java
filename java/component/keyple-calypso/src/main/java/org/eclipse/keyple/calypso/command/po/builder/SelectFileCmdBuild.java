@@ -13,9 +13,8 @@ package org.eclipse.keyple.calypso.command.po.builder;
 
 import org.eclipse.keyple.calypso.SelectFileControl;
 import org.eclipse.keyple.calypso.command.PoClass;
-import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
+import org.eclipse.keyple.calypso.command.po.AbstractPoUserCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
-import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
 import org.eclipse.keyple.calypso.command.po.parser.SelectFileRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
@@ -23,24 +22,33 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  * This class provides the dedicated constructor to build the Select File APDU commands.
  *
  */
-public final class SelectFileCmdBuild extends AbstractPoCommandBuilder<SelectFileRespPars>
-        implements PoSendableInSession {
+public final class SelectFileCmdBuild extends AbstractPoUserCommandBuilder<SelectFileRespPars> {
 
     private static final CalypsoPoCommands command = CalypsoPoCommands.SELECT_FILE;
+
+    /* Construction arguments */
+    private final byte[] path;
+    private final SelectFileControl selectFileControl;
 
     /**
      * Instantiates a new SelectFileCmdBuild to select the first, next or current file in the
      * current DF.
      *
      * @param poClass indicates which CLA byte should be used for the Apdu
-     * @param selectControl the selection mode control: FIRST, NEXT or CURRENT
+     * @param selectFileControl the selection mode control: FIRST, NEXT or CURRENT
      */
-    public SelectFileCmdBuild(PoClass poClass, SelectFileControl selectControl) {
+    public SelectFileCmdBuild(PoClass poClass, SelectFileControl selectFileControl) {
         super(command, null);
+
+        // TODO complete argument checking
+        this.path = null;
+        this.selectFileControl = selectFileControl;
+
+        byte cla = poClass.getValue();
         byte p1;
         byte p2;
         byte[] selectData = new byte[] {0x00, 0x00};
-        switch (selectControl) {
+        switch (selectFileControl) {
             case FIRST_EF:
                 p1 = (byte) 0x02;
                 p2 = (byte) 0x00;
@@ -55,10 +63,10 @@ public final class SelectFileCmdBuild extends AbstractPoCommandBuilder<SelectFil
                 break;
             default:
                 throw new IllegalStateException(
-                        "Unsupported selectControl parameter " + selectControl.toString());
+                        "Unsupported selectFileControl parameter " + selectFileControl.toString());
         }
 
-        request = setApduRequest(poClass.getValue(), command, p1, p2, selectData, (byte) 0x00);
+        request = setApduRequest(cla, command, p1, p2, selectData, (byte) 0x00);
     }
 
     /**
@@ -70,12 +78,45 @@ public final class SelectFileCmdBuild extends AbstractPoCommandBuilder<SelectFil
      */
     public SelectFileCmdBuild(PoClass poClass, byte[] selectionPath) {
         super(command, null);
+
+        // TODO complete argument checking
+        this.path = selectionPath;
+        this.selectFileControl = null;
+
         request = setApduRequest(poClass.getValue(), command, (byte) 0x09, (byte) 0x00,
                 selectionPath, (byte) 0x00);
     }
 
     @Override
     public SelectFileRespPars createResponseParser(ApduResponse apduResponse) {
-        return new SelectFileRespPars(apduResponse);
+        return new SelectFileRespPars(apduResponse, this);
+    }
+
+    /**
+     * This command sendable in session does not affect the session buffer
+     * 
+     * @return 0
+     */
+    @Override
+    public int getSessionBufferSizeConsumed() {
+        return 0;
+    }
+
+    /**
+     * The selection path can be null if the chosen constructor targets the current EF
+     * 
+     * @return the selection path or null
+     */
+    public byte[] getPath() {
+        return path;
+    }
+
+    /**
+     * The file selection control can be null if the chosen constructor targets an explicit path
+     * 
+     * @return the select file control or null
+     */
+    public SelectFileControl getSelectFileControl() {
+        return selectFileControl;
     }
 }

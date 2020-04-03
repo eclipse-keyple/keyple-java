@@ -14,6 +14,7 @@ package org.eclipse.keyple.calypso.command.po.parser;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
+import org.eclipse.keyple.calypso.command.po.builder.GetDataTraceCmdBuild;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -45,9 +46,10 @@ public final class GetDataTraceRespPars extends AbstractPoResponseParser {
      * command.
      *
      * @param response the Traceability Data response from Get Data APDU command
+     * @param builderReference the reference to the builder that created this parser
      */
-    public GetDataTraceRespPars(ApduResponse response) {
-        super(response);
+    public GetDataTraceRespPars(ApduResponse response, GetDataTraceCmdBuild builderReference) {
+        super(response, builderReference);
     }
 
     @Override

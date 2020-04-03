@@ -23,11 +23,14 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  * Record APDU command.
  *
  */
-public final class AppendRecordCmdBuild extends AbstractPoCommandBuilder<AppendRecordRespPars>
-        implements PoSendableInSession, PoModificationCommand {
+public final class AppendRecordCmdBuild extends AbstractPoUserCommandBuilder<AppendRecordRespPars> {
 
     /** The command. */
     private static final CalypsoPoCommands command = CalypsoPoCommands.APPEND_RECORD;
+
+    /* Construction arguments */
+    private final int sfi;
+    private final byte[] data;
 
     /**
      * Instantiates a new UpdateRecordCmdBuild.
@@ -41,6 +44,12 @@ public final class AppendRecordCmdBuild extends AbstractPoCommandBuilder<AppendR
     public AppendRecordCmdBuild(PoClass poClass, byte sfi, byte[] newRecordData, String extraInfo) {
         super(command, null);
         byte cla = poClass.getValue();
+
+        // TODO add argument checking
+
+        this.sfi = sfi;
+        this.data = newRecordData;
+
         byte p1 = (byte) 0x00;
         byte p2 = (sfi == 0) ? (byte) 0x00 : (byte) (sfi * 8);
 
@@ -52,6 +61,24 @@ public final class AppendRecordCmdBuild extends AbstractPoCommandBuilder<AppendR
 
     @Override
     public AppendRecordRespPars createResponseParser(ApduResponse apduResponse) {
-        return new AppendRecordRespPars(apduResponse);
+        return new AppendRecordRespPars(apduResponse, this);
+    }
+
+    /**
+     * This command consumes 6 + data length bytes in the session buffer
+     * 
+     * @return the number of bytes consumed
+     */
+    @Override
+    public int getSessionBufferSizeConsumed() {
+        return 6 + data.length;
+    }
+
+    public int getSfi() {
+        return sfi;
+    }
+
+    public byte[] getData() {
+        return data;
     }
 }

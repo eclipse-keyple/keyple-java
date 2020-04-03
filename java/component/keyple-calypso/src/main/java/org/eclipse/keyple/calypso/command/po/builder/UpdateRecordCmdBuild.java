@@ -17,17 +17,20 @@ import org.eclipse.keyple.calypso.command.po.*;
 import org.eclipse.keyple.calypso.command.po.parser.UpdateRecordRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class UpdateRecordCmdBuild. This class provides the dedicated constructor to build the Update
  * Record APDU command.
  *
  */
-public final class UpdateRecordCmdBuild extends AbstractPoCommandBuilder<UpdateRecordRespPars>
-        implements PoSendableInSession, PoModificationCommand {
+public final class UpdateRecordCmdBuild extends AbstractPoUserCommandBuilder<UpdateRecordRespPars> {
 
     /** The command. */
     private static final CalypsoPoCommands command = CalypsoPoCommands.UPDATE_RECORD;
+
+    /* Construction arguments */
+    private final int sfi;
+    private final int recordNumber;
+    private final byte[] data;
 
     /**
      * Instantiates a new UpdateRecordCmdBuild.
@@ -46,10 +49,16 @@ public final class UpdateRecordCmdBuild extends AbstractPoCommandBuilder<UpdateR
         if (recordNumber < 1) {
             throw new IllegalArgumentException("Bad record number (< 1)");
         }
+
+        // TODO complete argument checking
+        byte cla = poClass.getValue();
+        this.sfi = sfi;
+        this.recordNumber = recordNumber;
+        this.data = newRecordData;
+
         byte p2 = (sfi == 0) ? (byte) 0x04 : (byte) ((byte) (sfi * 8) + 4);
 
-        this.request =
-                setApduRequest(poClass.getValue(), command, recordNumber, p2, newRecordData, null);
+        this.request = setApduRequest(cla, command, recordNumber, p2, newRecordData, null);
         if (extraInfo != null) {
             this.addSubName(extraInfo);
         }
@@ -57,6 +66,28 @@ public final class UpdateRecordCmdBuild extends AbstractPoCommandBuilder<UpdateR
 
     @Override
     public UpdateRecordRespPars createResponseParser(ApduResponse apduResponse) {
-        return new UpdateRecordRespPars(apduResponse);
+        return new UpdateRecordRespPars(apduResponse, this);
+    }
+
+    /**
+     * This command consumes 6 + data length bytes in the session buffer
+     * 
+     * @return the number of bytes consumed
+     */
+    @Override
+    public int getSessionBufferSizeConsumed() {
+        return 6 + data.length;
+    }
+
+    public int getSfi() {
+        return sfi;
+    }
+
+    public int getRecordNumber() {
+        return recordNumber;
+    }
+
+    public byte[] getData() {
+        return data;
     }
 }

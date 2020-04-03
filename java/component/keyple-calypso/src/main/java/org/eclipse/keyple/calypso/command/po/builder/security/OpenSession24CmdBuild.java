@@ -57,6 +57,6 @@ public final class OpenSession24CmdBuild
 
     @Override
     public OpenSession24RespPars createResponseParser(ApduResponse apduResponse) {
-        return new OpenSession24RespPars(apduResponse);
+        return new OpenSession24RespPars(apduResponse, this);
     }
 }

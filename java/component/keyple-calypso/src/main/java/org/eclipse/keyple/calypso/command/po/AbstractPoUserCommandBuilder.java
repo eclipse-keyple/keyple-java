@@ -17,7 +17,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduRequest;
  * Abstract class for all builders of "user" Calypso commands, i.e. all commands intended to access
  * PO files or data, especially during secure sessions.
  */
-public abstract class AbstractPoUserCommandBuilder<T extends AbstractPoResponseParser>
+public abstract class AbstractPoUserCommandBuilder<AbstractPoResponseParser>
         extends AbstractPoCommandBuilder {
     /**
      * Constructor

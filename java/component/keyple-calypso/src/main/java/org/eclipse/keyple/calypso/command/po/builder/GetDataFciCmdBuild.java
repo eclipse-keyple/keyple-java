@@ -12,7 +12,7 @@
 package org.eclipse.keyple.calypso.command.po.builder;
 
 import org.eclipse.keyple.calypso.command.PoClass;
-import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
+import org.eclipse.keyple.calypso.command.po.AbstractPoUserCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
@@ -24,7 +24,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  * and thus make calculation of the digest impossible.
  *
  */
-public final class GetDataFciCmdBuild extends AbstractPoCommandBuilder<GetDataFciRespPars> {
+public final class GetDataFciCmdBuild extends AbstractPoUserCommandBuilder<GetDataFciRespPars> {
 
     private static final CalypsoPoCommands command = CalypsoPoCommands.GET_DATA_FCI;
 
@@ -42,6 +42,11 @@ public final class GetDataFciCmdBuild extends AbstractPoCommandBuilder<GetDataFc
 
     @Override
     public GetDataFciRespPars createResponseParser(ApduResponse apduResponse) {
-        return new GetDataFciRespPars(apduResponse);
+        return new GetDataFciRespPars(apduResponse, this);
+    }
+
+    @Override
+    public int getSessionBufferSizeConsumed() {
+        return 0;
     }
 }

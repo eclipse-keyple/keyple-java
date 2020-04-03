@@ -75,6 +75,6 @@ public final class CloseSessionCmdBuild extends AbstractPoCommandBuilder<CloseSe
 
     @Override
     public CloseSessionRespPars createResponseParser(ApduResponse apduResponse) {
-        return new CloseSessionRespPars(apduResponse);
+        return new CloseSessionRespPars(apduResponse, this);
     }
 }
