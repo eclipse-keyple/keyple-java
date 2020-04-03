@@ -21,15 +21,25 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  */
 public abstract class AbstractPoCommandBuilder<T extends AbstractPoResponseParser>
         extends AbstractIso7816CommandBuilder {
+    /**
+     * The reference field is used to find the type of command concerned when manipulating a list of
+     * abstract builder objects. Unfortunately, the diversity of these objects does not allow the
+     * use of simple generic methods.
+     * <p>
+     * 
+     * @See getCommandReference method
+     */
+    private final CalypsoPoCommands reference;
 
     /**
      * Constructor dedicated for the building of referenced Calypso commands
-     * 
+     *
      * @param reference a command reference from the Calypso command table
      * @param request the ApduRequest (the instruction byte will be overwritten)
      */
     public AbstractPoCommandBuilder(CalypsoPoCommands reference, ApduRequest request) {
         super(reference, request);
+        this.reference = reference;
     }
 
     /**
@@ -39,4 +49,13 @@ public abstract class AbstractPoCommandBuilder<T extends AbstractPoResponseParse
      * @return an {@link AbstractApduResponseParser}
      */
     public abstract T createResponseParser(ApduResponse apduResponse);
+
+    /**
+     * All PO commands are identified by a value from the {@link CalypsoPoCommands} enumeration
+     *
+     * @return the current command identification
+     */
+    public CalypsoPoCommands getCommandReference() {
+        return reference;
+    };
 }
