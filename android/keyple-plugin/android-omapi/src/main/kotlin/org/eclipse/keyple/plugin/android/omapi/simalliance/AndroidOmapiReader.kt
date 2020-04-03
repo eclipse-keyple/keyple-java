@@ -14,8 +14,6 @@ package org.eclipse.keyple.plugin.android.omapi.simalliance
 import java.io.IOException
 import kotlin.experimental.or
 import org.eclipse.keyple.core.seproxy.SeSelector
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIllegalArgumentException
-import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.seproxy.message.ApduResponse
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractLocalReader
@@ -65,10 +63,8 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
      * @param aidSelector the selection parameters
      * @return a ApduResponse built from the FCI data resulting from the application selection
      * @throws KeypleReaderIOException
-     * @throws KeypleChannelControlException
-     * @throws KeypleReaderIllegalArgumentException
      */
-    @Throws(KeypleReaderIOException::class, KeypleChannelControlException::class, KeypleReaderIllegalArgumentException::class)
+    @Throws(KeypleReaderIOException::class)
     override fun openChannelForAid(aidSelector: SeSelector.AidSelector): ApduResponse {
         if (aidSelector.aidToSelect == null) {
             try {
@@ -78,7 +74,7 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
                 throw KeypleReaderIOException("IOException while opening basic channel.")
             } catch (e: SecurityException) {
                 Timber.e(e)
-                throw KeypleChannelControlException("Error while opening basic channel, SE_SELECTOR = $aidSelector", e.cause)
+                throw KeypleReaderIOException("Error while opening basic channel, SE_SELECTOR = $aidSelector", e.cause)
             }
 
             if (openChannel == null) {
@@ -107,11 +103,11 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
                 throw KeypleReaderIOException("IOException while opening logical channel.", e)
             } catch (e: NoSuchElementException) {
                 Timber.e(e, "NoSuchElementException")
-                throw KeypleReaderIllegalArgumentException(
+                throw java.lang.IllegalArgumentException(
                         "NoSuchElementException: " + ByteArrayUtil.toHex(aidSelector.aidToSelect.value), e)
             } catch (e: SecurityException) {
                 Timber.e(e, "SecurityException")
-                throw KeypleChannelControlException("SecurityException while opening logical channel, aid :" + ByteArrayUtil.toHex(aidSelector.aidToSelect.value), e.cause)
+                throw KeypleReaderIOException("SecurityException while opening logical channel, aid :" + ByteArrayUtil.toHex(aidSelector.aidToSelect.value), e.cause)
             }
 
             if (openChannel == null) {
@@ -126,13 +122,13 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
         return session?.isClosed == false
     }
 
-    @Throws(KeypleChannelControlException::class)
+    @Throws(KeypleReaderIOException::class)
     public override fun openPhysicalChannel() {
         try {
             session = nativeReader.openSession()
         } catch (e: IOException) {
             Timber.e(e, "IOException")
-            throw KeypleChannelControlException("IOException while opening physical channel.", e)
+            throw KeypleReaderIOException("IOException while opening physical channel.", e)
         }
     }
 

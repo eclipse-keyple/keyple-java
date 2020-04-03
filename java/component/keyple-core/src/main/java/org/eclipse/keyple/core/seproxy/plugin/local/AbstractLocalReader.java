@@ -111,7 +111,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
         closeLogicalChannel();
         try {
             closePhysicalChannel();
-        } catch (KeypleChannelControlException e) {
+        } catch (KeypleReaderIOException e) {
             logger.debug("[{}] Exception occurred in closeLogicalAndPhysicalChannels. Message: {}",
                     this.getName(), e.getMessage());
         }
@@ -226,12 +226,9 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * @return the SelectionStatus containing the actual selection result (ATR and/or FCI and the
      *         matching status flag).
      * @throws KeypleReaderIOException if a reader error occurs
-     * @throws KeypleChannelControlException if a channel control exception occurs
-     * @throws KeypleReaderIllegalArgumentException if a selection exception occurs
      */
     protected SelectionStatus openLogicalChannel(SeSelector seSelector)
-            throws KeypleReaderIOException, KeypleChannelControlException,
-            KeypleReaderIllegalArgumentException {
+            throws KeypleReaderIOException {
         byte[] atr = getATR();
         boolean selectionHasMatched = true;
         SelectionStatus selectionStatus;
@@ -315,18 +312,14 @@ public abstract class AbstractLocalReader extends AbstractReader {
      *         the selection process result. When ATR or FCI are not available, they are set to null
      *         but they can't be both null at the same time.
      * @throws KeypleReaderIOException if a reader error occurs
-     * @throws KeypleChannelControlException if a channel control exception occurs
-     * @throws KeypleReaderIllegalArgumentException if a selection exception occurs
      */
     protected final SelectionStatus openLogicalChannelAndSelect(SeSelector seSelector)
-            throws KeypleChannelControlException, KeypleReaderIOException,
-            KeypleReaderIllegalArgumentException {
+            throws KeypleReaderIOException {
 
         SelectionStatus selectionStatus;
 
         if (seSelector == null) {
-            throw new KeypleReaderIllegalArgumentException(
-                    "Try to open logical channel without selector.");
+            throw new IllegalArgumentException("Try to open logical channel without selector.");
         }
 
         if (!logicalChannelIsOpen) {
@@ -338,7 +331,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
                 openPhysicalChannel();
             }
             if (!isPhysicalChannelOpen()) {
-                throw new KeypleChannelControlException("Fail to open physical channel.");
+                throw new KeypleReaderIOException("Fail to open physical channel.");
             }
         }
 
@@ -350,18 +343,18 @@ public abstract class AbstractLocalReader extends AbstractReader {
     /**
      * Attempts to open the physical channel
      *
-     * @throws KeypleChannelControlException if the channel opening fails
+     * @throws KeypleReaderIOException if the channel opening fails
      */
-    protected abstract void openPhysicalChannel() throws KeypleChannelControlException;
+    protected abstract void openPhysicalChannel() throws KeypleReaderIOException;
 
     /**
      * Closes the current physical channel.
      * <p>
      * This method must be implemented by the ProxyReader plugin (e.g. Pcsc/Nfc/Omapi Reader).
      *
-     * @throws KeypleChannelControlException if a reader error occurs
+     * @throws KeypleReaderIOException if a reader error occurs
      */
-    protected abstract void closePhysicalChannel() throws KeypleChannelControlException;
+    protected abstract void closePhysicalChannel() throws KeypleReaderIOException;
 
     /**
      * Tells if the physical channel is open or not
@@ -698,7 +691,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
                     selectionStatus = openLogicalChannelAndSelect(seRequest.getSeSelector());
                     logger.trace("[{}] processSeRequest => Logical channel opening success.",
                             this.getName());
-                } catch (KeypleReaderIllegalArgumentException e) {
+                } catch (IllegalArgumentException e) {
                     logger.debug("[{}] processSeRequest => Logical channel opening failure",
                             this.getName());
                     closeLogicalChannel();

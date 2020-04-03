@@ -35,12 +35,12 @@ public class BlankAbstractLocalReader extends AbstractLocalReader {
     }
 
     @Override
-    public void openPhysicalChannel() throws KeypleChannelControlException {
+    public void openPhysicalChannel() throws KeypleReaderIOException {
 
     }
 
     @Override
-    public void closePhysicalChannel() throws KeypleChannelControlException {
+    public void closePhysicalChannel() {
 
     }
 

@@ -43,8 +43,8 @@ public class SamResourceManagerDefault extends SamResourceManager {
     /**
      * Protected constructor, use the {@link SamResourceManagerFactory}
      * 
-     * @param readerPlugin
-     * @param samReaderFilter
+     * @param readerPlugin the reader plugin
+     * @param samReaderFilter the reader filter
      */
     protected SamResourceManagerDefault(ReaderPlugin readerPlugin, String samReaderFilter) {
 

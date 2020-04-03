@@ -11,29 +11,27 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.exception;
 
-import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-
 /**
- * Exception thrown when Channel Operations (open/close) failed in a {@link ProxyReader}
+ * The exception <code>KeypleReaderProtocolFlagNotFoundException</code> indicates that the reader
+ * protocol flag is not found in the reader or SE have failed, generally when the reader was
+ * disconnected or card removed.
  */
-public class KeypleChannelControlException extends KeypleReaderException {
+public class KeypleReaderProtocolFlagNotFoundException extends KeypleReaderException {
 
     /**
-     * New exception to be thrown
-     *
-     * @param message : message to identify the exception and the context
+     * @param message the message to identify the exception context
      */
-    public KeypleChannelControlException(String message) {
+    public KeypleReaderProtocolFlagNotFoundException(String message) {
         super(message);
     }
 
     /**
-     * Encapsulate a lower level reader exception
+     * Encapsulates a lower level reader exception
      *
-     * @param message : message to add some context to the exception
-     * @param cause : lower level exception
+     * @param message message to identify the exception context
+     * @param cause the cause
      */
-    public KeypleChannelControlException(String message, Throwable cause) {
+    public KeypleReaderProtocolFlagNotFoundException(String message, Throwable cause) {
         super(message, cause);
     }
 }

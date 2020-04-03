@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information regarding copyright
  * ownership.
@@ -12,15 +12,24 @@
 package org.eclipse.keyple.core.seproxy.exception;
 
 /**
- * The exception <code>KeypleReaderIllegalArgumentException</code> indicates that a reader's method
- * is called by some illegal arguments.
+ * The exception <code>KeypleSeException</code> is the parent class of all Keyple SE exceptions.
  */
-public class KeypleReaderIllegalArgumentException extends KeypleReaderException {
+public abstract class KeypleSeException extends KeypleException {
 
     /**
      * @param message the message to identify the exception context
      */
-    public KeypleReaderIllegalArgumentException(String message) {
+    public KeypleSeException(String message) {
         super(message);
+    }
+
+    /**
+     * Encapsulates a lower level SE exception
+     *
+     * @param message message to identify the exception context
+     * @param cause the cause
+     */
+    public KeypleSeException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

@@ -21,7 +21,6 @@ import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
@@ -171,14 +170,6 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
 
         try {
             responseSet = processSeRequestSet(requestSet, multiSeRequestProcessing, channelControl);
-        } catch (KeypleChannelControlException ex) {
-            long timeStamp = System.nanoTime();
-            double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
-            this.before = timeStamp;
-            logger.debug("[{}] transmit => SEREQUESTSET channel failure. elapsed {}",
-                    this.getName(), elapsedMs);
-            /* Throw an exception with the responses collected so far. */
-            throw ex;
         } catch (KeypleReaderIOException ex) {
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
@@ -264,14 +255,6 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
 
         try {
             seResponse = processSeRequest(seRequest, channelControl);
-        } catch (KeypleChannelControlException ex) {
-            long timeStamp = System.nanoTime();
-            double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
-            this.before = timeStamp;
-            logger.debug("[{}] transmit => SEREQUEST channel failure. elapsed {}", this.getName(),
-                    elapsedMs);
-            /* Throw an exception with the responses collected so far (ex.getSeResponse()). */
-            throw ex;
         } catch (KeypleReaderIOException ex) {
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;

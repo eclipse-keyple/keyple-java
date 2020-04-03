@@ -15,7 +15,6 @@ import java.util.List;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
@@ -361,7 +360,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
             // expected SEs
             try {
                 closePhysicalChannel();
-            } catch (KeypleChannelControlException e) {
+            } catch (KeypleReaderIOException e) {
                 logger.error("Error while closing physical channel. {}", e.getMessage());
             }
         }

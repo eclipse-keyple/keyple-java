@@ -32,7 +32,7 @@ public class SamResourceManagerPool extends SamResourceManager {
     /**
      * Protected constructor, use the {@link SamResourceManagerFactory}
      * 
-     * @param samReaderPoolPlugin
+     * @param samReaderPoolPlugin the reader pool plugin
      */
     protected SamResourceManagerPool(ReaderPoolPlugin samReaderPoolPlugin) {
         this.samReaderPlugin = samReaderPoolPlugin;

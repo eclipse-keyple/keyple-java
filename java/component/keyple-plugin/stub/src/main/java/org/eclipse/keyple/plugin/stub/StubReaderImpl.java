@@ -17,7 +17,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
-import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.plugin.local.*;
@@ -94,14 +93,14 @@ class StubReaderImpl extends AbstractObservableLocalReader
     }
 
     @Override
-    protected void openPhysicalChannel() throws KeypleChannelControlException {
+    protected void openPhysicalChannel() throws KeypleReaderIOException {
         if (se != null) {
             se.openPhysicalChannel();
         }
     }
 
     @Override
-    public void closePhysicalChannel() throws KeypleChannelControlException {
+    public void closePhysicalChannel() throws KeypleReaderIOException {
         if (se != null) {
             se.closePhysicalChannel();
         }

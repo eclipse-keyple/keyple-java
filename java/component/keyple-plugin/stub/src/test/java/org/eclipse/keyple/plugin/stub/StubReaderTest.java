@@ -31,7 +31,6 @@ import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.*;
-import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
@@ -1365,13 +1364,13 @@ public class StubReaderTest extends BaseStubTest {
 
             // override methods to fail open connection
             @Override
-            public void openPhysicalChannel() throws KeypleChannelControlException {
-                throw new KeypleChannelControlException("Impossible to estasblish connection");
+            public void openPhysicalChannel() throws KeypleReaderIOException {
+                throw new KeypleReaderIOException("Impossible to estasblish connection");
             }
 
             @Override
-            public void closePhysicalChannel() throws KeypleChannelControlException {
-                throw new KeypleChannelControlException("Channel is not open");
+            public void closePhysicalChannel() throws KeypleReaderIOException {
+                throw new KeypleReaderIOException("Channel is not open");
             }
 
             @Override

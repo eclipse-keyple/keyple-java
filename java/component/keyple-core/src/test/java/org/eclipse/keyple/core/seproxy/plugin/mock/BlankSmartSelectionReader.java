@@ -38,12 +38,12 @@ public class BlankSmartSelectionReader extends AbstractLocalReader implements Sm
     }
 
     @Override
-    public void openPhysicalChannel() throws KeypleChannelControlException {
+    public void openPhysicalChannel() {
 
     }
 
     @Override
-    public void closePhysicalChannel() throws KeypleChannelControlException {
+    public void closePhysicalChannel() {
 
     }
 
@@ -63,9 +63,7 @@ public class BlankSmartSelectionReader extends AbstractLocalReader implements Sm
     }
 
     @Override
-    public ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector)
-            throws KeypleReaderIOException, KeypleChannelControlException,
-            KeypleReaderIllegalArgumentException {
+    public ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector) {
         return null;
     }
 

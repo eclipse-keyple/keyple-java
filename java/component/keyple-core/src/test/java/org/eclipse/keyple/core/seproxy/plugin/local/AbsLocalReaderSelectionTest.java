@@ -218,7 +218,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
      * open logical channel
      */
 
-    @Test(expected = KeypleReaderIllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void open_channel_null() throws Exception {
         AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
         r.openLogicalChannelAndSelect(null);
@@ -237,7 +237,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
         verify(r, times(1)).openLogicalChannel(seSelector);
     }
 
-    @Test(expected = KeypleChannelControlException.class)
+    @Test(expected = KeypleReaderIOException.class)
     public void open_channel_fail() throws Exception {
         AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
         when(r.getATR()).thenReturn(ByteArrayUtil.fromHex(ATR));

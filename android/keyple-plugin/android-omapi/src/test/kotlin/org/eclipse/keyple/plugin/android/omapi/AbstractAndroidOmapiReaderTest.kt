@@ -17,7 +17,6 @@ import java.io.IOException
 import org.eclipse.keyple.core.seproxy.ChannelControl
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
 import org.eclipse.keyple.core.seproxy.SeSelector
-import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.message.ApduRequest
@@ -121,7 +120,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader.transmitSet(getSampleSeRequest())
     }
 
-    @Test(expected = KeypleChannelControlException::class)
+    @Test(expected = KeypleReaderIOException::class)
     fun transmitSecurityException() {
         nativeReader = mockReaderWithExceptionOnOpenLogicalChannel(SecurityException())
         reader = buildOmapiReaderImpl(nativeReader)
@@ -162,7 +161,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader.transmitSet(getNoAidSampleSeRequest())
     }
 
-    @Test(expected = KeypleChannelControlException::class)
+    @Test(expected = KeypleReaderIOException::class)
     fun transmitNoAidSecurityException() {
         nativeReader = mockReaderWithExceptionOnOpenBasicChannel(SecurityException())
         reader = buildOmapiReaderImpl(nativeReader)

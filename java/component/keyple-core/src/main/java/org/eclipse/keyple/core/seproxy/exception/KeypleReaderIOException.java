@@ -13,7 +13,7 @@ package org.eclipse.keyple.core.seproxy.exception;
 
 /**
  * The exception <code>KeypleReaderIOException</code> indicates that some IO operations with the
- * reader have failed, generally when the reader was suddenly disconnected.
+ * reader or SE have failed, generally when the reader was disconnected or card removed.
  */
 public class KeypleReaderIOException extends KeypleReaderException {
 

@@ -22,7 +22,6 @@ import java.io.IOException
 import java.util.HashMap
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableLocalReader
@@ -234,7 +233,7 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
         return tagProxy?.isConnected == true
     }
 
-    @Throws(KeypleChannelControlException::class)
+    @Throws(KeypleReaderIOException::class)
     public override fun openPhysicalChannel() {
         if (tagProxy?.isConnected != true) {
             try {
@@ -243,21 +242,21 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
                 Timber.i("Tag connected successfully : ${printTagId()}")
             } catch (e: IOException) {
                 Timber.e(e, "Error while connecting to Tag ")
-                throw KeypleChannelControlException("Error while opening physical channel", e)
+                throw KeypleReaderIOException("Error while opening physical channel", e)
             }
         } else {
             Timber.i("Tag is already connected to : ${printTagId()}")
         }
     }
 
-    @Throws(KeypleChannelControlException::class)
+    @Throws(KeypleReaderIOException::class)
     public override fun closePhysicalChannel() {
         try {
             tagProxy?.close()
             Timber.i("Disconnected tag : ${printTagId()}")
         } catch (e: IOException) {
             Timber.e(e, "Disconnecting error")
-            throw KeypleChannelControlException("Error while closing physical channel", e)
+            throw KeypleReaderIOException("Error while closing physical channel", e)
         } finally {
             tagProxy = null
         }
