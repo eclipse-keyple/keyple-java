@@ -15,6 +15,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -71,7 +72,7 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
     }
 
     @Override
-    public void setParameter(String key, String value) {
+    public void setParameter(String key, String value) throws KeypleReaderIOException {
         parameters.put(key, value);
     }
 
@@ -183,7 +184,7 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
      * @return connected readers' name list
      */
     @Override
-    public SortedSet<String> fetchNativeReadersNames() {
+    public SortedSet<String> fetchNativeReadersNames() throws KeypleReaderIOException {
         if (connectedStubNames.isEmpty()) {
             logger.trace("No reader available.");
         }
@@ -197,7 +198,7 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
      * @throws KeypleReaderException if a reader error occurs
      */
     @Override
-    protected SortedSet<SeReader> initNativeReaders() {
+    protected SortedSet<SeReader> initNativeReaders() throws KeypleReaderIOException {
         /* init Stub Readers response object */
         SortedSet<SeReader> newNativeReaders = new ConcurrentSkipListSet<SeReader>();
         return newNativeReaders;
@@ -213,7 +214,8 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
      * @return the reader object
      */
     @Override
-    protected SeReader fetchNativeReader(String readerName) {
+    protected SeReader fetchNativeReader(String readerName)
+            throws KeypleReaderNotFoundException, KeypleReaderIOException {
         for (SeReader reader : readers) {
             if (reader.getName().equals(readerName)) {
                 return reader;

@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.nativese.method;
 
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.rm.AbstractRemoteMethodTx;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
@@ -45,8 +45,8 @@ public class RmDisconnectReaderTx extends AbstractRemoteMethodTx<Boolean> {
         // if reader connection thrown an exception
         if (KeypleDtoHelper.containsException(keypleDto)) {
             // logger.trace("KeypleDto contains an exception: {}", keypleDto);
-            KeypleReaderException ex =
-                    JsonParser.getGson().fromJson(keypleDto.getBody(), KeypleReaderException.class);
+            KeypleReaderIOException ex = JsonParser.getGson().fromJson(keypleDto.getBody(),
+                    KeypleReaderIOException.class);
             throw new KeypleRemoteException(
                     "An exception occurs while calling the remote method disconnectReader", ex);
         } else {

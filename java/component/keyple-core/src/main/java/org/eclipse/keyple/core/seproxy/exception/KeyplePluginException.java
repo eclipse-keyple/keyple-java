@@ -12,10 +12,10 @@
 package org.eclipse.keyple.core.seproxy.exception;
 
 /**
- * The exception <code>KeyplePluginException</code> is the parent class of all Keyple plugins
- * exceptions.
+ * The exception <code>KeyplePluginException</code> is the parent abstract class of all Keyple
+ * plugins exceptions.
  */
-public class KeyplePluginException extends KeypleException {
+public abstract class KeyplePluginException extends KeypleException {
 
     /**
      * @param message the message to identify the exception context

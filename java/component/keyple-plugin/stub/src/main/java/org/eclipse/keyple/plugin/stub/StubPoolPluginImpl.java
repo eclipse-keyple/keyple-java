@@ -17,6 +17,7 @@ import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 
 /**
@@ -181,8 +182,7 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
     }
 
     @Override
-    public void setParameter(String key, String value)
-            throws IllegalArgumentException, KeypleException {
+    public void setParameter(String key, String value) throws KeypleReaderIOException {
         stubPlugin.setParameter(key, value);
     }
 

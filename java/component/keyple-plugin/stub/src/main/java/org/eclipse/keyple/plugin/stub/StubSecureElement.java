@@ -76,7 +76,7 @@ public abstract class StubSecureElement {
      *
      * @param apduIn : commands to be processed
      * @return APDU response
-     * @throws KeypleReaderIOException if the transmission fails
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     public byte[] processApdu(byte[] apduIn) throws KeypleReaderIOException {
 

@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information regarding copyright
  * ownership.
@@ -12,24 +12,26 @@
 package org.eclipse.keyple.core.seproxy.exception;
 
 /**
- * The exception <code>KeypleSeException</code> is the parent class of all Keyple SE exceptions.
+ * The exception <code>KeypleReaderProtocolFlagNotFoundException</code> indicates that the reader
+ * protocol flag is not found in the reader or SE have failed, generally when the reader was
+ * disconnected or card removed.
  */
-public abstract class KeypleSeException extends KeypleException {
+public class KeypleReaderProtocolException extends KeypleReaderException {
 
     /**
      * @param message the message to identify the exception context
      */
-    public KeypleSeException(String message) {
+    public KeypleReaderProtocolException(String message) {
         super(message);
     }
 
     /**
-     * Encapsulates a lower level SE exception
+     * Encapsulates a lower level reader exception
      *
      * @param message message to identify the exception context
      * @param cause the cause
      */
-    public KeypleSeException(String message, Throwable cause) {
+    public KeypleReaderProtocolException(String message, Throwable cause) {
         super(message, cause);
     }
 }

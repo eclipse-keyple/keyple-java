@@ -30,6 +30,7 @@ import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForStartDetect;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.core.util.Configurable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +72,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     /**
      * This constructor should only be called by PcscPlugin PCSC reader parameters are initialized
      * with their default values as defined in setParameter. See
-     * {@link #setParameter(String, String)} for more details
+     * {@link Configurable#setParameter(String, String)} for more details
      *
      * @param pluginName the name of the plugin
      * @param terminal the PC/SC terminal
@@ -275,7 +276,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
      *
      * @param apduIn APDU in buffer
      * @return apduOut buffer
-     * @throws KeypleReaderIOException if the transmission failed
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
     protected byte[] transmitApdu(byte[] apduIn) throws KeypleReaderIOException {
@@ -304,10 +305,12 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
      *
      * @param protocolFlag the protocol flag
      * @return true if the current SE matches the protocol flag
-     * @throws KeypleReaderException if the protocol mask is not found
+     * @throws KeypleReaderProtocolException if the protocol mask is not found
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
-    protected boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderException {
+    protected boolean protocolFlagMatches(SeProtocol protocolFlag)
+            throws KeypleReaderProtocolException, KeypleReaderIOException {
         boolean result;
         // Test protocolFlag to check if ATR based protocol filtering is required
         if (protocolFlag != null) {
@@ -317,7 +320,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
             // the requestSet will be executed only if the protocol match the requestElement
             String selectionMask = protocolsMap.get(protocolFlag);
             if (selectionMask == null) {
-                throw new KeypleReaderException("Target selector mask not found!", null);
+                throw new KeypleReaderProtocolException("Target selector mask not found!", null);
             }
             Pattern p = Pattern.compile(selectionMask);
             String atr = ByteArrayUtil.toHex(card.getATR().getBytes());
@@ -371,15 +374,11 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
      *
      * @param name Parameter name
      * @param value Parameter value
-     * @throws KeypleException This method can fail when disabling the exclusive mode as it's
-     *         executed instantly
-     * @throws IllegalArgumentException when parameter is wrong
-     *
-     *
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed,
+     *         when disabling the exclusive mode as it's executed instantly
      */
     @Override
-    public void setParameter(String name, String value)
-            throws IllegalArgumentException, KeypleException {
+    public void setParameter(String name, String value) throws KeypleReaderIOException {
 
         logger.debug("[{}] setParameter => PCSC: Set a parameter. NAME = {}, VALUE = {}",
                 this.getName(), name, value);
@@ -415,7 +414,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                     try {
                         card.endExclusive();
                     } catch (CardException e) {
-                        throw new KeypleReaderException("Couldn't disable exclusive mode", e);
+                        throw new KeypleReaderIOException("Couldn't disable exclusive mode", e);
                     }
                 }
                 cardExclusiveMode = false;
@@ -497,7 +496,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
      * In this case be aware that on some platforms (ex. Windows 8+), the exclusivity is granted for
      * a limited time (ex. 5 seconds). After this delay, the card is automatically resetted.
      *
-     * @throws KeypleReaderIOException if a reader error occurs
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
     protected void openPhysicalChannel() throws KeypleReaderIOException {

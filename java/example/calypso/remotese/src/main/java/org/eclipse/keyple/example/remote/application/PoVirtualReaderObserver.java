@@ -15,7 +15,6 @@ import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.exception.NoResourceAvailableException;
-import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
@@ -23,6 +22,7 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
@@ -92,7 +92,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
                             new SamIdentifier(SamRevision.AUTO, ".*", ""));
 
                     if (samResource == null) {
-                        throw new KeypleReaderException(
+                        throw new KeypleReaderIOException(
                                 "No Sam resources available during the timeout");
                     }
 

@@ -556,10 +556,7 @@ public final class PoTransaction {
              */
             if (ratificationAsked || poSeResponse == null
                     || poSeResponse.getApduResponses().size() != poApduRequestList.size() - 1) {
-                /* Add current PO SeResponse to exception */
-                ex.setSeResponse(poSeResponse);
-                throw new KeypleReaderException("PO Reader Exception while closing Secure Session",
-                        ex);
+                throw ex;
             }
         }
 

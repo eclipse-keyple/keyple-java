@@ -35,7 +35,7 @@ public interface SeReader extends Nameable, Configurable, Comparable<SeReader> {
      * Checks if is SE present.
      *
      * @return true if a Secure Element is present in the reader
-     * @throws KeypleReaderIOException if error while reading SE
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     boolean isSePresent() throws KeypleReaderIOException;
 

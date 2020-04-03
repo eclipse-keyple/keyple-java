@@ -17,7 +17,7 @@ import android.nfc.tech.MifareClassic
 import android.nfc.tech.MifareUltralight
 import android.nfc.tech.TagTechnology
 import java.io.IOException
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolException
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.slf4j.LoggerFactory
@@ -90,9 +90,9 @@ internal class TagProxy private constructor(private val tagTechnology: TagTechno
          *
          * @param tag : tag to be proxied
          * @return tagProxy
-         * @throws KeypleReaderException
+         * @throws KeypleReaderProtocolException
          */
-        @Throws(KeypleReaderException::class)
+        @Throws(KeypleReaderProtocolException::class)
         fun getTagProxy(tag: Tag): TagProxy {
 
             LOG.info("Matching Tag Type : $tag")
@@ -119,7 +119,7 @@ internal class TagProxy private constructor(private val tagTechnology: TagTechno
                                 AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4))
                     }
                     else -> {
-                        throw KeypleReaderException("Keyple Android Reader supports only : " +
+                        throw KeypleReaderProtocolException("Keyple Android Reader supports only : " +
                                 AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC) + ", " +
                                 AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL) + ", " +
                                 AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4))

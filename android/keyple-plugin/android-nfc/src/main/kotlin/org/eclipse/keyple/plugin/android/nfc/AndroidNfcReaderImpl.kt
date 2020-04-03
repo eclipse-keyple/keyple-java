@@ -283,7 +283,7 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
                     throw KeypleReaderIOException(
                             "Error while transmitting APDU, invalid out data buffer", e)
                 } catch (e: NoSuchElementException) {
-                    throw KeypleReaderException("Error while transmitting APDU, no such Element", e)
+                    throw KeypleReaderIOException("Error while transmitting APDU, no such Element", e)
                 }
             }
         }

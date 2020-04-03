@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Set;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
@@ -83,8 +83,8 @@ public class RmTransmitSetTx extends AbstractRemoteMethodTx<List<SeResponse>> {
 
         if (KeypleDtoHelper.containsException(keypleDto)) {
             logger.trace("KeypleDto contains an exception: {}", keypleDto);
-            KeypleReaderException ex =
-                    JsonParser.getGson().fromJson(keypleDto.getBody(), KeypleReaderException.class);
+            KeypleReaderIOException ex = JsonParser.getGson().fromJson(keypleDto.getBody(),
+                    KeypleReaderIOException.class);
             throw new KeypleRemoteException(
                     "An exception occurs while calling the remote method transmitSet", ex);
         } else {

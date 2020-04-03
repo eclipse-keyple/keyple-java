@@ -17,10 +17,13 @@ import java.util.List;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
 import org.eclipse.keyple.calypso.command.sam.builder.security.*;
-import org.eclipse.keyple.calypso.command.sam.parser.security.*;
+import org.eclipse.keyple.calypso.command.sam.parser.security.DigestAuthenticateRespPars;
+import org.eclipse.keyple.calypso.command.sam.parser.security.DigestCloseRespPars;
+import org.eclipse.keyple.calypso.command.sam.parser.security.SamGetChallengeRespPars;
 import org.eclipse.keyple.calypso.transaction.exception.KeypleCalypsoSecureSessionException;
 import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
@@ -473,7 +476,7 @@ class SamCommandProcessor {
             }
         } else {
             logger.debug("checkPoSignature: no response to Digest Authenticate.");
-            throw new KeypleReaderException("No response to Digest Authenticate.");
+            throw new KeypleReaderIOException("No response to Digest Authenticate.");
         }
         return authenticationStatus;
     }

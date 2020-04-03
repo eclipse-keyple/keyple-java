@@ -50,7 +50,8 @@ public class BlankAbstractLocalReader extends AbstractLocalReader {
     }
 
     @Override
-    public boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderException {
+    public boolean protocolFlagMatches(SeProtocol protocolFlag)
+            throws KeypleReaderProtocolException, KeypleReaderIOException {
         return false;
     }
 
@@ -70,8 +71,7 @@ public class BlankAbstractLocalReader extends AbstractLocalReader {
     }
 
     @Override
-    public void setParameter(String key, String value)
-            throws IllegalArgumentException, KeypleException {
+    public void setParameter(String key, String value) throws KeypleReaderIOException {
 
     }
 }

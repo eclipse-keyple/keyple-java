@@ -14,6 +14,7 @@ package org.eclipse.keyple.core.util;
 import java.util.Map;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 
 /**
@@ -35,9 +36,9 @@ public interface Configurable {
      * @param key the parameter key
      * @param value the parameter value
      * @throws IllegalArgumentException if the parameter or the value is not supported
-     * @throws KeypleException if the parameter fails to be set up
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    void setParameter(String key, String value) throws IllegalArgumentException, KeypleException;
+    void setParameter(String key, String value) throws KeypleReaderIOException;
 
     /**
      * allows to define a set of proprietary settings for a reader or a plugin (contactless

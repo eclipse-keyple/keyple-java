@@ -83,7 +83,8 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
     }
 
     @Override
-    public boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderException {
+    public boolean protocolFlagMatches(SeProtocol protocolFlag)
+            throws KeypleReaderProtocolException, KeypleReaderIOException {
         return false;
     }
 
@@ -103,8 +104,7 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
     }
 
     @Override
-    public void setParameter(String key, String value)
-            throws IllegalArgumentException, KeypleException {
+    public void setParameter(String key, String value) throws KeypleReaderIOException {
 
     }
 

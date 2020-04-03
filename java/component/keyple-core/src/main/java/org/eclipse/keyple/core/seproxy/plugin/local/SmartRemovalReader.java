@@ -35,8 +35,7 @@ public interface SmartRemovalReader extends ObservableReader {
      * *
      *
      * @return presence status
-     * @throws KeypleReaderIOException in the event of a communication failure with the reader
-     *         (disconnection)
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     boolean waitForCardAbsentNative() throws KeypleReaderIOException;
 

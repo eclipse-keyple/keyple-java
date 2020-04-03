@@ -59,7 +59,7 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
      * Open a logical channel by selecting the application
      * @param aidSelector the selection parameters
      * @return a ApduResponse built from the FCI data resulting from the application selection
-     * @throws KeypleReaderIOException
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Throws(KeypleReaderIOException::class)
     override fun openChannelForAid(aidSelector: SeSelector.AidSelector): ApduResponse {
@@ -130,7 +130,7 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
      *
      * @param apduIn byte buffer containing the ingoing data
      * @return apduOut response
-     * @throws KeypleReaderIOException if error while sending or receiving bytes
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     override fun transmitApdu(apduIn: ByteArray): ByteArray {
         // Initialization

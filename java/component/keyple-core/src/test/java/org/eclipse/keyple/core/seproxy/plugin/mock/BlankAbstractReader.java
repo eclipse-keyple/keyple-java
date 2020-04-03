@@ -16,8 +16,8 @@ import java.util.Map;
 import java.util.Set;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractReader;
@@ -72,8 +72,7 @@ public class BlankAbstractReader extends AbstractReader {
     }
 
     @Override
-    public void setParameter(String key, String value)
-            throws IllegalArgumentException, KeypleException {
+    public void setParameter(String key, String value) throws KeypleReaderIOException {
 
     }
 }
