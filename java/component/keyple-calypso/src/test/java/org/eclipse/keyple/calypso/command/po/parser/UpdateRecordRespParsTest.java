@@ -13,7 +13,6 @@ package org.eclipse.keyple.calypso.command.po.parser;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
@@ -38,8 +37,8 @@ public class UpdateRecordRespParsTest {
                                 new ApduResponse(ByteArrayUtil.fromHex("9000"), null), true),
                         responses);
 
-        AbstractApduResponseParser apduResponseParser =
-                new UpdateRecordRespPars(seResponse.getApduResponses().get(0));
+        UpdateRecordRespPars apduResponseParser =
+                new UpdateRecordRespPars(seResponse.getApduResponses().get(0), null);
         Assert.assertArrayEquals(new byte[] {90, 0},
                 apduResponseParser.getApduResponse().getBytes());
     }
