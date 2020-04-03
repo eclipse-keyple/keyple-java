@@ -307,7 +307,6 @@ class SamCommandProcessor {
      * 
      * @param addDigestClose indicates whether to add the Digest Close command
      * @return a SeRequest containing all the ApduRequest to send to the SAM
-     * @throws IllegalStateException if digest cache is empty or containing a even number of packets
      */
     private SeRequest getPendingSamRequest(boolean addDigestClose) {
         // TODO optimization with the use of Digest Update Multiple whenever possible.

@@ -16,7 +16,7 @@ import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.exception.*;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
@@ -429,11 +429,10 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * 
      * @param protocolFlag the protocol flag
      * @return true if the current protocol matches the provided protocol flag
-     * @throws KeypleReaderProtocolException if the <code>protocolFlag</code> has a bad value
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     protected abstract boolean protocolFlagMatches(SeProtocol protocolFlag)
-            throws KeypleReaderProtocolException, KeypleReaderIOException;
+            throws KeypleReaderIOException;
 
     /** ==== SeRequestSe and SeRequest transmission management ============= */
 
@@ -453,7 +452,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
     @Override
     protected final List<SeResponse> processSeRequestSet(Set<SeRequest> requestSet,
             MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
-            throws KeypleReaderException {
+            throws KeypleReaderIOException {
 
         boolean[] requestMatchesProtocol = new boolean[requestSet.size()];
         int requestIndex = 0;
@@ -500,7 +499,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
                     SeResponse response;
                     try {
                         response = processSeRequestLogical(request);
-                    } catch (KeypleReaderException ex) {
+                    } catch (KeypleReaderIOException ex) {
                         /*
                          * The process has been interrupted. We launch a KeypleReaderException with
                          * the responses collected so far.
@@ -508,7 +507,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
                         /* Add the latest (and partial) SeResponse to the current list. */
                         responses.add(ex.getSeResponse());
                         /* Build a List of SeResponse with the available data. */
-                        ex.setSeResponseSet(responses);
+                        ex.setSeResponseList(responses);
                         logger.debug(
                                 "[{}] processSeRequestSet => transmit : process interrupted, collect previous responses {}",
                                 this.getName(), responses);
@@ -575,13 +574,13 @@ public abstract class AbstractLocalReader extends AbstractReader {
      *        requested)
      * @param channelControl indicates if the channel has to be closed at the end of the processing
      * @return the SeResponse to the SeRequest
-     * @throws KeypleReaderException if a transmission fails
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @SuppressWarnings({"PMD.ModifiedCyclomaticComplexity", "PMD.CyclomaticComplexity",
             "PMD.StdCyclomaticComplexity", "PMD.NPathComplexity", "PMD.ExcessiveMethodLength"})
     @Override
     protected final SeResponse processSeRequest(SeRequest seRequest, ChannelControl channelControl)
-            throws IllegalStateException, KeypleReaderException {
+            throws KeypleReaderIOException {
 
         SeResponse seResponse = null;
 
@@ -623,11 +622,9 @@ public abstract class AbstractLocalReader extends AbstractReader {
      *
      * @param seRequest the {@link SeRequest} to be sent
      * @return seResponse
-     * @throws IllegalStateException
-     * @throws KeypleReaderException
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    private SeResponse processSeRequestLogical(SeRequest seRequest)
-            throws IllegalStateException, KeypleReaderException {
+    private SeResponse processSeRequestLogical(SeRequest seRequest) throws KeypleReaderIOException {
         boolean previouslyOpen = true;
         SelectionStatus selectionStatus = null;
 

@@ -12,17 +12,20 @@
 package org.eclipse.keyple.core.seproxy.plugin.local;
 
 import static org.eclipse.keyple.core.seproxy.plugin.local.AbsLocalReaderSelectionTest.ATR;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
-import java.util.*;
+import static org.mockito.Mockito.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.message.*;
+import org.eclipse.keyple.core.seproxy.message.ApduRequest;
+import org.eclipse.keyple.core.seproxy.message.SeRequest;
+import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.plugin.mock.BlankAbstractLocalReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -71,9 +74,9 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
             reader.processSeRequestSet(seRequestSet, MultiSeRequestProcessing.PROCESS_ALL,
                     ChannelControl.CLOSE_AFTER);
             Assert.fail();
-        } catch (KeypleReaderException ex) {
-            Assert.assertEquals(ex.getSeResponseSet().size(), 1);
-            Assert.assertEquals(ex.getSeResponseSet().get(0).getApduResponses().size(), 2);
+        } catch (KeypleReaderIOException ex) {
+            Assert.assertEquals(ex.getSeResponseList().size(), 1);
+            Assert.assertEquals(ex.getSeResponseList().get(0).getApduResponses().size(), 2);
         }
     }
 
@@ -88,11 +91,11 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
                     ChannelControl.CLOSE_AFTER);
             Assert.fail();
 
-        } catch (KeypleReaderException ex) {
-            Assert.assertEquals(ex.getSeResponseSet().size(), 2);
-            Assert.assertEquals(ex.getSeResponseSet().get(0).getApduResponses().size(), 4);
-            Assert.assertEquals(ex.getSeResponseSet().get(1).getApduResponses().size(), 2);
-            Assert.assertEquals(ex.getSeResponseSet().get(1).getApduResponses().size(), 2);
+        } catch (KeypleReaderIOException ex) {
+            Assert.assertEquals(ex.getSeResponseList().size(), 2);
+            Assert.assertEquals(ex.getSeResponseList().get(0).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponseList().get(1).getApduResponses().size(), 2);
+            Assert.assertEquals(ex.getSeResponseList().get(1).getApduResponses().size(), 2);
         }
     }
 
@@ -109,11 +112,11 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
                     ChannelControl.CLOSE_AFTER);
             Assert.fail();
 
-        } catch (KeypleReaderException ex) {
-            Assert.assertEquals(ex.getSeResponseSet().size(), 3);
-            Assert.assertEquals(ex.getSeResponseSet().get(0).getApduResponses().size(), 4);
-            Assert.assertEquals(ex.getSeResponseSet().get(1).getApduResponses().size(), 4);
-            Assert.assertEquals(ex.getSeResponseSet().get(2).getApduResponses().size(), 2);
+        } catch (KeypleReaderIOException ex) {
+            Assert.assertEquals(ex.getSeResponseList().size(), 3);
+            Assert.assertEquals(ex.getSeResponseList().get(0).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponseList().get(1).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponseList().get(2).getApduResponses().size(), 2);
         }
     }
 
@@ -161,7 +164,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
         try {
             // test
             reader.processSeRequest(seRequestSet, ChannelControl.KEEP_OPEN);
-        } catch (KeypleReaderException ex) {
+        } catch (KeypleReaderIOException ex) {
             logger.error("", ex);
             Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 0);
         }
@@ -179,7 +182,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
             reader.processSeRequest(seRequestSet, ChannelControl.CLOSE_AFTER);
             Assert.fail("Should throw exception");
 
-        } catch (KeypleReaderException ex) {
+        } catch (KeypleReaderIOException ex) {
             Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 1);
         }
     }
@@ -194,7 +197,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
             reader.processSeRequest(seRequestSet, ChannelControl.CLOSE_AFTER);
             Assert.fail("Should throw exception");
 
-        } catch (KeypleReaderException ex) {
+        } catch (KeypleReaderIOException ex) {
             Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 2);
         }
     }

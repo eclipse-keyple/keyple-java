@@ -145,12 +145,12 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
      * @param multiSeRequestProcessing the multi SE request processing mode
      * @param channelControl the channel control indicator
      * @return the response set
-     * @throws KeypleReaderException if a reader error occurs
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
     public final List<SeResponse> transmitSet(Set<SeRequest> requestSet,
             MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
-            throws KeypleReaderException {
+            throws KeypleReaderIOException {
         if (requestSet == null) {
             throw new IllegalArgumentException("seRequestSet must not be null");
         }
@@ -196,11 +196,11 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
      * 
      * @param requestSet the request set
      * @return the response set
-     * @throws KeypleReaderException if a reader error occurs
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
     public final List<SeResponse> transmitSet(Set<SeRequest> requestSet)
-            throws KeypleReaderException {
+            throws KeypleReaderIOException {
         return transmitSet(requestSet, MultiSeRequestProcessing.FIRST_MATCH,
                 ChannelControl.KEEP_OPEN);
     }
@@ -214,11 +214,11 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
      * @param multiSeRequestProcessing the multi se processing mode
      * @param channelControl indicates if the channel has to be closed at the end of the processing
      * @return the List of {@link SeResponse} (responses to the Set of {@link SeRequest})
-     * @throws KeypleReaderException if reader error occurs
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     protected abstract List<SeResponse> processSeRequestSet(Set<SeRequest> requestSet,
             MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
-            throws KeypleReaderException;
+            throws KeypleReaderIOException;
 
     /**
      * Execute the transmission of a {@link SeRequest} and returns a {@link SeResponse}
@@ -231,11 +231,11 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
      * @param seRequest the request to be transmitted
      * @param channelControl indicates if the channel has to be closed at the end of the processing
      * @return the received response
-     * @throws KeypleReaderException if a reader error occurs
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
     public final SeResponse transmit(SeRequest seRequest, ChannelControl channelControl)
-            throws KeypleReaderException {
+            throws KeypleReaderIOException {
         if (seRequest == null) {
             throw new IllegalArgumentException("seRequest must not be null");
         }
@@ -281,10 +281,10 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
      * 
      * @param seRequest the request to be transmitted
      * @return the received response
-     * @throws KeypleReaderException if a reader error occurs
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
-    public final SeResponse transmit(SeRequest seRequest) throws KeypleReaderException {
+    public final SeResponse transmit(SeRequest seRequest) throws KeypleReaderIOException {
         return transmit(seRequest, ChannelControl.KEEP_OPEN);
     }
 
@@ -297,10 +297,10 @@ public abstract class AbstractReader extends Observable<ReaderEvent>
      * @param channelControl a flag indicating if the channel has to be closed after the processing
      *        of the {@link SeRequest}
      * @return the {@link SeResponse} (responses to the {@link SeRequest})
-     * @throws KeypleReaderException if reader error occurs
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     protected abstract SeResponse processSeRequest(SeRequest seRequest,
-            ChannelControl channelControl) throws KeypleReaderException;
+            ChannelControl channelControl) throws KeypleReaderIOException;
 
     /* ==== Methods specific to observability ============================= */
 

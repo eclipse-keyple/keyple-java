@@ -20,7 +20,6 @@ import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
@@ -107,12 +106,12 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
      * @param multiSeRequestProcessing the multi se processing mode
      * @param channelControl indicates if the channel has to be closed at the end of the processing
      * @return List of SeResponse from SE
-     * @throws KeypleReaderException
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
     protected List<SeResponse> processSeRequestSet(Set<SeRequest> seRequestSet,
             MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
-            throws KeypleReaderException {
+            throws KeypleReaderIOException {
 
         RmTransmitSetTx transmit = new RmTransmitSetTx(seRequestSet, multiSeRequestProcessing,
                 channelControl, session.getSessionId(), this.getNativeReaderName(), this.getName(),
@@ -123,7 +122,7 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
         } catch (KeypleRemoteException e) {
             if (e.getCause() != null) {
                 // KeypleReaderException is inside the KeypleRemoteException
-                throw (KeypleReaderException) e.getCause();
+                throw (KeypleReaderIOException) e.getCause();
 
             } else {
                 // create a new KeypleReaderIOException
@@ -138,12 +137,11 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
      * @param seRequest : SeRequest to be transmitted to SE
      * @param channelControl indicates if the channel has to be closed at the end of the processing
      * @return seResponse : SeResponse from SE
-     * @throws IllegalArgumentException
-     * @throws KeypleReaderException
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
     protected SeResponse processSeRequest(SeRequest seRequest, ChannelControl channelControl)
-            throws IllegalArgumentException, KeypleReaderException {
+            throws KeypleReaderIOException {
 
         RmTransmitTx transmit = new RmTransmitTx(seRequest, channelControl, session.getSessionId(),
                 this.getNativeReaderName(), this.getName(), session.getMasterNodeId(),
@@ -153,7 +151,7 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
             return transmit.execute(rmTxEngine);
         } catch (KeypleRemoteException e) {
             e.printStackTrace();
-            throw (KeypleReaderException) e.getCause();
+            throw (KeypleReaderIOException) e.getCause();
         }
 
     }

@@ -53,8 +53,7 @@ public class BlankSmartSelectionReader extends AbstractLocalReader implements Sm
     }
 
     @Override
-    public boolean protocolFlagMatches(SeProtocol protocolFlag)
-            throws KeypleReaderProtocolException, KeypleReaderIOException {
+    public boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderIOException {
         return false;
     }
 

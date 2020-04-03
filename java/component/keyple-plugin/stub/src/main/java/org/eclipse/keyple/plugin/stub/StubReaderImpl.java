@@ -19,7 +19,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolException;
 import org.eclipse.keyple.core.seproxy.plugin.local.*;
 import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.SmartInsertionMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.SmartRemovalMonitoringJob;
@@ -116,8 +115,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
     }
 
     @Override
-    protected boolean protocolFlagMatches(SeProtocol protocolFlag)
-            throws KeypleReaderProtocolException, KeypleReaderIOException {
+    protected boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderIOException {
         boolean result;
         if (se == null) {
             throw new KeypleReaderIOException("No SE available.");
@@ -130,7 +128,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
             // the requestSet will be executed only if the protocol match the requestElement
             String selectionMask = protocolsMap.get(protocolFlag);
             if (selectionMask == null) {
-                throw new KeypleReaderProtocolException("Target selector mask not found!", null);
+                throw new KeypleReaderIOException("Target selector mask not found!", null);
             }
             Pattern p = Pattern.compile(selectionMask);
             String protocol = se.getSeProcotol();

@@ -25,6 +25,7 @@ import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -543,7 +544,7 @@ public final class PoTransaction {
         SeResponse poSeResponse;
         try {
             poSeResponse = poReader.transmit(poSeRequest, channelControl);
-        } catch (KeypleReaderException ex) {
+        } catch (KeypleReaderIOException ex) {
             poSeResponse = ex.getSeResponse();
             /*
              * The current exception may have been caused by a communication issue with the PO
@@ -651,7 +652,6 @@ public final class PoTransaction {
      * Get the ratification status obtained at Session Opening
      * 
      * @return true or false
-     * @throws IllegalStateException if no session has been initiated
      */
     public boolean wasRatified() {
         if (sessionState == SessionState.SESSION_UNINITIALIZED) {
@@ -664,7 +664,6 @@ public final class PoTransaction {
      * Get the data read at Session Opening
      * 
      * @return a byte array containing the data
-     * @throws IllegalStateException if no session has been initiated
      */
     public byte[] getOpenRecordDataRead() {
         if (sessionState == SessionState.SESSION_UNINITIALIZED) {
@@ -1292,7 +1291,7 @@ public final class PoTransaction {
         SeResponse poSeResponse;
         try {
             poSeResponse = poReader.transmit(poSeRequest, channelControl);
-        } catch (KeypleReaderException ex) {
+        } catch (KeypleReaderIOException ex) {
             poSeResponse = ex.getSeResponse();
         }
 

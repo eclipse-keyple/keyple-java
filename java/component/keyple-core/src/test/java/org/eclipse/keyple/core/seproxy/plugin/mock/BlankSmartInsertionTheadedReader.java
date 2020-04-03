@@ -129,8 +129,7 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
     }
 
     @Override
-    public boolean protocolFlagMatches(SeProtocol protocolFlag)
-            throws KeypleReaderProtocolException, KeypleReaderIOException {
+    public boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderIOException {
         return false;
     }
 

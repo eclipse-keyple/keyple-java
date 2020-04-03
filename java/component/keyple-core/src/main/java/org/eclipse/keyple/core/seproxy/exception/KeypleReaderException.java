@@ -11,21 +11,13 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.exception;
 
-import java.util.List;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
+
 
 /**
  * The exception <code>KeypleReaderException</code> is the parent abstract class of all Keyple
  * reader exceptions.
  */
 public abstract class KeypleReaderException extends KeypleException {
-
-    /*
-     * SeResponse and List of SeResponse objects to carry partial responses in the event of a
-     * breakdown in communication with the SE.
-     */
-    private List<SeResponse> seResponseList;
-    private SeResponse seResponse;
 
     /**
      * @param message the message to identify the exception context
@@ -42,22 +34,5 @@ public abstract class KeypleReaderException extends KeypleException {
      */
     public KeypleReaderException(String message, Throwable cause) {
         super(message, cause);
-    }
-
-    /* Setters and Getters for List of SeResponse and SeResponse */
-    public List<SeResponse> getSeResponseSet() {
-        return seResponseList;
-    }
-
-    public void setSeResponseSet(List<SeResponse> seResponseList) {
-        this.seResponseList = seResponseList;
-    }
-
-    public SeResponse getSeResponse() {
-        return seResponse;
-    }
-
-    public void setSeResponse(SeResponse seResponse) {
-        this.seResponse = seResponse;
     }
 }

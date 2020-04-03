@@ -815,9 +815,9 @@ public class StubReaderTest extends BaseStubTest {
             List<SeResponse> seResponseList = ((ProxyReader) reader).transmitSet(seRequestSet);
             Assert.fail("Should throw exception");
 
-        } catch (KeypleReaderException ex) {
-            Assert.assertEquals(ex.getSeResponseSet().size(), 1);
-            Assert.assertEquals(ex.getSeResponseSet().get(0).getApduResponses().size(), 2);
+        } catch (KeypleReaderIOException ex) {
+            Assert.assertEquals(ex.getSeResponseList().size(), 1);
+            Assert.assertEquals(ex.getSeResponseList().get(0).getApduResponses().size(), 2);
         }
     }
 
@@ -845,11 +845,11 @@ public class StubReaderTest extends BaseStubTest {
             List<SeResponse> seResponseList = ((ProxyReader) reader).transmitSet(seRequestSet);
             Assert.fail("Should throw exception");
 
-        } catch (KeypleReaderException ex) {
-            Assert.assertEquals(ex.getSeResponseSet().size(), 2);
-            Assert.assertEquals(ex.getSeResponseSet().get(0).getApduResponses().size(), 4);
-            Assert.assertEquals(ex.getSeResponseSet().get(1).getApduResponses().size(), 2);
-            Assert.assertEquals(ex.getSeResponseSet().get(1).getApduResponses().size(), 2);
+        } catch (KeypleReaderIOException ex) {
+            Assert.assertEquals(ex.getSeResponseList().size(), 2);
+            Assert.assertEquals(ex.getSeResponseList().get(0).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponseList().get(1).getApduResponses().size(), 2);
+            Assert.assertEquals(ex.getSeResponseList().get(1).getApduResponses().size(), 2);
         }
     }
 
@@ -878,11 +878,11 @@ public class StubReaderTest extends BaseStubTest {
             List<SeResponse> seResponseList = ((ProxyReader) reader).transmitSet(seRequestSet);
             Assert.fail("Should throw exception");
 
-        } catch (KeypleReaderException ex) {
-            Assert.assertEquals(ex.getSeResponseSet().size(), 3);
-            Assert.assertEquals(ex.getSeResponseSet().get(0).getApduResponses().size(), 4);
-            Assert.assertEquals(ex.getSeResponseSet().get(1).getApduResponses().size(), 4);
-            Assert.assertEquals(ex.getSeResponseSet().get(2).getApduResponses().size(), 2);
+        } catch (KeypleReaderIOException ex) {
+            Assert.assertEquals(ex.getSeResponseList().size(), 3);
+            Assert.assertEquals(ex.getSeResponseList().get(0).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponseList().get(1).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponseList().get(2).getApduResponses().size(), 2);
         }
     }
 
@@ -941,7 +941,7 @@ public class StubReaderTest extends BaseStubTest {
             SeResponse seResponse = ((ProxyReader) reader).transmit(seRequest);
             Assert.fail("Should throw exception");
 
-        } catch (KeypleReaderException ex) {
+        } catch (KeypleReaderIOException ex) {
             Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 0);
         }
     }
@@ -971,7 +971,7 @@ public class StubReaderTest extends BaseStubTest {
             SeResponse seResponse = ((ProxyReader) reader).transmit(seRequest);
             Assert.fail("Should throw exception");
 
-        } catch (KeypleReaderException ex) {
+        } catch (KeypleReaderIOException ex) {
             Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 1);
         }
     }
@@ -1000,7 +1000,7 @@ public class StubReaderTest extends BaseStubTest {
             SeResponse seResponse = ((ProxyReader) reader).transmit(seRequest);
             Assert.fail("Should throw exception");
 
-        } catch (KeypleReaderException ex) {
+        } catch (KeypleReaderIOException ex) {
             Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 2);
         }
     }
@@ -1390,7 +1390,7 @@ public class StubReaderTest extends BaseStubTest {
         return new ApduRequest(ByteArrayUtil.fromHex("FEDCBA98 9005h"), false);
     }
 
-    static public void genericSelectSe(SeReader reader) throws KeypleReaderException {
+    static public void genericSelectSe(SeReader reader) throws KeypleReaderIOException {
         /**
          * Create a new local class extending AbstractSeSelectionRequest
          */

@@ -305,12 +305,10 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
      *
      * @param protocolFlag the protocol flag
      * @return true if the current SE matches the protocol flag
-     * @throws KeypleReaderProtocolException if the protocol mask is not found
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
-    protected boolean protocolFlagMatches(SeProtocol protocolFlag)
-            throws KeypleReaderProtocolException, KeypleReaderIOException {
+    protected boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderIOException {
         boolean result;
         // Test protocolFlag to check if ATR based protocol filtering is required
         if (protocolFlag != null) {
@@ -320,7 +318,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
             // the requestSet will be executed only if the protocol match the requestElement
             String selectionMask = protocolsMap.get(protocolFlag);
             if (selectionMask == null) {
-                throw new KeypleReaderProtocolException("Target selector mask not found!", null);
+                throw new KeypleReaderIOException("Target selector mask not found!", null);
             }
             Pattern p = Pattern.compile(selectionMask);
             String atr = ByteArrayUtil.toHex(card.getATR().getBytes());
