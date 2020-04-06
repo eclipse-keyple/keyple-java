@@ -27,6 +27,8 @@ public final class ReadRecordsCmdBuild extends AbstractPoUserCommandBuilder<Read
     /** The command. */
     private static final CalypsoPoCommands command = CalypsoPoCommands.READ_RECORDS;
 
+    /* Construction arguments */
+    private final int sfi;
     private final byte firstRecordNumber;
     private final ReadDataStructure readDataStructure;
 
@@ -53,6 +55,7 @@ public final class ReadRecordsCmdBuild extends AbstractPoUserCommandBuilder<Read
             throw new IllegalArgumentException("Bad record number (< 1)");
         }
 
+        this.sfi = sfi;
         this.firstRecordNumber = firstRecordNumber;
         this.readDataStructure = readDataStructure;
 
@@ -101,5 +104,17 @@ public final class ReadRecordsCmdBuild extends AbstractPoUserCommandBuilder<Read
     @Override
     public int getSessionBufferSizeConsumed() {
         return 0;
+    }
+
+    public int getSfi() {
+        return sfi;
+    }
+
+    public byte getFirstRecordNumber() {
+        return firstRecordNumber;
+    }
+
+    public ReadDataStructure getReadDataStructure() {
+        return readDataStructure;
     }
 }
