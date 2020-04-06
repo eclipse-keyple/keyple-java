@@ -99,8 +99,10 @@ class SamCommandProcessor {
      * @return the terminal challenge as an array of bytes
      * @throws KeypleReaderException if the communication with the SAM failed
      * @throws KeypleCalypsoSecureSessionException if there is an error in the SAM response
+     * @throws KeypleCalypsoSecureSessionException if PO transaction error occurs
      */
-    byte[] getSessionTerminalChallenge() throws KeypleReaderException {
+    byte[] getSessionTerminalChallenge()
+            throws KeypleReaderException, KeypleCalypsoSecureSessionException {
         /* SAM ApduRequest List to hold Select Diversifier and Get Challenge commands */
         List<ApduRequest> samApduRequestList = new ArrayList<ApduRequest>();
 
@@ -378,8 +380,10 @@ class SamCommandProcessor {
      * @return the terminal signature
      * @throws KeypleReaderException if the communication with the SAM failed
      * @throws KeypleCalypsoSecureSessionException if there is an error in the SAM response
+     * @throws KeypleCalypsoSecureSessionException if PO transaction error occurs
      */
-    byte[] getTerminalSignature() throws KeypleReaderException {
+    byte[] getTerminalSignature()
+            throws KeypleReaderException, KeypleCalypsoSecureSessionException {
 
         /* All remaining SAM digest operations will now run at once. */
         /* Get the SAM Digest request including Digest Close from the cache manager */
@@ -436,8 +440,10 @@ class SamCommandProcessor {
      * @return true if the PO signature is correct
      * @throws KeypleReaderException if the communication with the SAM failed
      * @throws KeypleCalypsoSecureSessionException if there is an error in the SAM response
+     * @throws KeypleCalypsoSecureSessionException if PO transaction error occurs
      */
-    boolean authenticatePoSignature(byte[] poSignatureLo) throws KeypleReaderException {
+    boolean authenticatePoSignature(byte[] poSignatureLo)
+            throws KeypleReaderException, KeypleCalypsoSecureSessionException {
         /* Check the PO signature part with the SAM */
         /* Build and send SAM Digest Authenticate command */
         AbstractApduCommandBuilder digestAuth = new DigestAuthenticateCmdBuild(

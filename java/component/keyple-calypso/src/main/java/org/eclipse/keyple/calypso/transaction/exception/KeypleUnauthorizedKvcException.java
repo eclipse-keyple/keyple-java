@@ -11,13 +11,16 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction.exception;
 
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-
 /**
- * Thrown when the current PO has an unauthorized KVC
+ * The exception <code>KeypleUnauthorizedKvcException</code> indicates that the current PO has an
+ * unauthorized KVC.
  */
-public class KeypleCalypsoSecureSessionUnauthorizedKvcException extends KeypleReaderException {
-    public KeypleCalypsoSecureSessionUnauthorizedKvcException(String message) {
+public class KeypleUnauthorizedKvcException extends KeyplePoTransactionException {
+
+    /**
+     * @param message the message to identify the exception context
+     */
+    public KeypleUnauthorizedKvcException(String message) {
         super(message);
     }
 }

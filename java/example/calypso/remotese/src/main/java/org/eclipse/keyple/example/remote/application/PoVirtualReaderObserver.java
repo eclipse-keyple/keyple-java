@@ -15,6 +15,9 @@ import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.exception.NoResourceAvailableException;
+import org.eclipse.keyple.calypso.transaction.*;
+import org.eclipse.keyple.calypso.transaction.exception.KeypleCalypsoSecureSessionException;
+import org.eclipse.keyple.calypso.transaction.exception.KeypleUnauthorizedKvcException;
 import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
@@ -187,6 +190,8 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
             }
         } catch (KeypleReaderException e) {
             e.printStackTrace();
+        } catch (KeypleCalypsoSecureSessionException e) {
+            e.printStackTrace();
         }
         logger.warn(
                 "==================================================================================");
@@ -284,6 +289,10 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
                     "==================================================================================");
 
         } catch (KeypleReaderException e) {
+            e.printStackTrace();
+        } catch (KeypleUnauthorizedKvcException e) {
+            e.printStackTrace();
+        } catch (KeypleCalypsoSecureSessionException e) {
             e.printStackTrace();
         }
     }

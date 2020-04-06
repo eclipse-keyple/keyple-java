@@ -13,7 +13,7 @@ package org.eclipse.keyple.calypso.transaction;
 
 import java.util.EnumMap;
 import java.util.List;
-import org.eclipse.keyple.calypso.transaction.exception.KeypleCalypsoSecureSessionUnauthorizedKvcException;
+import org.eclipse.keyple.calypso.transaction.exception.KeypleUnauthorizedKvcException;
 
 /**
  * A class dedicated to managing the security settings involved in managing secure sessions.
@@ -96,7 +96,7 @@ public class SecuritySettings {
      * If this method is not called, the list will remain empty and all KVCs will be accepted.
      *
      * If a list is provided and a PO with a KVC not belonging to this list is presented, a
-     * {@link KeypleCalypsoSecureSessionUnauthorizedKvcException} will be raised.
+     * {@link KeypleUnauthorizedKvcException} will be raised.
      *
      * @param authorizedKvcList the list of authorized KVCs
      */

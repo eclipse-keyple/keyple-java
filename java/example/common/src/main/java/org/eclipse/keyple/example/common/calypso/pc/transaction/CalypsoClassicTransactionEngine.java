@@ -16,6 +16,8 @@ import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.transaction.*;
+import org.eclipse.keyple.calypso.transaction.exception.KeypleCalypsoSecureSessionException;
+import org.eclipse.keyple.calypso.transaction.exception.KeypleUnauthorizedKvcException;
 import org.eclipse.keyple.core.selection.*;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
@@ -126,9 +128,12 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
      * @param poTransaction PoTransaction object
      * @param closeSeChannel flag to ask or not the channel closing at the end of the transaction
      * @throws KeypleReaderException reader exception (defined as public for purposes of javadoc)
+     * @throws KeypleUnauthorizedKvcException if the PO KVC is not authorized
+     * @throws KeypleCalypsoSecureSessionException if PO transaction error occurs
      */
     public void doCalypsoReadWriteTransaction(PoTransaction poTransaction, boolean closeSeChannel)
-            throws KeypleReaderException {
+            throws KeypleReaderException, KeypleUnauthorizedKvcException,
+            KeypleCalypsoSecureSessionException {
 
         boolean poProcessStatus;
 

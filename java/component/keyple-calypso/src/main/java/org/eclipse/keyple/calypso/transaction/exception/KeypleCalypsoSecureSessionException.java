@@ -13,11 +13,10 @@ package org.eclipse.keyple.calypso.transaction.exception;
 
 import java.util.Collections;
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
-public class KeypleCalypsoSecureSessionException extends KeypleReaderException {
+public class KeypleCalypsoSecureSessionException extends KeyplePoTransactionException {
 
     public enum Type {
         PO, SAM

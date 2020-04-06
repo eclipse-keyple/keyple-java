@@ -175,10 +175,13 @@ public final class PoTransaction {
      * @return SeResponse response to all executed commands including the self generated "Open
      *         Secure Session" command
      * @throws KeypleReaderException the IO reader exception
+     * @throws KeypleUnauthorizedKvcException if the PO KVC is not authorized
+     * @throws KeypleCalypsoSecureSessionException if PO transaction error occurs
      */
     private SeResponse processAtomicOpening(SessionAccessLevel accessLevel, byte openingSfiToSelect,
             byte openingRecordNumberToRead, List<PoCommand> poCommands)
-            throws KeypleReaderException {
+            throws KeypleReaderException, KeypleUnauthorizedKvcException,
+            KeypleCalypsoSecureSessionException {
 
         // gets the terminal challenge
         byte[] sessionTerminalChallenge = samCommandProcessor.getSessionTerminalChallenge();
@@ -258,8 +261,7 @@ public final class PoTransaction {
         }
 
         if (!samCommandProcessor.isAuthorizedKvc(poKvc)) {
-            throw new KeypleCalypsoSecureSessionUnauthorizedKvcException(
-                    String.format("PO KVC = %02X", poKvc));
+            throw new KeypleUnauthorizedKvcException(String.format("PO KVC = %02X", poKvc));
         }
 
         /* Keep the ratification status and read data */
@@ -334,9 +336,11 @@ public final class PoTransaction {
      * @return SeResponse all responses to the provided commands
      *
      * @throws KeypleReaderException IO Reader exception
+     * @throws KeypleCalypsoSecureSessionException if PO transaction error occurs
      */
     private SeResponse processAtomicPoCommands(List<PoCommand> poCommands,
-            ChannelControl channelControl) throws KeypleReaderException {
+            ChannelControl channelControl)
+            throws KeypleReaderException, KeypleCalypsoSecureSessionException {
 
         // Get the PO ApduRequest List
         List<ApduRequest> poApduRequestList = this.getApduRequests(poCommands);
@@ -452,10 +456,12 @@ public final class PoTransaction {
      *         <li>The argument of the ratification command is replaced by an indication of the PO
      *         communication mode.</li>
      *         </ul>
+     * @throws KeypleCalypsoSecureSessionException if PO transaction error occurs
      */
     private SeResponse processAtomicClosing(List<PoCommand> poModificationCommands,
             List<ApduResponse> poAnticipatedResponses, TransmissionMode transmissionMode,
-            ChannelControl channelControl) throws KeypleReaderException {
+            ChannelControl channelControl)
+            throws KeypleReaderException, KeypleCalypsoSecureSessionException {
 
         if (sessionState != SessionState.SESSION_OPEN) {
             throw new IllegalStateException("Bad session state. Current: " + sessionState.toString()
@@ -618,10 +624,11 @@ public final class PoTransaction {
      *         <li>The argument of the ratification command is replaced by an indication of the PO
      *         communication mode.</li>
      *         </ul>
+     * @throws KeypleCalypsoSecureSessionException if PO transaction error occurs
      */
     private SeResponse processAtomicClosing(List<PoCommand> poCommands,
             TransmissionMode transmissionMode, ChannelControl channelControl)
-            throws KeypleReaderException {
+            throws KeypleReaderException, KeypleCalypsoSecureSessionException {
         List<ApduResponse> poAnticipatedResponses =
                 AnticipatedResponseBuilder.getResponses(poCommands);
         return processAtomicClosing(poCommands, poAnticipatedResponses, transmissionMode,
@@ -931,10 +938,13 @@ public final class PoTransaction {
      * @param openingRecordNumberToRead number of the record to read
      * @return true if all commands are successful
      * @throws KeypleReaderException the IO reader exception
+     * @throws KeypleUnauthorizedKvcException if the PO KVC is not authorized
+     * @throws KeypleCalypsoSecureSessionException if PO transaction error occurs
      */
     public boolean processOpening(SessionModificationMode modificationMode,
             SessionAccessLevel accessLevel, byte openingSfiToSelect, byte openingRecordNumberToRead)
-            throws KeypleReaderException {
+            throws KeypleReaderException, KeypleUnauthorizedKvcException,
+            KeypleCalypsoSecureSessionException {
         currentModificationMode = modificationMode;
         currentAccessLevel = accessLevel;
         byte localOpeningRecordNumberToRead = openingRecordNumberToRead;
@@ -1022,8 +1032,10 @@ public final class PoTransaction {
      * @return true if all commands are successful
      *
      * @throws KeypleReaderException IO Reader exception
+     * @throws KeypleCalypsoSecureSessionException if PO transaction error occurs
      */
-    public boolean processPoCommands(ChannelControl channelControl) throws KeypleReaderException {
+    public boolean processPoCommands(ChannelControl channelControl)
+            throws KeypleReaderException, KeypleCalypsoSecureSessionException {
 
         /** This method should be called only if no session was previously open */
         if (sessionState == SessionState.SESSION_OPEN) {
@@ -1060,8 +1072,11 @@ public final class PoTransaction {
      * @return true if all commands are successful
      *
      * @throws KeypleReaderException IO Reader exception
+     * @throws KeypleUnauthorizedKvcException if the PO KVC is not authorized
+     * @throws KeypleCalypsoSecureSessionException if PO transaction error occurs
      */
-    public boolean processPoCommandsInSession() throws KeypleReaderException {
+    public boolean processPoCommandsInSession() throws KeypleReaderException,
+            KeypleUnauthorizedKvcException, KeypleCalypsoSecureSessionException {
 
         /** This method should be called only if a session was previously open */
         if (sessionState != SessionState.SESSION_OPEN) {
@@ -1164,8 +1179,11 @@ public final class PoTransaction {
      *         <li>The argument of the ratification command is replaced by an indication of the PO
      *         communication mode.</li>
      *         </ul>
+     * @throws KeypleUnauthorizedKvcException if the PO KVC is not authorized
+     * @throws KeypleCalypsoSecureSessionException if PO transaction error occurs
      */
-    public boolean processClosing(ChannelControl channelControl) throws KeypleReaderException {
+    public boolean processClosing(ChannelControl channelControl) throws KeypleReaderException,
+            KeypleUnauthorizedKvcException, KeypleCalypsoSecureSessionException {
         boolean poProcessSuccess = true;
         boolean atLeastOneReadCommand = false;
         boolean sessionPreviouslyClosed = false;
