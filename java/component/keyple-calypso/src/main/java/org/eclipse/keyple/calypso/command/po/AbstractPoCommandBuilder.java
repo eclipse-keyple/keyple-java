@@ -57,5 +57,5 @@ public abstract class AbstractPoCommandBuilder<T extends AbstractPoResponseParse
      */
     public CalypsoPoCommands getCommandReference() {
         return reference;
-    };
+    }
 }
