@@ -48,13 +48,19 @@ public final class PoTransaction {
     private static final int OFFSET_INS = 1;
     private static final int OFFSET_P1 = 2;
     private static final int OFFSET_P2 = 3;
-    private static final int OFFSET_Lc = 4;
+    private static final int OFFSET_LC = 4;
     private static final int OFFSET_DATA = 5;
 
+    /**
+     * commands that modify the content of the PO in session have a cost on the session buffer equal
+     * to the length of the outgoing data plus 6 bytes
+     */
+    private static final int SESSION_BUFFER_CMD_ADDITIONAL_COST = 6;
+
     /** Ratification command APDU for rev <= 2.4 */
-    private final static byte[] ratificationCmdApduLegacy = ByteArrayUtil.fromHex("94B2000000");
+    private final static byte[] RATIFICATION_CMD_APDU_LEGACY = ByteArrayUtil.fromHex("94B2000000");
     /** Ratification command APDU for rev > 2.4 */
-    private final static byte[] ratificationCmdApdu = ByteArrayUtil.fromHex("00B2000000");
+    private final static byte[] RATIFICATION_CMD_APDU = ByteArrayUtil.fromHex("00B2000000");
 
     private static final Logger logger = LoggerFactory.getLogger(PoTransaction.class);
 
@@ -495,10 +501,10 @@ public final class PoTransaction {
         if (transmissionMode == TransmissionMode.CONTACTLESS) {
             if (poRevision == PoRevision.REV2_4) {
                 ratificationCommand = new PoCustomReadCommandBuilder("Ratification command",
-                        new ApduRequest(ratificationCmdApduLegacy, false));
+                        new ApduRequest(RATIFICATION_CMD_APDU_LEGACY, false));
             } else {
                 ratificationCommand = new PoCustomReadCommandBuilder("Ratification command",
-                        new ApduRequest(ratificationCmdApdu, false));
+                        new ApduRequest(RATIFICATION_CMD_APDU, false));
             }
             /*
              * Ratification is done by the ratification command above so is not requested in the
@@ -941,14 +947,15 @@ public final class PoTransaction {
         /* create a sublist of PoCommand to be sent atomically */
         List<PoCommand> poAtomicCommandList = new ArrayList<PoCommand>();
         for (PoCommand poCommand : poCommandManager.getPoCommandList()) {
-            if (poCommand.getCommandBuilder().isSessionBufferUsed()) {
+            if (!poCommand.getCommandBuilder().isSessionBufferUsed()) {
                 /* This command does not affect the PO modifications buffer */
                 poAtomicCommandList.add(poCommand);
             } else {
                 /* This command affects the PO modifications buffer */
                 int neededSessionBufferSpace =
-                        poCommand.getCommandBuilder().getApduRequest().getBytes().length + 6;
-                if (isSessionBufferFull(neededSessionBufferSpace)) {
+                        poCommand.getCommandBuilder().getApduRequest().getBytes().length
+                                + SESSION_BUFFER_CMD_ADDITIONAL_COST;
+                if (isSessionBufferOverflowed(neededSessionBufferSpace)) {
                     if (currentModificationMode == SessionModificationMode.ATOMIC) {
                         throw new IllegalStateException(
                                 "ATOMIC mode error! This command would overflow the PO modifications buffer: "
@@ -982,7 +989,7 @@ public final class PoTransaction {
                     /*
                      * just update modifications buffer usage counter, ignore result (always false)
                      */
-                    isSessionBufferFull(neededSessionBufferSpace);
+                    isSessionBufferOverflowed(neededSessionBufferSpace);
                 } else {
                     /*
                      * The command fits in the PO modifications buffer, just add it to the list
@@ -1071,14 +1078,15 @@ public final class PoTransaction {
         List<PoCommand> poAtomicBuilderParserList = new ArrayList<PoCommand>();
 
         for (PoCommand poCommand : poCommandManager.getPoCommandList()) {
-            if (poCommand.getCommandBuilder().isSessionBufferUsed()) {
+            if (!poCommand.getCommandBuilder().isSessionBufferUsed()) {
                 /* This command does not affect the PO modifications buffer */
                 poAtomicBuilderParserList.add(poCommand);
             } else {
                 /* This command affects the PO modifications buffer */
                 int neededSessionBufferSpace =
-                        poCommand.getCommandBuilder().getApduRequest().getBytes().length + 6;
-                if (isSessionBufferFull(neededSessionBufferSpace)) {
+                        poCommand.getCommandBuilder().getApduRequest().getBytes().length
+                                + SESSION_BUFFER_CMD_ADDITIONAL_COST;
+                if (isSessionBufferOverflowed(neededSessionBufferSpace)) {
                     if (currentModificationMode == SessionModificationMode.ATOMIC) {
                         throw new IllegalStateException(
                                 "ATOMIC mode error! This command would overflow the PO modifications buffer: "
@@ -1111,7 +1119,7 @@ public final class PoTransaction {
                     /*
                      * just update modifications buffer usage counter, ignore result (always false)
                      */
-                    isSessionBufferFull(neededSessionBufferSpace);
+                    isSessionBufferOverflowed(neededSessionBufferSpace);
                 } else {
                     /*
                      * The command fits in the PO modifications buffer, just add it to the list
@@ -1169,7 +1177,7 @@ public final class PoTransaction {
         List<PoCommand> poAtomicBuilderParserList = new ArrayList<PoCommand>();
         SeResponse seResponseClosing;
         for (PoCommand poCommand : poCommandManager.getPoCommandList()) {
-            if (poCommand.getCommandBuilder().isSessionBufferUsed()) {
+            if (!poCommand.getCommandBuilder().isSessionBufferUsed()) {
                 /*
                  * This command does not affect the PO modifications buffer. We will call
                  * processPoCommands first
@@ -1179,8 +1187,9 @@ public final class PoTransaction {
             } else {
                 /* This command affects the PO modifications buffer */
                 int neededSessionBufferSpace =
-                        poCommand.getCommandBuilder().getApduRequest().getBytes().length + 6;
-                if (isSessionBufferFull(neededSessionBufferSpace)) {
+                        poCommand.getCommandBuilder().getApduRequest().getBytes().length
+                                + SESSION_BUFFER_CMD_ADDITIONAL_COST;
+                if (isSessionBufferOverflowed(neededSessionBufferSpace)) {
                     if (currentModificationMode == SessionModificationMode.ATOMIC) {
                         throw new IllegalStateException(
                                 "ATOMIC mode error! This command would overflow the PO modifications buffer: "
@@ -1224,7 +1233,7 @@ public final class PoTransaction {
                     /*
                      * just update modifications buffer usage counter, ignore result (always false)
                      */
-                    isSessionBufferFull(neededSessionBufferSpace);
+                    isSessionBufferOverflowed(neededSessionBufferSpace);
                 } else {
                     /*
                      * The command fits in the PO modifications buffer, just add it to the list
@@ -1337,12 +1346,13 @@ public final class PoTransaction {
      * argument is compatible with the current usage level of the buffer.
      * <p>
      * If it is compatible, the requirement is subtracted from the current level and the method
-     * returns false. If this is not the case, the method returns true.
+     * returns false. If this is not the case, the method returns true and the current level is left
+     * unchanged.
      * 
      * @param sessionBufferSizeConsumed session buffer requirement
      * @return true or false
      */
-    private boolean isSessionBufferFull(int sessionBufferSizeConsumed) {
+    private boolean isSessionBufferOverflowed(int sessionBufferSizeConsumed) {
         boolean isSessionBufferFull = false;
         if (modificationsCounterIsInBytes) {
             if (modificationsCounter - sessionBufferSizeConsumed > 0) {
