@@ -14,8 +14,8 @@ package org.eclipse.keyple.calypso.command.sam.exception;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 
 /**
- * The exception <code>KeypleSamIncorrectInputDataException</code> indicates that input data content
- * is incorrect.
+ * The exception {@code KeypleSamIncorrectInputDataException} indicates that input data content is
+ * incorrect.
  */
 public class KeypleSamIncorrectInputDataException extends KeypleSamCommandException {
 

@@ -14,8 +14,8 @@ package org.eclipse.keyple.calypso.command.po.exception;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 
 /**
- * The exception <code>KeyplePoSecurityContextException</code> indicates that the security
- * conditions are not fulfilled (e.g. no session, wrong key).
+ * The exception {@code KeyplePoSecurityContextException} indicates that the security conditions are
+ * not fulfilled (e.g. no session, wrong key).
  */
 public class KeyplePoSecurityContextException extends KeyplePoCommandException {
 

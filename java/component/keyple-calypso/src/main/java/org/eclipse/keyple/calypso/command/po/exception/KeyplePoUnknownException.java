@@ -14,8 +14,7 @@ package org.eclipse.keyple.calypso.command.po.exception;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 
 /**
- * The exception <code>KeyplePoUnknownException</code> indicates that the status code is not
- * referenced.
+ * The exception {@code KeyplePoUnknownException} indicates that the status code is not referenced.
  */
 public class KeyplePoUnknownException extends KeyplePoCommandException {
 

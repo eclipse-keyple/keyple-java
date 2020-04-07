@@ -14,8 +14,8 @@ package org.eclipse.keyple.core.seproxy.exception;
 
 
 /**
- * The exception <code>KeypleReaderException</code> is the parent abstract class of all Keyple
- * reader exceptions.
+ * The exception {@code KeypleReaderException} is the parent abstract class of all Keyple reader
+ * exceptions.
  */
 public abstract class KeypleReaderException extends KeypleException {
 

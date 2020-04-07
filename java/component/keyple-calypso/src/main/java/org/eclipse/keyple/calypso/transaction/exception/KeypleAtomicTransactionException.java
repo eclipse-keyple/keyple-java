@@ -9,23 +9,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.calypso.command.po.exception;
-
-import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
+package org.eclipse.keyple.calypso.transaction.exception;
 
 /**
- * The exception {@code KeyplePoDataAccessException} indicates that the content of the command is
- * incompatible with the PO's file system (e.g. reading a non-existent record,...).
+ * The exception {@code KeypleAtomicTransactionException} indicates that the transaction cannot be
+ * done in an atomic way because the capacity of the session buffer is not sufficient.
  */
-public class KeyplePoDataAccessException extends KeyplePoCommandException {
+public class KeypleAtomicTransactionException extends KeyplePoTransactionException {
 
     /**
      * @param message the message to identify the exception context
-     * @param command the Calypso PO command
-     * @param statusCode the status code
      */
-    public KeyplePoDataAccessException(String message, CalypsoPoCommand command,
-            Integer statusCode) {
-        super(message, command, statusCode);
+    protected KeypleAtomicTransactionException(String message) {
+        super(message);
     }
 }

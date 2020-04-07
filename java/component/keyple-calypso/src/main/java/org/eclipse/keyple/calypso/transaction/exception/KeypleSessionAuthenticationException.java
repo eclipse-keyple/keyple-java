@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information regarding copyright
  * ownership.
@@ -9,28 +9,29 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.exception;
+package org.eclipse.keyple.calypso.transaction.exception;
 
 /**
- * The exception {@code KeypleException} is the parent abstract class of all Keyple checked
- * exceptions.
+ * The exception {@code KeypleSessionAuthenticationException} indicates that the PO has correctly
+ * closed the secure session, but the support is not authentic because the signature of the PO is
+ * incorrect.
  */
-public abstract class KeypleException extends Exception {
+public class KeypleSessionAuthenticationException extends KeyplePoTransactionException {
 
     /**
      * @param message the message to identify the exception context
      */
-    protected KeypleException(String message) {
+    protected KeypleSessionAuthenticationException(String message) {
         super(message);
     }
 
     /**
-     * Encapsulate a lower level exception (ie CardException, IOException, HostNotFoundException..)
+     * Encapsulates lower level exception.
      *
      * @param message message to identify the exception context
      * @param cause the cause
      */
-    protected KeypleException(String message, Throwable cause) {
+    protected KeypleSessionAuthenticationException(String message, Throwable cause) {
         super(message, cause);
     }
 }

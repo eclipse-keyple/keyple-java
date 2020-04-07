@@ -14,7 +14,7 @@ package org.eclipse.keyple.calypso.command.po.exception;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 
 /**
- * The exception <code>KeyplePoTransactionsOverflowException</code> indicates that the number of
+ * The exception {@code KeyplePoTransactionsOverflowException} indicates that the number of
  * transactions authorized by the PO has reached its limit.<br>
  * This may occur, for example, when requesting an open secure session.
  */

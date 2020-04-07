@@ -9,23 +9,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.calypso.command.po.exception;
+package org.eclipse.keyple.calypso.transaction.exception;
 
-import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 
 /**
- * The exception {@code KeyplePoDataAccessException} indicates that the content of the command is
- * incompatible with the PO's file system (e.g. reading a non-existent record,...).
+ * The exception {@code KeypleInconsistencyDataException} indicates an inconsistency in the PO
+ * data.<br>
+ * This can occur, for example, if data read in session is different from data read outside the
+ * session.
  */
-public class KeyplePoDataAccessException extends KeyplePoCommandException {
+public class KeypleInconsistencyDataException extends KeyplePoTransactionException {
 
     /**
      * @param message the message to identify the exception context
-     * @param command the Calypso PO command
-     * @param statusCode the status code
      */
-    public KeyplePoDataAccessException(String message, CalypsoPoCommand command,
-            Integer statusCode) {
-        super(message, command, statusCode);
+    protected KeypleInconsistencyDataException(String message) {
+        super(message);
     }
 }

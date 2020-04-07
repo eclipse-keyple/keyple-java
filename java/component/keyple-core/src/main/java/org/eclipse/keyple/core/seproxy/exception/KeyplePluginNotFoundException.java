@@ -14,7 +14,7 @@ package org.eclipse.keyple.core.seproxy.exception;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 
 /**
- * The exception <code>KeyplePluginNotFoundException</code> indicates that the plugin is not found,
+ * The exception {@code KeyplePluginNotFoundException} indicates that the plugin is not found,
  * generally when it has not been previously registered to the {@link SeProxyService}.
  */
 public class KeyplePluginNotFoundException extends KeyplePluginException {

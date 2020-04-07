@@ -14,7 +14,7 @@ package org.eclipse.keyple.calypso.command.po.exception;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 
 /**
- * The exception <code>KeyplePoPinException</code> indicates that the input PIN provided is not
+ * The exception {@code KeyplePoPinException} indicates that the input PIN provided is not
  * valid.<br>
  * This can occur during the PIN verification.
  */

@@ -11,28 +11,29 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction.exception;
 
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
+import org.eclipse.keyple.calypso.command.po.exception.KeyplePoCommandException;
 
 /**
- * The exception {@code KeyplePoTransactionException} is the parent abstract class of all Keyple PO
- * transaction functional exceptions.
+ * The exception {@code KeyplePoAnomalyException} indicates an anomaly in the PO.<br>
+ * This can occur if the PO is not Calypso compliant.
  */
-public abstract class KeyplePoTransactionException extends KeypleException {
+public class KeyplePoAnomalyException extends KeyplePoTransactionException {
 
     /**
-     * @param message the message to identify the exception context
-     */
-    protected KeyplePoTransactionException(String message) {
-        super(message);
-    }
-
-    /**
-     * Encapsulates a lower level PO transaction exception
+     * Encapsulates an unexpected {@link KeyplePoCommandException} exception.
      *
      * @param message message to identify the exception context
      * @param cause the cause
      */
-    protected KeyplePoTransactionException(String message, Throwable cause) {
+    public KeyplePoAnomalyException(String message, KeyplePoCommandException cause) {
         super(message, cause);
+    }
+
+    /**
+     * @return the unexpected cause {@link KeyplePoCommandException}
+     */
+    @Override
+    public KeyplePoCommandException getCause() {
+        return (KeyplePoCommandException) super.getCause();
     }
 }

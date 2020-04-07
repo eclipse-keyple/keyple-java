@@ -15,8 +15,8 @@ import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.core.seproxy.exception.KeypleSeCommandException;
 
 /**
- * The exception <code>KeypleSamCommandException</code> is the parent abstract class of all Keyple
- * SAM APDU commands exceptions.
+ * The exception {@code KeypleSamCommandException} is the parent abstract class of all Keyple SAM
+ * APDU commands exceptions.
  */
 public abstract class KeypleSamCommandException extends KeypleSeCommandException {
 

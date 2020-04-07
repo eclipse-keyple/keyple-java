@@ -14,8 +14,8 @@ package org.eclipse.keyple.calypso.command.sam.exception;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 
 /**
- * The exception <code>KeypleSamBadExpectedLengthException</code> indicates that the expected output
- * data length is not correct.
+ * The exception {@code KeypleSamBadExpectedLengthException} indicates that the expected output data
+ * length is not correct.
  */
 public class KeypleSamBadExpectedLengthException extends KeypleSamCommandException {
 

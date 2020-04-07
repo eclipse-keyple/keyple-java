@@ -14,8 +14,8 @@ package org.eclipse.keyple.calypso.command.sam.exception;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 
 /**
- * The exception <code>KeypleSamDataAccessException</code> indicates that the content of the command
- * is incompatible with the SAM's file system (e.g. signing key not found,...).
+ * The exception {@code KeypleSamDataAccessException} indicates that the content of the command is
+ * incompatible with the SAM's file system (e.g. signing key not found,...).
  */
 public class KeypleSamDataAccessException extends KeypleSamCommandException {
 

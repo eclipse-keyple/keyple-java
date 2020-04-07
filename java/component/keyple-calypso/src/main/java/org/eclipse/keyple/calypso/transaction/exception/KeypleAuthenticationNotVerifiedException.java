@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information regarding copyright
  * ownership.
@@ -9,28 +9,29 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.exception;
+package org.eclipse.keyple.calypso.transaction.exception;
 
 /**
- * The exception {@code KeypleException} is the parent abstract class of all Keyple checked
- * exceptions.
+ * The exception {@code KeypleAuthenticationNotVerifiedException} indicates that the PO has
+ * correctly closed the secure session, but that it is impossible to check the authenticity of the
+ * support because the SAM is no more available (timeout, network problem,...).
  */
-public abstract class KeypleException extends Exception {
+public class KeypleAuthenticationNotVerifiedException extends KeyplePoTransactionException {
 
     /**
      * @param message the message to identify the exception context
      */
-    protected KeypleException(String message) {
+    protected KeypleAuthenticationNotVerifiedException(String message) {
         super(message);
     }
 
     /**
-     * Encapsulate a lower level exception (ie CardException, IOException, HostNotFoundException..)
+     * Encapsulates lower level exception.
      *
      * @param message message to identify the exception context
      * @param cause the cause
      */
-    protected KeypleException(String message, Throwable cause) {
+    protected KeypleAuthenticationNotVerifiedException(String message, Throwable cause) {
         super(message, cause);
     }
 }

@@ -15,8 +15,8 @@ import java.util.List;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 
 /**
- * The exception <code>KeypleReaderIOException</code> indicates that some IO operations with the
- * reader or SE have failed, generally when the reader was disconnected or card removed.
+ * The exception {@code KeypleReaderIOException} indicates that some IO operations with the reader
+ * or SE have failed, generally when the reader was disconnected or card removed.
  */
 public class KeypleReaderIOException extends KeypleReaderException {
 

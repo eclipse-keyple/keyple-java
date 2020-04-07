@@ -14,8 +14,8 @@ package org.eclipse.keyple.calypso.command.po.exception;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 
 /**
- * The exception <code>KeyplePoBadExpectedLengthException</code> indicates that the expected output
- * data length is not correct.
+ * The exception {@code KeyplePoBadExpectedLengthException} indicates that the expected output data
+ * length is not correct.
  */
 public class KeyplePoBadExpectedLengthException extends KeyplePoCommandException {
 

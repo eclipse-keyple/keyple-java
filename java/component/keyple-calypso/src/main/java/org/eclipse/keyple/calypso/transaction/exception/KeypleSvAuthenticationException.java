@@ -9,23 +9,28 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.calypso.command.po.exception;
-
-import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
+package org.eclipse.keyple.calypso.transaction.exception;
 
 /**
- * The exception {@code KeyplePoDataAccessException} indicates that the content of the command is
- * incompatible with the PO's file system (e.g. reading a non-existent record,...).
+ * The exception {@code KeypleSvAuthenticationException} indicates that the "Stored Value" session
+ * is not authentic because the signature of the PO is incorrect.
  */
-public class KeyplePoDataAccessException extends KeyplePoCommandException {
+public class KeypleSvAuthenticationException extends KeyplePoTransactionException {
 
     /**
      * @param message the message to identify the exception context
-     * @param command the Calypso PO command
-     * @param statusCode the status code
      */
-    public KeyplePoDataAccessException(String message, CalypsoPoCommand command,
-            Integer statusCode) {
-        super(message, command, statusCode);
+    protected KeypleSvAuthenticationException(String message) {
+        super(message);
+    }
+
+    /**
+     * Encapsulates lower level exception.
+     *
+     * @param message message to identify the exception context
+     * @param cause the cause
+     */
+    protected KeypleSvAuthenticationException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

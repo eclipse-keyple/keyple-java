@@ -11,28 +11,29 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction.exception;
 
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
+import org.eclipse.keyple.calypso.command.sam.exception.KeypleSamCommandException;
 
 /**
- * The exception {@code KeyplePoTransactionException} is the parent abstract class of all Keyple PO
- * transaction functional exceptions.
+ * The exception {@code KeypleSamAnomalyException} indicates an anomaly in the SAM.<br>
+ * This can occur if the SAM is not Calypso compliant.
  */
-public abstract class KeyplePoTransactionException extends KeypleException {
+public class KeypleSamAnomalyException extends KeyplePoTransactionException {
 
     /**
-     * @param message the message to identify the exception context
-     */
-    protected KeyplePoTransactionException(String message) {
-        super(message);
-    }
-
-    /**
-     * Encapsulates a lower level PO transaction exception
+     * Encapsulates an unexpected {@link KeypleSamCommandException} exception.
      *
      * @param message message to identify the exception context
      * @param cause the cause
      */
-    protected KeyplePoTransactionException(String message, Throwable cause) {
+    public KeypleSamAnomalyException(String message, KeypleSamCommandException cause) {
         super(message, cause);
+    }
+
+    /**
+     * @return the unexpected cause {@link KeypleSamCommandException}
+     */
+    @Override
+    public KeypleSamCommandException getCause() {
+        return (KeypleSamCommandException) super.getCause();
     }
 }

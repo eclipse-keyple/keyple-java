@@ -14,7 +14,7 @@ package org.eclipse.keyple.calypso.command.sam.exception;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 
 /**
- * The exception <code>KeypleSamTransactionsOverflowException</code> indicates that the number of
+ * The exception {@code KeypleSamTransactionsOverflowException} indicates that the number of
  * transactions authorized by the SAM has reached its limit.<br>
  * This may occur, for example, during the digest init operation.
  */

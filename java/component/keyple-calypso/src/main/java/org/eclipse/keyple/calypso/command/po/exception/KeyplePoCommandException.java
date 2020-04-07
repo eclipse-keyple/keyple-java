@@ -15,8 +15,8 @@ import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.core.seproxy.exception.KeypleSeCommandException;
 
 /**
- * The exception <code>KeyplePoCommandException</code> is the parent abstract class of all Keyple PO
- * APDU commands exceptions.
+ * The exception {@code KeyplePoCommandException} is the parent abstract class of all Keyple PO APDU
+ * commands exceptions.
  */
 public abstract class KeyplePoCommandException extends KeypleSeCommandException {
 

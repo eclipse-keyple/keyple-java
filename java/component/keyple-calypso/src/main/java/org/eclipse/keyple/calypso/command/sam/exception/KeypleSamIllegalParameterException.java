@@ -14,8 +14,8 @@ package org.eclipse.keyple.calypso.command.sam.exception;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 
 /**
- * The exception <code>KeypleSamIllegalParameterException</code> indicates that some input parameter
- * is not accepted by the SAM.
+ * The exception {@code KeypleSamIllegalParameterException} indicates that some input parameter is
+ * not accepted by the SAM.
  */
 public class KeypleSamIllegalParameterException extends KeypleSamCommandException {
 

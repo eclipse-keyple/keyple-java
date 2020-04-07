@@ -14,7 +14,7 @@ package org.eclipse.keyple.calypso.command.sam.exception;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 
 /**
- * The exception <code>KeypleSamAccessForbiddenException</code> indicates that preconditions are not
+ * The exception {@code KeypleSamAccessForbiddenException} indicates that preconditions are not
  * satisfied (e.g. session not active,...).
  */
 public class KeypleSamAccessForbiddenException extends KeypleSamCommandException {

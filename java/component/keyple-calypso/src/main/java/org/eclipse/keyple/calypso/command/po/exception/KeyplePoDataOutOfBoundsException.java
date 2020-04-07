@@ -14,8 +14,8 @@ package org.eclipse.keyple.calypso.command.po.exception;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 
 /**
- * The exception <code>KeyplePoDataOutOfBoundsException</code> indicates that the data provided by
- * the user induces a capacity overflow in the PO.<br>
+ * The exception {@code KeyplePoDataOutOfBoundsException} indicates that the data provided by the
+ * user induces a capacity overflow in the PO.<br>
  * This can occur, for example, for commands that update a counter or the "Stored Value".
  */
 public class KeyplePoDataOutOfBoundsException extends KeyplePoCommandException {
