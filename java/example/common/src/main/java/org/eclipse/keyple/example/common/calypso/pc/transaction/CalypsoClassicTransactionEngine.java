@@ -136,7 +136,8 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
      */
     public void doCalypsoReadWriteTransaction(PoTransaction poTransaction, boolean closeSeChannel)
             throws KeypleReaderException, KeypleUnauthorizedKvcException,
-            KeypleCalypsoSecureSessionException, KeypleDesynchronisedExchangesException, KeyplePoTransactionIllegalStateException {
+            KeypleCalypsoSecureSessionException, KeypleDesynchronisedExchangesException,
+            KeyplePoTransactionIllegalStateException {
 
         boolean poProcessStatus;
 
