@@ -22,7 +22,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  * APDU command.
  *
  */
-public final class DecreaseCmdBuild extends AbstractPoUserCommandBuilder<DecreaseRespPars> {
+public final class DecreaseCmdBuild extends AbstractPoCommandBuilder<DecreaseRespPars> {
 
     /** The command. */
     private static final CalypsoPoCommands command = CalypsoPoCommands.DECREASE;
@@ -87,23 +87,33 @@ public final class DecreaseCmdBuild extends AbstractPoUserCommandBuilder<Decreas
     }
 
     /**
-     * This command consumes 6 + 3 bytes in the session buffer
+     * This command can modify the contents of the PO in session and therefore uses the session
+     * buffer.
      * 
-     * @return 9
+     * @return true
      */
     @Override
-    public int getSessionBufferSizeConsumed() {
-        return 9;
+    public boolean isSessionBufferUsed() {
+        return true;
     }
 
+    /**
+     * @return the SFI of the accessed file
+     */
     public int getSfi() {
         return sfi;
     }
 
+    /**
+     * @return the counter number
+     */
     public int getCounterNumber() {
         return counterNumber;
     }
 
+    /**
+     * @return the decrement value
+     */
     public int getDecValue() {
         return decValue;
     }

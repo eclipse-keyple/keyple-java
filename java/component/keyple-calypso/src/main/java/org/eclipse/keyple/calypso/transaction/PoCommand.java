@@ -11,8 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
+import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
-import org.eclipse.keyple.calypso.command.po.AbstractPoUserCommandBuilder;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
@@ -25,7 +25,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  * by "prepare" methods and containing their results..
  */
 class PoCommand {
-    private AbstractPoUserCommandBuilder poCommandBuilder;
+    private AbstractPoCommandBuilder poCommandBuilder;
     private AbstractPoResponseParser poResponseParser;
 
     /**
@@ -33,7 +33,7 @@ class PoCommand {
      *
      * @param poCommandBuilder the command builder to be stored
      */
-    public PoCommand(AbstractPoUserCommandBuilder poCommandBuilder) {
+    public PoCommand(AbstractPoCommandBuilder poCommandBuilder) {
         this.poCommandBuilder = poCommandBuilder;
         this.poResponseParser = null;
     }
@@ -45,7 +45,7 @@ class PoCommand {
      *
      * @return the builder
      */
-    public AbstractPoUserCommandBuilder getCommandBuilder() {
+    public AbstractPoCommandBuilder getCommandBuilder() {
         return poCommandBuilder;
     }
 

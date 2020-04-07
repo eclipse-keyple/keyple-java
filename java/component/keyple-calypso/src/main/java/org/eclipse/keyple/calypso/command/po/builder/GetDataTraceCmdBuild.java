@@ -12,7 +12,7 @@
 package org.eclipse.keyple.calypso.command.po.builder;
 
 import org.eclipse.keyple.calypso.command.PoClass;
-import org.eclipse.keyple.calypso.command.po.AbstractPoUserCommandBuilder;
+import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataTraceRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
@@ -24,7 +24,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  * and thus make calculation of the digest impossible.
  *
  */
-public final class GetDataTraceCmdBuild extends AbstractPoUserCommandBuilder<GetDataTraceRespPars> {
+public final class GetDataTraceCmdBuild extends AbstractPoCommandBuilder<GetDataTraceRespPars> {
 
     private static final CalypsoPoCommands command = CalypsoPoCommands.GET_DATA_TRACE;
 
@@ -45,8 +45,14 @@ public final class GetDataTraceCmdBuild extends AbstractPoUserCommandBuilder<Get
         return new GetDataTraceRespPars(apduResponse, this);
     }
 
+    /**
+     * This command doesn't modify the contents of the PO and therefore doesn't uses the session
+     * buffer.
+     * 
+     * @return false
+     */
     @Override
-    public int getSessionBufferSizeConsumed() {
-        return 0;
+    public boolean isSessionBufferUsed() {
+        return false;
     }
 }

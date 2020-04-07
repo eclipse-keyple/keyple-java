@@ -13,7 +13,7 @@ package org.eclipse.keyple.calypso.transaction;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.keyple.calypso.command.po.AbstractPoUserCommandBuilder;
+import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +51,7 @@ class PoCommandManager {
      * @param commandBuilder the command builder
      * @return the index to retrieve the parser later
      */
-    int addRegularCommand(AbstractPoUserCommandBuilder commandBuilder) {
+    int addRegularCommand(AbstractPoCommandBuilder commandBuilder) {
         /**
          * Reset the list if the preparation of the command is done after a previous processing
          * notified by notifyCommandsProcessed.

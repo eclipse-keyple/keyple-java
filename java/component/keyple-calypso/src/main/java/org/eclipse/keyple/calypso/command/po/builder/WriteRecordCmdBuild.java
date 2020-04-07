@@ -13,7 +13,7 @@ package org.eclipse.keyple.calypso.command.po.builder;
 
 
 import org.eclipse.keyple.calypso.command.PoClass;
-import org.eclipse.keyple.calypso.command.po.AbstractPoUserCommandBuilder;
+import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.parser.WriteRecordRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
@@ -23,7 +23,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  * Record APDU command.
  *
  */
-public final class WriteRecordCmdBuild extends AbstractPoUserCommandBuilder<WriteRecordRespPars> {
+public final class WriteRecordCmdBuild extends AbstractPoCommandBuilder<WriteRecordRespPars> {
 
     /** The command. */
     private static final CalypsoPoCommands command = CalypsoPoCommands.WRITE_RECORD;
@@ -71,23 +71,34 @@ public final class WriteRecordCmdBuild extends AbstractPoUserCommandBuilder<Writ
     }
 
     /**
-     * This command consumes 6 + data length bytes in the session buffer
+     * This command can modify the contents of the PO in session and therefore uses the session
+     * buffer.
      * 
-     * @return the number of bytes consumed
+     * @return true
      */
     @Override
-    public int getSessionBufferSizeConsumed() {
-        return 6 + data.length;
+    public boolean isSessionBufferUsed() {
+        return true;
     }
 
+
+    /**
+     * @return the SFI of the accessed file
+     */
     public int getSfi() {
         return sfi;
     }
 
+    /**
+     * @return the number of the accessed record
+     */
     public int getRecordNumber() {
         return recordNumber;
     }
 
+    /**
+     * @return the data sent to the PO
+     */
     public byte[] getData() {
         return data;
     }

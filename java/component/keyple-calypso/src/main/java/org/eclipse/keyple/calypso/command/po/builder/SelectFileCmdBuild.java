@@ -13,7 +13,7 @@ package org.eclipse.keyple.calypso.command.po.builder;
 
 import org.eclipse.keyple.calypso.SelectFileControl;
 import org.eclipse.keyple.calypso.command.PoClass;
-import org.eclipse.keyple.calypso.command.po.AbstractPoUserCommandBuilder;
+import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.parser.SelectFileRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
@@ -22,7 +22,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  * This class provides the dedicated constructor to build the Select File APDU commands.
  *
  */
-public final class SelectFileCmdBuild extends AbstractPoUserCommandBuilder<SelectFileRespPars> {
+public final class SelectFileCmdBuild extends AbstractPoCommandBuilder<SelectFileRespPars> {
 
     private static final CalypsoPoCommands command = CalypsoPoCommands.SELECT_FILE;
 
@@ -93,13 +93,14 @@ public final class SelectFileCmdBuild extends AbstractPoUserCommandBuilder<Selec
     }
 
     /**
-     * This command sendable in session does not affect the session buffer
+     * This command can modify the contents of the PO in session and therefore uses the session
+     * buffer.
      * 
-     * @return 0
+     * @return true
      */
     @Override
-    public int getSessionBufferSizeConsumed() {
-        return 0;
+    public boolean isSessionBufferUsed() {
+        return true;
     }
 
     /**

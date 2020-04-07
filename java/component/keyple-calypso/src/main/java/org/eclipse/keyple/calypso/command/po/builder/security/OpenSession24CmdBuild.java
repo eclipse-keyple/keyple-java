@@ -59,4 +59,15 @@ public final class OpenSession24CmdBuild
     public OpenSession24RespPars createResponseParser(ApduResponse apduResponse) {
         return new OpenSession24RespPars(apduResponse, this);
     }
+
+    /**
+     *
+     * This command can't be executed in session and therefore doesn't uses the session buffer.
+     * 
+     * @return false
+     */
+    @Override
+    public boolean isSessionBufferUsed() {
+        return false;
+    }
 }

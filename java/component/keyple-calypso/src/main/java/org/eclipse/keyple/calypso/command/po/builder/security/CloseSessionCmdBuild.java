@@ -77,4 +77,15 @@ public final class CloseSessionCmdBuild extends AbstractPoCommandBuilder<CloseSe
     public CloseSessionRespPars createResponseParser(ApduResponse apduResponse) {
         return new CloseSessionRespPars(apduResponse, this);
     }
+
+    /**
+     *
+     * This command can't be executed in session and therefore doesn't uses the session buffer.
+     * 
+     * @return false
+     */
+    @Override
+    public boolean isSessionBufferUsed() {
+        return false;
+    }
 }

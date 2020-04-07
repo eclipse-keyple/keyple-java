@@ -58,4 +58,13 @@ public abstract class AbstractPoCommandBuilder<T extends AbstractPoResponseParse
     public CalypsoPoCommands getCommandReference() {
         return reference;
     }
+
+    /**
+     * Indicates if the session buffer is used when executing this command.
+     * <p>
+     * Allows the management of the overflow of this buffer.
+     *
+     * @return true if this command uses the session buffer
+     */
+    public abstract boolean isSessionBufferUsed();
 }

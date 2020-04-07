@@ -23,7 +23,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  * Record APDU command.
  *
  */
-public final class AppendRecordCmdBuild extends AbstractPoUserCommandBuilder<AppendRecordRespPars> {
+public final class AppendRecordCmdBuild extends AbstractPoCommandBuilder<AppendRecordRespPars> {
 
     /** The command. */
     private static final CalypsoPoCommands command = CalypsoPoCommands.APPEND_RECORD;
@@ -65,19 +65,26 @@ public final class AppendRecordCmdBuild extends AbstractPoUserCommandBuilder<App
     }
 
     /**
-     * This command consumes 6 + data length bytes in the session buffer
+     * This command can modify the contents of the PO in session and therefore uses the session
+     * buffer.
      * 
-     * @return the number of bytes consumed
+     * @return true
      */
     @Override
-    public int getSessionBufferSizeConsumed() {
-        return 6 + data.length;
+    public boolean isSessionBufferUsed() {
+        return true;
     }
 
+    /**
+     * @return the SFI of the accessed file
+     */
     public int getSfi() {
         return sfi;
     }
 
+    /**
+     * @return the data sent to the PO
+     */
     public byte[] getData() {
         return data;
     }

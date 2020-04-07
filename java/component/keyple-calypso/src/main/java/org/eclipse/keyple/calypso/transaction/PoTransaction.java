@@ -941,13 +941,13 @@ public final class PoTransaction {
         /* create a sublist of PoCommand to be sent atomically */
         List<PoCommand> poAtomicCommandList = new ArrayList<PoCommand>();
         for (PoCommand poCommand : poCommandManager.getPoCommandList()) {
-            int neededSessionBufferSpace =
-                    poCommand.getCommandBuilder().getSessionBufferSizeConsumed();
-            if (neededSessionBufferSpace == 0) {
+            if (poCommand.getCommandBuilder().isSessionBufferUsed()) {
                 /* This command does not affect the PO modifications buffer */
                 poAtomicCommandList.add(poCommand);
             } else {
                 /* This command affects the PO modifications buffer */
+                int neededSessionBufferSpace =
+                        poCommand.getCommandBuilder().getApduRequest().getBytes().length + 6;
                 if (isSessionBufferFull(neededSessionBufferSpace)) {
                     if (currentModificationMode == SessionModificationMode.ATOMIC) {
                         throw new IllegalStateException(
@@ -1071,13 +1071,13 @@ public final class PoTransaction {
         List<PoCommand> poAtomicBuilderParserList = new ArrayList<PoCommand>();
 
         for (PoCommand poCommand : poCommandManager.getPoCommandList()) {
-            int neededSessionBufferSpace =
-                    poCommand.getCommandBuilder().getSessionBufferSizeConsumed();
-            if (neededSessionBufferSpace == 0) {
+            if (poCommand.getCommandBuilder().isSessionBufferUsed()) {
                 /* This command does not affect the PO modifications buffer */
                 poAtomicBuilderParserList.add(poCommand);
             } else {
                 /* This command affects the PO modifications buffer */
+                int neededSessionBufferSpace =
+                        poCommand.getCommandBuilder().getApduRequest().getBytes().length + 6;
                 if (isSessionBufferFull(neededSessionBufferSpace)) {
                     if (currentModificationMode == SessionModificationMode.ATOMIC) {
                         throw new IllegalStateException(
@@ -1169,9 +1169,7 @@ public final class PoTransaction {
         List<PoCommand> poAtomicBuilderParserList = new ArrayList<PoCommand>();
         SeResponse seResponseClosing;
         for (PoCommand poCommand : poCommandManager.getPoCommandList()) {
-            int neededSessionBufferSpace =
-                    poCommand.getCommandBuilder().getSessionBufferSizeConsumed();
-            if (neededSessionBufferSpace == 0) {
+            if (poCommand.getCommandBuilder().isSessionBufferUsed()) {
                 /*
                  * This command does not affect the PO modifications buffer. We will call
                  * processPoCommands first
@@ -1180,6 +1178,8 @@ public final class PoTransaction {
                 atLeastOneReadCommand = true;
             } else {
                 /* This command affects the PO modifications buffer */
+                int neededSessionBufferSpace =
+                        poCommand.getCommandBuilder().getApduRequest().getBytes().length + 6;
                 if (isSessionBufferFull(neededSessionBufferSpace)) {
                     if (currentModificationMode == SessionModificationMode.ATOMIC) {
                         throw new IllegalStateException(

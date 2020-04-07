@@ -12,7 +12,7 @@
 package org.eclipse.keyple.calypso.command.po.builder;
 
 import org.eclipse.keyple.calypso.command.PoClass;
-import org.eclipse.keyple.calypso.command.po.AbstractPoUserCommandBuilder;
+import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
@@ -22,7 +22,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  * The Class ReadRecordsCmdBuild. This class provides the dedicated constructor to build the Read
  * Records APDU command.
  */
-public final class ReadRecordsCmdBuild extends AbstractPoUserCommandBuilder<ReadRecordsRespPars> {
+public final class ReadRecordsCmdBuild extends AbstractPoCommandBuilder<ReadRecordsRespPars> {
 
     /** The command. */
     private static final CalypsoPoCommands command = CalypsoPoCommands.READ_RECORDS;
@@ -97,23 +97,33 @@ public final class ReadRecordsCmdBuild extends AbstractPoUserCommandBuilder<Read
     }
 
     /**
-     * This command sendable in session does not affect the session buffer
+     * This command doesn't modify the contents of the PO and therefore doesn't uses the session
+     * buffer.
      * 
-     * @return 0
+     * @return false
      */
     @Override
-    public int getSessionBufferSizeConsumed() {
-        return 0;
+    public boolean isSessionBufferUsed() {
+        return false;
     }
 
+    /**
+     * @return the SFI of the accessed file
+     */
     public int getSfi() {
         return sfi;
     }
 
+    /**
+     * @return the number of the first record to read
+     */
     public byte getFirstRecordNumber() {
         return firstRecordNumber;
     }
 
+    /**
+     * @return the read data structure info
+     */
     public ReadDataStructure getReadDataStructure() {
         return readDataStructure;
     }

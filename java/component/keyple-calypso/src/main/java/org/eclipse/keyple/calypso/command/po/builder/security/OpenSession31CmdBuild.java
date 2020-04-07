@@ -54,4 +54,15 @@ public final class OpenSession31CmdBuild
     public OpenSession31RespPars createResponseParser(ApduResponse apduResponse) {
         return new OpenSession31RespPars(apduResponse, this);
     }
+
+    /**
+     *
+     * This command can't be executed in session and therefore doesn't uses the session buffer.
+     * 
+     * @return false
+     */
+    @Override
+    public boolean isSessionBufferUsed() {
+        return false;
+    }
 }

@@ -44,4 +44,15 @@ public final class PoGetChallengeCmdBuild extends AbstractPoCommandBuilder<PoGet
     public PoGetChallengeRespPars createResponseParser(ApduResponse apduResponse) {
         return new PoGetChallengeRespPars(apduResponse, this);
     }
+
+    /**
+     * This command doesn't modify the contents of the PO and therefore doesn't uses the session
+     * buffer.
+     * 
+     * @return false
+     */
+    @Override
+    public boolean isSessionBufferUsed() {
+        return false;
+    }
 }
