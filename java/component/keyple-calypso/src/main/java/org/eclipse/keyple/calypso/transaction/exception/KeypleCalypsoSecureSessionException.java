@@ -16,6 +16,7 @@ import java.util.List;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
+@Deprecated
 public class KeypleCalypsoSecureSessionException extends KeyplePoTransactionException {
 
     public enum Type {

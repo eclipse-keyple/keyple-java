@@ -23,7 +23,7 @@ public class KeypleInconsistencyDataException extends KeyplePoTransactionExcepti
     /**
      * @param message the message to identify the exception context
      */
-    protected KeypleInconsistencyDataException(String message) {
+    public KeypleInconsistencyDataException(String message) {
         super(message);
     }
 }

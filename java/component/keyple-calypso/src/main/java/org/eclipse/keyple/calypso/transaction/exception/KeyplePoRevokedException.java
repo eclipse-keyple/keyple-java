@@ -19,7 +19,7 @@ public class KeyplePoRevokedException extends KeyplePoTransactionException {
     /**
      * @param message the message to identify the exception context
      */
-    protected KeyplePoRevokedException(String message) {
+    public KeyplePoRevokedException(String message) {
         super(message);
     }
 }

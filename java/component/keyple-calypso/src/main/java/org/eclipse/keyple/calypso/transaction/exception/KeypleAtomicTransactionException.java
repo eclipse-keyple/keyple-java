@@ -20,7 +20,7 @@ public class KeypleAtomicTransactionException extends KeyplePoTransactionExcepti
     /**
      * @param message the message to identify the exception context
      */
-    protected KeypleAtomicTransactionException(String message) {
+    public KeypleAtomicTransactionException(String message) {
         super(message);
     }
 }

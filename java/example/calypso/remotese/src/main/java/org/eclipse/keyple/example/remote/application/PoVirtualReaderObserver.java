@@ -17,6 +17,8 @@ import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.exception.NoSamResourceAvailableException;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.calypso.transaction.exception.KeypleCalypsoSecureSessionException;
+import org.eclipse.keyple.calypso.transaction.exception.KeypleDesynchronisedExchangesException;
+import org.eclipse.keyple.calypso.transaction.exception.KeyplePoTransactionIllegalStateException;
 import org.eclipse.keyple.calypso.transaction.exception.KeypleUnauthorizedKvcException;
 import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
@@ -192,6 +194,8 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
             e.printStackTrace();
         } catch (KeypleCalypsoSecureSessionException e) {
             e.printStackTrace();
+        } catch (KeypleDesynchronisedExchangesException e) {
+            e.printStackTrace();
         }
         logger.warn(
                 "==================================================================================");
@@ -293,6 +297,10 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
         } catch (KeypleUnauthorizedKvcException e) {
             e.printStackTrace();
         } catch (KeypleCalypsoSecureSessionException e) {
+            e.printStackTrace();
+        } catch (KeyplePoTransactionIllegalStateException e) {
+            e.printStackTrace();
+        } catch (KeypleDesynchronisedExchangesException e) {
             e.printStackTrace();
         }
     }

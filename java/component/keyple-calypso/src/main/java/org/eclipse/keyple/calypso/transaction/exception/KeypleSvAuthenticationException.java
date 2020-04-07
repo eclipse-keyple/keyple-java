@@ -20,7 +20,7 @@ public class KeypleSvAuthenticationException extends KeyplePoTransactionExceptio
     /**
      * @param message the message to identify the exception context
      */
-    protected KeypleSvAuthenticationException(String message) {
+    public KeypleSvAuthenticationException(String message) {
         super(message);
     }
 
@@ -30,7 +30,7 @@ public class KeypleSvAuthenticationException extends KeyplePoTransactionExceptio
      * @param message message to identify the exception context
      * @param cause the cause
      */
-    protected KeypleSvAuthenticationException(String message, Throwable cause) {
+    public KeypleSvAuthenticationException(String message, Throwable cause) {
         super(message, cause);
     }
 }

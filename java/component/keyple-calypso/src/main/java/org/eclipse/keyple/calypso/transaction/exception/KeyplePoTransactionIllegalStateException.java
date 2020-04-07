@@ -22,7 +22,7 @@ public class KeyplePoTransactionIllegalStateException extends KeyplePoTransactio
     /**
      * @param message the message to identify the exception context
      */
-    protected KeyplePoTransactionIllegalStateException(String message) {
+    public KeyplePoTransactionIllegalStateException(String message) {
         super(message);
     }
 }

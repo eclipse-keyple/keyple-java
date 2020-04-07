@@ -21,7 +21,7 @@ public class KeypleSessionAuthenticationException extends KeyplePoTransactionExc
     /**
      * @param message the message to identify the exception context
      */
-    protected KeypleSessionAuthenticationException(String message) {
+    public KeypleSessionAuthenticationException(String message) {
         super(message);
     }
 
@@ -31,7 +31,7 @@ public class KeypleSessionAuthenticationException extends KeyplePoTransactionExc
      * @param message message to identify the exception context
      * @param cause the cause
      */
-    protected KeypleSessionAuthenticationException(String message, Throwable cause) {
+    public KeypleSessionAuthenticationException(String message, Throwable cause) {
         super(message, cause);
     }
 }

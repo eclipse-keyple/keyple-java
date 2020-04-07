@@ -21,6 +21,7 @@ import org.eclipse.keyple.calypso.command.sam.parser.security.DigestAuthenticate
 import org.eclipse.keyple.calypso.command.sam.parser.security.DigestCloseRespPars;
 import org.eclipse.keyple.calypso.command.sam.parser.security.SamGetChallengeRespPars;
 import org.eclipse.keyple.calypso.transaction.exception.KeypleCalypsoSecureSessionException;
+import org.eclipse.keyple.calypso.transaction.exception.KeypleDesynchronisedExchangesException;
 import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
@@ -98,11 +99,10 @@ class SamCommandProcessor {
      * 
      * @return the terminal challenge as an array of bytes
      * @throws KeypleReaderException if the communication with the SAM failed
-     * @throws KeypleCalypsoSecureSessionException if there is an error in the SAM response
-     * @throws KeypleCalypsoSecureSessionException if PO transaction error occurs
+     * @throws KeypleDesynchronisedExchangesException if PO exchanges APDU are desynchronized
      */
     byte[] getSessionTerminalChallenge()
-            throws KeypleReaderException, KeypleCalypsoSecureSessionException {
+            throws KeypleReaderException, KeypleDesynchronisedExchangesException {
         /* SAM ApduRequest List to hold Select Diversifier and Get Challenge commands */
         List<ApduRequest> samApduRequestList = new ArrayList<ApduRequest>();
 
@@ -161,9 +161,7 @@ class SamCommandProcessor {
                         ByteArrayUtil.toHex(sessionTerminalChallenge));
             }
         } else {
-            throw new KeypleCalypsoSecureSessionException("Invalid message received",
-                    KeypleCalypsoSecureSessionException.Type.SAM, samApduRequestList,
-                    samApduResponseList);
+            throw new KeypleDesynchronisedExchangesException("Invalid message received");
         }
         return sessionTerminalChallenge;
     }
@@ -396,12 +394,6 @@ class SamCommandProcessor {
 
         logger.trace("SAMRESPONSE = {}", samSeResponse);
 
-        if (!samSeResponse.wasChannelPreviouslyOpen()) {
-            throw new KeypleCalypsoSecureSessionException("The logical channel was not open",
-                    KeypleCalypsoSecureSessionException.Type.PO, samSeRequest.getApduRequests(),
-                    null);
-        }
-
         List<ApduResponse> samApduResponseList = samSeResponse.getApduResponses();
 
         for (int i = 0; i < samApduResponseList.size(); i++) {
@@ -459,12 +451,6 @@ class SamCommandProcessor {
         SeResponse samSeResponse = samReader.transmit(samSeRequest);
 
         logger.trace("checkPoSignature: SAMRESPONSE = {}", samSeResponse);
-
-        if (!samSeResponse.wasChannelPreviouslyOpen()) {
-            throw new KeypleCalypsoSecureSessionException("The logical channel was not open",
-                    KeypleCalypsoSecureSessionException.Type.SAM, samSeRequest.getApduRequests(),
-                    null);
-        }
 
         /* Get transaction result parsing the response */
         List<ApduResponse> samApduResponseList = samSeResponse.getApduResponses();

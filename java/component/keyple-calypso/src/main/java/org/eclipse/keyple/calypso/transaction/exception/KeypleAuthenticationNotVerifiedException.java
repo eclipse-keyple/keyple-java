@@ -21,7 +21,7 @@ public class KeypleAuthenticationNotVerifiedException extends KeyplePoTransactio
     /**
      * @param message the message to identify the exception context
      */
-    protected KeypleAuthenticationNotVerifiedException(String message) {
+    public KeypleAuthenticationNotVerifiedException(String message) {
         super(message);
     }
 
@@ -31,7 +31,7 @@ public class KeypleAuthenticationNotVerifiedException extends KeyplePoTransactio
      * @param message message to identify the exception context
      * @param cause the cause
      */
-    protected KeypleAuthenticationNotVerifiedException(String message, Throwable cause) {
+    public KeypleAuthenticationNotVerifiedException(String message, Throwable cause) {
         super(message, cause);
     }
 }

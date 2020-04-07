@@ -21,7 +21,7 @@ public class KeypleDesynchronisedExchangesException extends KeyplePoTransactionE
     /**
      * @param message the message to identify the exception context
      */
-    protected KeypleDesynchronisedExchangesException(String message) {
+    public KeypleDesynchronisedExchangesException(String message) {
         super(message);
     }
 }
