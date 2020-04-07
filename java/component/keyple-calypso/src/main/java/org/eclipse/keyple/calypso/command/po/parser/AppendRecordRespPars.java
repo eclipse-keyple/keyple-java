@@ -14,6 +14,7 @@ package org.eclipse.keyple.calypso.command.po.parser;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
+import org.eclipse.keyple.calypso.command.po.builder.AppendRecordCmdBuild;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
@@ -41,15 +42,6 @@ public final class AppendRecordRespPars extends AbstractPoResponseParser {
     }
 
     /**
-     * Instantiates a new AppendRecordRespPars.
-     * 
-     * @param response the response from the PO
-     */
-    public AppendRecordRespPars(ApduResponse response) {
-        super(response);
-    }
-
-    /**
      * Get the internal status table
      *
      * @return Status table
@@ -57,5 +49,15 @@ public final class AppendRecordRespPars extends AbstractPoResponseParser {
     @Override
     protected Map<Integer, StatusProperties> getStatusTable() {
         return STATUS_TABLE;
+    }
+
+    /**
+     * Instantiates a new AppendRecordRespPars.
+     * 
+     * @param response the response from the PO
+     * @param builderReference the reference to the builder that created this parser
+     */
+    public AppendRecordRespPars(ApduResponse response, AppendRecordCmdBuild builderReference) {
+        super(response, builderReference);
     }
 }

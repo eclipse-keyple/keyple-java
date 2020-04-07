@@ -14,6 +14,7 @@ package org.eclipse.keyple.calypso.command.po.parser;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
+import org.eclipse.keyple.calypso.command.po.builder.WriteRecordCmdBuild;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
@@ -50,11 +51,12 @@ public final class WriteRecordRespPars extends AbstractPoResponseParser {
     }
 
     /**
-     * Instantiates a new WriteRecordRespPars.
+     * Instantiates a new WriteRecordRespPars
      *
      * @param response the response from the PO
+     * @param builderReference the reference to the builder that created this parser
      */
-    public WriteRecordRespPars(ApduResponse response) {
-        super(response);
+    public WriteRecordRespPars(ApduResponse response, WriteRecordCmdBuild builderReference) {
+        super(response, builderReference);
     }
 }

@@ -14,6 +14,7 @@ package org.eclipse.keyple.calypso.command.po.parser.security;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
+import org.eclipse.keyple.calypso.command.po.builder.security.ChangeKeyCmdBuild;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
@@ -43,9 +44,10 @@ public class ChangeKeyRespPars extends AbstractPoResponseParser {
      * Instantiates a new ChangeKeyRespPars
      * 
      * @param response the response from the PO
+     * @param builderReference the reference to the builder that created this parser
      */
-    public ChangeKeyRespPars(ApduResponse response) {
-        super(response);
+    public ChangeKeyRespPars(ApduResponse response, ChangeKeyCmdBuild builderReference) {
+        super(response, builderReference);
     }
 
     @Override

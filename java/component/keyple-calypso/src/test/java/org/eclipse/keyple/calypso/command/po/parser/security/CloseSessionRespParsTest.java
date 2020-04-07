@@ -40,7 +40,7 @@ public class CloseSessionRespParsTest {
                         responses);
 
         AbstractApduResponseParser apduResponseParser =
-                new CloseSessionRespPars(seResponse.getApduResponses().get(0));
+                new CloseSessionRespPars(seResponse.getApduResponses().get(0), null);
         Assert.assertArrayEquals(response, apduResponseParser.getApduResponse().getBytes());
     }
 
@@ -59,20 +59,20 @@ public class CloseSessionRespParsTest {
 
         {// Case Length = 4
             CloseSessionRespPars pars =
-                    new CloseSessionRespPars(new ApduResponse(apduResponse, null));
+                    new CloseSessionRespPars(new ApduResponse(apduResponse, null), null);
             Assert.assertArrayEquals(sessionSignature, pars.getSignatureLo());
         }
 
         {// Case Length = 8
             CloseSessionRespPars pars =
-                    new CloseSessionRespPars(new ApduResponse(apduResponseCaseTwo, null));
+                    new CloseSessionRespPars(new ApduResponse(apduResponseCaseTwo, null), null);
             Assert.assertArrayEquals(sessionSignatureCaseTwo, pars.getSignatureLo());
         }
 
         {// Case Other
             try {
-                CloseSessionRespPars pars =
-                        new CloseSessionRespPars(new ApduResponse(apduResponseCaseThree, null));
+                CloseSessionRespPars pars = new CloseSessionRespPars(
+                        new ApduResponse(apduResponseCaseThree, null), null);
                 Assert.fail();
             } catch (IllegalArgumentException ex) {
                 /* expected case */
@@ -82,8 +82,8 @@ public class CloseSessionRespParsTest {
 
     @Test
     public void existingTestConverted() {
-        CloseSessionRespPars parser =
-                new CloseSessionRespPars(new ApduResponse(ByteArrayUtil.fromHex("9000h"), null));
+        CloseSessionRespPars parser = new CloseSessionRespPars(
+                new ApduResponse(ByteArrayUtil.fromHex("9000h"), null), null);
         // This assert wasn't passing
         Assert.assertEquals("", ByteArrayUtil.toHex(parser.getSignatureLo()));
         Assert.assertEquals("", ByteArrayUtil.toHex(parser.getPostponedData()));
@@ -92,13 +92,13 @@ public class CloseSessionRespParsTest {
     @Test // Calypso / page 105 / Example command aborting a session:
     public void abortingASession() {
         CloseSessionRespPars parser = new CloseSessionRespPars(
-                new ApduResponse(ByteArrayUtil.fromHex("FEDCBA98 9000h"), null));
+                new ApduResponse(ByteArrayUtil.fromHex("FEDCBA98 9000h"), null), null);
     }
 
     @Test // Calypso / page 105 / Example command, Lc=4, without postponed data:
     public void lc4withoutPostponedData() {
         CloseSessionRespPars parser = new CloseSessionRespPars(
-                new ApduResponse(ByteArrayUtil.fromHex("FEDCBA98 9000h"), null));
+                new ApduResponse(ByteArrayUtil.fromHex("FEDCBA98 9000h"), null), null);
         Assert.assertEquals("FEDCBA98", ByteArrayUtil.toHex(parser.getSignatureLo()));
         Assert.assertEquals("", ByteArrayUtil.toHex(parser.getPostponedData()));
     }
@@ -106,7 +106,7 @@ public class CloseSessionRespParsTest {
     @Test // Calypso / page 105 / Example command, Lc=4, with postponed data:
     public void lc4WithPostponedData() {
         CloseSessionRespPars parser = new CloseSessionRespPars(
-                new ApduResponse(ByteArrayUtil.fromHex("04 345678 FEDCBA98 9000h"), null));
+                new ApduResponse(ByteArrayUtil.fromHex("04 345678 FEDCBA98 9000h"), null), null);
         Assert.assertEquals("FEDCBA98", ByteArrayUtil.toHex(parser.getSignatureLo()));
         Assert.assertEquals("04345678", ByteArrayUtil.toHex(parser.getPostponedData()));
     }

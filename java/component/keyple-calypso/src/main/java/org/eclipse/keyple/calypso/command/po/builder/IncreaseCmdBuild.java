@@ -22,11 +22,15 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  * APDU command.
  *
  */
-public final class IncreaseCmdBuild extends AbstractPoCommandBuilder<IncreaseRespPars>
-        implements PoSendableInSession, PoModificationCommand {
+public final class IncreaseCmdBuild extends AbstractPoCommandBuilder<IncreaseRespPars> {
 
     /** The command. */
     private static final CalypsoPoCommands command = CalypsoPoCommands.INCREASE;
+
+    /* Construction arguments */
+    private final int sfi;
+    private final int counterNumber;
+    private final int incValue;
 
     /**
      * Instantiates a new increase cmd build from command parameters.
@@ -55,6 +59,12 @@ public final class IncreaseCmdBuild extends AbstractPoCommandBuilder<IncreaseRes
             throw new IllegalArgumentException("Increment value out of range!");
         }
 
+        // TODO complete argument checking
+        byte cla = poClass.getValue();
+        this.sfi = sfi;
+        this.counterNumber = counterNumber;
+        this.incValue = incValue;
+
         // convert the integer value into a 3-byte buffer
         byte[] incValueBuffer = new byte[3];
         incValueBuffer[0] = (byte) ((incValue >> 16) & 0xFF);
@@ -64,8 +74,7 @@ public final class IncreaseCmdBuild extends AbstractPoCommandBuilder<IncreaseRes
         byte p2 = (byte) (sfi * 8);
 
         /* this is a case4 command, we set Le = 0 */
-        this.request = setApduRequest(poClass.getValue(), command, counterNumber, p2,
-                incValueBuffer, (byte) 0x00);
+        this.request = setApduRequest(cla, command, counterNumber, p2, incValueBuffer, (byte) 0x00);
         if (extraInfo != null) {
             this.addSubName(extraInfo);
         }
@@ -73,6 +82,38 @@ public final class IncreaseCmdBuild extends AbstractPoCommandBuilder<IncreaseRes
 
     @Override
     public IncreaseRespPars createResponseParser(ApduResponse apduResponse) {
-        return new IncreaseRespPars(apduResponse);
+        return new IncreaseRespPars(apduResponse, this);
+    }
+
+    /**
+     * This command can modify the contents of the PO in session and therefore uses the session
+     * buffer.
+     * 
+     * @return true
+     */
+    @Override
+    public boolean isSessionBufferUsed() {
+        return true;
+    }
+
+    /**
+     * @return the SFI of the accessed file
+     */
+    public int getSfi() {
+        return sfi;
+    }
+
+    /**
+     * @return the counter number
+     */
+    public int getCounterNumber() {
+        return counterNumber;
+    }
+
+    /**
+     * @return the increment value
+     */
+    public int getIncValue() {
+        return incValue;
     }
 }

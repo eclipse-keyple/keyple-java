@@ -17,8 +17,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 /**
  * Class to build custom (non-referenced) read PO commands
  */
-public class PoCustomReadCommandBuilder extends AbstractIso7816CommandBuilder
-        implements PoSendableInSession {
+public class PoCustomReadCommandBuilder extends AbstractIso7816CommandBuilder {
 
     protected PoRevision defaultRevision = PoRevision.REV3_1;
 

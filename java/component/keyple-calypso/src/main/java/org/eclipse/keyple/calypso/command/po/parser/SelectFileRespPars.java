@@ -14,6 +14,7 @@ package org.eclipse.keyple.calypso.command.po.parser;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
+import org.eclipse.keyple.calypso.command.po.builder.SelectFileCmdBuild;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -40,18 +41,23 @@ public final class SelectFileRespPars extends AbstractPoResponseParser {
         STATUS_TABLE = m;
     }
 
+    @Override
+    protected Map<Integer, StatusProperties> getStatusTable() {
+        return STATUS_TABLE;
+    }
+
     // File Type Values
-    public final static int FILE_TYPE_MF = 1;
-    public final static int FILE_TYPE_DF = 2;
-    public final static int FILE_TYPE_EF = 4;
+    public static final int FILE_TYPE_MF = 1;
+    public static final int FILE_TYPE_DF = 2;
+    public static final int FILE_TYPE_EF = 4;
 
     // EF Type Values
-    public final static int EF_TYPE_DF = 0;
-    public final static int EF_TYPE_BINARY = 1;
-    public final static int EF_TYPE_LINEAR = 2;
-    public final static int EF_TYPE_CYCLIC = 4;
-    public final static int EF_TYPE_SIMULATED_COUNTERS = 8;
-    public final static int EF_TYPE_COUNTERS = 9;
+    public static final int EF_TYPE_DF = 0;
+    public static final int EF_TYPE_BINARY = 1;
+    public static final int EF_TYPE_LINEAR = 2;
+    public static final int EF_TYPE_CYCLIC = 4;
+    public static final int EF_TYPE_SIMULATED_COUNTERS = 8;
+    public static final int EF_TYPE_COUNTERS = 9;
 
     private byte[] fileBinaryData;
 
@@ -165,7 +171,7 @@ public final class SelectFileRespPars extends AbstractPoResponseParser {
 
             rfu = new byte[5];
             System.arraycopy(inFileParameters, iter, rfu, 0, 5);
-            iter += 5; // RFU fields;
+            iter += 5;
 
         } else {
 
@@ -192,9 +198,10 @@ public final class SelectFileRespPars extends AbstractPoResponseParser {
      * Instantiates a new SelectFileRespPars.
      * 
      * @param response the response from the PO
+     * @param builderReference the reference to the builder that created this parser
      */
-    public SelectFileRespPars(ApduResponse response) {
-        super(response);
+    public SelectFileRespPars(ApduResponse response, SelectFileCmdBuild builderReference) {
+        super(response, builderReference);
         parseResponse();
     }
 

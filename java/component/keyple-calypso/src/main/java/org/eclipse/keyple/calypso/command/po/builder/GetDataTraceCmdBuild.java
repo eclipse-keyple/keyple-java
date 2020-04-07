@@ -42,6 +42,17 @@ public final class GetDataTraceCmdBuild extends AbstractPoCommandBuilder<GetData
 
     @Override
     public GetDataTraceRespPars createResponseParser(ApduResponse apduResponse) {
-        return new GetDataTraceRespPars(apduResponse);
+        return new GetDataTraceRespPars(apduResponse, this);
+    }
+
+    /**
+     * This command doesn't modify the contents of the PO and therefore doesn't uses the session
+     * buffer.
+     * 
+     * @return false
+     */
+    @Override
+    public boolean isSessionBufferUsed() {
+        return false;
     }
 }

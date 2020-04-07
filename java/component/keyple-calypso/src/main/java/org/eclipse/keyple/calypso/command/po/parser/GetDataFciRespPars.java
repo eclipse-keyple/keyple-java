@@ -16,6 +16,7 @@ import static org.eclipse.keyple.core.util.bertlv.Tag.TagType.PRIMITIVE;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
+import org.eclipse.keyple.calypso.command.po.builder.GetDataFciCmdBuild;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -95,10 +96,10 @@ public final class GetDataFciRespPars extends AbstractPoResponseParser {
     private byte siSoftwareRevision = 0;
 
     /** Application type bitmasks features */
-    private final static byte APP_TYPE_WITH_CALYPSO_PIN = 0x01;
-    private final static byte APP_TYPE_WITH_CALYPSO_SV = 0x02;
-    private final static byte APP_TYPE_RATIFICATION_COMMAND_REQUIRED = 0x04;
-    private final static byte APP_TYPE_CALYPSO_REV_32_MODE = 0x08;
+    private static final byte APP_TYPE_WITH_CALYPSO_PIN = 0x01;
+    private static final byte APP_TYPE_WITH_CALYPSO_SV = 0x02;
+    private static final byte APP_TYPE_RATIFICATION_COMMAND_REQUIRED = 0x04;
+    private static final byte APP_TYPE_CALYPSO_REV_32_MODE = 0x08;
 
     /**
      * Instantiates a new GetDataFciRespPars from the ApduResponse to a selection application
@@ -123,16 +124,15 @@ public final class GetDataFciRespPars extends AbstractPoResponseParser {
      * All fields are pre-initialized to handle the case where the parsing fails.
      * <p>
      *
-     * @param selectApplicationResponse the select application response from Get Data APDU command
+     * @param response the select application response from Get Data APDU command
+     * @param builderReference the reference to the builder that created this parser
      */
-    public GetDataFciRespPars(ApduResponse selectApplicationResponse) {
-        super(selectApplicationResponse);
-
-        final byte[] response = selectApplicationResponse.getBytes();
+    public GetDataFciRespPars(ApduResponse response, GetDataFciCmdBuild builderReference) {
+        super(response, builderReference);
         TLV tlv;
 
         /* check the command status to determine if the DF has been invalidated */
-        if (selectApplicationResponse.getStatusCode() == 0x6283) {
+        if (response.getStatusCode() == 0x6283) {
             logger.debug(
                     "The response to the select application command status word indicates that the DF has been invalidated.");
             isDfInvalidated = true;
@@ -141,7 +141,8 @@ public final class GetDataFciRespPars extends AbstractPoResponseParser {
         /* parse the raw data with the help of the TLV class */
         try {
             /* init TLV object with the raw data and extract the FCI Template */
-            tlv = new TLV(response);
+            final byte[] responseData = response.getBytes();
+            tlv = new TLV(responseData);
 
             /* Get the FCI template */
             if (!tlv.parse(TAG_FCI_TEMPLATE, 0)) {

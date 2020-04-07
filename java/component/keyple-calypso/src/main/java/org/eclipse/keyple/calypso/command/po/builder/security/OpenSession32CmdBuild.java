@@ -55,6 +55,17 @@ public final class OpenSession32CmdBuild
 
     @Override
     public OpenSession32RespPars createResponseParser(ApduResponse apduResponse) {
-        return new OpenSession32RespPars(apduResponse);
+        return new OpenSession32RespPars(apduResponse, this);
+    }
+
+    /**
+     *
+     * This command can't be executed in session and therefore doesn't uses the session buffer.
+     * 
+     * @return false
+     */
+    @Override
+    public boolean isSessionBufferUsed() {
+        return false;
     }
 }

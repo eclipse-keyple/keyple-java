@@ -17,8 +17,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 /**
  * Class to build custom (non-referenced) modification PO commands
  */
-public class PoCustomModificationCommandBuilder extends AbstractIso7816CommandBuilder
-        implements PoModificationCommand {
+public class PoCustomModificationCommandBuilder extends AbstractIso7816CommandBuilder {
 
     protected PoRevision defaultRevision = PoRevision.REV3_1;
 

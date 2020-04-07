@@ -13,6 +13,7 @@ package org.eclipse.keyple.calypso.command.po.parser;
 
 import java.util.*;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
+import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -59,14 +60,10 @@ public final class ReadRecordsRespPars extends AbstractPoResponseParser {
      * Instantiates a new ReadRecordsRespPars.
      * 
      * @param apduResponse the response from the PO
-     * @param recordNumber the record number
-     * @param readDataStructure the type of content in the response to parse
+     * @param builderReference the reference to the builder that created this parser
      */
-    public ReadRecordsRespPars(ApduResponse apduResponse, ReadDataStructure readDataStructure,
-            byte recordNumber) {
-        super(apduResponse);
-        this.recordNumber = recordNumber;
-        this.readDataStructure = readDataStructure;
+    public ReadRecordsRespPars(ApduResponse apduResponse, ReadRecordsCmdBuild builderReference) {
+        super(apduResponse, builderReference);
     }
 
     /**
@@ -158,18 +155,20 @@ public final class ReadRecordsRespPars extends AbstractPoResponseParser {
 
     @Override
     public String toString() {
-        String string;
+        String string = "";
+        SortedMap<Integer, byte[]> recordMap;
+        SortedMap<Integer, Integer> counterMap;
+        StringBuilder sb;
         switch (readDataStructure) {
-            case SINGLE_RECORD_DATA: {
-                SortedMap<Integer, byte[]> recordMap = getRecords();
+            case SINGLE_RECORD_DATA:
+                recordMap = getRecords();
                 string = String.format("Single record data: {RECORD = %d, DATA = %s}",
                         recordMap.firstKey(),
                         ByteArrayUtil.toHex(recordMap.get(recordMap.firstKey())));
-            }
                 break;
-            case MULTIPLE_RECORD_DATA: {
-                SortedMap<Integer, byte[]> recordMap = getRecords();
-                StringBuilder sb = new StringBuilder();
+            case MULTIPLE_RECORD_DATA:
+                recordMap = getRecords();
+                sb = new StringBuilder();
                 sb.append("Multiple record data: ");
                 Set records = recordMap.keySet();
                 for (Iterator it = records.iterator(); it.hasNext();) {
@@ -179,19 +178,17 @@ public final class ReadRecordsRespPars extends AbstractPoResponseParser {
                     if (it.hasNext()) {
                         sb.append(", ");
                     }
+                    string = sb.toString();
                 }
-                string = sb.toString();
-            }
                 break;
-            case SINGLE_COUNTER: {
-                SortedMap<Integer, Integer> counterMap = getCounters();
+            case SINGLE_COUNTER:
+                counterMap = getCounters();
                 string = String.format("Single counter: {COUNTER = %d, VALUE = %d}",
                         counterMap.firstKey(), counterMap.get(counterMap.firstKey()));
-            }
                 break;
-            case MULTIPLE_COUNTER: {
-                SortedMap<Integer, Integer> counterMap = getCounters();
-                StringBuilder sb = new StringBuilder();
+            case MULTIPLE_COUNTER:
+                counterMap = getCounters();
+                sb = new StringBuilder();
                 sb.append("Multiple counter: ");
                 Set counters = counterMap.keySet();
                 for (Iterator it = counters.iterator(); it.hasNext();) {
@@ -203,7 +200,6 @@ public final class ReadRecordsRespPars extends AbstractPoResponseParser {
                     }
                 }
                 string = sb.toString();
-            }
                 break;
             default:
                 throw new IllegalStateException("Unexpected data structure");

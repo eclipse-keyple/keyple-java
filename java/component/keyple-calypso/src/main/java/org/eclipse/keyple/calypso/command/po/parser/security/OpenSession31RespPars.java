@@ -13,17 +13,23 @@ package org.eclipse.keyple.calypso.command.po.parser.security;
 
 import java.util.Arrays;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
+import org.eclipse.keyple.calypso.command.po.builder.security.OpenSession31CmdBuild;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 public final class OpenSession31RespPars extends AbstractOpenSessionRespPars {
 
-    public OpenSession31RespPars(ApduResponse response) {
-        super(response, PoRevision.REV3_1);
+    /**
+     * Instantiates a new OpenSession31RespPars from the response.
+     *
+     * @param response from OpenSession31RespPars
+     * @param builderReference the reference to the builder that created this parser
+     */
+    public OpenSession31RespPars(ApduResponse response, OpenSession31CmdBuild builderReference) {
+        super(response, builderReference, PoRevision.REV3_1);
     }
 
     @Override
     SecureSession toSecureSession(byte[] apduResponseData) {
-        SecureSession secureSession;
         boolean previousSessionRatified = (apduResponseData[4] == (byte) 0x00);
         boolean manageSecureSessionAuthorized = false;
 

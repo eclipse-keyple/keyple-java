@@ -42,6 +42,17 @@ public final class GetDataFciCmdBuild extends AbstractPoCommandBuilder<GetDataFc
 
     @Override
     public GetDataFciRespPars createResponseParser(ApduResponse apduResponse) {
-        return new GetDataFciRespPars(apduResponse);
+        return new GetDataFciRespPars(apduResponse, this);
+    }
+
+    /**
+     * This command doesn't modify the contents of the PO and therefore doesn't uses the session
+     * buffer.
+     * 
+     * @return false
+     */
+    @Override
+    public boolean isSessionBufferUsed() {
+        return false;
     }
 }

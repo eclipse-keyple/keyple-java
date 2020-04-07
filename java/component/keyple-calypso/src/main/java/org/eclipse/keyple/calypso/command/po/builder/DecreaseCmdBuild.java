@@ -22,11 +22,15 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  * APDU command.
  *
  */
-public final class DecreaseCmdBuild extends AbstractPoCommandBuilder<DecreaseRespPars>
-        implements PoSendableInSession, PoModificationCommand {
+public final class DecreaseCmdBuild extends AbstractPoCommandBuilder<DecreaseRespPars> {
 
     /** The command. */
     private static final CalypsoPoCommands command = CalypsoPoCommands.DECREASE;
+
+    /* Construction arguments */
+    private final int sfi;
+    private final int counterNumber;
+    private final int decValue;
 
     /**
      * Instantiates a new decrease cmd build from command parameters.
@@ -56,13 +60,18 @@ public final class DecreaseCmdBuild extends AbstractPoCommandBuilder<DecreaseRes
             throw new IllegalArgumentException("Decrement value out of range!");
         }
 
+        // TODO complete argument checking
+        byte cla = poClass.getValue();
+        this.sfi = sfi;
+        this.counterNumber = counterNumber;
+        this.decValue = decValue;
+
         // convert the integer value into a 3-byte buffer
         byte[] decValueBuffer = new byte[3];
         decValueBuffer[0] = (byte) ((decValue >> 16) & 0xFF);
         decValueBuffer[1] = (byte) ((decValue >> 8) & 0xFF);
         decValueBuffer[2] = (byte) (decValue & 0xFF);
 
-        byte cla = poClass.getValue();
         byte p2 = (byte) (sfi * 8);
 
         /* this is a case4 command, we set Le = 0 */
@@ -74,6 +83,38 @@ public final class DecreaseCmdBuild extends AbstractPoCommandBuilder<DecreaseRes
 
     @Override
     public DecreaseRespPars createResponseParser(ApduResponse apduResponse) {
-        return new DecreaseRespPars(apduResponse);
+        return new DecreaseRespPars(apduResponse, this);
+    }
+
+    /**
+     * This command can modify the contents of the PO in session and therefore uses the session
+     * buffer.
+     * 
+     * @return true
+     */
+    @Override
+    public boolean isSessionBufferUsed() {
+        return true;
+    }
+
+    /**
+     * @return the SFI of the accessed file
+     */
+    public int getSfi() {
+        return sfi;
+    }
+
+    /**
+     * @return the counter number
+     */
+    public int getCounterNumber() {
+        return counterNumber;
+    }
+
+    /**
+     * @return the decrement value
+     */
+    public int getDecValue() {
+        return decValue;
     }
 }

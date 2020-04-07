@@ -14,6 +14,7 @@ package org.eclipse.keyple.calypso.command.po.parser;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
+import org.eclipse.keyple.calypso.command.po.builder.IncreaseCmdBuild;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
@@ -44,29 +45,27 @@ public final class IncreaseRespPars extends AbstractPoResponseParser {
         STATUS_TABLE = m;
     }
 
-    /**
-     * Constructor to build a parser of the Increase command response.
-     *
-     * @param response response to parse
-     */
-    public IncreaseRespPars(ApduResponse response) {
-        super(response);
-    }
-
-
     @Override
     protected Map<Integer, StatusProperties> getStatusTable() {
         return STATUS_TABLE;
     }
 
     /**
+     * Constructor to build a parser of the Increase command response.
+     *
+     * @param response response to parse
+     * @param builderReference the reference to the builder that created this parser
+     */
+    public IncreaseRespPars(ApduResponse response, IncreaseCmdBuild builderReference) {
+        super(response, builderReference);
+    }
+
+    /**
      * Returns the new counter value as an int between 0
      *
      * @return the new value
-     * @throws IllegalStateException - if the counter value is not available from the command
-     *         response.
      */
-    public int getNewValue() throws IllegalStateException {
+    public int getNewValue() {
         byte[] newValueBuffer = getApduResponse().getDataOut();
         if (newValueBuffer.length == 3) {
             return (newValueBuffer[0] << 16) + (newValueBuffer[1] << 8) + newValueBuffer[2];

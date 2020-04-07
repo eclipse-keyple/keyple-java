@@ -41,7 +41,7 @@ public class GetDataRespParsTest {
                         + appSerialNumber + " 53 07 " + startupInformation + "9000"),
                 null);
 
-        GetDataFciRespPars parser = new GetDataFciRespPars(apduResponse);
+        GetDataFciRespPars parser = new GetDataFciRespPars(apduResponse, null);
 
         /* valid Calypso FCI */
         Assert.assertTrue(parser.isValidCalypsoFCI());
@@ -88,7 +88,7 @@ public class GetDataRespParsTest {
                         + appSerialNumber + " 53 07 " + startupInformation + "9000"),
                 null);
 
-        parser = new GetDataFciRespPars(apduResponse);
+        parser = new GetDataFciRespPars(apduResponse, null);
 
         /* valid Calypso FCI */
         Assert.assertTrue(parser.isValidCalypsoFCI());
@@ -139,7 +139,7 @@ public class GetDataRespParsTest {
                         + appSerialNumber + " 53 07 " + startupInformation + "6283"),
                 null);
 
-        GetDataFciRespPars parser = new GetDataFciRespPars(apduResponse);
+        GetDataFciRespPars parser = new GetDataFciRespPars(apduResponse, null);
 
         /* valid Calypso FCI */
         Assert.assertTrue(parser.isValidCalypsoFCI());
@@ -168,7 +168,7 @@ public class GetDataRespParsTest {
                         + appSerialNumber + " 53 07 " + startupInformation + "9000"),
                 null);
 
-        GetDataFciRespPars parser = new GetDataFciRespPars(apduResponse);
+        GetDataFciRespPars parser = new GetDataFciRespPars(apduResponse, null);
 
         /* invalid Calypso FCI */
         Assert.assertFalse(parser.isValidCalypsoFCI());
@@ -179,7 +179,7 @@ public class GetDataRespParsTest {
                         + appSerialNumber + " 53 07 " + startupInformation + "9000"),
                 null);
 
-        parser = new GetDataFciRespPars(apduResponse);
+        parser = new GetDataFciRespPars(apduResponse, null);
 
         /* invalid Calypso FCI */
         Assert.assertFalse(parser.isValidCalypsoFCI());
@@ -190,7 +190,7 @@ public class GetDataRespParsTest {
                         + appSerialNumber + " 53 07 " + startupInformation + "9000"),
                 null);
 
-        parser = new GetDataFciRespPars(apduResponse);
+        parser = new GetDataFciRespPars(apduResponse, null);
 
         /* invalid Calypso FCI */
         Assert.assertFalse(parser.isValidCalypsoFCI());
@@ -201,7 +201,7 @@ public class GetDataRespParsTest {
                         + appSerialNumber + " 53 07 " + startupInformation + "9000"),
                 null);
 
-        parser = new GetDataFciRespPars(apduResponse);
+        parser = new GetDataFciRespPars(apduResponse, null);
 
         /* invalid Calypso FCI */
         Assert.assertFalse(parser.isValidCalypsoFCI());
@@ -212,7 +212,7 @@ public class GetDataRespParsTest {
                         + appSerialNumber + " 53 07 " + startupInformation + "9000"),
                 null);
 
-        parser = new GetDataFciRespPars(apduResponse);
+        parser = new GetDataFciRespPars(apduResponse, null);
 
         /* invalid Calypso FCI */
         Assert.assertFalse(parser.isValidCalypsoFCI());
@@ -223,7 +223,7 @@ public class GetDataRespParsTest {
                         + appSerialNumber + " 43 07 " + startupInformation + "9000"),
                 null);
 
-        parser = new GetDataFciRespPars(apduResponse);
+        parser = new GetDataFciRespPars(apduResponse, null);
 
         /* invalid Calypso FCI */
         Assert.assertFalse(parser.isValidCalypsoFCI());

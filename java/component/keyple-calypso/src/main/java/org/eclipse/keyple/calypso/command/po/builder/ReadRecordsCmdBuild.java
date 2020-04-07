@@ -14,7 +14,6 @@ package org.eclipse.keyple.calypso.command.po.builder;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
-import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
@@ -23,12 +22,13 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  * The Class ReadRecordsCmdBuild. This class provides the dedicated constructor to build the Read
  * Records APDU command.
  */
-public final class ReadRecordsCmdBuild extends AbstractPoCommandBuilder<ReadRecordsRespPars>
-        implements PoSendableInSession {
+public final class ReadRecordsCmdBuild extends AbstractPoCommandBuilder<ReadRecordsRespPars> {
 
     /** The command. */
     private static final CalypsoPoCommands command = CalypsoPoCommands.READ_RECORDS;
 
+    /* Construction arguments */
+    private final int sfi;
     private final byte firstRecordNumber;
     private final ReadDataStructure readDataStructure;
 
@@ -55,6 +55,7 @@ public final class ReadRecordsCmdBuild extends AbstractPoCommandBuilder<ReadReco
             throw new IllegalArgumentException("Bad record number (< 1)");
         }
 
+        this.sfi = sfi;
         this.firstRecordNumber = firstRecordNumber;
         this.readDataStructure = readDataStructure;
 
@@ -92,6 +93,38 @@ public final class ReadRecordsCmdBuild extends AbstractPoCommandBuilder<ReadReco
 
     @Override
     public ReadRecordsRespPars createResponseParser(ApduResponse apduResponse) {
-        return new ReadRecordsRespPars(apduResponse, readDataStructure, firstRecordNumber);
+        return new ReadRecordsRespPars(apduResponse, this);
+    }
+
+    /**
+     * This command doesn't modify the contents of the PO and therefore doesn't uses the session
+     * buffer.
+     * 
+     * @return false
+     */
+    @Override
+    public boolean isSessionBufferUsed() {
+        return false;
+    }
+
+    /**
+     * @return the SFI of the accessed file
+     */
+    public int getSfi() {
+        return sfi;
+    }
+
+    /**
+     * @return the number of the first record to read
+     */
+    public byte getFirstRecordNumber() {
+        return firstRecordNumber;
+    }
+
+    /**
+     * @return the read data structure info
+     */
+    public ReadDataStructure getReadDataStructure() {
+        return readDataStructure;
     }
 }

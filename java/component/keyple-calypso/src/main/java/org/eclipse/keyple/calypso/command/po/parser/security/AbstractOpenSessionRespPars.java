@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
+import org.eclipse.keyple.calypso.command.po.builder.security.*;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
@@ -55,8 +56,6 @@ public abstract class AbstractOpenSessionRespPars extends AbstractPoResponsePars
         return STATUS_TABLE;
     }
 
-    private final PoRevision revision;
-
     /** The secure session. */
     SecureSession secureSession;
 
@@ -64,25 +63,30 @@ public abstract class AbstractOpenSessionRespPars extends AbstractPoResponsePars
      * Instantiates a new AbstractOpenSessionRespPars.
      *
      * @param response the response from Open secure session APDU command
+     * @param builderReference the reference to the builder that created this parser
      * @param revision the revision of the PO
      */
-    AbstractOpenSessionRespPars(ApduResponse response, PoRevision revision) {
-        super(response);
-        this.revision = revision;
+    AbstractOpenSessionRespPars(ApduResponse response, AbstractOpenSessionCmdBuild builderReference,
+            PoRevision revision) {
+        super(response, builderReference);
         this.secureSession = toSecureSession(response.getDataOut());
     }
 
-    public static AbstractOpenSessionRespPars create(ApduResponse response, PoRevision revision) {
+    public AbstractOpenSessionRespPars create(ApduResponse response, PoRevision revision) {
         switch (revision) {
             case REV1_0:
-                return new OpenSession10RespPars(response);
+                return new OpenSession10RespPars(response,
+                        (OpenSession10CmdBuild) builderReference);
             case REV2_4:
-                return new OpenSession24RespPars(response);
+                return new OpenSession24RespPars(response,
+                        (OpenSession24CmdBuild) builderReference);
             case REV3_1:
             case REV3_1_CLAP:
-                return new OpenSession31RespPars(response);
+                return new OpenSession31RespPars(response,
+                        (OpenSession31CmdBuild) builderReference);
             case REV3_2:
-                return new OpenSession32RespPars(response);
+                return new OpenSession32RespPars(response,
+                        (OpenSession32CmdBuild) builderReference);
             default:
                 throw new IllegalArgumentException("Unknow revision " + revision);
         }
