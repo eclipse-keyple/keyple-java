@@ -25,7 +25,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 public final class UpdateRecordCmdBuild extends AbstractPoCommandBuilder<UpdateRecordRespPars> {
 
     /** The command. */
-    private static final CalypsoPoCommands command = CalypsoPoCommands.UPDATE_RECORD;
+    private static final CalypsoPoCommand command = CalypsoPoCommand.UPDATE_RECORD;
 
     /* Construction arguments */
     private final int sfi;

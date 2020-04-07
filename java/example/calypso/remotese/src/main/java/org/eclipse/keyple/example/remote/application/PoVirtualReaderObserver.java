@@ -14,7 +14,7 @@ package org.eclipse.keyple.example.remote.application;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
-import org.eclipse.keyple.calypso.exception.NoResourceAvailableException;
+import org.eclipse.keyple.calypso.exception.NoSamResourceAvailableException;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.calypso.transaction.exception.KeypleCalypsoSecureSessionException;
 import org.eclipse.keyple.calypso.transaction.exception.KeypleUnauthorizedKvcException;
@@ -105,7 +105,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
                     e.printStackTrace();
                 } catch (KeypleReaderException e) {
                     e.printStackTrace();
-                } catch (NoResourceAvailableException e) {
+                } catch (NoSamResourceAvailableException e) {
                     e.printStackTrace();
                 } finally {
                     /**

@@ -23,7 +23,7 @@ public abstract class AbstractSamCommandBuilder extends AbstractIso7816CommandBu
 
     protected SamRevision defaultRevision = SamRevision.S1D;// 94
 
-    public AbstractSamCommandBuilder(CalypsoSamCommands reference, ApduRequest request) {
+    public AbstractSamCommandBuilder(CalypsoSamCommand reference, ApduRequest request) {
         super(reference, request);
     }
 }

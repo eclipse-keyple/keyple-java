@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 import java.util.*;
 import org.eclipse.keyple.calypso.CalypsoBaseTest;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
-import org.eclipse.keyple.calypso.exception.NoResourceAvailableException;
+import org.eclipse.keyple.calypso.exception.NoSamResourceAvailableException;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
@@ -61,7 +61,7 @@ public class SamResourceManagerDefaultTest extends CalypsoBaseTest {
             out = srmSpy.allocateSamResource(SamResourceManager.AllocationMode.BLOCKING,
                     new SamIdentifier(SamRevision.AUTO, "any", "any"));
 
-        } catch (NoResourceAvailableException e) {
+        } catch (NoSamResourceAvailableException e) {
             exceptionThrown = true;
         }
         long stop = System.currentTimeMillis();
@@ -73,7 +73,7 @@ public class SamResourceManagerDefaultTest extends CalypsoBaseTest {
     }
 
     @Test
-    public void getSamResource() throws KeypleReaderException, NoResourceAvailableException {
+    public void getSamResource() throws KeypleReaderException, NoSamResourceAvailableException {
 
         // init SamResourceManager with a mathching filter
         SamResourceManagerDefault srmSpy = srmSpy(".*");

@@ -13,7 +13,7 @@ package org.eclipse.keyple.calypso.command.sam.builder.security;
 
 
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
-import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommands;
+import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 
 // TODO: Auto-generated Javadoc
@@ -24,7 +24,7 @@ import org.eclipse.keyple.calypso.command.sam.SamRevision;
 public class SelectDiversifierCmdBuild extends AbstractSamCommandBuilder {
 
     /** The command. */
-    private static final CalypsoSamCommands command = CalypsoSamCommands.SELECT_DIVERSIFIER;
+    private static final CalypsoSamCommand command = CalypsoSamCommand.SELECT_DIVERSIFIER;
 
     /**
      * Instantiates a new SelectDiversifierCmdBuild.

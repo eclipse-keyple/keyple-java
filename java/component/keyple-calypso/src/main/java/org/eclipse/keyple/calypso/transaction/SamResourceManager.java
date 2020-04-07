@@ -12,7 +12,7 @@
 package org.eclipse.keyple.calypso.transaction;
 
 import static org.eclipse.keyple.calypso.command.sam.SamRevision.AUTO;
-import org.eclipse.keyple.calypso.exception.NoResourceAvailableException;
+import org.eclipse.keyple.calypso.exception.NoSamResourceAvailableException;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -48,11 +48,12 @@ public abstract class SamResourceManager {
      * @param allocationMode the blocking/non-blocking mode
      * @param samIdentifier the targeted SAM identifier
      * @return a SAM resource
-     * @throws NoResourceAvailableException if no resource is available
+     * @throws NoSamResourceAvailableException if no resource is available
      * @throws KeypleReaderException if a reader error occurs
      */
     abstract public SamResource allocateSamResource(AllocationMode allocationMode,
-            SamIdentifier samIdentifier) throws KeypleReaderException, NoResourceAvailableException;
+            SamIdentifier samIdentifier)
+            throws KeypleReaderException, NoSamResourceAvailableException;
 
     /**
      * Free a previously allocated SAM resource.

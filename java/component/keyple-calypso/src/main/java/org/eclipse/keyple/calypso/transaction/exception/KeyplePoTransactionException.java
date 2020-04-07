@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information regarding copyright
  * ownership.
@@ -22,7 +22,7 @@ public abstract class KeyplePoTransactionException extends KeypleException {
     /**
      * @param message the message to identify the exception context
      */
-    public KeyplePoTransactionException(String message) {
+    protected KeyplePoTransactionException(String message) {
         super(message);
     }
 
@@ -32,7 +32,7 @@ public abstract class KeyplePoTransactionException extends KeypleException {
      * @param message message to identify the exception context
      * @param cause the cause
      */
-    public KeyplePoTransactionException(String message, Throwable cause) {
+    protected KeyplePoTransactionException(String message, Throwable cause) {
         super(message, cause);
     }
 }

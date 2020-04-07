@@ -13,7 +13,7 @@ package org.eclipse.keyple.calypso.command.po.builder;
 
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
-import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
+import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
@@ -25,7 +25,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 public final class ReadRecordsCmdBuild extends AbstractPoCommandBuilder<ReadRecordsRespPars> {
 
     /** The command. */
-    private static final CalypsoPoCommands command = CalypsoPoCommands.READ_RECORDS;
+    private static final CalypsoPoCommand command = CalypsoPoCommand.READ_RECORDS;
 
     /* Construction arguments */
     private final int sfi;
@@ -99,7 +99,7 @@ public final class ReadRecordsCmdBuild extends AbstractPoCommandBuilder<ReadReco
     /**
      * This command doesn't modify the contents of the PO and therefore doesn't uses the session
      * buffer.
-     * 
+     *
      * @return false
      */
     @Override

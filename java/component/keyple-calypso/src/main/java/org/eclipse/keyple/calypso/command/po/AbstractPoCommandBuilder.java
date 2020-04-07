@@ -37,7 +37,7 @@ public abstract class AbstractPoCommandBuilder<T extends AbstractPoResponseParse
      * @param reference a command reference from the Calypso command table
      * @param request the ApduRequest (the instruction byte will be overwritten)
      */
-    public AbstractPoCommandBuilder(CalypsoPoCommands reference, ApduRequest request) {
+    public AbstractPoCommandBuilder(CalypsoPoCommand reference, ApduRequest request) {
         super(reference, request);
         this.reference = reference;
     }

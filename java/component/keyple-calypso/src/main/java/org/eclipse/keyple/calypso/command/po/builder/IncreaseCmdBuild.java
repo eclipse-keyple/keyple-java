@@ -25,7 +25,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 public final class IncreaseCmdBuild extends AbstractPoCommandBuilder<IncreaseRespPars> {
 
     /** The command. */
-    private static final CalypsoPoCommands command = CalypsoPoCommands.INCREASE;
+    private static final CalypsoPoCommand command = CalypsoPoCommand.INCREASE;
 
     /* Construction arguments */
     private final int sfi;

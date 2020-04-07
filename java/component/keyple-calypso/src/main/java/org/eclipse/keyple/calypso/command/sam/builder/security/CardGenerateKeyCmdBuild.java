@@ -13,7 +13,7 @@ package org.eclipse.keyple.calypso.command.sam.builder.security;
 
 import org.eclipse.keyple.calypso.KeyReference;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
-import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommands;
+import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 
 /**
@@ -21,7 +21,7 @@ import org.eclipse.keyple.calypso.command.sam.SamRevision;
  */
 public class CardGenerateKeyCmdBuild extends AbstractSamCommandBuilder {
     /** The command reference. */
-    private static final CalypsoSamCommands command = CalypsoSamCommands.CARD_GENERATE_KEY;
+    private static final CalypsoSamCommand command = CalypsoSamCommand.CARD_GENERATE_KEY;
 
     /**
      * Instantiates a new DigestUpdateCmdBuild and generate the ciphered data for a key ciphered by

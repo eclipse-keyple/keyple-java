@@ -13,12 +13,12 @@ package org.eclipse.keyple.calypso.command.po.builder.security;
 
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
-import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
+import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.parser.security.ChangeKeyRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 public class ChangeKeyCmdBuild extends AbstractPoCommandBuilder<ChangeKeyRespPars> {
-    private static final CalypsoPoCommands command = CalypsoPoCommands.CHANGE_KEY;
+    private static final CalypsoPoCommand command = CalypsoPoCommand.CHANGE_KEY;
 
     /**
      * Change Key Calypso command

@@ -22,7 +22,7 @@ public abstract class KeypleReaderException extends KeypleException {
     /**
      * @param message the message to identify the exception context
      */
-    public KeypleReaderException(String message) {
+    protected KeypleReaderException(String message) {
         super(message);
     }
 
@@ -32,7 +32,7 @@ public abstract class KeypleReaderException extends KeypleException {
      * @param message message to identify the exception context
      * @param cause the cause
      */
-    public KeypleReaderException(String message, Throwable cause) {
+    protected KeypleReaderException(String message, Throwable cause) {
         super(message, cause);
     }
 }

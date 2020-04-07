@@ -12,7 +12,7 @@
 package org.eclipse.keyple.calypso.command.sam.builder.security;
 
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
-import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommands;
+import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 
 /**
@@ -21,7 +21,7 @@ import org.eclipse.keyple.calypso.command.sam.SamRevision;
 public class GiveRandomCmdBuild extends AbstractSamCommandBuilder {
 
     /** The command reference. */
-    private static final CalypsoSamCommands command = CalypsoSamCommands.GIVE_RANDOM;
+    private static final CalypsoSamCommand command = CalypsoSamCommand.GIVE_RANDOM;
 
     /**
      * Instantiates a new DigestUpdateCmdBuild.

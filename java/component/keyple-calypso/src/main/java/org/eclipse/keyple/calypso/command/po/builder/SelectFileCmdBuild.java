@@ -14,7 +14,7 @@ package org.eclipse.keyple.calypso.command.po.builder;
 import org.eclipse.keyple.calypso.SelectFileControl;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
-import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
+import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.parser.SelectFileRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
@@ -24,7 +24,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  */
 public final class SelectFileCmdBuild extends AbstractPoCommandBuilder<SelectFileRespPars> {
 
-    private static final CalypsoPoCommands command = CalypsoPoCommands.SELECT_FILE;
+    private static final CalypsoPoCommand command = CalypsoPoCommand.SELECT_FILE;
 
     /* Construction arguments */
     private final byte[] path;
@@ -105,7 +105,7 @@ public final class SelectFileCmdBuild extends AbstractPoCommandBuilder<SelectFil
 
     /**
      * The selection path can be null if the chosen constructor targets the current EF
-     * 
+     *
      * @return the selection path or null
      */
     public byte[] getPath() {
@@ -114,7 +114,7 @@ public final class SelectFileCmdBuild extends AbstractPoCommandBuilder<SelectFil
 
     /**
      * The file selection control can be null if the chosen constructor targets an explicit path
-     * 
+     *
      * @return the select file control or null
      */
     public SelectFileControl getSelectFileControl() {

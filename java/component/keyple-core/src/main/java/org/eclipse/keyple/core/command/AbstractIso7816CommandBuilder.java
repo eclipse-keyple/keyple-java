@@ -35,7 +35,7 @@ public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandB
      * @param commandReference command reference
      * @param request ApduRequest
      */
-    public AbstractIso7816CommandBuilder(CommandsTable commandReference, ApduRequest request) {
+    public AbstractIso7816CommandBuilder(SeCommand commandReference, ApduRequest request) {
         super(commandReference, request);
     }
 
@@ -78,7 +78,7 @@ public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandB
      *        handle the actual length [case4])
      * @return an ApduRequest
      */
-    protected ApduRequest setApduRequest(byte cla, CommandsTable command, byte p1, byte p2,
+    protected ApduRequest setApduRequest(byte cla, SeCommand command, byte p1, byte p2,
             byte[] dataIn, Byte le) {
         boolean case4;
         /* sanity check */

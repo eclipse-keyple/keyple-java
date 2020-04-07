@@ -20,7 +20,7 @@ public abstract class KeyplePluginException extends KeypleException {
     /**
      * @param message the message to identify the exception context
      */
-    public KeyplePluginException(String message) {
+    protected KeyplePluginException(String message) {
         super(message);
     }
 
@@ -30,7 +30,7 @@ public abstract class KeyplePluginException extends KeypleException {
      * @param message message to identify the exception context
      * @param cause the cause
      */
-    public KeyplePluginException(String message, Throwable cause) {
+    protected KeyplePluginException(String message, Throwable cause) {
         super(message, cause);
     }
 }

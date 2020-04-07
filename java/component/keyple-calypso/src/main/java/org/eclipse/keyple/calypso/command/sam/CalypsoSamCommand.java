@@ -17,9 +17,9 @@ import org.eclipse.keyple.calypso.command.sam.parser.security.*;
 import org.eclipse.keyple.calypso.command.sam.parser.security.SelectDiversifierRespPars;
 import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.command.CommandsTable;
+import org.eclipse.keyple.core.command.SeCommand;
 
-public enum CalypsoSamCommands implements CommandsTable {
+public enum CalypsoSamCommand implements SeCommand {
 
     /** The sam select diversifier. */
     SELECT_DIVERSIFIER("Select Diversifier", (byte) 0x14, SelectDiversifierCmdBuild.class,
@@ -73,7 +73,7 @@ public enum CalypsoSamCommands implements CommandsTable {
     private final String name;
 
     /** The instruction byte. */
-    private final byte instructionbyte;
+    private final byte instructionByte;
 
     /** The command builder class. */
     private final Class<? extends AbstractApduCommandBuilder> commandBuilderClass;
@@ -89,11 +89,11 @@ public enum CalypsoSamCommands implements CommandsTable {
      * @param commandBuilderClass the command builder class
      * @param responseParserClass the response parser class
      */
-    CalypsoSamCommands(String name, byte instructionByte,
+    CalypsoSamCommand(String name, byte instructionByte,
             Class<? extends AbstractApduCommandBuilder> commandBuilderClass,
             Class<? extends AbstractApduResponseParser> responseParserClass) {
         this.name = name;
-        this.instructionbyte = instructionByte;
+        this.instructionByte = instructionByte;
         this.commandBuilderClass = commandBuilderClass;
         this.responseParserClass = responseParserClass;
     }
@@ -113,7 +113,7 @@ public enum CalypsoSamCommands implements CommandsTable {
      * @return the value of INS byte
      */
     public byte getInstructionByte() {
-        return instructionbyte;
+        return instructionByte;
     }
 
     /**

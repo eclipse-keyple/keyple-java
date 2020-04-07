@@ -11,9 +11,9 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.command.po;
 
-import org.eclipse.keyple.core.command.CommandsTable;
+import org.eclipse.keyple.core.command.SeCommand;
 
-public enum CalypsoPoCommands implements CommandsTable {
+public enum CalypsoPoCommand implements SeCommand {
 
     /** The po get data. */
     GET_DATA_FCI("Get Data'FCI'", (byte) 0xCA),
@@ -67,7 +67,7 @@ public enum CalypsoPoCommands implements CommandsTable {
     private final String name;
 
     /** The instruction byte. */
-    private final byte instructionbyte;
+    private final byte instructionByte;
 
     /**
      * The generic constructor of CalypsoCommands.
@@ -75,9 +75,9 @@ public enum CalypsoPoCommands implements CommandsTable {
      * @param name the name
      * @param instructionByte the instruction byte
      */
-    CalypsoPoCommands(String name, byte instructionByte) {
+    CalypsoPoCommand(String name, byte instructionByte) {
         this.name = name;
-        this.instructionbyte = instructionByte;
+        this.instructionByte = instructionByte;
     }
 
 
@@ -96,7 +96,7 @@ public enum CalypsoPoCommands implements CommandsTable {
      * @return the value of INS byte
      */
     public byte getInstructionByte() {
-        return instructionbyte;
+        return instructionByte;
     }
 
     /**
@@ -105,7 +105,7 @@ public enum CalypsoPoCommands implements CommandsTable {
      * @param rev Command revision
      * @return Returned command
      */
-    public static CalypsoPoCommands getOpenSessionForRev(PoRevision rev) {
+    public static CalypsoPoCommand getOpenSessionForRev(PoRevision rev) {
         switch (rev) {
             case REV1_0:
                 return OPEN_SESSION_10;

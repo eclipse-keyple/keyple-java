@@ -11,17 +11,29 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.exception;
 
+import org.eclipse.keyple.core.command.SeCommand;
+
 /**
  * The exception <code>KeypleSeCommandException</code> is the parent abstract class of all Keyple SE
  * APDU commands exceptions.
  */
 public abstract class KeypleSeCommandException extends KeypleException {
 
+    /** The command */
+    private SeCommand command;
+
+    /** The status code (optional) */
+    private Integer statusCode;
+
     /**
      * @param message the message to identify the exception context
+     * @param command the command
+     * @param statusCode the status code (optional)
      */
-    public KeypleSeCommandException(String message) {
+    protected KeypleSeCommandException(String message, SeCommand command, Integer statusCode) {
         super(message);
+        this.command = command;
+        this.statusCode = statusCode;
     }
 
     /**
@@ -29,8 +41,27 @@ public abstract class KeypleSeCommandException extends KeypleException {
      *
      * @param message message to identify the exception context
      * @param cause the cause
+     * @param command the command
+     * @param statusCode the status code (optional)
      */
-    public KeypleSeCommandException(String message, Throwable cause) {
+    protected KeypleSeCommandException(String message, Throwable cause, SeCommand command,
+            Integer statusCode) {
         super(message, cause);
+        this.command = command;
+        this.statusCode = statusCode;
+    }
+
+    /**
+     * @return the command
+     */
+    public SeCommand getCommand() {
+        return command;
+    }
+
+    /**
+     * @return the status code (nullable)
+     */
+    public Integer getStatusCode() {
+        return statusCode;
     }
 }
