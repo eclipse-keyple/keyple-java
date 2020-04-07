@@ -93,14 +93,14 @@ public final class SelectFileCmdBuild extends AbstractPoCommandBuilder<SelectFil
     }
 
     /**
-     * This command can modify the contents of the PO in session and therefore uses the session
+     * This command doesn't modify the contents of the PO and therefore doesn't uses the session
      * buffer.
-     * 
-     * @return true
+     *
+     * @return false
      */
     @Override
     public boolean isSessionBufferUsed() {
-        return true;
+        return false;
     }
 
     /**
