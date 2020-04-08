@@ -15,7 +15,10 @@ import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 
 /**
  * The exception {@code KeyplePoBadExpectedLengthException} indicates that the expected output data
- * length is not correct.
+ * length is not correct.<br>
+ * This exception is specially associated with the code 6CXXh.<br>
+ * It is therefore possible to retrieve the value XX using the method {@code getExpectedLength()} if
+ * {@code statusCode} is set.
  */
 public class KeyplePoBadExpectedLengthException extends KeyplePoCommandException {
 
@@ -27,5 +30,12 @@ public class KeyplePoBadExpectedLengthException extends KeyplePoCommandException
     public KeyplePoBadExpectedLengthException(String message, CalypsoPoCommand command,
             Integer statusCode) {
         super(message, command, statusCode);
+    }
+
+    /**
+     * @return the expected length if {@code statusCode} is set, or null
+     */
+    public int getExpectedLength() {
+        return getStatusCode() != null ? getStatusCode() & 0xFF : null;
     }
 }
