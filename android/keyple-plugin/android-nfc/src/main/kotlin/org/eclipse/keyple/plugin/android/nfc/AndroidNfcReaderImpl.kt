@@ -22,8 +22,8 @@ import java.io.IOException
 import java.util.HashMap
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableLocalReader
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState.MonitoringState
