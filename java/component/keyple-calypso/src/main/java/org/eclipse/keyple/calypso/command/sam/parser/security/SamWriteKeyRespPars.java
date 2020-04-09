@@ -27,21 +27,21 @@ public class SamWriteKeyRespPars extends AbstractSamResponseParser {
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(AbstractSamResponseParser.STATUS_TABLE);
-        m.put(0x6700, new StatusProperties(false, "Incorrect Lc.",
-                CalypsoSamIllegalParameterException.class));
-        m.put(0x6900, new StatusProperties(false, "An event counter cannot be incremented.",
+        m.put(0x6700,
+                new StatusProperties("Incorrect Lc.", CalypsoSamIllegalParameterException.class));
+        m.put(0x6900, new StatusProperties("An event counter cannot be incremented.",
                 CalypsoSamCounterOverflowException.class));
-        m.put(0x6985, new StatusProperties(false, "Preconditions not satisfied.",
+        m.put(0x6985, new StatusProperties("Preconditions not satisfied.",
                 CalypsoSamAccessForbiddenException.class));
-        m.put(0x6988, new StatusProperties(false, "Incorrect signature.",
+        m.put(0x6988, new StatusProperties("Incorrect signature.",
                 CalypsoSamSecurityDataException.class));
-        m.put(0x6A00, new StatusProperties(false, "P1 or P2 incorrect.",
+        m.put(0x6A00, new StatusProperties("P1 or P2 incorrect.",
                 CalypsoSamIllegalParameterException.class));
-        m.put(0x6A80, new StatusProperties(false, "Incorrect plain or decrypted data.",
+        m.put(0x6A80, new StatusProperties("Incorrect plain or decrypted data.",
                 CalypsoSamIncorrectInputDataException.class));
-        m.put(0x6A83, new StatusProperties(false, "Record not found: deciphering key not found.",
+        m.put(0x6A83, new StatusProperties("Record not found: deciphering key not found.",
                 CalypsoSamDataAccessException.class));
-        m.put(0x6A87, new StatusProperties(false, "Lc inconsistent with P1 or P2.",
+        m.put(0x6A87, new StatusProperties("Lc inconsistent with P1 or P2.",
                 CalypsoSamIncorrectInputDataException.class));
         STATUS_TABLE = m;
     }

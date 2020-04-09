@@ -25,9 +25,10 @@ public abstract class AbstractApduResponseParser {
     protected ApduResponse response;
 
     protected static final Map<Integer, StatusProperties> STATUS_TABLE;
+
     static {
         HashMap<Integer, StatusProperties> m = new HashMap<Integer, StatusProperties>();
-        m.put(0x9000, new StatusProperties(true, "Success", null));
+        m.put(0x9000, new StatusProperties("Success", null));
         STATUS_TABLE = m;
     }
 
@@ -91,35 +92,38 @@ public abstract class AbstractApduResponseParser {
      */
     protected static class StatusProperties {
 
-        /** The successful indicator */
-        private final boolean successful;
-
         /** The status information */
         private final String information;
 
-        /** The associated exception class (optional) */
+        /** The successful indicator */
+        private final boolean successful;
+
+        /** The associated exception class in case of error status */
         private final Class<? extends KeypleSeCommandException> exceptionClass;
 
         /**
-         * A map with the double byte of a status as key, and the successful property and ASCII text
-         * information as data.
+         * Create a successful status.
          *
-         * @param successful set successful status
-         * @param information additional information
-         * @param exceptionClass the associated exception class (optional)
+         * @param information the status information
          */
-        public StatusProperties(boolean successful, String information,
-                Class<? extends KeypleSeCommandException> exceptionClass) {
-            this.successful = successful;
+        public StatusProperties(String information) {
             this.information = information;
-            this.exceptionClass = exceptionClass;
+            this.successful = true;
+            this.exceptionClass = null;
         }
 
         /**
-         * @return the successful indicator
+         * Create an error status.<br>
+         * If {@code exceptionClass} is null, then a successful status is created.
+         *
+         * @param information the status information
+         * @param exceptionClass the associated exception class
          */
-        public boolean isSuccessful() {
-            return successful;
+        public StatusProperties(String information,
+                Class<? extends KeypleSeCommandException> exceptionClass) {
+            this.information = information;
+            this.successful = exceptionClass == null;
+            this.exceptionClass = exceptionClass;
         }
 
         /**
@@ -127,6 +131,13 @@ public abstract class AbstractApduResponseParser {
          */
         public String getInformation() {
             return information;
+        }
+
+        /**
+         * @return the successful indicator
+         */
+        public boolean isSuccessful() {
+            return successful;
         }
 
         /**

@@ -28,7 +28,7 @@ public class DigestCloseRespPars extends AbstractSamResponseParser {
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(AbstractSamResponseParser.STATUS_TABLE);
-        m.put(0x6985, new StatusProperties(false, "Preconditions not satisfied.",
+        m.put(0x6985, new StatusProperties("Preconditions not satisfied.",
                 CalypsoSamAccessForbiddenException.class));
         STATUS_TABLE = m;
     }

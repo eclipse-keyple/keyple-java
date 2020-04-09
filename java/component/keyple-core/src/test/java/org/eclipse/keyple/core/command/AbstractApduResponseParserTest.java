@@ -11,9 +11,9 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.command;
 
-import static org.junit.Assert.*;
 import java.util.Map;
 import org.eclipse.keyple.core.CoreBaseTest;
+import org.eclipse.keyple.core.seproxy.exception.KeypleSeCommandException;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
@@ -104,9 +104,11 @@ public class AbstractApduResponseParserTest extends CoreBaseTest {
         public ApduResponseParser(ApduResponse response) {
             super(response);
             // additional status words
-            STATUS_TABLE.put(0x9999, new StatusProperties(true, "sw 9999", null));
-            STATUS_TABLE.put(0x6500, new StatusProperties(false, "sw 6500", null));
-            STATUS_TABLE.put(0x6400, new StatusProperties(false, "sw 6400", null));
+            STATUS_TABLE.put(0x9999, new StatusProperties("sw 9999"));
+            STATUS_TABLE.put(0x6500,
+                    new StatusProperties("sw 6500", KeypleSeCommandException.class));
+            STATUS_TABLE.put(0x6400,
+                    new StatusProperties("sw 6400", KeypleSeCommandException.class));
         }
     }
 }

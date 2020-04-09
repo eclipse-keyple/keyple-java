@@ -31,38 +31,35 @@ public abstract class AbstractOpenSessionRespPars extends AbstractPoResponsePars
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(AbstractApduResponseParser.STATUS_TABLE);
-        m.put(0x6700, new StatusProperties(false, "Lc value not supported.",
+        m.put(0x6700, new StatusProperties("Lc value not supported.",
                 CalypsoPoIllegalParameterException.class));
-        m.put(0x6900, new StatusProperties(false, "Transaction Counter is 0",
+        m.put(0x6900, new StatusProperties("Transaction Counter is 0",
                 CalypsoPoTerminatedException.class));
         m.put(0x6981,
-                new StatusProperties(false,
+                new StatusProperties(
                         "Command forbidden (read requested and current EF is a Binary file).",
                         CalypsoPoDataAccessException.class));
-        m.put(0x6982, new StatusProperties(false,
+        m.put(0x6982, new StatusProperties(
                 "Security conditions not fulfilled (PIN code not presented, AES key forbidding the "
                         + "compatibility mode, encryption required).",
                 CalypsoPoSecurityContextException.class));
         m.put(0x6985,
-                new StatusProperties(false,
+                new StatusProperties(
                         "Access forbidden (Never access mode, Session already opened).",
                         CalypsoPoAccessForbiddenException.class));
         m.put(0x6986,
-                new StatusProperties(false,
-                        "Command not allowed (read requested and no current EF).",
+                new StatusProperties("Command not allowed (read requested and no current EF).",
                         CalypsoPoDataAccessException.class));
-        m.put(0x6A81, new StatusProperties(false, "Wrong key index.",
-                CalypsoPoIllegalParameterException.class));
-        m.put(0x6A82,
-                new StatusProperties(false, "File not found.", CalypsoPoDataAccessException.class));
-        m.put(0x6A83,
-                new StatusProperties(false, "Record not found (record index is above NumRec).",
-                        CalypsoPoDataAccessException.class));
+        m.put(0x6A81,
+                new StatusProperties("Wrong key index.", CalypsoPoIllegalParameterException.class));
+        m.put(0x6A82, new StatusProperties("File not found.", CalypsoPoDataAccessException.class));
+        m.put(0x6A83, new StatusProperties("Record not found (record index is above NumRec).",
+                CalypsoPoDataAccessException.class));
         m.put(0x6B00,
-                new StatusProperties(false,
+                new StatusProperties(
                         "P1 or P2 value not supported (key index incorrect, wrong P2).",
                         CalypsoPoIllegalParameterException.class));
-        m.put(0x61FF, new StatusProperties(true, "Correct execution (ISO7816 T=0).", null));
+        m.put(0x61FF, new StatusProperties("Correct execution (ISO7816 T=0).", null));
         STATUS_TABLE = m;
     }
 

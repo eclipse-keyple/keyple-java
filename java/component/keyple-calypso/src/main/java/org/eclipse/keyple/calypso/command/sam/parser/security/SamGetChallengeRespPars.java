@@ -29,8 +29,8 @@ public class SamGetChallengeRespPars extends AbstractSamResponseParser {
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(AbstractSamResponseParser.STATUS_TABLE);
-        m.put(0x6700, new StatusProperties(false, "Incorrect Le.",
-                CalypsoSamIllegalParameterException.class));
+        m.put(0x6700,
+                new StatusProperties("Incorrect Le.", CalypsoSamIllegalParameterException.class));
         STATUS_TABLE = m;
     }
 

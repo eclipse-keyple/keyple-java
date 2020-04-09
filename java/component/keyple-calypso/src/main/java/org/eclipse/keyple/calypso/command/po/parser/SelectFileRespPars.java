@@ -36,11 +36,10 @@ public final class SelectFileRespPars extends AbstractPoResponseParser {
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(AbstractApduResponseParser.STATUS_TABLE);
-        m.put(0x6700, new StatusProperties(false, "Lc value not supported.",
+        m.put(0x6700, new StatusProperties("Lc value not supported.",
                 CalypsoPoIllegalParameterException.class));
-        m.put(0x6A82,
-                new StatusProperties(false, "File not found.", CalypsoPoDataAccessException.class));
-        m.put(0x6119, new StatusProperties(true, "Correct execution (ISO7816 T=0).", null));
+        m.put(0x6A82, new StatusProperties("File not found.", CalypsoPoDataAccessException.class));
+        m.put(0x6119, new StatusProperties("Correct execution (ISO7816 T=0).", null));
         STATUS_TABLE = m;
     }
 

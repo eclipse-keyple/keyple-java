@@ -34,17 +34,15 @@ public final class CloseSessionRespPars extends AbstractPoResponseParser {
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(AbstractApduResponseParser.STATUS_TABLE);
-        m.put(0x6700, new StatusProperties(false,
+        m.put(0x6700, new StatusProperties(
                 "Lc signatureLo not supported (e.g. Lc=4 with a Revision 3.2 mode for Open Secure Session).",
                 CalypsoPoIllegalParameterException.class));
-        m.put(0x6B00, new StatusProperties(false, "P1 or P2 signatureLo not supported.",
+        m.put(0x6B00, new StatusProperties("P1 or P2 signatureLo not supported.",
                 CalypsoPoIllegalParameterException.class));
-        m.put(0x6988, new StatusProperties(false, "incorrect signatureLo.",
+        m.put(0x6988, new StatusProperties("incorrect signatureLo.",
                 CalypsoPoSecurityDataException.class));
-        m.put(0x6985, new StatusProperties(false, "No session was opened.",
+        m.put(0x6985, new StatusProperties("No session was opened.",
                 CalypsoPoAccessForbiddenException.class));
-        m.put(0x61FF,
-                new StatusProperties(true, "Correct execution (Le≠0 and ISO7816 T=0).", null));
         STATUS_TABLE = m;
     }
 

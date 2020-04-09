@@ -30,8 +30,8 @@ public class GiveRandomRespPars extends AbstractSamResponseParser {
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(AbstractSamResponseParser.STATUS_TABLE);
-        m.put(0x6700, new StatusProperties(false, "Incorrect Lc.",
-                CalypsoSamIllegalParameterException.class));
+        m.put(0x6700,
+                new StatusProperties("Incorrect Lc.", CalypsoSamIllegalParameterException.class));
         STATUS_TABLE = m;
     }
 

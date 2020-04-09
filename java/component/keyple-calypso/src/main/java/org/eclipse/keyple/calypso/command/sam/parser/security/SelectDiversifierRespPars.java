@@ -30,9 +30,9 @@ public class SelectDiversifierRespPars extends AbstractSamResponseParser {
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(AbstractSamResponseParser.STATUS_TABLE);
-        m.put(0x6700, new StatusProperties(false, "Incorrect Lc.",
-                CalypsoSamIllegalParameterException.class));
-        m.put(0x6985, new StatusProperties(false, "Preconditions not satisfied: the SAM is locked.",
+        m.put(0x6700,
+                new StatusProperties("Incorrect Lc.", CalypsoSamIllegalParameterException.class));
+        m.put(0x6985, new StatusProperties("Preconditions not satisfied: the SAM is locked.",
                 CalypsoSamAccessForbiddenException.class));
         STATUS_TABLE = m;
     }

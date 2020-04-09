@@ -24,9 +24,9 @@ public class AbstractSamResponseParser extends AbstractApduResponseParser {
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(AbstractApduResponseParser.STATUS_TABLE);
-        m.put(0x6D00, new StatusProperties(false, "Instruction unknown.",
+        m.put(0x6D00, new StatusProperties("Instruction unknown.",
                 CalypsoSamIllegalParameterException.class));
-        m.put(0x6E00, new StatusProperties(false, "Class not supported.",
+        m.put(0x6E00, new StatusProperties("Class not supported.",
                 CalypsoSamIllegalParameterException.class));
         STATUS_TABLE = m;
     }

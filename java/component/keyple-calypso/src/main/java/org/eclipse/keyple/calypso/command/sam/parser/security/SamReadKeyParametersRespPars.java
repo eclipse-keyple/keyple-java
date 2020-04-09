@@ -29,16 +29,16 @@ public class SamReadKeyParametersRespPars extends AbstractSamResponseParser {
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(AbstractSamResponseParser.STATUS_TABLE);
-        m.put(0x6700, new StatusProperties(false, "Incorrect Lc.",
-                CalypsoSamIllegalParameterException.class));
-        m.put(0x6900, new StatusProperties(false, "An event counter cannot be incremented.",
+        m.put(0x6700,
+                new StatusProperties("Incorrect Lc.", CalypsoSamIllegalParameterException.class));
+        m.put(0x6900, new StatusProperties("An event counter cannot be incremented.",
                 CalypsoSamCounterOverflowException.class));
-        m.put(0x6A00, new StatusProperties(false, "Incorrect P2.",
-                CalypsoSamIllegalParameterException.class));
-        m.put(0x6A83, new StatusProperties(false, "Record not found: key to read not found.",
+        m.put(0x6A00,
+                new StatusProperties("Incorrect P2.", CalypsoSamIllegalParameterException.class));
+        m.put(0x6A83, new StatusProperties("Record not found: key to read not found.",
                 CalypsoSamDataAccessException.class));
-        m.put(0x6200, new StatusProperties(true, "Correct execution with warning: data not signed.",
-                null));
+        m.put(0x6200,
+                new StatusProperties("Correct execution with warning: data not signed.", null));
         STATUS_TABLE = m;
     }
 

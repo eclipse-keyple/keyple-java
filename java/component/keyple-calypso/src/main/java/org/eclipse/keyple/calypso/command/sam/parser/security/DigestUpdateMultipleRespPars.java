@@ -31,16 +31,15 @@ public class DigestUpdateMultipleRespPars extends AbstractSamResponseParser {
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(AbstractSamResponseParser.STATUS_TABLE);
-        m.put(0x6700, new StatusProperties(false, "Incorrect Lc.",
-                CalypsoSamIllegalParameterException.class));
-        m.put(0x6985, new StatusProperties(false, "Preconditions not satisfied.",
+        m.put(0x6700,
+                new StatusProperties("Incorrect Lc.", CalypsoSamIllegalParameterException.class));
+        m.put(0x6985, new StatusProperties("Preconditions not satisfied.",
                 CalypsoSamAccessForbiddenException.class));
         m.put(0x6A80,
-                new StatusProperties(false,
-                        "Incorrect value in the incoming data: incorrect structure.",
+                new StatusProperties("Incorrect value in the incoming data: incorrect structure.",
                         CalypsoSamIncorrectInputDataException.class));
-        m.put(0x6B00, new StatusProperties(false, "Incorrect P1.",
-                CalypsoSamIllegalParameterException.class));
+        m.put(0x6B00,
+                new StatusProperties("Incorrect P1.", CalypsoSamIllegalParameterException.class));
         STATUS_TABLE = m;
     }
 

@@ -29,26 +29,24 @@ public final class AppendRecordRespPars extends AbstractPoResponseParser {
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(AbstractApduResponseParser.STATUS_TABLE);
-        m.put(0x6B00, new StatusProperties(false, "P1 or P2 value not supported.",
+        m.put(0x6B00, new StatusProperties("P1 or P2 value not supported.",
                 CalypsoPoIllegalParameterException.class));
-        m.put(0x6700, new StatusProperties(false, "Lc value not supported.",
+        m.put(0x6700, new StatusProperties("Lc value not supported.",
                 CalypsoPoDataAccessException.class));
-        m.put(0x6400, new StatusProperties(false, "Too many modifications in session.",
+        m.put(0x6400, new StatusProperties("Too many modifications in session.",
                 CalypsoPoSessionBufferOverflowException.class));
-        m.put(0x6981, new StatusProperties(false, "The current EF is not a Cyclic EF.",
+        m.put(0x6981, new StatusProperties("The current EF is not a Cyclic EF.",
                 CalypsoPoDataAccessException.class));
         m.put(0x6982,
-                new StatusProperties(false,
-                        "Security conditions not fulfilled (no session, wrong key).",
+                new StatusProperties("Security conditions not fulfilled (no session, wrong key).",
                         CalypsoPoSecurityContextException.class));
         m.put(0x6985,
-                new StatusProperties(false,
+                new StatusProperties(
                         "Access forbidden (Never access mode, DF is invalidated, etc..).",
                         CalypsoPoAccessForbiddenException.class));
-        m.put(0x6986, new StatusProperties(false, "Command not allowed (no current EF).",
+        m.put(0x6986, new StatusProperties("Command not allowed (no current EF).",
                 CalypsoPoDataAccessException.class));
-        m.put(0x6A82,
-                new StatusProperties(false, "File not found.", CalypsoPoDataAccessException.class));
+        m.put(0x6A82, new StatusProperties("File not found.", CalypsoPoDataAccessException.class));
         STATUS_TABLE = m;
     }
 
