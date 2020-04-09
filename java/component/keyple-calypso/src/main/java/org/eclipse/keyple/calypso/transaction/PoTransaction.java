@@ -25,6 +25,7 @@ import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -174,10 +175,14 @@ public final class PoTransaction {
      * @return SeResponse response to all executed commands including the self generated "Open
      *         Secure Session" command
      * @throws KeypleReaderException the IO reader exception
+     * @throws CalypsoUnauthorizedKvcException if the PO KVC is not authorized
+     * @throws CalypsoSecureSessionException if PO transaction error occurs
+     * @throws CalypsoDesynchronisedExchangesException if PO exchanges APDU are desynchronized
      */
     private SeResponse processAtomicOpening(SessionAccessLevel accessLevel, byte openingSfiToSelect,
             byte openingRecordNumberToRead, List<PoCommand> poCommands)
-            throws KeypleReaderException {
+            throws KeypleReaderException, CalypsoUnauthorizedKvcException,
+            CalypsoSecureSessionException, CalypsoDesynchronisedExchangesException {
 
         // gets the terminal challenge
         byte[] sessionTerminalChallenge = samCommandProcessor.getSessionTerminalChallenge();
@@ -209,26 +214,19 @@ public final class PoTransaction {
 
         logger.trace("processAtomicOpening => opening:  POSERESPONSE = {}", poSeResponse);
 
-        if (!poSeResponse.wasChannelPreviouslyOpen()) {
-            throw new KeypleCalypsoSecureSessionException("The logical channel was not open",
-                    KeypleCalypsoSecureSessionException.Type.PO, poSeRequest.getApduRequests(),
-                    null);
-        }
-
         /* Retrieve and check the ApduResponses */
         List<ApduResponse> poApduResponseList = poSeResponse.getApduResponses();
 
         /* Do some basic checks */
         if (poApduRequestList.size() != poApduResponseList.size()) {
-            throw new KeypleCalypsoSecureSessionException("Inconsistent requests and responses",
-                    KeypleCalypsoSecureSessionException.Type.PO, poApduRequestList,
-                    poApduResponseList);
+            throw new CalypsoDesynchronisedExchangesException(
+                    "Inconsistent requests and responses");
         }
 
         for (ApduResponse apduR : poApduResponseList) {
             if (!apduR.isSuccessful()) {
-                throw new KeypleCalypsoSecureSessionException("Invalid response",
-                        KeypleCalypsoSecureSessionException.Type.PO, poApduRequestList,
+                throw new CalypsoSecureSessionException("Invalid response",
+                        CalypsoSecureSessionException.Type.PO, poApduRequestList,
                         poApduResponseList);
             }
         }
@@ -257,8 +255,7 @@ public final class PoTransaction {
         }
 
         if (!samCommandProcessor.isAuthorizedKvc(poKvc)) {
-            throw new KeypleCalypsoSecureSessionUnauthorizedKvcException(
-                    String.format("PO KVC = %02X", poKvc));
+            throw new CalypsoUnauthorizedKvcException(String.format("PO KVC = %02X", poKvc));
         }
 
         /* Keep the ratification status and read data */
@@ -333,9 +330,12 @@ public final class PoTransaction {
      * @return SeResponse all responses to the provided commands
      *
      * @throws KeypleReaderException IO Reader exception
+     * @throws CalypsoSecureSessionException if PO transaction error occurs
+     * @throws CalypsoDesynchronisedExchangesException if PO exchanges APDU are desynchronized
      */
     private SeResponse processAtomicPoCommands(List<PoCommand> poCommands,
-            ChannelControl channelControl) throws KeypleReaderException {
+            ChannelControl channelControl) throws KeypleReaderException,
+            CalypsoSecureSessionException, CalypsoDesynchronisedExchangesException {
 
         // Get the PO ApduRequest List
         List<ApduRequest> poApduRequestList = this.getApduRequests(poCommands);
@@ -353,26 +353,19 @@ public final class PoTransaction {
 
         logger.trace("processAtomicPoCommands => PORESPONSE = {}", poSeResponse);
 
-        if (!poSeResponse.wasChannelPreviouslyOpen()) {
-            throw new KeypleCalypsoSecureSessionException("The logical channel was not open",
-                    KeypleCalypsoSecureSessionException.Type.PO, poSeRequest.getApduRequests(),
-                    null);
-        }
-
         /* Retrieve and check the ApduResponses */
         List<ApduResponse> poApduResponseList = poSeResponse.getApduResponses();
 
         /* Do some basic checks */
         if (poApduRequestList.size() != poApduResponseList.size()) {
-            throw new KeypleCalypsoSecureSessionException("Inconsistent requests and responses",
-                    KeypleCalypsoSecureSessionException.Type.PO, poApduRequestList,
-                    poApduResponseList);
+            throw new CalypsoDesynchronisedExchangesException(
+                    "Inconsistent requests and responses");
         }
 
         for (ApduResponse apduR : poApduResponseList) {
             if (!apduR.isSuccessful()) {
-                throw new KeypleCalypsoSecureSessionException("Invalid response",
-                        KeypleCalypsoSecureSessionException.Type.PO, poApduRequestList,
+                throw new CalypsoSecureSessionException("Invalid response",
+                        CalypsoSecureSessionException.Type.PO, poApduRequestList,
                         poApduResponseList);
             }
         }
@@ -451,10 +444,13 @@ public final class PoTransaction {
      *         <li>The argument of the ratification command is replaced by an indication of the PO
      *         communication mode.</li>
      *         </ul>
+     * @throws CalypsoSecureSessionException if PO transaction error occurs
+     * @throws CalypsoDesynchronisedExchangesException if PO exchanges APDU are desynchronized
      */
     private SeResponse processAtomicClosing(List<PoCommand> poModificationCommands,
             List<ApduResponse> poAnticipatedResponses, TransmissionMode transmissionMode,
-            ChannelControl channelControl) throws KeypleReaderException {
+            ChannelControl channelControl) throws KeypleReaderException,
+            CalypsoSecureSessionException, CalypsoDesynchronisedExchangesException {
 
         if (sessionState != SessionState.SESSION_OPEN) {
             throw new IllegalStateException("Bad session state. Current: " + sessionState.toString()
@@ -479,10 +475,8 @@ public final class PoTransaction {
                             poAnticipatedResponses.get(i));
                 }
             } else {
-                throw new KeypleCalypsoSecureSessionException(
-                        "Inconsistent requests and anticipated responses",
-                        KeypleCalypsoSecureSessionException.Type.PO, poApduRequestList,
-                        poAnticipatedResponses);
+                throw new CalypsoDesynchronisedExchangesException(
+                        "Inconsistent requests and anticipated responses");
             }
         }
 
@@ -543,7 +537,7 @@ public final class PoTransaction {
         SeResponse poSeResponse;
         try {
             poSeResponse = poReader.transmit(poSeRequest, channelControl);
-        } catch (KeypleReaderException ex) {
+        } catch (KeypleReaderIOException ex) {
             poSeResponse = ex.getSeResponse();
             /*
              * The current exception may have been caused by a communication issue with the PO
@@ -556,17 +550,8 @@ public final class PoTransaction {
              */
             if (ratificationAsked || poSeResponse == null
                     || poSeResponse.getApduResponses().size() != poApduRequestList.size() - 1) {
-                /* Add current PO SeResponse to exception */
-                ex.setSeResponse(poSeResponse);
-                throw new KeypleReaderException("PO Reader Exception while closing Secure Session",
-                        ex);
+                throw ex;
             }
-        }
-
-        if (!poSeResponse.wasChannelPreviouslyOpen()) {
-            throw new KeypleCalypsoSecureSessionException("The logical channel was not open",
-                    KeypleCalypsoSecureSessionException.Type.PO, poSeRequest.getApduRequests(),
-                    null);
         }
 
         logger.trace("processAtomicClosing => POSERESPONSE = {}", poSeResponse);
@@ -578,9 +563,8 @@ public final class PoTransaction {
         CloseSessionRespPars poCloseSessionPars = closeSessionCmdBuild
                 .createResponseParser(poApduResponseList.get(closeCommandIndex));
         if (!poCloseSessionPars.isSuccessful()) {
-            throw new KeypleCalypsoSecureSessionException("Didn't get a signature",
-                    KeypleCalypsoSecureSessionException.Type.PO, poApduRequestList,
-                    poApduResponseList);
+            throw new CalypsoSecureSessionException("Didn't get a signature",
+                    CalypsoSecureSessionException.Type.PO, poApduRequestList, poApduResponseList);
         }
 
         transactionResult =
@@ -620,10 +604,14 @@ public final class PoTransaction {
      *         <li>The argument of the ratification command is replaced by an indication of the PO
      *         communication mode.</li>
      *         </ul>
+     * @throws CalypsoSecureSessionException if PO transaction error occurs
+     * @throws CalypsoPoTransactionIllegalStateException if PO transaction is not accurately used
+     * @throws CalypsoDesynchronisedExchangesException if PO exchanges APDU are desynchronized
      */
     private SeResponse processAtomicClosing(List<PoCommand> poCommands,
             TransmissionMode transmissionMode, ChannelControl channelControl)
-            throws KeypleReaderException {
+            throws KeypleReaderException, CalypsoSecureSessionException,
+            CalypsoPoTransactionIllegalStateException, CalypsoDesynchronisedExchangesException {
         List<ApduResponse> poAnticipatedResponses =
                 AnticipatedResponseBuilder.getResponses(poCommands);
         return processAtomicClosing(poCommands, poAnticipatedResponses, transmissionMode,
@@ -654,7 +642,6 @@ public final class PoTransaction {
      * Get the ratification status obtained at Session Opening
      * 
      * @return true or false
-     * @throws IllegalStateException if no session has been initiated
      */
     public boolean wasRatified() {
         if (sessionState == SessionState.SESSION_UNINITIALIZED) {
@@ -667,7 +654,6 @@ public final class PoTransaction {
      * Get the data read at Session Opening
      * 
      * @return a byte array containing the data
-     * @throws IllegalStateException if no session has been initiated
      */
     public byte[] getOpenRecordDataRead() {
         if (sessionState == SessionState.SESSION_UNINITIALIZED) {
@@ -820,10 +806,10 @@ public final class PoTransaction {
          *
          * @param poCommands the modification command list
          * @return the anticipated responses.
-         * @throws KeypleCalypsoSecureSessionException if an response can't be determined.
+         * @throws CalypsoPoTransactionIllegalStateException if an response can't be determined.
          */
         private static List<ApduResponse> getResponses(List<PoCommand> poCommands)
-                throws KeypleCalypsoSecureSessionException {
+                throws CalypsoPoTransactionIllegalStateException {
             List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
             if (poCommands != null) {
                 for (PoCommand poCommand : poCommands) {
@@ -878,14 +864,13 @@ public final class PoTransaction {
                                         newCounterValue);
                             }
                         } else {
-                            throw new KeypleCalypsoSecureSessionException(
+                            throw new CalypsoPoTransactionIllegalStateException(
                                     "Anticipated response. COMMAND = " + ((poCommand
                                             .getCommandBuilder() instanceof DecreaseCmdBuild)
                                                     ? "Decrease"
                                                     : "Increase")
                                             + ". Unable to determine anticipated counter value. SFI = "
-                                            + sfi,
-                                    poCommand.getCommandBuilder().getApduRequest(), null);
+                                            + sfi);
                         }
                     } else {
                         /* Append/Update/Write Record: response = 9000 */
@@ -935,10 +920,16 @@ public final class PoTransaction {
      * @param openingRecordNumberToRead number of the record to read
      * @return true if all commands are successful
      * @throws KeypleReaderException the IO reader exception
+     * @throws CalypsoUnauthorizedKvcException if the PO KVC is not authorized
+     * @throws CalypsoSecureSessionException if PO transaction error occurs
+     * @throws CalypsoDesynchronisedExchangesException if PO exchanges APDU are desynchronized
+     * @throws CalypsoPoTransactionIllegalStateException if PO transaction is not accurately used
      */
     public boolean processOpening(SessionModificationMode modificationMode,
             SessionAccessLevel accessLevel, byte openingSfiToSelect, byte openingRecordNumberToRead)
-            throws KeypleReaderException {
+            throws KeypleReaderException, CalypsoUnauthorizedKvcException,
+            CalypsoSecureSessionException, CalypsoDesynchronisedExchangesException,
+            CalypsoPoTransactionIllegalStateException {
         currentModificationMode = modificationMode;
         currentAccessLevel = accessLevel;
         byte localOpeningRecordNumberToRead = openingRecordNumberToRead;
@@ -1026,8 +1017,11 @@ public final class PoTransaction {
      * @return true if all commands are successful
      *
      * @throws KeypleReaderException IO Reader exception
+     * @throws CalypsoSecureSessionException if PO transaction error occurs
+     * @throws CalypsoDesynchronisedExchangesException if PO exchanges APDU are desynchronized
      */
-    public boolean processPoCommands(ChannelControl channelControl) throws KeypleReaderException {
+    public boolean processPoCommands(ChannelControl channelControl) throws KeypleReaderException,
+            CalypsoSecureSessionException, CalypsoDesynchronisedExchangesException {
 
         /** This method should be called only if no session was previously open */
         if (sessionState == SessionState.SESSION_OPEN) {
@@ -1064,8 +1058,14 @@ public final class PoTransaction {
      * @return true if all commands are successful
      *
      * @throws KeypleReaderException IO Reader exception
+     * @throws CalypsoUnauthorizedKvcException if the PO KVC is not authorized
+     * @throws CalypsoSecureSessionException if PO transaction error occurs
+     * @throws CalypsoDesynchronisedExchangesException if PO exchanges APDU are desynchronized
+     * @throws CalypsoPoTransactionIllegalStateException if PO transaction is not accurately used
      */
-    public boolean processPoCommandsInSession() throws KeypleReaderException {
+    public boolean processPoCommandsInSession() throws KeypleReaderException,
+            CalypsoUnauthorizedKvcException, CalypsoSecureSessionException,
+            CalypsoDesynchronisedExchangesException, CalypsoPoTransactionIllegalStateException {
 
         /** This method should be called only if a session was previously open */
         if (sessionState != SessionState.SESSION_OPEN) {
@@ -1168,8 +1168,14 @@ public final class PoTransaction {
      *         <li>The argument of the ratification command is replaced by an indication of the PO
      *         communication mode.</li>
      *         </ul>
+     * @throws CalypsoUnauthorizedKvcException if the PO KVC is not authorized
+     * @throws CalypsoSecureSessionException if PO transaction error occurs
+     * @throws CalypsoDesynchronisedExchangesException if PO exchanges APDU are desynchronized
+     * @throws CalypsoPoTransactionIllegalStateException if PO transaction is not accurately used
      */
-    public boolean processClosing(ChannelControl channelControl) throws KeypleReaderException {
+    public boolean processClosing(ChannelControl channelControl) throws KeypleReaderException,
+            CalypsoUnauthorizedKvcException, CalypsoSecureSessionException,
+            CalypsoDesynchronisedExchangesException, CalypsoPoTransactionIllegalStateException {
         boolean poProcessSuccess = true;
         boolean atLeastOneReadCommand = false;
         boolean sessionPreviouslyClosed = false;
@@ -1295,7 +1301,7 @@ public final class PoTransaction {
         SeResponse poSeResponse;
         try {
             poSeResponse = poReader.transmit(poSeRequest, channelControl);
-        } catch (KeypleReaderException ex) {
+        } catch (KeypleReaderIOException ex) {
             poSeResponse = ex.getSeResponse();
         }
 

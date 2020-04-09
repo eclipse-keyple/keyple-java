@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin.local.monitoring;
 
-import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState;
 import org.eclipse.keyple.core.seproxy.plugin.local.MonitoringJob;
@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * If the SE is removed during processing, then an internal SE_REMOVED event is triggered.
  * <p>
- * If a communication problem with the reader occurs (KeypleIOReaderException) an internal
+ * If a communication problem with the reader occurs (KeypleReaderIOException) an internal
  * STOP_DETECT event is fired.
  */
 public class SmartRemovalMonitoringJob implements MonitoringJob {
@@ -60,7 +60,7 @@ public class SmartRemovalMonitoringJob implements MonitoringJob {
                                 "[{}] waitForCardAbsentNative => return false, task interrupted",
                                 reader.getName());
                     }
-                } catch (KeypleIOReaderException e) {
+                } catch (KeypleReaderIOException e) {
                     logger.trace(
                             "[{}] waitForCardAbsent => Error while polling SE with waitForCardAbsent",
                             reader.getName());

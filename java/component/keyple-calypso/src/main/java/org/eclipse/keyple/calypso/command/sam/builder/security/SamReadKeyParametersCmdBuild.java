@@ -12,7 +12,7 @@
 package org.eclipse.keyple.calypso.command.sam.builder.security;
 
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
-import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommands;
+import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 
 /**
@@ -20,7 +20,7 @@ import org.eclipse.keyple.calypso.command.sam.SamRevision;
  */
 public class SamReadKeyParametersCmdBuild extends AbstractSamCommandBuilder {
     /** The command reference. */
-    private static final CalypsoSamCommands command = CalypsoSamCommands.READ_KEY_PARAMETERS;
+    private static final CalypsoSamCommand command = CalypsoSamCommand.READ_KEY_PARAMETERS;
 
     public static final int MAX_WORK_KEY_REC_NUMB = 126;
 

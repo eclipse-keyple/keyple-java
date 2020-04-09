@@ -15,9 +15,8 @@ import java.util.List;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
@@ -152,7 +151,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      * @return true if the SE is present
      */
     @Override
-    public boolean isSePresent() throws KeypleIOReaderException {
+    public boolean isSePresent() throws KeypleReaderIOException {
         if (checkSePresence()) {
             return true;
         } else {
@@ -361,7 +360,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
             // expected SEs
             try {
                 closePhysicalChannel();
-            } catch (KeypleChannelControlException e) {
+            } catch (KeypleReaderIOException e) {
                 logger.error("Error while closing physical channel. {}", e.getMessage());
             }
         }
@@ -387,7 +386,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
         try {
             logger.trace("[{}] Ping SE", this.getName());
             transmitApdu(apdu);
-        } catch (KeypleIOReaderException e) {
+        } catch (KeypleReaderIOException e) {
             logger.trace("[{}] Exception occurred in isSePresentPing. Message: {}", this.getName(),
                     e.getMessage());
             return false;

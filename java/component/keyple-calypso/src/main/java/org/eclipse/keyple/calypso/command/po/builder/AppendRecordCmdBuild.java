@@ -26,7 +26,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 public final class AppendRecordCmdBuild extends AbstractPoCommandBuilder<AppendRecordRespPars> {
 
     /** The command. */
-    private static final CalypsoPoCommands command = CalypsoPoCommands.APPEND_RECORD;
+    private static final CalypsoPoCommand command = CalypsoPoCommand.APPEND_RECORD;
 
     /* Construction arguments */
     private final int sfi;

@@ -15,7 +15,7 @@ package org.eclipse.keyple.calypso.command.po.builder.security;
 
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
-import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
+import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 
 /**
@@ -34,7 +34,7 @@ public abstract class AbstractOpenSessionCmdBuild<T extends AbstractPoResponsePa
      * @throws IllegalArgumentException - if the request is inconsistent
      */
     public AbstractOpenSessionCmdBuild(PoRevision revision) {
-        super(CalypsoPoCommands.getOpenSessionForRev(revision), null);
+        super(CalypsoPoCommand.getOpenSessionForRev(revision), null);
     }
 
     public static AbstractOpenSessionCmdBuild create(PoRevision revision, byte debitKeyIndex,

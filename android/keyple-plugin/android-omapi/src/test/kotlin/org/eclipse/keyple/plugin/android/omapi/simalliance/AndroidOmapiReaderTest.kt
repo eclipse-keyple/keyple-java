@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.android.omapi.simalliance
 import io.mockk.every
 import io.mockk.mockk
 import org.eclipse.keyple.core.seproxy.SeSelector
-import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.seproxy.message.ApduRequest
 import org.eclipse.keyple.core.seproxy.message.SeRequest
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
@@ -40,7 +40,7 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
         return nativeReader.name
     }
 
-    @Test(expected = KeypleIOReaderException::class)
+    @Test(expected = KeypleReaderIOException::class)
     fun notUsingDefaultFOAndFCIOnPreSimAlliance30() {
 
         nativeReader = mockReaderForP2Test("2.04")

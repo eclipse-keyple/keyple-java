@@ -41,7 +41,7 @@ public abstract class AbstractApduCommandBuilder {
      * @param commandReference command reference
      * @param request request
      */
-    public AbstractApduCommandBuilder(CommandsTable commandReference, ApduRequest request) {
+    public AbstractApduCommandBuilder(SeCommand commandReference, ApduRequest request) {
         this.name = commandReference.getName();
         this.request = request;
         // set APDU name for non null request

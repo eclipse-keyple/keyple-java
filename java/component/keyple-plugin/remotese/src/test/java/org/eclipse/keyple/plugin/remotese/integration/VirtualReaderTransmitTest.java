@@ -21,7 +21,11 @@ import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.message.*;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.seproxy.message.ApduRequest;
+import org.eclipse.keyple.core.seproxy.message.ProxyReader;
+import org.eclipse.keyple.core.seproxy.message.SeRequest;
+import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
 import org.eclipse.keyple.plugin.remotese.rm.json.SampleFactory;
@@ -191,12 +195,12 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
             ((ProxyReader) virtualReader).transmitSet(seRequestSet);
 
-        } catch (KeypleReaderException ex) {
+        } catch (KeypleReaderIOException ex) {
             logger.info("KeypleReaderException was thrown as expected : {} {}",
-                    ex.getSeResponseSet(), ex.getSeResponse());
+                    ex.getSeResponseList(), ex.getSeResponse());
 
-            Assert.assertEquals(ex.getSeResponseSet().size(), 1);
-            Assert.assertEquals(ex.getSeResponseSet().get(0).getApduResponses().size(), 2);
+            Assert.assertEquals(ex.getSeResponseList().size(), 1);
+            Assert.assertEquals(ex.getSeResponseList().get(0).getApduResponses().size(), 2);
         }
     }
 
@@ -217,13 +221,13 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
             ((ProxyReader) virtualReader).transmitSet(seRequestSet);
 
-        } catch (KeypleReaderException ex) {
+        } catch (KeypleReaderIOException ex) {
             logger.info("KeypleReaderException was thrown as expected : {} {}",
-                    ex.getSeResponseSet(), ex.getSeResponse());
-            Assert.assertEquals(ex.getSeResponseSet().size(), 2);
-            Assert.assertEquals(ex.getSeResponseSet().get(0).getApduResponses().size(), 4);
-            Assert.assertEquals(ex.getSeResponseSet().get(1).getApduResponses().size(), 2);
-            Assert.assertEquals(ex.getSeResponseSet().get(1).getApduResponses().size(), 2);
+                    ex.getSeResponseList(), ex.getSeResponse());
+            Assert.assertEquals(ex.getSeResponseList().size(), 2);
+            Assert.assertEquals(ex.getSeResponseList().get(0).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponseList().get(1).getApduResponses().size(), 2);
+            Assert.assertEquals(ex.getSeResponseList().get(1).getApduResponses().size(), 2);
         }
     }
 
@@ -245,13 +249,13 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
             ((ProxyReader) virtualReader).transmitSet(seRequestSet);
 
-        } catch (KeypleReaderException ex) {
+        } catch (KeypleReaderIOException ex) {
             logger.info("KeypleReaderException was thrown as expected : {} {}",
-                    ex.getSeResponseSet(), ex.getSeResponse());
-            Assert.assertEquals(ex.getSeResponseSet().size(), 3);
-            Assert.assertEquals(ex.getSeResponseSet().get(0).getApduResponses().size(), 4);
-            Assert.assertEquals(ex.getSeResponseSet().get(1).getApduResponses().size(), 4);
-            Assert.assertEquals(ex.getSeResponseSet().get(2).getApduResponses().size(), 2);
+                    ex.getSeResponseList(), ex.getSeResponse());
+            Assert.assertEquals(ex.getSeResponseList().size(), 3);
+            Assert.assertEquals(ex.getSeResponseList().get(0).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponseList().get(1).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponseList().get(2).getApduResponses().size(), 2);
         }
     }
 
@@ -273,13 +277,13 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
             ((ProxyReader) virtualReader).transmitSet(seRequestSet);
 
-        } catch (KeypleReaderException ex) {
+        } catch (KeypleReaderIOException ex) {
             logger.info("KeypleReaderException was thrown as expected : {} {}",
-                    ex.getSeResponseSet(), ex.getSeResponse());
-            Assert.assertEquals(ex.getSeResponseSet().size(), 3);
-            Assert.assertEquals(ex.getSeResponseSet().get(0).getApduResponses().size(), 4);
-            Assert.assertEquals(ex.getSeResponseSet().get(1).getApduResponses().size(), 4);
-            Assert.assertEquals(ex.getSeResponseSet().get(2).getApduResponses().size(), 4);
+                    ex.getSeResponseList(), ex.getSeResponse());
+            Assert.assertEquals(ex.getSeResponseList().size(), 3);
+            Assert.assertEquals(ex.getSeResponseList().get(0).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponseList().get(1).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponseList().get(2).getApduResponses().size(), 4);
         }
     }
 
@@ -301,9 +305,9 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
             ((ProxyReader) virtualReader).transmit(seRequest);
 
-        } catch (KeypleReaderException ex) {
+        } catch (KeypleReaderIOException ex) {
             logger.info("KeypleReaderException was thrown as expected : {} {}",
-                    ex.getSeResponseSet(), ex.getSeResponse());
+                    ex.getSeResponseList(), ex.getSeResponse());
             Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 0);
         }
     }
@@ -326,9 +330,9 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
             ((ProxyReader) virtualReader).transmit(seRequest);
 
-        } catch (KeypleReaderException ex) {
+        } catch (KeypleReaderIOException ex) {
             logger.info("KeypleReaderException was thrown as expected : {} {}",
-                    ex.getSeResponseSet(), ex.getSeResponse());
+                    ex.getSeResponseList(), ex.getSeResponse());
             Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 1);
         }
     }
@@ -351,9 +355,9 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
             ((ProxyReader) virtualReader).transmit(seRequest);
 
-        } catch (KeypleReaderException ex) {
+        } catch (KeypleReaderIOException ex) {
             logger.info("KeypleReaderException was thrown as expected : set : {}, seResponse : {}",
-                    ex.getSeResponseSet(), ex.getSeResponse());
+                    ex.getSeResponseList(), ex.getSeResponse());
             Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 2);
         }
     }
@@ -376,9 +380,9 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
             ((ProxyReader) virtualReader).transmit(seRequest);
 
-        } catch (KeypleReaderException ex) {
+        } catch (KeypleReaderIOException ex) {
             logger.info("KeypleReaderException was thrown as expected : {} {}",
-                    ex.getSeResponseSet(), ex.getSeResponse());
+                    ex.getSeResponseList(), ex.getSeResponse());
             Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 3);
         }
     }

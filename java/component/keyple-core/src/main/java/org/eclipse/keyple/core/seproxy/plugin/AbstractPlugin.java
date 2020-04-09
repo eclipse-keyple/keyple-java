@@ -114,11 +114,9 @@ public abstract class AbstractPlugin extends Observable<PluginEvent>
      * this method is called once in the plugin constructor.
      *
      * @return the list of AbstractReader objects.
-     * @throws KeypleReaderException if a reader error when readers list initialization, it will be
-     *         thrown by the constructor in a KeypleRuntimeException to be caught at a higher level
-     *         by the {@link org.eclipse.keyple.core.seproxy.AbstractPluginFactory}
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    protected abstract SortedSet<SeReader> initNativeReaders() throws KeypleReaderException;
+    protected abstract SortedSet<SeReader> initNativeReaders() throws KeypleReaderIOException;
 
     /**
      * Compare the name of the current ReaderPlugin to the name of the ReaderPlugin provided in
@@ -200,12 +198,12 @@ public abstract class AbstractPlugin extends Observable<PluginEvent>
      * See {@link #setParameter(String, String)} for more details
      *
      * @param parameters the new parameters
-     * @throws KeypleBaseException This method can fail when disabling the exclusive mode as it's
+     * @throws KeypleException This method can fail when disabling the exclusive mode as it's
      *         executed instantly
      */
     @Override
     public final void setParameters(Map<String, String> parameters)
-            throws IllegalArgumentException, KeypleBaseException {
+            throws IllegalArgumentException, KeypleException {
         for (Map.Entry<String, String> en : parameters.entrySet()) {
             setParameter(en.getKey(), en.getValue());
         }

@@ -14,9 +14,7 @@ package org.eclipse.keyple.plugin.android.omapi.simalliance
 import java.io.IOException
 import kotlin.experimental.or
 import org.eclipse.keyple.core.seproxy.SeSelector
-import org.eclipse.keyple.core.seproxy.exception.KeypleApplicationSelectionException
-import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException
-import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.seproxy.message.ApduResponse
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractLocalReader
 import org.eclipse.keyple.core.util.ByteArrayUtil
@@ -64,25 +62,23 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
      * Open a logical channel by selecting the application
      * @param aidSelector the selection parameters
      * @return a ApduResponse built from the FCI data resulting from the application selection
-     * @throws KeypleIOReaderException
-     * @throws KeypleChannelControlException
-     * @throws KeypleApplicationSelectionException
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    @Throws(KeypleIOReaderException::class, KeypleChannelControlException::class, KeypleApplicationSelectionException::class)
+    @Throws(KeypleReaderIOException::class)
     override fun openChannelForAid(aidSelector: SeSelector.AidSelector): ApduResponse {
         if (aidSelector.aidToSelect == null) {
             try {
                 openChannel = session?.openBasicChannel(null)
             } catch (e: IOException) {
                 Timber.e(e)
-                throw KeypleIOReaderException("IOException while opening basic channel.")
+                throw KeypleReaderIOException("IOException while opening basic channel.")
             } catch (e: SecurityException) {
                 Timber.e(e)
-                throw KeypleChannelControlException("Error while opening basic channel, SE_SELECTOR = $aidSelector", e.cause)
+                throw KeypleReaderIOException("Error while opening basic channel, SE_SELECTOR = $aidSelector", e.cause)
             }
 
             if (openChannel == null) {
-                throw KeypleIOReaderException("Failed to open a basic channel.")
+                throw KeypleReaderIOException("Failed to open a basic channel.")
             }
         } else {
             Timber.i("[%s] openLogicalChannel => Select Application with AID = %s",
@@ -99,23 +95,23 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
                             if (omapiVersion >= P2_SUPPORTED_MIN_VERSION) {
                                 session?.openLogicalChannel(aidSelector.aidToSelect.value, p2)
                             } else {
-                                throw KeypleIOReaderException("P2 != 00h while opening logical channel is only supported by OMAPI version >= 3.0. Current is $omapiVersion")
+                                throw KeypleReaderIOException("P2 != 00h while opening logical channel is only supported by OMAPI version >= 3.0. Current is $omapiVersion")
                             }
                         }
             } catch (e: IOException) {
                 Timber.e(e, "IOException")
-                throw KeypleIOReaderException("IOException while opening logical channel.", e)
+                throw KeypleReaderIOException("IOException while opening logical channel.", e)
             } catch (e: NoSuchElementException) {
                 Timber.e(e, "NoSuchElementException")
-                throw KeypleApplicationSelectionException(
+                throw java.lang.IllegalArgumentException(
                         "NoSuchElementException: " + ByteArrayUtil.toHex(aidSelector.aidToSelect.value), e)
             } catch (e: SecurityException) {
                 Timber.e(e, "SecurityException")
-                throw KeypleChannelControlException("SecurityException while opening logical channel, aid :" + ByteArrayUtil.toHex(aidSelector.aidToSelect.value), e.cause)
+                throw KeypleReaderIOException("SecurityException while opening logical channel, aid :" + ByteArrayUtil.toHex(aidSelector.aidToSelect.value), e.cause)
             }
 
             if (openChannel == null) {
-                throw KeypleIOReaderException("Failed to open a logical channel.")
+                throw KeypleReaderIOException("Failed to open a logical channel.")
             }
         }
         /* get the FCI and build an ApduResponse */
@@ -126,13 +122,13 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
         return session?.isClosed == false
     }
 
-    @Throws(KeypleChannelControlException::class)
+    @Throws(KeypleReaderIOException::class)
     public override fun openPhysicalChannel() {
         try {
             session = nativeReader.openSession()
         } catch (e: IOException) {
             Timber.e(e, "IOException")
-            throw KeypleChannelControlException("IOException while opening physical channel.", e)
+            throw KeypleReaderIOException("IOException while opening physical channel.", e)
         }
     }
 
@@ -151,9 +147,9 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
      *
      * @param apduIn byte buffer containing the ingoing data
      * @return apduOut response
-     * @throws KeypleIOReaderException if error while sending or receiving bytes
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    @Throws(KeypleIOReaderException::class)
+    @Throws(KeypleReaderIOException::class)
     override fun transmitApdu(apduIn: ByteArray): ByteArray {
         // Initialization
         Timber.d("Data Length to be sent to tag : %s", apduIn.size)
@@ -164,7 +160,7 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
                 dataOut = it?.transmit(apduIn) ?: throw IOException("Channel is not open")
             }
         } catch (e: IOException) {
-            throw KeypleIOReaderException("Error while transmitting APDU", e)
+            throw KeypleReaderIOException("Error while transmitting APDU", e)
         }
 
         Timber.d("Data out : " + ByteArrayUtil.toHex(dataOut))

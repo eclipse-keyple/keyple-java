@@ -13,7 +13,7 @@ package org.eclipse.keyple.plugin.android.nfc
 
 import java.io.IOException
 import java.util.HashMap
-import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException
+import org.eclipse.keyple.core.seproxy.exception.KeypleException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.junit.Assert
 import org.junit.Before
@@ -47,7 +47,7 @@ class AndroidNfcPluginImplTest {
     }
 
     @Test
-    @Throws(KeypleBaseException::class)
+    @Throws(KeypleException::class)
     fun setParameters() {
 
         val parameters = HashMap<String, String>()

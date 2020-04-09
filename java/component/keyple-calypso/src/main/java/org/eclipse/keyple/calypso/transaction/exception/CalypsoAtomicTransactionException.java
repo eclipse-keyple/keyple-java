@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information regarding copyright
  * ownership.
@@ -11,13 +11,16 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction.exception;
 
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-
 /**
- * Thrown when the current PO has an unauthorized KVC
+ * The exception {@code CalypsoAtomicTransactionException} indicates that the transaction cannot be
+ * done in an atomic way because the capacity of the session buffer is not sufficient.
  */
-public class KeypleCalypsoSecureSessionUnauthorizedKvcException extends KeypleReaderException {
-    public KeypleCalypsoSecureSessionUnauthorizedKvcException(String message) {
+public class CalypsoAtomicTransactionException extends CalypsoPoTransactionException {
+
+    /**
+     * @param message the message to identify the exception context
+     */
+    public CalypsoAtomicTransactionException(String message) {
         super(message);
     }
 }

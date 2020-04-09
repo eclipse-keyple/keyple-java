@@ -31,9 +31,8 @@ import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.*;
-import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -445,7 +444,7 @@ public class StubReaderTest extends BaseStubTest {
                 byte[] fci = null;
                 try {
                     fci = hoplinkSE().processApdu(selectApplicationCommand);
-                } catch (KeypleIOReaderException e) {
+                } catch (KeypleReaderIOException e) {
                     e.printStackTrace();
                 }
 
@@ -816,9 +815,9 @@ public class StubReaderTest extends BaseStubTest {
             List<SeResponse> seResponseList = ((ProxyReader) reader).transmitSet(seRequestSet);
             Assert.fail("Should throw exception");
 
-        } catch (KeypleReaderException ex) {
-            Assert.assertEquals(ex.getSeResponseSet().size(), 1);
-            Assert.assertEquals(ex.getSeResponseSet().get(0).getApduResponses().size(), 2);
+        } catch (KeypleReaderIOException ex) {
+            Assert.assertEquals(ex.getSeResponseList().size(), 1);
+            Assert.assertEquals(ex.getSeResponseList().get(0).getApduResponses().size(), 2);
         }
     }
 
@@ -846,11 +845,11 @@ public class StubReaderTest extends BaseStubTest {
             List<SeResponse> seResponseList = ((ProxyReader) reader).transmitSet(seRequestSet);
             Assert.fail("Should throw exception");
 
-        } catch (KeypleReaderException ex) {
-            Assert.assertEquals(ex.getSeResponseSet().size(), 2);
-            Assert.assertEquals(ex.getSeResponseSet().get(0).getApduResponses().size(), 4);
-            Assert.assertEquals(ex.getSeResponseSet().get(1).getApduResponses().size(), 2);
-            Assert.assertEquals(ex.getSeResponseSet().get(1).getApduResponses().size(), 2);
+        } catch (KeypleReaderIOException ex) {
+            Assert.assertEquals(ex.getSeResponseList().size(), 2);
+            Assert.assertEquals(ex.getSeResponseList().get(0).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponseList().get(1).getApduResponses().size(), 2);
+            Assert.assertEquals(ex.getSeResponseList().get(1).getApduResponses().size(), 2);
         }
     }
 
@@ -879,11 +878,11 @@ public class StubReaderTest extends BaseStubTest {
             List<SeResponse> seResponseList = ((ProxyReader) reader).transmitSet(seRequestSet);
             Assert.fail("Should throw exception");
 
-        } catch (KeypleReaderException ex) {
-            Assert.assertEquals(ex.getSeResponseSet().size(), 3);
-            Assert.assertEquals(ex.getSeResponseSet().get(0).getApduResponses().size(), 4);
-            Assert.assertEquals(ex.getSeResponseSet().get(1).getApduResponses().size(), 4);
-            Assert.assertEquals(ex.getSeResponseSet().get(2).getApduResponses().size(), 2);
+        } catch (KeypleReaderIOException ex) {
+            Assert.assertEquals(ex.getSeResponseList().size(), 3);
+            Assert.assertEquals(ex.getSeResponseList().get(0).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponseList().get(1).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponseList().get(2).getApduResponses().size(), 2);
         }
     }
 
@@ -942,7 +941,7 @@ public class StubReaderTest extends BaseStubTest {
             SeResponse seResponse = ((ProxyReader) reader).transmit(seRequest);
             Assert.fail("Should throw exception");
 
-        } catch (KeypleReaderException ex) {
+        } catch (KeypleReaderIOException ex) {
             Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 0);
         }
     }
@@ -972,7 +971,7 @@ public class StubReaderTest extends BaseStubTest {
             SeResponse seResponse = ((ProxyReader) reader).transmit(seRequest);
             Assert.fail("Should throw exception");
 
-        } catch (KeypleReaderException ex) {
+        } catch (KeypleReaderIOException ex) {
             Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 1);
         }
     }
@@ -1001,7 +1000,7 @@ public class StubReaderTest extends BaseStubTest {
             SeResponse seResponse = ((ProxyReader) reader).transmit(seRequest);
             Assert.fail("Should throw exception");
 
-        } catch (KeypleReaderException ex) {
+        } catch (KeypleReaderIOException ex) {
             Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 2);
         }
     }
@@ -1240,7 +1239,7 @@ public class StubReaderTest extends BaseStubTest {
         return new StubSecureElement() {
 
             @Override
-            public byte[] processApdu(byte[] apduIn) throws KeypleIOReaderException {
+            public byte[] processApdu(byte[] apduIn) throws KeypleReaderIOException {
                 addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00",
                         "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
 
@@ -1271,7 +1270,7 @@ public class StubReaderTest extends BaseStubTest {
     static public StubSecureElement revision1SE() {
         return new StubSecureElement() {
             @Override
-            public byte[] processApdu(byte[] apduIn) throws KeypleIOReaderException {
+            public byte[] processApdu(byte[] apduIn) throws KeypleReaderIOException {
                 addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00",
                         "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
 
@@ -1301,7 +1300,7 @@ public class StubReaderTest extends BaseStubTest {
         return new StubSecureElement() {
 
             @Override
-            public byte[] processApdu(byte[] apduIn) throws KeypleIOReaderException {
+            public byte[] processApdu(byte[] apduIn) throws KeypleReaderIOException {
 
                 addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00",
                         "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
@@ -1325,7 +1324,7 @@ public class StubReaderTest extends BaseStubTest {
     static public StubSecureElement partialSE() {
         return new StubSecureElement() {
             @Override
-            public byte[] processApdu(byte[] apduIn) throws KeypleIOReaderException {
+            public byte[] processApdu(byte[] apduIn) throws KeypleReaderIOException {
 
                 addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00",
                         "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
@@ -1365,18 +1364,18 @@ public class StubReaderTest extends BaseStubTest {
 
             // override methods to fail open connection
             @Override
-            public void openPhysicalChannel() throws KeypleChannelControlException {
-                throw new KeypleChannelControlException("Impossible to estasblish connection");
+            public void openPhysicalChannel() throws KeypleReaderIOException {
+                throw new KeypleReaderIOException("Impossible to estasblish connection");
             }
 
             @Override
-            public void closePhysicalChannel() throws KeypleChannelControlException {
-                throw new KeypleChannelControlException("Channel is not open");
+            public void closePhysicalChannel() throws KeypleReaderIOException {
+                throw new KeypleReaderIOException("Channel is not open");
             }
 
             @Override
-            public byte[] processApdu(byte[] apduIn) throws KeypleIOReaderException {
-                throw new KeypleIOReaderException("Error while transmitting apdu");
+            public byte[] processApdu(byte[] apduIn) throws KeypleReaderIOException {
+                throw new KeypleReaderIOException("Error while transmitting apdu");
             }
 
             @Override
@@ -1391,7 +1390,7 @@ public class StubReaderTest extends BaseStubTest {
         return new ApduRequest(ByteArrayUtil.fromHex("FEDCBA98 9005h"), false);
     }
 
-    static public void genericSelectSe(SeReader reader) throws KeypleReaderException {
+    static public void genericSelectSe(SeReader reader) throws KeypleReaderIOException {
         /**
          * Create a new local class extending AbstractSeSelectionRequest
          */

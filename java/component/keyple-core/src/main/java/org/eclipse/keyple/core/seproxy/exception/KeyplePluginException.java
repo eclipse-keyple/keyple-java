@@ -12,26 +12,25 @@
 package org.eclipse.keyple.core.seproxy.exception;
 
 /**
- * Base Exceptions thrown in a {@link org.eclipse.keyple.core.seproxy.ReaderPlugin} context
+ * The exception {@code KeyplePluginException} is the parent abstract class of all Keyple plugins
+ * exceptions.
  */
-public class KeyplePluginException extends KeypleBaseException {
+public abstract class KeyplePluginException extends KeypleException {
 
     /**
-     * New plugin exception to be thrown
-     * 
-     * @param message : message to identify the exception and the context
+     * @param message the message to identify the exception context
      */
-    public KeyplePluginException(String message) {
+    protected KeyplePluginException(String message) {
         super(message);
     }
 
     /**
-     * Encapsulate a lower level plugin exception
-     * 
-     * @param message : message to add some context to the exception
-     * @param cause : lower level exception
+     * Encapsulates a lower level plugin exception
+     *
+     * @param message message to identify the exception context
+     * @param cause the cause
      */
-    public KeyplePluginException(String message, Throwable cause) {
+    protected KeyplePluginException(String message, Throwable cause) {
         super(message, cause);
     }
 }

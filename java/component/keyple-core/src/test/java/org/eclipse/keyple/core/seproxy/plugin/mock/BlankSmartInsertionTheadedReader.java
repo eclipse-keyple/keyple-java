@@ -92,7 +92,7 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
                     if (BlankSmartInsertionTheadedReader.this.waitForCardPresent()) {
                         onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
                     }
-                } catch (KeypleIOReaderException e) {
+                } catch (KeypleReaderIOException e) {
                     logger.trace(
                             "[{}] waitForCardPresent => Error while polling card with waitForCardPresent",
                             BlankSmartInsertionTheadedReader.this.getName());
@@ -114,12 +114,12 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
     }
 
     @Override
-    public void openPhysicalChannel() throws KeypleChannelControlException {
+    public void openPhysicalChannel() {
 
     }
 
     @Override
-    public void closePhysicalChannel() throws KeypleChannelControlException {
+    public void closePhysicalChannel() {
 
     }
 
@@ -129,12 +129,12 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
     }
 
     @Override
-    public boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderException {
+    public boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderIOException {
         return false;
     }
 
     @Override
-    public byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
+    public byte[] transmitApdu(byte[] apduIn) throws KeypleReaderIOException {
         return new byte[0];
     }
 
@@ -149,8 +149,7 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
     }
 
     @Override
-    public void setParameter(String key, String value)
-            throws IllegalArgumentException, KeypleBaseException {
+    public void setParameter(String key, String value) throws KeypleReaderIOException {
 
     }
 
@@ -161,7 +160,7 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
      */
 
     @Override
-    public boolean waitForCardPresent() throws KeypleIOReaderException {
+    public boolean waitForCardPresent() throws KeypleReaderIOException {
         detectCount++;
         try {
             Thread.sleep(10);

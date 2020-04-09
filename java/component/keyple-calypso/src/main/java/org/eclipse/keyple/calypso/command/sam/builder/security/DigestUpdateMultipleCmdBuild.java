@@ -13,7 +13,7 @@ package org.eclipse.keyple.calypso.command.sam.builder.security;
 
 
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
-import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommands;
+import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 
 // TODO: Auto-generated Javadoc
@@ -25,7 +25,7 @@ import org.eclipse.keyple.calypso.command.sam.SamRevision;
 public class DigestUpdateMultipleCmdBuild extends AbstractSamCommandBuilder {
 
     /** The command. */
-    private static final CalypsoSamCommands command = CalypsoSamCommands.DIGEST_UPDATE_MULTIPLE;
+    private static final CalypsoSamCommand command = CalypsoSamCommand.DIGEST_UPDATE_MULTIPLE;
 
     /**
      * Instantiates a new DigestUpdateMultipleCmdBuild.

@@ -17,7 +17,7 @@ import java.util.Set;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 
 
 /**
@@ -62,11 +62,11 @@ public interface ProxyReader extends SeReader {
      * @param channelControl indicates if the channel has to be closed at the end of the
      *        transmission
      * @return the SE response
-     * @throws KeypleReaderException An error occurs during transmit (channel, IO)
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     List<SeResponse> transmitSet(Set<SeRequest> seApplicationRequest,
             MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
-            throws KeypleReaderException, IllegalArgumentException;
+            throws KeypleReaderIOException;
 
     /**
      * Transmits a Set of {@link SeRequest} (list of {@link SeRequest}) to a SE application and get
@@ -77,10 +77,10 @@ public interface ProxyReader extends SeReader {
      *
      * @param seApplicationRequest the Set of application requests
      * @return the SE response
-     * @throws KeypleReaderException An error occurs during transmit (channel, IO)
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     List<SeResponse> transmitSet(Set<SeRequest> seApplicationRequest)
-            throws KeypleReaderException, IllegalArgumentException;
+            throws KeypleReaderIOException;
 
     /**
      * Transmits a single {@link SeRequest} (list of {@link ApduRequest}) and get back the
@@ -100,11 +100,10 @@ public interface ProxyReader extends SeReader {
      * @param seApplicationRequest the SeRequest to transmit
      * @param channelControl a flag to tell if the channel has to be closed at the end
      * @return SeResponse the response to the SeRequest
-     * @throws KeypleReaderException in case of a reader exception
-     * @throws IllegalArgumentException if a bad argument is provided
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     SeResponse transmit(SeRequest seApplicationRequest, ChannelControl channelControl)
-            throws KeypleReaderException, IllegalArgumentException;
+            throws KeypleReaderIOException;
 
     /**
      * Transmits a single {@link SeRequest} (list of {@link ApduRequest}) and get back the
@@ -118,9 +117,7 @@ public interface ProxyReader extends SeReader {
      *
      * @param seApplicationRequest the SeRequest to transmit
      * @return SeResponse the response to the SeRequest
-     * @throws KeypleReaderException in case of a reader exception
-     * @throws IllegalArgumentException if a bad argument is provided
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    SeResponse transmit(SeRequest seApplicationRequest)
-            throws KeypleReaderException, IllegalArgumentException;
+    SeResponse transmit(SeRequest seApplicationRequest) throws KeypleReaderIOException;
 }

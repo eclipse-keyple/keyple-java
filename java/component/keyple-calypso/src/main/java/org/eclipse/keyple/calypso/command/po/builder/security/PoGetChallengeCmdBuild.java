@@ -13,7 +13,7 @@ package org.eclipse.keyple.calypso.command.po.builder.security;
 
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
-import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
+import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.parser.security.PoGetChallengeRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
@@ -23,7 +23,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  */
 public final class PoGetChallengeCmdBuild extends AbstractPoCommandBuilder<PoGetChallengeRespPars> {
 
-    private static final CalypsoPoCommands command = CalypsoPoCommands.GET_CHALLENGE;
+    private static final CalypsoPoCommand command = CalypsoPoCommand.GET_CHALLENGE;
 
     /**
      * Instantiates a new PoGetChallengeCmdBuild.

@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.command;
 
-public interface CommandsTable {
+public interface SeCommand {
 
     String getName();
 

@@ -12,7 +12,7 @@
 package org.eclipse.keyple.calypso.command.sam.builder.security;
 
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
-import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommands;
+import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 
 /**
@@ -21,7 +21,7 @@ import org.eclipse.keyple.calypso.command.sam.SamRevision;
 public class SamWriteKeyCmdBuild extends AbstractSamCommandBuilder {
     /** The command reference. */
 
-    private static final CalypsoSamCommands command = CalypsoSamCommands.WRITE_KEY;
+    private static final CalypsoSamCommand command = CalypsoSamCommand.WRITE_KEY;
 
     /**
      * Builder constructor

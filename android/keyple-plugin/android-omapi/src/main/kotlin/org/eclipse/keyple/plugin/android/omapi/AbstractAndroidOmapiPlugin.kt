@@ -57,8 +57,6 @@ internal abstract class AbstractAndroidOmapiPlugin<T, V> : AbstractPlugin(PLUGIN
 
         if (readers.isEmpty()) {
             Timber.w("OMAPI SeService is not connected yet")
-            // throw new KeypleReaderException("OMAPI SeService is not connected yet, try again");
-            // can throw an exception to notif
         }
 
         return readers

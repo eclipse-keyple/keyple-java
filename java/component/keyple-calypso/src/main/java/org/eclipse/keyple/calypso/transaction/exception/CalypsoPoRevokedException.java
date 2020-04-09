@@ -9,18 +9,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.calypso.exception;
+package org.eclipse.keyple.calypso.transaction.exception;
 
-import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+/**
+ * The exception {@code CalypsoPoRevokedException} indicates that the PO is revoked.
+ */
+public class CalypsoPoRevokedException extends CalypsoPoTransactionException {
 
-public class NoResourceAvailableException extends KeypleBaseException {
-
-
-    public NoResourceAvailableException(String message) {
+    /**
+     * @param message the message to identify the exception context
+     */
+    public CalypsoPoRevokedException(String message) {
         super(message);
-    }
-
-    public NoResourceAvailableException(String message, Throwable cause) {
-        super(message, cause);
     }
 }

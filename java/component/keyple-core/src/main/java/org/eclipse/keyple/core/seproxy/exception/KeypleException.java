@@ -11,21 +11,26 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.exception;
 
-
-import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-
 /**
- * Application selection failure in {@link ProxyReader} by AID or ATR
+ * The exception {@code KeypleException} is the parent abstract class of all Keyple checked
+ * exceptions.
  */
-public class KeypleApplicationSelectionException extends KeypleReaderException {
+public abstract class KeypleException extends Exception {
 
-
-    public KeypleApplicationSelectionException(String message) {
+    /**
+     * @param message the message to identify the exception context
+     */
+    protected KeypleException(String message) {
         super(message);
     }
 
-    public KeypleApplicationSelectionException(String message, Throwable cause) {
+    /**
+     * Encapsulate a lower level exception (ie CardException, IOException, HostNotFoundException..)
+     *
+     * @param message message to identify the exception context
+     * @param cause the cause
+     */
+    protected KeypleException(String message, Throwable cause) {
         super(message, cause);
     }
-
 }

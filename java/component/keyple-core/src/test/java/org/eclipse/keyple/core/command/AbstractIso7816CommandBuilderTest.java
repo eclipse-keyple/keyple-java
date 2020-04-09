@@ -160,7 +160,7 @@ public class AbstractIso7816CommandBuilderTest extends CoreBaseTest {
                 apduRequest.getBytes());
     }
 
-    private enum CommandRef implements CommandsTable {
+    private enum CommandRef implements SeCommand {
         COMMAND_1("COMMAND_1", (byte) 0x11), COMMAND_2("COMMAND_2", (byte) 0x22);
 
         /** The name. */
@@ -186,7 +186,7 @@ public class AbstractIso7816CommandBuilderTest extends CoreBaseTest {
     }
 
     private class Iso7816CommandBuilder extends AbstractIso7816CommandBuilder {
-        public Iso7816CommandBuilder(CommandsTable commandReference, ApduRequest request) {
+        public Iso7816CommandBuilder(SeCommand commandReference, ApduRequest request) {
             super(commandReference, request);
         }
 

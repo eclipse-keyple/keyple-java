@@ -12,7 +12,7 @@
 package org.eclipse.keyple.calypso.command.sam.builder.security;
 
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
-import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommands;
+import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 
 /**
@@ -21,7 +21,7 @@ import org.eclipse.keyple.calypso.command.sam.SamRevision;
 public class DigestCloseCmdBuild extends AbstractSamCommandBuilder {
 
     /** The command. */
-    private static final CalypsoSamCommands command = CalypsoSamCommands.DIGEST_CLOSE;
+    private static final CalypsoSamCommand command = CalypsoSamCommand.DIGEST_CLOSE;
 
     /**
      * Instantiates a new DigestCloseCmdBuild .

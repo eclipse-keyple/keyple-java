@@ -15,13 +15,15 @@ package org.eclipse.keyple.example.calypso.pc.usecase2;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.transaction.*;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronisedExchangesException;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoSecureSessionException;
 import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
@@ -67,7 +69,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
      */
     private static final Object waitForEnd = new Object();
 
-    public DefaultSelectionNotification_Pcsc() throws KeypleBaseException, InterruptedException {
+    public DefaultSelectionNotification_Pcsc() throws KeypleException, InterruptedException {
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
 
@@ -234,6 +236,10 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
                     }
                 } catch (KeypleReaderException e) {
                     e.printStackTrace();
+                } catch (CalypsoSecureSessionException e) {
+                    e.printStackTrace();
+                } catch (CalypsoDesynchronisedExchangesException e) {
+                    e.printStackTrace();
                 }
 
                 logger.info(
@@ -276,7 +282,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
     /**
      * main program entry
      */
-    public static void main(String[] args) throws InterruptedException, KeypleBaseException {
+    public static void main(String[] args) throws InterruptedException, KeypleException {
         /* Create the observable object to handle the PO processing */
         DefaultSelectionNotification_Pcsc m = new DefaultSelectionNotification_Pcsc();
     }

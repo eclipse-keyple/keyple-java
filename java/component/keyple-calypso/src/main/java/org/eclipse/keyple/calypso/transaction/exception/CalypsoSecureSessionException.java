@@ -13,11 +13,11 @@ package org.eclipse.keyple.calypso.transaction.exception;
 
 import java.util.Collections;
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
-public class KeypleCalypsoSecureSessionException extends KeypleReaderException {
+@Deprecated
+public class CalypsoSecureSessionException extends CalypsoPoTransactionException {
 
     public enum Type {
         PO, SAM
@@ -27,19 +27,19 @@ public class KeypleCalypsoSecureSessionException extends KeypleReaderException {
     private final List<ApduRequest> requests;
     private final List<ApduResponse> responses;
 
-    public KeypleCalypsoSecureSessionException(String message, Type type,
-            List<ApduRequest> requests, List<ApduResponse> responses) {
+    public CalypsoSecureSessionException(String message, Type type, List<ApduRequest> requests,
+            List<ApduResponse> responses) {
         super(message);
         this.type = type;
         this.requests = requests;
         this.responses = responses;
     }
 
-    public KeypleCalypsoSecureSessionException(String message, ApduRequest req, ApduResponse resp) {
+    public CalypsoSecureSessionException(String message, ApduRequest req, ApduResponse resp) {
         this(message, null, Collections.singletonList(req), Collections.singletonList(resp));
     }
 
-    public KeypleCalypsoSecureSessionException(String message, ApduResponse resp) {
+    public CalypsoSecureSessionException(String message, ApduResponse resp) {
         this(message, null, resp);
     }
 

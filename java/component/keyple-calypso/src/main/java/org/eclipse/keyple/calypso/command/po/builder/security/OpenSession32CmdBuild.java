@@ -13,7 +13,7 @@ package org.eclipse.keyple.calypso.command.po.builder.security;
 
 
 import org.eclipse.keyple.calypso.command.PoClass;
-import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
+import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.parser.security.OpenSession32RespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
@@ -47,7 +47,7 @@ public final class OpenSession32CmdBuild
         System.arraycopy(samChallenge, 0, dataIn, 1, samChallenge.length);
 
         this.request = setApduRequest(PoClass.ISO.getValue(),
-                CalypsoPoCommands.getOpenSessionForRev(PoRevision.REV3_2), p1, p2, dataIn, le);
+                CalypsoPoCommand.getOpenSessionForRev(PoRevision.REV3_2), p1, p2, dataIn, le);
         if (extraInfo != null) {
             this.addSubName(extraInfo);
         }

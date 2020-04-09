@@ -25,7 +25,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 public final class DecreaseCmdBuild extends AbstractPoCommandBuilder<DecreaseRespPars> {
 
     /** The command. */
-    private static final CalypsoPoCommands command = CalypsoPoCommands.DECREASE;
+    private static final CalypsoPoCommand command = CalypsoPoCommand.DECREASE;
 
     /* Construction arguments */
     private final int sfi;

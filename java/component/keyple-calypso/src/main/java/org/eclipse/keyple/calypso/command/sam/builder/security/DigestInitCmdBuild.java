@@ -13,7 +13,7 @@ package org.eclipse.keyple.calypso.command.sam.builder.security;
 
 
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
-import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommands;
+import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 
 /**
@@ -24,7 +24,7 @@ public class DigestInitCmdBuild extends AbstractSamCommandBuilder {
     /**
      * The command.
      */
-    private static final CalypsoSamCommands command = CalypsoSamCommands.DIGEST_INIT;
+    private static final CalypsoSamCommand command = CalypsoSamCommand.DIGEST_INIT;
 
     /**
      * Instantiates a new DigestInitCmdBuild.
@@ -80,7 +80,7 @@ public class DigestInitCmdBuild extends AbstractSamCommandBuilder {
         }
         // CalypsoRequest calypsoRequest = new CalypsoRequest(cla, CalypsoCommands.SAM_DIGEST_INIT,
         // p1, p2, dataIn);
-        request = setApduRequest(cla, CalypsoSamCommands.DIGEST_INIT, p1, p2, dataIn, null);
+        request = setApduRequest(cla, CalypsoSamCommand.DIGEST_INIT, p1, p2, dataIn, null);
 
     }
 }

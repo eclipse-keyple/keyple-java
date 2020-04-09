@@ -17,10 +17,14 @@ import java.util.List;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
 import org.eclipse.keyple.calypso.command.sam.builder.security.*;
-import org.eclipse.keyple.calypso.command.sam.parser.security.*;
-import org.eclipse.keyple.calypso.transaction.exception.KeypleCalypsoSecureSessionException;
+import org.eclipse.keyple.calypso.command.sam.parser.security.DigestAuthenticateRespPars;
+import org.eclipse.keyple.calypso.command.sam.parser.security.DigestCloseRespPars;
+import org.eclipse.keyple.calypso.command.sam.parser.security.SamGetChallengeRespPars;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronisedExchangesException;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoSecureSessionException;
 import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
@@ -95,9 +99,10 @@ class SamCommandProcessor {
      * 
      * @return the terminal challenge as an array of bytes
      * @throws KeypleReaderException if the communication with the SAM failed
-     * @throws KeypleCalypsoSecureSessionException if there is an error in the SAM response
+     * @throws CalypsoDesynchronisedExchangesException if PO exchanges APDU are desynchronized
      */
-    byte[] getSessionTerminalChallenge() throws KeypleReaderException {
+    byte[] getSessionTerminalChallenge()
+            throws KeypleReaderException, CalypsoDesynchronisedExchangesException {
         /* SAM ApduRequest List to hold Select Diversifier and Get Challenge commands */
         List<ApduRequest> samApduRequestList = new ArrayList<ApduRequest>();
 
@@ -156,9 +161,7 @@ class SamCommandProcessor {
                         ByteArrayUtil.toHex(sessionTerminalChallenge));
             }
         } else {
-            throw new KeypleCalypsoSecureSessionException("Invalid message received",
-                    KeypleCalypsoSecureSessionException.Type.SAM, samApduRequestList,
-                    samApduResponseList);
+            throw new CalypsoDesynchronisedExchangesException("Invalid message received");
         }
         return sessionTerminalChallenge;
     }
@@ -304,7 +307,6 @@ class SamCommandProcessor {
      * 
      * @param addDigestClose indicates whether to add the Digest Close command
      * @return a SeRequest containing all the ApduRequest to send to the SAM
-     * @throws IllegalStateException if digest cache is empty or containing a even number of packets
      */
     private SeRequest getPendingSamRequest(boolean addDigestClose) {
         // TODO optimization with the use of Digest Update Multiple whenever possible.
@@ -375,9 +377,10 @@ class SamCommandProcessor {
      * 
      * @return the terminal signature
      * @throws KeypleReaderException if the communication with the SAM failed
-     * @throws KeypleCalypsoSecureSessionException if there is an error in the SAM response
+     * @throws CalypsoSecureSessionException if there is an error in the SAM response
+     * @throws CalypsoSecureSessionException if PO transaction error occurs
      */
-    byte[] getTerminalSignature() throws KeypleReaderException {
+    byte[] getTerminalSignature() throws KeypleReaderException, CalypsoSecureSessionException {
 
         /* All remaining SAM digest operations will now run at once. */
         /* Get the SAM Digest request including Digest Close from the cache manager */
@@ -389,12 +392,6 @@ class SamCommandProcessor {
         SeResponse samSeResponse = samReader.transmit(samSeRequest);
 
         logger.trace("SAMRESPONSE = {}", samSeResponse);
-
-        if (!samSeResponse.wasChannelPreviouslyOpen()) {
-            throw new KeypleCalypsoSecureSessionException("The logical channel was not open",
-                    KeypleCalypsoSecureSessionException.Type.PO, samSeRequest.getApduRequests(),
-                    null);
-        }
 
         List<ApduResponse> samApduResponseList = samSeResponse.getApduResponses();
 
@@ -433,9 +430,11 @@ class SamCommandProcessor {
      * @param poSignatureLo the PO part of the signature
      * @return true if the PO signature is correct
      * @throws KeypleReaderException if the communication with the SAM failed
-     * @throws KeypleCalypsoSecureSessionException if there is an error in the SAM response
+     * @throws CalypsoSecureSessionException if there is an error in the SAM response
+     * @throws CalypsoSecureSessionException if PO transaction error occurs
      */
-    boolean authenticatePoSignature(byte[] poSignatureLo) throws KeypleReaderException {
+    boolean authenticatePoSignature(byte[] poSignatureLo)
+            throws KeypleReaderException, CalypsoSecureSessionException {
         /* Check the PO signature part with the SAM */
         /* Build and send SAM Digest Authenticate command */
         AbstractApduCommandBuilder digestAuth = new DigestAuthenticateCmdBuild(
@@ -452,12 +451,6 @@ class SamCommandProcessor {
 
         logger.trace("checkPoSignature: SAMRESPONSE = {}", samSeResponse);
 
-        if (!samSeResponse.wasChannelPreviouslyOpen()) {
-            throw new KeypleCalypsoSecureSessionException("The logical channel was not open",
-                    KeypleCalypsoSecureSessionException.Type.SAM, samSeRequest.getApduRequests(),
-                    null);
-        }
-
         /* Get transaction result parsing the response */
         List<ApduResponse> samApduResponseList = samSeResponse.getApduResponses();
 
@@ -473,7 +466,7 @@ class SamCommandProcessor {
             }
         } else {
             logger.debug("checkPoSignature: no response to Digest Authenticate.");
-            throw new KeypleReaderException("No response to Digest Authenticate.");
+            throw new KeypleReaderIOException("No response to Digest Authenticate.");
         }
         return authenticationStatus;
     }

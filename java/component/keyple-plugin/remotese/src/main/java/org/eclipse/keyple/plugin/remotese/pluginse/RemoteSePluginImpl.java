@@ -19,6 +19,7 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
@@ -93,7 +94,7 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
 
         try {
             if (getReaderByRemoteName(nativeReaderName, slaveNodeId) != null) {
-                throw new KeypleReaderException(
+                throw new KeypleReaderIOException(
                         "Virtual Reader already exists for reader " + nativeReaderName);
             }
         } catch (KeypleReaderNotFoundException e) {
@@ -176,7 +177,7 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
      * Init Native Readers to empty Set
      */
     @Override
-    protected SortedSet<SeReader> initNativeReaders() {
+    protected SortedSet<SeReader> initNativeReaders() throws KeypleReaderIOException {
         return new TreeSet<SeReader>();
     }
 
@@ -186,7 +187,7 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
     }
 
     @Override
-    public void setParameter(String key, String value) throws IllegalArgumentException {
+    public void setParameter(String key, String value) throws KeypleReaderIOException {
         parameters.put(key, value);
     }
 

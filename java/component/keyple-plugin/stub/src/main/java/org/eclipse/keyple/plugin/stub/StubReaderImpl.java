@@ -17,9 +17,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
-import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.plugin.local.*;
 import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.SmartInsertionMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.SmartRemovalMonitoringJob;
@@ -94,32 +93,32 @@ class StubReaderImpl extends AbstractObservableLocalReader
     }
 
     @Override
-    protected void openPhysicalChannel() throws KeypleChannelControlException {
+    protected void openPhysicalChannel() throws KeypleReaderIOException {
         if (se != null) {
             se.openPhysicalChannel();
         }
     }
 
     @Override
-    public void closePhysicalChannel() throws KeypleChannelControlException {
+    public void closePhysicalChannel() throws KeypleReaderIOException {
         if (se != null) {
             se.closePhysicalChannel();
         }
     }
 
     @Override
-    public byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
+    public byte[] transmitApdu(byte[] apduIn) throws KeypleReaderIOException {
         if (se == null) {
-            throw new KeypleIOReaderException("No SE available.");
+            throw new KeypleReaderIOException("No SE available.");
         }
         return se.processApdu(apduIn);
     }
 
     @Override
-    protected boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderException {
+    protected boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderIOException {
         boolean result;
         if (se == null) {
-            throw new KeypleReaderException("No SE available.");
+            throw new KeypleReaderIOException("No SE available.");
         }
         // Test protocolFlag to check if ATR based protocol filtering is required
         if (protocolFlag != null) {
@@ -129,7 +128,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
             // the requestSet will be executed only if the protocol match the requestElement
             String selectionMask = protocolsMap.get(protocolFlag);
             if (selectionMask == null) {
-                throw new KeypleReaderException("Target selector mask not found!", null);
+                throw new KeypleReaderIOException("Target selector mask not found!", null);
             }
             Pattern p = Pattern.compile(selectionMask);
             String protocol = se.getSeProcotol();
@@ -156,7 +155,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
     }
 
     @Override
-    public void setParameter(String name, String value) {
+    public void setParameter(String name, String value) throws KeypleReaderIOException {
         parameters.put(name, value);
     }
 

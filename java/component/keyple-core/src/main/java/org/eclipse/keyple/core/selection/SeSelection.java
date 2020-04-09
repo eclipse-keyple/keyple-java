@@ -17,7 +17,7 @@ import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.slf4j.Logger;
@@ -168,10 +168,10 @@ public final class SeSelection {
      * @param seReader the SeReader on which the selection is made
      * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
      *         including {@link AbstractMatchingSe} and {@link SeResponse}.
-     * @throws KeypleReaderException if the requests transmission failed
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     public SelectionsResult processExplicitSelection(SeReader seReader)
-            throws KeypleReaderException {
+            throws KeypleReaderIOException {
         if (logger.isTraceEnabled()) {
             logger.trace("Transmit SELECTIONREQUEST ({} request(s))", selectionRequestSet.size());
         }
