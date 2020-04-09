@@ -473,7 +473,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
              * Prepare the reading order and keep the associated parser for later use once the
              * selection has been made.
              */
-        readEnvironmentParserIndex = poSelectionRequest.prepareReadRecordsCmd(
+        readEnvironmentParserIndex = poSelectionRequest.prepareReadRecords(
                 CalypsoClassicInfo.SFI_EnvironmentAndHolder,
                 ReadDataStructure.SINGLE_RECORD_DATA, CalypsoClassicInfo.RECORD_NUMBER_1,
                 String.format("EnvironmentAndHolder (SFI=%02X))",
@@ -573,7 +573,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                  * Prepare the reading order and keep the associated parser for later use once the
                  * transaction has been processed.
                  */
-                val readEventLogParserIndex = poTransaction.prepareReadRecordsCmd(
+                val readEventLogParserIndex = poTransaction.prepareReadRecords(
                         CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
                         CalypsoClassicInfo.RECORD_NUMBER_1,
                         String.format("EventLog (SFI=%02X, recnbr=%d))",

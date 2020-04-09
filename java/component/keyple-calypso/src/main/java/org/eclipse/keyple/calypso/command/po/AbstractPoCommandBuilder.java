@@ -15,12 +15,17 @@ import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.command.AbstractIso7816CommandBuilder;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract class for all PO command builders.
  */
 public abstract class AbstractPoCommandBuilder<T extends AbstractPoResponseParser>
         extends AbstractIso7816CommandBuilder {
+
+    /** common logger for all builders */
+    protected static Logger logger = LoggerFactory.getLogger(AbstractPoCommandBuilder.class);
 
     /**
      * The reference field is used to find the type of command concerned when manipulating a list of

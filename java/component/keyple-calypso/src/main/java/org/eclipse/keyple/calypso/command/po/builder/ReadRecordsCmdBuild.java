@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information regarding copyright
  * ownership.
@@ -42,13 +42,12 @@ public final class ReadRecordsCmdBuild extends AbstractPoCommandBuilder<ReadReco
      *        several records)
      * @param readJustOneRecord the read just one record
      * @param expectedLength the expected length of the record(s)
-     * @param extraInfo extra information included in the logs (can be null or empty)
      * @throws IllegalArgumentException - if record number &lt; 1
      * @throws IllegalArgumentException - if the request is inconsistent
      */
     public ReadRecordsCmdBuild(PoClass poClass, byte sfi, ReadDataStructure readDataStructure,
-            byte firstRecordNumber, boolean readJustOneRecord, byte expectedLength,
-            String extraInfo) throws IllegalArgumentException {
+            byte firstRecordNumber, boolean readJustOneRecord, byte expectedLength)
+            throws IllegalArgumentException {
         super(command, null);
 
         if (firstRecordNumber < 1) {
@@ -65,7 +64,10 @@ public final class ReadRecordsCmdBuild extends AbstractPoCommandBuilder<ReadReco
         }
         this.request = setApduRequest(poClass.getValue(), command, firstRecordNumber, p2, null,
                 expectedLength);
-        if (extraInfo != null) {
+
+        if (logger.isDebugEnabled()) {
+            String extraInfo = String.format("SFI=%02X, REC=%d, JUSTONE=%d, EXPECTEDLENGTH=%d", sfi,
+                    firstRecordNumber, readJustOneRecord ? "true" : "false", expectedLength);
             this.addSubName(extraInfo);
         }
     }
@@ -80,15 +82,12 @@ public final class ReadRecordsCmdBuild extends AbstractPoCommandBuilder<ReadReco
      * @param firstRecordNumber the record number to read (or first record to read in case of
      *        several records)
      * @param readJustOneRecord the read just one record
-     * @param extraInfo extra information included in the logs (can be null or empty)
      * @throws IllegalArgumentException - if record number &lt; 1
      * @throws IllegalArgumentException - if the request is inconsistent
      */
     public ReadRecordsCmdBuild(PoClass poClass, byte sfi, ReadDataStructure readDataStructure,
-            byte firstRecordNumber, boolean readJustOneRecord, String extraInfo)
-            throws IllegalArgumentException {
-        this(poClass, sfi, readDataStructure, firstRecordNumber, readJustOneRecord, (byte) 0x00,
-                extraInfo);
+            byte firstRecordNumber, boolean readJustOneRecord) throws IllegalArgumentException {
+        this(poClass, sfi, readDataStructure, firstRecordNumber, readJustOneRecord, (byte) 0x00);
     }
 
     @Override
@@ -107,23 +106,17 @@ public final class ReadRecordsCmdBuild extends AbstractPoCommandBuilder<ReadReco
         return false;
     }
 
-    /**
-     * @return the SFI of the accessed file
-     */
+    /** @return the SFI of the accessed file */
     public int getSfi() {
         return sfi;
     }
 
-    /**
-     * @return the number of the first record to read
-     */
+    /** @return the number of the first record to read */
     public byte getFirstRecordNumber() {
         return firstRecordNumber;
     }
 
-    /**
-     * @return the read data structure info
-     */
+    /** @return the read data structure info */
     public ReadDataStructure getReadDataStructure() {
         return readDataStructure;
     }

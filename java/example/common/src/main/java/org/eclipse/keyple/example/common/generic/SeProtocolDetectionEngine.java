@@ -21,7 +21,6 @@ import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /**
  * This code demonstrates the multi-protocols capability of the Keyple SeProxy
@@ -68,12 +67,8 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
                                             new SeSelector.AidSelector.IsoAid(HoplinkAID), null),
                                     "Hoplink selector"));
 
-                    poSelectionRequest.preparePoCustomReadCmd("Standard Get Data",
-                            ByteArrayUtil.fromHex("FFCA000000"));
-
-                    poSelectionRequest.prepareReadRecordsCmd(SFI_T2Environment,
-                            ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01,
-                            "Hoplink T2 Environment");
+                    poSelectionRequest.prepareReadRecords(SFI_T2Environment,
+                            ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01);
 
                     seSelection.prepareSelection(poSelectionRequest);
 

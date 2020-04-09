@@ -91,20 +91,8 @@ public final class PoSelectionRequest extends AbstractSeSelectionRequest {
         boolean readJustOneRecord =
                 !(readDataStructureEnum == ReadDataStructure.MULTIPLE_RECORD_DATA);
 
-        String extraInfo;
-
-        if (logger.isDebugEnabled()) {
-            extraInfo = String.format(
-                    "SFI = %02X, RECNUMBER = %d, JUSTONE = %s, EXPECTEDLENGTH = %d", sfi,
-                    firstRecordNumber, readJustOneRecord ? "true" : "false", expectedLength);
-            logger.trace("ReadRecords: {}", extraInfo);
-        } else {
-            extraInfo = null;
-        }
-
-        addApduRequest(
-                new ReadRecordsCmdBuild(poClass, sfi, readDataStructureEnum, firstRecordNumber,
-                        readJustOneRecord, (byte) expectedLength, extraInfo).getApduRequest());
+        addApduRequest(new ReadRecordsCmdBuild(poClass, sfi, readDataStructureEnum,
+                firstRecordNumber, readJustOneRecord, (byte) expectedLength).getApduRequest());
 
         /* keep read record parameters in the dedicated Maps */
         readRecordFirstRecordNumberMap.put(commandIndex, firstRecordNumber);
@@ -133,7 +121,7 @@ public final class PoSelectionRequest extends AbstractSeSelectionRequest {
      * @param expectedLength the expected length of the record(s)
      * @return the command index indicating the order of the command in the command list
      */
-    public int prepareReadRecordsCmd(byte sfi, ReadDataStructure readDataStructureEnum,
+    public int prepareReadRecords(byte sfi, ReadDataStructure readDataStructureEnum,
             byte firstRecordNumber, int expectedLength) {
         if (expectedLength < 1 || expectedLength > 250) {
             throw new IllegalArgumentException("Bad length.");
@@ -157,7 +145,7 @@ public final class PoSelectionRequest extends AbstractSeSelectionRequest {
      *        several records)
      * @return the command index indicating the order of the command in the command list
      */
-    public int prepareReadRecordsCmd(byte sfi, ReadDataStructure readDataStructureEnum,
+    public int prepareReadRecords(byte sfi, ReadDataStructure readDataStructureEnum,
             byte firstRecordNumber) {
         if (seSelector.getSeProtocol() == SeCommonProtocols.PROTOCOL_ISO7816_3) {
             throw new IllegalArgumentException(
@@ -173,7 +161,7 @@ public final class PoSelectionRequest extends AbstractSeSelectionRequest {
      * @param path path from the CURRENT_DF (CURRENT_DF identifier excluded)
      * @return the command index indicating the order of the command in the command list
      */
-    public int prepareSelectFileCmd(byte[] path) {
+    public int prepareSelectFile(byte[] path) {
         addApduRequest(new SelectFileCmdBuild(poClass, path).getApduRequest());
         if (logger.isTraceEnabled()) {
             logger.trace("Select File: PATH = {}", ByteArrayUtil.toHex(path));
@@ -193,7 +181,7 @@ public final class PoSelectionRequest extends AbstractSeSelectionRequest {
      * @param selectControl provides the navigation case: FIRST, NEXT or CURRENT
      * @return the command index indicating the order of the command in the command list
      */
-    public int prepareSelectFileCmd(SelectFileControl selectControl) {
+    public int prepareSelectFile(SelectFileControl selectControl) {
         addApduRequest(new SelectFileCmdBuild(poClass, selectControl).getApduRequest());
         if (logger.isTraceEnabled()) {
             logger.trace("Navigate: CONTROL = {}", selectControl);

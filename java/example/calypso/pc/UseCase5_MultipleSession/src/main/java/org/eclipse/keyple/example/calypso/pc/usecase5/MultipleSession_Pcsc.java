@@ -191,10 +191,8 @@ public class MultipleSession_Pcsc {
 
                 for (int i = 0; i < nbCommands; i++) {
                     appendRecordParsers[i] =
-                            poTransaction.prepareAppendRecordCmd(CalypsoClassicInfo.SFI_EventLog,
-                                    ByteArrayUtil.fromHex(CalypsoClassicInfo.eventLog_dataFill),
-                                    String.format("EventLog (SFI=%02X) #%d",
-                                            CalypsoClassicInfo.SFI_EventLog, i));
+                            poTransaction.prepareAppendRecord(CalypsoClassicInfo.SFI_EventLog,
+                                    ByteArrayUtil.fromHex(CalypsoClassicInfo.eventLog_dataFill));
                 }
 
                 /* proceed with the sending of commands, don't close the channel */

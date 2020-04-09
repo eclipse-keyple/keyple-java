@@ -130,12 +130,12 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                      * Prepare the reading order and keep the associated parser for later use once
                      * the selection has been made.
                      */
-                    val readEnvironmentParserIndex = poSelectionRequest.prepareReadRecordsCmd(
+                    val readEnvironmentParserIndex = poSelectionRequest.prepareReadRecords(
                             sfiNavigoEFEnvironment, ReadDataStructure.SINGLE_RECORD_DATA,
                             1.toByte(), 29, String.format("Navigo2013 EF environment (SFI=%02X)",
                             sfiNavigoEFEnvironment))
 
-                    val readTransportEventParserIndex = poSelectionRequest.prepareReadRecordsCmd(
+                    val readTransportEventParserIndex = poSelectionRequest.prepareReadRecords(
                             sfiNavigoEFTransportEvent, ReadDataStructure.SINGLE_RECORD_DATA,
                             1.toByte(), 29, String.format("Navigo2013 EF TransportEvent (SFI=%02X)",
                             sfiNavigoEFTransportEvent))
@@ -225,12 +225,12 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                      * Prepare the reading order and keep the associated parser for later use once
                      * the selection has been made.
                      */
-                    val readEnvironmentParserIndex = poSelectionRequest.prepareReadRecordsCmd(
+                    val readEnvironmentParserIndex = poSelectionRequest.prepareReadRecords(
                             sfiHoplinkEFEnvironment, ReadDataStructure.SINGLE_RECORD_DATA,
                             1.toByte(), 32, String.format("Hoplink EF T2Environment (SFI=%02X)",
                             sfiHoplinkEFEnvironment))
 
-                    val readUsageParserIndex = poSelectionRequest.prepareReadRecordsCmd(
+                    val readUsageParserIndex = poSelectionRequest.prepareReadRecords(
                             sfiHoplinkEFUsage, ReadDataStructure.SINGLE_RECORD_DATA,
                             1.toByte(), 48, String.format("Hoplink EF T2Usage (SFI=%02X)",
                             sfiHoplinkEFUsage))

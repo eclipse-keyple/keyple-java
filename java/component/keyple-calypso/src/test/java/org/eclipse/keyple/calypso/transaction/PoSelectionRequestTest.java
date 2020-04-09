@@ -69,9 +69,9 @@ public class PoSelectionRequestTest {
 
     @Test
     public void prepareReadRecordsCmd() {
-        int readParserIndex1 = poSelectionRequest.prepareReadRecordsCmd((byte) 0x01,
+        int readParserIndex1 = poSelectionRequest.prepareReadRecords((byte) 0x01,
                 ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01);
-        int readParserIndex2 = poSelectionRequest.prepareReadRecordsCmd((byte) 0x02,
+        int readParserIndex2 = poSelectionRequest.prepareReadRecords((byte) 0x02,
                 ReadDataStructure.SINGLE_COUNTER, (byte) 0x01);
         Assert.assertEquals(0, readParserIndex1);
         Assert.assertEquals(1, readParserIndex2);
@@ -99,9 +99,9 @@ public class PoSelectionRequestTest {
 
     @Test
     public void prepareReadRecordsCmd1() {
-        int readParserIndex1 = poSelectionRequest.prepareReadRecordsCmd((byte) 0x01,
+        int readParserIndex1 = poSelectionRequest.prepareReadRecords((byte) 0x01,
                 ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01);
-        int readParserIndex2 = poSelectionRequest.prepareReadRecordsCmd((byte) 0x01,
+        int readParserIndex2 = poSelectionRequest.prepareReadRecords((byte) 0x01,
                 ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01);
         Assert.assertEquals(0, readParserIndex1);
         Assert.assertEquals(1, readParserIndex2);
@@ -121,7 +121,7 @@ public class PoSelectionRequestTest {
 
     @Test
     public void prepareReadRecordsCmd2() {
-        int readParserIndex1 = poSelectionRequest.prepareReadRecordsCmd((byte) 0x01,
+        int readParserIndex1 = poSelectionRequest.prepareReadRecords((byte) 0x01,
                 ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, 29);
         Assert.assertEquals(0, readParserIndex1);
         List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
@@ -138,9 +138,9 @@ public class PoSelectionRequestTest {
 
     @Test
     public void prepareSelectFileCmd1() {
-        int selectIndex1 = poSelectionRequest.prepareSelectFileCmd(SelectFileControl.CURRENT_DF);
-        int selectIndex2 = poSelectionRequest.prepareSelectFileCmd(SelectFileControl.FIRST_EF);
-        int selectIndex3 = poSelectionRequest.prepareSelectFileCmd(SelectFileControl.NEXT_EF);
+        int selectIndex1 = poSelectionRequest.prepareSelectFile(SelectFileControl.CURRENT_DF);
+        int selectIndex2 = poSelectionRequest.prepareSelectFile(SelectFileControl.FIRST_EF);
+        int selectIndex3 = poSelectionRequest.prepareSelectFile(SelectFileControl.NEXT_EF);
 
         Assert.assertEquals(0, selectIndex1);
         Assert.assertEquals(1, selectIndex2);
@@ -197,8 +197,7 @@ public class PoSelectionRequestTest {
 
     @Test
     public void prepareSelectFileCmd2() {
-        int selectIndex1 =
-                poSelectionRequest.prepareSelectFileCmd(ByteArrayUtil.fromHex(FILE_PATH));
+        int selectIndex1 = poSelectionRequest.prepareSelectFile(ByteArrayUtil.fromHex(FILE_PATH));
 
         Assert.assertEquals(0, selectIndex1);
 
