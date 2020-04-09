@@ -14,12 +14,12 @@ package org.eclipse.keyple.example.remote.application;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
-import org.eclipse.keyple.calypso.exception.NoSamResourceAvailableException;
+import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
 import org.eclipse.keyple.calypso.transaction.*;
-import org.eclipse.keyple.calypso.transaction.exception.KeypleCalypsoSecureSessionException;
-import org.eclipse.keyple.calypso.transaction.exception.KeypleDesynchronisedExchangesException;
-import org.eclipse.keyple.calypso.transaction.exception.KeyplePoTransactionIllegalStateException;
-import org.eclipse.keyple.calypso.transaction.exception.KeypleUnauthorizedKvcException;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronisedExchangesException;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionIllegalStateException;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoSecureSessionException;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoUnauthorizedKvcException;
 import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
@@ -107,7 +107,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
                     e.printStackTrace();
                 } catch (KeypleReaderException e) {
                     e.printStackTrace();
-                } catch (NoSamResourceAvailableException e) {
+                } catch (CalypsoNoSamResourceAvailableException e) {
                     e.printStackTrace();
                 } finally {
                     /**
@@ -192,9 +192,9 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
             }
         } catch (KeypleReaderException e) {
             e.printStackTrace();
-        } catch (KeypleCalypsoSecureSessionException e) {
+        } catch (CalypsoSecureSessionException e) {
             e.printStackTrace();
-        } catch (KeypleDesynchronisedExchangesException e) {
+        } catch (CalypsoDesynchronisedExchangesException e) {
             e.printStackTrace();
         }
         logger.warn(
@@ -294,13 +294,13 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
 
         } catch (KeypleReaderException e) {
             e.printStackTrace();
-        } catch (KeypleUnauthorizedKvcException e) {
+        } catch (CalypsoUnauthorizedKvcException e) {
             e.printStackTrace();
-        } catch (KeypleCalypsoSecureSessionException e) {
+        } catch (CalypsoSecureSessionException e) {
             e.printStackTrace();
-        } catch (KeyplePoTransactionIllegalStateException e) {
+        } catch (CalypsoPoTransactionIllegalStateException e) {
             e.printStackTrace();
-        } catch (KeypleDesynchronisedExchangesException e) {
+        } catch (CalypsoDesynchronisedExchangesException e) {
             e.printStackTrace();
         }
     }

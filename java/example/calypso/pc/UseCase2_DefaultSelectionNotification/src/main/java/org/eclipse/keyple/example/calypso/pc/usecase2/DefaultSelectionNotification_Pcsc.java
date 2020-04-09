@@ -15,8 +15,8 @@ package org.eclipse.keyple.example.calypso.pc.usecase2;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.transaction.*;
-import org.eclipse.keyple.calypso.transaction.exception.KeypleCalypsoSecureSessionException;
-import org.eclipse.keyple.calypso.transaction.exception.KeypleDesynchronisedExchangesException;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronisedExchangesException;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoSecureSessionException;
 import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.*;
@@ -236,9 +236,9 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
                     }
                 } catch (KeypleReaderException e) {
                     e.printStackTrace();
-                } catch (KeypleCalypsoSecureSessionException e) {
+                } catch (CalypsoSecureSessionException e) {
                     e.printStackTrace();
-                } catch (KeypleDesynchronisedExchangesException e) {
+                } catch (CalypsoDesynchronisedExchangesException e) {
                     e.printStackTrace();
                 }
 

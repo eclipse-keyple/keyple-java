@@ -16,7 +16,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import org.eclipse.keyple.calypso.CalypsoBaseTest;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
-import org.eclipse.keyple.calypso.exception.NoSamResourceAvailableException;
+import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -54,7 +54,7 @@ public class SamResourceManagerPoolTest extends CalypsoBaseTest {
             SamResource out = srmSpy.allocateSamResource(SamResourceManager.AllocationMode.BLOCKING,
                     new SamIdentifier(SamRevision.AUTO, "any", "any"));
 
-        } catch (NoSamResourceAvailableException e) {
+        } catch (CalypsoNoSamResourceAvailableException e) {
             exceptionThrown = true;
         }
         long stop = System.currentTimeMillis();
@@ -66,7 +66,7 @@ public class SamResourceManagerPoolTest extends CalypsoBaseTest {
     }
 
     @Test
-    public void getResource() throws KeypleReaderException, NoSamResourceAvailableException {
+    public void getResource() throws KeypleReaderException, CalypsoNoSamResourceAvailableException {
         // init plugin
         ReaderPoolPlugin poolPlugin = Mockito.mock(ReaderPoolPlugin.class);
         doReturn(seReaderMock()).when(poolPlugin).allocateReader(any(String.class));

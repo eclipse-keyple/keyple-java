@@ -20,8 +20,8 @@ import org.eclipse.keyple.calypso.command.sam.builder.security.*;
 import org.eclipse.keyple.calypso.command.sam.parser.security.DigestAuthenticateRespPars;
 import org.eclipse.keyple.calypso.command.sam.parser.security.DigestCloseRespPars;
 import org.eclipse.keyple.calypso.command.sam.parser.security.SamGetChallengeRespPars;
-import org.eclipse.keyple.calypso.transaction.exception.KeypleCalypsoSecureSessionException;
-import org.eclipse.keyple.calypso.transaction.exception.KeypleDesynchronisedExchangesException;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronisedExchangesException;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoSecureSessionException;
 import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
@@ -99,10 +99,10 @@ class SamCommandProcessor {
      * 
      * @return the terminal challenge as an array of bytes
      * @throws KeypleReaderException if the communication with the SAM failed
-     * @throws KeypleDesynchronisedExchangesException if PO exchanges APDU are desynchronized
+     * @throws CalypsoDesynchronisedExchangesException if PO exchanges APDU are desynchronized
      */
     byte[] getSessionTerminalChallenge()
-            throws KeypleReaderException, KeypleDesynchronisedExchangesException {
+            throws KeypleReaderException, CalypsoDesynchronisedExchangesException {
         /* SAM ApduRequest List to hold Select Diversifier and Get Challenge commands */
         List<ApduRequest> samApduRequestList = new ArrayList<ApduRequest>();
 
@@ -161,7 +161,7 @@ class SamCommandProcessor {
                         ByteArrayUtil.toHex(sessionTerminalChallenge));
             }
         } else {
-            throw new KeypleDesynchronisedExchangesException("Invalid message received");
+            throw new CalypsoDesynchronisedExchangesException("Invalid message received");
         }
         return sessionTerminalChallenge;
     }
@@ -377,11 +377,10 @@ class SamCommandProcessor {
      * 
      * @return the terminal signature
      * @throws KeypleReaderException if the communication with the SAM failed
-     * @throws KeypleCalypsoSecureSessionException if there is an error in the SAM response
-     * @throws KeypleCalypsoSecureSessionException if PO transaction error occurs
+     * @throws CalypsoSecureSessionException if there is an error in the SAM response
+     * @throws CalypsoSecureSessionException if PO transaction error occurs
      */
-    byte[] getTerminalSignature()
-            throws KeypleReaderException, KeypleCalypsoSecureSessionException {
+    byte[] getTerminalSignature() throws KeypleReaderException, CalypsoSecureSessionException {
 
         /* All remaining SAM digest operations will now run at once. */
         /* Get the SAM Digest request including Digest Close from the cache manager */
@@ -431,11 +430,11 @@ class SamCommandProcessor {
      * @param poSignatureLo the PO part of the signature
      * @return true if the PO signature is correct
      * @throws KeypleReaderException if the communication with the SAM failed
-     * @throws KeypleCalypsoSecureSessionException if there is an error in the SAM response
-     * @throws KeypleCalypsoSecureSessionException if PO transaction error occurs
+     * @throws CalypsoSecureSessionException if there is an error in the SAM response
+     * @throws CalypsoSecureSessionException if PO transaction error occurs
      */
     boolean authenticatePoSignature(byte[] poSignatureLo)
-            throws KeypleReaderException, KeypleCalypsoSecureSessionException {
+            throws KeypleReaderException, CalypsoSecureSessionException {
         /* Check the PO signature part with the SAM */
         /* Build and send SAM Digest Authenticate command */
         AbstractApduCommandBuilder digestAuth = new DigestAuthenticateCmdBuild(

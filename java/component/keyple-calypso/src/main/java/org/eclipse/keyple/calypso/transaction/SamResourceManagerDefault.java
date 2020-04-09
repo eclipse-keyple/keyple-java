@@ -14,7 +14,7 @@ package org.eclipse.keyple.calypso.transaction;
 
 import java.util.*;
 import java.util.regex.Pattern;
-import org.eclipse.keyple.calypso.exception.NoSamResourceAvailableException;
+import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -107,7 +107,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
 
     @Override
     public SamResource allocateSamResource(AllocationMode allocationMode,
-            SamIdentifier samIdentifier) throws NoSamResourceAvailableException {
+            SamIdentifier samIdentifier) throws CalypsoNoSamResourceAvailableException {
         long maxBlockingDate = System.currentTimeMillis() + MAX_BLOCKING_TIME;
         boolean noSamResourceLogged = false;
         logger.trace("Allocating SAM reader channel...");
@@ -127,7 +127,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
             // loop until MAX_BLOCKING_TIME in blocking mode, only once in non-blocking mode
             if (allocationMode == AllocationMode.NON_BLOCKING) {
                 logger.trace("No SAM resources available at the moment.");
-                throw new NoSamResourceAvailableException(
+                throw new CalypsoNoSamResourceAvailableException(
                         "No Sam resource could be allocated for samIdentifier +"
                                 + samIdentifier.getGroupReference());
             } else {
@@ -145,7 +145,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
                 if (System.currentTimeMillis() >= maxBlockingDate) {
                     logger.error("The allocation process failed. Timeout {} sec exceeded .",
                             (MAX_BLOCKING_TIME / 1000.0));
-                    throw new NoSamResourceAvailableException(
+                    throw new CalypsoNoSamResourceAvailableException(
                             "No Sam resource could be allocated within timeout of "
                                     + MAX_BLOCKING_TIME + "ms for samIdentifier "
                                     + samIdentifier.getGroupReference());
