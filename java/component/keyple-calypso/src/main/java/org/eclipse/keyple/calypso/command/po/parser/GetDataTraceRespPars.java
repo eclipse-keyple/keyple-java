@@ -15,9 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.builder.GetDataTraceCmdBuild;
-import org.eclipse.keyple.calypso.command.po.exception.KeyplePoBadExpectedLengthException;
-import org.eclipse.keyple.calypso.command.po.exception.KeyplePoDataAccessException;
-import org.eclipse.keyple.calypso.command.po.exception.KeyplePoIllegalParameterException;
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoDataAccessException;
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalParameterException;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -34,13 +33,13 @@ public final class GetDataTraceRespPars extends AbstractPoResponseParser {
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(AbstractApduResponseParser.STATUS_TABLE);
-        m.put(0x6A88, new StatusProperties(false,
-                "Data object not found (optional mode not available).", KeyplePoDataAccessException.class));
+        m.put(0x6A88,
+                new StatusProperties(false, "Data object not found (optional mode not available).",
+                        CalypsoPoDataAccessException.class));
         m.put(0x6B00, new StatusProperties(false,
                 "P1 or P2 value not supported (<>004fh, 0062h, 006Fh, 00C0h, 00D0h, 0185h and 5F52h, according to "
-                        + "available optional modes).", KeyplePoIllegalParameterException.class));
-        m.put(0x6CFF, new StatusProperties(false,
-                "Le value incorrect.", KeyplePoBadExpectedLengthException.class));
+                        + "available optional modes).",
+                CalypsoPoIllegalParameterException.class));
         m.put(0x6283, new StatusProperties(true,
                 "Successful execution, FCI request and DF is invalidated.", null));
         STATUS_TABLE = m;

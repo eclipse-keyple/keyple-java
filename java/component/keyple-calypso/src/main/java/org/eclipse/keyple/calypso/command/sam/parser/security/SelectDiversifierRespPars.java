@@ -12,13 +12,12 @@
 package org.eclipse.keyple.calypso.command.sam.parser.security;
 
 
-import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
-import org.eclipse.keyple.calypso.command.sam.exception.KeypleSamIllegalParameterException;
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
-
 import java.util.HashMap;
 import java.util.Map;
+import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
+import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamAccessForbiddenException;
+import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
  * Select diversifier response parser. See specs: Calypso / page 54 / 7.4.2 - Session MAC
@@ -30,11 +29,11 @@ public class SelectDiversifierRespPars extends AbstractSamResponseParser {
 
     static {
         Map<Integer, StatusProperties> m =
-                new HashMap<Integer, StatusProperties>(AbstractApduResponseParser.STATUS_TABLE);
-        m.put(0x6D00, new StatusProperties(false,
-                "Instruction unknown.", KeypleSamIllegalParameterException.class));
-        m.put(0x6E00, new StatusProperties(false,
-                "Class not supported.", KeypleSamIllegalParameterException.class));
+                new HashMap<Integer, StatusProperties>(AbstractSamResponseParser.STATUS_TABLE);
+        m.put(0x6700, new StatusProperties(false, "Incorrect Lc.",
+                CalypsoSamIllegalParameterException.class));
+        m.put(0x6985, new StatusProperties(false, "Preconditions not satisfied: the SAM is locked.",
+                CalypsoSamAccessForbiddenException.class));
         STATUS_TABLE = m;
     }
 

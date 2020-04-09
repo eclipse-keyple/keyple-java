@@ -29,19 +29,31 @@ public final class WriteRecordRespPars extends AbstractPoResponseParser {
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(AbstractApduResponseParser.STATUS_TABLE);
-        m.put(0x6400, new StatusProperties(false, "Too many modifications in session", KeyplePoSessionBufferOverflowException.class));
-        m.put(0x6700, new StatusProperties(false, "Lc value not supported", KeyplePoDataAccessException.class));
-        m.put(0x6981, new StatusProperties(false,
-                "Wrong EF type (not a Linear EF, or Cyclic EF with Record Number 01h).", KeyplePoDataAccessException.class));
+        m.put(0x6400, new StatusProperties(false, "Too many modifications in session",
+                CalypsoPoSessionBufferOverflowException.class));
+        m.put(0x6700, new StatusProperties(false, "Lc value not supported",
+                CalypsoPoDataAccessException.class));
+        m.put(0x6981,
+                new StatusProperties(false,
+                        "Wrong EF type (not a Linear EF, or Cyclic EF with Record Number 01h).",
+                        CalypsoPoDataAccessException.class));
         m.put(0x6982, new StatusProperties(false,
-                "Security conditions not fulfilled (no session, wrong key, encryption required)", KeyplePoSecurityContextException.class));
-        m.put(0x6985, new StatusProperties(false,
-                "Access forbidden (Never access mode, DF is invalidated, etc..)", KeyplePoAccessForbiddenException.class));
-        m.put(0x6986, new StatusProperties(false, "Command not allowed (no current EF)", KeyplePoDataAccessException.class));
-        m.put(0x6A82, new StatusProperties(false, "File not found", KeyplePoDataAccessException.class));
-        m.put(0x6A83, new StatusProperties(false,
-                "Record is not found (record index is 0 or above NumRec)", KeyplePoDataAccessException.class));
-        m.put(0x6B00, new StatusProperties(false, "P2 value not supported", KeyplePoIllegalParameterException.class));
+                "Security conditions not fulfilled (no session, wrong key, encryption required)",
+                CalypsoPoSecurityContextException.class));
+        m.put(0x6985,
+                new StatusProperties(false,
+                        "Access forbidden (Never access mode, DF is invalidated, etc..)",
+                        CalypsoPoAccessForbiddenException.class));
+        m.put(0x6986, new StatusProperties(false, "Command not allowed (no current EF)",
+                CalypsoPoDataAccessException.class));
+        m.put(0x6A82,
+                new StatusProperties(false, "File not found", CalypsoPoDataAccessException.class));
+        m.put(0x6A83,
+                new StatusProperties(false,
+                        "Record is not found (record index is 0 or above NumRec)",
+                        CalypsoPoDataAccessException.class));
+        m.put(0x6B00, new StatusProperties(false, "P2 value not supported",
+                CalypsoPoIllegalParameterException.class));
         STATUS_TABLE = m;
     }
 

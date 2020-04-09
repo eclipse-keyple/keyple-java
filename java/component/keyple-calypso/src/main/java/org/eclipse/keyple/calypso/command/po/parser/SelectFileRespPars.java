@@ -15,8 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.builder.SelectFileCmdBuild;
-import org.eclipse.keyple.calypso.command.po.exception.KeyplePoDataAccessException;
-import org.eclipse.keyple.calypso.command.po.exception.KeyplePoIllegalParameterException;
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoDataAccessException;
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalParameterException;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -36,12 +36,11 @@ public final class SelectFileRespPars extends AbstractPoResponseParser {
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(AbstractApduResponseParser.STATUS_TABLE);
-        m.put(0x6700, new StatusProperties(false,
-                "Lc value not supported.", KeyplePoIllegalParameterException.class));
-        m.put(0x6A82, new StatusProperties(false,
-                "File not found.", KeyplePoDataAccessException.class));
-        m.put(0x6119, new StatusProperties(true,
-                "Correct execution (ISO7816 T=0).", null));
+        m.put(0x6700, new StatusProperties(false, "Lc value not supported.",
+                CalypsoPoIllegalParameterException.class));
+        m.put(0x6A82,
+                new StatusProperties(false, "File not found.", CalypsoPoDataAccessException.class));
+        m.put(0x6119, new StatusProperties(true, "Correct execution (ISO7816 T=0).", null));
         STATUS_TABLE = m;
     }
 

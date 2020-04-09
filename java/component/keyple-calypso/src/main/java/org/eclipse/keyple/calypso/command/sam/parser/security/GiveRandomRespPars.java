@@ -12,13 +12,11 @@
 package org.eclipse.keyple.calypso.command.sam.parser.security;
 
 
-import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
-import org.eclipse.keyple.calypso.command.sam.exception.KeypleSamIllegalParameterException;
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
-
 import java.util.HashMap;
 import java.util.Map;
+import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
+import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
  * PO Give Random response parser.
@@ -31,12 +29,9 @@ public class GiveRandomRespPars extends AbstractSamResponseParser {
 
     static {
         Map<Integer, StatusProperties> m =
-                new HashMap<Integer, StatusProperties>(AbstractApduResponseParser.STATUS_TABLE);
-        m.put(0x6700, new StatusProperties(false, "Incorrect Lc.", KeypleSamIllegalParameterException.class));
-        m.put(0x6D00, new StatusProperties(false,
-                "Instruction unknown.", KeypleSamIllegalParameterException.class));
-        m.put(0x6E00, new StatusProperties(false,
-                "Class not supported.", KeypleSamIllegalParameterException.class));
+                new HashMap<Integer, StatusProperties>(AbstractSamResponseParser.STATUS_TABLE);
+        m.put(0x6700, new StatusProperties(false, "Incorrect Lc.",
+                CalypsoSamIllegalParameterException.class));
         STATUS_TABLE = m;
     }
 

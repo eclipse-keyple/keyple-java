@@ -17,9 +17,9 @@ import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.builder.security.CloseSessionCmdBuild;
-import org.eclipse.keyple.calypso.command.po.exception.KeyplePoAccessForbiddenException;
-import org.eclipse.keyple.calypso.command.po.exception.KeyplePoIllegalParameterException;
-import org.eclipse.keyple.calypso.command.po.exception.KeyplePoSecurityDataException;
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoAccessForbiddenException;
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalParameterException;
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoSecurityDataException;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
@@ -35,11 +35,16 @@ public final class CloseSessionRespPars extends AbstractPoResponseParser {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(AbstractApduResponseParser.STATUS_TABLE);
         m.put(0x6700, new StatusProperties(false,
-                "Lc signatureLo not supported (e.g. Lc=4 with a Revision 3.2 mode for Open Secure Session).", KeyplePoIllegalParameterException.class));
-        m.put(0x6B00, new StatusProperties(false, "P1 or P2 signatureLo not supported.", KeyplePoIllegalParameterException.class));
-        m.put(0x6988, new StatusProperties(false, "incorrect signatureLo.", KeyplePoSecurityDataException.class));
-        m.put(0x6985, new StatusProperties(false, "No session was opened.", KeyplePoAccessForbiddenException.class));
-        m.put(0x61FF, new StatusProperties(true, "Correct execution (Le≠0 and ISO7816 T=0).", null));
+                "Lc signatureLo not supported (e.g. Lc=4 with a Revision 3.2 mode for Open Secure Session).",
+                CalypsoPoIllegalParameterException.class));
+        m.put(0x6B00, new StatusProperties(false, "P1 or P2 signatureLo not supported.",
+                CalypsoPoIllegalParameterException.class));
+        m.put(0x6988, new StatusProperties(false, "incorrect signatureLo.",
+                CalypsoPoSecurityDataException.class));
+        m.put(0x6985, new StatusProperties(false, "No session was opened.",
+                CalypsoPoAccessForbiddenException.class));
+        m.put(0x61FF,
+                new StatusProperties(true, "Correct execution (Le≠0 and ISO7816 T=0).", null));
         STATUS_TABLE = m;
     }
 

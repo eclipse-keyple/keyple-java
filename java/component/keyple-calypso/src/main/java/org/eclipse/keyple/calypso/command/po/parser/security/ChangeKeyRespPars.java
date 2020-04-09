@@ -25,18 +25,27 @@ public class ChangeKeyRespPars extends AbstractPoResponseParser {
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(AbstractApduResponseParser.STATUS_TABLE);
-        m.put(0x6700, new StatusProperties(false,
-                "Lc value not supported (not 04h, 10h, 18h, 20h).", KeyplePoIllegalParameterException.class));
-        m.put(0x6900, new StatusProperties(false, "Transaction Counter is 0.", KeyplePoTransactionsOverflowException.class));
+        m.put(0x6700,
+                new StatusProperties(false, "Lc value not supported (not 04h, 10h, 18h, 20h).",
+                        CalypsoPoIllegalParameterException.class));
+        m.put(0x6900, new StatusProperties(false, "Transaction Counter is 0.",
+                CalypsoPoTerminatedException.class));
         m.put(0x6982, new StatusProperties(false,
-                "Security conditions not fulfilled (Get Challenge not done: challenge unavailable).", KeyplePoSecurityContextException.class));
-        m.put(0x6985, new StatusProperties(false,
-                "Access forbidden (a session is open or DF is invalidated).", KeyplePoAccessForbiddenException.class));
-        m.put(0x6988, new StatusProperties(false, "Incorrect Cryptogram.", KeyplePoSecurityDataException.class));
+                "Security conditions not fulfilled (Get Challenge not done: challenge unavailable).",
+                CalypsoPoSecurityContextException.class));
+        m.put(0x6985,
+                new StatusProperties(false,
+                        "Access forbidden (a session is open or DF is invalidated).",
+                        CalypsoPoAccessForbiddenException.class));
+        m.put(0x6988, new StatusProperties(false, "Incorrect Cryptogram.",
+                CalypsoPoSecurityDataException.class));
         m.put(0x6A80, new StatusProperties(false,
-                "Decrypted message incorrect (key algorithm not supported, incorrect padding, etc.).", KeyplePoSecurityDataException.class));
-        m.put(0x6A87, new StatusProperties(false, "Lc not compatible with P2.", KeyplePoIllegalParameterException.class));
-        m.put(0x6B00, new StatusProperties(false, "Incorrect P1, P2.", KeyplePoIllegalParameterException.class));
+                "Decrypted message incorrect (key algorithm not supported, incorrect padding, etc.).",
+                CalypsoPoSecurityDataException.class));
+        m.put(0x6A87, new StatusProperties(false, "Lc not compatible with P2.",
+                CalypsoPoIllegalParameterException.class));
+        m.put(0x6B00, new StatusProperties(false, "Incorrect P1, P2.",
+                CalypsoPoIllegalParameterException.class));
         STATUS_TABLE = m;
     }
 
