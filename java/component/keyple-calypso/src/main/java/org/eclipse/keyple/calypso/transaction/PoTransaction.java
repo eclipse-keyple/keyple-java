@@ -489,15 +489,15 @@ public final class PoTransaction {
                     ByteArrayUtil.toHex(sessionTerminalSignature));
         }
 
-        PoCustomReadCommandBuilder ratificationCommand;
+        PoCustomCommandBuilder ratificationCommand;
         boolean ratificationAsked;
 
         if (transmissionMode == TransmissionMode.CONTACTLESS) {
             if (poRevision == PoRevision.REV2_4) {
-                ratificationCommand = new PoCustomReadCommandBuilder("Ratification command",
+                ratificationCommand = new PoCustomCommandBuilder("Ratification command",
                         new ApduRequest(RATIFICATION_CMD_APDU_LEGACY, false));
             } else {
-                ratificationCommand = new PoCustomReadCommandBuilder("Ratification command",
+                ratificationCommand = new PoCustomCommandBuilder("Ratification command",
                         new ApduRequest(RATIFICATION_CMD_APDU, false));
             }
             /*

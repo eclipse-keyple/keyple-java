@@ -70,16 +70,16 @@ public class PoSelectionRequestTest {
     @Test
     public void prepareReadRecordsCmd() {
         int readParserIndex1 = poSelectionRequest.prepareReadRecordsCmd((byte) 0x01,
-                ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, "Read record SFI 01");
+                ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01);
         int readParserIndex2 = poSelectionRequest.prepareReadRecordsCmd((byte) 0x02,
-                ReadDataStructure.SINGLE_COUNTER, (byte) 0x01, "Read counter SFI 02");
-        Assert.assertEquals(readParserIndex1, 0);
-        Assert.assertEquals(readParserIndex2, 1);
+                ReadDataStructure.SINGLE_COUNTER, (byte) 0x01);
+        Assert.assertEquals(0, readParserIndex1);
+        Assert.assertEquals(1, readParserIndex2);
 
         List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
         // add two response
-        ((ArrayList) apduResponseList).add(READ_REC_APDU_RESPONSE);
-        ((ArrayList) apduResponseList).add(READ_REC_APDU_RESPONSE);
+        apduResponseList.add(READ_REC_APDU_RESPONSE);
+        apduResponseList.add(READ_REC_APDU_RESPONSE);
 
         ReadRecordsRespPars readRecordsRespPars1 =
                 (ReadRecordsRespPars) poSelectionRequest.getCommandParser(
@@ -100,16 +100,16 @@ public class PoSelectionRequestTest {
     @Test
     public void prepareReadRecordsCmd1() {
         int readParserIndex1 = poSelectionRequest.prepareReadRecordsCmd((byte) 0x01,
-                ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, "Read rec SFI 01");
+                ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01);
         int readParserIndex2 = poSelectionRequest.prepareReadRecordsCmd((byte) 0x01,
-                ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, "Read rec SFI 01");
-        Assert.assertEquals(readParserIndex1, 0);
-        Assert.assertEquals(readParserIndex2, 1);
+                ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01);
+        Assert.assertEquals(0, readParserIndex1);
+        Assert.assertEquals(1, readParserIndex2);
 
         List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
         // add two response
-        ((ArrayList) apduResponseList).add(READ_REC_APDU_RESPONSE);
-        ((ArrayList) apduResponseList).add(READ_REC_APDU_RESPONSE);
+        apduResponseList.add(READ_REC_APDU_RESPONSE);
+        apduResponseList.add(READ_REC_APDU_RESPONSE);
 
         ReadRecordsRespPars readRecordsRespPars1 =
                 (ReadRecordsRespPars) poSelectionRequest.getCommandParser(
@@ -122,11 +122,11 @@ public class PoSelectionRequestTest {
     @Test
     public void prepareReadRecordsCmd2() {
         int readParserIndex1 = poSelectionRequest.prepareReadRecordsCmd((byte) 0x01,
-                ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, 29, "Read rec SFI 01");
-        Assert.assertEquals(readParserIndex1, 0);
+                ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, 29);
+        Assert.assertEquals(0, readParserIndex1);
         List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
         // add one response
-        ((ArrayList) apduResponseList).add(READ_REC_APDU_RESPONSE);
+        apduResponseList.add(READ_REC_APDU_RESPONSE);
 
         ReadRecordsRespPars readRecordsRespPars1 =
                 (ReadRecordsRespPars) poSelectionRequest.getCommandParser(
@@ -138,21 +138,18 @@ public class PoSelectionRequestTest {
 
     @Test
     public void prepareSelectFileCmd1() {
-        int selectIndex1 =
-                poSelectionRequest.prepareSelectFileCmd(SelectFileControl.CURRENT_DF, "CurrentDF");
-        int selectIndex2 =
-                poSelectionRequest.prepareSelectFileCmd(SelectFileControl.FIRST_EF, "First");
-        int selectIndex3 =
-                poSelectionRequest.prepareSelectFileCmd(SelectFileControl.NEXT_EF, "Next");
+        int selectIndex1 = poSelectionRequest.prepareSelectFileCmd(SelectFileControl.CURRENT_DF);
+        int selectIndex2 = poSelectionRequest.prepareSelectFileCmd(SelectFileControl.FIRST_EF);
+        int selectIndex3 = poSelectionRequest.prepareSelectFileCmd(SelectFileControl.NEXT_EF);
 
-        Assert.assertEquals(selectIndex1, 0);
-        Assert.assertEquals(selectIndex2, 1);
-        Assert.assertEquals(selectIndex3, 2);
+        Assert.assertEquals(0, selectIndex1);
+        Assert.assertEquals(1, selectIndex2);
+        Assert.assertEquals(2, selectIndex3);
 
         List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
-        ((ArrayList) apduResponseList).add(SELECT_FILE_APDU_RESPONSE_1);
-        ((ArrayList) apduResponseList).add(SELECT_FILE_APDU_RESPONSE_2);
-        ((ArrayList) apduResponseList).add(SELECT_FILE_APDU_RESPONSE_3);
+        apduResponseList.add(SELECT_FILE_APDU_RESPONSE_1);
+        apduResponseList.add(SELECT_FILE_APDU_RESPONSE_2);
+        apduResponseList.add(SELECT_FILE_APDU_RESPONSE_3);
 
         SelectFileRespPars selectFileRespPars1 = (SelectFileRespPars) poSelectionRequest
                 .getCommandParser(new SeResponse(true, true, null, apduResponseList), selectIndex1);
@@ -200,31 +197,16 @@ public class PoSelectionRequestTest {
 
     @Test
     public void prepareSelectFileCmd2() {
-        int selectIndex1 = poSelectionRequest.prepareSelectFileCmd(ByteArrayUtil.fromHex(FILE_PATH),
-                "Path 3F00");
+        int selectIndex1 =
+                poSelectionRequest.prepareSelectFileCmd(ByteArrayUtil.fromHex(FILE_PATH));
 
-        Assert.assertEquals(selectIndex1, 0);
+        Assert.assertEquals(0, selectIndex1);
 
         List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
-        ((ArrayList) apduResponseList).add(SELECT_FILE_APDU_RESPONSE_1);
+        apduResponseList.add(SELECT_FILE_APDU_RESPONSE_1);
 
         SelectFileRespPars selectFileRespPars1 = (SelectFileRespPars) poSelectionRequest
                 .getCommandParser(new SeResponse(true, true, null, apduResponseList), selectIndex1);
         Assert.assertEquals(0x3F00, selectFileRespPars1.getLid());
-    }
-
-    @Test
-    public void preparePoCustomReadCmd() {
-        int readParserIndex1 = poSelectionRequest.preparePoCustomReadCmd("Custom command read",
-                ByteArrayUtil.fromHex("FFCA000000"));
-        Assert.assertEquals(0, readParserIndex1);
-    }
-
-    @Test
-    public void preparePoCustomModificationCmd() {
-        ApduRequest apduRequest = new ApduRequest(ByteArrayUtil.fromHex("FFCA000000"), false);
-        int modifyParserIndex1 = poSelectionRequest
-                .preparePoCustomModificationCmd("Custom command modify", apduRequest);
-        Assert.assertEquals(0, modifyParserIndex1);
     }
 }
