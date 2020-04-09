@@ -13,13 +13,45 @@ package org.eclipse.keyple.calypso.command.sam.parser.security;
 
 
 import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
+import org.eclipse.keyple.calypso.command.sam.exception.KeypleSamAccessForbiddenException;
+import org.eclipse.keyple.calypso.command.sam.exception.KeypleSamIllegalParameterException;
+import org.eclipse.keyple.calypso.command.sam.exception.KeypleSamIncorrectInputDataException;
+import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Digest update multiple response parser. See specs: Calypso / page 54 / 7.4.2 - Session MAC
  * computation
  */
 public class DigestUpdateMultipleRespPars extends AbstractSamResponseParser {
+
+    private static final Map<Integer, StatusProperties> STATUS_TABLE;
+
+    static {
+        Map<Integer, StatusProperties> m =
+                new HashMap<Integer, StatusProperties>(AbstractApduResponseParser.STATUS_TABLE);
+        m.put(0x6700, new StatusProperties(false, "Incorrect Lc.", KeypleSamIllegalParameterException.class));
+        m.put(0x6985, new StatusProperties(false,
+                "Preconditions not satisfied.", KeypleSamAccessForbiddenException.class));
+        m.put(0x6A80, new StatusProperties(false,
+                "Incorrect value in the incoming data: incorrect structure.", KeypleSamIncorrectInputDataException.class));
+        m.put(0x6B00, new StatusProperties(false,
+                "Incorrect P1.", KeypleSamIllegalParameterException.class));
+        m.put(0x6D00, new StatusProperties(false,
+                "Instruction unknown.", KeypleSamIllegalParameterException.class));
+        m.put(0x6E00, new StatusProperties(false,
+                "Class not supported.", KeypleSamIllegalParameterException.class));
+        STATUS_TABLE = m;
+    }
+
+    @Override
+    protected Map<Integer, StatusProperties> getStatusTable() {
+        return STATUS_TABLE;
+    }
+
     /**
      * Instantiates a new DigestUpdateMultipleRespPars.
      *

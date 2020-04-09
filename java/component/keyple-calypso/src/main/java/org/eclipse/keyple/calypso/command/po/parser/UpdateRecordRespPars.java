@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.builder.UpdateRecordCmdBuild;
+import org.eclipse.keyple.calypso.command.po.exception.*;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
@@ -28,20 +29,19 @@ public final class UpdateRecordRespPars extends AbstractPoResponseParser {
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(AbstractApduResponseParser.STATUS_TABLE);
-        m.put(0x6400, new StatusProperties(false, "Too many modifications in session"));
-        m.put(0x6700, new StatusProperties(false, "Lc value not supported"));
+        m.put(0x6400, new StatusProperties(false, "Too many modifications in session", KeyplePoSessionBufferOverflowException.class));
+        m.put(0x6700, new StatusProperties(false, "Lc value not supported", KeyplePoDataAccessException.class));
         m.put(0x6981, new StatusProperties(false,
-                "Command forbidden on cyclic files when the record exists and is not record 01h and on binary files"));
+                "Command forbidden on cyclic files when the record exists and is not record 01h and on binary files", KeyplePoDataAccessException.class));
         m.put(0x6982, new StatusProperties(false,
-                "Security conditions not fulfilled (no session, wrong key, encryption required)"));
+                "Security conditions not fulfilled (no session, wrong key, encryption required)", KeyplePoSecurityContextException.class));
         m.put(0x6985, new StatusProperties(false,
-                "Access forbidden (Never access mode, DF is invalidated, etc..)"));
-        m.put(0x6986, new StatusProperties(false, "Command not allowed (no current EF)"));
-        m.put(0x6A82, new StatusProperties(false, "File not found"));
+                "Access forbidden (Never access mode, DF is invalidated, etc..)", KeyplePoAccessForbiddenException.class));
+        m.put(0x6986, new StatusProperties(false, "Command not allowed (no current EF)", KeyplePoDataAccessException.class));
+        m.put(0x6A82, new StatusProperties(false, "File not found", KeyplePoDataAccessException.class));
         m.put(0x6A83, new StatusProperties(false,
-                "Record is not found (record index is 0 or above NumRec)"));
-        m.put(0x6B00, new StatusProperties(false, "P2 value not supported"));
-        m.put(0x9000, new StatusProperties(true, "Successful execution"));
+                "Record is not found (record index is 0 or above NumRec)", KeyplePoDataAccessException.class));
+        m.put(0x6B00, new StatusProperties(false, "P2 value not supported", KeyplePoIllegalParameterException.class));
         STATUS_TABLE = m;
     }
 

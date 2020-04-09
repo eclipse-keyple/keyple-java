@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.builder.AppendRecordCmdBuild;
+import org.eclipse.keyple.calypso.command.po.exception.*;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
@@ -28,16 +29,26 @@ public final class AppendRecordRespPars extends AbstractPoResponseParser {
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(AbstractApduResponseParser.STATUS_TABLE);
-        m.put(0x6B00, new StatusProperties(false, "P1 or P2 vaue not supported."));
-        m.put(0x6700, new StatusProperties(false, "Lc value not supported."));
-        m.put(0x6400, new StatusProperties(false, "Too many modifications in session."));
-        m.put(0x6981, new StatusProperties(false, "The current EF is not a Cyclic EF."));
-        m.put(0x6982, new StatusProperties(false,
-                "Security conditions not fulfilled (no session, wrong key)."));
-        m.put(0x6985, new StatusProperties(false,
-                "Access forbidden (Never access mode, DF is invalidated, etc..)."));
-        m.put(0x6986, new StatusProperties(false, "Command not allowed (no current EF)."));
-        m.put(0x6A82, new StatusProperties(false, "File not found."));
+        m.put(0x6B00, new StatusProperties(false,"P1 or P2 value not supported.",
+                KeyplePoIllegalParameterException.class));
+        m.put(0x6700, new StatusProperties(false, "Lc value not supported.",
+                KeyplePoDataAccessException.class));
+        m.put(0x6400, new StatusProperties(false, "Too many modifications in session.",
+                KeyplePoSessionBufferOverflowException.class));
+        m.put(0x6981, new StatusProperties(false, "The current EF is not a Cyclic EF.",
+                KeyplePoDataAccessException.class));
+        m.put(0x6982,
+                new StatusProperties(false,
+                        "Security conditions not fulfilled (no session, wrong key).",
+                        KeyplePoSecurityContextException.class));
+        m.put(0x6985,
+                new StatusProperties(false,
+                        "Access forbidden (Never access mode, DF is invalidated, etc..).",
+                        KeyplePoAccessForbiddenException.class));
+        m.put(0x6986, new StatusProperties(false, "Command not allowed (no current EF).",
+                KeyplePoDataAccessException.class));
+        m.put(0x6A82,
+                new StatusProperties(false, "File not found.", KeyplePoDataAccessException.class));
         STATUS_TABLE = m;
     }
 

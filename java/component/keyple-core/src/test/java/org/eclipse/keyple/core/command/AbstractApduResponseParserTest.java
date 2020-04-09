@@ -104,9 +104,9 @@ public class AbstractApduResponseParserTest extends CoreBaseTest {
         public ApduResponseParser(ApduResponse response) {
             super(response);
             // additional status words
-            STATUS_TABLE.put(0x9999, new StatusProperties(true, "sw 9999"));
-            STATUS_TABLE.put(0x6500, new StatusProperties(false, "sw 6500"));
-            STATUS_TABLE.put(0x6400, new StatusProperties(false, "sw 6400"));
+            STATUS_TABLE.put(0x9999, new StatusProperties(true, "sw 9999", null));
+            STATUS_TABLE.put(0x6500, new StatusProperties(false, "sw 6500", null));
+            STATUS_TABLE.put(0x6400, new StatusProperties(false, "sw 6400", null));
         }
     }
 }

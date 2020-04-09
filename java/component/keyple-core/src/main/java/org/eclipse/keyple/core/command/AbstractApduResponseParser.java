@@ -13,6 +13,7 @@ package org.eclipse.keyple.core.command;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.eclipse.keyple.core.seproxy.exception.KeypleSeCommandException;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
@@ -26,7 +27,7 @@ public abstract class AbstractApduResponseParser {
     protected static final Map<Integer, StatusProperties> STATUS_TABLE;
     static {
         HashMap<Integer, StatusProperties> m = new HashMap<Integer, StatusProperties>();
-        m.put(0x9000, new StatusProperties(true, "Success"));
+        m.put(0x9000, new StatusProperties(true, "Success", null));
         STATUS_TABLE = m;
     }
 
@@ -57,12 +58,11 @@ public abstract class AbstractApduResponseParser {
         return response;
     }
 
-    private int getStatusCode() {
-        return response.getStatusCode();
-    }
-
-    private StatusProperties getPropertiesForStatusCode() {
-        return getStatusTable().get(getStatusCode());
+    /**
+     * @return the properties associated to the response status code
+     */
+    private StatusProperties getStatusCodeProperties() {
+        return getStatusTable().get(response.getStatusCode());
     }
 
     /**
@@ -72,7 +72,7 @@ public abstract class AbstractApduResponseParser {
      *         code.
      */
     public boolean isSuccessful() {
-        StatusProperties props = getPropertiesForStatusCode();
+        StatusProperties props = getStatusCodeProperties();
         return props != null && props.isSuccessful();
     }
 
@@ -82,21 +82,23 @@ public abstract class AbstractApduResponseParser {
      * @return the ASCII message from the statusTable for the current status code.
      */
     public final String getStatusInformation() {
-        StatusProperties props = getPropertiesForStatusCode();
+        StatusProperties props = getStatusCodeProperties();
         return props != null ? props.getInformation() : null;
     }
-
 
     /**
      * Status code properties
      */
     protected static class StatusProperties {
 
-        /** The successful. */
+        /** The successful indicator */
         private final boolean successful;
 
-        /** The information. */
+        /** The status information */
         private final String information;
+
+        /** The associated exception class (optional) */
+        private final Class<? extends KeypleSeCommandException> exceptionClass;
 
         /**
          * A map with the double byte of a status as key, and the successful property and ASCII text
@@ -104,29 +106,34 @@ public abstract class AbstractApduResponseParser {
          *
          * @param successful set successful status
          * @param information additional information
+         * @param exceptionClass the associated exception class (optional)
          */
-        public StatusProperties(boolean successful, String information) {
+        public StatusProperties(boolean successful, String information,
+                Class<? extends KeypleSeCommandException> exceptionClass) {
             this.successful = successful;
             this.information = information;
+            this.exceptionClass = exceptionClass;
         }
 
         /**
-         * Gets the successful.
-         *
-         * @return the successful
+         * @return the successful indicator
          */
         public boolean isSuccessful() {
             return successful;
         }
 
         /**
-         * Gets the information.
-         *
-         * @return the information
+         * @return the status information
          */
-        String getInformation() {
+        public String getInformation() {
             return information;
         }
 
+        /**
+         * @return the nullable exception class
+         */
+        public Class<? extends KeypleSeCommandException> getExceptionClass() {
+            return exceptionClass;
+        }
     }
 }

@@ -17,6 +17,7 @@ import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.security.*;
+import org.eclipse.keyple.calypso.command.po.exception.*;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
@@ -30,23 +31,25 @@ public abstract class AbstractOpenSessionRespPars extends AbstractPoResponsePars
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(AbstractApduResponseParser.STATUS_TABLE);
-        m.put(0x6700, new StatusProperties(false, "Lc value not supported."));
-        m.put(0x6900, new StatusProperties(false, "Transaction Counter is 0"));
+        m.put(0x6700, new StatusProperties(false, "Lc value not supported.", KeyplePoIllegalParameterException.class));
+        m.put(0x6900, new StatusProperties(false, "Transaction Counter is 0", KeyplePoTransactionsOverflowException.class));
         m.put(0x6981, new StatusProperties(false,
-                "Command forbidden (read requested and current EF is a Binary file)."));
+                "Command forbidden (read requested and current EF is a Binary file).", KeyplePoDataAccessException.class));
         m.put(0x6982, new StatusProperties(false,
                 "Security conditions not fulfilled (PIN code not presented, AES key forbidding the "
-                        + "compatibility mode, encryption required)."));
+                        + "compatibility mode, encryption required).", KeyplePoSecurityContextException.class));
         m.put(0x6985, new StatusProperties(false,
-                "Access forbidden (Never access mode, Session already opened)."));
+                "Access forbidden (Never access mode, Session already opened).", KeyplePoAccessForbiddenException.class));
         m.put(0x6986, new StatusProperties(false,
-                "Command not allowed (read requested and no current EF)."));
-        m.put(0x6A81, new StatusProperties(false, "Wrong key index."));
-        m.put(0x6A82, new StatusProperties(false, "File not found."));
+                "Command not allowed (read requested and no current EF).", KeyplePoDataAccessException.class));
+        m.put(0x6A81, new StatusProperties(false, "Wrong key index.", KeyplePoIllegalParameterException.class));
+        m.put(0x6A82, new StatusProperties(false, "File not found.", KeyplePoDataAccessException.class));
         m.put(0x6A83,
-                new StatusProperties(false, "Record not found (record index is above NumRec)."));
+                new StatusProperties(false, "Record not found (record index is above NumRec).", KeyplePoDataAccessException.class));
         m.put(0x6B00, new StatusProperties(false,
-                "P1 or P2 value not supported (key index incorrect, wrong P2)."));
+                "P1 or P2 value not supported (key index incorrect, wrong P2).", KeyplePoIllegalParameterException.class));
+        m.put(0x61FF, new StatusProperties(true,
+                "Correct execution (ISO7816 T=0).", null));
         STATUS_TABLE = m;
     }
 
