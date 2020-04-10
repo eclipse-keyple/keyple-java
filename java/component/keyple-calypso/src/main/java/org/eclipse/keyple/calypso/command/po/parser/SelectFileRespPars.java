@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.builder.SelectFileCmdBuild;
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoDataAccessException;
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalParameterException;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -34,10 +36,10 @@ public final class SelectFileRespPars extends AbstractPoResponseParser {
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(AbstractApduResponseParser.STATUS_TABLE);
-        m.put(0x6A88, new StatusProperties(false,
-                "Data object not found (optional mode not available)."));
-        m.put(0x6B00, new StatusProperties(false,
-                "P1 or P2 value not supported (<>004fh, 0062h, 006Fh, 00C0h, 00D0h, 0185h and 5F52h, according to availabl optional modes)."));
+        m.put(0x6700, new StatusProperties("Lc value not supported.",
+                CalypsoPoIllegalParameterException.class));
+        m.put(0x6A82, new StatusProperties("File not found.", CalypsoPoDataAccessException.class));
+        m.put(0x6119, new StatusProperties("Correct execution (ISO7816 T=0).", null));
         STATUS_TABLE = m;
     }
 

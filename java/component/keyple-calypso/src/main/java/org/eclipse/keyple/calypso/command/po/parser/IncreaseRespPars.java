@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.builder.IncreaseCmdBuild;
+import org.eclipse.keyple.calypso.command.po.exception.*;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
@@ -28,20 +29,29 @@ public final class IncreaseRespPars extends AbstractPoResponseParser {
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(AbstractApduResponseParser.STATUS_TABLE);
-        m.put(0x6400, new StatusProperties(false, "Too many modifications in session."));
-        m.put(0x6700, new StatusProperties(false, "Lc value not supported."));
-        m.put(0x6981, new StatusProperties(false,
-                "The current EF is not a Counters or Simulated Counter EF."));
-        m.put(0x6982, new StatusProperties(false,
-                "Security conditions not fulfilled (no session, wrong key, encryption required)."));
-        m.put(0x6985, new StatusProperties(false,
-                "Access forbidden (Never access mode, DF is invalidated, etc.)"));
-        m.put(0x6986, new StatusProperties(false, "Command not allowed (no current EF)."));
-        m.put(0x6A80, new StatusProperties(false, "Overflow error."));
-        m.put(0x6A82, new StatusProperties(false, "File not found."));
-        m.put(0x6B00, new StatusProperties(false, "P1 or P2 value not supported."));
-        m.put(0x6103, new StatusProperties(true, "Successful execution."));
-        m.put(0x9000, new StatusProperties(true, "Successful execution."));
+        m.put(0x6400, new StatusProperties("Too many modifications in session.",
+                CalypsoPoSessionBufferOverflowException.class));
+        m.put(0x6700, new StatusProperties("Lc value not supported.",
+                CalypsoPoIllegalParameterException.class));
+        m.put(0x6981,
+                new StatusProperties("The current EF is not a Counters or Simulated Counter EF.",
+                        CalypsoPoDataAccessException.class));
+        m.put(0x6982, new StatusProperties(
+                "Security conditions not fulfilled (no session, wrong key, encryption required).",
+                CalypsoPoSecurityContextException.class));
+        m.put(0x6985,
+                new StatusProperties(
+                        "Access forbidden (Never access mode, DF is invalidated, etc.)",
+                        CalypsoPoAccessForbiddenException.class));
+        m.put(0x6986, new StatusProperties("Command not allowed (no current EF).",
+                CalypsoPoDataAccessException.class));
+        m.put(0x6A80,
+                new StatusProperties("Overflow error.", CalypsoPoDataOutOfBoundsException.class));
+        m.put(0x6A82, new StatusProperties("File not found.", CalypsoPoDataAccessException.class));
+        m.put(0x6B00, new StatusProperties("P1 or P2 value not supported.",
+                CalypsoPoDataAccessException.class));
+        m.put(0x6103,
+                new StatusProperties("Successful execution (possible only in ISO7816 T=0).", null));
         STATUS_TABLE = m;
     }
 

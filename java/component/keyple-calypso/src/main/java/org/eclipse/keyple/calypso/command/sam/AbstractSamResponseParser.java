@@ -11,10 +11,31 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.command.sam;
 
+import java.util.HashMap;
+import java.util.Map;
+import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 public class AbstractSamResponseParser extends AbstractApduResponseParser {
+
+    protected static final Map<Integer, StatusProperties> STATUS_TABLE;
+
+    static {
+        Map<Integer, StatusProperties> m =
+                new HashMap<Integer, StatusProperties>(AbstractApduResponseParser.STATUS_TABLE);
+        m.put(0x6D00, new StatusProperties("Instruction unknown.",
+                CalypsoSamIllegalParameterException.class));
+        m.put(0x6E00, new StatusProperties("Class not supported.",
+                CalypsoSamIllegalParameterException.class));
+        STATUS_TABLE = m;
+    }
+
+    @Override
+    protected Map<Integer, StatusProperties> getStatusTable() {
+        return STATUS_TABLE;
+    }
+
     /**
      * Constructor to build a parser of the APDU response.
      *

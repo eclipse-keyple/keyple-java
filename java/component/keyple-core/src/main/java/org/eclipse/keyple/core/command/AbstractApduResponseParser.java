@@ -13,6 +13,7 @@ package org.eclipse.keyple.core.command;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.eclipse.keyple.core.seproxy.exception.KeypleSeCommandException;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
@@ -24,9 +25,10 @@ public abstract class AbstractApduResponseParser {
     protected ApduResponse response;
 
     protected static final Map<Integer, StatusProperties> STATUS_TABLE;
+
     static {
         HashMap<Integer, StatusProperties> m = new HashMap<Integer, StatusProperties>();
-        m.put(0x9000, new StatusProperties(true, "Success"));
+        m.put(0x9000, new StatusProperties("Success", null));
         STATUS_TABLE = m;
     }
 
@@ -57,12 +59,11 @@ public abstract class AbstractApduResponseParser {
         return response;
     }
 
-    private int getStatusCode() {
-        return response.getStatusCode();
-    }
-
-    private StatusProperties getPropertiesForStatusCode() {
-        return getStatusTable().get(getStatusCode());
+    /**
+     * @return the properties associated to the response status code
+     */
+    private StatusProperties getStatusCodeProperties() {
+        return getStatusTable().get(response.getStatusCode());
     }
 
     /**
@@ -72,7 +73,7 @@ public abstract class AbstractApduResponseParser {
      *         code.
      */
     public boolean isSuccessful() {
-        StatusProperties props = getPropertiesForStatusCode();
+        StatusProperties props = getStatusCodeProperties();
         return props != null && props.isSuccessful();
     }
 
@@ -82,51 +83,68 @@ public abstract class AbstractApduResponseParser {
      * @return the ASCII message from the statusTable for the current status code.
      */
     public final String getStatusInformation() {
-        StatusProperties props = getPropertiesForStatusCode();
+        StatusProperties props = getStatusCodeProperties();
         return props != null ? props.getInformation() : null;
     }
-
 
     /**
      * Status code properties
      */
     protected static class StatusProperties {
 
-        /** The successful. */
-        private final boolean successful;
-
-        /** The information. */
+        /** The status information */
         private final String information;
 
+        /** The successful indicator */
+        private final boolean successful;
+
+        /** The associated exception class in case of error status */
+        private final Class<? extends KeypleSeCommandException> exceptionClass;
+
         /**
-         * A map with the double byte of a status as key, and the successful property and ASCII text
-         * information as data.
+         * Create a successful status.
          *
-         * @param successful set successful status
-         * @param information additional information
+         * @param information the status information
          */
-        public StatusProperties(boolean successful, String information) {
-            this.successful = successful;
+        public StatusProperties(String information) {
             this.information = information;
+            this.successful = true;
+            this.exceptionClass = null;
         }
 
         /**
-         * Gets the successful.
+         * Create an error status.<br>
+         * If {@code exceptionClass} is null, then a successful status is created.
          *
-         * @return the successful
+         * @param information the status information
+         * @param exceptionClass the associated exception class
+         */
+        public StatusProperties(String information,
+                Class<? extends KeypleSeCommandException> exceptionClass) {
+            this.information = information;
+            this.successful = exceptionClass == null;
+            this.exceptionClass = exceptionClass;
+        }
+
+        /**
+         * @return the status information
+         */
+        public String getInformation() {
+            return information;
+        }
+
+        /**
+         * @return the successful indicator
          */
         public boolean isSuccessful() {
             return successful;
         }
 
         /**
-         * Gets the information.
-         *
-         * @return the information
+         * @return the nullable exception class
          */
-        String getInformation() {
-            return information;
+        public Class<? extends KeypleSeCommandException> getExceptionClass() {
+            return exceptionClass;
         }
-
     }
 }

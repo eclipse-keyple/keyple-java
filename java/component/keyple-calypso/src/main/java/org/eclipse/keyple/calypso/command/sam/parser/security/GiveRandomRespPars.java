@@ -12,7 +12,10 @@
 package org.eclipse.keyple.calypso.command.sam.parser.security;
 
 
+import java.util.HashMap;
+import java.util.Map;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
+import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
@@ -21,6 +24,22 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  * No output data except status word
  */
 public class GiveRandomRespPars extends AbstractSamResponseParser {
+
+    private static final Map<Integer, StatusProperties> STATUS_TABLE;
+
+    static {
+        Map<Integer, StatusProperties> m =
+                new HashMap<Integer, StatusProperties>(AbstractSamResponseParser.STATUS_TABLE);
+        m.put(0x6700,
+                new StatusProperties("Incorrect Lc.", CalypsoSamIllegalParameterException.class));
+        STATUS_TABLE = m;
+    }
+
+    @Override
+    protected Map<Integer, StatusProperties> getStatusTable() {
+        return STATUS_TABLE;
+    }
+
     /**
      * Instantiates a new GiveRandomRespPars.
      *

@@ -14,22 +14,30 @@ package org.eclipse.keyple.calypso.command.sam.parser.security;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
+import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamAccessForbiddenException;
+import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamDataAccessException;
+import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
+import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIncorrectInputDataException;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 public class CardGenerateKeyRespPars extends AbstractSamResponseParser {
+
     private static final Map<Integer, StatusProperties> STATUS_TABLE;
 
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(AbstractSamResponseParser.STATUS_TABLE);
-        m.put(0x6700, new StatusProperties(false, "Lc value not supported"));
-        m.put(0x6985, new StatusProperties(false, "Preconditions not satisfied"));
-        m.put(0x6A00, new StatusProperties(false, "Incorrect P1 or P2"));
-        m.put(0x6A80, new StatusProperties(false,
-                "Incorrect incoming data: unknown or incorrect format"));
-        m.put(0x6A83, new StatusProperties(false,
-                "Record not found: ciphering key or key to cipher not found"));
-        m.put(0x9000, new StatusProperties(true, "Successful execution."));
+        m.put(0x6700,
+                new StatusProperties("Incorrect Lc.", CalypsoSamIllegalParameterException.class));
+        m.put(0x6985, new StatusProperties("Preconditions not satisfied.",
+                CalypsoSamAccessForbiddenException.class));
+        m.put(0x6A00, new StatusProperties("Incorrect P1 or P2",
+                CalypsoSamIllegalParameterException.class));
+        m.put(0x6A80, new StatusProperties("Incorrect incoming data: unknown or incorrect format",
+                CalypsoSamIncorrectInputDataException.class));
+        m.put(0x6A83,
+                new StatusProperties("Record not found: ciphering key or key to cipher not found",
+                        CalypsoSamDataAccessException.class));
         STATUS_TABLE = m;
     }
 

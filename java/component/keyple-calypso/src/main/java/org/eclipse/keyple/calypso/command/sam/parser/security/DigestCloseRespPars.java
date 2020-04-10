@@ -12,14 +12,32 @@
 package org.eclipse.keyple.calypso.command.sam.parser.security;
 
 
-
+import java.util.HashMap;
+import java.util.Map;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
+import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamAccessForbiddenException;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
  * Digest close response parser. See specs: Calypso / page 54 / 7.4.2 - Session MAC computation
  */
 public class DigestCloseRespPars extends AbstractSamResponseParser {
+
+    private static final Map<Integer, StatusProperties> STATUS_TABLE;
+
+    static {
+        Map<Integer, StatusProperties> m =
+                new HashMap<Integer, StatusProperties>(AbstractSamResponseParser.STATUS_TABLE);
+        m.put(0x6985, new StatusProperties("Preconditions not satisfied.",
+                CalypsoSamAccessForbiddenException.class));
+        STATUS_TABLE = m;
+    }
+
+    @Override
+    protected Map<Integer, StatusProperties> getStatusTable() {
+        return STATUS_TABLE;
+    }
+
     /**
      * Instantiates a new DigestCloseRespPars.
      *

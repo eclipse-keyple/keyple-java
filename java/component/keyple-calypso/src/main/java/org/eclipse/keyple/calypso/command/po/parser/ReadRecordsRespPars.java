@@ -14,6 +14,7 @@ package org.eclipse.keyple.calypso.command.po.parser;
 import java.util.*;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
+import org.eclipse.keyple.calypso.command.po.exception.*;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -31,18 +32,21 @@ public final class ReadRecordsRespPars extends AbstractPoResponseParser {
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(AbstractApduResponseParser.STATUS_TABLE);
-        m.put(0x6981, new StatusProperties(false, "Command forbidden on binary files"));
-        m.put(0x6982, new StatusProperties(false,
-                "Security conditions not fulfilled (PIN code not presented, encryption required)."));
-        m.put(0x6985, new StatusProperties(false,
-                "Access forbidden (Never access mode, stored value log file and a stored value operation was done during the current session)."));
-        m.put(0x6986, new StatusProperties(false, "Command not allowed (no current EF)"));
-        m.put(0x6A82, new StatusProperties(false, "File not found"));
-        m.put(0x6A83, new StatusProperties(false,
-                "Record not found (record index is 0, or above NumRec"));
-        m.put(0x6B00, new StatusProperties(false, "P2 value not supported"));
-        m.put(0x6CFF, new StatusProperties(false, "Le value incorrect"));
-        m.put(0x9000, new StatusProperties(true, "Successful execution."));
+        m.put(0x6981, new StatusProperties("Command forbidden on binary files",
+                CalypsoPoDataAccessException.class));
+        m.put(0x6982, new StatusProperties(
+                "Security conditions not fulfilled (PIN code not presented, encryption required).",
+                CalypsoPoSecurityContextException.class));
+        m.put(0x6985, new StatusProperties(
+                "Access forbidden (Never access mode, stored value log file and a stored value operation was done during the current session).",
+                CalypsoPoAccessForbiddenException.class));
+        m.put(0x6986, new StatusProperties("Command not allowed (no current EF)",
+                CalypsoPoDataAccessException.class));
+        m.put(0x6A82, new StatusProperties("File not found", CalypsoPoDataAccessException.class));
+        m.put(0x6A83, new StatusProperties("Record not found (record index is 0, or above NumRec",
+                CalypsoPoDataAccessException.class));
+        m.put(0x6B00, new StatusProperties("P2 value not supported",
+                CalypsoPoIllegalParameterException.class));
         STATUS_TABLE = m;
     }
 
