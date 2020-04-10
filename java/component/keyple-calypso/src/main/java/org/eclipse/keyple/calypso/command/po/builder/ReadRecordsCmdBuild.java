@@ -66,7 +66,7 @@ public final class ReadRecordsCmdBuild extends AbstractPoCommandBuilder<ReadReco
                 expectedLength);
 
         if (logger.isDebugEnabled()) {
-            String extraInfo = String.format("SFI=%02X, REC=%d, JUSTONE=%d, EXPECTEDLENGTH=%d", sfi,
+            String extraInfo = String.format("SFI=%02X, REC=%d, JUSTONE=%s, EXPECTEDLENGTH=%d", sfi,
                     firstRecordNumber, readJustOneRecord ? "true" : "false", expectedLength);
             this.addSubName(extraInfo);
         }

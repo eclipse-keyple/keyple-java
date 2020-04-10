@@ -142,9 +142,9 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
         for (int i = 0; i < N_TIMES; i++) {
 
             // test
-            ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoClass.ISO,
-                    (byte) 0x14, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true,
-                    (byte) 0x20, "");
+            ReadRecordsCmdBuild poReadRecordCmd_T2Env =
+                    new ReadRecordsCmdBuild(PoClass.ISO, (byte) 0x14,
+                            ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true, (byte) 0x20);
             List<ApduRequest> poApduRequestList =
                     Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
             SeRequest seRequest = new SeRequest(poApduRequestList);
