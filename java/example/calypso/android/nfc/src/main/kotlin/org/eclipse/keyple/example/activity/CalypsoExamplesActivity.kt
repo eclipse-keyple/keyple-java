@@ -475,9 +475,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
              */
         readEnvironmentParserIndex = poSelectionRequest.prepareReadRecords(
                 CalypsoClassicInfo.SFI_EnvironmentAndHolder,
-                ReadDataStructure.SINGLE_RECORD_DATA, CalypsoClassicInfo.RECORD_NUMBER_1,
-                String.format("EnvironmentAndHolder (SFI=%02X))",
-                        CalypsoClassicInfo.SFI_EnvironmentAndHolder))
+                ReadDataStructure.SINGLE_RECORD_DATA, CalypsoClassicInfo.RECORD_NUMBER_1)
 
         /*
          * Add the selection case to the current selection (we could have added other cases
@@ -575,10 +573,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                  */
                 val readEventLogParserIndex = poTransaction.prepareReadRecords(
                         CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
-                        CalypsoClassicInfo.RECORD_NUMBER_1,
-                        String.format("EventLog (SFI=%02X, recnbr=%d))",
-                                CalypsoClassicInfo.SFI_EventLog,
-                                CalypsoClassicInfo.RECORD_NUMBER_1))
+                        CalypsoClassicInfo.RECORD_NUMBER_1)
 
                 /*
                  * Actual PO communication: send the prepared read order, then close the channel

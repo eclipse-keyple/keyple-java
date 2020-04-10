@@ -132,13 +132,11 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                      */
                     val readEnvironmentParserIndex = poSelectionRequest.prepareReadRecords(
                             sfiNavigoEFEnvironment, ReadDataStructure.SINGLE_RECORD_DATA,
-                            1.toByte(), 29, String.format("Navigo2013 EF environment (SFI=%02X)",
-                            sfiNavigoEFEnvironment))
+                            1.toByte(), 29)
 
                     val readTransportEventParserIndex = poSelectionRequest.prepareReadRecords(
                             sfiNavigoEFTransportEvent, ReadDataStructure.SINGLE_RECORD_DATA,
-                            1.toByte(), 29, String.format("Navigo2013 EF TransportEvent (SFI=%02X)",
-                            sfiNavigoEFTransportEvent))
+                            1.toByte(), 29)
 
                     /*
                      * Add the selection case to the current selection (we could have added other
@@ -227,13 +225,11 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                      */
                     val readEnvironmentParserIndex = poSelectionRequest.prepareReadRecords(
                             sfiHoplinkEFEnvironment, ReadDataStructure.SINGLE_RECORD_DATA,
-                            1.toByte(), 32, String.format("Hoplink EF T2Environment (SFI=%02X)",
-                            sfiHoplinkEFEnvironment))
+                            1.toByte(), 32)
 
                     val readUsageParserIndex = poSelectionRequest.prepareReadRecords(
                             sfiHoplinkEFUsage, ReadDataStructure.SINGLE_RECORD_DATA,
-                            1.toByte(), 48, String.format("Hoplink EF T2Usage (SFI=%02X)",
-                            sfiHoplinkEFUsage))
+                            1.toByte(), 48)
 
                     /*
                      * Add the selection case to the current selection (we could have added other
