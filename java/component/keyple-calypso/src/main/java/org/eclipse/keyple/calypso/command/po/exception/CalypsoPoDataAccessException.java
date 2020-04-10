@@ -17,7 +17,7 @@ import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
  * The exception {@code CalypsoPoDataAccessException} indicates that the content of the command is
  * incompatible with the PO's file system (e.g. reading a non-existent record,...).
  */
-public class CalypsoPoDataAccessException extends CalypsoPoCommandException {
+public final class CalypsoPoDataAccessException extends CalypsoPoCommandException {
 
     /**
      * @param message the message to identify the exception context

@@ -19,7 +19,7 @@ import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
  * This can occur, for example, during the closing of a secure session if the SAM's signature is
  * incorrect.
  */
-public class CalypsoPoSecurityDataException extends CalypsoPoCommandException {
+public final class CalypsoPoSecurityDataException extends CalypsoPoCommandException {
 
     /**
      * @param message the message to identify the exception context

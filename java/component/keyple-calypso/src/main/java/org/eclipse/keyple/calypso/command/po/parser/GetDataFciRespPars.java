@@ -128,10 +128,10 @@ public final class GetDataFciRespPars extends AbstractPoResponseParser {
      * <p>
      *
      * @param response the select application response from Get Data APDU command
-     * @param builderReference the reference to the builder that created this parser
+     * @param CalypsoSam the reference to the builder that created this parser
      */
-    public GetDataFciRespPars(ApduResponse response, GetDataFciCmdBuild builderReference) {
-        super(response, builderReference);
+    public GetDataFciRespPars(ApduResponse response, GetDataFciCmdBuild CalypsoSam) {
+        super(response, CalypsoSam);
         TLV tlv;
 
         /* check the command status to determine if the DF has been invalidated */

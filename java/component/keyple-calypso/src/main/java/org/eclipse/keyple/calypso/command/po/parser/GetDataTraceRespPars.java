@@ -49,10 +49,10 @@ public final class GetDataTraceRespPars extends AbstractPoResponseParser {
      * command.
      *
      * @param response the Traceability Data response from Get Data APDU command
-     * @param builderReference the reference to the builder that created this parser
+     * @param CalypsoSam the reference to the builder that created this parser
      */
-    public GetDataTraceRespPars(ApduResponse response, GetDataTraceCmdBuild builderReference) {
-        super(response, builderReference);
+    public GetDataTraceRespPars(ApduResponse response, GetDataTraceCmdBuild CalypsoSam) {
+        super(response, CalypsoSam);
     }
 
     @Override

@@ -18,7 +18,7 @@ import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
  * authorized by the PO has reached its limit.<br>
  * This may occur, for example, when requesting an open secure session.
  */
-public class CalypsoPoTerminatedException extends CalypsoPoCommandException {
+public final class CalypsoPoTerminatedException extends CalypsoPoCommandException {
 
     /**
      * @param message the message to identify the exception context

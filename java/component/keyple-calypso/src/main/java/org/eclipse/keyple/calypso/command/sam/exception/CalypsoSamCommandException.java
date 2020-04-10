@@ -12,7 +12,7 @@
 package org.eclipse.keyple.calypso.command.sam.exception;
 
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
-import org.eclipse.keyple.core.seproxy.exception.KeypleSeCommandException;
+import org.eclipse.keyple.core.command.exception.KeypleSeCommandException;
 
 /**
  * The exception {@code CalypsoSamCommandException} is the parent abstract class of all Keyple SAM

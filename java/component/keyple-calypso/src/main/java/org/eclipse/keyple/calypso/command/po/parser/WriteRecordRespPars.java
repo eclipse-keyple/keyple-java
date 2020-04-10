@@ -64,9 +64,9 @@ public final class WriteRecordRespPars extends AbstractPoResponseParser {
      * Instantiates a new WriteRecordRespPars
      *
      * @param response the response from the PO
-     * @param builderReference the reference to the builder that created this parser
+     * @param CalypsoSam the reference to the builder that created this parser
      */
-    public WriteRecordRespPars(ApduResponse response, WriteRecordCmdBuild builderReference) {
-        super(response, builderReference);
+    public WriteRecordRespPars(ApduResponse response, WriteRecordCmdBuild CalypsoSam) {
+        super(response, CalypsoSam);
     }
 }

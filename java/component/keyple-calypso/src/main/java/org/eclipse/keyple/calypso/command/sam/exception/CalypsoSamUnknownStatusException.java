@@ -17,14 +17,14 @@ import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
  * The exception {@code CalypsoSamUnknownException} indicates that the status code is not
  * referenced.
  */
-public class CalypsoSamUnknownException extends CalypsoSamCommandException {
+public final class CalypsoSamUnknownStatusException extends CalypsoSamCommandException {
 
     /**
      * @param message the message to identify the exception context
      * @param command the Calypso SAM command
      * @param statusCode the status code
      */
-    public CalypsoSamUnknownException(String message, CalypsoSamCommand command,
+    public CalypsoSamUnknownStatusException(String message, CalypsoSamCommand command,
             Integer statusCode) {
         super(message, command, statusCode);
     }

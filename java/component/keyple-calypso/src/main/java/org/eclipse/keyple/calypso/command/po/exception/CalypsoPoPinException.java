@@ -18,7 +18,7 @@ import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
  * valid.<br>
  * This can occur during the PIN verification.
  */
-public class CalypsoPoPinException extends CalypsoPoCommandException {
+public final class CalypsoPoPinException extends CalypsoPoCommandException {
 
     /**
      * @param message the message to identify the exception context

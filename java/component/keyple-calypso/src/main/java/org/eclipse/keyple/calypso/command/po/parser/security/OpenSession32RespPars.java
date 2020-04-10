@@ -22,10 +22,10 @@ public final class OpenSession32RespPars extends AbstractOpenSessionRespPars {
      * Instantiates a new OpenSession32RespPars from the response.
      *
      * @param response from OpenSession32RespPars
-     * @param builderReference the reference to the builder that created this parser
+     * @param CalypsoSam the reference to the builder that created this parser
      */
-    public OpenSession32RespPars(ApduResponse response, OpenSession32CmdBuild builderReference) {
-        super(response, builderReference, PoRevision.REV3_2);
+    public OpenSession32RespPars(ApduResponse response, OpenSession32CmdBuild CalypsoSam) {
+        super(response, CalypsoSam, PoRevision.REV3_2);
     }
 
     /**

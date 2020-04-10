@@ -13,7 +13,7 @@ package org.eclipse.keyple.core.command;
 
 import java.util.Map;
 import org.eclipse.keyple.core.CoreBaseTest;
-import org.eclipse.keyple.core.seproxy.exception.KeypleSeCommandException;
+import org.eclipse.keyple.core.command.exception.KeypleSeCommandException;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
@@ -102,7 +102,7 @@ public class AbstractApduResponseParserTest extends CoreBaseTest {
 
     static public final class ApduResponseParser extends AbstractApduResponseParser {
         public ApduResponseParser(ApduResponse response) {
-            super(response);
+            super(response, null);
             // additional status words
             STATUS_TABLE.put(0x9999, new StatusProperties("sw 9999"));
             STATUS_TABLE.put(0x6500,

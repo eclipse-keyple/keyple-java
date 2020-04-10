@@ -26,4 +26,9 @@ public abstract class AbstractSamCommandBuilder extends AbstractIso7816CommandBu
     public AbstractSamCommandBuilder(CalypsoSamCommand reference, ApduRequest request) {
         super(reference, request);
     }
+
+    @Override
+    public CalypsoSamCommand getCommandRef() {
+        return (CalypsoSamCommand) commandRef;
+    }
 }

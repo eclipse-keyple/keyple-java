@@ -45,6 +45,7 @@ public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandB
      * @param name name of command
      * @param request ApduRequest
      */
+    @Deprecated
     public AbstractIso7816CommandBuilder(String name, ApduRequest request) {
         super(name, request);
     }

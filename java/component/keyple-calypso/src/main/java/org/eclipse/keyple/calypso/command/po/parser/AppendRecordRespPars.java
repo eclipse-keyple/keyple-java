@@ -64,9 +64,9 @@ public final class AppendRecordRespPars extends AbstractPoResponseParser {
      * Instantiates a new AppendRecordRespPars.
      * 
      * @param response the response from the PO
-     * @param builderReference the reference to the builder that created this parser
+     * @param CalypsoSam the reference to the builder that created this parser
      */
-    public AppendRecordRespPars(ApduResponse response, AppendRecordCmdBuild builderReference) {
-        super(response, builderReference);
+    public AppendRecordRespPars(ApduResponse response, AppendRecordCmdBuild CalypsoSam) {
+        super(response, CalypsoSam);
     }
 }

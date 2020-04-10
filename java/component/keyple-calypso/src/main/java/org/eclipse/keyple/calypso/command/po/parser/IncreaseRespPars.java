@@ -64,10 +64,10 @@ public final class IncreaseRespPars extends AbstractPoResponseParser {
      * Constructor to build a parser of the Increase command response.
      *
      * @param response response to parse
-     * @param builderReference the reference to the builder that created this parser
+     * @param CalypsoSam the reference to the builder that created this parser
      */
-    public IncreaseRespPars(ApduResponse response, IncreaseCmdBuild builderReference) {
-        super(response, builderReference);
+    public IncreaseRespPars(ApduResponse response, IncreaseCmdBuild CalypsoSam) {
+        super(response, CalypsoSam);
     }
 
     /**

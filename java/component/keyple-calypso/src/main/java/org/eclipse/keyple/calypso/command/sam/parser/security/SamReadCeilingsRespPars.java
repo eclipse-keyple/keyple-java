@@ -14,8 +14,10 @@ package org.eclipse.keyple.calypso.command.sam.parser.security;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
+import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCounterOverflowException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
+import org.eclipse.keyple.core.command.SeCommand;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
@@ -48,7 +50,7 @@ public class SamReadCeilingsRespPars extends AbstractSamResponseParser {
      * @param response of the SamReadEventCounterRespPars
      */
     public SamReadCeilingsRespPars(ApduResponse response) {
-        super(response);
+        super(response, null);
     }
 
     /**
@@ -58,5 +60,10 @@ public class SamReadCeilingsRespPars extends AbstractSamResponseParser {
      */
     public byte[] getCeilingsData() {
         return isSuccessful() ? response.getDataOut() : null;
+    }
+
+    @Override
+    protected SeCommand getCommandRef() {
+        return CalypsoSamCommand.READ_CEILINGS;
     }
 }

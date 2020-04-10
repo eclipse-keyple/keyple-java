@@ -19,7 +19,7 @@ import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
  * This can occur, for example, during the digest authenticate operation when the PO's signature is
  * incorrect.
  */
-public class CalypsoSamSecurityDataException extends CalypsoSamCommandException {
+public final class CalypsoSamSecurityDataException extends CalypsoSamCommandException {
 
     /**
      * @param message the message to identify the exception context

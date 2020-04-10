@@ -15,9 +15,11 @@ package org.eclipse.keyple.calypso.command.sam.parser.security;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
+import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamAccessForbiddenException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamSecurityDataException;
+import org.eclipse.keyple.core.command.SeCommand;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
@@ -51,6 +53,11 @@ public class DigestAuthenticateRespPars extends AbstractSamResponseParser {
      * @param response from the SAM DigestAuthenticateCmdBuild
      */
     public DigestAuthenticateRespPars(ApduResponse response) {
-        super(response);
+        super(response, null);
+    }
+
+    @Override
+    protected SeCommand getCommandRef() {
+        return CalypsoSamCommand.DIGEST_AUTHENTICATE;
     }
 }
