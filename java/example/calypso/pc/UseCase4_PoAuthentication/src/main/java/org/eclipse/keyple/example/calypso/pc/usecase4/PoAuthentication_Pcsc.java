@@ -152,12 +152,9 @@ public class PoAuthentication_Pcsc {
                  * Prepare the reading order and keep the associated parser for later use once the
                  * transaction has been processed.
                  */
-                int readEventLogParserIndex = poTransaction.prepareReadRecordsCmd(
+                int readEventLogParserIndex = poTransaction.prepareReadRecords(
                         CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
-                        CalypsoClassicInfo.RECORD_NUMBER_1,
-                        String.format("EventLog (SFI=%02X, recnbr=%d))",
-                                CalypsoClassicInfo.SFI_EventLog,
-                                CalypsoClassicInfo.RECORD_NUMBER_1));
+                        CalypsoClassicInfo.RECORD_NUMBER_1);
 
 
                 /*
@@ -179,12 +176,9 @@ public class PoAuthentication_Pcsc {
                  * Prepare the reading order and keep the associated parser for later use once the
                  * transaction has been processed.
                  */
-                int readEventLogParserIndexBis = poTransaction.prepareReadRecordsCmd(
+                int readEventLogParserIndexBis = poTransaction.prepareReadRecords(
                         CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
-                        CalypsoClassicInfo.RECORD_NUMBER_1,
-                        String.format("EventLog (SFI=%02X, recnbr=%d))",
-                                CalypsoClassicInfo.SFI_EventLog,
-                                CalypsoClassicInfo.RECORD_NUMBER_1));
+                        CalypsoClassicInfo.RECORD_NUMBER_1);
 
                 poProcessStatus = poTransaction.processPoCommandsInSession();
 

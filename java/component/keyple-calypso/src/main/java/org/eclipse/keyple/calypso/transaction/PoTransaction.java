@@ -191,10 +191,9 @@ public final class PoTransaction {
         List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
 
         /* Build the PO Open Secure Session command */
-        // TODO decide how to define the extraInfo field. Empty for the moment.
-        AbstractOpenSessionCmdBuild openSessionCmdBuild = AbstractOpenSessionCmdBuild.create(
-                poRevision, accessLevel.getSessionKey(), sessionTerminalChallenge,
-                openingSfiToSelect, openingRecordNumberToRead, "");
+        AbstractOpenSessionCmdBuild openSessionCmdBuild =
+                AbstractOpenSessionCmdBuild.create(poRevision, accessLevel.getSessionKey(),
+                        sessionTerminalChallenge, openingSfiToSelect, openingRecordNumberToRead);
 
         /* Add the resulting ApduRequest to the PO ApduRequest list */
         poApduRequestList.add(openSessionCmdBuild.getApduRequest());
@@ -489,15 +488,15 @@ public final class PoTransaction {
                     ByteArrayUtil.toHex(sessionTerminalSignature));
         }
 
-        PoCustomReadCommandBuilder ratificationCommand;
+        PoCustomCommandBuilder ratificationCommand;
         boolean ratificationAsked;
 
         if (transmissionMode == TransmissionMode.CONTACTLESS) {
             if (poRevision == PoRevision.REV2_4) {
-                ratificationCommand = new PoCustomReadCommandBuilder("Ratification command",
+                ratificationCommand = new PoCustomCommandBuilder("Ratification command",
                         new ApduRequest(RATIFICATION_CMD_APDU_LEGACY, false));
             } else {
-                ratificationCommand = new PoCustomReadCommandBuilder("Ratification command",
+                ratificationCommand = new PoCustomCommandBuilder("Ratification command",
                         new ApduRequest(RATIFICATION_CMD_APDU, false));
             }
             /*
@@ -1402,10 +1401,9 @@ public final class PoTransaction {
      * <p>
      *
      * @param path path from the CURRENT_DF (CURRENT_DF identifier excluded)
-     * @param extraInfo extra information included in the logs (can be null or empty)
      * @return the command index (input order, starting at 0)
      */
-    public int prepareSelectFileCmd(byte[] path, String extraInfo) {
+    public int prepareSelectFile(byte[] path) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("Select File: PATH = {}", ByteArrayUtil.toHex(path));
@@ -1424,10 +1422,9 @@ public final class PoTransaction {
      * <p>
      *
      * @param selectControl provides the navigation case: FIRST, NEXT or CURRENT
-     * @param extraInfo extra information included in the logs (can be null or empty)
      * @return the command index (input order, starting at 0)
      */
-    public int prepareSelectFileCmd(SelectFileControl selectControl, String extraInfo) {
+    public int prepareSelectFile(SelectFileControl selectControl) {
         if (logger.isTraceEnabled()) {
             logger.trace("Navigate: CONTROL = {}", selectControl);
         }
@@ -1448,13 +1445,12 @@ public final class PoTransaction {
      * @param firstRecordNumber the record number to read (or first record to read in case of
      *        several records)
      * @param expectedLength the expected length of the record(s)
-     * @param extraInfo extra information included in the logs (can be null or empty)
      * @return the command index (input order, starting at 0)
      * @throws IllegalArgumentException - if record number &lt; 1
      * @throws IllegalArgumentException - if the request is inconsistent
      */
     private int prepareReadRecordsCmdInternal(byte sfi, ReadDataStructure readDataStructureEnum,
-            byte firstRecordNumber, int expectedLength, String extraInfo) {
+            byte firstRecordNumber, int expectedLength) {
 
         /*
          * the readJustOneRecord flag is set to false only in case of multiple read records, in all
@@ -1469,7 +1465,7 @@ public final class PoTransaction {
 
         return poCommandManager.addRegularCommand(
                 new ReadRecordsCmdBuild(calypsoPo.getPoClass(), sfi, readDataStructureEnum,
-                        firstRecordNumber, readJustOneRecord, (byte) expectedLength, extraInfo));
+                        firstRecordNumber, readJustOneRecord, (byte) expectedLength));
     }
 
     /**
@@ -1485,18 +1481,17 @@ public final class PoTransaction {
      * @param firstRecordNumber the record number to read (or first record to read in case of
      *        several records)
      * @param expectedLength the expected length of the record(s)
-     * @param extraInfo extra information included in the logs (can be null or empty)
      * @return the command index (input order, starting at 0)
      * @throws IllegalArgumentException - if record number &lt; 1
      * @throws IllegalArgumentException - if the request is inconsistent
      */
-    public int prepareReadRecordsCmd(byte sfi, ReadDataStructure readDataStructureEnum,
-            byte firstRecordNumber, int expectedLength, String extraInfo) {
+    public int prepareReadRecords(byte sfi, ReadDataStructure readDataStructureEnum,
+            byte firstRecordNumber, int expectedLength) {
         if (expectedLength < 1 || expectedLength > 250) {
             throw new IllegalArgumentException("Bad length.");
         }
         return prepareReadRecordsCmdInternal(sfi, readDataStructureEnum, firstRecordNumber,
-                expectedLength, extraInfo);
+                expectedLength);
     }
 
     /**
@@ -1510,19 +1505,17 @@ public final class PoTransaction {
      * @param readDataStructureEnum read mode enum to indicate a SINGLE, MULTIPLE or COUNTER read
      * @param firstRecordNumber the record number to read (or first record to read in case of
      *        several records)
-     * @param extraInfo extra information included in the logs (can be null or empty)
      * @return the command index (input order, starting at 0)
      * @throws IllegalArgumentException - if record number &lt; 1
      * @throws IllegalArgumentException - if the request is inconsistent
      */
-    public int prepareReadRecordsCmd(byte sfi, ReadDataStructure readDataStructureEnum,
-            byte firstRecordNumber, String extraInfo) {
+    public int prepareReadRecords(byte sfi, ReadDataStructure readDataStructureEnum,
+            byte firstRecordNumber) {
         if (poReader.getTransmissionMode() == TransmissionMode.CONTACTS) {
             throw new IllegalArgumentException(
                     "In contacts mode, the expected length must be specified.");
         }
-        return prepareReadRecordsCmdInternal(sfi, readDataStructureEnum, firstRecordNumber, 0,
-                extraInfo);
+        return prepareReadRecordsCmdInternal(sfi, readDataStructureEnum, firstRecordNumber, 0);
     }
 
     /**
@@ -1533,17 +1526,16 @@ public final class PoTransaction {
      *
      * @param sfi the sfi to select
      * @param newRecordData the new record data to write
-     * @param extraInfo extra information included in the logs (can be null or empty)
      * @return the command index (input order, starting at 0)
      * @throws IllegalArgumentException - if the command is inconsistent
      */
-    public int prepareAppendRecordCmd(byte sfi, byte[] newRecordData, String extraInfo) {
+    public int prepareAppendRecord(byte sfi, byte[] newRecordData) {
         /*
          * create and keep the PoCommand, return the command index
          */
 
         return poCommandManager.addRegularCommand(
-                new AppendRecordCmdBuild(calypsoPo.getPoClass(), sfi, newRecordData, extraInfo));
+                new AppendRecordCmdBuild(calypsoPo.getPoClass(), sfi, newRecordData));
     }
 
     /**
@@ -1556,19 +1548,17 @@ public final class PoTransaction {
      * @param recordNumber the record number to update
      * @param newRecordData the new record data. If length &lt; RecSize, bytes beyond length are
      *        left unchanged.
-     * @param extraInfo extra information included in the logs (can be null or empty)
      * @return the command index (input order, starting at 0)
      * @throws IllegalArgumentException - if record number is &lt; 1
      * @throws IllegalArgumentException - if the request is inconsistent
      */
-    public int prepareUpdateRecordCmd(byte sfi, byte recordNumber, byte[] newRecordData,
-            String extraInfo) {
+    public int prepareUpdateRecord(byte sfi, byte recordNumber, byte[] newRecordData) {
         /*
          * create and keep the PoCommand, return the command index
          */
 
-        return poCommandManager.addRegularCommand(new UpdateRecordCmdBuild(calypsoPo.getPoClass(),
-                sfi, recordNumber, newRecordData, extraInfo));
+        return poCommandManager.addRegularCommand(
+                new UpdateRecordCmdBuild(calypsoPo.getPoClass(), sfi, recordNumber, newRecordData));
     }
 
 
@@ -1582,19 +1572,17 @@ public final class PoTransaction {
      * @param recordNumber the record number to write
      * @param overwriteRecordData the data to overwrite in the record. If length &lt; RecSize, bytes
      *        beyond length are left unchanged.
-     * @param extraInfo extra information included in the logs (can be null or empty)
      * @return the command index (input order, starting at 0)
      * @throws IllegalArgumentException - if record number is &lt; 1
      * @throws IllegalArgumentException - if the request is inconsistent
      */
-    public int prepareWriteRecordCmd(byte sfi, byte recordNumber, byte[] overwriteRecordData,
-            String extraInfo) {
+    public int prepareWriteRecord(byte sfi, byte recordNumber, byte[] overwriteRecordData) {
         /*
          * create and keep the PoCommand, return the command index
          */
 
         return poCommandManager.addRegularCommand(new WriteRecordCmdBuild(calypsoPo.getPoClass(),
-                sfi, recordNumber, overwriteRecordData, extraInfo));
+                sfi, recordNumber, overwriteRecordData));
     }
 
     /**
@@ -1608,19 +1596,18 @@ public final class PoTransaction {
      * @param sfi SFI of the file to select or 00h for current EF
      * @param incValue Value to add to the counter (defined as a positive int &lt;= 16777215
      *        [FFFFFFh])
-     * @param extraInfo extra information included in the logs (can be null or empty)
      * @return the command index (input order, starting at 0)
      * @throws IllegalArgumentException - if the decrement value is out of range
      * @throws IllegalArgumentException - if the command is inconsistent
      */
-    public int prepareIncreaseCmd(byte sfi, byte counterNumber, int incValue, String extraInfo) {
+    public int prepareIncrease(byte sfi, byte counterNumber, int incValue) {
 
         /*
          * create and keep the PoCommand, return the command index
          */
 
-        return poCommandManager.addRegularCommand(new IncreaseCmdBuild(calypsoPo.getPoClass(), sfi,
-                counterNumber, incValue, extraInfo));
+        return poCommandManager.addRegularCommand(
+                new IncreaseCmdBuild(calypsoPo.getPoClass(), sfi, counterNumber, incValue));
     }
 
     /**
@@ -1634,19 +1621,18 @@ public final class PoTransaction {
      * @param sfi SFI of the file to select or 00h for current EF
      * @param decValue Value to subtract to the counter (defined as a positive int &lt;= 16777215
      *        [FFFFFFh])
-     * @param extraInfo extra information included in the logs (can be null or empty)
      * @return the command index (input order, starting at 0)
      * @throws IllegalArgumentException - if the decrement value is out of range
      * @throws IllegalArgumentException - if the command is inconsistent
      */
-    public int prepareDecreaseCmd(byte sfi, byte counterNumber, int decValue, String extraInfo) {
+    public int prepareDecrease(byte sfi, byte counterNumber, int decValue) {
 
         /*
          * create and keep the PoCommand, return the command index
          */
 
-        return poCommandManager.addRegularCommand(new DecreaseCmdBuild(calypsoPo.getPoClass(), sfi,
-                counterNumber, decValue, extraInfo));
+        return poCommandManager.addRegularCommand(
+                new DecreaseCmdBuild(calypsoPo.getPoClass(), sfi, counterNumber, decValue));
     }
 
     /**

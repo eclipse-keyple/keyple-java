@@ -120,19 +120,17 @@ public class Rev1Selection_Pcsc {
             /*
              * Prepare the selection of the DF RT.
              */
-            int selectFileParserIndex = poSelectionRequest.prepareSelectFileCmd(
-                    ByteArrayUtil.fromHex(poDfRtPath), "Select file: " + poDfRtPath);
+            int selectFileParserIndex =
+                    poSelectionRequest.prepareSelectFile(ByteArrayUtil.fromHex(poDfRtPath));
 
             /*
              * Prepare the reading order and keep the associated parser for later use once the
              * selection has been made. We provide the expected record length since the REV1 PO need
              * it.
              */
-            int readEnvironmentParserIndex = poSelectionRequest.prepareReadRecordsCmd(
+            int readEnvironmentParserIndex = poSelectionRequest.prepareReadRecords(
                     CalypsoClassicInfo.SFI_EnvironmentAndHolder,
-                    ReadDataStructure.SINGLE_RECORD_DATA, CalypsoClassicInfo.RECORD_NUMBER_1, 29,
-                    String.format("EnvironmentAndHolder (SFI=%02X))",
-                            CalypsoClassicInfo.SFI_EnvironmentAndHolder));
+                    ReadDataStructure.SINGLE_RECORD_DATA, CalypsoClassicInfo.RECORD_NUMBER_1, 29);
 
             /*
              * Add the selection case to the current selection (we could have added other cases
@@ -183,12 +181,9 @@ public class Rev1Selection_Pcsc {
                  * transaction has been processed. We provide the expected record length since the
                  * REV1 PO need it.
                  */
-                int readEventLogParserIndex = poTransaction.prepareReadRecordsCmd(
+                int readEventLogParserIndex = poTransaction.prepareReadRecords(
                         CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
-                        CalypsoClassicInfo.RECORD_NUMBER_1, 29,
-                        String.format("EventLog (SFI=%02X, recnbr=%d))",
-                                CalypsoClassicInfo.SFI_EventLog,
-                                CalypsoClassicInfo.RECORD_NUMBER_1));
+                        CalypsoClassicInfo.RECORD_NUMBER_1, 29);
 
                 /*
                  * Actual PO communication: send the prepared read order, then close the channel

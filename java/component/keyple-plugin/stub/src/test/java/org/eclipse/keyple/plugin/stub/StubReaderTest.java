@@ -1071,9 +1071,8 @@ public class StubReaderTest extends BaseStubTest {
     static public Set<SeRequest> getRequestIsoDepSetSample() {
         String poAid = "A000000291A000000191";
 
-        ReadRecordsCmdBuild poReadRecordCmd_T2Env =
-                new ReadRecordsCmdBuild(PoClass.ISO, (byte) 0x14,
-                        ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true, (byte) 0x20, "");
+        ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoClass.ISO,
+                (byte) 0x14, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true, (byte) 0x20);
 
         List<ApduRequest> poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
 
@@ -1095,7 +1094,7 @@ public class StubReaderTest extends BaseStubTest {
     static public Set<SeRequest> getNoResponseRequest() {
 
         IncreaseCmdBuild poIncreaseCmdBuild =
-                new IncreaseCmdBuild(PoClass.ISO, (byte) 0x14, (byte) 0x01, 0, "");
+                new IncreaseCmdBuild(PoClass.ISO, (byte) 0x14, (byte) 0x01, 0);
 
         List<ApduRequest> poApduRequestList = Arrays.asList(poIncreaseCmdBuild.getApduRequest());
 
@@ -1117,11 +1116,11 @@ public class StubReaderTest extends BaseStubTest {
         String poAid = "A000000291A000000191";
 
         ReadRecordsCmdBuild poReadRecord1CmdBuild = new ReadRecordsCmdBuild(PoClass.ISO,
-                (byte) 0x14, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true, "");
+                (byte) 0x14, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true);
 
         /* this command doesn't in the PartialSE */
         ReadRecordsCmdBuild poReadRecord2CmdBuild = new ReadRecordsCmdBuild(PoClass.ISO,
-                (byte) 0x1E, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true, "");
+                (byte) 0x1E, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true);
 
         List<ApduRequest> poApduRequestList1 = new ArrayList<ApduRequest>();
         poApduRequestList1.add(poReadRecord1CmdBuild.getApduRequest());
@@ -1192,11 +1191,11 @@ public class StubReaderTest extends BaseStubTest {
         String poAid = "A000000291A000000191";
 
         ReadRecordsCmdBuild poReadRecord1CmdBuild = new ReadRecordsCmdBuild(PoClass.ISO,
-                (byte) 0x14, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true, "");
+                (byte) 0x14, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true);
 
         /* this command doesn't in the PartialSE */
         ReadRecordsCmdBuild poReadRecord2CmdBuild = new ReadRecordsCmdBuild(PoClass.ISO,
-                (byte) 0x1E, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true, "");
+                (byte) 0x1E, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true);
 
         List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
 

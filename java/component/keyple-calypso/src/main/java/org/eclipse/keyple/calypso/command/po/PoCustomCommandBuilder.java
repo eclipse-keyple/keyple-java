@@ -15,9 +15,9 @@ import org.eclipse.keyple.core.command.AbstractIso7816CommandBuilder;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 
 /**
- * Class to build custom (non-referenced) modification PO commands
+ * Class to build custom (non-referenced) PO commands
  */
-public class PoCustomModificationCommandBuilder extends AbstractIso7816CommandBuilder {
+public class PoCustomCommandBuilder extends AbstractIso7816CommandBuilder {
 
     protected PoRevision defaultRevision = PoRevision.REV3_1;
 
@@ -32,11 +32,11 @@ public class PoCustomModificationCommandBuilder extends AbstractIso7816CommandBu
      * <p>
      * It is done at the user's risk.</li>
      * </ul>
-     *
+     * 
      * @param name the name of the command (will appear in the ApduRequest log)
      * @param request the ApduRequest (the correct instruction byte must be provided)
      */
-    public PoCustomModificationCommandBuilder(String name, ApduRequest request) {
-        super("PO Custom Modification Command: " + name, request);
+    public PoCustomCommandBuilder(String name, ApduRequest request) {
+        super("PO Custom command: " + name, request);
     }
 }

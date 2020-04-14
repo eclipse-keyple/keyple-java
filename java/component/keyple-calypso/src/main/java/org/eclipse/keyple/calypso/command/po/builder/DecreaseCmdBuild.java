@@ -41,13 +41,12 @@ public final class DecreaseCmdBuild extends AbstractPoCommandBuilder<DecreaseRes
      *        file.
      * @param decValue Value to subtract to the counter (defined as a positive int &lt;= 16777215
      *        [FFFFFFh])
-     * @param extraInfo extra information included in the logs (can be null or empty)
      * @throws IllegalArgumentException - if the decrement value is out of range
      * @throws IllegalArgumentException - if the command is inconsistent
      */
 
-    public DecreaseCmdBuild(PoClass poClass, byte sfi, byte counterNumber, int decValue,
-            String extraInfo) throws IllegalArgumentException {
+    public DecreaseCmdBuild(PoClass poClass, byte sfi, byte counterNumber, int decValue)
+            throws IllegalArgumentException {
         super(command, null);
 
         // only counter number >= 1 are allowed
@@ -76,7 +75,10 @@ public final class DecreaseCmdBuild extends AbstractPoCommandBuilder<DecreaseRes
 
         /* this is a case4 command, we set Le = 0 */
         this.request = setApduRequest(cla, command, counterNumber, p2, decValueBuffer, (byte) 0);
-        if (extraInfo != null) {
+
+        if (logger.isDebugEnabled()) {
+            String extraInfo = String.format("SFI=%02X, COUNTER=%d, DECREMENT=%d", sfi,
+                    counterNumber, decValue);
             this.addSubName(extraInfo);
         }
     }

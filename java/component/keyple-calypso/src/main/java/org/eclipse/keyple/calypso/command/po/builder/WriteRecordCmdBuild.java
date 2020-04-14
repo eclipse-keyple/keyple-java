@@ -40,12 +40,11 @@ public final class WriteRecordCmdBuild extends AbstractPoCommandBuilder<WriteRec
      * @param sfi the sfi to select
      * @param recordNumber the record number to write
      * @param newRecordData the new record data to write
-     * @param extraInfo extra information included in the logs (can be null or empty)
      * @throws IllegalArgumentException - if record number is &lt; 1
      * @throws IllegalArgumentException - if the request is inconsistent
      */
-    public WriteRecordCmdBuild(PoClass poClass, byte sfi, byte recordNumber, byte[] newRecordData,
-            String extraInfo) throws IllegalArgumentException {
+    public WriteRecordCmdBuild(PoClass poClass, byte sfi, byte recordNumber, byte[] newRecordData)
+            throws IllegalArgumentException {
         super(command, null);
         if (recordNumber < 1) {
             throw new IllegalArgumentException("Bad record number (< 1)");
@@ -60,7 +59,9 @@ public final class WriteRecordCmdBuild extends AbstractPoCommandBuilder<WriteRec
         byte p2 = (sfi == 0) ? (byte) 0x04 : (byte) ((byte) (sfi * 8) + 4);
 
         this.request = setApduRequest(cla, command, recordNumber, p2, newRecordData, null);
-        if (extraInfo != null) {
+
+        if (logger.isDebugEnabled()) {
+            String extraInfo = String.format("SFI=%02X, REC=%d", sfi, recordNumber);
             this.addSubName(extraInfo);
         }
     }

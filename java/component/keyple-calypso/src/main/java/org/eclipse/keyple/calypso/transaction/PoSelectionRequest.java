@@ -16,8 +16,6 @@ package org.eclipse.keyple.calypso.transaction;
 import java.util.*;
 import org.eclipse.keyple.calypso.SelectFileControl;
 import org.eclipse.keyple.calypso.command.PoClass;
-import org.eclipse.keyple.calypso.command.po.PoCustomModificationCommandBuilder;
-import org.eclipse.keyple.calypso.command.po.PoCustomReadCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.SelectFileCmdBuild;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
@@ -25,7 +23,6 @@ import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.SelectFileRespPars;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
-import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -82,11 +79,10 @@ public final class PoSelectionRequest extends AbstractSeSelectionRequest {
      * @param firstRecordNumber the record number to read (or first record to read in case of
      *        several records)
      * @param expectedLength the expected length of the record(s)
-     * @param extraInfo extra information included in the logs (can be null or empty)
      * @return the command index indicating the order of the command in the command list
      */
     private int prepareReadRecordsCmdInternal(byte sfi, ReadDataStructure readDataStructureEnum,
-            byte firstRecordNumber, int expectedLength, String extraInfo) {
+            byte firstRecordNumber, int expectedLength) {
 
         /*
          * the readJustOneRecord flag is set to false only in case of multiple read records, in all
@@ -95,14 +91,8 @@ public final class PoSelectionRequest extends AbstractSeSelectionRequest {
         boolean readJustOneRecord =
                 !(readDataStructureEnum == ReadDataStructure.MULTIPLE_RECORD_DATA);
 
-        addApduRequest(
-                new ReadRecordsCmdBuild(poClass, sfi, readDataStructureEnum, firstRecordNumber,
-                        readJustOneRecord, (byte) expectedLength, extraInfo).getApduRequest());
-
-        if (logger.isTraceEnabled()) {
-            logger.trace("ReadRecords: SFI = {}, RECNUMBER = {}, JUSTONE = {}, EXPECTEDLENGTH = {}",
-                    sfi, firstRecordNumber, readJustOneRecord, expectedLength);
-        }
+        addApduRequest(new ReadRecordsCmdBuild(poClass, sfi, readDataStructureEnum,
+                firstRecordNumber, readJustOneRecord, (byte) expectedLength).getApduRequest());
 
         /* keep read record parameters in the dedicated Maps */
         readRecordFirstRecordNumberMap.put(commandIndex, firstRecordNumber);
@@ -129,16 +119,16 @@ public final class PoSelectionRequest extends AbstractSeSelectionRequest {
      * @param firstRecordNumber the record number to read (or first record to read in case of
      *        several records)
      * @param expectedLength the expected length of the record(s)
-     * @param extraInfo extra information included in the logs (can be null or empty)
      * @return the command index indicating the order of the command in the command list
      */
-    public int prepareReadRecordsCmd(byte sfi, ReadDataStructure readDataStructureEnum,
-            byte firstRecordNumber, int expectedLength, String extraInfo) {
+    public int prepareReadRecords(byte sfi, ReadDataStructure readDataStructureEnum,
+            byte firstRecordNumber, int expectedLength) {
         if (expectedLength < 1 || expectedLength > 250) {
             throw new IllegalArgumentException("Bad length.");
         }
+
         return prepareReadRecordsCmdInternal(sfi, readDataStructureEnum, firstRecordNumber,
-                expectedLength, extraInfo);
+                expectedLength);
     }
 
     /**
@@ -153,17 +143,15 @@ public final class PoSelectionRequest extends AbstractSeSelectionRequest {
      * @param readDataStructureEnum read mode enum to indicate a SINGLE, MULTIPLE or COUNTER read
      * @param firstRecordNumber the record number to read (or first record to read in case of
      *        several records)
-     * @param extraInfo extra information included in the logs (can be null or empty)
      * @return the command index indicating the order of the command in the command list
      */
-    public int prepareReadRecordsCmd(byte sfi, ReadDataStructure readDataStructureEnum,
-            byte firstRecordNumber, String extraInfo) {
+    public int prepareReadRecords(byte sfi, ReadDataStructure readDataStructureEnum,
+            byte firstRecordNumber) {
         if (seSelector.getSeProtocol() == SeCommonProtocols.PROTOCOL_ISO7816_3) {
             throw new IllegalArgumentException(
                     "In contacts mode, the expected length must be specified.");
         }
-        return prepareReadRecordsCmdInternal(sfi, readDataStructureEnum, firstRecordNumber, 0,
-                extraInfo);
+        return prepareReadRecordsCmdInternal(sfi, readDataStructureEnum, firstRecordNumber, 0);
     }
 
     /**
@@ -171,10 +159,9 @@ public final class PoSelectionRequest extends AbstractSeSelectionRequest {
      * <p>
      * 
      * @param path path from the CURRENT_DF (CURRENT_DF identifier excluded)
-     * @param extraInfo extra information included in the logs (can be null or empty)
      * @return the command index indicating the order of the command in the command list
      */
-    public int prepareSelectFileCmd(byte[] path, String extraInfo) {
+    public int prepareSelectFile(byte[] path) {
         addApduRequest(new SelectFileCmdBuild(poClass, path).getApduRequest());
         if (logger.isTraceEnabled()) {
             logger.trace("Select File: PATH = {}", ByteArrayUtil.toHex(path));
@@ -192,10 +179,9 @@ public final class PoSelectionRequest extends AbstractSeSelectionRequest {
      * <p>
      *
      * @param selectControl provides the navigation case: FIRST, NEXT or CURRENT
-     * @param extraInfo extra information included in the logs (can be null or empty)
      * @return the command index indicating the order of the command in the command list
      */
-    public int prepareSelectFileCmd(SelectFileControl selectControl, String extraInfo) {
+    public int prepareSelectFile(SelectFileControl selectControl) {
         addApduRequest(new SelectFileCmdBuild(poClass, selectControl).getApduRequest());
         if (logger.isTraceEnabled()) {
             logger.trace("Navigate: CONTROL = {}", selectControl);
@@ -204,40 +190,6 @@ public final class PoSelectionRequest extends AbstractSeSelectionRequest {
         /* set the parser for the response of this command */
         parsingClassList.add(SelectFileRespPars.class);
 
-        /* return and post increment the command index */
-        return commandIndex++;
-    }
-
-    /**
-     * Prepare a custom read ApduRequest to be executed following the selection.
-     * 
-     * @param name the name of the command (will appear in the ApduRequest log)
-     * @param apdu the byte array corresponding to the command to be sent (the correct instruction
-     *        byte must be provided)
-     * @return the command index indicating the order of the command in the command list
-     */
-    public int preparePoCustomReadCmd(String name, byte[] apdu) {
-        ApduRequest apduRequest = new ApduRequest(apdu, false);
-        addApduRequest(new PoCustomReadCommandBuilder(name, apduRequest).getApduRequest());
-        if (logger.isTraceEnabled()) {
-            logger.trace("CustomReadCommand: APDUREQUEST = {}", apduRequest);
-        }
-        /* return and post increment the command index */
-        return commandIndex++;
-    }
-
-    /**
-     * Prepare a custom modification ApduRequest to be executed following the selection.
-     *
-     * @param name the name of the command (will appear in the ApduRequest log)
-     * @param apduRequest the ApduRequest (the correct instruction byte must be provided)
-     * @return the command index indicating the order of the command in the command list
-     */
-    public int preparePoCustomModificationCmd(String name, ApduRequest apduRequest) {
-        addApduRequest(new PoCustomModificationCommandBuilder(name, apduRequest).getApduRequest());
-        if (logger.isTraceEnabled()) {
-            logger.trace("CustomModificationCommand: APDUREQUEST = {}", apduRequest);
-        }
         /* return and post increment the command index */
         return commandIndex++;
     }
