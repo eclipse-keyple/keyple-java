@@ -38,21 +38,21 @@ public abstract class AbstractOpenSessionCmdBuild<T extends AbstractPoResponsePa
     }
 
     public static AbstractOpenSessionCmdBuild create(PoRevision revision, byte debitKeyIndex,
-            byte[] sessionTerminalChallenge, byte sfi, byte recordNbapduResponseList) {
+            byte[] sessionTerminalChallenge, byte sfi, byte recordNb) {
         switch (revision) {
             case REV1_0:
                 return new OpenSession10CmdBuild(debitKeyIndex, sessionTerminalChallenge, sfi,
-                        recordNbapduResponseList);
+                        recordNb);
             case REV2_4:
                 return new OpenSession24CmdBuild(debitKeyIndex, sessionTerminalChallenge, sfi,
-                        recordNbapduResponseList);
+                        recordNb);
             case REV3_1:
             case REV3_1_CLAP:
                 return new OpenSession31CmdBuild(debitKeyIndex, sessionTerminalChallenge, sfi,
-                        recordNbapduResponseList);
+                        recordNb);
             case REV3_2:
                 return new OpenSession32CmdBuild(debitKeyIndex, sessionTerminalChallenge, sfi,
-                        recordNbapduResponseList);
+                        recordNb);
             default:
                 throw new IllegalArgumentException("Revision " + revision + " isn't supported");
         }
