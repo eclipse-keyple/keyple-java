@@ -37,8 +37,6 @@ public final class SeSelection {
      */
     private final List<AbstractSeSelectionRequest> seSelectionRequestList =
             new ArrayList<AbstractSeSelectionRequest>();
-    private final Set<SeRequest> selectionRequestSet = new LinkedHashSet<SeRequest>();
-    private int selectionIndex;
     private MultiSeRequestProcessing multiSeRequestProcessing;
     private ChannelControl channelControl;
 
@@ -50,7 +48,6 @@ public final class SeSelection {
      */
     public SeSelection(MultiSeRequestProcessing multiSeRequestProcessing,
             ChannelControl channelControl) {
-        selectionIndex = 0;
         this.multiSeRequestProcessing = multiSeRequestProcessing;
         this.channelControl = channelControl;
     }
@@ -76,12 +73,10 @@ public final class SeSelection {
                     seSelectionRequest.getSelectionRequest(),
                     seSelectionRequest.getSeSelector().getExtraInfo());
         }
-        /* build the SeRequest set transmitted to the SE */
-        selectionRequestSet.add(seSelectionRequest.getSelectionRequest());
         /* keep the selection request */
         seSelectionRequestList.add(seSelectionRequest);
-        /* return and post increment the selection index */
-        return selectionIndex++;
+        /* return the selection index */
+        return seSelectionRequestList.size();
     }
 
     /**
@@ -172,6 +167,10 @@ public final class SeSelection {
      */
     public SelectionsResult processExplicitSelection(SeReader seReader)
             throws KeypleReaderIOException {
+        Set<SeRequest> selectionRequestSet = new LinkedHashSet<SeRequest>();
+        for (AbstractSeSelectionRequest seSelectionRequest : seSelectionRequestList) {
+            selectionRequestSet.add(seSelectionRequest.getSelectionRequest());
+        }
         if (logger.isTraceEnabled()) {
             logger.trace("Transmit SELECTIONREQUEST ({} request(s))", selectionRequestSet.size());
         }
@@ -192,6 +191,10 @@ public final class SeSelection {
      *         prepareSelection
      */
     public AbstractDefaultSelectionsRequest getSelectionOperation() {
+        Set<SeRequest> selectionRequestSet = new LinkedHashSet<SeRequest>();
+        for (AbstractSeSelectionRequest seSelectionRequest : seSelectionRequestList) {
+            selectionRequestSet.add(seSelectionRequest.getSelectionRequest());
+        }
         return new DefaultSelectionsRequest(selectionRequestSet, multiSeRequestProcessing,
                 channelControl);
     }
