@@ -64,10 +64,10 @@ public final class ReadRecordsRespPars extends AbstractPoResponseParser {
      * Instantiates a new ReadRecordsRespPars.
      * 
      * @param apduResponse the response from the PO
-     * @param CalypsoSam the reference to the builder that created this parser
+     * @param builder the reference to the builder that created this parser
      */
-    public ReadRecordsRespPars(ApduResponse apduResponse, ReadRecordsCmdBuild CalypsoSam) {
-        super(apduResponse, CalypsoSam);
+    public ReadRecordsRespPars(ApduResponse apduResponse, ReadRecordsCmdBuild builder) {
+        super(apduResponse, builder);
     }
 
     /**

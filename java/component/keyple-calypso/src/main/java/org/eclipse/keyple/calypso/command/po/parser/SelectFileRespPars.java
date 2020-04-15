@@ -200,10 +200,10 @@ public final class SelectFileRespPars extends AbstractPoResponseParser {
      * Instantiates a new SelectFileRespPars.
      * 
      * @param response the response from the PO
-     * @param CalypsoSam the reference to the builder that created this parser
+     * @param builder the reference to the builder that created this parser
      */
-    public SelectFileRespPars(ApduResponse response, SelectFileCmdBuild CalypsoSam) {
-        super(response, CalypsoSam);
+    public SelectFileRespPars(ApduResponse response, SelectFileCmdBuild builder) {
+        super(response, builder);
         parseResponse();
     }
 

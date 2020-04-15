@@ -76,12 +76,12 @@ public abstract class AbstractOpenSessionRespPars extends AbstractPoResponsePars
      * Instantiates a new AbstractOpenSessionRespPars.
      *
      * @param response the response from Open secure session APDU command
-     * @param CalypsoSam the reference to the builder that created this parser
+     * @param builder the reference to the builder that created this parser
      * @param revision the revision of the PO
      */
-    AbstractOpenSessionRespPars(ApduResponse response, AbstractOpenSessionCmdBuild CalypsoSam,
+    AbstractOpenSessionRespPars(ApduResponse response, AbstractOpenSessionCmdBuild builder,
             PoRevision revision) {
-        super(response, CalypsoSam);
+        super(response, builder);
         this.secureSession = toSecureSession(response.getDataOut());
     }
 

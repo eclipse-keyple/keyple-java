@@ -42,10 +42,10 @@ public abstract class AbstractSamResponseParser extends AbstractApduResponsePars
      * Constructor to build a parser of the APDU response.
      *
      * @param response response to parse
-     * @param CalypsoSam the reference of the builder that created the parser
+     * @param builder the reference of the builder that created the parser
      */
-    public AbstractSamResponseParser(ApduResponse response, AbstractSamCommandBuilder CalypsoSam) {
-        super(response, CalypsoSam);
+    public AbstractSamResponseParser(ApduResponse response, AbstractSamCommandBuilder builder) {
+        super(response, builder);
     }
 
     @Override

@@ -23,10 +23,10 @@ public abstract class AbstractPoResponseParser extends AbstractApduResponseParse
      * The generic abstract constructor to build a parser of the APDU response.
      *
      * @param response response to parse
-     * @param CalypsoSam the reference of the builder that created the parser
+     * @param builder the reference of the builder that created the parser
      */
-    public AbstractPoResponseParser(ApduResponse response, AbstractPoCommandBuilder CalypsoSam) {
-        super(response, CalypsoSam);
+    public AbstractPoResponseParser(ApduResponse response, AbstractPoCommandBuilder builder) {
+        super(response, builder);
     }
 
     @Override

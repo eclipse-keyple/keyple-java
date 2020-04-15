@@ -63,9 +63,9 @@ public final class UpdateRecordRespPars extends AbstractPoResponseParser {
      * Instantiates a new UpdateRecordRespPars.
      * 
      * @param response the response from the PO
-     * @param CalypsoSam the reference to the builder that created this parser
+     * @param builder the reference to the builder that created this parser
      */
-    public UpdateRecordRespPars(ApduResponse response, UpdateRecordCmdBuild CalypsoSam) {
-        super(response, CalypsoSam);
+    public UpdateRecordRespPars(ApduResponse response, UpdateRecordCmdBuild builder) {
+        super(response, builder);
     }
 }
