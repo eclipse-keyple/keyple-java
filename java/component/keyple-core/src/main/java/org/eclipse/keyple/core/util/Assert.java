@@ -68,7 +68,7 @@ public final class Assert {
     }
 
     /**
-     * Assert that a list of {@code Objdect} is not null and not empty.
+     * Assert that a list of {@code Object} is not null and not empty.
      *
      * @param o the object to check
      * @param name the object name
@@ -111,9 +111,30 @@ public final class Assert {
      * @return the current instance
      * @throws IllegalArgumentException if {@code condition} is false
      */
-    public Assert assertTrue(boolean condition, String name) {
+    public Assert isTrue(boolean condition, String name) {
         if (!condition) {
             throw new IllegalArgumentException("Condition [" + name + "] is false.");
+        }
+        return INSTANCE;
+    }
+
+    /**
+     * Assert that an {@Code Integer} is not null and is greater than or equal to {@code minValue}.
+     *
+     * @param n the number to check
+     * @param minValue the min accepted value
+     * @param name the object name
+     * @return the current instance
+     * @throws IllegalArgumentException if {@code n} is null or has a value less than
+     *         {@code minValue}
+     */
+    public Assert greaterOrEqual(Integer n, int minValue, String name) {
+        if (n == null) {
+            throw new IllegalArgumentException("Argument [" + name + "] is null.");
+        }
+        if (n < minValue) {
+            throw new IllegalArgumentException("Argument [" + name + "] has a value [" + n
+                    + "] less than [" + minValue + "].");
         }
         return INSTANCE;
     }

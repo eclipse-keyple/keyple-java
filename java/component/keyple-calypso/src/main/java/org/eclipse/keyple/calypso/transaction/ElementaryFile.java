@@ -16,8 +16,6 @@ package org.eclipse.keyple.calypso.transaction;
  */
 public class ElementaryFile {
 
-    /** The associated SFI */
     private byte sfi;
-
-
+    private FileHeader header;
 }
