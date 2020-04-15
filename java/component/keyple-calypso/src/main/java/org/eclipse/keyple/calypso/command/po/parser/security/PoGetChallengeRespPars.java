@@ -25,10 +25,10 @@ public final class PoGetChallengeRespPars extends AbstractPoResponseParser {
      * Instantiates a new PoGetChallengeRespPars.
      *
      * @param response the response from PO Get Challenge APDU Command
-     * @param builderReference the reference to the builder that created this parser
+     * @param builder the reference to the builder that created this parser
      */
-    public PoGetChallengeRespPars(ApduResponse response, PoGetChallengeCmdBuild builderReference) {
-        super(response, builderReference);
+    public PoGetChallengeRespPars(ApduResponse response, PoGetChallengeCmdBuild builder) {
+        super(response, builder);
     }
 
     public byte[] getPoChallenge() {

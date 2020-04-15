@@ -9,9 +9,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.exception;
+package org.eclipse.keyple.core.command.exception;
 
 import org.eclipse.keyple.core.command.SeCommand;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 
 /**
  * The exception {@code KeypleSeCommandException} is the parent abstract class of all Keyple SE APDU
@@ -32,21 +33,6 @@ public abstract class KeypleSeCommandException extends KeypleException {
      */
     protected KeypleSeCommandException(String message, SeCommand command, Integer statusCode) {
         super(message);
-        this.command = command;
-        this.statusCode = statusCode;
-    }
-
-    /**
-     * Encapsulates a lower level SE exception
-     *
-     * @param message message to identify the exception context
-     * @param cause the cause
-     * @param command the command
-     * @param statusCode the status code (optional)
-     */
-    protected KeypleSeCommandException(String message, Throwable cause, SeCommand command,
-            Integer statusCode) {
-        super(message, cause);
         this.command = command;
         this.statusCode = statusCode;
     }

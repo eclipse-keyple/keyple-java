@@ -61,10 +61,10 @@ public final class CloseSessionRespPars extends AbstractPoResponseParser {
      * Instantiates a new CloseSessionRespPars from the response.
      *
      * @param response from CloseSessionCmdBuild
-     * @param builderReference the reference to the builder that created this parser
+     * @param builder the reference to the builder that created this parser
      */
-    public CloseSessionRespPars(ApduResponse response, CloseSessionCmdBuild builderReference) {
-        super(response, builderReference);
+    public CloseSessionRespPars(ApduResponse response, CloseSessionCmdBuild builder) {
+        super(response, builder);
         parse(response.getDataOut());
     }
 

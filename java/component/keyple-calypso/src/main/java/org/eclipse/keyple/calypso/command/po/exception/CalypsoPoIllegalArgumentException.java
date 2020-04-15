@@ -18,7 +18,7 @@ import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
  * allow to build a syntactically correct command (e.g. SFI too large, record number out of
  * bounds,...).
  */
-public class CalypsoPoIllegalArgumentException extends CalypsoPoCommandException {
+public final class CalypsoPoIllegalArgumentException extends CalypsoPoCommandException {
 
     /**
      * @param message the message to identify the exception context

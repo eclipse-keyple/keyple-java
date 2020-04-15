@@ -22,10 +22,10 @@ public final class OpenSession10RespPars extends AbstractOpenSessionRespPars {
      * Instantiates a new OpenSession10RespPars from the response.
      *
      * @param response from OpenSession10RespPars
-     * @param builderReference the reference to the builder that created this parser
+     * @param builder the reference to the builder that created this parser
      */
-    public OpenSession10RespPars(ApduResponse response, OpenSession10CmdBuild builderReference) {
-        super(response, builderReference, PoRevision.REV1_0);
+    public OpenSession10RespPars(ApduResponse response, OpenSession10CmdBuild builder) {
+        super(response, builder, PoRevision.REV1_0);
     }
 
     @Override

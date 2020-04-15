@@ -18,7 +18,7 @@ import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
  * user induces a capacity overflow in the PO.<br>
  * This can occur, for example, for commands that update a counter or the "Stored Value".
  */
-public class CalypsoPoDataOutOfBoundsException extends CalypsoPoCommandException {
+public final class CalypsoPoDataOutOfBoundsException extends CalypsoPoCommandException {
 
     /**
      * @param message the message to identify the exception context

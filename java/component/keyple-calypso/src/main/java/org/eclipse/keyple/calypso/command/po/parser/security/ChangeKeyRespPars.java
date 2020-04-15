@@ -51,10 +51,10 @@ public class ChangeKeyRespPars extends AbstractPoResponseParser {
      * Instantiates a new ChangeKeyRespPars
      * 
      * @param response the response from the PO
-     * @param builderReference the reference to the builder that created this parser
+     * @param builder the reference to the builder that created this parser
      */
-    public ChangeKeyRespPars(ApduResponse response, ChangeKeyCmdBuild builderReference) {
-        super(response, builderReference);
+    public ChangeKeyRespPars(ApduResponse response, ChangeKeyCmdBuild builder) {
+        super(response, builder);
     }
 
     @Override

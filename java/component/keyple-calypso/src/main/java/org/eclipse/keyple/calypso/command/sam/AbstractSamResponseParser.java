@@ -13,11 +13,13 @@ package org.eclipse.keyple.calypso.command.sam;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
+import org.eclipse.keyple.calypso.command.sam.exception.*;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.command.SeCommand;
+import org.eclipse.keyple.core.command.exception.KeypleSeCommandException;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
-public class AbstractSamResponseParser extends AbstractApduResponseParser {
+public abstract class AbstractSamResponseParser extends AbstractApduResponseParser {
 
     protected static final Map<Integer, StatusProperties> STATUS_TABLE;
 
@@ -40,8 +42,41 @@ public class AbstractSamResponseParser extends AbstractApduResponseParser {
      * Constructor to build a parser of the APDU response.
      *
      * @param response response to parse
+     * @param builder the reference of the builder that created the parser
      */
-    public AbstractSamResponseParser(ApduResponse response) {
-        super(response);
+    public AbstractSamResponseParser(ApduResponse response, AbstractSamCommandBuilder builder) {
+        super(response, builder);
+    }
+
+    @Override
+    public final AbstractSamCommandBuilder getBuilder() {
+        return (AbstractSamCommandBuilder) super.getBuilder();
+    }
+
+    @Override
+    protected final KeypleSeCommandException buildCommandException(
+            Class<? extends KeypleSeCommandException> exceptionClass, String message,
+            SeCommand commandRef, Integer statusCode) {
+
+        KeypleSeCommandException e;
+        CalypsoSamCommand command = (CalypsoSamCommand) commandRef;
+        if (exceptionClass == CalypsoSamAccessForbiddenException.class) {
+            e = new CalypsoSamAccessForbiddenException(message, command, statusCode);
+        } else if (exceptionClass == CalypsoSamCounterOverflowException.class) {
+            e = new CalypsoSamCounterOverflowException(message, command, statusCode);
+        } else if (exceptionClass == CalypsoSamDataAccessException.class) {
+            e = new CalypsoSamDataAccessException(message, command, statusCode);
+        } else if (exceptionClass == CalypsoSamIllegalArgumentException.class) {
+            e = new CalypsoSamIllegalArgumentException(message, command);
+        } else if (exceptionClass == CalypsoSamIllegalParameterException.class) {
+            e = new CalypsoSamIllegalParameterException(message, command, statusCode);
+        } else if (exceptionClass == CalypsoSamIncorrectInputDataException.class) {
+            e = new CalypsoSamIncorrectInputDataException(message, command, statusCode);
+        } else if (exceptionClass == CalypsoSamSecurityDataException.class) {
+            e = new CalypsoSamSecurityDataException(message, command, statusCode);
+        } else {
+            e = new CalypsoSamUnknownStatusException(message, command, statusCode);
+        }
+        return e;
     }
 }

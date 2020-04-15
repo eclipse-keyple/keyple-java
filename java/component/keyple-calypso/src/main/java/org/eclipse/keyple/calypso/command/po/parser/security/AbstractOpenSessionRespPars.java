@@ -76,30 +76,26 @@ public abstract class AbstractOpenSessionRespPars extends AbstractPoResponsePars
      * Instantiates a new AbstractOpenSessionRespPars.
      *
      * @param response the response from Open secure session APDU command
-     * @param builderReference the reference to the builder that created this parser
+     * @param builder the reference to the builder that created this parser
      * @param revision the revision of the PO
      */
-    AbstractOpenSessionRespPars(ApduResponse response, AbstractOpenSessionCmdBuild builderReference,
+    AbstractOpenSessionRespPars(ApduResponse response, AbstractOpenSessionCmdBuild builder,
             PoRevision revision) {
-        super(response, builderReference);
+        super(response, builder);
         this.secureSession = toSecureSession(response.getDataOut());
     }
 
     public AbstractOpenSessionRespPars create(ApduResponse response, PoRevision revision) {
         switch (revision) {
             case REV1_0:
-                return new OpenSession10RespPars(response,
-                        (OpenSession10CmdBuild) builderReference);
+                return new OpenSession10RespPars(response, (OpenSession10CmdBuild) builder);
             case REV2_4:
-                return new OpenSession24RespPars(response,
-                        (OpenSession24CmdBuild) builderReference);
+                return new OpenSession24RespPars(response, (OpenSession24CmdBuild) builder);
             case REV3_1:
             case REV3_1_CLAP:
-                return new OpenSession31RespPars(response,
-                        (OpenSession31CmdBuild) builderReference);
+                return new OpenSession31RespPars(response, (OpenSession31CmdBuild) builder);
             case REV3_2:
-                return new OpenSession32RespPars(response,
-                        (OpenSession32CmdBuild) builderReference);
+                return new OpenSession32RespPars(response, (OpenSession32CmdBuild) builder);
             default:
                 throw new IllegalArgumentException("Unknow revision " + revision);
         }

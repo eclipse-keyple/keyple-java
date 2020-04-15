@@ -14,10 +14,12 @@ package org.eclipse.keyple.calypso.command.sam.parser.security;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
+import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamAccessForbiddenException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamDataAccessException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIncorrectInputDataException;
+import org.eclipse.keyple.core.command.SeCommand;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 public class CardGenerateKeyRespPars extends AbstractSamResponseParser {
@@ -52,7 +54,7 @@ public class CardGenerateKeyRespPars extends AbstractSamResponseParser {
      * @param response from the SAM
      */
     public CardGenerateKeyRespPars(ApduResponse response) {
-        super(response);
+        super(response, null);
     }
 
     /**
@@ -62,5 +64,10 @@ public class CardGenerateKeyRespPars extends AbstractSamResponseParser {
      */
     public byte[] getCipheredData() {
         return isSuccessful() ? response.getDataOut() : null;
+    }
+
+    @Override
+    protected SeCommand getCommandRef() {
+        return CalypsoSamCommand.CARD_GENERATE_KEY;
     }
 }

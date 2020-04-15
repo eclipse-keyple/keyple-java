@@ -64,10 +64,10 @@ public final class DecreaseRespPars extends AbstractPoResponseParser {
      * Instantiates a new DecreaseRespPars.
      * 
      * @param response the response from the PO
-     * @param builderReference the reference to the builder that created this parser
+     * @param builder the reference to the builder that created this parser
      */
-    public DecreaseRespPars(ApduResponse response, DecreaseCmdBuild builderReference) {
-        super(response, builderReference);
+    public DecreaseRespPars(ApduResponse response, DecreaseCmdBuild builder) {
+        super(response, builder);
     }
 
     /**

@@ -28,24 +28,13 @@ public abstract class AbstractPoCommandBuilder<T extends AbstractPoResponseParse
     protected static Logger logger = LoggerFactory.getLogger(AbstractPoCommandBuilder.class);
 
     /**
-     * The reference field is used to find the type of command concerned when manipulating a list of
-     * abstract builder objects. Unfortunately, the diversity of these objects does not allow the
-     * use of simple generic methods.
-     * <p>
-     * 
-     * @See getCommandReference method
-     */
-    private final CalypsoPoCommand reference;
-
-    /**
      * Constructor dedicated for the building of referenced Calypso commands
-     *
-     * @param reference a command reference from the Calypso command table
+     * 
+     * @param commandRef a command reference from the Calypso command table
      * @param request the ApduRequest (the instruction byte will be overwritten)
      */
-    public AbstractPoCommandBuilder(CalypsoPoCommand reference, ApduRequest request) {
-        super(reference, request);
-        this.reference = reference;
+    public AbstractPoCommandBuilder(CalypsoPoCommand commandRef, ApduRequest request) {
+        super(commandRef, request);
     }
 
     /**
@@ -56,13 +45,9 @@ public abstract class AbstractPoCommandBuilder<T extends AbstractPoResponseParse
      */
     public abstract T createResponseParser(ApduResponse apduResponse);
 
-    /**
-     * All PO commands are identified by a value from the {@link CalypsoPoCommand} enumeration
-     *
-     * @return the current command identification
-     */
-    public CalypsoPoCommand getCommandReference() {
-        return reference;
+    @Override
+    public CalypsoPoCommand getCommandRef() {
+        return (CalypsoPoCommand) commandRef;
     }
 
     /**

@@ -18,7 +18,7 @@ import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
  * authorized by the SAM has reached its limit.<br>
  * This may occur, for example, during the digest init operation.
  */
-public class CalypsoSamCounterOverflowException extends CalypsoSamCommandException {
+public final class CalypsoSamCounterOverflowException extends CalypsoSamCommandException {
 
     /**
      * @param message the message to identify the exception context

@@ -17,7 +17,7 @@ import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
  * The exception {@code CalypsoSamIllegalArgumentException} indicates that the input user data do
  * not allow to build a syntactically correct command.
  */
-public class CalypsoSamIllegalArgumentException extends CalypsoSamCommandException {
+public final class CalypsoSamIllegalArgumentException extends CalypsoSamCommandException {
 
     /**
      * @param message the message to identify the exception context

@@ -13,7 +13,8 @@ package org.eclipse.keyple.core.command;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.keyple.core.seproxy.exception.KeypleSeCommandException;
+import org.eclipse.keyple.core.command.exception.KeypleSeCommandException;
+import org.eclipse.keyple.core.command.exception.KeypleSeCommandUnknownStatusException;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
@@ -21,42 +22,70 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  */
 public abstract class AbstractApduResponseParser {
 
-    /** the byte array APDU response. */
-    protected ApduResponse response;
-
     protected static final Map<Integer, StatusProperties> STATUS_TABLE;
 
     static {
         HashMap<Integer, StatusProperties> m = new HashMap<Integer, StatusProperties>();
-        m.put(0x9000, new StatusProperties("Success", null));
+        m.put(0x9000, new StatusProperties("Success"));
         STATUS_TABLE = m;
     }
 
+    /** the byte array APDU response. */
+    protected final ApduResponse response;
+
     /**
-     * Get the internal status table
+     * Parsers are usually created by their associated builder. The CalypsoSam field maintains a
+     * link between the builder and the parser in order to allow the parser to access the builder
+     * parameters that were used to create the command (e.g. SFI, registration number, etc.).
+     */
+    protected final AbstractApduCommandBuilder builder;
+
+    /**
+     * the generic abstract constructor to build a parser of the APDU response.
      * 
-     * @return Status table
+     * @param response response to parse
+     * @param builder the reference of the builder that created the parser
+     */
+    public AbstractApduResponseParser(ApduResponse response, AbstractApduCommandBuilder builder) {
+        this.response = response;
+        this.builder = builder;
+    }
+
+    /**
+     * @return the internal status table
      */
     protected Map<Integer, StatusProperties> getStatusTable() {
         return STATUS_TABLE;
     }
 
     /**
-     * the generic abstract constructor to build a parser of the APDU response.
+     * Build a command exception.<br>
+     * This method should be override in subclasses in order to create specific exceptions.
      *
-     * @param response response to parse
+     * @param exceptionClass the exception class
+     * @param message the message
+     * @param commandRef the command reference
+     * @param statusCode the status code
+     * @return a new instance not null
      */
-    public AbstractApduResponseParser(ApduResponse response) {
-        this.response = response;
+    protected KeypleSeCommandException buildCommandException(
+            Class<? extends KeypleSeCommandException> exceptionClass, String message,
+            SeCommand commandRef, Integer statusCode) {
+        return new KeypleSeCommandUnknownStatusException(message, commandRef, statusCode);
     }
 
     /**
-     * Gets the apdu response.
-     *
-     * @return the ApduResponse instance.
+     * @return the APDU response
      */
     public final ApduResponse getApduResponse() {
         return response;
+    }
+
+    /**
+     * @return the associated builder reference
+     */
+    public AbstractApduCommandBuilder getBuilder() {
+        return builder;
     }
 
     /**
@@ -67,9 +96,7 @@ public abstract class AbstractApduResponseParser {
     }
 
     /**
-     * Checks if is successful.
-     *
-     * @return if the status is successful from the statusTable according to the current status
+     * @return true if the status is successful from the statusTable according to the current status
      *         code.
      */
     public boolean isSuccessful() {
@@ -78,8 +105,47 @@ public abstract class AbstractApduResponseParser {
     }
 
     /**
-     * Gets the status information.
+     * This method check the status code.<br>
+     * If status code is not referenced, then status is considered unsuccessful.
      *
+     * @throws KeypleSeCommandException if status is not successful.
+     */
+    public void checkStatus() throws KeypleSeCommandException {
+
+        StatusProperties props = getStatusCodeProperties();
+        if (props != null && props.isSuccessful()) {
+            return;
+        }
+        // Status code is not referenced, or not successful.
+
+        // exception class
+        Class<? extends KeypleSeCommandException> exceptionClass =
+                props != null ? props.getExceptionClass() : null;
+
+        // message
+        String message = props != null ? props.getInformation() : "Unknown status";
+
+        // command reference
+        SeCommand commandRef = getCommandRef();
+
+        // status code
+        Integer statusCode = response.getStatusCode();
+
+        // Throw the exception
+        throw buildCommandException(exceptionClass, message, commandRef, statusCode);
+    }
+
+    /**
+     * Gets the associated command reference.<br>
+     * By default, the command reference is retrieved from the associated builder.
+     *
+     * @return a nullable command reference
+     */
+    protected SeCommand getCommandRef() {
+        return builder != null ? builder.getCommandRef() : null;
+    }
+
+    /**
      * @return the ASCII message from the statusTable for the current status code.
      */
     public final String getStatusInformation() {

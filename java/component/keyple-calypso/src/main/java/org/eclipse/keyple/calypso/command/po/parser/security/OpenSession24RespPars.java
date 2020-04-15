@@ -22,10 +22,10 @@ public final class OpenSession24RespPars extends AbstractOpenSessionRespPars {
      * Instantiates a new OpenSession24RespPars from the response.
      *
      * @param response from OpenSession24RespPars
-     * @param builderReference the reference to the builder that created this parser
+     * @param builder the reference to the builder that created this parser
      */
-    public OpenSession24RespPars(ApduResponse response, OpenSession24CmdBuild builderReference) {
-        super(response, builderReference, PoRevision.REV2_4);
+    public OpenSession24RespPars(ApduResponse response, OpenSession24CmdBuild builder) {
+        super(response, builder, PoRevision.REV2_4);
     }
 
     @Override

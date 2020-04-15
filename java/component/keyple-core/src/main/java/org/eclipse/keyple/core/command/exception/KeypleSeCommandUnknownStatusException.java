@@ -9,21 +9,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.calypso.command.po.exception;
+package org.eclipse.keyple.core.command.exception;
 
-import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
+import org.eclipse.keyple.core.command.SeCommand;
 
 /**
- * The exception {@code CalypsoPoUnknownException} indicates that the status code is not referenced.
+ * The exception {@code KeypleSeCommandUnknownStatusException} indicates that the status code is not
+ * referenced.
  */
-public class CalypsoPoUnknownException extends CalypsoPoCommandException {
+public class KeypleSeCommandUnknownStatusException extends KeypleSeCommandException {
 
     /**
      * @param message the message to identify the exception context
-     * @param command the Calypso PO command
+     * @param command the SE command
      * @param statusCode the status code
      */
-    public CalypsoPoUnknownException(String message, CalypsoPoCommand command, Integer statusCode) {
+    public KeypleSeCommandUnknownStatusException(String message, SeCommand command,
+            Integer statusCode) {
         super(message, command, statusCode);
     }
 }

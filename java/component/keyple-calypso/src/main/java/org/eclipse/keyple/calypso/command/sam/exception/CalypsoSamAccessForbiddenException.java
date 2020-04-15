@@ -17,7 +17,7 @@ import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
  * The exception {@code CalypsoSamAccessForbiddenException} indicates that preconditions are not
  * satisfied (e.g. session not active,...).
  */
-public class CalypsoSamAccessForbiddenException extends CalypsoSamCommandException {
+public final class CalypsoSamAccessForbiddenException extends CalypsoSamCommandException {
 
     /**
      * @param message the message to identify the exception context

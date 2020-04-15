@@ -17,7 +17,7 @@ import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
  * The exception {@code CalypsoPoIllegalParameterException} indicates that some input parameter is
  * not accepted by the PO.
  */
-public class CalypsoPoIllegalParameterException extends CalypsoPoCommandException {
+public final class CalypsoPoIllegalParameterException extends CalypsoPoCommandException {
 
     /**
      * @param message the message to identify the exception context
