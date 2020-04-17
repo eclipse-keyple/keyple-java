@@ -61,7 +61,7 @@ public class SamResourceManager {
      * @param maxBlockingTime the maximum duration for which the allocateSamResource method will
      *        attempt to allocate a new reader by retrying (in milliseconds)
      * @throws KeypleReaderException thrown if an error occurs while getting the readers list.
-     * @Since 0.8.1
+     * @since 0.8.1
      */
     public SamResourceManager(ReaderPlugin samReaderPlugin, String samReaderFilter,
             int maxBlockingTime) throws KeypleReaderException {
