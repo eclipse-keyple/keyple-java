@@ -176,5 +176,6 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
 
     }
 
-
+    @Override
+    public void clearObservers() {}
 }

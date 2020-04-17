@@ -108,4 +108,6 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
 
     }
 
+    @Override
+    public void clearObservers() {}
 }
