@@ -11,7 +11,9 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
@@ -21,15 +23,14 @@ import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.util.Configurable;
 import org.eclipse.keyple.core.util.Nameable;
-import org.eclipse.keyple.core.util.Observable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Observable plugin. These plugin can report when a reader is added or removed.
  */
-public abstract class AbstractPlugin extends Observable<PluginEvent>
-        implements ReaderPlugin, Nameable, Configurable {
+public abstract class AbstractPlugin
+        implements ReaderPlugin, ObservablePlugin, Nameable, Configurable {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractPlugin.class);
 
@@ -41,6 +42,13 @@ public abstract class AbstractPlugin extends Observable<PluginEvent>
      */
     protected SortedSet<SeReader> readers = null;
 
+    /* The observers of this object */
+    private Set<ObservablePlugin.PluginObserver> observers;
+    /*
+     * this object will be used to synchronize the access to the observers list in order to be
+     * thread safe
+     */
+    private final Object SYNC = new Object();
 
     /**
      * Instantiates a new ReaderPlugin. Retrieve the current readers list.
@@ -157,11 +165,21 @@ public abstract class AbstractPlugin extends Observable<PluginEvent>
      *
      * @param observer the observer object
      */
+    @Override
     public void addObserver(ObservablePlugin.PluginObserver observer) {
+        if (observer == null) {
+            return;
+        }
+
         logger.trace("[{}] addObserver => Adding '{}' as an observer of '{}'.",
-                this.getClass().getSimpleName(), observer.getClass().getSimpleName(),
-                this.getName());
-        super.addObserver(observer);
+                this.getClass().getSimpleName(), observer.getClass().getSimpleName(), getName());
+
+        synchronized (SYNC) {
+            if (observers == null) {
+                observers = new HashSet<ObservablePlugin.PluginObserver>(1);
+            }
+            observers.add(observer);
+        }
     }
 
     /**
@@ -171,9 +189,19 @@ public abstract class AbstractPlugin extends Observable<PluginEvent>
      *
      * @param observer the observer object
      */
+    @Override
     public void removeObserver(ObservablePlugin.PluginObserver observer) {
-        logger.trace("[{}] removeObserver => Deleting a plugin observer", this.getName());
-        super.removeObserver(observer);
+        if (observer == null) {
+            return;
+        }
+
+        logger.trace("[{}] removeObserver => Deleting a plugin observer", getName());
+
+        synchronized (SYNC) {
+            if (observers != null) {
+                observers.remove(observer);
+            }
+        }
     }
 
     /**
@@ -189,9 +217,36 @@ public abstract class AbstractPlugin extends Observable<PluginEvent>
                 "[{}] AbstractPlugin => Notifying a plugin event to {} observers. EVENTNAME = {} ",
                 this.getName(), this.countObservers(), event.getEventType().getName());
 
-        setChanged();
+        Set<ObservablePlugin.PluginObserver> observersCopy;
 
-        super.notifyObservers(event);
+        synchronized (SYNC) {
+            if (observers == null) {
+                return;
+            }
+            observersCopy = new HashSet<ObservablePlugin.PluginObserver>(observers);
+        }
+
+        for (ObservablePlugin.PluginObserver observer : observersCopy) {
+            observer.update(event);
+        }
+    }
+
+    /**
+     * @return the current number of observers
+     */
+    @Override
+    public int countObservers() {
+        return observers == null ? 0 : observers.size();
+    }
+
+    /**
+     * Remove all the observers
+     */
+    @Override
+    public void clearObservers() {
+        if (observers != null) {
+            this.observers.clear();
+        }
     }
 
     /**
@@ -204,8 +259,7 @@ public abstract class AbstractPlugin extends Observable<PluginEvent>
      *         executed instantly
      */
     @Override
-    public final void setParameters(Map<String, String> parameters)
-            throws IllegalArgumentException, KeypleBaseException {
+    public final void setParameters(Map<String, String> parameters) throws KeypleBaseException {
         for (Map.Entry<String, String> en : parameters.entrySet()) {
             setParameter(en.getKey(), en.getValue());
         }

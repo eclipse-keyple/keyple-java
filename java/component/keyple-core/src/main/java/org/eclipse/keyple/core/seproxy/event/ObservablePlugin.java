@@ -12,18 +12,53 @@
 package org.eclipse.keyple.core.seproxy.event;
 
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.util.Observable;
 
+/**
+ * The ObservablePlugin interface provides the API to observe readers in plugins.
+ * <p>
+ * Allows subscribed observers to receive a PluginEvent when a reader is connected/disconnected
+ */
 public interface ObservablePlugin extends ReaderPlugin {
-    interface PluginObserver extends Observable.Observer<PluginEvent> {
+    /**
+     * Interface to be implemented by plugin observers.
+     */
+    interface PluginObserver {
         void update(PluginEvent event);
     }
 
+    /**
+     * Add a plugin observer.
+     * <p>
+     * The observer will receive all the events produced by this plugin (reader connection,
+     * disconnection)
+     *
+     * @param observer the observer object
+     */
     void addObserver(PluginObserver observer);
 
+    /**
+     * Remove a plugin observer.
+     * <p>
+     * The observer will not receive any of the events produced by this plugin.
+     *
+     * @param observer the observer object
+     */
     void removeObserver(PluginObserver observer);
 
+    /**
+     * Push a PluginEvent of the {@link ObservablePlugin} to its registered observers.
+     *
+     * @param event the event (see {@link PluginEvent})
+     */
     void notifyObservers(PluginEvent event);
 
+    /**
+     * Remove all observers at once
+     */
+    void clearObservers();
+
+    /**
+     * @return the number of observers
+     */
     int countObservers();
 }
