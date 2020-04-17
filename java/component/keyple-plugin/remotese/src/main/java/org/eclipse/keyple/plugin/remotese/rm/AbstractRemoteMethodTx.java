@@ -95,6 +95,9 @@ public abstract class AbstractRemoteMethodTx<T> {
      * @throws KeypleRemoteException if a problem occurs while sending
      */
     public void send(IRemoteMethodTxCallback<T> callback) throws KeypleRemoteException {
+        if(logger.isTraceEnabled()){
+            logger.trace("Send asynchronously keypleDto for {}", this);
+        }
         this.callback = callback;
         sender.sendDTO(this.dto());
     }
@@ -110,12 +113,15 @@ public abstract class AbstractRemoteMethodTx<T> {
      */
     final public T execute(IRemoteMethodTxEngine rmTxEngine) throws KeypleRemoteException {
 
+        if(logger.isTraceEnabled()){
+            logger.trace("execute {}", this.toString());
+        }
         // register this method to receive response
         rmTxEngine.register(this);
 
         if (!isRegistered) {
             throw new IllegalStateException(
-                    "RemoteMethodTx#execute() can not be used until RemoteMethod is isRegistered in a RemoteMethodEngine, please call RemoteMethodEngine#register");
+                    "RemoteMethodTx#execute() can not be used until RemoteMethodTx is registered in a RemoteMethodEngine, please call RemoteMethodEngine#register");
         }
         // logger.debug("Blocking Get {}", this.getClass().getCanonicalName());
         final AbstractRemoteMethodTx thisInstance = this;
@@ -127,13 +133,14 @@ public abstract class AbstractRemoteMethodTx<T> {
                     send(new IRemoteMethodTxCallback<T>() {
                         @Override
                         public void get(T response, KeypleRemoteException exception) {
-                            logger.debug("Release lock of rm {} {}", thisInstance.getMethodName(),
-                                    thisInstance.id);
+                            if(logger.isTraceEnabled()){
+                                logger.trace("Release lock of {}", thisInstance.toString());
+                            }
                             lock.countDown();
                         }
                     });
                 } catch (KeypleRemoteException e) {
-                    logger.error("Exception while sending Dto", e);
+                    logger.error("Exception {} while sending Dto {} for {}", e.getMessage(), thisInstance);
                     thisInstance.remoteException = e;
                     lock.countDown();
                 }
@@ -142,14 +149,18 @@ public abstract class AbstractRemoteMethodTx<T> {
 
         try {
             lock = new CountDownLatch(1);
-            logger.trace("" + "" + "Set callback on RemoteMethodTx {} {}",
-                    this.getClass().getCanonicalName(), this.hashCode());
             asyncSend.start();
-            logger.trace("Lock {}, {}", thisInstance.getMethodName(), this.id);
+            if(logger.isTraceEnabled()){
+                logger.trace("Lock thread for {}",this.toString());
+            }
+
+            // lock until response is received
             boolean responseReceived = lock.await(timeout, TimeUnit.MILLISECONDS);
 
             if (responseReceived) {
-                logger.trace("Unlock {}, {}", this.getClass().getCanonicalName(), this.hashCode());
+                if(logger.isTraceEnabled()){
+                    logger.trace("Unlock thread for {}",this.toString());
+                }
                 if (this.remoteException != null) {
                     throw remoteException;
                 } else {
@@ -160,14 +171,13 @@ public abstract class AbstractRemoteMethodTx<T> {
                  * timeout, no answer has been received
                  */
                 throw new KeypleRemoteException(
-                        "Waiting time elapsed, no answer received from the other node for method "
-                                + this.getClass().getCanonicalName());
+                        "Waiting time elapsed, no answer received from the other node for " + this.toString());
             }
 
 
         } catch (InterruptedException e) {
             throw new IllegalStateException(
-                    "Thread locking in blocking transmitSet has encountered an exception", e);
+                    "Thread locking has encounterd an exception with "+ this.toString(), e);
         }
     }
 
@@ -177,6 +187,9 @@ public abstract class AbstractRemoteMethodTx<T> {
      * @param keypleDto
      */
     void setResponse(KeypleDto keypleDto) {
+        if(logger.isTraceEnabled()){
+            logger.trace("Response received {} for {}",keypleDto, this.toString());
+        }
         try {
             this.response = parseResponse(keypleDto);
             this.callback.get(response, null);
@@ -203,5 +216,16 @@ public abstract class AbstractRemoteMethodTx<T> {
     protected abstract KeypleDto dto();
 
 
-
+    @Override
+    public String toString() {
+        return "AbstractRemoteMethodTx{" +
+                "sessionId='" + sessionId + '\'' +
+                ", methodName='" + getMethodName() + '\'' +
+                ", nativeReaderName='" + nativeReaderName + '\'' +
+                ", virtualReaderName='" + virtualReaderName + '\'' +
+                ", targetNodeId='" + targetNodeId + '\'' +
+                ", requesterNodeId='" + requesterNodeId + '\'' +
+                ", id='" + id + '\'' +
+                '}';
+    }
 }
