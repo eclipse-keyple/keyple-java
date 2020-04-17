@@ -155,4 +155,7 @@ public class BlankSmartPresenceTheadedReader extends AbstractObservableLocalRead
         return new ObservableReaderStateService(this, states,
                 AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION);
     }
+
+    @Override
+    public void clearObservers() {}
 }
