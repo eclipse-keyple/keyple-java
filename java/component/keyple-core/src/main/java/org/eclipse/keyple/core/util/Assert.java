@@ -16,6 +16,8 @@ import java.util.List;
 /**
  * The utility class {@code Assert} exposes very useful methods for testing method call parameters
  * and raising a {@link IllegalArgumentException} unchecked exception.
+ * 
+ * @since 0.9
  */
 public final class Assert {
 
@@ -35,51 +37,54 @@ public final class Assert {
     }
 
     /**
-     * Assert that the input {@code Object} is not null.
+     * Assert that the input object is not null.
      *
-     * @param o the object to check
+     * @param obj the object to check
      * @param name the object name
      * @return the current instance
-     * @throws IllegalArgumentException if {@code o} is null
+     * @throws IllegalArgumentException if object is null
+     * @since 0.9
      */
-    public Assert notNull(Object o, String name) {
-        if (o == null) {
+    public Assert notNull(Object obj, String name) {
+        if (obj == null) {
             throw new IllegalArgumentException("Argument [" + name + "] is null.");
         }
         return INSTANCE;
     }
 
     /**
-     * Assert that the input {@code String} is not null and not empty.
+     * Assert that the input string is not null and not empty.
      *
-     * @param o the object to check
+     * @param obj the object to check
      * @param name the object name
      * @return the current instance
-     * @throws IllegalArgumentException if {@code o} is null or empty
+     * @throws IllegalArgumentException if object is null or empty
+     * @since 0.9
      */
-    public Assert notEmpty(String o, String name) {
-        if (o == null) {
+    public Assert notEmpty(String obj, String name) {
+        if (obj == null) {
             throw new IllegalArgumentException("Argument [" + name + "] is null.");
         }
-        if (o.isEmpty()) {
+        if (obj.isEmpty()) {
             throw new IllegalArgumentException("Argument [" + name + "] is empty.");
         }
         return INSTANCE;
     }
 
     /**
-     * Assert that a list of {@code Object} is not null and not empty.
+     * Assert that a list of objects is not null and not empty.
      *
-     * @param o the object to check
+     * @param obj the object to check
      * @param name the object name
      * @return the current instance
-     * @throws IllegalArgumentException if {@code o} is null or empty
+     * @throws IllegalArgumentException if object is null or empty
+     * @since 0.9
      */
-    public Assert notEmpty(final List<? extends Object> o, String name) {
-        if (o == null) {
+    public Assert notEmpty(List<? extends Object> obj, String name) {
+        if (obj == null) {
             throw new IllegalArgumentException("Argument [" + name + "] is null.");
         }
-        if (o.isEmpty()) {
+        if (obj.isEmpty()) {
             throw new IllegalArgumentException("Argument [" + name + "] is empty.");
         }
         return INSTANCE;
@@ -88,16 +93,17 @@ public final class Assert {
     /**
      * Assert that a byte array is not null and not empty.
      *
-     * @param o the object to check
+     * @param obj the object to check
      * @param name the object name
      * @return the current instance
-     * @throws IllegalArgumentException if {@code o} is null or empty
+     * @throws IllegalArgumentException if object is null or empty
+     * @since 0.9
      */
-    public Assert notEmpty(final byte[] o, String name) {
-        if (o == null) {
+    public Assert notEmpty(byte[] obj, String name) {
+        if (obj == null) {
             throw new IllegalArgumentException("Argument [" + name + "] is null.");
         }
-        if (o.length == 0) {
+        if (obj.length == 0) {
             throw new IllegalArgumentException("Argument [" + name + "] is empty.");
         }
         return INSTANCE;
@@ -109,9 +115,13 @@ public final class Assert {
      * @param condition the condition to check
      * @param name the object name
      * @return the current instance
-     * @throws IllegalArgumentException if {@code condition} is false
+     * @throws IllegalArgumentException if condition is null or false
+     * @since 0.9
      */
-    public Assert isTrue(boolean condition, String name) {
+    public Assert isTrue(Boolean condition, String name) {
+        if (condition == null) {
+            throw new IllegalArgumentException("Condition [" + name + "] is null.");
+        }
         if (!condition) {
             throw new IllegalArgumentException("Condition [" + name + "] is false.");
         }
@@ -119,21 +129,21 @@ public final class Assert {
     }
 
     /**
-     * Assert that an {@Code Integer} is not null and is greater than or equal to {@code minValue}.
+     * Assert that an integer is not null and is greater than or equal to minValue.
      *
-     * @param n the number to check
+     * @param number the number to check
      * @param minValue the min accepted value
      * @param name the object name
      * @return the current instance
-     * @throws IllegalArgumentException if {@code n} is null or has a value less than
-     *         {@code minValue}
+     * @throws IllegalArgumentException if number is null or has a value less than minValue.
+     * @since 0.9
      */
-    public Assert greaterOrEqual(Integer n, int minValue, String name) {
-        if (n == null) {
+    public Assert greaterOrEqual(Integer number, int minValue, String name) {
+        if (number == null) {
             throw new IllegalArgumentException("Argument [" + name + "] is null.");
         }
-        if (n < minValue) {
-            throw new IllegalArgumentException("Argument [" + name + "] has a value [" + n
+        if (number < minValue) {
+            throw new IllegalArgumentException("Argument [" + name + "] has a value [" + number
                     + "] less than [" + minValue + "].");
         }
         return INSTANCE;

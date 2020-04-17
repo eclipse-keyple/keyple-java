@@ -12,7 +12,8 @@
 package org.eclipse.keyple.calypso.transaction;
 
 
-
+import java.util.HashSet;
+import java.util.NoSuchElementException;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
@@ -65,6 +66,8 @@ public final class CalypsoPo extends AbstractMatchingSe {
     private byte[] poAtr;
     private int modificationsCounterMax;
     private boolean modificationCounterIsInBytes = true;
+    private DirectoryHeader directoryHeader;
+    private final HashSet<ElementaryFile> elementaryFiles = new HashSet<ElementaryFile>();
 
     /**
      * Constructor.
@@ -420,5 +423,71 @@ public final class CalypsoPo extends AbstractMatchingSe {
             }
             return PoClass.ISO;
         }
+    }
+
+    /**
+     * Gets the DF metadata.
+     *
+     * @return null if is not set.
+     * @since 0.9
+     */
+    public DirectoryHeader getDirectoryHeader() {
+        return directoryHeader;
+    }
+
+    /**
+     * (package-private)<br>
+     * Sets the DF metadata.
+     *
+     * @param directoryHeader the DF metadata (should be not null)
+     * @return the current instance.
+     */
+    CalypsoPo setDirectoryHeader(DirectoryHeader directoryHeader) {
+        this.directoryHeader = directoryHeader;
+        return this;
+    }
+
+    /**
+     * Gets a reference to the Elementary File that has the provided SFI value.
+     *
+     * @param sfi the SFI to search
+     * @return a not null object reference.
+     * @throws NoSuchElementException if requested EF is not found.
+     * @since 0.9
+     */
+    public ElementaryFile getFileBySfi(byte sfi) {
+        for (ElementaryFile ef : elementaryFiles) {
+            if (ef.getSfi() == sfi) {
+                return ef;
+            }
+        }
+        throw new NoSuchElementException("EF with SFI [" + sfi + "] is not found.");
+    }
+
+    /**
+     * Gets a reference to the Elementary File that has the provided LID value.
+     *
+     * @param lid the LID to search
+     * @return a not null object reference.
+     * @throws NoSuchElementException if requested EF is not found.
+     * @since 0.9
+     */
+    public ElementaryFile getFileByLid(short lid) {
+        for (ElementaryFile ef : elementaryFiles) {
+            if (ef.getHeader() != null && ef.getHeader().getLid() == lid) {
+                return ef;
+            }
+        }
+        throw new NoSuchElementException("EF with LID [" + lid + "] is not found.");
+    }
+
+    /**
+     * Gets a reference to all Elementary Files.
+     *
+     * @return a not null set reference (may be empty if no one EF is set).
+     * @since 0.9
+     */
+    public HashSet<ElementaryFile> getAllFiles() {
+        return elementaryFiles;
     }
 }
