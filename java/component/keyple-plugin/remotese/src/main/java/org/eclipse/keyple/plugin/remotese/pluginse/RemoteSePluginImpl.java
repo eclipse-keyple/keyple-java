@@ -149,7 +149,9 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
                 slaveNodeId);
 
         // remove observers of reader
-        virtualReader.clearObservers();
+        if (virtualReader instanceof VirtualObservableReader) {
+            ((VirtualObservableReader) virtualReader).clearObservers();
+        }
 
         // remove reader
         readers.remove(virtualReader);
