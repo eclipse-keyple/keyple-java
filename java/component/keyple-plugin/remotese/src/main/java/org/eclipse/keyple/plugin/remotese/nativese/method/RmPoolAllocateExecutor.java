@@ -13,6 +13,7 @@ package org.eclipse.keyple.plugin.remotese.nativese.method;
 
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.plugin.remotese.rm.IRemoteMethodExecutor;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
@@ -47,7 +48,13 @@ public class RmPoolAllocateExecutor implements IRemoteMethodExecutor {
         String groupReference = body.get("groupReference").getAsString();
 
         // Execute Remote Method
-        SeReader seReader = poolPlugin.allocateReader(groupReference);
+        SeReader seReader = null;
+        try {
+            seReader = poolPlugin.allocateReader(groupReference);
+        } catch (KeypleAllocationReaderException e) {
+            // TODO Handle this exception
+            e.printStackTrace();
+        }
 
         // Build Response
         JsonObject bodyResp = new JsonObject();
