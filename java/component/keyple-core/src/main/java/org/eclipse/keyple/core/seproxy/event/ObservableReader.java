@@ -14,7 +14,6 @@ package org.eclipse.keyple.core.seproxy.event;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.util.Observable;
 
 /**
  * The ObservableReader interface provides the API for observable readers.
@@ -29,7 +28,8 @@ public interface ObservableReader extends SeReader {
     /**
      * Interface to be implemented by reader observers.
      */
-    interface ReaderObserver extends Observable.Observer<ReaderEvent> {
+    interface ReaderObserver {
+        void update(ReaderEvent event);
     }
 
     /**
