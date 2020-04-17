@@ -190,7 +190,7 @@ class SamCommandProcessor {
      * @param accessLevel the session access level
      * @return the work KIF value byte
      */
-    private byte determineWorkKif(byte poKif, PoTransaction.SessionAccessLevel accessLevel) {
+    private byte determineWorkKif(byte poKif, SessionAccessLevel accessLevel) {
         byte workKeyKif;
         if (poKif == KIF_UNDEFINED) {
             switch (accessLevel) {
@@ -231,10 +231,9 @@ class SamCommandProcessor {
      * @param digestData a first packet of data to digest.
      * @return true if the initialization is successful
      */
-    boolean initializeDigester(PoTransaction.SessionAccessLevel accessLevel,
-            boolean sessionEncryption, boolean verificationMode,
-            SecuritySettings.DefaultKeyInfo workKeyRecordNumber, byte poKif, byte poKVC,
-            byte[] digestData) {
+    boolean initializeDigester(SessionAccessLevel accessLevel, boolean sessionEncryption,
+            boolean verificationMode, SecuritySettings.DefaultKeyInfo workKeyRecordNumber,
+            byte poKif, byte poKVC, byte[] digestData) {
 
         this.sessionEncryption = sessionEncryption;
         this.verificationMode = verificationMode;

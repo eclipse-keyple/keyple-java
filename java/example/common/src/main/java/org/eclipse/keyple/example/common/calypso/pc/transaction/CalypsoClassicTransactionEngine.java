@@ -20,8 +20,10 @@ import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronisedExc
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionIllegalStateException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoSecureSessionException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoUnauthorizedKvcException;
-import org.eclipse.keyple.core.selection.*;
-import org.eclipse.keyple.core.seproxy.*;
+import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -166,8 +168,8 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
          * Environment and Holder file
          */
         poProcessStatus = poTransaction.processOpening(PoTransaction.SessionModificationMode.ATOMIC,
-                PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT,
-                CalypsoClassicInfo.SFI_EnvironmentAndHolder, CalypsoClassicInfo.RECORD_NUMBER_1);
+                SessionAccessLevel.SESSION_LVL_DEBIT, CalypsoClassicInfo.SFI_EnvironmentAndHolder,
+                CalypsoClassicInfo.RECORD_NUMBER_1);
 
         logger.info("Parsing Read EventLog file: "
                 + ((ReadRecordsRespPars) poTransaction.getResponseParser(readEventLogParserIndex))

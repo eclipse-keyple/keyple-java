@@ -662,34 +662,6 @@ public final class PoTransaction {
     }
 
     /**
-     * The PO Transaction Access Level: personalization, loading or debiting.
-     */
-    public enum SessionAccessLevel {
-        /** Session Access Level used for personalization purposes. */
-        SESSION_LVL_PERSO("perso", (byte) 0x01),
-        /** Session Access Level used for reloading purposes. */
-        SESSION_LVL_LOAD("load", (byte) 0x02),
-        /** Session Access Level used for validating and debiting purposes. */
-        SESSION_LVL_DEBIT("debit", (byte) 0x03);
-
-        private final String name;
-        private final byte sessionKey;
-
-        SessionAccessLevel(String name, byte sessionKey) {
-            this.name = name;
-            this.sessionKey = sessionKey;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public byte getSessionKey() {
-            return sessionKey;
-        }
-    }
-
-    /**
      * The modification mode indicates whether the secure session can be closed and reopened to
      * manage the limitation of the PO buffer memory.
      */
