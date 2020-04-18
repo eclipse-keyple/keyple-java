@@ -14,7 +14,6 @@ package org.eclipse.keyple.plugin.remotese.integration;
 
 
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
 import org.eclipse.keyple.plugin.stub.StubReader;
@@ -63,7 +62,7 @@ public class VirtualReaderParameterTest extends VirtualReaderBaseTest {
         virtualReader = getVirtualReader();
 
         Assert.assertEquals(virtualReader.getTransmissionMode(),
-                ((SeReader) nativeReader).getTransmissionMode());
+                nativeReader.getTransmissionMode());
     }
 
 }
