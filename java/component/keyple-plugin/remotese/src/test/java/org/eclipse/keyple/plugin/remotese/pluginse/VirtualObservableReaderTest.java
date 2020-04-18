@@ -45,7 +45,7 @@ public class VirtualObservableReaderTest extends VirtualReaderBaseTest {
         initMasterNSlave();
 
         // configure and connect a Mock Reader
-        nativeReader = (ObservableReader) connectMockObservableReader("mockObservableReader");
+        nativeReader = connectMockObservableReader("mockObservableReader");
 
 
         // get the paired virtual reader
@@ -86,10 +86,10 @@ public class VirtualObservableReaderTest extends VirtualReaderBaseTest {
     }
 
 
-    protected SeReader connectMockObservableReader(String readerName) throws Exception {
+    protected ObservableReader connectMockObservableReader(String readerName) throws Exception {
 
         // configure mock native reader
-        SeReader mockReader = Mockito.spy(SeReader.class);
+        ObservableReader mockReader = Mockito.spy(ObservableReader.class);
         doReturn(readerName).when(mockReader).getName();
         doReturn(TransmissionMode.CONTACTLESS).when(mockReader).getTransmissionMode();
 
