@@ -11,11 +11,9 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -39,26 +37,32 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
     public static final String DEFAULT_PLUGIN_NAME = "RemoteSePlugin";
 
     // in milliseconds, throw an exception if slave hasn't answer during this time
-    public final long rpc_timeout;
-
-    // private final VirtualReaderSessionFactory sessionManager;
+    public final long rpcTimeout;
 
     private final VirtualReaderSessionFactory sessionManager;
     protected final DtoSender dtoSender;
     private final Map<String, String> parameters;
+
+    /* The observers of this object */
+    private Set<ObservablePlugin.PluginObserver> observers;
+    /*
+     * this object will be used to synchronize the access to the observers list in order to be
+     * thread safe
+     */
+    private final Object sync = new Object();
 
     /**
      * RemoteSePlugin is wrapped into MasterAPI and instantiated like a standard plugin
      * by @SeProxyService. Use MasterAPI
      */
     RemoteSePluginImpl(VirtualReaderSessionFactory sessionManager, DtoSender dtoSender,
-            long rpc_timeout, String pluginName) {
+            long rpcTimeout, String pluginName) {
         super(pluginName);
         this.sessionManager = sessionManager;
         logger.info("Init RemoteSePlugin");
         this.dtoSender = dtoSender;
         this.parameters = new HashMap<String, String>();
-        this.rpc_timeout = rpc_timeout;
+        this.rpcTimeout = rpcTimeout;
     }
 
 
@@ -112,13 +116,13 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
          * session and the provided name Virtual Reader can be Observable or not.
          */
         VirtualReaderImpl virtualReader;
-        if (isObservable) {
+        if (Boolean.TRUE.equals(isObservable)) {
             virtualReader = new VirtualObservableReaderImpl(session, nativeReaderName,
-                    new RemoteMethodTxEngine(dtoSender, rpc_timeout), slaveNodeId, transmissionMode,
+                    new RemoteMethodTxEngine(dtoSender, rpcTimeout), slaveNodeId, transmissionMode,
                     options);
         } else {
             virtualReader = new VirtualReaderImpl(session, nativeReaderName,
-                    new RemoteMethodTxEngine(dtoSender, rpc_timeout), slaveNodeId, transmissionMode,
+                    new RemoteMethodTxEngine(dtoSender, rpcTimeout), slaveNodeId, transmissionMode,
                     options);
         }
         readers.add(virtualReader);
@@ -189,7 +193,7 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
     }
 
     @Override
-    public void setParameter(String key, String value) throws IllegalArgumentException {
+    public void setParameter(String key, String value) {
         parameters.put(key, value);
     }
 
@@ -206,5 +210,91 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
     }
 
 
+    /**
+     * Add a plugin observer.
+     * <p>
+     * The observer will receive all the events produced by this plugin (reader insertion, removal,
+     * etc.)
+     *
+     * @param observer the observer object
+     */
+    @Override
+    public void addObserver(ObservablePlugin.PluginObserver observer) {
+        if (observer == null) {
+            return;
+        }
 
+        logger.trace("Adding '{}' as an observer of '{}'.", observer.getClass().getSimpleName(),
+                getName());
+
+        synchronized (sync) {
+            if (observers == null) {
+                observers = new HashSet<PluginObserver>(1);
+            }
+            observers.add(observer);
+        }
+    }
+
+    /**
+     * Remove a plugin observer.
+     * <p>
+     * The observer will no longer receive any of the events produced by this plugin.
+     *
+     * @param observer the observer object
+     */
+    @Override
+    public void removeObserver(ObservablePlugin.PluginObserver observer) {
+        if (observer == null) {
+            return;
+        }
+
+        logger.trace("[{}] Deleting a plugin observer", getName());
+
+        synchronized (sync) {
+            if (observers != null) {
+                observers.remove(observer);
+            }
+        }
+    }
+
+    /**
+     * Notify all registered observers with the provided {@link PluginEvent}
+     *
+     * @param event the plugin event
+     */
+    @Override
+    public final void notifyObservers(final PluginEvent event) {
+
+        logger.trace("[{}] Notifying a plugin event to {} observers. EVENTNAME = {} ",
+                this.getName(), countObservers(), event.getEventType().getName());
+
+        Set<PluginObserver> observersCopy;
+
+        synchronized (sync) {
+            if (observers == null) {
+                return;
+            }
+            observersCopy = new HashSet<ObservablePlugin.PluginObserver>(observers);
+        }
+
+        for (ObservablePlugin.PluginObserver observer : observersCopy) {
+            observer.update(event);
+        }
+    }
+
+    /**
+     * Remove all observers at once
+     */
+    public final void clearObservers() {
+        if (observers != null) {
+            this.observers.clear();
+        }
+    }
+
+    /**
+     * @return the number of observers
+     */
+    public final int countObservers() {
+        return observers == null ? 0 : observers.size();
+    }
 }

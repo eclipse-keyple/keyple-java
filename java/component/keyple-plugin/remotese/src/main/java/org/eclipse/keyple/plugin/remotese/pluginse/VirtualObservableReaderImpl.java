@@ -38,7 +38,7 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
      * this object will be used to synchronize the access to the observers list in order to be
      * thread safe
      */
-    private final Object SYNC = new Object();
+    private final Object sync = new Object();
 
     public VirtualObservableReaderImpl(VirtualReaderSession session, String nativeReaderName,
             RemoteMethodTxEngine rmTxEngine, String slaveNodeId, TransmissionMode transmissionMode,
@@ -53,10 +53,10 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
             return;
         }
 
-        logger.trace("[{}] addObserver => Adding '{}' as an observer of '{}'.",
-                this.getClass().getSimpleName(), observer.getClass().getSimpleName(), getName());
+        logger.trace("Adding '{}' as an observer of '{}'.", observer.getClass().getSimpleName(),
+                getName());
 
-        synchronized (SYNC) {
+        synchronized (sync) {
             if (observers == null) {
                 observers = new HashSet<ReaderObserver>(1);
             }
@@ -70,9 +70,9 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
             return;
         }
 
-        logger.trace("[{}] removeObserver => Deleting a reader observer", this.getName());
+        logger.trace("[{}] Deleting a reader observer", this.getName());
 
-        synchronized (SYNC) {
+        synchronized (sync) {
             if (observers != null) {
                 observers.remove(observer);
             }
@@ -82,13 +82,12 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
     @Override
     public final void notifyObservers(final ReaderEvent event) {
 
-        logger.trace(
-                "[{}] AbstractReader => Notifying a reader event to {} observers. EVENTNAME = {}",
+        logger.trace("[{}] Notifying a reader event to {} observers. EVENTNAME = {}",
                 this.getName(), this.countObservers(), event.getEventType().getName());
 
         Set<ObservableReader.ReaderObserver> observersCopy;
 
-        synchronized (SYNC) {
+        synchronized (sync) {
             if (observers == null) {
                 return;
             }

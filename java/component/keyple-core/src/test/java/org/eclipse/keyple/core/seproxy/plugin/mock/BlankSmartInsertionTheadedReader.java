@@ -175,7 +175,4 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
     public void stopWaitForCard() {
 
     }
-
-    @Override
-    public void clearObservers() {}
 }
