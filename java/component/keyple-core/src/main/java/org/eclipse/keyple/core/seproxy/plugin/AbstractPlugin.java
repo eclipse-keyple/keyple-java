@@ -11,28 +11,21 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
-import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.util.Configurable;
 import org.eclipse.keyple.core.util.Nameable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Observable plugin. These plugin can report when a reader is added or removed.
  */
 public abstract class AbstractPlugin
         implements ReaderPlugin, ObservablePlugin, Nameable, Configurable {
-
-    private static final Logger logger = LoggerFactory.getLogger(AbstractPlugin.class);
 
     /** The plugin name (must be unique) */
     private final String name;
@@ -41,14 +34,6 @@ public abstract class AbstractPlugin
      * The list of readers
      */
     protected SortedSet<SeReader> readers = null;
-
-    /* The observers of this object */
-    private Set<ObservablePlugin.PluginObserver> observers;
-    /*
-     * this object will be used to synchronize the access to the observers list in order to be
-     * thread safe
-     */
-    private final Object SYNC = new Object();
 
     /**
      * Instantiates a new ReaderPlugin. Retrieve the current readers list.
@@ -155,98 +140,6 @@ public abstract class AbstractPlugin
             }
         }
         throw new KeypleReaderNotFoundException(name);
-    }
-
-    /**
-     * Add a plugin observer.
-     * <p>
-     * The observer will receive all the events produced by this plugin (reader insertion, removal,
-     * etc.)
-     *
-     * @param observer the observer object
-     */
-    @Override
-    public void addObserver(ObservablePlugin.PluginObserver observer) {
-        if (observer == null) {
-            return;
-        }
-
-        logger.trace("[{}] addObserver => Adding '{}' as an observer of '{}'.",
-                this.getClass().getSimpleName(), observer.getClass().getSimpleName(), getName());
-
-        synchronized (SYNC) {
-            if (observers == null) {
-                observers = new HashSet<ObservablePlugin.PluginObserver>(1);
-            }
-            observers.add(observer);
-        }
-    }
-
-    /**
-     * Remove a plugin observer.
-     * <p>
-     * The observer will do not receive any of the events produced by this plugin.
-     *
-     * @param observer the observer object
-     */
-    @Override
-    public void removeObserver(ObservablePlugin.PluginObserver observer) {
-        if (observer == null) {
-            return;
-        }
-
-        logger.trace("[{}] removeObserver => Deleting a plugin observer", getName());
-
-        synchronized (SYNC) {
-            if (observers != null) {
-                observers.remove(observer);
-            }
-        }
-    }
-
-    /**
-     * This method shall be called only from a SE Proxy plugin implementing AbstractPlugin. Push a
-     * PluginEvent of the selected AbstractPlugin to its registered Observer.
-     *
-     * @param event the event
-     */
-    @Override
-    public final void notifyObservers(final PluginEvent event) {
-
-        logger.trace(
-                "[{}] AbstractPlugin => Notifying a plugin event to {} observers. EVENTNAME = {} ",
-                this.getName(), this.countObservers(), event.getEventType().getName());
-
-        Set<ObservablePlugin.PluginObserver> observersCopy;
-
-        synchronized (SYNC) {
-            if (observers == null) {
-                return;
-            }
-            observersCopy = new HashSet<ObservablePlugin.PluginObserver>(observers);
-        }
-
-        for (ObservablePlugin.PluginObserver observer : observersCopy) {
-            observer.update(event);
-        }
-    }
-
-    /**
-     * @return the current number of observers
-     */
-    @Override
-    public int countObservers() {
-        return observers == null ? 0 : observers.size();
-    }
-
-    /**
-     * Remove all the observers
-     */
-    @Override
-    public void clearObservers() {
-        if (observers != null) {
-            this.observers.clear();
-        }
     }
 
     /**

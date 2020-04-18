@@ -23,7 +23,7 @@ public interface ObservablePlugin extends ReaderPlugin {
      * Interface to be implemented by plugin observers.
      */
     interface PluginObserver {
-        void update(PluginEvent event);
+        void update(final PluginEvent event);
     }
 
     /**
@@ -34,23 +34,23 @@ public interface ObservablePlugin extends ReaderPlugin {
      *
      * @param observer the observer object
      */
-    void addObserver(PluginObserver observer);
+    void addObserver(final PluginObserver observer);
 
     /**
      * Remove a plugin observer.
      * <p>
-     * The observer will not receive any of the events produced by this plugin.
+     * The observer will no longer receive any of the events produced by this plugin.
      *
      * @param observer the observer object
      */
-    void removeObserver(PluginObserver observer);
+    void removeObserver(final PluginObserver observer);
 
     /**
      * Push a PluginEvent of the {@link ObservablePlugin} to its registered observers.
      *
      * @param event the event (see {@link PluginEvent})
      */
-    void notifyObservers(PluginEvent event);
+    void notifyObservers(final PluginEvent event);
 
     /**
      * Remove all observers at once
