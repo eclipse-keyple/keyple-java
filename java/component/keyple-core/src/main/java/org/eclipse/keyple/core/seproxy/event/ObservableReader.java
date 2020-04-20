@@ -128,7 +128,7 @@ public interface ObservableReader extends SeReader {
      *
      * @param event the event (see {@link ReaderEvent})
      */
-    void notifyObservers(ReaderEvent event);
+    void notifyObservers(final ReaderEvent event);
 
     /**
      * Remove all observers at once
