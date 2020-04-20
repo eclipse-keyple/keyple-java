@@ -179,7 +179,7 @@ public class SamResourceManager {
                     samReader = ((ReaderPoolPlugin) samReaderPlugin)
                             .allocateReader(samIdentifier.getGroupReference());
                 } catch (KeypleAllocationReaderException e) {
-                    throw new CalypsoNoSamResourceAvailableException(e.getMessage());
+                    throw new CalypsoNoSamResourceAvailableException(e.getMessage(), e);
                 }
                 if (samReader != null) {
                     SamResource samResource = createSamResource(samReader);

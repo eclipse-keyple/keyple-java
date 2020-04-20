@@ -52,8 +52,10 @@ public class RmPoolAllocateExecutor implements IRemoteMethodExecutor {
         try {
             seReader = poolPlugin.allocateReader(groupReference);
         } catch (KeypleAllocationReaderException e) {
-            // TODO Handle this exception
-            e.printStackTrace();
+            // if an exception occurs, send it into a keypleDto to the Master
+            return transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(
+                    getMethodName().getName(), e, null, null, null, keypleDto.getTargetNodeId(),
+                    keypleDto.getRequesterNodeId(), keypleDto.getId()));
         }
 
         // Build Response

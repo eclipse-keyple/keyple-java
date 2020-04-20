@@ -25,4 +25,11 @@ public class CalypsoNoSamResourceAvailableException extends KeypleBaseException 
     public CalypsoNoSamResourceAvailableException(String message) {
         super(message);
     }
+
+    /**
+     * @param message the message to identify the exception context
+     */
+    public CalypsoNoSamResourceAvailableException(String message, Throwable t) {
+        super(message, t);
+    }
 }
