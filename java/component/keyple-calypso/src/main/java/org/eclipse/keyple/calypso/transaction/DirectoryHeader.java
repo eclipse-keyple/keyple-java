@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
@@ -22,7 +23,7 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
  * 
  * @since 0.9
  */
-public class DirectoryHeader {
+public class DirectoryHeader implements Serializable {
 
     private final short lid;
     private final byte[] accessConditions;

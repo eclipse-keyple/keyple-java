@@ -14,7 +14,7 @@ package org.eclipse.keyple.calypso.transaction;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import java.util.NoSuchElementException;
-import java.util.TreeMap;
+import java.util.SortedMap;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,12 +38,12 @@ public class FileDataTest {
     }
 
     @Test
-    public void getAllRecordsContent_shouldReturnACopy() {
+    public void getAllRecordsContent_shouldReturnAReference() {
         file.setContent(1, data1);
-        TreeMap<Integer, byte[]> copy1 = file.getAllRecordsContent();
-        TreeMap<Integer, byte[]> copy2 = file.getAllRecordsContent();
-        assertThat(copy1).isNotSameAs(copy2);
-        assertThat(copy1.get(1)).isNotSameAs(copy2.get(1));
+        SortedMap<Integer, byte[]> copy1 = file.getAllRecordsContent();
+        SortedMap<Integer, byte[]> copy2 = file.getAllRecordsContent();
+        assertThat(copy1).isSameAs(copy2);
+        assertThat(copy1.get(1)).isSameAs(copy2.get(1));
     }
 
     @Test(expected = NoSuchElementException.class)
@@ -52,10 +52,10 @@ public class FileDataTest {
     }
 
     @Test
-    public void getContent_shouldReturnACopy() {
+    public void getContent_shouldReturnAReference() {
         file.setContent(1, data1);
         byte[] copy = file.getContent();
-        assertThat(copy).isNotSameAs(data1);
+        assertThat(copy).isSameAs(data1);
     }
 
     @Test
@@ -71,10 +71,10 @@ public class FileDataTest {
     }
 
     @Test
-    public void getContentP1_shouldReturnACopy() {
+    public void getContentP1_shouldReturnAReference() {
         file.setContent(1, data1);
         byte[] copy = file.getContent(1);
-        assertThat(copy).isNotSameAs(data1);
+        assertThat(copy).isSameAs(data1);
     }
 
     @Test
@@ -162,15 +162,15 @@ public class FileDataTest {
     @Test
     public void getAllCountersValue_shouldReturnAllNonTruncatedCounters() {
         file.setContent(1, data4);
-        TreeMap<Integer, Integer> counters = file.getAllCountersValue();
+        SortedMap<Integer, Integer> counters = file.getAllCountersValue();
         assertThat(counters).containsExactly(entry(1, 0x444444));
     }
 
     @Test
-    public void setContentP2_shouldPutACopy() {
+    public void setContentP2_shouldPutAReference() {
         file.setContent(1, data1);
         byte[] copy = file.getContent(1);
-        assertThat(copy).isNotSameAs(data1);
+        assertThat(copy).isSameAs(data1);
     }
 
     @Test
@@ -186,6 +186,28 @@ public class FileDataTest {
         file.setContent(1, data2);
         byte[] val = file.getContent(1);
         assertThat(val).isEqualTo(data2);
+    }
+
+    @Test
+    public void setCounter_whenRecord1IsNotSet_shouldCreateRecord1() {
+        file.setCounter(1, data3);
+        byte[] val = file.getContent(1);
+        assertThat(val).isNotNull();
+    }
+
+    @Test
+    public void setCounter_shouldPutACopy() {
+        file.setCounter(1, data3);
+        byte[] copy = file.getContent(1);
+        assertThat(copy).isNotSameAs(data3);
+    }
+
+    @Test
+    public void setCounter_shouldSetOrReplaceCounterValue() {
+        file.setContent(1, data4);
+        file.setCounter(2, data3);
+        byte[] val = file.getContent(1);
+        assertThat(val).isEqualTo(ByteArrayUtil.fromHex("444444333333"));
     }
 
     @Test
@@ -219,19 +241,27 @@ public class FileDataTest {
     }
 
     @Test
-    public void addContent_whenNoContent_shouldSetContentToRecord1() {
-        file.addContent(data1);
+    public void addCyclicContent_whenNoContent_shouldSetContentToRecord1() {
+        file.addCyclicContent(data1);
         byte[] val = file.getContent(1);
         assertThat(val).isEqualTo(data1);
     }
 
     @Test
-    public void addContent_shouldShiftAllRecordsAndSetContentToRecord1() {
+    public void addCyclicContent_shouldShiftAllRecordsAndSetContentToRecord1() {
         file.setContent(1, data1);
         file.setContent(2, data2);
-        file.addContent(data3);
+        file.addCyclicContent(data3);
         assertThat(file.getAllRecordsContent()).containsExactly(
                 entry(1, ByteArrayUtil.fromHex("333333")), entry(2, ByteArrayUtil.fromHex("11")),
                 entry(3, ByteArrayUtil.fromHex("2222")));
+    }
+
+    @Test
+    public void clone_shouldReturnACopy() {
+        file.setContent(1, data1);
+        FileData clone = file.clone();
+        assertThat(clone).isNotSameAs(file);
+        assertThat(clone.getContent(1)).isNotSameAs(file.getContent(1));
     }
 }

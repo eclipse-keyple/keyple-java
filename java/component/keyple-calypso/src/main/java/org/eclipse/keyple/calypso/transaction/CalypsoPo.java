@@ -14,6 +14,7 @@ package org.eclipse.keyple.calypso.transaction;
 
 import java.util.HashSet;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
@@ -67,7 +68,9 @@ public final class CalypsoPo extends AbstractMatchingSe {
     private int modificationsCounterMax;
     private boolean modificationCounterIsInBytes = true;
     private DirectoryHeader directoryHeader;
+    private boolean sessionRunning;
     private final HashSet<ElementaryFile> elementaryFiles = new HashSet<ElementaryFile>();
+    private final HashSet<ElementaryFile> elementaryFilesSession = new HashSet<ElementaryFile>();
 
     /**
      * Constructor.
@@ -448,46 +451,134 @@ public final class CalypsoPo extends AbstractMatchingSe {
     }
 
     /**
-     * Gets a reference to the Elementary File that has the provided SFI value.
+     * Gets a snapshot of the Elementary File that has the provided SFI value.<br>
+     * Note that if a secure session is actually running, then the snapshot contains all session
+     * modifications, which can be canceled if the secure session fails.
      *
      * @param sfi the SFI to search
-     * @return a not null object reference.
+     * @return a not null copy.
      * @throws NoSuchElementException if requested EF is not found.
      * @since 0.9
      */
     public ElementaryFile getFileBySfi(byte sfi) {
-        for (ElementaryFile ef : elementaryFiles) {
+        for (ElementaryFile ef : getActiveFiles()) {
             if (ef.getSfi() == sfi) {
-                return ef;
+                return ef.clone();
             }
         }
         throw new NoSuchElementException("EF with SFI [" + sfi + "] is not found.");
     }
 
     /**
-     * Gets a reference to the Elementary File that has the provided LID value.
+     * (package-private)<br>
+     * Gets a reference to the Elementary File that has the provided SFI value, or create one if
+     * requested EF is not found.<br>
+     *
+     * @param sfi the SFI to search
+     * @return a not null reference.
+     */
+    ElementaryFile getFileBySfiForUpdate(byte sfi) {
+        Set<ElementaryFile> files = getActiveFiles();
+        // Search EF
+        for (ElementaryFile ef : files) {
+            if (ef.getSfi() == sfi) {
+                return ef;
+            }
+        }
+        // Create EF
+        ElementaryFile ef = new ElementaryFile(sfi);
+        files.add(new ElementaryFile(sfi));
+        return ef;
+    }
+
+    /**
+     * Gets a snapshot of the Elementary File that has the provided LID value.<br>
+     * Note that if a secure session is actually running, then the snapshot contains all session
+     * modifications, which can be canceled if the secure session fails.
      *
      * @param lid the LID to search
-     * @return a not null object reference.
+     * @return a not null copy.
      * @throws NoSuchElementException if requested EF is not found.
      * @since 0.9
      */
     public ElementaryFile getFileByLid(short lid) {
-        for (ElementaryFile ef : elementaryFiles) {
+        for (ElementaryFile ef : getActiveFiles()) {
             if (ef.getHeader() != null && ef.getHeader().getLid() == lid) {
-                return ef;
+                return ef.clone();
             }
         }
         throw new NoSuchElementException("EF with LID [" + lid + "] is not found.");
     }
 
     /**
-     * Gets a reference to all Elementary Files.
+     * Gets a snapshot of all known Elementary Files.<br>
+     * Note that if a secure session is actually running, then the snapshot contains all session
+     * modifications, which can be canceled if the secure session fails.
      *
-     * @return a not null set reference (may be empty if no one EF is set).
+     * @return a not null copy (may be empty if no one EF is set).
      * @since 0.9
      */
-    public HashSet<ElementaryFile> getAllFiles() {
-        return elementaryFiles;
+    public Set<ElementaryFile> getAllFiles() {
+        Set<ElementaryFile> snapshot = new HashSet<ElementaryFile>();
+        copy(getActiveFiles(), snapshot);
+        return snapshot;
+    }
+
+    /**
+     * (package-private)<br>
+     * Indicates that a PO secure session is being started.<br>
+     * This method must be called when SW of the PO open secure session command is successful
+     * (0x9000).
+     */
+    void startSecureSession() {
+        sessionRunning = true;
+        copy(elementaryFiles, elementaryFilesSession);
+    }
+
+    /**
+     * (package-private)<br>
+     * Indicates that the actual PO secure session was successfully ended.<br>
+     * This method must be called when SW of the PO close secure session command is successful
+     * (0x9000).
+     */
+    void validateSecureSession() {
+        sessionRunning = false;
+        copy(elementaryFilesSession, elementaryFiles);
+        elementaryFilesSession.clear();
+    }
+
+    /**
+     * (package-private)<br>
+     * Indicates that the the actual PO secure session was cancelled. This method must be called
+     * when SW of the PO close secure session command is unsuccessful or if secure session is
+     * aborted.
+     */
+    void cancelSecureSession() {
+        sessionRunning = false;
+        elementaryFilesSession.clear();
+    }
+
+    /**
+     * (private)<br>
+     * Gets the active set of Elementary Files depending on the session running context.
+     *
+     * @return a not null set reference.
+     */
+    private Set<ElementaryFile> getActiveFiles() {
+        return sessionRunning ? elementaryFilesSession : elementaryFiles;
+    }
+
+    /**
+     * (private)<br>
+     * Copy a set of ElementaryFile to another one by cloning each element.
+     *
+     * @param src the source (should be not null)
+     * @param dest the destination (should be not null)
+     */
+    private static void copy(Set<ElementaryFile> src, Set<ElementaryFile> dest) {
+        dest.clear();
+        for (ElementaryFile ef : src) {
+            dest.add(ef.clone());
+        }
     }
 }
