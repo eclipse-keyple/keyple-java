@@ -15,6 +15,7 @@ import java.util.*;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
@@ -103,18 +104,19 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
      * @return seReader if available, null otherwise
      */
     @Override
-    public SeReader allocateReader(String groupReference) {
+    public SeReader allocateReader(String groupReference) throws KeypleAllocationReaderException {
         // find the reader in the readerPool
         StubReaderImpl seReader = readerPool.get(groupReference);
 
         // check if the reader is available
         if (seReader == null || allocatedReader.containsKey(seReader.getName())) {
-            return null;
+            throw new KeypleAllocationReaderException(
+                    "Impossible to allocate a reader for groupReference : " + groupReference
+                            + ". Has the reader being plugged to this referenceGroup?");
         } else {
             allocatedReader.put(seReader.getName(), groupReference);
             return seReader;
         }
-
     }
 
     /**

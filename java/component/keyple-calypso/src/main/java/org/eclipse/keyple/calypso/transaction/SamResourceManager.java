@@ -14,6 +14,7 @@ package org.eclipse.keyple.calypso.transaction;
 import static org.eclipse.keyple.calypso.command.sam.SamRevision.AUTO;
 import java.util.*;
 import java.util.regex.Pattern;
+import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.*;
@@ -40,8 +41,9 @@ public class SamResourceManager {
         BLOCKING, NON_BLOCKING
     }
 
-    /* the maximum time (in tenths of a second) during which the BLOCKING mode will wait */
-    private final static int MAX_BLOCKING_TIME = 1000; // 10 sec
+    /* the default maximum time (in milliseconds) during which the BLOCKING mode will wait */
+    private final static int MAX_BLOCKING_TIME = 1000; // 1 sec
+    private final int maxBlockingTime;
     private final ReaderPlugin samReaderPlugin;
     private final List<SamResource> localSamResources = new ArrayList<SamResource>();
     private final boolean dynamicAllocationPlugin;
@@ -56,10 +58,13 @@ public class SamResourceManager {
      * @param samReaderPlugin the plugin through which SAM readers are accessible
      * @param samReaderFilter the regular expression defining how to identify SAM readers among
      *        others.
-     * @throws KeypleReaderException throw if an error occurs while getting the readers list.
+     * @param maxBlockingTime the maximum duration for which the allocateSamResource method will
+     *        attempt to allocate a new reader by retrying (in milliseconds)
+     * @throws KeypleReaderException thrown if an error occurs while getting the readers list.
+     * @since 0.8.1
      */
-    public SamResourceManager(ReaderPlugin samReaderPlugin, String samReaderFilter)
-            throws KeypleReaderException {
+    public SamResourceManager(ReaderPlugin samReaderPlugin, String samReaderFilter,
+            int maxBlockingTime) throws KeypleReaderException {
         this.samReaderPlugin = samReaderPlugin;
         if (samReaderPlugin instanceof ReaderPoolPlugin) {
             logger.info("Create SAM resource manager from reader pool plugin: {}",
@@ -95,6 +100,20 @@ public class SamResourceManager {
                 }
             }
         }
+        this.maxBlockingTime = maxBlockingTime;
+    }
+
+    /**
+     * Alternate constructor with default max blocking time value
+     *
+     * @param samReaderPlugin the plugin through which SAM readers are accessible
+     * @param samReaderFilter the regular expression defining how to identify SAM readers among
+     *        others.
+     * @throws KeypleReaderException thrown if an error occurs while getting the readers list.
+     */
+    public SamResourceManager(ReaderPlugin samReaderPlugin, String samReaderFilter)
+            throws KeypleReaderException {
+        this(samReaderPlugin, samReaderFilter, MAX_BLOCKING_TIME);
     }
 
     /**
@@ -144,17 +163,24 @@ public class SamResourceManager {
      * @param samIdentifier the targeted SAM identifier
      * @return a SAM resource
      * @throws KeypleReaderException if a reader error occurs
+     * @throws CalypsoNoSamResourceAvailableException if the reader allocation failed
      */
     public SamResource allocateSamResource(AllocationMode allocationMode,
-            SamIdentifier samIdentifier) throws KeypleReaderException {
-        long maxBlockingDate = System.currentTimeMillis() + MAX_BLOCKING_TIME;
+            SamIdentifier samIdentifier)
+            throws KeypleReaderException, CalypsoNoSamResourceAvailableException {
+        long maxBlockingDate = System.currentTimeMillis() + maxBlockingTime;
         boolean noSamResourceLogged = false;
         logger.debug("Allocating SAM reader channel...");
         while (true) {
             if (dynamicAllocationPlugin) {
                 // virtually infinite number of readers
-                SeReader samReader = ((ReaderPoolPlugin) samReaderPlugin)
-                        .allocateReader(samIdentifier.getGroupReference());
+                SeReader samReader = null;
+                try {
+                    samReader = ((ReaderPoolPlugin) samReaderPlugin)
+                            .allocateReader(samIdentifier.getGroupReference());
+                } catch (KeypleAllocationReaderException e) {
+                    throw new CalypsoNoSamResourceAvailableException(e.getMessage(), e);
+                }
                 if (samReader != null) {
                     SamResource samResource = createSamResource(samReader);
                     logger.debug("Allocation succeeded. SAM resource created.");
@@ -191,13 +217,12 @@ public class SamResourceManager {
                     logger.error("Interrupt exception in Thread.sleep.");
                 }
                 if (System.currentTimeMillis() >= maxBlockingDate) {
-                    logger.error("The allocation process failed. Timeout {} sec exceeded .",
-                            (MAX_BLOCKING_TIME / 100.0));
-                    return null;
+                    throw new CalypsoNoSamResourceAvailableException(
+                            "The allocation process has timed out.");
                 }
             }
         }
-        return null;
+        throw new CalypsoNoSamResourceAvailableException("The allocation process has failed.");
     }
 
     /**
