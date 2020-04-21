@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
@@ -19,7 +20,7 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
  * 
  * @since 0.9
  */
-public class FileHeader {
+public class FileHeader implements Serializable, Cloneable {
 
     private final short lid;
     private final int recordsNumber;
@@ -112,25 +113,25 @@ public class FileHeader {
 
         /**
          * (package-private)<br>
-         * Sets a copy of the provided access conditions byte array.
+         * Sets a reference to the provided access conditions byte array.
          *
          * @param accessConditions the access conditions (should be not null and 4 bytes length)
          * @return the builder instance
          */
         FileHeaderBuilder accessConditions(byte[] accessConditions) {
-            this.accessConditions = Arrays.copyOf(accessConditions, accessConditions.length);
+            this.accessConditions = accessConditions;
             return this;
         }
 
         /**
          * (package-private)<br>
-         * Sets a copy of the provided key indexes byte array.
+         * Sets a reference to the provided key indexes byte array.
          *
          * @param keyIndexes the key indexes (should be not null and 4 bytes length)
          * @return the builder instance
          */
         FileHeaderBuilder keyIndexes(byte[] keyIndexes) {
-            this.keyIndexes = Arrays.copyOf(keyIndexes, keyIndexes.length);
+            this.keyIndexes = keyIndexes;
             return this;
         }
 
@@ -208,23 +209,23 @@ public class FileHeader {
     }
 
     /**
-     * Gets a copy of access conditions.
+     * Gets a reference to the access conditions.
      *
-     * @return a not empty byte array copy
+     * @return a not empty byte array reference
      * @since 0.9
      */
     public byte[] getAccessConditions() {
-        return Arrays.copyOf(accessConditions, accessConditions.length);
+        return accessConditions;
     }
 
     /**
-     * Gets a copy of keys indexes.
+     * Gets a reference to the keys indexes.
      *
-     * @return a not empty byte array copy
+     * @return a not empty byte array reference
      * @since 0.9
      */
     public byte[] getKeyIndexes() {
-        return Arrays.copyOf(keyIndexes, keyIndexes.length);
+        return keyIndexes;
     }
 
     /**
@@ -255,6 +256,25 @@ public class FileHeader {
      */
     static FileHeaderBuilder builder() {
         return new FileHeaderBuilder();
+    }
+
+    /**
+     * Gets a clone of the current instance.
+     *
+     * @return a not null object
+     * @since 0.9
+     */
+    @Override
+    public FileHeader clone() {
+        return FileHeader.builder()//
+                .lid(lid)//
+                .recordsNumber(recordsNumber)//
+                .recordSize(recordSize)//
+                .type(type)//
+                .accessConditions(Arrays.copyOf(accessConditions, accessConditions.length))//
+                .keyIndexes(Arrays.copyOf(keyIndexes, keyIndexes.length))//
+                .sharedReference(sharedReference)//
+                .build();
     }
 
     /**

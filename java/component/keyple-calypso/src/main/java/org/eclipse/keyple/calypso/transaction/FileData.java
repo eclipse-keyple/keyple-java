@@ -11,17 +11,17 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
+import java.io.Serializable;
 import java.util.*;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-
 
 /**
  * The class {@code FileData} contains all known data content of a Calypso EF.
  * 
  * @since 0.9
  */
-public class FileData {
+public class FileData implements Serializable, Cloneable {
 
     private final TreeMap<Integer, byte[]> records = new TreeMap<Integer, byte[]>();
 
@@ -32,24 +32,20 @@ public class FileData {
     FileData() {}
 
     /**
-     * Gets a copy of all known records content.
+     * Gets a reference to all known records content.
      *
-     * @return a copy not null eventually empty if there's no content.
+     * @return a not null map eventually empty if there's no content.
      * @since 0.9
      */
-    public TreeMap<Integer, byte[]> getAllRecordsContent() {
-        TreeMap<Integer, byte[]> result = new TreeMap<Integer, byte[]>();
-        for (Map.Entry<Integer, byte[]> entry : records.entrySet()) {
-            result.put(entry.getKey(), Arrays.copyOf(entry.getValue(), entry.getValue().length));
-        }
-        return result;
+    public SortedMap<Integer, byte[]> getAllRecordsContent() {
+        return records;
     }
 
     /**
-     * Gets a copy of the known content of record #1.<br>
+     * Gets a reference to the known content of record #1.<br>
      * For a Binary file, it means all the bytes of the file.
      *
-     * @return a copy not empty of the record content.
+     * @return a not empty reference to the record content.
      * @throws NoSuchElementException if record #1 is not set.
      * @since 0.9
      */
@@ -58,10 +54,10 @@ public class FileData {
     }
 
     /**
-     * Gets a copy of the known content of a specific record.
+     * Gets a reference to the known content of a specific record.
      *
      * @param numRecord the record number
-     * @return a copy not empty of the record content.
+     * @return a not empty reference to the record content.
      * @throws NoSuchElementException if record #numRecord is not set.
      * @since 0.9
      */
@@ -70,7 +66,7 @@ public class FileData {
         if (content == null) {
             throw new NoSuchElementException("Record #" + numRecord + " is not set.");
         }
-        return Arrays.copyOf(content, content.length);
+        return content;
     }
 
     /**
@@ -154,8 +150,8 @@ public class FileData {
      * @throws NoSuchElementException if record #1 is not set.
      * @since 0.9
      */
-    public TreeMap<Integer, Integer> getAllCountersValue() {
-        TreeMap<Integer, Integer> result = new TreeMap<Integer, Integer>();
+    public SortedMap<Integer, Integer> getAllCountersValue() {
+        SortedMap<Integer, Integer> result = new TreeMap<Integer, Integer>();
         byte[] rec1 = records.get(1);
         if (rec1 == null) {
             throw new NoSuchElementException("Record #1 is not set.");
@@ -169,14 +165,24 @@ public class FileData {
 
     /**
      * (package-private)<br>
-     * Set or replace the entire content of the specified record #numRecord by a copy of the
-     * provided content.
+     * Set or replace the entire content of the specified record #numRecord by the provided content.
      *
      * @param numRecord the record number (should be {@code >=} 1)
      * @param content the content (should be not empty)
      */
     void setContent(int numRecord, byte[] content) {
-        records.put(numRecord, Arrays.copyOf(content, content.length));
+        records.put(numRecord, content);
+    }
+
+    /**
+     * (package-private)<br>
+     * Sets a counter value in record #1.
+     *
+     * @param numCounter the counter number (should be {@code >=} 1)
+     * @param content the counter value (should be not null and 3 bytes length)
+     */
+    void setCounter(int numCounter, byte[] content) {
+        setContent(1, content, (numCounter - 1) * 3);
     }
 
     /**
@@ -207,24 +213,39 @@ public class FileData {
         }
         System.arraycopy(content, 0, newContent, offset, content.length);
         records.put(numRecord, newContent);
-        ArrayList<String> l = new ArrayList<String>();
     }
 
     /**
      * (package-private)<br>
-     * Set content at record #1 by rolling previously all actual records contents (record #1 ->
-     * record #2).<br>
+     * Add cyclic content at record #1 by rolling previously all actual records contents (record #1
+     * -> record #2, record #2 -> record #3,...).<br>
      * This is useful for cyclic files.<br>
      * Note that records are infinitely shifted.
      *
      * @param content the content (should be not empty)
      */
-    void addContent(byte[] content) {
-        ArrayList<Integer> l = new ArrayList<Integer>(records.descendingKeySet());
-        for (Integer i : l) {
+    void addCyclicContent(byte[] content) {
+        ArrayList<Integer> descendingKeys = new ArrayList<Integer>(records.descendingKeySet());
+        for (Integer i : descendingKeys) {
             records.put(i + 1, records.get(i));
         }
         records.put(1, content);
+    }
+
+    /**
+     * Gets a clone of the current instance.
+     *
+     * @return not null object
+     * @since 0.9
+     */
+    @Override
+    public FileData clone() {
+        FileData data = new FileData();
+        for (Map.Entry<Integer, byte[]> entry : records.entrySet()) {
+            data.setContent(entry.getKey(),
+                    Arrays.copyOf(entry.getValue(), entry.getValue().length));
+        }
+        return data;
     }
 
     @Override

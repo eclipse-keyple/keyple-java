@@ -11,18 +11,18 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
-import org.eclipse.keyple.core.util.Assert;
+import java.io.Serializable;
 
 /**
  * The class {@code ElementaryFile} contains the description of a Calypso EF.
  * 
  * @since 0.9
  */
-public class ElementaryFile {
+public class ElementaryFile implements Serializable, Cloneable {
 
     private final byte sfi;
     private FileHeader header;
-    private FileData data;
+    private final FileData data;
 
     /**
      * (package-private)<br>
@@ -33,6 +33,19 @@ public class ElementaryFile {
      */
     ElementaryFile(byte sfi) {
         this.sfi = sfi;
+        this.data = new FileData();
+    }
+
+    /**
+     * (private)<br>
+     * Constructor used only by method "clone".
+     *
+     * @param sfi the SFI
+     * @param data the data
+     */
+    private ElementaryFile(byte sfi, FileData data) {
+        this.sfi = sfi;
+        this.data = data;
     }
 
     /**
@@ -56,15 +69,13 @@ public class ElementaryFile {
     }
 
     /**
+     * (package-private)<br>
      * Sets the file header.
      *
      * @param header the file header (should be not null)
      * @return the current instance.
-     * @throws IllegalArgumentException if header is null.
-     * @since 0.9
      */
-    public ElementaryFile setHeader(FileHeader header) {
-        Assert.getInstance().notNull(header, "header");
+    ElementaryFile setHeader(FileHeader header) {
         this.header = header;
         return this;
     }
@@ -72,7 +83,7 @@ public class ElementaryFile {
     /**
      * Gets the file data.
      *
-     * @return a data reference of null if data is not yet set.
+     * @return a not null data reference.
      * @since 0.9
      */
     public FileData getData() {
@@ -80,17 +91,18 @@ public class ElementaryFile {
     }
 
     /**
-     * Sets the file data.
+     * Gets a clone of the current instance.
      *
-     * @param data the file data (should be not null)
-     * @return the current instance.
-     * @throws IllegalArgumentException if data is null.
+     * @return not null object
      * @since 0.9
      */
-    public ElementaryFile setData(FileData data) {
-        Assert.getInstance().notNull(data, "data");
-        this.data = data;
-        return this;
+    @Override
+    public ElementaryFile clone() {
+        ElementaryFile ef = new ElementaryFile(sfi, data.clone());
+        if (header != null) {
+            ef.setHeader(header.clone());
+        }
+        return ef;
     }
 
     /**

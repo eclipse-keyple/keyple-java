@@ -12,6 +12,10 @@
 package org.eclipse.keyple.calypso.transaction;
 
 
+import static org.assertj.core.api.Assertions.*;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
@@ -21,6 +25,7 @@ import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -62,6 +67,7 @@ public class CalypsoPoTest {
             "6F238409315449432E49434131A516BF0C13C708000000001122334453070A3C23051410019000";
     private final static String DF_NAME = "315449432E494341";
     private final static String SERIAL_NUMBER = "0000000011223344";
+    private CalypsoPo po;
 
     /**
      * Build a CalypsoPo from atr and fci provided as hex strings
@@ -99,6 +105,10 @@ public class CalypsoPoTest {
         return getCalypsoPo(ATR_VALUE, fciStr);
     }
 
+    @Before
+    public void setUp() throws Exception {
+        po = getCalypsoPo(ATR_VALUE, FCI_REV31);
+    }
 
     @Test
     public void getRevision() {
@@ -219,5 +229,151 @@ public class CalypsoPoTest {
         Assert.assertEquals(0x14, calypsoPo.getSoftwareIssuerByte());
         Assert.assertEquals(0x10, calypsoPo.getSoftwareVersionByte());
         Assert.assertEquals(0x01, calypsoPo.getSoftwareRevisionByte());
+    }
+
+    @Test
+    public void getDirectoryHeader_whenDfIsNotSet_shouldReturnNull() {
+        assertThat(po.getDirectoryHeader()).isNull();
+    }
+
+    @Test
+    public void getDirectoryHeader_whenDfIsSet_shouldReturnAReference() {
+        DirectoryHeader df = DirectoryHeader.builder().build();
+        po.setDirectoryHeader(df);
+        assertThat(po.getDirectoryHeader()).isSameAs(df);
+    }
+
+    @Test
+    public void setDirectoryHeader_shouldSetAReference() {
+        DirectoryHeader df = DirectoryHeader.builder().build();
+        po.setDirectoryHeader(df);
+        assertThat(po.getDirectoryHeader()).isSameAs(df);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void getFileBySfi_whenSfiIsNotFound_shouldThrowNSEE() {
+        po.getFileBySfi((byte) 1);
+    }
+
+    @Test
+    public void getFileBySfi_whenSfiIsFound_shouldReturnAReference() {
+        po.setContent((byte) 1, 1, new byte[1]);
+        ElementaryFile ref1 = po.getFileBySfi((byte) 1);
+        ElementaryFile ref2 = po.getFileBySfi((byte) 1);
+        assertThat(ref2).isSameAs(ref1);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void getFileByLid_whenLidIsNotFound_shouldThrowNSEE() {
+        po.getFileByLid((short) 1);
+    }
+
+    @Test
+    public void getFileByLid_whenLidIsFound_shouldReturnAReference() {
+        po.setFileHeader((byte) 1, FileHeader.builder().lid((short) 2).build());
+        ElementaryFile ref1 = po.getFileByLid((short) 2);
+        ElementaryFile ref2 = po.getFileByLid((short) 2);
+        assertThat(ref2).isSameAs(ref1);
+    }
+
+    @Test
+    public void getAllFiles_whenFilesAreNotSet_shouldReturnANotNullInstance() {
+        assertThat(po.getAllFiles()).isNotNull();
+    }
+
+    @Test
+    public void getAllFiles_whenFilesAreSet_shouldReturnAReference() {
+        po.setContent((byte) 1, 1, new byte[1]);
+        Map<Byte, ElementaryFile> ref1 = po.getAllFiles();
+        Map<Byte, ElementaryFile> ref2 = po.getAllFiles();
+        assertThat(ref2).isSameAs(ref1);
+    }
+
+    @Test
+    public void setFileHeader_whenSfiIsNotSet_shouldCreateEf() {
+        try {
+            po.getFileBySfi((byte) 1);
+            shouldHaveThrown(NoSuchElementException.class);
+        } catch (NoSuchElementException e) {
+        }
+        po.setFileHeader((byte) 1, FileHeader.builder().lid((short) 2).build());
+        assertThat(po.getFileBySfi((byte) 1)).isNotNull();
+    }
+
+    @Test
+    public void setFileHeader_whenSfiIsSet_shouldReplaceHeader() {
+        FileHeader h1 = FileHeader.builder().lid((short) 1).build();
+        FileHeader h2 = FileHeader.builder().lid((short) 2).build();
+        po.setFileHeader((byte) 1, h1);
+        po.setFileHeader((byte) 1, h2);
+        assertThat(po.getFileBySfi((byte) 1).getHeader()).isSameAs(h2);
+    }
+
+    @Test
+    public void setContentP3_whenSfiIsNotSet_shouldCreateEf() {
+        try {
+            po.getFileBySfi((byte) 1);
+            shouldHaveThrown(NoSuchElementException.class);
+        } catch (NoSuchElementException e) {
+        }
+        po.setContent((byte) 1, 1, new byte[1]);
+        assertThat(po.getFileBySfi((byte) 1)).isNotNull();
+    }
+
+    @Test
+    public void setCounter_whenSfiIsNotSet_shouldCreateEf() {
+        try {
+            po.getFileBySfi((byte) 1);
+            shouldHaveThrown(NoSuchElementException.class);
+        } catch (NoSuchElementException e) {
+        }
+        po.setCounter((byte) 1, 1, new byte[3]);
+        assertThat(po.getFileBySfi((byte) 1)).isNotNull();
+    }
+
+    @Test
+    public void setContentP4_whenSfiIsNotSet_shouldCreateEf() {
+        try {
+            po.getFileBySfi((byte) 1);
+            shouldHaveThrown(NoSuchElementException.class);
+        } catch (NoSuchElementException e) {
+        }
+        po.setContent((byte) 1, 1, new byte[1], 1);
+        assertThat(po.getFileBySfi((byte) 1)).isNotNull();
+    }
+
+    @Test
+    public void addCyclicContent_whenSfiIsNotSet_shouldCreateEf() {
+        try {
+            po.getFileBySfi((byte) 1);
+            shouldHaveThrown(NoSuchElementException.class);
+        } catch (NoSuchElementException e) {
+        }
+        po.addCyclicContent((byte) 1, new byte[1]);
+        assertThat(po.getFileBySfi((byte) 1)).isNotNull();
+    }
+
+    @Test
+    public void backupFiles_and_restoreFiles() {
+
+        byte[] content;
+
+        po.setContent((byte) 1, 1, new byte[1]);
+        content = po.getFileBySfi((byte) 1).getData().getContent(1);
+        byte[] contentV1 = Arrays.copyOf(content, content.length);
+
+        po.backupFiles();
+
+        content = po.getFileBySfi((byte) 1).getData().getContent(1);
+        assertThat(content).isEqualTo(contentV1);
+
+        po.setContent((byte) 1, 1, new byte[2]);
+        content = po.getFileBySfi((byte) 1).getData().getContent(1);
+        assertThat(content).isNotEqualTo(contentV1);
+
+        po.restoreFiles();
+
+        content = po.getFileBySfi((byte) 1).getData().getContent(1);
+        assertThat(content).isEqualTo(contentV1);
     }
 }
