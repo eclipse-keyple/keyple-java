@@ -54,6 +54,7 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
      * directly to the removal sequence for the observed readers.<br>
      * TODO find a better way to manage this need
      */
+    @Deprecated // will change in a later version
     protected boolean forceClosing = true;
 
     /**

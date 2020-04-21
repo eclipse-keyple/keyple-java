@@ -140,6 +140,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin
     /**
      * Remove all observers at once
      */
+    @Deprecated // will change in a later version
     public final void clearObservers() {
         if (observers != null) {
             this.observers.clear();
@@ -191,6 +192,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin
      * 
      * @return true, if the background job is monitoring, false in all other cases.
      */
+    @Deprecated // will change in a later version
     protected Boolean isMonitoring() {
         return thread != null && thread.isAlive() && thread.isMonitoring();
     }

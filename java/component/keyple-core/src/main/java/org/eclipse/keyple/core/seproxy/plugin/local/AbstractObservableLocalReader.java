@@ -287,8 +287,9 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      *
      * @return true if the SE is present
      */
+    @Deprecated // will change in a later version
     @Override
-    public boolean isSePresent() throws KeypleIOReaderException {
+    public final boolean isSePresent() throws KeypleIOReaderException {
         if (checkSePresence()) {
             return true;
         } else {
@@ -390,6 +391,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      * change to the WAIT_FOR_START_DETECTION or WAIT_FOR_SE_INSERTION state depending on what was
      * set when the detection was started.
      */
+    @Deprecated // will change in a later version
     protected void startRemovalSequence() {
         if (logger.isTraceEnabled()) {
             logger.trace("[{}] start removal sequence of the reader", getName());
@@ -419,6 +421,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      * @return ReaderEvent that should be notified to observers, contains the results of the default
      *         selection if any, can be null if no event should be sent
      */
+    @Deprecated // will change in a later version
     public final ReaderEvent processSeInserted() {
         if (logger.isTraceEnabled()) {
             logger.trace("[{}] process the inserted se", getName());
@@ -522,6 +525,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      *
      * @return true if the SE still responds, false if not
      */
+    @Deprecated // will change in a later version
     public boolean isSePresentPing() {
         // APDU sent to check the communication with the PO
         final byte[] apdu = {(byte) 0x00, (byte) 0xC0, (byte) 0x00, (byte) 0x00, (byte) 0x00};
@@ -552,6 +556,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      * reader only)
      *
      */
+    @Deprecated // will change in a later version
     public final void processSeRemoved() {
         closeLogicalAndPhysicalChannels();
         notifyObservers(new ReaderEvent(getPluginName(), getName(),
@@ -563,6 +568,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      * 
      * @return the current polling mode
      */
+    @Deprecated // will change in a later version
     public ObservableReader.PollingMode getPollingMode() {
         return currentPollingMode;
     }
@@ -573,6 +579,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      *
      * @param stateId : new stateId
      */
+    @Deprecated // will change in a later version
     protected void switchState(AbstractObservableState.MonitoringState stateId) {
         this.stateService.switchState(stateId);
     }
@@ -582,6 +589,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      * 
      * @return current getMonitoringState
      */
+    @Deprecated // will change in a later version
     public AbstractObservableState.MonitoringState getCurrentMonitoringState() {
         return this.stateService.getCurrentMonitoringState();
     }
@@ -592,6 +600,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      *
      * @param event internal event
      */
+    @Deprecated // will change in a later version
     public void onEvent(InternalEvent event) {
         this.stateService.onEvent(event);
     }
