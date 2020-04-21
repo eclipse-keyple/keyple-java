@@ -44,7 +44,7 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
     private final Map<String, String> parameters;
 
     /* The observers of this object */
-    private Set<ObservablePlugin.PluginObserver> observers;
+    private List<ObservablePlugin.PluginObserver> observers;
     /*
      * this object will be used to synchronize the access to the observers list in order to be
      * thread safe
@@ -229,7 +229,7 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
 
         synchronized (sync) {
             if (observers == null) {
-                observers = new HashSet<PluginObserver>(1);
+                observers = new ArrayList<PluginObserver>(1);
             }
             observers.add(observer);
         }
@@ -268,13 +268,13 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
         logger.trace("[{}] Notifying a plugin event to {} observers. EVENTNAME = {} ",
                 this.getName(), countObservers(), event.getEventType().getName());
 
-        Set<PluginObserver> observersCopy;
+        List<PluginObserver> observersCopy;
 
         synchronized (sync) {
             if (observers == null) {
                 return;
             }
-            observersCopy = new HashSet<ObservablePlugin.PluginObserver>(observers);
+            observersCopy = new ArrayList<PluginObserver>(observers);
         }
 
         for (ObservablePlugin.PluginObserver observer : observersCopy) {

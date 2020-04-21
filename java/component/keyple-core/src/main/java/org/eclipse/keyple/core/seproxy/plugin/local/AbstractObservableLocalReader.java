@@ -11,9 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin.local;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -116,7 +115,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
     }
 
     /* The observers of this object */
-    private Set<ObservableReader.ReaderObserver> observers;
+    private List<ObservableReader.ReaderObserver> observers;
     /*
      * this object will be used to synchronize the access to the observers list in order to be
      * thread safe
@@ -173,7 +172,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
 
         synchronized (sync) {
             if (observers == null) {
-                observers = new HashSet<ObservableReader.ReaderObserver>(1);
+                observers = new ArrayList<ReaderObserver>(1);
             }
             observers.add(observer);
         }
@@ -216,13 +215,13 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
                     this.countObservers(), event.getEventType().getName());
         }
 
-        Set<ObservableReader.ReaderObserver> observersCopy;
+        List<ObservableReader.ReaderObserver> observersCopy;
 
         synchronized (sync) {
             if (observers == null) {
                 return;
             }
-            observersCopy = new HashSet<ObservableReader.ReaderObserver>(observers);
+            observersCopy = new ArrayList<ReaderObserver>(observers);
         }
 
         for (ObservableReader.ReaderObserver observer : observersCopy) {

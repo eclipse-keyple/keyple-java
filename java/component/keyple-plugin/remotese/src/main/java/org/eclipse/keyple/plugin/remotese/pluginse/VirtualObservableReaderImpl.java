@@ -11,9 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -33,7 +31,7 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
     private static final Logger logger = LoggerFactory.getLogger(VirtualObservableReaderImpl.class);
 
     /* The observers of this object */
-    private Set<ReaderObserver> observers;
+    private List<ReaderObserver> observers;
     /*
      * this object will be used to synchronize the access to the observers list in order to be
      * thread safe
@@ -58,7 +56,7 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
 
         synchronized (sync) {
             if (observers == null) {
-                observers = new HashSet<ReaderObserver>(1);
+                observers = new ArrayList<ReaderObserver>(1);
             }
             observers.add(observer);
         }
@@ -85,13 +83,13 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
         logger.trace("[{}] Notifying a reader event to {} observers. EVENTNAME = {}",
                 this.getName(), this.countObservers(), event.getEventType().getName());
 
-        Set<ObservableReader.ReaderObserver> observersCopy;
+        List<ReaderObserver> observersCopy;
 
         synchronized (sync) {
             if (observers == null) {
                 return;
             }
-            observersCopy = new HashSet<ObservableReader.ReaderObserver>(observers);
+            observersCopy = new ArrayList<ReaderObserver>(observers);
         }
 
         for (ObservableReader.ReaderObserver observer : observersCopy) {

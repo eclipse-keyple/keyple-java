@@ -11,9 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.SortedSet;
+import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
@@ -33,7 +31,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin
             LoggerFactory.getLogger(AbstractThreadedObservablePlugin.class);
 
     /* The observers of this object */
-    private Set<ObservablePlugin.PluginObserver> observers;
+    private List<ObservablePlugin.PluginObserver> observers;
     /*
      * this object will be used to synchronize the access to the observers list in order to be
      * thread safe
@@ -92,7 +90,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin
 
         synchronized (sync) {
             if (observers == null) {
-                observers = new HashSet<PluginObserver>(1);
+                observers = new ArrayList<PluginObserver>(1);
             }
             observers.add(observer);
         }
@@ -173,13 +171,13 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin
             logger.trace("[{}] Notifying a plugin event to {} observers. EVENTNAME = {} ",
                     this.getName(), countObservers(), event.getEventType().getName());
         }
-        Set<PluginObserver> observersCopy;
+        List<PluginObserver> observersCopy;
 
         synchronized (sync) {
             if (observers == null) {
                 return;
             }
-            observersCopy = new HashSet<ObservablePlugin.PluginObserver>(observers);
+            observersCopy = new ArrayList<PluginObserver>(observers);
         }
 
         for (ObservablePlugin.PluginObserver observer : observersCopy) {
