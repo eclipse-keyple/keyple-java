@@ -161,7 +161,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      * @param observer the observer object
      */
     @Override
-    public final void addObserver(ObservableReader.ReaderObserver observer) {
+    public final void addObserver(final ObservableReader.ReaderObserver observer) {
         if (observer == null) {
             return;
         }
@@ -187,7 +187,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      * @param observer the observer object
      */
     @Override
-    public final void removeObserver(ObservableReader.ReaderObserver observer) {
+    public final void removeObserver(final ObservableReader.ReaderObserver observer) {
         if (observer == null) {
             return;
         }
@@ -317,7 +317,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      *        the SE detection is restarted, if SINGLESHOT, the SE detection is stopped until a new
      *        call to startSeDetection is made.
      */
-    public void startSeDetection(ObservableReader.PollingMode pollingMode) {
+    public final void startSeDetection(ObservableReader.PollingMode pollingMode) {
         if (logger.isTraceEnabled()) {
             logger.trace("[{}] start Se Detection with pollingMode {}", getName(), pollingMode);
         }
@@ -331,7 +331,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      * This method must be overloaded by readers depending on the particularity of their management
      * of the start of SE detection.
      */
-    public void stopSeDetection() {
+    public final void stopSeDetection() {
         if (logger.isTraceEnabled()) {
             logger.trace("[{}] stop Se Detection", getName());
         }
@@ -429,7 +429,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
                         getName());
             }
             /* no default request is defined, just notify the SE insertion */
-            return new ReaderEvent(this.pluginName, getName(), ReaderEvent.EventType.SE_INSERTED,
+            return new ReaderEvent(getPluginName(), getName(), ReaderEvent.EventType.SE_INSERTED,
                     null);
         } else {
             /*
@@ -456,7 +456,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
                 if (notificationMode == ObservableReader.NotificationMode.MATCHED_ONLY) {
                     /* notify only if a SE matched the selection, just ignore if not */
                     if (aSeMatched) {
-                        return new ReaderEvent(this.pluginName, getName(),
+                        return new ReaderEvent(getPluginName(), getName(),
                                 ReaderEvent.EventType.SE_MATCHED,
                                 new DefaultSelectionsResponse(seResponseList));
                     } else {
@@ -471,7 +471,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
                     // ObservableReader.NotificationMode.ALWAYS
                     if (aSeMatched) {
                         /* The SE matched, notify a SE_MATCHED event with the received response */
-                        return new ReaderEvent(this.pluginName, getName(),
+                        return new ReaderEvent(getPluginName(), getName(),
                                 ReaderEvent.EventType.SE_MATCHED,
                                 new DefaultSelectionsResponse(seResponseList));
                     } else {
@@ -483,7 +483,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
                             logger.trace("[{}] none of {} default selection matched", getName(),
                                     seResponseList.size());
                         }
-                        return new ReaderEvent(this.pluginName, getName(),
+                        return new ReaderEvent(getPluginName(), getName(),
                                 ReaderEvent.EventType.SE_INSERTED,
                                 new DefaultSelectionsResponse(seResponseList));
                     }
@@ -554,7 +554,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      */
     public final void processSeRemoved() {
         closeLogicalAndPhysicalChannels();
-        notifyObservers(new ReaderEvent(this.pluginName, getName(),
+        notifyObservers(new ReaderEvent(getPluginName(), getName(),
                 ReaderEvent.EventType.SE_REMOVED, null));
     }
 

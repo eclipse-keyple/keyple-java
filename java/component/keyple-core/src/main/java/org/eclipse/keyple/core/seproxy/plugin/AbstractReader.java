@@ -44,7 +44,7 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
     private long before;
 
     /** Contains the name of the plugin */
-    protected final String pluginName;
+    private final String pluginName;
 
     /**
      * This flag is used with transmit or transmitSet
@@ -79,7 +79,7 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
      * <p>
      * The method will be used particularly for logging purposes. The plugin name is also part of
      * the ReaderEvent and PluginEvent objects.
-     * 
+     *
      * @return the plugin name String
      */
     public final String getPluginName() {

@@ -37,7 +37,7 @@ public abstract class AbstractSeProxyComponent implements Nameable, Configurable
      * @return the name of the component
      */
     @Override
-    public String getName() {
+    public final String getName() {
         return name;
     }
 

@@ -11,24 +11,17 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
-import java.util.Map;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
+import org.eclipse.keyple.core.seproxy.AbstractSeProxyComponent;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.exception.*;
-import org.eclipse.keyple.core.util.Configurable;
-import org.eclipse.keyple.core.util.Nameable;
 
 /**
  * Observable plugin. These plugin can report when a reader is added or removed.
  */
-public abstract class AbstractPlugin
-        implements ReaderPlugin, ObservablePlugin, Nameable, Configurable {
-
-    /** The plugin name (must be unique) */
-    private final String name;
+public abstract class AbstractPlugin extends AbstractSeProxyComponent implements ReaderPlugin {
 
     /**
      * The list of readers
@@ -45,7 +38,7 @@ public abstract class AbstractPlugin
      * @param name name of the plugin
      */
     protected AbstractPlugin(String name) {
-        this.name = name;
+        super(name);
 
         try {
             readers = initNativeReaders();
@@ -53,16 +46,6 @@ public abstract class AbstractPlugin
             throw new KeypleRuntimeException("Could not instantiate readers in plugin constructor",
                     e);
         }
-    }
-
-    /**
-     * Gets the plugin name
-     *
-     * @return the plugin name string
-     */
-    @Override
-    public final String getName() {
-        return name;
     }
 
     /**
@@ -140,21 +123,5 @@ public abstract class AbstractPlugin
             }
         }
         throw new KeypleReaderNotFoundException(name);
-    }
-
-    /**
-     * Set a list of parameters on a plugin.
-     * <p>
-     * See {@link #setParameter(String, String)} for more details
-     *
-     * @param parameters the new parameters
-     * @throws KeypleBaseException This method can fail when disabling the exclusive mode as it's
-     *         executed instantly
-     */
-    @Override
-    public final void setParameters(Map<String, String> parameters) throws KeypleBaseException {
-        for (Map.Entry<String, String> en : parameters.entrySet()) {
-            setParameter(en.getKey(), en.getValue());
-        }
     }
 }

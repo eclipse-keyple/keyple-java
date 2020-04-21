@@ -48,7 +48,7 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
 
 
     @Override
-    public void addObserver(ObservableReader.ReaderObserver observer) {
+    public final void addObserver(final ObservableReader.ReaderObserver observer) {
         if (observer == null) {
             return;
         }
@@ -65,7 +65,7 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
     }
 
     @Override
-    public void removeObserver(ObservableReader.ReaderObserver observer) {
+    public final void removeObserver(final ObservableReader.ReaderObserver observer) {
         if (observer == null) {
             return;
         }
@@ -100,12 +100,12 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
     }
 
     @Override
-    public int countObservers() {
+    public final int countObservers() {
         return observers == null ? 0 : observers.size();
     }
 
     @Override
-    public void clearObservers() {
+    public final void clearObservers() {
         if (observers != null) {
             this.observers.clear();
         }
