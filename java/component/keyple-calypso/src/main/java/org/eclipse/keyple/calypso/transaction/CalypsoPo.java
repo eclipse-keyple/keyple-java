@@ -12,9 +12,7 @@
 package org.eclipse.keyple.calypso.transaction;
 
 
-import java.util.HashSet;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
@@ -68,9 +66,10 @@ public final class CalypsoPo extends AbstractMatchingSe {
     private int modificationsCounterMax;
     private boolean modificationCounterIsInBytes = true;
     private DirectoryHeader directoryHeader;
-    private boolean sessionRunning;
-    private final HashSet<ElementaryFile> elementaryFiles = new HashSet<ElementaryFile>();
-    private final HashSet<ElementaryFile> elementaryFilesSession = new HashSet<ElementaryFile>();
+    private final Map<Byte, ElementaryFile> efBySfi = new HashMap<Byte, ElementaryFile>();
+    private final Map<Byte, ElementaryFile> efBySfiBackup = new HashMap<Byte, ElementaryFile>();
+    private final Map<Short, Byte> sfiByLid = new HashMap<Short, Byte>();
+    private final Map<Short, Byte> sfiByLidBackup = new HashMap<Short, Byte>();
 
     /**
      * Constructor.
@@ -451,134 +450,191 @@ public final class CalypsoPo extends AbstractMatchingSe {
     }
 
     /**
-     * Gets a snapshot of the Elementary File that has the provided SFI value.<br>
-     * Note that if a secure session is actually running, then the snapshot contains all session
+     * Gets a reference to the {@link ElementaryFile} that has the provided SFI value.<br>
+     * Note that if a secure session is actually running, then the object contains all session
      * modifications, which can be canceled if the secure session fails.
      *
      * @param sfi the SFI to search
-     * @return a not null copy.
+     * @return a not null reference.
      * @throws NoSuchElementException if requested EF is not found.
      * @since 0.9
      */
     public ElementaryFile getFileBySfi(byte sfi) {
-        for (ElementaryFile ef : getActiveFiles()) {
-            if (ef.getSfi() == sfi) {
-                return ef.clone();
-            }
+        ElementaryFile ef = efBySfi.get(sfi);
+        if (ef == null) {
+            throw new NoSuchElementException("EF with SFI [" + sfi + "] is not found.");
         }
-        throw new NoSuchElementException("EF with SFI [" + sfi + "] is not found.");
-    }
-
-    /**
-     * (package-private)<br>
-     * Gets a reference to the Elementary File that has the provided SFI value, or create one if
-     * requested EF is not found.<br>
-     *
-     * @param sfi the SFI to search
-     * @return a not null reference.
-     */
-    ElementaryFile getFileBySfiForUpdate(byte sfi) {
-        Set<ElementaryFile> files = getActiveFiles();
-        // Search EF
-        for (ElementaryFile ef : files) {
-            if (ef.getSfi() == sfi) {
-                return ef;
-            }
-        }
-        // Create EF
-        ElementaryFile ef = new ElementaryFile(sfi);
-        files.add(new ElementaryFile(sfi));
         return ef;
     }
 
     /**
-     * Gets a snapshot of the Elementary File that has the provided LID value.<br>
-     * Note that if a secure session is actually running, then the snapshot contains all session
+     * Gets a reference to the {@link ElementaryFile} that has the provided LID value.<br>
+     * Note that if a secure session is actually running, then the object contains all session
      * modifications, which can be canceled if the secure session fails.
      *
      * @param lid the LID to search
-     * @return a not null copy.
+     * @return a not null reference.
      * @throws NoSuchElementException if requested EF is not found.
      * @since 0.9
      */
     public ElementaryFile getFileByLid(short lid) {
-        for (ElementaryFile ef : getActiveFiles()) {
-            if (ef.getHeader() != null && ef.getHeader().getLid() == lid) {
-                return ef.clone();
-            }
+        Byte sfi = sfiByLid.get(lid);
+        if (sfi == null) {
+            throw new NoSuchElementException("EF with LID [" + lid + "] is not found.");
         }
-        throw new NoSuchElementException("EF with LID [" + lid + "] is not found.");
+        return efBySfi.get(sfi);
     }
 
     /**
-     * Gets a snapshot of all known Elementary Files.<br>
-     * Note that if a secure session is actually running, then the snapshot contains all session
+     * Gets a reference to a map of all known Elementary Files by their associated SFI.<br>
+     * Note that if a secure session is actually running, then the map contains all session
      * modifications, which can be canceled if the secure session fails.
      *
-     * @return a not null copy (may be empty if no one EF is set).
+     * @return a not null reference (may be empty if no one EF is set).
      * @since 0.9
      */
-    public Set<ElementaryFile> getAllFiles() {
-        Set<ElementaryFile> snapshot = new HashSet<ElementaryFile>();
-        copy(getActiveFiles(), snapshot);
-        return snapshot;
-    }
-
-    /**
-     * (package-private)<br>
-     * Indicates that a PO secure session is being started.<br>
-     * This method must be called when SW of the PO open secure session command is successful
-     * (0x9000).
-     */
-    void startSecureSession() {
-        sessionRunning = true;
-        copy(elementaryFiles, elementaryFilesSession);
-    }
-
-    /**
-     * (package-private)<br>
-     * Indicates that the actual PO secure session was successfully ended.<br>
-     * This method must be called when SW of the PO close secure session command is successful
-     * (0x9000).
-     */
-    void validateSecureSession() {
-        sessionRunning = false;
-        copy(elementaryFilesSession, elementaryFiles);
-        elementaryFilesSession.clear();
-    }
-
-    /**
-     * (package-private)<br>
-     * Indicates that the the actual PO secure session was cancelled. This method must be called
-     * when SW of the PO close secure session command is unsuccessful or if secure session is
-     * aborted.
-     */
-    void cancelSecureSession() {
-        sessionRunning = false;
-        elementaryFilesSession.clear();
+    public Map<Byte, ElementaryFile> getAllFiles() {
+        return efBySfi;
     }
 
     /**
      * (private)<br>
-     * Gets the active set of Elementary Files depending on the session running context.
+     * Gets or creates the EF having the provided SFI.
      *
-     * @return a not null set reference.
+     * @param sfi the SFI
+     * @return a not null reference.
      */
-    private Set<ElementaryFile> getActiveFiles() {
-        return sessionRunning ? elementaryFilesSession : elementaryFiles;
+    private ElementaryFile getOrCreateFile(byte sfi) {
+        ElementaryFile ef = efBySfi.get(sfi);
+        if (ef == null) {
+            ef = new ElementaryFile(sfi);
+            efBySfi.put(sfi, ef);
+        }
+        return ef;
+    }
+
+    /**
+     * (package-private)<br>
+     * Sets the provided {@link FileHeader} to the EF having the provided SFI.<br>
+     * If EF does not exist, then it is created.
+     *
+     * @param sfi the SFI
+     * @param header the file header (should be not null)
+     */
+    void setFileHeader(byte sfi, FileHeader header) {
+        ElementaryFile ef = getOrCreateFile(sfi);
+        ef.setHeader(header);
+        sfiByLid.put(header.getLid(), sfi);
+    }
+
+    /**
+     * (package-private)<br>
+     * Set or replace the entire content of the specified record #numRecord of the provided SFI by
+     * the provided content.<br>
+     * If EF does not exist, then it is created.
+     *
+     * @param sfi the SFI
+     * @param numRecord the record number (should be {@code >=} 1)
+     * @param content the content (should be not empty)
+     */
+    void setContent(byte sfi, int numRecord, byte[] content) {
+        ElementaryFile ef = getOrCreateFile(sfi);
+        ef.getData().setContent(numRecord, content);
+    }
+
+    /**
+     * (package-private)<br>
+     * Sets a counter value in record #1 of the provided SFI.<br>
+     * If EF does not exist, then it is created.
+     *
+     * @param sfi the SFI
+     * @param numCounter the counter number (should be {@code >=} 1)
+     * @param content the counter value (should be not null and 3 bytes length)
+     */
+    void setCounter(byte sfi, int numCounter, byte[] content) {
+        ElementaryFile ef = getOrCreateFile(sfi);
+        ef.getData().setCounter(numCounter, content);
+    }
+
+    /**
+     * (package-private)<br>
+     * Set or replace the content at the specified offset of record #numRecord of the provided SFI
+     * by a copy of the provided content.<br>
+     * If EF does not exist, then it is created.<br>
+     * If actual record content is not set or has a size {@code <} offset, then missing data will be
+     * padded with 0.
+     *
+     * @param sfi the SFI
+     * @param numRecord the record number (should be {@code >=} 1)
+     * @param content the content (should be not empty)
+     * @param offset the offset (should be {@code >=} 0)
+     */
+    void setContent(byte sfi, int numRecord, byte[] content, int offset) {
+        ElementaryFile ef = getOrCreateFile(sfi);
+        ef.getData().setContent(numRecord, content, offset);
+    }
+
+    /**
+     * (package-private)<br>
+     * Add cyclic content at record #1 by rolling previously all actual records contents (record #1
+     * -> record #2, record #2 -> record #3,...) of the provided SFI.<br>
+     * This is useful for cyclic files. Note that records are infinitely shifted.<br>
+     * <br>
+     * If EF does not exist, then it is created.
+     *
+     * @param sfi the SFI
+     * @param content the content (should be not empty)
+     */
+    void addCyclicContent(byte sfi, byte[] content) {
+        ElementaryFile ef = getOrCreateFile(sfi);
+        ef.getData().addCyclicContent(content);
+    }
+
+    /**
+     * (package-private)<br>
+     * Make a backup of the Elementary Files.<br>
+     * This method should be used before starting a PO secure session.
+     */
+    void backupFiles() {
+        copyMapFiles(efBySfi, efBySfiBackup);
+        copyMapSfi(sfiByLid, sfiByLidBackup);
+    }
+
+    /**
+     * (package-private)<br>
+     * Restore the last backup of Elementary Files.<br>
+     * This method should be used when SW of the PO close secure session command is unsuccessful or
+     * if secure session is aborted.
+     */
+    void restoreFiles() {
+        copyMapFiles(efBySfiBackup, efBySfi);
+        copyMapSfi(sfiByLidBackup, sfiByLid);
     }
 
     /**
      * (private)<br>
-     * Copy a set of ElementaryFile to another one by cloning each element.
+     * Copy a map of ElementaryFile by SFI to another one by cloning each element.
      *
      * @param src the source (should be not null)
      * @param dest the destination (should be not null)
      */
-    private static void copy(Set<ElementaryFile> src, Set<ElementaryFile> dest) {
+    private static void copyMapFiles(Map<Byte, ElementaryFile> src,
+            Map<Byte, ElementaryFile> dest) {
         dest.clear();
-        for (ElementaryFile ef : src) {
-            dest.add(ef.clone());
+        for (Map.Entry<Byte, ElementaryFile> entry : src.entrySet()) {
+            dest.put(entry.getKey(), entry.getValue().clone());
         }
+    }
+
+    /**
+     * (private)<br>
+     * Copy a map of SFI by LID to another one by cloning each element.
+     *
+     * @param src the source (should be not null)
+     * @param dest the destination (should be not null)
+     */
+    private static void copyMapSfi(Map<Short, Byte> src, Map<Short, Byte> dest) {
+        dest.clear();
+        dest.putAll(src);
     }
 }
