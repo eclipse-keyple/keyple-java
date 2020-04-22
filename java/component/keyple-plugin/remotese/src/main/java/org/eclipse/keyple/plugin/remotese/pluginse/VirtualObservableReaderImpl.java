@@ -11,8 +11,10 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
-import java.util.Map;
+import java.util.*;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.pluginse.method.RmSetDefaultSelectionRequestTx;
@@ -28,6 +30,13 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
 
     private static final Logger logger = LoggerFactory.getLogger(VirtualObservableReaderImpl.class);
 
+    /* The observers of this object */
+    private List<ReaderObserver> observers;
+    /*
+     * this object will be used to synchronize the access to the observers list in order to be
+     * thread safe
+     */
+    private final Object sync = new Object();
 
     public VirtualObservableReaderImpl(VirtualReaderSession session, String nativeReaderName,
             RemoteMethodTxEngine rmTxEngine, String slaveNodeId, TransmissionMode transmissionMode,
@@ -35,6 +44,75 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
         super(session, nativeReaderName, rmTxEngine, slaveNodeId, transmissionMode, options);
     }
 
+
+    @Override
+    public final void addObserver(final ObservableReader.ReaderObserver observer) {
+        if (observer == null) {
+            return;
+        }
+
+        logger.trace("Adding '{}' as an observer of '{}'.", observer.getClass().getSimpleName(),
+                getName());
+
+        synchronized (sync) {
+            if (observers == null) {
+                observers = new ArrayList<ReaderObserver>(1);
+            }
+            observers.add(observer);
+        }
+    }
+
+    @Override
+    public final void removeObserver(final ObservableReader.ReaderObserver observer) {
+        if (observer == null) {
+            return;
+        }
+
+        logger.trace("[{}] Deleting a reader observer", this.getName());
+
+        synchronized (sync) {
+            if (observers != null) {
+                observers.remove(observer);
+            }
+        }
+    }
+
+    @Override
+    public final void notifyObservers(final ReaderEvent event) {
+
+        logger.trace("[{}] Notifying a reader event to {} observers. EVENTNAME = {}",
+                this.getName(), this.countObservers(), event.getEventType().getName());
+
+        List<ReaderObserver> observersCopy;
+
+        synchronized (sync) {
+            if (observers == null) {
+                return;
+            }
+            observersCopy = new ArrayList<ReaderObserver>(observers);
+        }
+
+        for (ObservableReader.ReaderObserver observer : observersCopy) {
+            observer.update(event);
+        }
+    }
+
+    @Override
+    public final int countObservers() {
+        return observers == null ? 0 : observers.size();
+    }
+
+    @Override
+    public final void clearObservers() {
+        if (observers != null) {
+            this.observers.clear();
+        }
+    }
+
+    @Override
+    public void notifySeProcessed() {
+        // TODO Check why this method is empty here
+    }
 
     @Override
     public void startSeDetection(PollingMode pollingMode) {
