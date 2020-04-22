@@ -191,7 +191,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
                 new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(AID), STATUS_CODE);
 
         // select both
-        SeSelector seSelector = new SeSelector(null, atrFilter, aidSelector, "extraInfo");
+        SeSelector seSelector = new SeSelector(null, atrFilter, aidSelector);
 
         SelectionStatus status = r.openLogicalChannel(seSelector);
         Assert.assertEquals(true, status.hasMatched());
@@ -206,7 +206,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     public void select_no_param() throws Exception {
         AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
 
-        SeSelector seSelector = new SeSelector(null, null, null, "extraInfo");
+        SeSelector seSelector = new SeSelector(null, null, null);
 
         SelectionStatus status = r.openLogicalChannel(seSelector);
         Assert.assertEquals(true, status.hasMatched());
@@ -304,14 +304,14 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
         SeSelector.AidSelector aidSelector =
                 new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(AID), STATUS_CODE);
 
-        return new SeSelector(null, null, aidSelector, "aidSelector : " + AID);
+        return new SeSelector(null, null, aidSelector);
     }
 
     static public SeSelector getAtrSelector() {
 
         SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter(ATR);
 
-        return new SeSelector(null, atrFilter, null, "atrFilter");
+        return new SeSelector(null, atrFilter, null);
     }
 
 
