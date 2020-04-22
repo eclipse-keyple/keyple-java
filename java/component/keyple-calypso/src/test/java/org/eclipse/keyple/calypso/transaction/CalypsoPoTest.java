@@ -94,7 +94,7 @@ public class CalypsoPoTest {
 
         SeResponse selectionData =
                 new SeResponse(true, false, new SelectionStatus(atr, fci, true), null);
-        CalypsoPo calypsoPo = new CalypsoPo(selectionData, TransmissionMode.CONTACTLESS, null);
+        CalypsoPo calypsoPo = new CalypsoPo(selectionData, TransmissionMode.CONTACTLESS);
         return calypsoPo;
     }
 
@@ -180,7 +180,7 @@ public class CalypsoPoTest {
         ApduResponse fciData = new ApduResponse(null, null);
         SeResponse selectionData =
                 new SeResponse(true, false, new SelectionStatus(atr, fciData, true), null);
-        CalypsoPo calypsoPo = new CalypsoPo(selectionData, TransmissionMode.CONTACTLESS, null);
+        CalypsoPo calypsoPo = new CalypsoPo(selectionData, TransmissionMode.CONTACTLESS);
     }
 
     @Test
@@ -189,7 +189,7 @@ public class CalypsoPoTest {
         ApduResponse fciData = new ApduResponse(null, null);
         SeResponse selectionData =
                 new SeResponse(true, false, new SelectionStatus(atr, fciData, true), null);
-        CalypsoPo calypsoPo = new CalypsoPo(selectionData, TransmissionMode.CONTACTLESS, null);
+        CalypsoPo calypsoPo = new CalypsoPo(selectionData, TransmissionMode.CONTACTLESS);
 
         Assert.assertEquals(PoRevision.REV1_0, calypsoPo.getRevision());
         Assert.assertNull(calypsoPo.getDfName());

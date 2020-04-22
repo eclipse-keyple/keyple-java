@@ -19,54 +19,42 @@ public class SamSelectorTest {
 
     @Test
     public void test_AidSelectorNull() {
-        SamSelector samSelector =
-                new SamSelector(new SamIdentifier(SamRevision.S1D, null, ""), "S1D");
+        SamSelector samSelector = new SamSelector(new SamIdentifier(SamRevision.S1D, "", ""));
         assertNull(samSelector.getAidSelector());
     }
 
     @Test
     public void test_SamRevision_S1D() {
-        SamSelector samSelector =
-                new SamSelector(new SamIdentifier(SamRevision.S1D, null, ""), "S1D");
+        SamSelector samSelector = new SamSelector(new SamIdentifier(SamRevision.S1D, "", ""));
         assertEquals("3B(.{6}|.{10})805A..80D?20.{4}.{8}829000",
                 samSelector.getAtrFilter().getAtrRegex());
     }
 
     @Test
     public void test_SamRevision_S1E() {
-        SamSelector samSelector =
-                new SamSelector(new SamIdentifier(SamRevision.S1E, null, ""), "S1E");
+        SamSelector samSelector = new SamSelector(new SamIdentifier(SamRevision.S1E, "", ""));
         assertEquals("3B(.{6}|.{10})805A..80E120.{4}.{8}829000",
                 samSelector.getAtrFilter().getAtrRegex());
     }
 
     @Test
     public void test_SamRevision_C1() {
-        SamSelector samSelector =
-                new SamSelector(new SamIdentifier(SamRevision.C1, null, ""), "C1");
+        SamSelector samSelector = new SamSelector(new SamIdentifier(SamRevision.C1, "", ""));
         assertEquals("3B(.{6}|.{10})805A..80C120.{4}.{8}829000",
                 samSelector.getAtrFilter().getAtrRegex());
     }
 
     @Test
     public void test_SamRevision_ANY() {
-        SamSelector samSelector =
-                new SamSelector(new SamIdentifier(SamRevision.AUTO, null, ""), "Any");
+        SamSelector samSelector = new SamSelector(new SamIdentifier(SamRevision.AUTO, "", ""));
         assertEquals(".*", samSelector.getAtrFilter().getAtrRegex());
     }
 
     @Test
     public void test_SamSerialNumber() {
         SamSelector samSelector =
-                new SamSelector(new SamIdentifier(SamRevision.C1, "11223344", ""), "Any");
+                new SamSelector(new SamIdentifier(SamRevision.C1, "11223344", ""));
         assertEquals("3B(.{6}|.{10})805A..80C120.{4}11223344829000",
                 samSelector.getAtrFilter().getAtrRegex());
-    }
-
-    @Test
-    public void test_ExtraInfo() {
-        SamSelector samSelector =
-                new SamSelector(new SamIdentifier(SamRevision.AUTO, null, ""), "Any");
-        assertEquals("Any", samSelector.getExtraInfo());
     }
 }
