@@ -78,7 +78,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin
      * @param observer the observer object
      */
     @Override
-    public final void addObserver(ObservablePlugin.PluginObserver observer) {
+    public final void addObserver(final ObservablePlugin.PluginObserver observer) {
         if (observer == null) {
             return;
         }
@@ -113,7 +113,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin
      * @param observer the observer object
      */
     @Override
-    public final void removeObserver(ObservablePlugin.PluginObserver observer) {
+    public final void removeObserver(final ObservablePlugin.PluginObserver observer) {
         if (observer == null) {
             return;
         }

@@ -353,7 +353,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      *        when a SE is inserted
      * @param notificationMode the notification mode enum (ALWAYS or MATCHED_ONLY)
      */
-    public void setDefaultSelectionRequest(
+    public final void setDefaultSelectionRequest(
             AbstractDefaultSelectionsRequest defaultSelectionsRequest,
             ObservableReader.NotificationMode notificationMode) {
         this.defaultSelectionsRequest = (DefaultSelectionsRequest) defaultSelectionsRequest;
@@ -371,7 +371,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      *        the SE detection is restarted, if STOP, the SE detection is stopped until a new call
      *        to startSeDetection is made.
      */
-    public void setDefaultSelectionRequest(
+    public final void setDefaultSelectionRequest(
             AbstractDefaultSelectionsRequest defaultSelectionsRequest,
             ObservableReader.NotificationMode notificationMode,
             ObservableReader.PollingMode pollingMode) {
