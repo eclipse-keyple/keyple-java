@@ -108,7 +108,7 @@ public class CalypsoUtilities {
          */
         SeSelection samSelection = new SeSelection();
 
-        SamSelector samSelector = new SamSelector(C1, ".*", "Selection SAM C1");
+        SamSelector samSelector = new SamSelector(C1, ".*");
 
         /* Prepare selector, ignore AbstractMatchingSe here */
         samSelection.prepareSelection(new SamSelectionRequest(samSelector));
@@ -126,6 +126,8 @@ public class CalypsoUtilities {
                         "No SAM is present in the reader " + samReader.getName());
             }
         } catch (KeypleReaderException e) {
+            throw new IllegalStateException("Reader exception: " + e.getMessage());
+        } catch (KeypleException e) {
             throw new IllegalStateException("Reader exception: " + e.getMessage());
         }
         logger.info("The SAM resource has been created");

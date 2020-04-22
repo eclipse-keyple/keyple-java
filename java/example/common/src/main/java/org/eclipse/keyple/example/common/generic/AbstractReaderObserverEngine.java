@@ -16,6 +16,7 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.slf4j.Logger;
@@ -31,7 +32,7 @@ public abstract class AbstractReaderObserverEngine implements ObservableReader.R
 
 
     protected abstract void processSeMatch(
-            AbstractDefaultSelectionsResponse defaultSelectionsResponse);
+            AbstractDefaultSelectionsResponse defaultSelectionsResponse) throws KeypleException;
 
     protected abstract void processSeInserted(); // alternative AID selection
 
@@ -85,9 +86,14 @@ public abstract class AbstractReaderObserverEngine implements ObservableReader.R
                     @Override
                     public void run() {
                         currentlyProcessingSe = true;
-                        processSeMatch(event.getDefaultSelectionsResponse()); // to process the
-                                                                              // selected
-                                                                              // application
+                        try {
+                            processSeMatch(event.getDefaultSelectionsResponse()); // to process the
+                        } catch (KeypleException e) {
+                            // TODO Rework error management
+                            e.printStackTrace();
+                        }
+                        // selected
+                        // application
                         /**
                          * Informs the underlying layer of the end of the SE processing, in order to
                          * manage the removal sequence.

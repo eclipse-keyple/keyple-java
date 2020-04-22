@@ -101,11 +101,11 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
          * Generic selection: configures a SeSelector with all the desired attributes to make the
          * selection
          */
-        GenericSeSelectionRequest seSelector = new GenericSeSelectionRequest(new SeSelector(
-                SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                new SeSelector.AidSelector(
-                        new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAid)), null),
-                "AID: " + seAid));
+        GenericSeSelectionRequest seSelector = new GenericSeSelectionRequest(
+                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                        new SeSelector.AidSelector(
+                                new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAid)),
+                                null)));
 
         /*
          * Add the selection case to the current selection (we could have added other cases here)
@@ -147,9 +147,15 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
         switch (event.getEventType()) {
             case SE_MATCHED:
                 /* the selection has one target, get the result at index 0 */
-                AbstractMatchingSe selectedSe =
-                        seSelection.processDefaultSelection(event.getDefaultSelectionsResponse())
-                                .getActiveSelection().getMatchingSe();
+                AbstractMatchingSe selectedSe = null;
+                try {
+                    selectedSe = seSelection
+                            .processDefaultSelection(event.getDefaultSelectionsResponse())
+                            .getActiveSelection().getMatchingSe();
+                } catch (KeypleException e) {
+                    // TODO Rework error management
+                    e.printStackTrace();
+                }
 
                 if (selectedSe != null) {
                     logger.info("Observer notification: the selection of the SE has succeeded.");

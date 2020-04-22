@@ -12,6 +12,7 @@
 package org.eclipse.keyple.example.common.calypso.pc.transaction;
 
 
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalArgumentException;
 import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
@@ -26,6 +27,7 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -274,7 +276,8 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
         }
     }
 
-    public AbstractDefaultSelectionsRequest preparePoSelection() {
+    public AbstractDefaultSelectionsRequest preparePoSelection()
+            throws CalypsoPoIllegalArgumentException {
         /*
          * Initialize the selection process
          */
@@ -290,8 +293,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
         seSelection.prepareSelection(
                 new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                         new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(poFakeAid1),
-                                PoSelector.InvalidatedPo.REJECT),
-                        "Selector with fake AID1")));
+                                PoSelector.InvalidatedPo.REJECT))));
 
         /*
          * Add selection case 2: Calypso application, protocol ISO, target rev 2 or 3
@@ -302,8 +304,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
                 new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                         new PoSelector.PoAidSelector(
                                 new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
-                                PoSelector.InvalidatedPo.ACCEPT),
-                        "Calypso selector"));
+                                PoSelector.InvalidatedPo.ACCEPT)));
 
         poSelectionRequestCalypsoAid.prepareReadRecords(CalypsoClassicInfo.SFI_EventLog,
                 ReadDataStructure.SINGLE_RECORD_DATA, CalypsoClassicInfo.RECORD_NUMBER_1);
@@ -316,16 +317,14 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
         seSelection.prepareSelection(
                 new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_B_PRIME, null,
                         new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(poFakeAid2),
-                                PoSelector.InvalidatedPo.REJECT),
-                        "Selector with fake AID2")));
+                                PoSelector.InvalidatedPo.REJECT))));
 
         /*
          * Add selection case 4: ATR selection, rev 1 atrregex
          */
         seSelection.prepareSelection(
                 new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_B_PRIME,
-                        new PoSelector.PoAtrFilter(CalypsoClassicInfo.ATR_REV1_REGEX), null,
-                        "Selector with fake AID2")));
+                        new PoSelector.PoAtrFilter(CalypsoClassicInfo.ATR_REV1_REGEX), null)));
 
         return seSelection.getSelectionOperation();
     }
@@ -334,7 +333,8 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
      * Do the PO selection and possibly go on with Calypso transactions.
      */
     @Override
-    public void processSeMatch(AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
+    public void processSeMatch(AbstractDefaultSelectionsResponse defaultSelectionsResponse)
+            throws KeypleException {
         CalypsoPo calypsoPo =
                 (CalypsoPo) seSelection.processDefaultSelection(defaultSelectionsResponse)
                         .getActiveSelection().getMatchingSe();

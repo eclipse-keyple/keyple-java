@@ -26,6 +26,7 @@ import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
@@ -72,9 +73,15 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
         switch (event.getEventType()) {
 
             case SE_MATCHED:
-                MatchingSelection matchingSelection =
-                        seSelection.processDefaultSelection(event.getDefaultSelectionsResponse())
-                                .getActiveSelection();
+                MatchingSelection matchingSelection = null;
+                try {
+                    matchingSelection = seSelection
+                            .processDefaultSelection(event.getDefaultSelectionsResponse())
+                            .getActiveSelection();
+                } catch (KeypleException e) {
+                    // TODO Rework error management
+                    e.printStackTrace();
+                }
 
                 // retrieve PO virtual reader
                 SeReader poReader = null;

@@ -103,19 +103,17 @@ public class ExplicitSelectionAid_Pcsc {
              * Calypso selection: configures a PoSelectionRequest with all the desired attributes to
              * make the selection and read additional information afterwards
              */
-            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
-                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                    new PoSelector.PoAidSelector(
-                            new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
-                            PoSelector.InvalidatedPo.REJECT),
-                    "AID: " + CalypsoClassicInfo.AID));
+            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
+                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                            new PoSelector.PoAidSelector(
+                                    new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
+                                    PoSelector.InvalidatedPo.REJECT)));
 
             /*
              * Prepare the reading order and keep the associated parser for later use once the
              * selection has been made.
              */
-            int readEnvironmentParserIndex = poSelectionRequest.prepareReadRecords(
-                    CalypsoClassicInfo.SFI_EnvironmentAndHolder,
+            poSelectionRequest.prepareReadRecords(CalypsoClassicInfo.SFI_EnvironmentAndHolder,
                     ReadDataStructure.SINGLE_RECORD_DATA, CalypsoClassicInfo.RECORD_NUMBER_1);
 
             /*
@@ -139,15 +137,18 @@ public class ExplicitSelectionAid_Pcsc {
                 CalypsoPo calypsoPo = (CalypsoPo) matchingSelection.getMatchingSe();
                 logger.info("The selection of the PO has succeeded.");
 
-                ReadRecordsRespPars readEnvironmentParser = (ReadRecordsRespPars) matchingSelection
-                        .getResponseParser(readEnvironmentParserIndex);
-
-                /* Retrieve the data read from the parser updated during the selection process */
-                byte environmentAndHolder[] = (readEnvironmentParser.getRecords())
-                        .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
-
-                /* Log the result */
-                logger.info("Environment file data: {}", ByteArrayUtil.toHex(environmentAndHolder));
+                // TODO To be updated with the new CalypsoPo API
+                // ReadRecordsRespPars readEnvironmentParser = (ReadRecordsRespPars)
+                // matchingSelection
+                // .getResponseParser(readEnvironmentParserIndex);
+                //
+                // /* Retrieve the data read from the parser updated during the selection process */
+                // byte environmentAndHolder[] = (readEnvironmentParser.getRecords())
+                // .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
+                //
+                // /* Log the result */
+                // logger.info("Environment file data: {}",
+                // ByteArrayUtil.toHex(environmentAndHolder));
 
                 /* Go on with the reading of the first record of the EventLog file */
                 logger.info(

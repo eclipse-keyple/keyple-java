@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.calypso.pc.Demo_CalypsoClassic;
 
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalArgumentException;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -33,8 +34,9 @@ public class Demo_CalypsoClassic_Stub {
      * @param args the program arguments
      * @throws InterruptedException thread exception
      */
-    public static void main(String[] args) throws InterruptedException,
-            KeyplePluginNotFoundException, KeyplePluginInstantiationException {
+    public static void main(String[] args)
+            throws InterruptedException, KeyplePluginNotFoundException,
+            KeyplePluginInstantiationException, CalypsoPoIllegalArgumentException {
         final Logger logger = LoggerFactory.getLogger(Demo_CalypsoClassic_Stub.class);
 
         /* Get the instance of the SeProxyService (Singleton pattern) */

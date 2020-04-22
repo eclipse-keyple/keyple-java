@@ -13,6 +13,7 @@ package org.eclipse.keyple.example.common.generic;
 
 
 
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalArgumentException;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
@@ -20,6 +21,7 @@ import org.eclipse.keyple.core.selection.*;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 
 /**
@@ -48,7 +50,8 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
         this.poReader = poReader;
     }
 
-    public AbstractDefaultSelectionsRequest prepareSeSelection() {
+    public AbstractDefaultSelectionsRequest prepareSeSelection()
+            throws CalypsoPoIllegalArgumentException {
 
         seSelection = new SeSelection();
 
@@ -61,11 +64,12 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
                     byte SFI_T2Usage = (byte) 0x1A;
                     byte SFI_T2Environment = (byte) 0x14;
 
-                    PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
-                            new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                    new PoSelector.PoAidSelector(
-                                            new SeSelector.AidSelector.IsoAid(HoplinkAID), null),
-                                    "Hoplink selector"));
+                    PoSelectionRequest poSelectionRequest =
+                            new PoSelectionRequest(
+                                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                                            new PoSelector.PoAidSelector(
+                                                    new SeSelector.AidSelector.IsoAid(HoplinkAID),
+                                                    null)));
 
                     poSelectionRequest.prepareReadRecords(SFI_T2Environment,
                             ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01);
@@ -85,7 +89,7 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
                     /* Add a generic selector */
                     seSelection.prepareSelection(new GenericSeSelectionRequest(
                             new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                                    new SeSelector.AtrFilter(".*"), null, "Default selector")));
+                                    new SeSelector.AtrFilter(".*"), null)));
                     break;
             }
         }
@@ -98,14 +102,14 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
      * {@link AbstractDefaultSelectionsResponse} showing the APDUs exchanges
      */
     @Override
-    public void processSeMatch(AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
+    public void processSeMatch(AbstractDefaultSelectionsResponse defaultSelectionsResponse)
+            throws KeypleException {
         SelectionsResult selectionsResult =
                 seSelection.processDefaultSelection(defaultSelectionsResponse);
         /* get the SE that matches one of the two selection targets */
         AbstractMatchingSe selectedSe = selectionsResult.getActiveSelection().getMatchingSe();
         if (selectedSe != null) {
-            System.out.println("Selector: " + selectedSe.getSelectionExtraInfo()
-                    + ", selection status = " + selectedSe.isSelected());
+            System.out.println("Selection status = " + selectedSe.isSelected());
         } else {
             System.out.println("No selection matched!");
         }

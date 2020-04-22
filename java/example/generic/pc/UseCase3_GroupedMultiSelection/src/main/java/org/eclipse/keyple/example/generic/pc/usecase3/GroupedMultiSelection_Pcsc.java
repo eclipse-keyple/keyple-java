@@ -70,24 +70,21 @@ public class GroupedMultiSelection_Pcsc {
                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                     new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(seAidPrefix), null,
                             SeSelector.AidSelector.FileOccurrence.FIRST,
-                            SeSelector.AidSelector.FileControlInformation.FCI),
-                    "Initial selection #1")));
+                            SeSelector.AidSelector.FileControlInformation.FCI))));
 
             /* next selection (2nd selection, later indexed 1) */
             seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector(
                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                     new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(seAidPrefix), null,
                             SeSelector.AidSelector.FileOccurrence.NEXT,
-                            SeSelector.AidSelector.FileControlInformation.FCI),
-                    "Next selection #2")));
+                            SeSelector.AidSelector.FileControlInformation.FCI))));
 
             /* next selection (3rd selection, later indexed 2) */
             seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector(
                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                     new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(seAidPrefix), null,
                             SeSelector.AidSelector.FileOccurrence.NEXT,
-                            SeSelector.AidSelector.FileControlInformation.FCI),
-                    "Next selection #3")));
+                            SeSelector.AidSelector.FileControlInformation.FCI))));
             /*
              * Actual SE communication: operate through a single request the SE selection
              */
@@ -99,8 +96,8 @@ public class GroupedMultiSelection_Pcsc {
                         .getMatchingSelections()) {
                     AbstractMatchingSe matchingSe = matchingSelection.getMatchingSe();
                     logger.info(
-                            "Selection status for selection \"{}\" (indexed {}): \n\t\tATR: {}\n\t\tFCI: {}",
-                            matchingSelection.getExtraInfo(), matchingSelection.getSelectionIndex(),
+                            "Selection status for selection (indexed {}): \n\t\tATR: {}\n\t\tFCI: {}",
+                            matchingSelection.getSelectionIndex(),
                             ByteArrayUtil
                                     .toHex(matchingSe.getSelectionStatus().getAtr().getBytes()),
                             ByteArrayUtil

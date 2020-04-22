@@ -15,7 +15,6 @@ import java.io.IOException;
 import org.eclipse.keyple.core.selection.*;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
@@ -33,7 +32,7 @@ public class SequentialMultiSelection_Pcsc {
             LoggerFactory.getLogger(SequentialMultiSelection_Pcsc.class);
 
     private static void doAndAnalyseSelection(SeReader seReader, SeSelection seSelection, int index)
-            throws KeypleReaderException {
+            throws KeypleException {
         SelectionsResult selectionsResult = seSelection.processExplicitSelection(seReader);
         if (selectionsResult.hasActiveSelection()) {
             AbstractMatchingSe matchingSe =
@@ -99,8 +98,7 @@ public class SequentialMultiSelection_Pcsc {
                     new SeSelector.AidSelector(
                             new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAidPrefix)),
                             null, SeSelector.AidSelector.FileOccurrence.FIRST,
-                            SeSelector.AidSelector.FileControlInformation.FCI),
-                    "Initial selection #1")));
+                            SeSelector.AidSelector.FileControlInformation.FCI))));
 
             /* Do the selection and display the result */
             doAndAnalyseSelection(seReader, seSelection, 1);
@@ -117,8 +115,7 @@ public class SequentialMultiSelection_Pcsc {
                     new SeSelector.AidSelector(
                             new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAidPrefix)),
                             null, SeSelector.AidSelector.FileOccurrence.NEXT,
-                            SeSelector.AidSelector.FileControlInformation.FCI),
-                    "Next selection #2")));
+                            SeSelector.AidSelector.FileControlInformation.FCI))));
 
             /* Do the selection and display the result */
             doAndAnalyseSelection(seReader, seSelection, 2);

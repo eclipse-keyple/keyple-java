@@ -15,7 +15,6 @@ package org.eclipse.keyple.example.calypso.pc.usecase3;
 import java.io.IOException;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
-import org.eclipse.keyple.calypso.command.po.parser.SelectFileRespPars;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
@@ -115,21 +114,19 @@ public class Rev1Selection_Pcsc {
              */
             PoSelectionRequest poSelectionRequest =
                     new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_B_PRIME,
-                            new PoSelector.PoAtrFilter(poAtrRegex), null, "ATR: " + poAtrRegex));
+                            new PoSelector.PoAtrFilter(poAtrRegex), null));
 
             /*
              * Prepare the selection of the DF RT.
              */
-            int selectFileParserIndex =
-                    poSelectionRequest.prepareSelectFile(ByteArrayUtil.fromHex(poDfRtPath));
+            poSelectionRequest.prepareSelectFile(ByteArrayUtil.fromHex(poDfRtPath));
 
             /*
              * Prepare the reading order and keep the associated parser for later use once the
              * selection has been made. We provide the expected record length since the REV1 PO need
              * it.
              */
-            int readEnvironmentParserIndex = poSelectionRequest.prepareReadRecords(
-                    CalypsoClassicInfo.SFI_EnvironmentAndHolder,
+            poSelectionRequest.prepareReadRecords(CalypsoClassicInfo.SFI_EnvironmentAndHolder,
                     ReadDataStructure.SINGLE_RECORD_DATA, CalypsoClassicInfo.RECORD_NUMBER_1, 29);
 
             /*
@@ -150,20 +147,23 @@ public class Rev1Selection_Pcsc {
                 CalypsoPo calypsoPo = (CalypsoPo) matchingSelection.getMatchingSe();
                 logger.info("The selection of the PO has succeeded.");
 
-                SelectFileRespPars selectFileRespPars = (SelectFileRespPars) matchingSelection
-                        .getResponseParser(selectFileParserIndex);
-                ReadRecordsRespPars readEnvironmentParser = (ReadRecordsRespPars) matchingSelection
-                        .getResponseParser(readEnvironmentParserIndex);
-
-                logger.info("DF RT FCI: {}",
-                        ByteArrayUtil.toHex(selectFileRespPars.getSelectionData()));
-
-                /* Retrieve the data read from the parser updated during the selection process */
-                byte environmentAndHolder[] = (readEnvironmentParser.getRecords())
-                        .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
-
-                /* Log the result */
-                logger.info("Environment file data: {}", ByteArrayUtil.toHex(environmentAndHolder));
+                // TODO To be updated with the new CalypsoPo API
+                // SelectFileRespPars selectFileRespPars = (SelectFileRespPars) matchingSelection
+                // .getResponseParser(selectFileParserIndex);
+                // ReadRecordsRespPars readEnvironmentParser = (ReadRecordsRespPars)
+                // matchingSelection
+                // .getResponseParser(readEnvironmentParserIndex);
+                //
+                // logger.info("DF RT FCI: {}",
+                // ByteArrayUtil.toHex(selectFileRespPars.getSelectionData()));
+                //
+                // /* Retrieve the data read from the parser updated during the selection process */
+                // byte environmentAndHolder[] = (readEnvironmentParser.getRecords())
+                // .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
+                //
+                // /* Log the result */
+                // logger.info("Environment file data: {}",
+                // ByteArrayUtil.toHex(environmentAndHolder));
 
                 /* Go on with the reading of the first record of the EventLog file */
                 logger.info(
