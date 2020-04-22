@@ -11,7 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.selection;
 
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 
 /**
@@ -44,23 +43,6 @@ public final class MatchingSelection {
      */
     public AbstractMatchingSe getMatchingSe() {
         return matchingSe;
-    }
-
-    /**
-     * Get the parser for the targeted response.
-     * 
-     * @param commandIndex the command index
-     * @return a parser object
-     */
-    public AbstractApduResponseParser getResponseParser(int commandIndex) {
-        return seSelectionRequest.getCommandParser(selectionSeResponse, commandIndex);
-    }
-
-    /**
-     * @return the info string provided with the Selector
-     */
-    public String getExtraInfo() {
-        return seSelectionRequest.getSeSelector().getExtraInfo();
     }
 
     /**

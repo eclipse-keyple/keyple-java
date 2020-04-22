@@ -37,11 +37,9 @@ public final class PoSelector extends SeSelector {
      * @param seProtocol the SE communication protocol
      * @param poAtrFilter the ATR filter
      * @param poAidSelector the AID selection data
-     * @param extraInfo information string (to be printed in logs)
      */
-    public PoSelector(SeProtocol seProtocol, PoAtrFilter poAtrFilter, PoAidSelector poAidSelector,
-            String extraInfo) {
-        super(seProtocol, poAtrFilter, poAidSelector, extraInfo);
+    public PoSelector(SeProtocol seProtocol, PoAtrFilter poAtrFilter, PoAidSelector poAidSelector) {
+        super(seProtocol, poAtrFilter, poAidSelector);
     }
 
     /**

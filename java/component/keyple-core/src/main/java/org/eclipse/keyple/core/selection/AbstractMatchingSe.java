@@ -23,17 +23,14 @@ public abstract class AbstractMatchingSe {
     private final SeResponse selectionResponse;
     private final TransmissionMode transmissionMode;
     private final SelectionStatus selectionStatus;
-    private final String selectionExtraInfo;
 
     /**
      * Constructor.
      * 
      * @param selectionResponse the response from the SE
      * @param transmissionMode the transmission mode, contact or contactless
-     * @param extraInfo information string
      */
-    protected AbstractMatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode,
-            String extraInfo) {
+    protected AbstractMatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode) {
         this.selectionResponse = selectionResponse;
         this.transmissionMode = transmissionMode;
         if (selectionResponse != null) {
@@ -41,7 +38,6 @@ public abstract class AbstractMatchingSe {
         } else {
             this.selectionStatus = null;
         }
-        this.selectionExtraInfo = extraInfo;
     }
 
     /**
@@ -72,12 +68,5 @@ public abstract class AbstractMatchingSe {
      */
     public TransmissionMode getTransmissionMode() {
         return transmissionMode;
-    }
-
-    /**
-     * @return the selection extra info string
-     */
-    public String getSelectionExtraInfo() {
-        return selectionExtraInfo;
     }
 }

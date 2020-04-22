@@ -16,12 +16,13 @@ package org.eclipse.keyple.calypso.transaction;
 import java.util.*;
 import org.eclipse.keyple.calypso.SelectFileControl;
 import org.eclipse.keyple.calypso.command.PoClass;
+import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.SelectFileCmdBuild;
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalArgumentException;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
-import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
-import org.eclipse.keyple.calypso.command.po.parser.SelectFileRespPars;
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronisedExchangesException;
+import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
@@ -34,14 +35,6 @@ import org.slf4j.LoggerFactory;
  */
 public final class PoSelectionRequest extends AbstractSeSelectionRequest {
     private static final Logger logger = LoggerFactory.getLogger(PoSelectionRequest.class);
-
-    private int commandIndex;
-    private List<Class<? extends AbstractApduResponseParser>> parsingClassList =
-            new ArrayList<Class<? extends AbstractApduResponseParser>>();
-    private Map<Integer, Byte> readRecordFirstRecordNumberMap = new HashMap<Integer, Byte>();
-    private Map<Integer, ReadDataStructure> readRecordDataStructureMap =
-            new HashMap<Integer, ReadDataStructure>();
-
     private final PoClass poClass;
 
     /**
@@ -52,8 +45,6 @@ public final class PoSelectionRequest extends AbstractSeSelectionRequest {
     public PoSelectionRequest(PoSelector poSelector) {
 
         super(poSelector);
-
-        commandIndex = 0;
 
         /* No AID selector for a legacy Calypso PO */
         if (seSelector.getAidSelector() == null) {
@@ -70,18 +61,14 @@ public final class PoSelectionRequest extends AbstractSeSelectionRequest {
     /**
      * Prepare one or more read record ApduRequest based on the target revision to be executed
      * following the selection.
-     * <p>
-     * In the case of a mixed target (rev2 or rev3) two commands are prepared. The first one in rev3
-     * format, the second one in rev2 format (mainly class byte)
-     * 
+     *
      * @param sfi the sfi top select
      * @param readDataStructureEnum read mode enum to indicate a SINGLE, MULTIPLE or COUNTER read
      * @param firstRecordNumber the record number to read (or first record to read in case of
      *        several records)
      * @param expectedLength the expected length of the record(s)
-     * @return the command index indicating the order of the command in the command list
      */
-    private int prepareReadRecordsCmdInternal(byte sfi, ReadDataStructure readDataStructureEnum,
+    private void prepareReadRecordsCmdInternal(byte sfi, ReadDataStructure readDataStructureEnum,
             byte firstRecordNumber, int expectedLength) {
 
         /*
@@ -91,18 +78,8 @@ public final class PoSelectionRequest extends AbstractSeSelectionRequest {
         boolean readJustOneRecord =
                 !(readDataStructureEnum == ReadDataStructure.MULTIPLE_RECORD_DATA);
 
-        addApduRequest(new ReadRecordsCmdBuild(poClass, sfi, readDataStructureEnum,
-                firstRecordNumber, readJustOneRecord, (byte) expectedLength).getApduRequest());
-
-        /* keep read record parameters in the dedicated Maps */
-        readRecordFirstRecordNumberMap.put(commandIndex, firstRecordNumber);
-        readRecordDataStructureMap.put(commandIndex, readDataStructureEnum);
-
-        /* set the parser for the response of this command */
-        parsingClassList.add(ReadRecordsRespPars.class);
-
-        /* return and post increment the command index */
-        return commandIndex++;
+        addCommandBuilder(new ReadRecordsCmdBuild(poClass, sfi, readDataStructureEnum,
+                firstRecordNumber, readJustOneRecord, (byte) expectedLength));
     }
 
     /**
@@ -110,24 +87,20 @@ public final class PoSelectionRequest extends AbstractSeSelectionRequest {
      * following the selection.
      * <p>
      * The expected length is provided and its value is checked between 1 and 250.
-     * <p>
-     * In the case of a mixed target (rev2 or rev3) two commands are prepared. The first one in rev3
-     * format, the second one in rev2 format (mainly class byte)
      *
      * @param sfi the sfi top select
      * @param readDataStructureEnum read mode enum to indicate a SINGLE, MULTIPLE or COUNTER read
      * @param firstRecordNumber the record number to read (or first record to read in case of
      *        several records)
      * @param expectedLength the expected length of the record(s)
-     * @return the command index indicating the order of the command in the command list
      */
-    public int prepareReadRecords(byte sfi, ReadDataStructure readDataStructureEnum,
+    public void prepareReadRecords(byte sfi, ReadDataStructure readDataStructureEnum,
             byte firstRecordNumber, int expectedLength) {
         if (expectedLength < 1 || expectedLength > 250) {
             throw new IllegalArgumentException("Bad length.");
         }
 
-        return prepareReadRecordsCmdInternal(sfi, readDataStructureEnum, firstRecordNumber,
+        prepareReadRecordsCmdInternal(sfi, readDataStructureEnum, firstRecordNumber,
                 expectedLength);
     }
 
@@ -135,97 +108,45 @@ public final class PoSelectionRequest extends AbstractSeSelectionRequest {
      * Prepare one or more read record ApduRequest based on the target revision to be executed
      * following the selection. No expected length is specified, the record output length is handled
      * automatically.
-     * <p>
-     * In the case of a mixed target (rev2 or rev3) two commands are prepared. The first one in rev3
-     * format, the second one in rev2 format (mainly class byte)
      *
      * @param sfi the sfi top select
      * @param readDataStructureEnum read mode enum to indicate a SINGLE, MULTIPLE or COUNTER read
      * @param firstRecordNumber the record number to read (or first record to read in case of
      *        several records)
-     * @return the command index indicating the order of the command in the command list
+     * @throws CalypsoPoIllegalArgumentException if one of the arguments is incorrect
      */
-    public int prepareReadRecords(byte sfi, ReadDataStructure readDataStructureEnum,
-            byte firstRecordNumber) {
+    public void prepareReadRecords(byte sfi, ReadDataStructure readDataStructureEnum,
+            byte firstRecordNumber) throws CalypsoPoIllegalArgumentException {
         if (seSelector.getSeProtocol() == SeCommonProtocols.PROTOCOL_ISO7816_3) {
-            throw new IllegalArgumentException(
-                    "In contacts mode, the expected length must be specified.");
+            throw new CalypsoPoIllegalArgumentException(
+                    "In contacts mode, the expected length must be specified.",
+                    CalypsoPoCommand.READ_RECORDS);
         }
-        return prepareReadRecordsCmdInternal(sfi, readDataStructureEnum, firstRecordNumber, 0);
+        prepareReadRecordsCmdInternal(sfi, readDataStructureEnum, firstRecordNumber, 0);
     }
 
     /**
      * Prepare a select file ApduRequest to be executed following the selection.
-     * <p>
-     * 
+     *
      * @param path path from the CURRENT_DF (CURRENT_DF identifier excluded)
-     * @return the command index indicating the order of the command in the command list
      */
-    public int prepareSelectFile(byte[] path) {
-        addApduRequest(new SelectFileCmdBuild(poClass, path).getApduRequest());
+    public void prepareSelectFile(byte[] path) {
+        addCommandBuilder(new SelectFileCmdBuild(poClass, path));
         if (logger.isTraceEnabled()) {
             logger.trace("Select File: PATH = {}", ByteArrayUtil.toHex(path));
         }
-
-        /* set the parser for the response of this command */
-        parsingClassList.add(SelectFileRespPars.class);
-
-        /* return and post increment the command index */
-        return commandIndex++;
     }
 
     /**
      * Prepare a select file ApduRequest to be executed following the selection.
-     * <p>
      *
      * @param selectControl provides the navigation case: FIRST, NEXT or CURRENT
-     * @return the command index indicating the order of the command in the command list
      */
-    public int prepareSelectFile(SelectFileControl selectControl) {
-        addApduRequest(new SelectFileCmdBuild(poClass, selectControl).getApduRequest());
+    public void prepareSelectFile(SelectFileControl selectControl) {
+        addCommandBuilder(new SelectFileCmdBuild(poClass, selectControl));
         if (logger.isTraceEnabled()) {
             logger.trace("Navigate: CONTROL = {}", selectControl);
         }
-
-        /* set the parser for the response of this command */
-        parsingClassList.add(SelectFileRespPars.class);
-
-        /* return and post increment the command index */
-        return commandIndex++;
-    }
-
-    /**
-     * Return the parser corresponding to the command whose index is provided.
-     * 
-     * @param seResponse the received SeResponse containing the commands raw responses
-     * @param commandIndex the command index
-     * @return a parser of the type matching the command
-     */
-    @Override
-    public AbstractApduResponseParser getCommandParser(SeResponse seResponse, int commandIndex) {
-        if (commandIndex >= parsingClassList.size()) {
-            throw new IllegalArgumentException(
-                    "Incorrect command index while getting command parser.");
-        }
-        if (seResponse.getApduResponses().size() != parsingClassList.size()) {
-            throw new IllegalArgumentException(
-                    "The number of responses and commands doesn't match.");
-        }
-        Class<? extends AbstractApduResponseParser> parsingClass =
-                parsingClassList.get(commandIndex);
-        AbstractApduResponseParser parser;
-        // TODO Update this with the new builder/parser API
-        // if (parsingClass == ReadRecordsRespPars.class) {
-        // parser = new ReadRecordsRespPars(seResponse.getApduResponses().get(commandIndex),
-        // readRecordDataStructureMap.get(commandIndex),
-        // readRecordFirstRecordNumberMap.get(commandIndex));
-        // } else if (parsingClass == SelectFileRespPars.class) {
-        // parser = new SelectFileRespPars(seResponse.getApduResponses().get(commandIndex));
-        // } else {
-        // throw new IllegalArgumentException("No parser available for this command.");
-        // }
-        // return parser;
-        return null;
     }
 
     /**
@@ -233,10 +154,27 @@ public final class PoSelectionRequest extends AbstractSeSelectionRequest {
      * 
      * @param seResponse the SE response received
      * @return a {@link CalypsoPo}
+     * @throws CalypsoDesynchronisedExchangesException if the number of responses is different from
+     *         the number of requests
      */
     @Override
-    protected CalypsoPo parse(SeResponse seResponse) {
-        return new CalypsoPo(seResponse, seSelector.getSeProtocol().getTransmissionMode(),
-                seSelector.getExtraInfo());
+    protected CalypsoPo parse(SeResponse seResponse)
+            throws CalypsoDesynchronisedExchangesException {
+
+        List<AbstractApduCommandBuilder> commandBuilders = getCommandBuilders();
+
+        if (commandBuilders.size() != seResponse.getApduResponses().size()) {
+            throw new CalypsoDesynchronisedExchangesException(
+                    "Mismatch in the number of requests/responses");
+        }
+
+        CalypsoPo calypsoPo =
+                new CalypsoPo(seResponse, seSelector.getSeProtocol().getTransmissionMode());
+
+        for (AbstractApduCommandBuilder commandBuilder : commandBuilders) {
+            // TODO update CalypsoPo with the received data
+        }
+
+        return calypsoPo;
     }
 }

@@ -29,7 +29,6 @@ public class SeSelector {
     private final SeProtocol seProtocol;
     private final AidSelector aidSelector;
     private final AtrFilter atrFilter;
-    private final String extraInfo;
 
     /**
      * Static nested class to hold the data elements used to perform an AID based selection
@@ -139,6 +138,11 @@ public class SeSelector {
                 }
                 return true;
             }
+
+            @Override
+            public String toString() {
+                return "IsoAid{" + "value=" + ByteArrayUtil.toHex(value) + '}';
+            }
         }
 
         private FileOccurrence fileOccurrence = FileOccurrence.FIRST;
@@ -241,9 +245,9 @@ public class SeSelector {
          */
         @Override
         public String toString() {
-            return String.format("AID:%s, OCCURRENCE:%s",
-                    aidToSelect == null ? "null" : ByteArrayUtil.toHex(aidToSelect.getValue()),
-                    fileOccurrence);
+            return "AidSelector{" + "fileOccurrence=" + fileOccurrence + ", fileControlInformation="
+                    + fileControlInformation + ", aidToSelect=" + aidToSelect
+                    + ", successfulSelectionStatusCodes=" + successfulSelectionStatusCodes + '}';
         }
     }
 
@@ -310,7 +314,7 @@ public class SeSelector {
          */
         @Override
         public String toString() {
-            return String.format("ATR regex:%s", atrRegex.length() != 0 ? atrRegex : "empty");
+            return "AtrFilter{" + "atrRegex='" + atrRegex + '\'' + '}';
         }
     }
 
@@ -339,23 +343,16 @@ public class SeSelector {
      * @param seProtocol the SE communication protocol
      * @param atrFilter the ATR filter
      * @param aidSelector the AID selection data
-     * @param extraInfo information string (to be printed in logs)
      */
-    public SeSelector(SeProtocol seProtocol, AtrFilter atrFilter, AidSelector aidSelector,
-            String extraInfo) {
+    public SeSelector(SeProtocol seProtocol, AtrFilter atrFilter, AidSelector aidSelector) {
         this.seProtocol = seProtocol;
         this.aidSelector = aidSelector;
         this.atrFilter = atrFilter;
-        if (extraInfo != null) {
-            this.extraInfo = extraInfo;
-        } else {
-            this.extraInfo = "";
-        }
         if (logger.isTraceEnabled()) {
             logger.trace("Selection data: AID = {}, ATRREGEX = {}, EXTRAINFO = {}",
                     (this.aidSelector == null || this.aidSelector.getAidToSelect() == null) ? "null"
                             : ByteArrayUtil.toHex(this.aidSelector.getAidToSelect().getValue()),
-                    this.atrFilter == null ? "null" : this.atrFilter.getAtrRegex(), extraInfo);
+                    this.atrFilter == null ? "null" : this.atrFilter.getAtrRegex());
         }
     }
 
@@ -386,19 +383,9 @@ public class SeSelector {
         return aidSelector;
     }
 
-    /**
-     * Gets the information string
-     *
-     * @return a string to be printed in logs
-     */
-    public final String getExtraInfo() {
-        return extraInfo;
-    }
-
     @Override
     public String toString() {
-        return "SeSelector: AID_SELECTOR = "
-                + (aidSelector == null ? "null" : aidSelector.toString()) + ", ATR_FILTER " + "= "
-                + (atrFilter == null ? "null" : atrFilter.toString());
+        return "SeSelector{" + "seProtocol=" + seProtocol + ", aidSelector=" + aidSelector
+                + ", atrFilter=" + atrFilter + '}';
     }
 }

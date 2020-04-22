@@ -28,10 +28,9 @@ public class SamSelector extends SeSelector {
      * @param samRevision the expected SAM revision (subtype)
      * @param serialNumber the expected serial number as an hex string (padded with 0 on the left).
      *        Can be a sub regex (e.g. "AEC0....") or null to allow any serial number.
-     * @param extraInfo information string (to be printed in logs)
      */
-    public SamSelector(SamRevision samRevision, String serialNumber, String extraInfo) {
-        super(SeCommonProtocols.PROTOCOL_ISO7816_3, new AtrFilter(null), null, extraInfo);
+    public SamSelector(SamRevision samRevision, String serialNumber) {
+        super(SeCommonProtocols.PROTOCOL_ISO7816_3, new AtrFilter(null), null);
         String atrRegex;
         String snRegex;
         /* check if serialNumber is defined */
@@ -72,9 +71,8 @@ public class SamSelector extends SeSelector {
      * @param samIdentifier the expected SAM identification: revision (subtype), serial number as an
      *        hex string (padded with 0 on the left; can be a sub regex e.g. "AEC0....") and
      *        groupReference (not needed here).
-     * @param extraInfo information string (to be printed in logs)
      */
-    public SamSelector(SamIdentifier samIdentifier, String extraInfo) {
-        this(samIdentifier.getSamRevision(), samIdentifier.getSerialNumber(), extraInfo);
+    public SamSelector(SamIdentifier samIdentifier) {
+        this(samIdentifier.getSamRevision(), samIdentifier.getSerialNumber());
     }
 }
