@@ -15,7 +15,6 @@ import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_calypso_example.eventRecyclerView
 import kotlinx.android.synthetic.main.activity_calypso_example.toolbar
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure
-import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest
 import org.eclipse.keyple.calypso.transaction.PoSelector
 import org.eclipse.keyple.core.selection.SeSelection
@@ -64,8 +63,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                             PoSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
                                     PoSelector.PoAidSelector(
                                             SeSelector.AidSelector.IsoAid(poAid),
-                                            PoSelector.InvalidatedPo.REJECT),
-                                    "AID: $poAid"))
+                                            PoSelector.InvalidatedPo.REJECT)))
                     seSelection.prepareSelection(poSelectionRequest)
 
                     try {
@@ -123,8 +121,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                             PoSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
                                     PoSelector.PoAidSelector(
                                             SeSelector.AidSelector.IsoAid(poAid),
-                                            PoSelector.InvalidatedPo.REJECT),
-                                    "AID: $poAid"))
+                                            PoSelector.InvalidatedPo.REJECT)))
 
                     /*
                      * Prepare the reading order and keep the associated parser for later use once
@@ -159,26 +156,26 @@ class CalypsoExamplesActivity : ExamplesActivity() {
 
                             // val calypsoPo = matchingSelection.matchingSe as CalypsoPo
                             addResultEvent("Selection succeeded for P0 with aid $poAid")
-
-                            val readEnvironmentParser = matchingSelection
-                                    .getResponseParser(readEnvironmentParserIndex) as ReadRecordsRespPars
-
-                            /*
-                             * Retrieve the data read from the parser updated during the selection
-                             * process (Environment)
-                             */
-                            val environmentAndHolder = readEnvironmentParser.records[1]
-                            addResultEvent("Environment file data: ${ByteArrayUtil.toHex(environmentAndHolder)}")
-
-                            val readTransportEventParser = matchingSelection
-                                    .getResponseParser(readTransportEventParserIndex) as ReadRecordsRespPars
-
-                            /*
-                             * Retrieve the data read from the parser updated during the selection
-                             * process (Usage)
-                             */
-                            val transportEvents = readTransportEventParser.records[1]
-                            addResultEvent("Transport Event file data: ${ByteArrayUtil.toHex(transportEvents)}")
+// TODO Review this code with the new 0.9 API
+//                            val readEnvironmentParser = matchingSelection
+//                                    .getResponseParser(readEnvironmentParserIndex) as ReadRecordsRespPars
+//
+//                            /*
+//                             * Retrieve the data read from the parser updated during the selection
+//                             * process (Environment)
+//                             */
+//                            val environmentAndHolder = readEnvironmentParser.records[1]
+//                            addResultEvent("Environment file data: ${ByteArrayUtil.toHex(environmentAndHolder)}")
+//
+//                            val readTransportEventParser = matchingSelection
+//                                    .getResponseParser(readTransportEventParserIndex) as ReadRecordsRespPars
+//
+//                            /*
+//                             * Retrieve the data read from the parser updated during the selection
+//                             * process (Usage)
+//                             */
+//                            val transportEvents = readTransportEventParser.records[1]
+//                            addResultEvent("Transport Event file data: ${ByteArrayUtil.toHex(transportEvents)}")
                         } else {
                             addResultEvent("The selection of the PO Failed")
                         }
@@ -216,8 +213,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                             PoSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
                                     PoSelector.PoAidSelector(
                                             SeSelector.AidSelector.IsoAid(poAid),
-                                            PoSelector.InvalidatedPo.REJECT),
-                                    "AID: $poAid"))
+                                            PoSelector.InvalidatedPo.REJECT)))
 
                     /*
                      * Prepare the reading order and keep the associated parser for later use once
@@ -251,26 +247,26 @@ class CalypsoExamplesActivity : ExamplesActivity() {
 
                             // val calypsoPo = matchingSelection.matchingSe as CalypsoPo
                             addResultEvent("Selection succeeded for P0 with aid $poAid")
-
-                            val readEnvironmentParser = matchingSelection
-                                    .getResponseParser(readEnvironmentParserIndex) as ReadRecordsRespPars
-
-                            /*
-                             * Retrieve the data read from the parser updated during the selection
-                             * process (Environment)
-                             */
-                            val environmentAndHolder = readEnvironmentParser.records[1]
-                            addResultEvent("Environment file data: ${ByteArrayUtil.toHex(environmentAndHolder)}")
-
-                            val readUsageParser = matchingSelection
-                                    .getResponseParser(readUsageParserIndex) as ReadRecordsRespPars
-
-                            /*
-                             * Retrieve the data read from the parser updated during the selection
-                             * process (Usage)
-                             */
-                            val transportEvents = readUsageParser.records[1]
-                            addResultEvent("Transport Event file data: ${ByteArrayUtil.toHex(transportEvents)}")
+// TODO Review this code with the new 0.9 API
+//                            val readEnvironmentParser = matchingSelection
+//                                    .getResponseParser(readEnvironmentParserIndex) as ReadRecordsRespPars
+//
+//                            /*
+//                             * Retrieve the data read from the parser updated during the selection
+//                             * process (Environment)
+//                             */
+//                            val environmentAndHolder = readEnvironmentParser.records[1]
+//                            addResultEvent("Environment file data: ${ByteArrayUtil.toHex(environmentAndHolder)}")
+//
+//                            val readUsageParser = matchingSelection
+//                                    .getResponseParser(readUsageParserIndex) as ReadRecordsRespPars
+//
+//                            /*
+//                             * Retrieve the data read from the parser updated during the selection
+//                             * process (Usage)
+//                             */
+//                            val transportEvents = readUsageParser.records[1]
+//                            addResultEvent("Transport Event file data: ${ByteArrayUtil.toHex(transportEvents)}")
                         } else {
                             addResultEvent("The selection of the PO Failed")
                         }

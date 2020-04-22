@@ -99,7 +99,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                                     SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix), null,
                                             SeSelector.AidSelector.FileOccurrence.FIRST,
-                                            SeSelector.AidSelector.FileControlInformation.FCI), "Initial selection #1")))
+                                            SeSelector.AidSelector.FileControlInformation.FCI))))
 
             /* Do the selection and display the result */
             addActionEvent("FIRST MATCH Calypso PO selection for prefix: $seAidPrefix")
@@ -118,7 +118,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                                     SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix), null,
                                             SeSelector.AidSelector.FileOccurrence.NEXT,
-                                            SeSelector.AidSelector.FileControlInformation.FCI), "Initial selection #2")))
+                                            SeSelector.AidSelector.FileControlInformation.FCI))))
 
             /* Do the selection and display the result */
             addActionEvent("NEXT MATCH Calypso PO selection for prefix: $seAidPrefix")
@@ -135,7 +135,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             if (selectionsResult.hasActiveSelection()) {
                 with(selectionsResult.getMatchingSelection(0)) {
                     val matchingSe = this.matchingSe
-                    addResultEvent("Selection status for selection ${this.extraInfo} " +
+                    addResultEvent("Selection status for selection " +
                             "(indexed ${this.selectionIndex}): \n\t\t" +
                             "ATR: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.atr.bytes)}\n\t\t" +
                             "FCI: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.fci.bytes)}")
@@ -168,7 +168,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                                     SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix), null,
                                             SeSelector.AidSelector.FileOccurrence.FIRST,
-                                            SeSelector.AidSelector.FileControlInformation.FCI), "Initial selection #1")))
+                                            SeSelector.AidSelector.FileControlInformation.FCI))))
 
             /* next selection (2nd selection, later indexed 1) */
             seSelection.prepareSelection(
@@ -177,7 +177,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                                     SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix), null,
                                             SeSelector.AidSelector.FileOccurrence.NEXT,
-                                            SeSelector.AidSelector.FileControlInformation.FCI), "Initial selection #2")))
+                                            SeSelector.AidSelector.FileControlInformation.FCI))))
 
             /* next selection (3rd selection, later indexed 2) */
             seSelection.prepareSelection(
@@ -186,7 +186,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                                     SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix), null,
                                             SeSelector.AidSelector.FileOccurrence.NEXT,
-                                            SeSelector.AidSelector.FileControlInformation.FCI), "Initial selection #3")))
+                                            SeSelector.AidSelector.FileControlInformation.FCI))))
 
             addActionEvent("Calypso PO selection for prefix: $seAidPrefix")
 
@@ -199,7 +199,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                 if (selectionResult.matchingSelections.size > 0) {
                     selectionResult.matchingSelections.forEach {
                         val matchingSe = it.matchingSe
-                        addResultEvent("Selection status for selection ${it.extraInfo} " +
+                        addResultEvent("Selection status for selection " +
                                 "(indexed ${it.selectionIndex}): \n\t\t" +
                                 "ATR: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.atr.bytes)}\n\t\t" +
                                 "FCI: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.fci.bytes)}")
@@ -243,8 +243,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
         val seSelector = GenericSeSelectionRequest(SeSelector(
                 SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                 SeSelector.AidSelector(
-                        SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(aid)), null),
-                "AID: $aid"))
+                        SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(aid)), null)))
 
         /*
         * Add the selection case to the current selection (we could have added other cases here)
@@ -336,8 +335,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                     SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
                             null,
                             SeSelector.AidSelector(
-                                    SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(aid)), null),
-                            "AID: $aid"))
+                                    SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(aid)), null)))
 
             /**
              * Prepare Selection
@@ -392,10 +390,9 @@ class CoreExamplesActivity : AbstractExampleActivity() {
         override fun parse(seResponse: SeResponse): AbstractMatchingSe {
             class GenericMatchingSe(
                 selectionResponse: SeResponse,
-                transmissionMode: TransmissionMode,
-                extraInfo: String
-            ) : AbstractMatchingSe(selectionResponse, transmissionMode, extraInfo)
-            return GenericMatchingSe(seResponse, transmissionMode, "Generic Matching SE")
+                transmissionMode: TransmissionMode
+            ) : AbstractMatchingSe(selectionResponse, transmissionMode)
+            return GenericMatchingSe(seResponse, transmissionMode)
         }
     }
 }
