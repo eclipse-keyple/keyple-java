@@ -15,7 +15,6 @@ import java.util.SortedSet;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -53,6 +52,7 @@ public class AbstractPluginTest extends CoreBaseTest {
     /**
      * Test if readers list does not send ConcurrentModificationException
      * https://keyple.atlassian.net/browse/KEYP-195
+     * 
      * @throws Throwable
      */
     @Test
@@ -61,26 +61,27 @@ public class AbstractPluginTest extends CoreBaseTest {
         SortedSet<SeReader> readers = plugin.getReaders();
         final CountDownLatch lock = new CountDownLatch(10);
 
-        addReaderThread(readers, 10,lock);
-        addReaderThread(readers, 10,lock);
-        removeReaderThread(readers, 10,lock);
+        addReaderThread(readers, 10, lock);
+        addReaderThread(readers, 10, lock);
+        removeReaderThread(readers, 10, lock);
         listReaders(readers, 10, lock);
-        addReaderThread(readers, 10,lock);
-        removeReaderThread(readers, 10,lock);
+        addReaderThread(readers, 10, lock);
+        removeReaderThread(readers, 10, lock);
         listReaders(readers, 10, lock);
-        removeReaderThread(readers, 10,lock);
+        removeReaderThread(readers, 10, lock);
         listReaders(readers, 10, lock);
-        removeReaderThread(readers, 10,lock);
+        removeReaderThread(readers, 10, lock);
 
-        //wait for all thread to finish with timeout
+        // wait for all thread to finish with timeout
         lock.await(2, TimeUnit.SECONDS);
 
-        //if all thread finished correctly, lock count should be 0
+        // if all thread finished correctly, lock count should be 0
         Assert.assertEquals(0, lock.getCount());
     }
 
 
-    public static void listReaders(final SortedSet<SeReader> readers, final int N, final CountDownLatch lock) {
+    public static void listReaders(final SortedSet<SeReader> readers, final int N,
+            final CountDownLatch lock) {
         Thread thread = new Thread() {
             public void run() {
                 for (int i = 0; i < N; i++) {
@@ -94,7 +95,7 @@ public class AbstractPluginTest extends CoreBaseTest {
                         e.printStackTrace();
                     }
                 }
-                //if no error, count down latch
+                // if no error, count down latch
                 lock.countDown();
             }
         };
@@ -102,14 +103,15 @@ public class AbstractPluginTest extends CoreBaseTest {
     }
 
 
-    public static void removeReaderThread(final SortedSet<SeReader> readers, final int N, final CountDownLatch lock) {
+    public static void removeReaderThread(final SortedSet<SeReader> readers, final int N,
+            final CountDownLatch lock) {
         Thread thread = new Thread() {
             public void run() {
                 for (int i = 0; i < N; i++) {
                     if (readers.size() > 0) {
                         readers.remove(readers.first());
                         logger.debug("readers: {}, remove first reader", readers.size());
-                    }else{
+                    } else {
                         logger.debug("readers: {}, list is empty", readers.size());
                     }
                     try {
@@ -118,14 +120,15 @@ public class AbstractPluginTest extends CoreBaseTest {
                         e.printStackTrace();
                     }
                 }
-                //if no error, count down latch
+                // if no error, count down latch
                 lock.countDown();
             }
         };
         thread.start();
     }
 
-    public static void addReaderThread(final SortedSet<SeReader> readers, final int N, final CountDownLatch lock) {
+    public static void addReaderThread(final SortedSet<SeReader> readers, final int N,
+            final CountDownLatch lock) {
         Thread thread = new Thread() {
             public void run() {
                 for (int i = 0; i < N; i++) {
@@ -140,7 +143,7 @@ public class AbstractPluginTest extends CoreBaseTest {
                         e.printStackTrace();
                     }
                 }
-                //if no error, count down latch
+                // if no error, count down latch
                 lock.countDown();
             }
         };
