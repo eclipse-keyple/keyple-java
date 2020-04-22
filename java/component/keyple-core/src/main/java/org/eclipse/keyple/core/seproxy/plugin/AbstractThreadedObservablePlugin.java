@@ -25,21 +25,12 @@ import org.slf4j.LoggerFactory;
  * The {@link AbstractThreadedObservablePlugin} class provides the means to observe a plugin
  * (insertion/removal of readers) using a monitoring thread.
  */
-public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin
-        implements ObservablePlugin {
+public abstract class AbstractThreadedObservablePlugin extends AbstractObservablePlugin {
     private static final Logger logger =
             LoggerFactory.getLogger(AbstractThreadedObservablePlugin.class);
 
-    /* The observers of this object */
-    private List<ObservablePlugin.PluginObserver> observers;
-    /*
-     * this object will be used to synchronize the access to the observers list in order to be
-     * thread safe
-     */
-    private final Object sync = new Object();
-
     /**
-     * Instantiates a observable plugin.
+     * Instantiates a threaded observable plugin.
      *
      * @param name name of the plugin
      */
@@ -70,30 +61,14 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin
     /**
      * Add a plugin observer.
      * <p>
-     * The observer will receive all the events produced by this plugin (reader insertion, removal,
-     * etc.)
-     * <p>
-     * A thread is created if it does not already exist (when the first observer is added).
+     * Overrides the method defined in {@link AbstractObservablePlugin}, a thread is created if it
+     * does not already exist (when the first observer is added).
      *
      * @param observer the observer object
      */
     @Override
     public final void addObserver(final ObservablePlugin.PluginObserver observer) {
-        if (observer == null) {
-            return;
-        }
-
-        if (logger.isTraceEnabled()) {
-            logger.trace("Adding '{}' as an observer of '{}'.", observer.getClass().getSimpleName(),
-                    getName());
-        }
-
-        synchronized (sync) {
-            if (observers == null) {
-                observers = new ArrayList<PluginObserver>(1);
-            }
-            observers.add(observer);
-        }
+        super.addObserver(observer);
         if (countObservers() == 1) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Start monitoring the plugin {}", this.getName());
@@ -106,25 +81,14 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin
     /**
      * Remove a plugin observer.
      * <p>
-     * The observer will do not receive any of the events produced by this plugin.
-     * <p>
-     * The monitoring thread is ended when the last observer is removed.
+     * Overrides the method defined in {@link AbstractObservablePlugin}, the monitoring thread is
+     * ended when the last observer is removed.
      *
      * @param observer the observer object
      */
     @Override
     public final void removeObserver(final ObservablePlugin.PluginObserver observer) {
-        if (observer == null) {
-            return;
-        }
-        if (logger.isTraceEnabled()) {
-            logger.trace("[{}] Deleting a plugin observer", getName());
-        }
-        synchronized (sync) {
-            if (observers != null) {
-                observers.remove(observer);
-            }
-        }
+        super.removeObserver(observer);
         if (countObservers() == 0) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Stop the plugin monitoring.");
@@ -137,51 +101,18 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin
 
     /**
      * Remove all observers at once
+     * <p>
+     * Overrides the method defined in {@link AbstractObservablePlugin}, the thread is ended.
      */
     @Deprecated // will change in a later version
+    @Override
     public final void clearObservers() {
-        if (observers != null) {
-            this.observers.clear();
-        }
+        super.clearObservers();
         if (thread != null) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Stop the plugin monitoring.");
             }
             thread.end();
-        }
-    }
-
-    /**
-     * @return the number of observers
-     */
-    public final int countObservers() {
-        return observers == null ? 0 : observers.size();
-    }
-
-    /**
-     * This method shall be called only from a SE Proxy plugin implementing AbstractPlugin. Push a
-     * PluginEvent of the selected AbstractPlugin to its registered Observer.
-     *
-     * @param event the event
-     */
-    @Override
-    public final void notifyObservers(final PluginEvent event) {
-
-        if (logger.isTraceEnabled()) {
-            logger.trace("[{}] Notifying a plugin event to {} observers. EVENTNAME = {} ",
-                    this.getName(), countObservers(), event.getEventType().getName());
-        }
-        List<PluginObserver> observersCopy;
-
-        synchronized (sync) {
-            if (observers == null) {
-                return;
-            }
-            observersCopy = new ArrayList<PluginObserver>(observers);
-        }
-
-        for (ObservablePlugin.PluginObserver observer : observersCopy) {
-            observer.update(event);
         }
     }
 

@@ -13,13 +13,12 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import java.util.*;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractObservablePlugin;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTxEngine;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
@@ -31,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * Remote SE Plugin Creates a virtual reader when a remote readers connect Manages the dispatch of
  * events received from remote readers
  */
-class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
+class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlugin {
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteSePluginImpl.class);
     public static final String DEFAULT_PLUGIN_NAME = "RemoteSePlugin";
@@ -42,14 +41,6 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
     private final VirtualReaderSessionFactory sessionManager;
     protected final DtoSender dtoSender;
     private final Map<String, String> parameters;
-
-    /* The observers of this object */
-    private List<ObservablePlugin.PluginObserver> observers;
-    /*
-     * this object will be used to synchronize the access to the observers list in order to be
-     * thread safe
-     */
-    private final Object sync = new Object();
 
     /**
      * RemoteSePlugin is wrapped into MasterAPI and instantiated like a standard plugin
@@ -136,7 +127,7 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
 
     /**
      * Remove a virtual reader (internal method)
-     * 
+     *
      * @param nativeReaderName : name of the virtual reader to be deleted
      * @param slaveNodeId : slave node where the remoteReader is hosted
      * @throws KeypleReaderNotFoundException if no virtual reader match the native reader name and
@@ -166,7 +157,7 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
 
     /**
      * Propagate a received event from slave device (internal method)
-     * 
+     *
      * @param event : Reader Event to be propagated
      */
 
@@ -210,91 +201,5 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
     }
 
 
-    /**
-     * Add a plugin observer.
-     * <p>
-     * The observer will receive all the events produced by this plugin (reader insertion, removal,
-     * etc.)
-     *
-     * @param observer the observer object
-     */
-    @Override
-    public void addObserver(ObservablePlugin.PluginObserver observer) {
-        if (observer == null) {
-            return;
-        }
 
-        logger.trace("Adding '{}' as an observer of '{}'.", observer.getClass().getSimpleName(),
-                getName());
-
-        synchronized (sync) {
-            if (observers == null) {
-                observers = new ArrayList<PluginObserver>(1);
-            }
-            observers.add(observer);
-        }
-    }
-
-    /**
-     * Remove a plugin observer.
-     * <p>
-     * The observer will no longer receive any of the events produced by this plugin.
-     *
-     * @param observer the observer object
-     */
-    @Override
-    public void removeObserver(ObservablePlugin.PluginObserver observer) {
-        if (observer == null) {
-            return;
-        }
-
-        logger.trace("[{}] Deleting a plugin observer", getName());
-
-        synchronized (sync) {
-            if (observers != null) {
-                observers.remove(observer);
-            }
-        }
-    }
-
-    /**
-     * Notify all registered observers with the provided {@link PluginEvent}
-     *
-     * @param event the plugin event
-     */
-    @Override
-    public final void notifyObservers(final PluginEvent event) {
-
-        logger.trace("[{}] Notifying a plugin event to {} observers. EVENTNAME = {} ",
-                this.getName(), countObservers(), event.getEventType().getName());
-
-        List<PluginObserver> observersCopy;
-
-        synchronized (sync) {
-            if (observers == null) {
-                return;
-            }
-            observersCopy = new ArrayList<PluginObserver>(observers);
-        }
-
-        for (ObservablePlugin.PluginObserver observer : observersCopy) {
-            observer.update(event);
-        }
-    }
-
-    /**
-     * Remove all observers at once
-     */
-    public final void clearObservers() {
-        if (observers != null) {
-            this.observers.clear();
-        }
-    }
-
-    /**
-     * @return the number of observers
-     */
-    public final int countObservers() {
-        return observers == null ? 0 : observers.size();
-    }
 }
