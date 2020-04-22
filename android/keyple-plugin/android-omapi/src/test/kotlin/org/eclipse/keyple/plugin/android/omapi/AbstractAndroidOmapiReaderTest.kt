@@ -190,7 +190,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
 
         // wrong protocol
         val seRequest = SeRequest(SeSelector(SeCommonProtocols.PROTOCOL_MIFARE_UL, null,
-                SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(poAid), null), null), ArrayList())
+                SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(poAid), null)), ArrayList())
 
         // test
         val seRequestSet = LinkedHashSet<SeRequest>()
@@ -250,7 +250,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
         val seRequest = SeRequest(SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
-                SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(PO_AID), null), null), poApduRequestList)
+                SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(PO_AID), null)), poApduRequestList)
 
         val seRequestSet = LinkedHashSet<SeRequest>()
         seRequestSet.add(seRequest)
@@ -262,7 +262,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
         val seRequest = SeRequest(SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
-                SeSelector.AidSelector(null, null), null), poApduRequestList)
+                SeSelector.AidSelector(null, null)), poApduRequestList)
 
         val seRequestSet = LinkedHashSet<SeRequest>()
         seRequestSet.add(seRequest)
