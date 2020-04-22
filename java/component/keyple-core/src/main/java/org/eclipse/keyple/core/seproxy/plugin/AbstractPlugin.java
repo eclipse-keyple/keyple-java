@@ -39,7 +39,7 @@ public abstract class AbstractPlugin extends Observable<PluginEvent>
     /**
      * The list of readers
      */
-    protected SortedSet<SeReader> readers = null;
+    protected ConcurrentSkipListSet<SeReader> readers = new ConcurrentSkipListSet<SeReader>();
 
 
     /**
@@ -55,7 +55,7 @@ public abstract class AbstractPlugin extends Observable<PluginEvent>
         this.name = name;
 
         try {
-            readers = initNativeReaders();
+            readers.addAll(initNativeReaders());
         } catch (KeypleReaderException e) {
             throw new KeypleRuntimeException("Could not instantiate readers in plugin constructor",
                     e);
@@ -82,10 +82,6 @@ public abstract class AbstractPlugin extends Observable<PluginEvent>
      */
     @Override
     public final SortedSet<SeReader> getReaders() {
-        if (readers == null) {
-            throw new KeypleRuntimeException(
-                    "Readers list is null, it has not been initialized properly, check initNativeReaders()");
-        }
         return readers;
     }
 
