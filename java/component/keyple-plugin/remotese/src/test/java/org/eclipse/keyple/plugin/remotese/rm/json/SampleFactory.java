@@ -48,7 +48,7 @@ public class SampleFactory {
         poApduRequestList = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
         SeSelector seSelector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid), null), null);
+                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid), null));
 
         SeRequest seRequest = new SeRequest(seSelector, poApduRequestList);
 
@@ -84,7 +84,7 @@ public class SampleFactory {
         poApduRequestList = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
         SeSelector seSelector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid), null), null);
+                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid), null));
 
         SeRequest seRequest = new SeRequest(seSelector, poApduRequestList);
         return seRequest;
@@ -110,10 +110,10 @@ public class SampleFactory {
         poApduRequestList = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
         SeSelector aidSelector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid), null), null);
+                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid), null));
 
         SeSelector atrSelector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3,
-                new SeSelector.AtrFilter("/regex/"), null, null);
+                new SeSelector.AtrFilter("/regex/"), null);
 
         SeRequest seRequest = new SeRequest(aidSelector, poApduRequestList);
 
