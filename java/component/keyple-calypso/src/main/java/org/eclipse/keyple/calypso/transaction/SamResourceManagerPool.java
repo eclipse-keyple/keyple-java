@@ -11,10 +11,11 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
-import org.eclipse.keyple.calypso.exception.NoResourceAvailableException;
+import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +44,8 @@ public class SamResourceManagerPool extends SamResourceManager {
 
     @Override
     public SamResource allocateSamResource(AllocationMode allocationMode,
-            SamIdentifier samIdentifier)
-            throws KeypleReaderException, NoResourceAvailableException {
+            SamIdentifier samIdentifier) throws KeypleReaderException,
+            CalypsoNoSamResourceAvailableException, KeypleAllocationReaderException {
         long maxBlockingDate = System.currentTimeMillis() + MAX_BLOCKING_TIME;
         boolean noSamResourceLogged = false;
         logger.debug("Allocating SAM reader channel...");
@@ -61,7 +62,7 @@ public class SamResourceManagerPool extends SamResourceManager {
             // loop until MAX_BLOCKING_TIME in blocking mode, only once in non-blocking mode
             if (allocationMode == AllocationMode.NON_BLOCKING) {
                 logger.trace("No SAM resources available at the moment.");
-                throw new NoResourceAvailableException(
+                throw new CalypsoNoSamResourceAvailableException(
                         "No Sam resource could be allocated for samIdentifier +"
                                 + samIdentifier.getGroupReference());
             } else {
@@ -79,7 +80,7 @@ public class SamResourceManagerPool extends SamResourceManager {
                 if (System.currentTimeMillis() >= maxBlockingDate) {
                     logger.error("The allocation process failed. Timeout {} sec exceeded .",
                             (MAX_BLOCKING_TIME / 1000.0));
-                    throw new NoResourceAvailableException(
+                    throw new CalypsoNoSamResourceAvailableException(
                             "No Sam resource could be allocated within timeout of "
                                     + MAX_BLOCKING_TIME + "ms for samIdentifier "
                                     + samIdentifier.getGroupReference());

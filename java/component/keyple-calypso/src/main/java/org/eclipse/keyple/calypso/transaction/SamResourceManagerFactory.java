@@ -31,12 +31,14 @@ public abstract class SamResourceManagerFactory {
      * @param readerPlugin the plugin through which SAM readers are accessible
      * @param samReaderFilter the regular expression defining how to identify SAM readers among
      *        others.
+     * @param maxBlockingTime the maximum duration for which the allocateSamResource method will
+     *        attempt to allocate a new reader by retrying (in milliseconds)
      * @throws KeypleReaderException throw if an error occurs while getting the readers list.
      * @return SamResourceManager working with a default plugin
      */
-    static public SamResourceManager instantiate(ReaderPlugin readerPlugin, String samReaderFilter)
-            throws KeypleReaderException {
-        return new SamResourceManagerDefault(readerPlugin, samReaderFilter);
+    static public SamResourceManager instantiate(ReaderPlugin readerPlugin, String samReaderFilter,
+            int maxBlockingTime) throws KeypleReaderException {
+        return new SamResourceManagerDefault(readerPlugin, samReaderFilter, maxBlockingTime);
     }
 
     /**
