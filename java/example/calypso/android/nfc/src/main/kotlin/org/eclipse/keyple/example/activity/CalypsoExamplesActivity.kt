@@ -172,7 +172,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                     SeCommonProtocols.PROTOCOL_ISO14443_4, null, PoSelector.PoAidSelector(
                     SeSelector.AidSelector.IsoAid(seAidPrefix), null,
                     SeSelector.AidSelector.FileOccurrence.FIRST,
-                    SeSelector.AidSelector.FileControlInformation.FCI), "Initial selection #1"))
+                    SeSelector.AidSelector.FileControlInformation.FCI)))
 
             seSelection.prepareSelection(selectionRequest1st)
 
@@ -190,7 +190,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                     SeCommonProtocols.PROTOCOL_ISO14443_4, null, PoSelector.PoAidSelector(
                     SeSelector.AidSelector.IsoAid(seAidPrefix), null,
                     SeSelector.AidSelector.FileOccurrence.NEXT,
-                    SeSelector.AidSelector.FileControlInformation.FCI), "Initial selection #2"))
+                    SeSelector.AidSelector.FileControlInformation.FCI)))
 
             seSelection.prepareSelection(selectionRequest2nd)
 
@@ -209,7 +209,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
             if (selectionsResult.hasActiveSelection()) {
                 with(selectionsResult.getMatchingSelection(0)) {
                     val matchingSe = this.matchingSe
-                    addResultEvent("Selection status for selection ${this.extraInfo} " +
+                    addResultEvent("Selection status for selection " +
                             "(indexed ${this.selectionIndex}): \n\t\t" +
                             "ATR: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.atr.bytes)}\n\t\t" +
                             "FCI: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.fci.bytes)}")
@@ -240,7 +240,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                     SeCommonProtocols.PROTOCOL_ISO14443_4, null, PoSelector.PoAidSelector(
                     SeSelector.AidSelector.IsoAid(seAidPrefix), null,
                     SeSelector.AidSelector.FileOccurrence.FIRST,
-                    SeSelector.AidSelector.FileControlInformation.FCI), "Initial selection #1"))
+                    SeSelector.AidSelector.FileControlInformation.FCI)))
 
             seSelection.prepareSelection(selectionRequest1st)
 
@@ -249,7 +249,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                     SeCommonProtocols.PROTOCOL_ISO14443_4, null, PoSelector.PoAidSelector(
                     SeSelector.AidSelector.IsoAid(seAidPrefix), null,
                     SeSelector.AidSelector.FileOccurrence.NEXT,
-                    SeSelector.AidSelector.FileControlInformation.FCI), "Next selection #2"))
+                    SeSelector.AidSelector.FileControlInformation.FCI)))
 
             seSelection.prepareSelection(selectionRequest2nd)
 
@@ -258,7 +258,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                     SeCommonProtocols.PROTOCOL_ISO14443_4, null, PoSelector.PoAidSelector(
                     SeSelector.AidSelector.IsoAid(seAidPrefix), null,
                     SeSelector.AidSelector.FileOccurrence.NEXT,
-                    SeSelector.AidSelector.FileControlInformation.FCI), "Next selection #3"))
+                    SeSelector.AidSelector.FileControlInformation.FCI)))
 
             seSelection.prepareSelection(selectionRequest3rd)
 
@@ -273,7 +273,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                 if (selectionResult.matchingSelections.size > 0) {
                     selectionResult.matchingSelections.forEach {
                         val matchingSe = it.matchingSe
-                        addResultEvent("Selection status for selection ${it.extraInfo} " +
+                        addResultEvent("Selection status for selection " +
                                 "(indexed ${it.selectionIndex}): \n\t\t" +
                                 "ATR: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.atr.bytes)}\n\t\t" +
                                 "FCI: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.fci.bytes)}")
@@ -318,8 +318,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
         val selectionRequest = PoSelectionRequest(PoSelector(
                 SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                 PoSelector.PoAidSelector(
-                        SeSelector.AidSelector.IsoAid(aid), null),
-                "AID: $aid"))
+                        SeSelector.AidSelector.IsoAid(aid), null)))
 
         /*
         * Add the selection case to the current selection (we could have added other cases here)
@@ -402,8 +401,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
             val selectionRequest = PoSelectionRequest(PoSelector(
                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                     PoSelector.PoAidSelector(
-                            SeSelector.AidSelector.IsoAid(aid), null),
-                    "AID: $aid"))
+                            SeSelector.AidSelector.IsoAid(aid), null)))
 
             /**
              * Prepare Selection
@@ -466,16 +464,16 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                 SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                 PoSelector.PoAidSelector(
                         SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
-                        PoSelector.InvalidatedPo.REJECT),
-                "AID: " + CalypsoClassicInfo.AID))
+                        PoSelector.InvalidatedPo.REJECT)))
 
         /*
              * Prepare the reading order and keep the associated parser for later use once the
              * selection has been made.
              */
-        readEnvironmentParserIndex = poSelectionRequest.prepareReadRecords(
-                CalypsoClassicInfo.SFI_EnvironmentAndHolder,
-                ReadDataStructure.SINGLE_RECORD_DATA, CalypsoClassicInfo.RECORD_NUMBER_1)
+        // TODO Review this code with the new 0.9 API
+//        readEnvironmentParserIndex = poSelectionRequest.prepareReadRecords(
+//                CalypsoClassicInfo.SFI_EnvironmentAndHolder,
+//                ReadDataStructure.SINGLE_RECORD_DATA, CalypsoClassicInfo.RECORD_NUMBER_1)
 
         /*
          * Add the selection case to the current selection (we could have added other cases
@@ -557,12 +555,13 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                 /*
                  * Retrieve the data read from the parser updated during the selection process
                  */
-                val readEnvironmentParser = selectionsResult
-                        .activeSelection.getResponseParser(readEnvironmentParserIndex) as ReadRecordsRespPars
-
-                val environmentAndHolder = readEnvironmentParser.records[CalypsoClassicInfo.RECORD_NUMBER_1.toInt()]
-
-                addResultEvent("Environment and Holder file: $environmentAndHolder")
+// TODO Review this code with the new 0.9 API
+//                val readEnvironmentParser = selectionsResult
+//                        .activeSelection.getResponseParser(readEnvironmentParserIndex) as ReadRecordsRespPars
+//
+//                val environmentAndHolder = readEnvironmentParser.records[CalypsoClassicInfo.RECORD_NUMBER_1.toInt()]
+//
+//                addResultEvent("Environment and Holder file: $environmentAndHolder")
 
                 addResultEvent("2nd PO exchange: read the event log file")
                 val poTransaction = PoTransaction(PoResource(reader, calypsoPo))

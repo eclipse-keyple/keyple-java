@@ -76,11 +76,9 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * 
      * @param selectionResponse the response to the selection application command
      * @param transmissionMode the current {@link TransmissionMode} (contacts or contactless)
-     * @param extraInfo information string
      */
-    public CalypsoPo(SeResponse selectionResponse, TransmissionMode transmissionMode,
-            String extraInfo) {
-        super(selectionResponse, transmissionMode, extraInfo);
+    public CalypsoPo(SeResponse selectionResponse, TransmissionMode transmissionMode) {
+        super(selectionResponse, transmissionMode);
 
         poAtr = selectionResponse.getSelectionStatus().getAtr().getBytes();
 

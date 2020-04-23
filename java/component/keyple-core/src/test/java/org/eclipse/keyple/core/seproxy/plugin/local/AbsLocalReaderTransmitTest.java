@@ -229,10 +229,10 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
 
         SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter(ATR);
         SeSelector selector =
-                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, atrFilter, null, "atr");
+                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, atrFilter, null);
 
         SeSelector failSelector =
-                new SeSelector(SeCommonProtocols.PROTOCOL_MIFARE_UL, atrFilter, null, "atr");
+                new SeSelector(SeCommonProtocols.PROTOCOL_MIFARE_UL, atrFilter, null);
 
         ApduRequest apduOK = new ApduRequest(APDU_SUCCESS, false);
         ApduRequest apduKO = new ApduRequest(APDU_IOEXC, false);

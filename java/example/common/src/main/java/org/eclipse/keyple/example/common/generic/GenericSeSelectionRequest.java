@@ -32,10 +32,10 @@ public class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
     protected AbstractMatchingSe parse(SeResponse seResponse) {
         class GenericMatchingSe extends AbstractMatchingSe {
             public GenericMatchingSe(SeResponse selectionResponse,
-                    TransmissionMode transmissionMode, String extraInfo) {
-                super(selectionResponse, transmissionMode, extraInfo);
+                    TransmissionMode transmissionMode) {
+                super(selectionResponse, transmissionMode);
             }
         }
-        return new GenericMatchingSe(seResponse, transmissionMode, "Generic Matching SE");
+        return new GenericMatchingSe(seResponse, transmissionMode);
     }
 }

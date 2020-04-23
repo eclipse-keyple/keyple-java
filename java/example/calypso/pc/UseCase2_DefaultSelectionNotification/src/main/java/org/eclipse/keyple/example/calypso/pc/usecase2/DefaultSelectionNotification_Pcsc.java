@@ -61,7 +61,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
     protected static final Logger logger =
             LoggerFactory.getLogger(DefaultSelectionNotification_Pcsc.class);
     private SeSelection seSelection;
-    private int readEnvironmentParserIndex;
+
     /**
      * This object is used to freeze the main thread while card operations are handle through the
      * observers callbacks. A call to the notify() method would end the program (not demonstrated
@@ -111,16 +111,14 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
                 new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                         new PoSelector.PoAidSelector(
                                 new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
-                                PoSelector.InvalidatedPo.REJECT),
-                        "AID: " + CalypsoClassicInfo.AID));
+                                PoSelector.InvalidatedPo.REJECT)));
 
         /*
          * Prepare the reading order and keep the associated parser for later use once the selection
          * has been made.
          */
-        readEnvironmentParserIndex =
-                poSelectionRequest.prepareReadRecords(CalypsoClassicInfo.SFI_EnvironmentAndHolder,
-                        ReadDataStructure.SINGLE_RECORD_DATA, CalypsoClassicInfo.RECORD_NUMBER_1);
+        poSelectionRequest.prepareReadRecords(CalypsoClassicInfo.SFI_EnvironmentAndHolder,
+                ReadDataStructure.SINGLE_RECORD_DATA, CalypsoClassicInfo.RECORD_NUMBER_1);
 
         /*
          * Add the selection case to the current selection (we could have added other cases here)
@@ -161,17 +159,21 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
     public void update(ReaderEvent event) {
         switch (event.getEventType()) {
             case SE_MATCHED:
-                MatchingSelection matchingSelection =
-                        seSelection.processDefaultSelection(event.getDefaultSelectionsResponse())
-                                .getActiveSelection();
-
+                MatchingSelection matchingSelection = null;
                 SeReader poReader = null;
                 try {
+                    matchingSelection = seSelection
+                            .processDefaultSelection(event.getDefaultSelectionsResponse())
+                            .getActiveSelection();
+
                     poReader = SeProxyService.getInstance().getPlugin(event.getPluginName())
                             .getReader(event.getReaderName());;
                 } catch (KeyplePluginNotFoundException e) {
                     e.printStackTrace();
                 } catch (KeypleReaderNotFoundException e) {
+                    e.printStackTrace();
+                } catch (KeypleException e) {
+                    // TODO Change this with the correct exception class when defined
                     e.printStackTrace();
                 }
 
@@ -179,17 +181,20 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
 
                 logger.info("Observer notification: the selection of the PO has succeeded.");
 
-                /*
-                 * Retrieve the data read from the parser updated during the selection process
-                 */
-                ReadRecordsRespPars readEnvironmentParser = (ReadRecordsRespPars) matchingSelection
-                        .getResponseParser(readEnvironmentParserIndex);
-
-                byte environmentAndHolder[] = (readEnvironmentParser.getRecords())
-                        .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
-
-                /* Log the result */
-                logger.info("Environment file data: {}", ByteArrayUtil.toHex(environmentAndHolder));
+                // TODO To be updated with the new CalypsoPo API
+                // /*
+                // * Retrieve the data read from the parser updated during the selection process
+                // */
+                // ReadRecordsRespPars readEnvironmentParser = (ReadRecordsRespPars)
+                // matchingSelection
+                // .getResponseParser(readEnvironmentParserIndex);
+                //
+                // byte environmentAndHolder[] = (readEnvironmentParser.getRecords())
+                // .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
+                //
+                // /* Log the result */
+                // logger.info("Environment file data: {}",
+                // ByteArrayUtil.toHex(environmentAndHolder));
 
                 /* Go on with the reading of the first record of the EventLog file */
                 logger.info(

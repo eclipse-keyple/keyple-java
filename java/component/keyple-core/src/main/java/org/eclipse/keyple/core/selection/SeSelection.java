@@ -17,6 +17,7 @@ import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
@@ -32,13 +33,11 @@ public final class SeSelection {
     private static final Logger logger = LoggerFactory.getLogger(SeSelection.class);
 
     /*
-     * list of target classes and selection requests used to build the AbstractMatchingSe list in
-     * return of processSelection methods
+     * list of selection requests used to build the AbstractMatchingSe list in return of
+     * processSelection methods
      */
-    private final List<AbstractSeSelectionRequest> seSelectionRequestList =
+    private final List<AbstractSeSelectionRequest> seSelectionRequests =
             new ArrayList<AbstractSeSelectionRequest>();
-    private final Set<SeRequest> selectionRequestSet = new LinkedHashSet<SeRequest>();
-    private int selectionIndex;
     private MultiSeRequestProcessing multiSeRequestProcessing;
     private ChannelControl channelControl;
 
@@ -50,7 +49,6 @@ public final class SeSelection {
      */
     public SeSelection(MultiSeRequestProcessing multiSeRequestProcessing,
             ChannelControl channelControl) {
-        selectionIndex = 0;
         this.multiSeRequestProcessing = multiSeRequestProcessing;
         this.channelControl = channelControl;
     }
@@ -72,16 +70,12 @@ public final class SeSelection {
      */
     public int prepareSelection(AbstractSeSelectionRequest seSelectionRequest) {
         if (logger.isTraceEnabled()) {
-            logger.trace("SELECTORREQUEST = {}, EXTRAINFO = {}",
-                    seSelectionRequest.getSelectionRequest(),
-                    seSelectionRequest.getSeSelector().getExtraInfo());
+            logger.trace("SELECTORREQUEST = {}", seSelectionRequest.getSelectionRequest());
         }
-        /* build the SeRequest set transmitted to the SE */
-        selectionRequestSet.add(seSelectionRequest.getSelectionRequest());
         /* keep the selection request */
-        seSelectionRequestList.add(seSelectionRequest);
-        /* return and post increment the selection index */
-        return selectionIndex++;
+        seSelectionRequests.add(seSelectionRequest);
+        /* return the selection index */
+        return seSelectionRequests.size();
     }
 
     /**
@@ -99,7 +93,7 @@ public final class SeSelection {
      *         including {@link AbstractMatchingSe} and {@link SeResponse}.
      */
     private SelectionsResult processSelection(
-            AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
+            AbstractDefaultSelectionsResponse defaultSelectionsResponse) throws KeypleException {
         SelectionsResult selectionsResult = new SelectionsResult();
 
         int index = 0;
@@ -114,10 +108,10 @@ public final class SeSelection {
                  * create a AbstractMatchingSe with the class deduced from the selection request
                  * during the selection preparation
                  */
-                AbstractMatchingSe matchingSe = seSelectionRequestList.get(index).parse(seResponse);
+                AbstractMatchingSe matchingSe = seSelectionRequests.get(index).parse(seResponse);
 
                 selectionsResult.addMatchingSelection(new MatchingSelection(index,
-                        seSelectionRequestList.get(index), matchingSe, seResponse));
+                        seSelectionRequests.get(index), matchingSe, seResponse));
             }
             index++;
         }
@@ -134,9 +128,10 @@ public final class SeSelection {
      *        {@link AbstractDefaultSelectionsRequest}
      * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
      *         including {@link AbstractMatchingSe} and {@link SeResponse}.
+     * @throws KeypleException if an error occurs during the selection process
      */
     public SelectionsResult processDefaultSelection(
-            AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
+            AbstractDefaultSelectionsResponse defaultSelectionsResponse) throws KeypleException {
 
         /* null pointer exception protection */
         if (defaultSelectionsResponse == null) {
@@ -170,8 +165,11 @@ public final class SeSelection {
      *         including {@link AbstractMatchingSe} and {@link SeResponse}.
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    public SelectionsResult processExplicitSelection(SeReader seReader)
-            throws KeypleReaderIOException {
+    public SelectionsResult processExplicitSelection(SeReader seReader) throws KeypleException {
+        Set<SeRequest> selectionRequestSet = new LinkedHashSet<SeRequest>();
+        for (AbstractSeSelectionRequest seSelectionRequest : seSelectionRequests) {
+            selectionRequestSet.add(seSelectionRequest.getSelectionRequest());
+        }
         if (logger.isTraceEnabled()) {
             logger.trace("Transmit SELECTIONREQUEST ({} request(s))", selectionRequestSet.size());
         }
@@ -192,6 +190,10 @@ public final class SeSelection {
      *         prepareSelection
      */
     public AbstractDefaultSelectionsRequest getSelectionOperation() {
+        Set<SeRequest> selectionRequestSet = new LinkedHashSet<SeRequest>();
+        for (AbstractSeSelectionRequest seSelectionRequest : seSelectionRequests) {
+            selectionRequestSet.add(seSelectionRequest.getSelectionRequest());
+        }
         return new DefaultSelectionsRequest(selectionRequestSet, multiSeRequestProcessing,
                 channelControl);
     }

@@ -36,7 +36,7 @@ public class SeResourceTest extends CoreBaseTest {
     @Test
     public void testConstructor() {
         MatchingSe matchingSe = new MatchingSe(new SeResponse(true, true, null, null),
-                TransmissionMode.CONTACTLESS, "extrainfo");
+                TransmissionMode.CONTACTLESS);
         SeReader seReader = null;
         LocalSeResource localSeResource = new LocalSeResource(seReader, matchingSe);
         Assert.assertEquals(matchingSe, localSeResource.getMatchingSe());
@@ -47,9 +47,8 @@ public class SeResourceTest extends CoreBaseTest {
      * Matching Se instantiation
      */
     private final class MatchingSe extends AbstractMatchingSe {
-        MatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode,
-                String extraInfo) {
-            super(selectionResponse, transmissionMode, extraInfo);
+        MatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode) {
+            super(selectionResponse, transmissionMode);
         }
     }
 

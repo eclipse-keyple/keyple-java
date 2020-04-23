@@ -16,8 +16,8 @@ import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableExcepti
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 
 /**
  * Management of SAM resources:
@@ -70,21 +70,30 @@ public abstract class SamResourceManager {
      *
      * @param samReader the SAM reader with which the APDU exchanges will be done.
      * @return a {@link SamResource}
-     * @throws KeypleReaderException if an reader error occurs while doing the selection
+     * @throws CalypsoNoSamResourceAvailableException if an error occurs while doing the selection
      */
-    protected SamResource createSamResource(SeReader samReader) throws KeypleReaderException {
+    protected SamResource createSamResource(SeReader samReader)
+            throws CalypsoNoSamResourceAvailableException {
 
         SeSelection samSelection = new SeSelection();
 
         /* Prepare selector */
-        samSelection.prepareSelection(new SamSelectionRequest(
-                new SamSelector(new SamIdentifier(AUTO, null, null), "SAM")));
+        samSelection.prepareSelection(
+                new SamSelectionRequest(new SamSelector(new SamIdentifier(AUTO, null, null))));
 
-        SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
+        SelectionsResult selectionsResult = null;
+
+        try {
+            selectionsResult = samSelection.processExplicitSelection(samReader);
+        } catch (KeypleException e) {
+            throw new CalypsoNoSamResourceAvailableException("Failed to select a SAM");
+        }
 
         if (!selectionsResult.hasActiveSelection()) {
-            throw new KeypleReaderIOException("Unable to open a logical channel for SAM!");
+            throw new CalypsoNoSamResourceAvailableException(
+                    "Unable to open a logical channel for SAM!");
         }
+
         CalypsoSam calypsoSam = (CalypsoSam) selectionsResult.getActiveSelection().getMatchingSe();
 
         return new SamResource(samReader, calypsoSam);

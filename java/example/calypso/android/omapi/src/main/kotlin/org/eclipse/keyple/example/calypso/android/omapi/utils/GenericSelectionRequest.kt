@@ -23,9 +23,8 @@ class GenericSeSelectionRequest(seSelector: SeSelector) : AbstractSeSelectionReq
     override fun parse(seResponse: SeResponse): AbstractMatchingSe {
         class GenericMatchingSe(
             selectionResponse: SeResponse,
-            transmissionMode: TransmissionMode,
-            extraInfo: String
-        ) : AbstractMatchingSe(selectionResponse, transmissionMode, extraInfo)
-        return GenericMatchingSe(seResponse, transmissionMode, "Generic Matching SE")
+            transmissionMode: TransmissionMode
+        ) : AbstractMatchingSe(selectionResponse, transmissionMode)
+        return GenericMatchingSe(seResponse, transmissionMode)
     }
 }

@@ -31,6 +31,7 @@ import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.*;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
@@ -467,8 +468,7 @@ public class StubReaderTest extends BaseStubTest {
 
         PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
                 SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(poAid), null),
-                "AID: " + poAid));
+                new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(poAid), null)));
 
         seSelection.prepareSelection(poSelectionRequest);
 
@@ -518,8 +518,7 @@ public class StubReaderTest extends BaseStubTest {
 
         PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
                 SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(poAid), null),
-                "AID: " + poAid));
+                new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(poAid), null)));
 
         seSelection.prepareSelection(poSelectionRequest);
 
@@ -581,8 +580,7 @@ public class StubReaderTest extends BaseStubTest {
 
         PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
                 SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(poAid), null),
-                "AID: " + poAid));
+                new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(poAid), null)));
 
         seSelection.prepareSelection(poSelectionRequest);
 
@@ -622,7 +620,7 @@ public class StubReaderTest extends BaseStubTest {
 
                 PoSelectionRequest poSelectionRequest =
                         new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_B_PRIME,
-                                new PoSelector.PoAtrFilter("3B.*"), null, "Test" + " ATR"));
+                                new PoSelector.PoAtrFilter("3B.*"), null));
 
                 /* Prepare selector, ignore AbstractMatchingSe here */
                 seSelection.prepareSelection(poSelectionRequest);
@@ -637,6 +635,8 @@ public class StubReaderTest extends BaseStubTest {
                     Assert.assertNotNull(matchingSe);
 
                 } catch (KeypleReaderException e) {
+                    Assert.fail("Unexcepted exception");
+                } catch (KeypleException e) {
                     Assert.fail("Unexcepted exception");
                 }
                 // unlock thread
@@ -696,8 +696,7 @@ public class StubReaderTest extends BaseStubTest {
 
         PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
                 SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(poAid), null),
-                "AID: " + poAid));
+                new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(poAid), null)));
 
         seSelection.prepareSelection(poSelectionRequest);
 
@@ -1224,10 +1223,11 @@ public class StubReaderTest extends BaseStubTest {
                 break;
         }
 
-        SeSelector selector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                new SeSelector.AidSelector(
-                        new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(poAid)), null),
-                null);
+        SeSelector selector =
+                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                        new SeSelector.AidSelector(
+                                new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(poAid)),
+                                null));
 
         return new SeRequest(poApduRequestList);
     }
@@ -1405,11 +1405,11 @@ public class StubReaderTest extends BaseStubTest {
             protected AbstractMatchingSe parse(SeResponse seResponse) {
                 class GenericMatchingSe extends AbstractMatchingSe {
                     public GenericMatchingSe(SeResponse selectionResponse,
-                            TransmissionMode transmissionMode, String extraInfo) {
-                        super(selectionResponse, transmissionMode, extraInfo);
+                            TransmissionMode transmissionMode) {
+                        super(selectionResponse, transmissionMode);
                     }
                 }
-                return new GenericMatchingSe(seResponse, transmissionMode, "Generic Matching SE");
+                return new GenericMatchingSe(seResponse, transmissionMode);
             }
         }
 
@@ -1418,11 +1418,15 @@ public class StubReaderTest extends BaseStubTest {
         // ChannelControl.CLOSE_AFTER);
         GenericSeSelectionRequest genericSeSelectionRequest =
                 new GenericSeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                        new SeSelector.AtrFilter("3B.*"), null, "ATR selection"));
+                        new SeSelector.AtrFilter("3B.*"), null));
 
         /* Prepare selector, ignore AbstractMatchingSe here */
         seSelection.prepareSelection(genericSeSelectionRequest);
 
-        seSelection.processExplicitSelection(reader);
+        try {
+            seSelection.processExplicitSelection(reader);
+        } catch (KeypleException e) {
+            Assert.fail("Unexcepted exception");
+        }
     }
 }

@@ -13,8 +13,9 @@ package org.eclipse.keyple.core.selection;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
@@ -28,8 +29,9 @@ import org.eclipse.keyple.core.seproxy.message.SeResponse;
 public abstract class AbstractSeSelectionRequest {
     protected final SeSelector seSelector;
 
-    /** optional apdu requests list to be executed following the selection process */
-    private final List<ApduRequest> seSelectionApduRequestList = new ArrayList<ApduRequest>();
+    /** optional command builder list of command to be executed following the selection process */
+    private final List<AbstractApduCommandBuilder> commandBuilders =
+            new ArrayList<AbstractApduCommandBuilder>();
 
     public AbstractSeSelectionRequest(SeSelector seSelector) {
         this.seSelector = seSelector;
@@ -37,11 +39,15 @@ public abstract class AbstractSeSelectionRequest {
 
     /**
      * Returns a selection SeRequest built from the information provided in the constructor and
-     * possibly completed with the seSelectionApduRequestList
+     * possibly completed with the commandBuilders list
      *
      * @return the selection SeRequest
      */
     final SeRequest getSelectionRequest() {
+        List<ApduRequest> seSelectionApduRequestList = new ArrayList<ApduRequest>();
+        for (AbstractApduCommandBuilder commandBuilder : commandBuilders) {
+            seSelectionApduRequestList.add(commandBuilder.getApduRequest());
+        }
         return new SeRequest(seSelector, seSelectionApduRequestList);
     }
 
@@ -50,29 +56,23 @@ public abstract class AbstractSeSelectionRequest {
     }
 
     /**
-     * Add an additional {@link ApduRequest} to be executed after the selection process if it
-     * succeeds.
+     * Add an additional {@link AbstractApduCommandBuilder} for the command to be executed after the
+     * selection process if it succeeds.
      * <p>
-     * If more than one {@link ApduRequest} is added, all will be executed in the order in which
-     * they were added.
+     * If more than one {@link AbstractApduCommandBuilder} is added, all will be executed in the
+     * order in which they were added.
      *
-     * @param apduRequest an {@link ApduRequest}
+     * @param commandBuilder an {@link AbstractApduCommandBuilder}
      */
-    protected final void addApduRequest(ApduRequest apduRequest) {
-        seSelectionApduRequestList.add(apduRequest);
+    protected final void addCommandBuilder(AbstractApduCommandBuilder commandBuilder) {
+        commandBuilders.add(commandBuilder);
     }
 
     /**
-     * Return the parser corresponding to the command whose index is provided.
-     *
-     * @param seResponse the received SeResponse containing the commands raw responses
-     * @param commandIndex the command index
-     * @return a parser of the type matching the command
+     * @return the current command builder list
      */
-    public AbstractApduResponseParser getCommandParser(SeResponse seResponse, int commandIndex) {
-        /* not yet implemented in keyple-core */
-        // TODO add a generic command parser
-        throw new IllegalStateException("No parsers available for this request.");
+    protected final List<AbstractApduCommandBuilder> getCommandBuilders() {
+        return commandBuilders;
     }
 
     /**
@@ -80,6 +80,7 @@ public abstract class AbstractSeSelectionRequest {
      * 
      * @param seResponse the SE response received
      * @return a {@link AbstractMatchingSe}
+     * @throws KeypleException if an error occurs while parsing the SE response
      */
-    protected abstract AbstractMatchingSe parse(SeResponse seResponse);
+    protected abstract AbstractMatchingSe parse(SeResponse seResponse) throws KeypleException;
 }

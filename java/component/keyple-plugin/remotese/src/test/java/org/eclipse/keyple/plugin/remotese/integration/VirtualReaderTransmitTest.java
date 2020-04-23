@@ -31,10 +31,7 @@ import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
 import org.eclipse.keyple.plugin.remotese.rm.json.SampleFactory;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.plugin.stub.StubReaderTest;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,6 +77,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
      * TRANSMITS
      */
 
+    @Ignore
     @Test
     public void testKOTransmitSet_NoSE() {
 
@@ -99,6 +97,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
         }
     }
 
+    @Ignore
     @Test
     public void testKOTransmit_NoSE() {
 

@@ -72,7 +72,7 @@ class CoreExamplesActivity : ExamplesActivity() {
                     addHeaderEvent("Starting explicitAidSelection with $poAid on Reader ${it.name}")
 
                     val seSelector = SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
-                            SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(poAid), setOf(36864)), null)
+                            SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(poAid), setOf(36864)))
                     val seRequest = SeRequest(seSelector, null)
 
                     addActionEvent("Sending SeRequest to select: $poAid")
@@ -112,24 +112,21 @@ class CoreExamplesActivity : ExamplesActivity() {
                 SeCommonProtocols.PROTOCOL_ISO7816_3, null,
                 SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix), null,
                         SeSelector.AidSelector.FileOccurrence.FIRST,
-                        SeSelector.AidSelector.FileControlInformation.FCI),
-                "Initial selection #1")))
+                        SeSelector.AidSelector.FileControlInformation.FCI))))
 
         /* next selection (2nd selection, later indexed 1) */
         seSelection.prepareSelection(GenericSeSelectionRequest(SeSelector(
                 SeCommonProtocols.PROTOCOL_ISO7816_3, null,
                 SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix), null,
                         SeSelector.AidSelector.FileOccurrence.NEXT,
-                        SeSelector.AidSelector.FileControlInformation.FCI),
-                "Next selection #2")))
+                        SeSelector.AidSelector.FileControlInformation.FCI))))
 
         /* next selection (3rd selection, later indexed 2) */
         seSelection.prepareSelection(GenericSeSelectionRequest(SeSelector(
                 SeCommonProtocols.PROTOCOL_ISO7816_3, null,
                 SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix), null,
                         SeSelector.AidSelector.FileOccurrence.NEXT,
-                        SeSelector.AidSelector.FileControlInformation.FCI),
-                "Next selection #3")))
+                        SeSelector.AidSelector.FileControlInformation.FCI))))
 
         /*
          * Actual SE communication: operate through a single request the SE selection
@@ -145,7 +142,7 @@ class CoreExamplesActivity : ExamplesActivity() {
                         if (selectionsResult.matchingSelections.size> 0) {
                             selectionsResult.matchingSelections.forEach {
                                 val matchingSe = it.matchingSe
-                                addResultEvent("Selection status for selection ${it.extraInfo} " +
+                                addResultEvent("Selection status for selection " +
                                         "(indexed ${it.selectionIndex}): \n\t\t" +
                                         "ATR: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.atr.bytes)}\n\t\t" +
                                         "FCI: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.fci.dataOut)}")
@@ -191,8 +188,7 @@ class CoreExamplesActivity : ExamplesActivity() {
                             null,
                             SeSelector.AidSelector(
                                     SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAidPrefix)), null, SeSelector.AidSelector.FileOccurrence.FIRST,
-                                    SeSelector.AidSelector.FileControlInformation.FCI),
-                            "Initial selection #1")))
+                                    SeSelector.AidSelector.FileControlInformation.FCI))))
                     /* Do the selection and display the result */
                     doAndAnalyseSelection(seReader, seSelection, 1, seAidPrefix)
 
@@ -208,8 +204,7 @@ class CoreExamplesActivity : ExamplesActivity() {
                             null,
                             SeSelector.AidSelector(
                                     SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAidPrefix)), null, SeSelector.AidSelector.FileOccurrence.NEXT,
-                                    SeSelector.AidSelector.FileControlInformation.FCI),
-                            "Next selection #2")))
+                                    SeSelector.AidSelector.FileControlInformation.FCI))))
 
                     /* Do the selection and display the result */
                     doAndAnalyseSelection(seReader, seSelection, 2, seAidPrefix)

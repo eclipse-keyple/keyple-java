@@ -174,7 +174,7 @@ public class SeRequestTest {
         SeSelector.AidSelector aidSelector = new SeSelector.AidSelector(
                 new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex("AABBCCDDEEFF")),
                 selectionStatusCode);
-        SeSelector seSelector = new SeSelector(getASeProtocol(), null, aidSelector, null);
+        SeSelector seSelector = new SeSelector(getASeProtocol(), null, aidSelector);
         return seSelector;
     }
 

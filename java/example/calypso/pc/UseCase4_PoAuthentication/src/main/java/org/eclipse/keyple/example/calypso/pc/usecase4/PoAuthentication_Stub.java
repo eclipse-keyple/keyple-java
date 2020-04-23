@@ -147,12 +147,11 @@ public class PoAuthentication_Stub {
              * Calypso selection: configures a PoSelectionRequest with all the desired attributes to
              * make the selection and read additional information afterwards
              */
-            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
-                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                    new PoSelector.PoAidSelector(
-                            new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
-                            PoSelector.InvalidatedPo.REJECT),
-                    "AID: " + CalypsoClassicInfo.AID));
+            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
+                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                            new PoSelector.PoAidSelector(
+                                    new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
+                                    PoSelector.InvalidatedPo.REJECT)));
 
             /*
              * Add the selection case to the current selection (we could have added other cases

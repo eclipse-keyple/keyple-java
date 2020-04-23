@@ -103,8 +103,7 @@ public class ExplicitSelectionAid_Pcsc {
                     new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                             new SeSelector.AidSelector(
                                     new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAid)),
-                                    null),
-                            "AID: " + seAid));
+                                    null)));
 
             /*
              * Add the selection case to the current selection (we could have added other cases
