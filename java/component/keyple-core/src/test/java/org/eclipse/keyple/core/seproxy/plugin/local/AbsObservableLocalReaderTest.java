@@ -12,12 +12,17 @@
 package org.eclipse.keyple.core.seproxy.plugin.local;
 
 import static org.mockito.Mockito.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.*;
 import org.eclipse.keyple.core.CoreBaseTest;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.plugin.mock.BlankObservableLocalReader;
 import org.junit.Assert;
@@ -202,6 +207,49 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     }
 
 
+    @Test
+    public void notifySeProcessed_withForceClosing() throws Exception {
+        AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
+        // keep open
+        r.transmit(SeRequestTest.getSeRequestSample(), ChannelControl.KEEP_OPEN);
+        // force closing
+        r.notifySeProcessed();
+        verify(r, times(1)).processSeRequest(null, ChannelControl.CLOSE_AFTER);
+    }
+
+    @Test
+    public void notifySeProcessed_withoutForceClosing() throws Exception {
+        AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
+        SeRequest request = SeRequestTest.getSeRequestSample();
+        // close after
+        r.transmit(request, ChannelControl.CLOSE_AFTER);
+        r.notifySeProcessed();
+
+        // force closing is not called (only the transmit)
+        verify(r, times(0)).processSeRequest(null, ChannelControl.CLOSE_AFTER);
+    }
+
+
+    /*
+     * Observers
+     */
+
+    @Test
+    public void addObserver() throws Exception {
+        AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
+        ObservableReader.ReaderObserver obs = getReaderObserver();
+        r.addObserver(obs);
+        Assert.assertEquals(1, r.countObservers());
+    }
+
+    @Test
+    public void removeObserver() throws Exception {
+        AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
+        ObservableReader.ReaderObserver obs = getReaderObserver();
+        r.addObserver(obs);
+        r.removeObserver(obs);
+        Assert.assertEquals(0, r.countObservers());
+    }
 
     /*
      * HELPERS
@@ -260,16 +308,14 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
 
 
 
-    static public AbstractObservableLocalReader getSpy(String pluginName, String readerName) {
+    static public AbstractObservableLocalReader getSpy(String pluginName, String readerName)
+            throws KeypleReaderException {
         AbstractObservableLocalReader r =
                 Mockito.spy(new BlankObservableLocalReader(pluginName, readerName));
-
-        /*
-         * doCallRealMethod().when(r).initStates(); doCallRealMethod().when(r).getCurrentState();
-         * doCallRealMethod().when(r).setCurrentState(any(AbstractObservableState.class));
-         * doCallRealMethod().when(r).switchState(any(AbstractObservableState.MonitoringState.class)
-         * ); doCallRealMethod().when(r).startSeDetection(any(ObservableReader.PollingMode.class));
-         */
+        doReturn(SeResponseTest.getASeResponse()).when(r).processSeRequest(any(SeRequest.class),
+                any(ChannelControl.class));
+        doReturn(getSeResponses()).when(r).processSeRequestSet(any(Set.class),
+                any(MultiSeRequestProcessing.class), any(ChannelControl.class));
         return r;
     }
 
@@ -290,5 +336,16 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         return Arrays.asList(seResponse);
     }
 
+    static public ObservableReader.ReaderObserver getReaderObserver() {
+        return new ObservableReader.ReaderObserver() {
+            @Override
+            public void update(ReaderEvent readerEvent) {}
+        };
+    }
 
+    static public List<SeResponse> getSeResponses() {
+        List<SeResponse> responses = new ArrayList<SeResponse>();
+        responses.add(SeResponseTest.getASeResponse());
+        return responses;
+    }
 }

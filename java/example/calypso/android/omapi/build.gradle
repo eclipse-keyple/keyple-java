@@ -118,10 +118,10 @@ dependencies {
     Keyple dependencies
      */
     //import the last version of keyple-java-core
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: '+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: keyple_v
 
     //import the last version of keyple-java-calypso
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: '+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: keyple_v
 
     //import the last version of keyple-java-plugin-omapi
     implementation group: 'org.eclipse.keyple', name: 'keyple-android-plugin-omapi', version: '+'

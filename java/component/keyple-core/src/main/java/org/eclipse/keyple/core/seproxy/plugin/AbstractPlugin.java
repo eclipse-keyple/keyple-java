@@ -11,36 +11,22 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
-import java.util.Map;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
+import org.eclipse.keyple.core.seproxy.AbstractSeProxyComponent;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
-import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.*;
-import org.eclipse.keyple.core.util.Configurable;
-import org.eclipse.keyple.core.util.Nameable;
-import org.eclipse.keyple.core.util.Observable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Observable plugin. These plugin can report when a reader is added or removed.
  */
-public abstract class AbstractPlugin extends Observable<PluginEvent>
-        implements ReaderPlugin, Nameable, Configurable {
-
-    private static final Logger logger = LoggerFactory.getLogger(AbstractPlugin.class);
-
-    /** The plugin name (must be unique) */
-    private final String name;
+public abstract class AbstractPlugin extends AbstractSeProxyComponent implements ReaderPlugin {
 
     /**
      * The list of readers
      */
-    protected SortedSet<SeReader> readers = null;
-
+    protected ConcurrentSkipListSet<SeReader> readers = new ConcurrentSkipListSet<SeReader>();
 
     /**
      * Instantiates a new ReaderPlugin. Retrieve the current readers list.
@@ -52,24 +38,14 @@ public abstract class AbstractPlugin extends Observable<PluginEvent>
      * @param name name of the plugin
      */
     protected AbstractPlugin(String name) {
-        this.name = name;
+        super(name);
 
         try {
-            readers = initNativeReaders();
+            readers.addAll(initNativeReaders());
         } catch (KeypleReaderException e) {
             throw new KeypleRuntimeException("Could not instantiate readers in plugin constructor",
                     e);
         }
-    }
-
-    /**
-     * Gets the plugin name
-     *
-     * @return the plugin name string
-     */
-    @Override
-    public final String getName() {
-        return name;
     }
 
     /**
@@ -82,10 +58,6 @@ public abstract class AbstractPlugin extends Observable<PluginEvent>
      */
     @Override
     public final SortedSet<SeReader> getReaders() {
-        if (readers == null) {
-            throw new KeypleRuntimeException(
-                    "Readers list is null, it has not been initialized properly, check initNativeReaders()");
-        }
         return readers;
     }
 
@@ -145,67 +117,5 @@ public abstract class AbstractPlugin extends Observable<PluginEvent>
             }
         }
         throw new KeypleReaderNotFoundException(name);
-    }
-
-    /**
-     * Add a plugin observer.
-     * <p>
-     * The observer will receive all the events produced by this plugin (reader insertion, removal,
-     * etc.)
-     *
-     * @param observer the observer object
-     */
-    public void addObserver(ObservablePlugin.PluginObserver observer) {
-        logger.trace("[{}] addObserver => Adding '{}' as an observer of '{}'.",
-                this.getClass().getSimpleName(), observer.getClass().getSimpleName(),
-                this.getName());
-        super.addObserver(observer);
-    }
-
-    /**
-     * Remove a plugin observer.
-     * <p>
-     * The observer will do not receive any of the events produced by this plugin.
-     *
-     * @param observer the observer object
-     */
-    public void removeObserver(ObservablePlugin.PluginObserver observer) {
-        logger.trace("[{}] removeObserver => Deleting a plugin observer", this.getName());
-        super.removeObserver(observer);
-    }
-
-    /**
-     * This method shall be called only from a SE Proxy plugin implementing AbstractPlugin. Push a
-     * PluginEvent of the selected AbstractPlugin to its registered Observer.
-     *
-     * @param event the event
-     */
-    @Override
-    public final void notifyObservers(final PluginEvent event) {
-
-        logger.trace(
-                "[{}] AbstractPlugin => Notifying a plugin event to {} observers. EVENTNAME = {} ",
-                this.getName(), this.countObservers(), event.getEventType().getName());
-
-        setChanged();
-
-        super.notifyObservers(event);
-    }
-
-    /**
-     * Set a list of parameters on a plugin.
-     * <p>
-     * See {@link #setParameter(String, String)} for more details
-     *
-     * @param parameters the new parameters
-     * @throws KeypleException This method can fail when disabling the exclusive mode as it's
-     *         executed instantly
-     */
-    @Override
-    public final void setParameters(Map<String, String> parameters)
-            throws IllegalArgumentException, KeypleException {
-        for (Map.Entry<String, String> en : parameters.entrySet()) {
-            setParameter(en.getKey(), en.getValue());
-        }
     }
 }

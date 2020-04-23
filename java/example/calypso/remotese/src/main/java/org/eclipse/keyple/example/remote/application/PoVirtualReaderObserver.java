@@ -26,6 +26,7 @@ import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
@@ -115,6 +116,8 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
                 } catch (KeypleReaderException e) {
                     e.printStackTrace();
                 } catch (CalypsoNoSamResourceAvailableException e) {
+                    e.printStackTrace();
+                } catch (KeypleAllocationReaderException e) {
                     e.printStackTrace();
                 } finally {
                     /**

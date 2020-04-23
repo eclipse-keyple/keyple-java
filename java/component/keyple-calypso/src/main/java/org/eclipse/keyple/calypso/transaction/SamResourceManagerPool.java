@@ -15,6 +15,7 @@ import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableExcepti
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +44,8 @@ public class SamResourceManagerPool extends SamResourceManager {
 
     @Override
     public SamResource allocateSamResource(AllocationMode allocationMode,
-            SamIdentifier samIdentifier)
-            throws KeypleReaderException, CalypsoNoSamResourceAvailableException {
+            SamIdentifier samIdentifier) throws KeypleReaderException,
+            CalypsoNoSamResourceAvailableException, KeypleAllocationReaderException {
         long maxBlockingDate = System.currentTimeMillis() + MAX_BLOCKING_TIME;
         boolean noSamResourceLogged = false;
         logger.debug("Allocating SAM reader channel...");

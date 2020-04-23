@@ -11,7 +11,9 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin.local;
 
+import java.util.ArrayList;
 import java.util.List;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -79,7 +81,8 @@ import org.slf4j.LoggerFactory;
  * WAIT_FOR_START_DETECTION state according the polling mode (ObservableReader.PollingMode).
  * </ol>
  */
-public abstract class AbstractObservableLocalReader extends AbstractLocalReader {
+public abstract class AbstractObservableLocalReader extends AbstractLocalReader
+        implements ObservableReader {
     /** logger */
     private static final Logger logger =
             LoggerFactory.getLogger(AbstractObservableLocalReader.class);
@@ -110,6 +113,14 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
         TIME_OUT
     }
 
+    /* The observers of this object */
+    private List<ObservableReader.ReaderObserver> observers;
+    /*
+     * this object will be used to synchronize the access to the observers list in order to be
+     * thread safe
+     */
+    private final Object sync = new Object();
+
     /* Service that handles Internal Events and their impact on the current state of the reader */
     protected ObservableReaderStateService stateService;
 
@@ -121,7 +132,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      * Make sure to initialize the stateService in your reader constructor with stateService =
      * initStateService()
      * <p>
-     * 
+     *
      * @return initialized state stateService with possible states and the init state
      */
     protected abstract ObservableReaderStateService initStateService();
@@ -139,6 +150,130 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
         super(pluginName, readerName);
     }
 
+    /**
+     * Add a {@link ObservableReader.ReaderObserver}.
+     * <p>
+     * The observer will receive all the events produced by this reader (se insertion, removal,
+     * etc.)
+     *
+     * @param observer the observer object
+     */
+    @Override
+    public final void addObserver(final ObservableReader.ReaderObserver observer) {
+        if (observer == null) {
+            return;
+        }
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("Adding '{}' as an observer of '{}'.", observer.getClass().getSimpleName(),
+                    getName());
+        }
+
+        synchronized (sync) {
+            if (observers == null) {
+                observers = new ArrayList<ReaderObserver>(1);
+            }
+            observers.add(observer);
+        }
+    }
+
+    /**
+     * Remove a {@link ObservableReader.ReaderObserver}.
+     * <p>
+     * The observer will do not receive any of the events produced by this reader.
+     *
+     * @param observer the observer object
+     */
+    @Override
+    public final void removeObserver(final ObservableReader.ReaderObserver observer) {
+        if (observer == null) {
+            return;
+        }
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("[{}] Deleting a reader observer", getName());
+        }
+
+        synchronized (sync) {
+            if (observers != null) {
+                observers.remove(observer);
+            }
+        }
+    }
+
+    /**
+     * Notify all registered observers with the provided {@link ReaderEvent}
+     *
+     * @param event the reader event
+     */
+    @Override
+    public final void notifyObservers(final ReaderEvent event) {
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("[{}] Notifying a reader event to {} observers. EVENTNAME = {}", getName(),
+                    this.countObservers(), event.getEventType().getName());
+        }
+
+        List<ObservableReader.ReaderObserver> observersCopy;
+
+        synchronized (sync) {
+            if (observers == null) {
+                return;
+            }
+            observersCopy = new ArrayList<ReaderObserver>(observers);
+        }
+
+        for (ObservableReader.ReaderObserver observer : observersCopy) {
+            observer.update(event);
+        }
+    }
+
+    /**
+     * @return the number of observers
+     */
+    @Override
+    public final int countObservers() {
+        return observers == null ? 0 : observers.size();
+    }
+
+    /**
+     * Remove all observers at once
+     */
+    @Override
+    public final void clearObservers() {
+        if (observers != null) {
+            this.observers.clear();
+        }
+    }
+
+    /**
+     * Allows the application to signal the end of processing and thus proceed with the removal
+     * sequence, followed by a restart of the card search.
+     * <p>
+     * Do nothing if the closing of the physical channel has already been requested.
+     * <p>
+     * Send a request without APDU just to close the physical channel if it has not already been
+     * closed.
+     *
+     */
+    public final void notifySeProcessed() {
+        if (forceClosing) {
+            try {
+                // close the physical channel thanks to CLOSE_AFTER flag
+                processSeRequest(null, ChannelControl.CLOSE_AFTER);
+                if (logger.isTraceEnabled()) {
+                    logger.trace(
+                            "Explicit communication closing requested, starting removal sequence.");
+                }
+            } catch (KeypleReaderException e) {
+                logger.error("KeypleReaderException while terminating. {}", e.getMessage());
+            }
+        } else {
+            if (logger.isTraceEnabled()) {
+                logger.trace("Explicit physical channel closing already requested.");
+            }
+        }
+    }
 
     /**
      * Check the presence of a SE
@@ -150,8 +285,9 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      *
      * @return true if the SE is present
      */
+    @Deprecated // will change in a later version
     @Override
-    public boolean isSePresent() throws KeypleReaderIOException {
+    public final boolean isSePresent() throws KeypleReaderIOException {
         if (checkSePresence()) {
             return true;
         } else {
@@ -180,9 +316,10 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      *        the SE detection is restarted, if SINGLESHOT, the SE detection is stopped until a new
      *        call to startSeDetection is made.
      */
-    public void startSeDetection(ObservableReader.PollingMode pollingMode) {
-        logger.trace("[{}] startSeDetection => start Se Detection with pollingMode {}",
-                this.getName(), pollingMode);
+    public final void startSeDetection(ObservableReader.PollingMode pollingMode) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("[{}] start Se Detection with pollingMode {}", getName(), pollingMode);
+        }
         this.currentPollingMode = pollingMode;
         this.stateService.onEvent(InternalEvent.START_DETECT);
     }
@@ -193,8 +330,10 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      * This method must be overloaded by readers depending on the particularity of their management
      * of the start of SE detection.
      */
-    public void stopSeDetection() {
-        logger.trace("[{}] stopSeDetection => stop Se Detection", this.getName());
+    public final void stopSeDetection() {
+        if (logger.isTraceEnabled()) {
+            logger.trace("[{}] stop Se Detection", getName());
+        }
         this.stateService.onEvent(InternalEvent.STOP_DETECT);
     }
 
@@ -213,7 +352,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      *        when a SE is inserted
      * @param notificationMode the notification mode enum (ALWAYS or MATCHED_ONLY)
      */
-    public void setDefaultSelectionRequest(
+    public final void setDefaultSelectionRequest(
             AbstractDefaultSelectionsRequest defaultSelectionsRequest,
             ObservableReader.NotificationMode notificationMode) {
         this.defaultSelectionsRequest = (DefaultSelectionsRequest) defaultSelectionsRequest;
@@ -231,7 +370,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      *        the SE detection is restarted, if STOP, the SE detection is stopped until a new call
      *        to startSeDetection is made.
      */
-    public void setDefaultSelectionRequest(
+    public final void setDefaultSelectionRequest(
             AbstractDefaultSelectionsRequest defaultSelectionsRequest,
             ObservableReader.NotificationMode notificationMode,
             ObservableReader.PollingMode pollingMode) {
@@ -250,9 +389,11 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      * change to the WAIT_FOR_START_DETECTION or WAIT_FOR_SE_INSERTION state depending on what was
      * set when the detection was started.
      */
+    @Deprecated // will change in a later version
     protected void startRemovalSequence() {
-        logger.trace("[{}] startRemovalSequence => start removal sequence of the reader",
-                this.getName());
+        if (logger.isTraceEnabled()) {
+            logger.trace("[{}] start removal sequence of the reader", getName());
+        }
         this.stateService.onEvent(InternalEvent.SE_PROCESSED);
     }
 
@@ -278,16 +419,18 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      * @return ReaderEvent that should be notified to observers, contains the results of the default
      *         selection if any, can be null if no event should be sent
      */
+    @Deprecated // will change in a later version
     public final ReaderEvent processSeInserted() {
-        logger.trace("[{}] processSeInserted => process the inserted se", this.getName());
-        boolean presenceNotified = false;
+        if (logger.isTraceEnabled()) {
+            logger.trace("[{}] process the inserted se", getName());
+        }
         if (defaultSelectionsRequest == null) {
-            logger.trace(
-                    "[{}] processSeInserted => no default selection request defined, notify SE_INSERTED",
-                    this.getName());
+            if (logger.isTraceEnabled()) {
+                logger.trace("[{}] no default selection request defined, notify SE_INSERTED",
+                        getName());
+            }
             /* no default request is defined, just notify the SE insertion */
-            presenceNotified = true;
-            return new ReaderEvent(this.pluginName, this.name, ReaderEvent.EventType.SE_INSERTED,
+            return new ReaderEvent(getPluginName(), getName(), ReaderEvent.EventType.SE_INSERTED,
                     null);
         } else {
             /*
@@ -303,8 +446,9 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
 
                 for (SeResponse seResponse : seResponseList) {
                     if (seResponse != null && seResponse.getSelectionStatus().hasMatched()) {
-                        logger.trace("[{}] processSeInserted => a default selection has matched",
-                                this.getName());
+                        if (logger.isTraceEnabled()) {
+                            logger.trace("[{}] a default selection has matched", getName());
+                        }
                         aSeMatched = true;
                         break;
                     }
@@ -313,23 +457,22 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                 if (notificationMode == ObservableReader.NotificationMode.MATCHED_ONLY) {
                     /* notify only if a SE matched the selection, just ignore if not */
                     if (aSeMatched) {
-                        presenceNotified = true;
-                        return new ReaderEvent(this.pluginName, this.name,
+                        return new ReaderEvent(getPluginName(), getName(),
                                 ReaderEvent.EventType.SE_MATCHED,
                                 new DefaultSelectionsResponse(seResponseList));
                     } else {
-                        logger.trace(
-                                "[{}] processSeInserted => selection hasn't matched"
-                                        + " do not thrown any event because of MATCHED_ONLY flag",
-                                this.getName());
+                        if (logger.isTraceEnabled()) {
+                            logger.trace("[{}] selection hasn't matched"
+                                    + " do not thrown any event because of MATCHED_ONLY flag",
+                                    getName());
+                        }
                         return null;
                     }
                 } else {
                     // ObservableReader.NotificationMode.ALWAYS
                     if (aSeMatched) {
-                        presenceNotified = true;
                         /* The SE matched, notify a SE_MATCHED event with the received response */
-                        return new ReaderEvent(this.pluginName, this.name,
+                        return new ReaderEvent(getPluginName(), getName(),
                                 ReaderEvent.EventType.SE_MATCHED,
                                 new DefaultSelectionsResponse(seResponseList));
                     } else {
@@ -337,11 +480,11 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                          * The SE didn't match, notify an SE_INSERTED event with the received
                          * response
                          */
-                        logger.trace(
-                                "[{}] processSeInserted => none of {} default selection matched",
-                                this.getName(), seResponseList.size());
-                        presenceNotified = true;
-                        return new ReaderEvent(this.pluginName, this.name,
+                        if (logger.isTraceEnabled()) {
+                            logger.trace("[{}] none of {} default selection matched", getName(),
+                                    seResponseList.size());
+                        }
+                        return new ReaderEvent(getPluginName(), getName(),
                                 ReaderEvent.EventType.SE_INSERTED,
                                 new DefaultSelectionsResponse(seResponseList));
                     }
@@ -349,20 +492,21 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
             } catch (KeypleReaderException e) {
                 /* the last transmission failed, close the logical and physical channels */
                 closeLogicalAndPhysicalChannels();
-                logger.debug("An IO Exception occurred while processing the default selection. {}",
-                        e.getMessage());
+                if (logger.isDebugEnabled()) {
+                    logger.debug(
+                            "An IO Exception occurred while processing the default selection. {}",
+                            e.getMessage());
+                }
                 // in this case the SE has been removed or not read correctly, do not throw event
             }
         }
 
-        if (!presenceNotified) {
-            // We close here the physical channel in case it has been opened for a SE outside the
-            // expected SEs
-            try {
-                closePhysicalChannel();
-            } catch (KeypleReaderIOException e) {
-                logger.error("Error while closing physical channel. {}", e.getMessage());
-            }
+        // We close here the physical channel in case it has been opened for a SE outside the
+        // expected SEs
+        try {
+            closePhysicalChannel();
+        } catch (KeypleReaderIOException e) {
+            logger.error("Error while closing physical channel. {}", e.getMessage());
         }
         // no event returned
         return null;
@@ -379,16 +523,21 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      *
      * @return true if the SE still responds, false if not
      */
+    @Deprecated // will change in a later version
     public boolean isSePresentPing() {
         // APDU sent to check the communication with the PO
         final byte[] apdu = {(byte) 0x00, (byte) 0xC0, (byte) 0x00, (byte) 0x00, (byte) 0x00};
         // transmits the APDU and checks for the IO exception.
         try {
-            logger.trace("[{}] Ping SE", this.getName());
+            if (logger.isTraceEnabled()) {
+                logger.trace("[{}] Ping SE", getName());
+            }
             transmitApdu(apdu);
         } catch (KeypleReaderIOException e) {
-            logger.trace("[{}] Exception occurred in isSePresentPing. Message: {}", this.getName(),
-                    e.getMessage());
+            if (logger.isTraceEnabled()) {
+                logger.trace("[{}] Exception occurred in isSePresentPing. Message: {}", getName(),
+                        e.getMessage());
+            }
             return false;
         }
         return true;
@@ -405,9 +554,10 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      * reader only)
      *
      */
+    @Deprecated // will change in a later version
     public final void processSeRemoved() {
         closeLogicalAndPhysicalChannels();
-        notifyObservers(new ReaderEvent(this.pluginName, this.name,
+        notifyObservers(new ReaderEvent(getPluginName(), getName(),
                 ReaderEvent.EventType.SE_REMOVED, null));
     }
 
@@ -416,6 +566,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      * 
      * @return the current polling mode
      */
+    @Deprecated // will change in a later version
     public ObservableReader.PollingMode getPollingMode() {
         return currentPollingMode;
     }
@@ -426,6 +577,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      *
      * @param stateId : new stateId
      */
+    @Deprecated // will change in a later version
     protected void switchState(AbstractObservableState.MonitoringState stateId) {
         this.stateService.switchState(stateId);
     }
@@ -435,6 +587,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      * 
      * @return current getMonitoringState
      */
+    @Deprecated // will change in a later version
     public AbstractObservableState.MonitoringState getCurrentMonitoringState() {
         return this.stateService.getCurrentMonitoringState();
     }
@@ -445,6 +598,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      *
      * @param event internal event
      */
+    @Deprecated // will change in a later version
     public void onEvent(InternalEvent event) {
         this.stateService.onEvent(event);
     }

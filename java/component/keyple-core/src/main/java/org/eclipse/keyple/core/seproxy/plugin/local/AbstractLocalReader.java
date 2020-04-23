@@ -107,6 +107,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
     /**
      * Close both logical and physical channels
      */
+    @Deprecated // will change in a later version
     protected void closeLogicalAndPhysicalChannels() {
         closeLogicalChannel();
         try {
@@ -227,6 +228,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      *         matching status flag).
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
+    @Deprecated // will change in a later version
     protected SelectionStatus openLogicalChannel(SeSelector seSelector)
             throws KeypleReaderIOException {
         byte[] atr = getATR();
@@ -313,6 +315,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      *         but they can't be both null at the same time.
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
+    @Deprecated // will change in a later version
     protected final SelectionStatus openLogicalChannelAndSelect(SeSelector seSelector)
             throws KeypleReaderIOException {
 
@@ -370,6 +373,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      *
      * @return true if the logical channel is open
      */
+    @Deprecated // will change in a later version
     final boolean isLogicalChannelOpen() {
         return logicalChannelIsOpen;
     }
@@ -377,6 +381,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
     /**
      * Close the logical channel.
      */
+    @Deprecated // will change in a later version
     private void closeLogicalChannel() {
         logger.trace("[{}] closeLogicalChannel => Closing of the logical channel.", this.getName());
         logicalChannelIsOpen = false;

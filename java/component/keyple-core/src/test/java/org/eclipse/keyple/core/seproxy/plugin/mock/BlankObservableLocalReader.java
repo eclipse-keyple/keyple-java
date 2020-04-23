@@ -106,5 +106,4 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
     public void setParameter(String key, String value) throws KeypleReaderIOException {
 
     }
-
 }

@@ -12,6 +12,7 @@
 package org.eclipse.keyple.plugin.stub;
 
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.junit.*;
@@ -83,7 +84,8 @@ public class StubPoolPluginTest extends BaseStubTest {
      * Allocate one reader
      */
     @Test
-    public void allocate_success() throws InterruptedException, KeypleReaderException {
+    public void allocate_success()
+            throws InterruptedException, KeypleReaderException, KeypleAllocationReaderException {
         // init stubPoolPlugin
         StubPoolPluginImpl stubPoolPlugin =
                 (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)
@@ -108,8 +110,9 @@ public class StubPoolPluginTest extends BaseStubTest {
     /**
      * Allocate twice the same reader, it does throw any error as no concurrency is managed
      */
-    @Test
-    public void allocate_twice() throws InterruptedException, KeypleReaderException {
+    @Test(expected = KeypleAllocationReaderException.class)
+    public void allocate_twice()
+            throws InterruptedException, KeypleReaderException, KeypleAllocationReaderException {
         // init stubPoolPlugin
         StubPoolPluginImpl stubPoolPlugin =
                 (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)
@@ -123,15 +126,14 @@ public class StubPoolPluginTest extends BaseStubTest {
         SeReader seReader = stubPoolPlugin.allocateReader("group1");
         SeReader seReader2 = stubPoolPlugin.allocateReader("group1");
 
-        // check reader has been allocated twice
-        Assert.assertNull(seReader2);
     }
 
     /**
      * Release one reader
      */
     @Test
-    public void release_success() throws InterruptedException, KeypleReaderException {
+    public void release_success()
+            throws InterruptedException, KeypleReaderException, KeypleAllocationReaderException {
         // init stubPoolPlugin
         StubPoolPluginImpl stubPoolPlugin =
                 (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)
