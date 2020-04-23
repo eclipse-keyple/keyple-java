@@ -13,6 +13,7 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import java.util.SortedSet;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTxPoolEngine;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
@@ -57,7 +58,7 @@ class RemoteSePoolPluginImpl extends RemoteSePluginImpl implements RemoteSePoolP
     }
 
     @Override
-    public SeReader allocateReader(String groupReference) {
+    public SeReader allocateReader(String groupReference) throws KeypleAllocationReaderException {
 
         if (slaveNodeId == null) {
             throw new IllegalStateException(
@@ -71,7 +72,8 @@ class RemoteSePoolPluginImpl extends RemoteSePluginImpl implements RemoteSePoolP
             // blocking call
             return allocate.execute(rmTxEngine);
         } catch (KeypleRemoteException e) {
-            return null;// todo throw exception here
+            throw new KeypleAllocationReaderException(
+                    "Reader Allocation failed for group reference: " + groupReference, e);
         }
 
     }
@@ -92,7 +94,7 @@ class RemoteSePoolPluginImpl extends RemoteSePluginImpl implements RemoteSePoolP
 
         VirtualReaderImpl virtualReader = (VirtualReaderImpl) seReader;
 
-        // call remote method for allocateReader
+        // call remote method for releaseReader
         RmPoolReleaseTx releaseTx = new RmPoolReleaseTx(virtualReader.getNativeReaderName(),
                 virtualReader.getName(), this, this.dtoSender,
                 virtualReader.getSession().getSessionId(), slaveNodeId, dtoSender.getNodeId());

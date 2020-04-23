@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
-import java.util.SortedSet;
+import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
@@ -25,12 +25,12 @@ import org.slf4j.LoggerFactory;
  * The {@link AbstractThreadedObservablePlugin} class provides the means to observe a plugin
  * (insertion/removal of readers) using a monitoring thread.
  */
-public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin {
+public abstract class AbstractThreadedObservablePlugin extends AbstractObservablePlugin {
     private static final Logger logger =
             LoggerFactory.getLogger(AbstractThreadedObservablePlugin.class);
 
     /**
-     * Instantiates a observable plugin.
+     * Instantiates a threaded observable plugin.
      *
      * @param name name of the plugin
      */
@@ -61,19 +61,18 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin {
     /**
      * Add a plugin observer.
      * <p>
-     * The observer will receive all the events produced by this plugin (reader insertion, removal,
-     * etc.)
-     * <p>
-     * In the case of a {@link AbstractThreadedObservablePlugin}, a thread is created if it does not
-     * already exist (when the first observer is added).
+     * Overrides the method defined in {@link AbstractObservablePlugin}, a thread is created if it
+     * does not already exist (when the first observer is added).
      *
      * @param observer the observer object
      */
     @Override
-    public final void addObserver(ObservablePlugin.PluginObserver observer) {
+    public final void addObserver(final ObservablePlugin.PluginObserver observer) {
         super.addObserver(observer);
-        if (this instanceof AbstractThreadedObservablePlugin && super.countObservers() == 1) {
-            logger.debug("Start monitoring the plugin {}", this.getName());
+        if (countObservers() == 1) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Start monitoring the plugin {}", this.getName());
+            }
             thread = new EventThread(this.getName());
             thread.start();
         }
@@ -82,29 +81,37 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin {
     /**
      * Remove a plugin observer.
      * <p>
-     * The observer will do not receive any of the events produced by this plugin.
-     * <p>
-     * In the case of a {@link AbstractThreadedObservablePlugin}, the monitoring thread is ended
-     * when the last observer is removed.
+     * Overrides the method defined in {@link AbstractObservablePlugin}, the monitoring thread is
+     * ended when the last observer is removed.
      *
      * @param observer the observer object
      */
     @Override
-    public final void removeObserver(ObservablePlugin.PluginObserver observer) {
+    public final void removeObserver(final ObservablePlugin.PluginObserver observer) {
         super.removeObserver(observer);
-        if (super.countObservers() == 0) {
-            logger.debug("Stop the plugin monitoring.");
+        if (countObservers() == 0) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Stop the plugin monitoring.");
+            }
             if (thread != null) {
                 thread.end();
             }
         }
     }
 
+    /**
+     * Remove all observers at once
+     * <p>
+     * Overrides the method defined in {@link AbstractObservablePlugin}, the thread is ended.
+     */
+    @Deprecated // will change in a later version
     @Override
-    public void clearObservers() {
+    public final void clearObservers() {
         super.clearObservers();
         if (thread != null) {
-            logger.debug("Stop the plugin monitoring.");
+            if (logger.isDebugEnabled()) {
+                logger.debug("Stop the plugin monitoring.");
+            }
             thread.end();
         }
     }
@@ -114,6 +121,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin {
      * 
      * @return true, if the background job is monitoring, false in all other cases.
      */
+    @Deprecated // will change in a later version
     protected Boolean isMonitoring() {
         return thread != null && thread.isAlive() && thread.isMonitoring();
     }
@@ -190,7 +198,9 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin {
                         /* notify disconnections if any and update the reader list */
                         if (!changedReaderNames.isEmpty()) {
                             /* grouped notification */
-                            logger.trace("Notifying disconnection(s): {}", changedReaderNames);
+                            if (logger.isTraceEnabled()) {
+                                logger.trace("Notifying disconnection(s): {}", changedReaderNames);
+                            }
                             notifyObservers(new PluginEvent(this.pluginName, changedReaderNames,
                                     PluginEvent.EventType.READER_DISCONNECTED));
                             /* list update */
@@ -206,9 +216,11 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin {
                                         ((ObservableReader) reader).stopSeDetection();
                                     }
                                     readers.remove(reader);
-                                    logger.trace(
-                                            "[{}][{}] Plugin thread => Remove unplugged reader from readers list.",
-                                            this.pluginName, reader.getName());
+                                    if (logger.isTraceEnabled()) {
+                                        logger.trace(
+                                                "[{}][{}] Plugin thread => Remove unplugged reader from readers list.",
+                                                this.pluginName, reader.getName());
+                                    }
                                     /* remove reader name from the current list */
                                     nativeReadersNames.remove(reader.getName());
 
@@ -227,16 +239,20 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin {
                                 readers.add(reader);
                                 /* add to the notification list */
                                 changedReaderNames.add(readerName);
-                                logger.trace(
-                                        "[{}][{}] Plugin thread => Add plugged reader to readers list.",
-                                        this.pluginName, reader.getName());
+                                if (logger.isTraceEnabled()) {
+                                    logger.trace(
+                                            "[{}][{}] Plugin thread => Add plugged reader to readers list.",
+                                            this.pluginName, reader.getName());
+                                }
                                 /* add reader name to the current list */
                                 nativeReadersNames.add(readerName);
                             }
                         }
                         /* notify connections if any */
                         if (!changedReaderNames.isEmpty()) {
-                            logger.trace("Notifying connection(s): {}", changedReaderNames);
+                            if (logger.isTraceEnabled()) {
+                                logger.trace("Notifying connection(s): {}", changedReaderNames);
+                            }
                             notifyObservers(new PluginEvent(this.pluginName, changedReaderNames,
                                     PluginEvent.EventType.READER_CONNECTED));
                         }
@@ -264,7 +280,9 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin {
     @Override
     protected void finalize() throws Throwable {
         thread.end();
-        logger.trace("[{}] Observable Plugin thread ended.", this.getName());
+        if (logger.isTraceEnabled()) {
+            logger.trace("[{}] Observable Plugin thread ended.", this.getName());
+        }
         super.finalize();
     }
 }

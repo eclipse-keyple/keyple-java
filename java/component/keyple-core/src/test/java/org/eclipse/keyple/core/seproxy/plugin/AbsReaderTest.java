@@ -11,7 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
-import static org.eclipse.keyple.core.seproxy.ChannelControl.CLOSE_AFTER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -23,8 +22,6 @@ import java.util.Set;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeRequestTest;
@@ -98,29 +95,6 @@ public class AbsReaderTest extends CoreBaseTest {
         Assert.assertNotNull(responses);
     }
 
-    @Test
-    public void ts_notifySeProcessed_withForceClosing() throws Exception {
-        AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
-        Set<SeRequest> set = getSeRequestSet();
-        // keep open
-        r.transmitSet(set, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
-        // force closing
-        r.notifySeProcessed();
-        verify(r, times(1)).processSeRequest(null, CLOSE_AFTER);
-    }
-
-    @Test
-    public void ts_notifySeProcessed_withoutForceClosing() throws Exception {
-        AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
-        Set<SeRequest> set = getSeRequestSet();
-        // close after
-        r.transmitSet(set, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
-        r.notifySeProcessed();
-
-        // force closing is not called (only the transmit)
-        verify(r, times(0)).processSeRequest(null, CLOSE_AFTER);
-    }
-
     /*
      * Transmit
      */
@@ -145,53 +119,6 @@ public class AbsReaderTest extends CoreBaseTest {
         verify(r, times(1)).processSeRequest(request, ChannelControl.CLOSE_AFTER);
         Assert.assertNotNull(response);
     }
-
-
-    @Test
-    public void notifySeProcessed_withForceClosing() throws Exception {
-        AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
-        // keep open
-        r.transmit(SeRequestTest.getSeRequestSample(), ChannelControl.KEEP_OPEN);
-        // force closing
-        r.notifySeProcessed();
-        verify(r, times(1)).processSeRequest(null, CLOSE_AFTER);
-    }
-
-    @Test
-    public void notifySeProcessed_withoutForceClosing() throws Exception {
-        AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
-        SeRequest request = SeRequestTest.getSeRequestSample();
-        // close after
-        r.transmit(request, ChannelControl.CLOSE_AFTER);
-        r.notifySeProcessed();
-
-        // force closing is not called (only the transmit)
-        verify(r, times(0)).processSeRequest(null, CLOSE_AFTER);
-    }
-
-
-    /*
-     * Observers
-     */
-
-    @Test
-    public void addObserver() throws Exception {
-        AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
-        ObservableReader.ReaderObserver obs = getReaderObserver();
-        r.addObserver(obs);
-        Assert.assertEquals(1, r.countObservers());
-    }
-
-    @Test
-    public void removeObserver() throws Exception {
-        AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
-        ObservableReader.ReaderObserver obs = getReaderObserver();
-        r.addObserver(obs);
-        r.removeObserver(obs);
-        Assert.assertEquals(0, r.countObservers());
-    }
-
-
 
     /*
      * Helpers
@@ -226,12 +153,4 @@ public class AbsReaderTest extends CoreBaseTest {
         responses.add(SeResponseTest.getASeResponse());
         return responses;
     }
-
-    static public ObservableReader.ReaderObserver getReaderObserver() {
-        return new ObservableReader.ReaderObserver() {
-            @Override
-            public void update(ReaderEvent readerEvent) {}
-        };
-    }
-
 }
