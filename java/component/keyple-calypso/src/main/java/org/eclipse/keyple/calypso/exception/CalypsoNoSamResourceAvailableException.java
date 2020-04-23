@@ -13,14 +13,24 @@ package org.eclipse.keyple.calypso.exception;
 
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 
-public class NoResourceAvailableException extends KeypleBaseException {
+/**
+ * The exception {@code CalypsoNoSamResourceAvailableException} indicates that there are no SAM
+ * resources available.
+ */
+public class CalypsoNoSamResourceAvailableException extends KeypleBaseException {
 
-
-    public NoResourceAvailableException(String message) {
+    /**
+     * @param message the message to identify the exception context
+     */
+    public CalypsoNoSamResourceAvailableException(String message) {
         super(message);
     }
 
-    public NoResourceAvailableException(String message, Throwable cause) {
-        super(message, cause);
+    /**
+     * @param message the message to identify the exception context
+     * @param t the cause
+     */
+    public CalypsoNoSamResourceAvailableException(String message, Throwable t) {
+        super(message, t);
     }
 }

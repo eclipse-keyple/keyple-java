@@ -14,7 +14,7 @@ package org.eclipse.keyple.calypso.transaction;
 
 import java.util.*;
 import java.util.regex.Pattern;
-import org.eclipse.keyple.calypso.exception.NoResourceAvailableException;
+import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -37,16 +37,23 @@ public class SamResourceManagerDefault extends SamResourceManager {
     final SamResourceManagerDefault.ReaderObserver readerObserver;// only used with observable
                                                                   // readers
     protected final ReaderPlugin samReaderPlugin;
-    protected final static int MAX_BLOCKING_TIME = 10000; // 10 sec
+    /* the default maximum time (in milliseconds) during which the BLOCKING mode will wait */
+    private final static int MAX_BLOCKING_TIME = 1000; // 1 sec
+    private final int maxBlockingTime;
     protected final static int POLLING_TIME = 10; // 10 ms
 
     /**
      * Protected constructor, use the {@link SamResourceManagerFactory}
-     * 
-     * @param readerPlugin
-     * @param samReaderFilter
+     *
+     * @param readerPlugin the plugin through which SAM readers are accessible
+     * @param samReaderFilter the regular expression defining how to identify SAM readers among
+     *        others.
+     * @param maxBlockingTime the maximum duration for which the allocateSamResource method will
+     *        attempt to allocate a new reader by retrying (in milliseconds)
+     * @throws KeypleReaderException thrown if an error occurs while getting the readers list.
      */
-    protected SamResourceManagerDefault(ReaderPlugin readerPlugin, String samReaderFilter) {
+    protected SamResourceManagerDefault(ReaderPlugin readerPlugin, String samReaderFilter,
+            int maxBlockingTime) throws KeypleReaderException {
 
         this.samReaderPlugin = readerPlugin;
 
@@ -80,7 +87,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
             logger.trace("Add observer PLUGINNAME = {}", samReaderPlugin.getName());
             ((ObservablePlugin) samReaderPlugin).addObserver(pluginObserver);
         }
-
+        this.maxBlockingTime = maxBlockingTime;
     }
 
     /**
@@ -107,8 +114,9 @@ public class SamResourceManagerDefault extends SamResourceManager {
 
     @Override
     public SamResource allocateSamResource(AllocationMode allocationMode,
-            SamIdentifier samIdentifier) throws NoResourceAvailableException {
-        long maxBlockingDate = System.currentTimeMillis() + MAX_BLOCKING_TIME;
+            SamIdentifier samIdentifier)
+            throws KeypleReaderException, CalypsoNoSamResourceAvailableException {
+        long maxBlockingDate = System.currentTimeMillis() + maxBlockingTime;
         boolean noSamResourceLogged = false;
         logger.trace("Allocating SAM reader channel...");
         while (true) {
@@ -127,7 +135,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
             // loop until MAX_BLOCKING_TIME in blocking mode, only once in non-blocking mode
             if (allocationMode == AllocationMode.NON_BLOCKING) {
                 logger.trace("No SAM resources available at the moment.");
-                throw new NoResourceAvailableException(
+                throw new CalypsoNoSamResourceAvailableException(
                         "No Sam resource could be allocated for samIdentifier +"
                                 + samIdentifier.getGroupReference());
             } else {
@@ -144,10 +152,10 @@ public class SamResourceManagerDefault extends SamResourceManager {
                 }
                 if (System.currentTimeMillis() >= maxBlockingDate) {
                     logger.error("The allocation process failed. Timeout {} sec exceeded .",
-                            (MAX_BLOCKING_TIME / 1000.0));
-                    throw new NoResourceAvailableException(
+                            (maxBlockingTime / 1000.0));
+                    throw new CalypsoNoSamResourceAvailableException(
                             "No Sam resource could be allocated within timeout of "
-                                    + MAX_BLOCKING_TIME + "ms for samIdentifier "
+                                    + maxBlockingTime + "ms for samIdentifier "
                                     + samIdentifier.getGroupReference());
                 }
             }

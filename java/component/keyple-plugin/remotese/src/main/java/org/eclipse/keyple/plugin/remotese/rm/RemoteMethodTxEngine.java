@@ -76,19 +76,28 @@ public class RemoteMethodTxEngine implements DtoHandler, IRemoteMethodTxEngine {
          */
         if (remoteMethodTx == null) {
             /*
-             * Should not happen, response received does not match a request. Ignore it
+             * Response received does not match a request. Ignore it
              */
             logger.error(
                     "RemoteMethodTxEngine receives a KeypleDto response but no remoteMethodTx are defined : "
                             + keypleDto);
+
+        } else {
+
+            /*
+             * Set keypleDto as a response to the remote method Tx (request)
+             */
+            remoteMethodTx.setResponse(keypleDto);
         }
 
-        // only one operation is allowed at the time
-        remoteMethodTx.setResponse(keypleDto);
+        /*
+         * init remote engine to receive a new request
+         */
 
         // re init remoteMethod
         remoteMethodTx = null;
 
+        // no dto should be sent back
         return message.nextTransportDTO(KeypleDtoHelper.NoResponse(keypleDto.getId()));
     }
 
@@ -99,7 +108,9 @@ public class RemoteMethodTxEngine implements DtoHandler, IRemoteMethodTxEngine {
      */
     @Override
     public void register(final AbstractRemoteMethodTx rm) {
-        logger.trace("Register rm to engine : {} {}", rm.getMethodName(), rm.id);
+        if (logger.isTraceEnabled()) {
+            logger.trace("Register RemoteMethod to engine : {} ", rm.id);
+        }
         rm.setRegistered(true);
         remoteMethodTx = rm;
         rm.setDtoSender(sender);

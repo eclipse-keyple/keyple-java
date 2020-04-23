@@ -182,28 +182,31 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
 
         logger.trace("{} EVENT {} ", this.getName(), event.getEventType());
 
-        if (thisReader.countObservers() > 0) {
-            /*
-             * thisReader.notifyObservers(event);
-             */
+        // TODO Check this!!!
+        if (thisReader instanceof VirtualObservableReader) {
+            if (((VirtualObservableReader) thisReader).countObservers() > 0) {
+                /*
+                 * thisReader.notifyObservers(event);
+                 */
 
 
-            // launch event another thread to permit blocking method to be used in update methode
-            // (such as transmit)
-            executorService.execute(new Runnable() {
-                @Override
-                public void run() {
-                    thisReader.notifyObservers(event);
-                }
-            });
+                // launch event another thread to permit blocking method to be used in update
+                // methode
+                // (such as transmit)
+                executorService.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        ((VirtualObservableReader) thisReader).notifyObservers(event);
+                    }
+                });
 
 
-        } else {
-            logger.trace(
-                    "An event was received but no observers are declared into VirtualReader : {} {}",
-                    thisReader.getName(), event.getEventType());
+            } else {
+                logger.trace(
+                        "An event was received but no observers are declared into VirtualReader : {} {}",
+                        thisReader.getName(), event.getEventType());
+            }
         }
-
     }
 
 

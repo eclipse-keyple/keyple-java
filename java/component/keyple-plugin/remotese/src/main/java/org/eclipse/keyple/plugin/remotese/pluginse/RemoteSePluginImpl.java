@@ -11,17 +11,14 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractObservablePlugin;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTxEngine;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
@@ -33,14 +30,12 @@ import org.slf4j.LoggerFactory;
  * Remote SE Plugin Creates a virtual reader when a remote readers connect Manages the dispatch of
  * events received from remote readers
  */
-class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
+class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlugin {
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteSePluginImpl.class);
 
     // in milliseconds, throw an exception if slave hasn't answer during this time
-    public final long rpc_timeout;
-
-    // private final VirtualReaderSessionFactory sessionManager;
+    public final long rpcTimeout;
 
     private final VirtualReaderSessionFactory sessionManager;
     protected final DtoSender dtoSender;
@@ -51,13 +46,13 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
      * by @SeProxyService. Use MasterAPI
      */
     RemoteSePluginImpl(VirtualReaderSessionFactory sessionManager, DtoSender dtoSender,
-            long rpc_timeout, String pluginName) {
+            long rpcTimeout, String pluginName) {
         super(pluginName);
         this.sessionManager = sessionManager;
         logger.info("Init RemoteSePlugin");
         this.dtoSender = dtoSender;
         this.parameters = new HashMap<String, String>();
-        this.rpc_timeout = rpc_timeout;
+        this.rpcTimeout = rpcTimeout;
     }
 
 
@@ -111,13 +106,13 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
          * session and the provided name Virtual Reader can be Observable or not.
          */
         VirtualReaderImpl virtualReader;
-        if (isObservable) {
+        if (Boolean.TRUE.equals(isObservable)) {
             virtualReader = new VirtualObservableReaderImpl(session, nativeReaderName,
-                    new RemoteMethodTxEngine(dtoSender, rpc_timeout), slaveNodeId, transmissionMode,
+                    new RemoteMethodTxEngine(dtoSender, rpcTimeout), slaveNodeId, transmissionMode,
                     options);
         } else {
             virtualReader = new VirtualReaderImpl(session, nativeReaderName,
-                    new RemoteMethodTxEngine(dtoSender, rpc_timeout), slaveNodeId, transmissionMode,
+                    new RemoteMethodTxEngine(dtoSender, rpcTimeout), slaveNodeId, transmissionMode,
                     options);
         }
         readers.add(virtualReader);
@@ -131,7 +126,7 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
 
     /**
      * Remove a virtual reader (internal method)
-     * 
+     *
      * @param nativeReaderName : name of the virtual reader to be deleted
      * @param slaveNodeId : slave node where the remoteReader is hosted
      * @throws KeypleReaderNotFoundException if no virtual reader match the native reader name and
@@ -148,7 +143,9 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
                 slaveNodeId);
 
         // remove observers of reader
-        virtualReader.clearObservers();
+        if (virtualReader instanceof VirtualObservableReader) {
+            ((VirtualObservableReader) virtualReader).clearObservers();
+        }
 
         // remove reader
         readers.remove(virtualReader);
@@ -159,7 +156,7 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
 
     /**
      * Propagate a received event from slave device (internal method)
-     * 
+     *
      * @param event : Reader Event to be propagated
      */
 
@@ -186,7 +183,7 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
     }
 
     @Override
-    public void setParameter(String key, String value) throws IllegalArgumentException {
+    public void setParameter(String key, String value) {
         parameters.put(key, value);
     }
 

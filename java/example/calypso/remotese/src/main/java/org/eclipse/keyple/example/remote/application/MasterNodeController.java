@@ -54,6 +54,8 @@ public class MasterNodeController {
     // DtoNode used as to send and receive KeypleDto to Slaves
     private DtoNode node;
 
+    private static final int MAX_BLOCKING_TIME = 1000; // 1 second
+
     static public long RPC_TIMEOUT = 20000;
 
     static public String STUB_MASTER = "stubMaster";
@@ -137,7 +139,8 @@ public class MasterNodeController {
             /*
              * Configure a Sam Resource Manager
              */
-            samResourceManager = SamResourceManagerFactory.instantiate(samStubPlugin, ".*");
+            samResourceManager =
+                    SamResourceManagerFactory.instantiate(samStubPlugin, ".*", MAX_BLOCKING_TIME);
 
 
             /*

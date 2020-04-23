@@ -14,7 +14,7 @@ package org.eclipse.keyple.example.remote.application;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
-import org.eclipse.keyple.calypso.exception.NoResourceAvailableException;
+import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
@@ -22,6 +22,7 @@ import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -102,7 +103,9 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
                     e.printStackTrace();
                 } catch (KeypleReaderException e) {
                     e.printStackTrace();
-                } catch (NoResourceAvailableException e) {
+                } catch (CalypsoNoSamResourceAvailableException e) {
+                    e.printStackTrace();
+                } catch (KeypleAllocationReaderException e) {
                     e.printStackTrace();
                 } finally {
                     /**
