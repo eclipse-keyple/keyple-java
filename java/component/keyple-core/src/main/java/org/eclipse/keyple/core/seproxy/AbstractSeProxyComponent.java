@@ -12,7 +12,7 @@
 package org.eclipse.keyple.core.seproxy;
 
 import java.util.Map;
-import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.util.Configurable;
 import org.eclipse.keyple.core.util.Nameable;
 
@@ -47,10 +47,10 @@ public abstract class AbstractSeProxyComponent implements Nameable, Configurable
      * See {@link #setParameter(String, String)} for more details
      *
      * @param parameters a Map &lt;String, String&gt; parameter set
-     * @throws KeypleBaseException if one of the parameters could not be set up
+     * @throws KeypleException if one of the parameters could not be set up
      */
     @Override
-    public final void setParameters(Map<String, String> parameters) throws KeypleBaseException {
+    public final void setParameters(Map<String, String> parameters) throws KeypleException {
         for (Map.Entry<String, String> en : parameters.entrySet()) {
             setParameter(en.getKey(), en.getValue());
         }
