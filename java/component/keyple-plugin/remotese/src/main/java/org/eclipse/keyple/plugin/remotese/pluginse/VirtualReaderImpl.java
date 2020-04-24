@@ -121,14 +121,11 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
             // blocking call
             return transmit.execute(rmTxEngine);
         } catch (KeypleRemoteException e) {
-            if (e.getCause() != null) {
-                // KeypleReaderException is inside the KeypleRemoteException
-                throw (KeypleReaderException) e.getCause();
-
-            } else {
-                // create a new KeypleReaderException
-                throw new KeypleReaderException(e.getMessage());
-            }
+            logger.error(
+                    "{} - processSeRequestSet encounters an exception while communicating with slave. "
+                            + "sessionId:{} error:{}",
+                    this.getName(), this.getSession().getSessionId(), e.getMessage());
+            throw toKeypleReaderException(e);
         }
     }
 
@@ -152,8 +149,10 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
             // blocking call
             return transmit.execute(rmTxEngine);
         } catch (KeypleRemoteException e) {
-            e.printStackTrace();
-            throw (KeypleReaderException) e.getCause();
+            logger.error(
+                    "{} - processSeRequest encounters an exception while communicating with slave. sessionId:{} error:{}",
+                    this.getName(), this.getSession().getSessionId(), e.getMessage());
+            throw toKeypleReaderException(e);
         }
 
     }
@@ -210,10 +209,7 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
     }
 
 
-    /**
-     *
-     * HELPERS
-     */
+
     @Override
     public Map<String, String> getParameters() {
         return parameters;
@@ -223,5 +219,25 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
     public void setParameter(String key, String value) throws IllegalArgumentException {
         parameters.put(key, value);
     }
+
+    /*
+     * PRIVATE HELPERS
+     */
+
+
+    private KeypleReaderException toKeypleReaderException(KeypleRemoteException e) {
+        if (e.getCause() != null) {
+            if (e.getCause() instanceof KeypleReaderException) {
+                // KeypleReaderException is inside the KeypleRemoteException
+                return (KeypleReaderException) e.getCause();
+            } else {
+                return new KeypleReaderException(e.getMessage(), e);
+            }
+        } else {
+            // create a new KeypleReaderException
+            return new KeypleReaderException(e.getMessage());
+        }
+    }
+
 
 }
