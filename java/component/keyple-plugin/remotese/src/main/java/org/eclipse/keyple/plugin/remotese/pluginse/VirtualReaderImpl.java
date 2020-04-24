@@ -95,7 +95,8 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
 
     @Override
     public boolean isSePresent() {
-        logger.error("isSePresent is not implemented yet");
+        logger.warn("{} isSePresent is not implemented in VirtualReader, returns false",
+                this.getName());
         return false;// not implemented
     }
 
@@ -160,12 +161,14 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
 
     @Override
     public void addSeProtocolSetting(SeProtocol seProtocol, String protocolRule) {
-        logger.error("{} addSeProtocolSetting is not implemented yet", this.getName());
+        logger.warn("{} addSeProtocolSetting is not implemented yet in VirtualReader",
+                this.getName());
     }
 
     @Override
     public void setSeProtocolSetting(Map<SeProtocol, String> protocolSetting) {
-        logger.error("setSeProtocolSetting is not implemented yet");
+        logger.warn("{} setSeProtocolSetting is not implemented yet in VirtualReader",
+                this.getName());
     }
 
     /*
