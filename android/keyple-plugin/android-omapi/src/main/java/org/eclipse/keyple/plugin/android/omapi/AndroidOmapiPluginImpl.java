@@ -116,7 +116,7 @@ final class AndroidOmapiPluginImpl extends AbstractPlugin implements AndroidOmap
         Log.i(TAG, "Retrieve available readers...");
 
         // init readers
-        readers = initNativeReaders();
+        readers.addAll(initNativeReaders());
     }
 
     private Map<String, String> parameters = new HashMap<String, String>();// not in use in this
