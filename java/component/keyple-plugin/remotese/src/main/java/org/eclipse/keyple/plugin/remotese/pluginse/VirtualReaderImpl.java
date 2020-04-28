@@ -19,7 +19,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
@@ -45,7 +44,7 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
     protected final String slaveNodeId;
     protected final TransmissionMode transmissionMode;
 
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    protected final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     private static final Logger logger = LoggerFactory.getLogger(VirtualReaderImpl.class);
 
@@ -155,7 +154,6 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
                     this.getName(), this.getSession().getSessionId(), e.getMessage());
             throw toKeypleReaderException(e);
         }
-
     }
 
     @Override
@@ -168,47 +166,6 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
     public void setSeProtocolSetting(Map<SeProtocol, String> protocolSetting) {
         logger.warn("{} setSeProtocolSetting is not implemented yet in VirtualReader",
                 this.getName());
-    }
-
-    /*
-     * PACKAGE PRIVATE
-     */
-
-    /**
-     * When an event occurs on the Remote LocalReader, notify Observers
-     * 
-     * @param event
-     */
-    void onRemoteReaderEvent(final ReaderEvent event) {
-        final VirtualReaderImpl thisReader = this;
-
-        logger.debug("{} EVENT {} ", this.getName(), event.getEventType());
-
-        // TODO Check this!!!
-        if (thisReader instanceof VirtualObservableReader) {
-            if (((VirtualObservableReader) thisReader).countObservers() > 0) {
-                /*
-                 * thisReader.notifyObservers(event);
-                 */
-
-
-                // launch event another thread to permit blocking method to be used in update
-                // methode
-                // (such as transmit)
-                executorService.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        ((VirtualObservableReader) thisReader).notifyObservers(event);
-                    }
-                });
-
-
-            } else {
-                logger.debug(
-                        "An event was received but no observers are declared into VirtualReader : {} {}",
-                        thisReader.getName(), event.getEventType());
-            }
-        }
     }
 
 

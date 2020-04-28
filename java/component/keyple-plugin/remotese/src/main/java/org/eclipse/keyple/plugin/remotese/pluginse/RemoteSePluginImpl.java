@@ -163,9 +163,13 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
 
     void onReaderEvent(ReaderEvent event) throws KeypleReaderNotFoundException {
         logger.debug("Dispatch ReaderEvent to the appropriate Reader : {}", event.getReaderName());
-
-        VirtualReaderImpl virtualReader = (VirtualReaderImpl) getReader(event.getReaderName());
-        virtualReader.onRemoteReaderEvent(event);
+        VirtualReader virtualReader = (VirtualReader) getReader(event.getReaderName());
+        if (virtualReader instanceof VirtualObservableReader) {
+            ((VirtualObservableReaderImpl) virtualReader).onRemoteReaderEvent(event);
+        } else {
+            logger.error("An event:{} is sent to a none VirtualObservableReader:{}, ignore it",
+                    event.getReaderName(), virtualReader.getName());
+        }
 
     }
 
