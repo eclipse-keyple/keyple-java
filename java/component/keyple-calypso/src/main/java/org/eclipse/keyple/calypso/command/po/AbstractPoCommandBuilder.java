@@ -45,6 +45,9 @@ public abstract class AbstractPoCommandBuilder<T extends AbstractPoResponseParse
      */
     public abstract T createResponseParser(ApduResponse apduResponse);
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CalypsoPoCommand getCommandRef() {
         return (CalypsoPoCommand) commandRef;
