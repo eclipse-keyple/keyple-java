@@ -57,12 +57,7 @@ public final class GetDataFciRespPars extends AbstractPoResponseParser {
         return STATUS_TABLE;
     }
 
-    /* buffer indicator to buffer size lookup table */
-    private static final int[] BUFFER_SIZE_INDICATOR_TO_BUFFER_SIZE = new int[] {0, 0, 0, 0, 0, 0,
-            215, 256, 304, 362, 430, 512, 608, 724, 861, 1024, 1217, 1448, 1722, 2048, 2435, 2896,
-            3444, 4096, 4870, 5792, 6888, 8192, 9741, 11585, 13777, 16384, 19483, 23170, 27554,
-            32768, 38967, 46340, 55108, 65536, 77935, 92681, 110217, 131072, 155871, 185363, 220435,
-            262144, 311743, 370727, 440871, 524288, 623487, 741455, 881743, 1048576};
+
 
     /* BER-TLV tags definitions */
     /* FCI Template: application class, constructed, tag number Fh => tag field 6Fh */
@@ -86,23 +81,11 @@ public final class GetDataFciRespPars extends AbstractPoResponseParser {
 
     /** attributes result of th FCI parsing */
     private boolean isDfInvalidated = false;
-
     private boolean isValidCalypsoFCI = false;
+
     private byte[] dfName = null;
     private byte[] applicationSN = null;
-    private byte siBufferSizeIndicator = 0;
-    private byte siPlatform = 0;
-    private byte siApplicationType = 0;
-    private byte siApplicationSubtype = 0;
-    private byte siSoftwareIssuer = 0;
-    private byte siSoftwareVersion = 0;
-    private byte siSoftwareRevision = 0;
-
-    /** Application type bitmasks features */
-    private static final byte APP_TYPE_WITH_CALYPSO_PIN = 0x01;
-    private static final byte APP_TYPE_WITH_CALYPSO_SV = 0x02;
-    private static final byte APP_TYPE_RATIFICATION_COMMAND_REQUIRED = 0x04;
-    private static final byte APP_TYPE_CALYPSO_REV_32_MODE = 0x08;
+    private byte[] discretionaryData = null;
 
     /**
      * Instantiates a new GetDataFciRespPars from the ApduResponse to a selection application
@@ -191,22 +174,12 @@ public final class GetDataFciRespPars extends AbstractPoResponseParser {
                 return;
             }
 
-            byte[] discretionaryData = tlv.getValue();
+            discretionaryData = tlv.getValue();
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Discretionary Data = {}", ByteArrayUtil.toHex(discretionaryData));
             }
 
-            /*
-             * split discretionary data in as many individual startup information
-             */
-            siBufferSizeIndicator = discretionaryData[0];
-            siPlatform = discretionaryData[1];
-            siApplicationType = discretionaryData[2];
-            siApplicationSubtype = discretionaryData[3];
-            siSoftwareIssuer = discretionaryData[4];
-            siSoftwareVersion = discretionaryData[5];
-            siSoftwareRevision = discretionaryData[6];
             /* all 3 main fields were retrieved */
             isValidCalypsoFCI = true;
 
@@ -228,53 +201,8 @@ public final class GetDataFciRespPars extends AbstractPoResponseParser {
         return applicationSN;
     }
 
-    public byte getBufferSizeIndicator() {
-        return siBufferSizeIndicator;
-    }
-
-    public int getBufferSizeValue() {
-        return BUFFER_SIZE_INDICATOR_TO_BUFFER_SIZE[getBufferSizeIndicator()];
-    }
-
-    public byte getPlatformByte() {
-        return siPlatform;
-    }
-
-    public byte getApplicationTypeByte() {
-        return siApplicationType;
-    }
-
-
-    public boolean isRev3_2ModeAvailable() {
-        return (siApplicationType & APP_TYPE_CALYPSO_REV_32_MODE) != 0;
-    }
-
-    public boolean isRatificationCommandRequired() {
-        return (siApplicationSubtype & APP_TYPE_RATIFICATION_COMMAND_REQUIRED) != 0;
-    }
-
-    public boolean hasCalypsoStoredValue() {
-        return (siApplicationSubtype & APP_TYPE_WITH_CALYPSO_SV) != 0;
-    }
-
-    public boolean hasCalypsoPin() {
-        return (siApplicationSubtype & APP_TYPE_WITH_CALYPSO_PIN) != 0;
-    }
-
-    public byte getApplicationSubtypeByte() {
-        return siApplicationSubtype;
-    }
-
-    public byte getSoftwareIssuerByte() {
-        return siSoftwareIssuer;
-    }
-
-    public byte getSoftwareVersionByte() {
-        return siSoftwareVersion;
-    }
-
-    public byte getSoftwareRevisionByte() {
-        return siSoftwareRevision;
+    public byte[] getDiscretionaryData() {
+        return discretionaryData;
     }
 
     public boolean isDfInvalidated() {
