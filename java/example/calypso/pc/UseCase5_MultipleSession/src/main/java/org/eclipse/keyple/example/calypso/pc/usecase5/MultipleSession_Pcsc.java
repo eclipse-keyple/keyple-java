@@ -178,7 +178,7 @@ public class MultipleSession_Pcsc {
                  *
                  * We'll send one more command to demonstrate the MULTIPLE mode
                  */
-                int modificationsBufferSize = calypsoPo.getModificationsCounter();
+                int modificationsBufferSize = 430; // not all PO have this buffer size
 
                 int nbCommands = (modificationsBufferSize / 35) + 1;
 

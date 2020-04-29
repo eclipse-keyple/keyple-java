@@ -126,8 +126,8 @@ public class Rev1Selection_Pcsc {
              * selection has been made. We provide the expected record length since the REV1 PO need
              * it.
              */
-            poSelectionRequest.prepareReadRecords(CalypsoClassicInfo.SFI_EnvironmentAndHolder,
-                    ReadDataStructure.SINGLE_RECORD_DATA, CalypsoClassicInfo.RECORD_NUMBER_1, 29);
+            poSelectionRequest.prepareReadRecordFile(CalypsoClassicInfo.SFI_EnvironmentAndHolder,
+                    CalypsoClassicInfo.RECORD_NUMBER_1);
 
             /*
              * Add the selection case to the current selection (we could have added other cases
