@@ -14,30 +14,27 @@ package org.eclipse.keyple.calypso.command.po.builder;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
-import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
- * The Class ReadRecordsCmdBuild. This class provides the dedicated constructor to build the Read
+ * The {@link ReadRecordsCmdBuild} class provides the dedicated constructor to build the Read
  * Records APDU command.
  */
 public final class ReadRecordsCmdBuild extends AbstractPoCommandBuilder<ReadRecordsRespPars> {
 
-    /** The command. */
     private static final CalypsoPoCommand command = CalypsoPoCommand.READ_RECORDS;
 
-    /* Construction arguments */
+    // Construction arguments used for parsing
     private final int sfi;
-    private final byte firstRecordNumber;
-    private final ReadDataStructure readDataStructure;
+    private final int firstRecordNumber;
+    private final boolean readJustOneRecord;
 
     /**
      * Instantiates a new read records cmd build.
      *
      * @param poClass indicates which CLA byte should be used for the Apdu
      * @param sfi the sfi top select
-     * @param readDataStructure file structure type (used to create the parser)
      * @param firstRecordNumber the record number to read (or first record to read in case of
      *        several records)
      * @param readJustOneRecord the read just one record
@@ -45,25 +42,21 @@ public final class ReadRecordsCmdBuild extends AbstractPoCommandBuilder<ReadReco
      * @throws IllegalArgumentException - if record number &lt; 1
      * @throws IllegalArgumentException - if the request is inconsistent
      */
-    public ReadRecordsCmdBuild(PoClass poClass, byte sfi, ReadDataStructure readDataStructure,
-            byte firstRecordNumber, boolean readJustOneRecord, byte expectedLength)
-            throws IllegalArgumentException {
+    public ReadRecordsCmdBuild(PoClass poClass, int sfi, int firstRecordNumber,
+            boolean readJustOneRecord, int expectedLength) throws IllegalArgumentException {
         super(command, null);
-
-        if (firstRecordNumber < 1) {
-            throw new IllegalArgumentException("Bad record number (< 1)");
-        }
 
         this.sfi = sfi;
         this.firstRecordNumber = firstRecordNumber;
-        this.readDataStructure = readDataStructure;
+        this.readJustOneRecord = readJustOneRecord;
 
+        byte p1 = (byte) firstRecordNumber;
         byte p2 = (sfi == (byte) 0x00) ? (byte) 0x05 : (byte) ((byte) (sfi * 8) + 5);
         if (readJustOneRecord) {
             p2 = (byte) (p2 - (byte) 0x01);
         }
-        this.request = setApduRequest(poClass.getValue(), command, firstRecordNumber, p2, null,
-                expectedLength);
+        byte le = (byte) expectedLength;
+        this.request = setApduRequest(poClass.getValue(), command, p1, p2, null, le);
 
         if (logger.isDebugEnabled()) {
             String extraInfo = String.format("SFI=%02X, REC=%d, JUSTONE=%s, EXPECTEDLENGTH=%d", sfi,
@@ -73,33 +66,15 @@ public final class ReadRecordsCmdBuild extends AbstractPoCommandBuilder<ReadReco
     }
 
     /**
-     * Instantiates a new read records cmd build without specifying the expected length. This
-     * constructor is allowed only in contactless mode.
-     *
-     * @param poClass indicates which CLA byte should be used for the Apdu
-     * @param readDataStructure file structure type
-     * @param sfi the sfi top select
-     * @param firstRecordNumber the record number to read (or first record to read in case of
-     *        several records)
-     * @param readJustOneRecord the read just one record
-     * @throws IllegalArgumentException - if record number &lt; 1
-     * @throws IllegalArgumentException - if the request is inconsistent
+     * {@inheritDoc}
      */
-    public ReadRecordsCmdBuild(PoClass poClass, byte sfi, ReadDataStructure readDataStructure,
-            byte firstRecordNumber, boolean readJustOneRecord) throws IllegalArgumentException {
-        this(poClass, sfi, readDataStructure, firstRecordNumber, readJustOneRecord, (byte) 0x00);
-    }
-
     @Override
     public ReadRecordsRespPars createResponseParser(ApduResponse apduResponse) {
         return new ReadRecordsRespPars(apduResponse, this);
     }
 
     /**
-     * This command doesn't modify the contents of the PO and therefore doesn't uses the session
-     * buffer.
-     *
-     * @return false
+     * {@inheritDoc}
      */
     @Override
     public boolean isSessionBufferUsed() {
@@ -112,12 +87,12 @@ public final class ReadRecordsCmdBuild extends AbstractPoCommandBuilder<ReadReco
     }
 
     /** @return the number of the first record to read */
-    public byte getFirstRecordNumber() {
+    public int getFirstRecordNumber() {
         return firstRecordNumber;
     }
 
-    /** @return the read data structure info */
-    public ReadDataStructure getReadDataStructure() {
-        return readDataStructure;
+    /** @return the readJustOneRecord flag */
+    public boolean isReadJustOneRecord() {
+        return readJustOneRecord;
     }
 }

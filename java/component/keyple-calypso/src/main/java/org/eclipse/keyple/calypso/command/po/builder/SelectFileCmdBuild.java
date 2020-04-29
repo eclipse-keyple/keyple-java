@@ -40,7 +40,6 @@ public final class SelectFileCmdBuild extends AbstractPoCommandBuilder<SelectFil
     public SelectFileCmdBuild(PoClass poClass, SelectFileControl selectFileControl) {
         super(command, null);
 
-        // TODO complete argument checking
         this.path = null;
         this.selectFileControl = selectFileControl;
 
