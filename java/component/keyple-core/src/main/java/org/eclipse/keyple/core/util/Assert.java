@@ -148,4 +148,51 @@ public final class Assert {
         }
         return INSTANCE;
     }
+
+    /**
+     * Assert that an integer is equal to value.
+     *
+     * @param number the number to check
+     * @param value the expected value
+     * @param name the object name
+     * @return the current instance
+     * @throws IllegalArgumentException if number is null or has a value less than minValue.
+     * @since 0.9
+     */
+    public Assert isEqual(Integer number, int value, String name) {
+        if (number == null) {
+            throw new IllegalArgumentException("Argument [" + name + "] is null.");
+        }
+        if (number != value) {
+            throw new IllegalArgumentException("Argument [" + name + "] has a value [" + number
+                    + "] not equal to [" + value + "].");
+        }
+        return INSTANCE;
+    }
+
+    /**
+     * Assert that an integer is not null and is in the range minValue, maxValue.
+     *
+     * @param number the number to check
+     * @param minValue the min accepted value
+     * @param maxValue the max accepted value
+     * @param name the object name
+     * @return the current instance
+     * @throws IllegalArgumentException if number is null or is out of range.
+     * @since 0.9
+     */
+    public Assert isInRange(Integer number, int minValue, int maxValue, String name) {
+        if (number == null) {
+            throw new IllegalArgumentException("Argument [" + name + "] is null.");
+        }
+        if (number < minValue) {
+            throw new IllegalArgumentException("Argument [" + name + "] has a value [" + number
+                    + "] less than [" + minValue + "].");
+        }
+        if (number > maxValue) {
+            throw new IllegalArgumentException("Argument [" + name + "] has a value [" + number
+                    + "] more than [" + maxValue + "].");
+        }
+        return INSTANCE;
+    }
 }
