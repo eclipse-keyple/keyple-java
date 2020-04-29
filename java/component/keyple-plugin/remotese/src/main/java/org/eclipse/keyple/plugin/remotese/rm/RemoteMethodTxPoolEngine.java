@@ -13,6 +13,7 @@ package org.eclipse.keyple.plugin.remotese.rm;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import org.eclipse.keyple.plugin.remotese.transport.DtoHandler;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
@@ -49,7 +50,7 @@ public class RemoteMethodTxPoolEngine implements DtoHandler, IRemoteMethodTxEngi
      */
     public RemoteMethodTxPoolEngine(DtoSender sender, long timeout,
             ExecutorService executorService) {
-        this.queue = new HashMap<String, AbstractRemoteMethodTx>();
+        this.queue = new ConcurrentHashMap<String, AbstractRemoteMethodTx>();
         this.sender = sender;
         this.timeout = timeout;
         this.executorService = executorService;
