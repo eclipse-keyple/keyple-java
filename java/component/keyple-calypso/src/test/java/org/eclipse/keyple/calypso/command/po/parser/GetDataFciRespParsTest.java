@@ -20,7 +20,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GetDataRespParsTest {
+public class GetDataFciRespParsTest {
 
     @Test
     public void testFCIparser_FCI_OK() {
@@ -43,8 +43,6 @@ public class GetDataRespParsTest {
 
         GetDataFciRespPars parser = new GetDataFciRespPars(apduResponse, null);
 
-        /* valid Calypso FCI */
-        Assert.assertTrue(parser.isValidCalypsoFCI());
         /* DF not invalidated */
         Assert.assertFalse(parser.isDfInvalidated());
         /* expected dfName */
@@ -52,25 +50,9 @@ public class GetDataRespParsTest {
         /* expected Application Serial Number */
         Assert.assertArrayEquals(ByteArrayUtil.fromHex(appSerialNumber),
                 parser.getApplicationSerialNumber());
-        /* Buffer size indicator and value */
-        Assert.assertEquals(siBufferSizeIndicator, parser.getBufferSizeIndicator());
-        Assert.assertEquals(512, parser.getBufferSizeValue());
-        /* Platform */
-        Assert.assertEquals(siPlatform, parser.getPlatformByte());
-        /* ApplicationType */
-        Assert.assertEquals(siApplicationType, parser.getApplicationTypeByte());
-        Assert.assertTrue(parser.isRev3_2ModeAvailable());
-        Assert.assertTrue(parser.isRatificationCommandRequired());
-        Assert.assertTrue(parser.hasCalypsoPin());
-        Assert.assertFalse(parser.hasCalypsoStoredValue());
-        /* ApplicationSubType */
-        Assert.assertEquals(siApplicationSubtype, parser.getApplicationSubtypeByte());
-        /* SoftwareIssuer */
-        Assert.assertEquals(siSoftwareIssuer, parser.getSoftwareIssuerByte());
-        /* SoftwareVersion */
-        Assert.assertEquals(siSoftwareVersion, parser.getSoftwareVersionByte());
-        /* SoftwareRevision */
-        Assert.assertEquals(siSoftwareRevision, parser.getSoftwareRevisionByte());
+        /* expected StartupInfo */
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex("0B55AA55AA55AA"),
+                parser.getDiscretionaryData());
 
         /* Change startup information */
         siBufferSizeIndicator = 16;
@@ -90,8 +72,6 @@ public class GetDataRespParsTest {
 
         parser = new GetDataFciRespPars(apduResponse, null);
 
-        /* valid Calypso FCI */
-        Assert.assertTrue(parser.isValidCalypsoFCI());
         /* DF not invalidated */
         Assert.assertFalse(parser.isDfInvalidated());
         /* expected dfName */
@@ -99,25 +79,9 @@ public class GetDataRespParsTest {
         /* expected Application Serial Number */
         Assert.assertArrayEquals(ByteArrayUtil.fromHex(appSerialNumber),
                 parser.getApplicationSerialNumber());
-        /* Buffer size indicator and value */
-        Assert.assertEquals(siBufferSizeIndicator, parser.getBufferSizeIndicator());
-        Assert.assertEquals(1217, parser.getBufferSizeValue());
-        /* Platform */
-        Assert.assertEquals(siPlatform, parser.getPlatformByte());
-        /* ApplicationType */
-        Assert.assertEquals(siApplicationType, parser.getApplicationTypeByte());
-        Assert.assertFalse(parser.isRev3_2ModeAvailable());
-        Assert.assertFalse(parser.isRatificationCommandRequired());
-        Assert.assertFalse(parser.hasCalypsoPin());
-        Assert.assertTrue(parser.hasCalypsoStoredValue());
-        /* ApplicationSubType */
-        Assert.assertEquals(siApplicationSubtype, parser.getApplicationSubtypeByte());
-        /* SoftwareIssuer */
-        Assert.assertEquals(siSoftwareIssuer, parser.getSoftwareIssuerByte());
-        /* SoftwareVersion */
-        Assert.assertEquals(siSoftwareVersion, parser.getSoftwareVersionByte());
-        /* SoftwareRevision */
-        Assert.assertEquals(siSoftwareRevision, parser.getSoftwareRevisionByte());
+        /* expected StartupInfo */
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex("10AA55AA55AA55"),
+                parser.getDiscretionaryData());
     }
 
     @Test
@@ -141,8 +105,6 @@ public class GetDataRespParsTest {
 
         GetDataFciRespPars parser = new GetDataFciRespPars(apduResponse, null);
 
-        /* valid Calypso FCI */
-        Assert.assertTrue(parser.isValidCalypsoFCI());
         Assert.assertTrue(parser.isDfInvalidated());
     }
 
