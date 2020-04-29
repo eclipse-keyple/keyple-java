@@ -12,6 +12,7 @@
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
 
+import java.util.Date;
 
 public interface VirtualReaderSession {
 
@@ -25,5 +26,7 @@ public interface VirtualReaderSession {
     String getSlaveNodeId();
 
     String getMasterNodeId();
+
+    Date getCreatedTime();
 
 }

@@ -13,6 +13,7 @@ package org.eclipse.keyple.plugin.remotese.rm;
 
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
@@ -49,6 +50,8 @@ public abstract class AbstractRemoteMethodTx<T> {
     private long timeout;
 
     private DtoSender sender;
+
+    private ExecutorService executorService;
 
     protected AbstractRemoteMethodTx(String sessionId, String nativeReaderName,
             String virtualReaderName, String targetNodeId, String requesterNodeId) {
@@ -124,33 +127,21 @@ public abstract class AbstractRemoteMethodTx<T> {
                     "RemoteMethodTx#execute() can not be used until RemoteMethodTx is registered in a RemoteMethodEngine, please call RemoteMethodEngine#register");
         }
         // logger.debug("Blocking Get {}", this.getClass().getCanonicalName());
-        final AbstractRemoteMethodTx thisInstance = this;
-
-        Thread asyncSend = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    send(new IRemoteMethodTxCallback<T>() {
-                        @Override
-                        public void get(T response, KeypleRemoteException exception) {
-                            if (logger.isTraceEnabled()) {
-                                logger.trace("Release lock of {}", thisInstance.toString());
-                            }
-                            lock.countDown();
-                        }
-                    });
-                } catch (KeypleRemoteException e) {
-                    logger.error("Exception {} while sending Dto {} for {}", e.getMessage(),
-                            thisInstance);
-                    thisInstance.remoteException = e;
-                    lock.countDown();
-                }
-            }
-        };
 
         try {
+            // define lock
             lock = new CountDownLatch(1);
-            asyncSend.start();
+
+            executorService.execute(sendTask(this, new IRemoteMethodTxCallback<T>() {
+                @Override
+                public void get(T response, KeypleRemoteException exception) {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Release lock of {}", this.toString());
+                    }
+                    lock.countDown();
+                }
+            }));
+
             if (logger.isTraceEnabled()) {
                 logger.trace("Lock thread for {}", this.toString());
             }
@@ -210,6 +201,11 @@ public abstract class AbstractRemoteMethodTx<T> {
         isRegistered = registered;
     }
 
+
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
+
     /**
      * Generates a Request Dto for this Rm Method call
      * 
@@ -225,5 +221,23 @@ public abstract class AbstractRemoteMethodTx<T> {
                 + ", virtualReaderName='" + virtualReaderName + '\'' + ", targetNodeId='"
                 + targetNodeId + '\'' + ", requesterNodeId='" + requesterNodeId + '\'' + ", id='"
                 + id + '\'' + '}';
+    }
+
+
+    public Runnable sendTask(final AbstractRemoteMethodTx thisInstance,
+            final IRemoteMethodTxCallback callback) {
+        return new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    send(callback);
+                } catch (KeypleRemoteException e) {
+                    logger.error("Exception {} while sending Dto {} for {}", e.getMessage(),
+                            thisInstance);
+                    thisInstance.remoteException = e;
+                    lock.countDown();
+                }
+            }
+        };
     }
 }
