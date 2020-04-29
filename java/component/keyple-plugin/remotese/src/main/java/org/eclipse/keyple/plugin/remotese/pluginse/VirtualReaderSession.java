@@ -14,6 +14,9 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import java.util.Date;
 
+/**
+ * Stores meta information on the virtual reader such as slave, master node id and createdTime
+ */
 public interface VirtualReaderSession {
 
     /**

@@ -65,4 +65,19 @@ public class VirtualReaderParameterTest extends VirtualReaderBaseTest {
                 nativeReader.getTransmissionMode());
     }
 
+    @Test
+    public void testGetSession() throws Exception {
+        // configure and connect a Stub Native reader
+        nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID,
+                TransmissionMode.CONTACTLESS);
+
+        // test virtual reader
+        virtualReader = getVirtualReader();
+
+        Assert.assertNotNull(virtualReader.getSession().getCreatedTime());
+        Assert.assertNotNull(virtualReader.getSession().getSessionId());
+        Assert.assertNotNull(virtualReader.getSession().getMasterNodeId(), SERVER_NODE_ID);
+        Assert.assertNotNull(virtualReader.getSession().getSlaveNodeId(), CLIENT_NODE_ID);
+    }
+
 }
