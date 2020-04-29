@@ -27,6 +27,7 @@ public class DirectoryHeader implements Serializable {
     private final short lid;
     private final byte[] accessConditions;
     private final byte[] keyIndexes;
+    private final byte dfStatus;
     private final HashMap<SessionAccessLevel, Byte> kif;
     private final HashMap<SessionAccessLevel, Byte> kvc;
 
@@ -35,6 +36,7 @@ public class DirectoryHeader implements Serializable {
         this.lid = builder.lid;
         this.accessConditions = builder.accessConditions;
         this.keyIndexes = builder.keyIndexes;
+        this.dfStatus = builder.dfStatus;
         this.kif = builder.kif;
         this.kvc = builder.kvc;
     }
@@ -48,6 +50,7 @@ public class DirectoryHeader implements Serializable {
         private short lid;
         private byte[] accessConditions;
         private byte[] keyIndexes;
+        private byte dfStatus;
         private final HashMap<SessionAccessLevel, Byte> kif =
                 new HashMap<SessionAccessLevel, Byte>();
         private final HashMap<SessionAccessLevel, Byte> kvc =
@@ -89,6 +92,18 @@ public class DirectoryHeader implements Serializable {
          */
         DirectoryHeaderBuilder keyIndexes(byte[] keyIndexes) {
             this.keyIndexes = keyIndexes;
+            return this;
+        }
+
+        /**
+         * (package-private)<br>
+         * Sets the DF status.
+         *
+         * @param dfStatus the DF status (byte)
+         * @return the builder instance
+         */
+        DirectoryHeaderBuilder dfStatus(byte dfStatus) {
+            this.dfStatus = dfStatus;
             return this;
         }
 
@@ -157,6 +172,16 @@ public class DirectoryHeader implements Serializable {
      */
     public byte[] getKeyIndexes() {
         return keyIndexes;
+    }
+
+    /**
+     * Gets the DF status.
+     *
+     * @return the DF status byte
+     * @since 0.9
+     */
+    public byte getDfStatus() {
+        return dfStatus;
     }
 
     /**
@@ -244,10 +269,12 @@ public class DirectoryHeader implements Serializable {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("DirectoryHeader{");
-        sb.append("lid=").append(lid);
+        sb.append("lid=0x").append(Integer.toHexString(lid & 0xFFFF));
         sb.append(", accessConditions=").append("0x").append(ByteArrayUtil.toHex(accessConditions));
         sb.append(", keyIndexes=").append("0x").append(ByteArrayUtil.toHex(keyIndexes));
+        sb.append(", dfStatus=0x").append(Integer.toHexString(dfStatus & 0xFF));
         sb.append(", kif=").append(kif);
+        sb.append(", kvc=").append(kvc);
         sb.append(", kvc=").append(kvc);
         sb.append('}');
         return sb.toString();

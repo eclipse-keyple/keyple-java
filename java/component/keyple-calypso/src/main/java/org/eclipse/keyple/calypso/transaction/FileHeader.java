@@ -28,6 +28,7 @@ public class FileHeader implements Serializable, Cloneable {
     private final FileType type;
     private final byte[] accessConditions;
     private final byte[] keyIndexes;
+    private final byte dfStatus;
     private final Short sharedReference;
 
     /** Private constructor */
@@ -38,6 +39,7 @@ public class FileHeader implements Serializable, Cloneable {
         this.type = builder.type;
         this.accessConditions = builder.accessConditions;
         this.keyIndexes = builder.keyIndexes;
+        this.dfStatus = builder.dfStatus;
         this.sharedReference = builder.sharedReference;
     }
 
@@ -58,6 +60,7 @@ public class FileHeader implements Serializable, Cloneable {
         private FileType type;
         private byte[] accessConditions;
         private byte[] keyIndexes;
+        private byte dfStatus;
         private Short sharedReference;
 
         /** Private constructor */
@@ -132,6 +135,18 @@ public class FileHeader implements Serializable, Cloneable {
          */
         FileHeaderBuilder keyIndexes(byte[] keyIndexes) {
             this.keyIndexes = keyIndexes;
+            return this;
+        }
+
+        /**
+         * (package-private)<br>
+         * Sets the DF status.
+         *
+         * @param dfStatus the DF status (byte)
+         * @return the builder instance
+         */
+        FileHeaderBuilder dfStatus(byte dfStatus) {
+            this.dfStatus = dfStatus;
             return this;
         }
 
@@ -229,6 +244,16 @@ public class FileHeader implements Serializable, Cloneable {
     }
 
     /**
+     * Gets the DF status.
+     *
+     * @return the DF status byte
+     * @since 0.9
+     */
+    public byte getDfStatus() {
+        return dfStatus;
+    }
+
+    /**
      * Returns true if EF is a shared file.
      *
      * @return true if the EF is a shared file
@@ -273,6 +298,7 @@ public class FileHeader implements Serializable, Cloneable {
                 .type(type)//
                 .accessConditions(Arrays.copyOf(accessConditions, accessConditions.length))//
                 .keyIndexes(Arrays.copyOf(keyIndexes, keyIndexes.length))//
+                .dfStatus(dfStatus)//
                 .sharedReference(sharedReference)//
                 .build();
     }
@@ -310,13 +336,14 @@ public class FileHeader implements Serializable, Cloneable {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("FileHeader{");
-        sb.append("lid=").append(lid);
+        sb.append("lid=0x").append(Integer.toHexString(lid & 0xFFFF));
         sb.append(", recordsNumber=").append(recordsNumber);
         sb.append(", recordSize=").append(recordSize);
         sb.append(", type=").append(type);
         sb.append(", accessConditions=").append("0x").append(ByteArrayUtil.toHex(accessConditions));
         sb.append(", keyIndexes=").append("0x").append(ByteArrayUtil.toHex(keyIndexes));
-        sb.append(", sharedReference=").append(sharedReference);
+        sb.append(", dfStatus=0x").append(Integer.toHexString(dfStatus & 0xFF));
+        sb.append(", sharedReference=0x").append(Integer.toHexString(sharedReference));
         sb.append('}');
         return sb.toString();
     }
