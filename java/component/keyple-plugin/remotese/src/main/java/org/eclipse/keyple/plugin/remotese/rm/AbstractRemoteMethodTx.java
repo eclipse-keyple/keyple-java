@@ -116,8 +116,8 @@ public abstract class AbstractRemoteMethodTx<T> {
      */
     final public T execute(IRemoteMethodTxEngine rmTxEngine) throws KeypleRemoteException {
 
-        if (logger.isTraceEnabled()) {
-            logger.trace("execute {}", this.toString());
+        if (logger.isDebugEnabled()) {
+            logger.debug("execute {}", this.toString());
         }
         // register this method to receive response
         rmTxEngine.register(this);
