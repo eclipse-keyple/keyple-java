@@ -54,8 +54,7 @@ public class MasterAPI implements DtoHandler {
     protected final ExecutorService executorService;
 
     /**
-     * Build a new MasterAPI, Entry point for incoming DTO in Master Manages RemoteSePlugin
-     * lifecycle Manages Master Session Dispatch KeypleDTO
+     * Build a new MasterAPI with default rpc timeout and default executor service (cached pool)
      *
      * @param seProxyService : SeProxyService
      * @param dtoNode : outgoing node to send Dto to Slave
@@ -67,8 +66,7 @@ public class MasterAPI implements DtoHandler {
     }
 
     /**
-     * Build a new MasterAPI, Entry point for incoming DTO in Master Manages RemoteSePlugin
-     * lifecycle Manages Master Session Dispatch KeypleDTO
+     * Build a new MasterAPI with custom rpcTimeout and default executor service (cached pool)
      *
      * @param seProxyService : SeProxyService
      * @param dtoNode : outgoing node to send Dto to Slave
@@ -83,8 +81,7 @@ public class MasterAPI implements DtoHandler {
     }
 
     /**
-     * Build a new MasterAPI, Entry point for incoming DTO in Master Manages RemoteSePlugin
-     * lifecycle Manages Master Session Dispatch KeypleDTO
+     * Build a new MasterAPI with custom rpcTimeout and default executor service (cached pool)
      *
      * @param seProxyService : SeProxyService
      * @param dtoNode : outgoing node to send Dto to Slave
@@ -104,8 +101,7 @@ public class MasterAPI implements DtoHandler {
     }
 
     /**
-     * Build a new MasterAPI, Entry point for incoming DTO in Master Manages RemoteSePlugin
-     * lifecycle Manages Master Session Dispatch KeypleDTO
+     * Build a new MasterAPI with custom rpcTimeout and custom executor service
      *
      * @param seProxyService : SeProxyService
      * @param dtoNode : outgoing node to send Dto to Slave

@@ -67,7 +67,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
 
 
     /**
-     * Constructor with a default timeout DEFAULT_RPC_TIMEOUT
+     * Constructor with a default timeout DEFAULT_RPC_TIMEOUT and single threaded executorService
      * 
      * @param seProxyService : instance of the seProxyService
      * @param dtoNode : Define which DTO sender will be called when a DTO needs to be sent.
@@ -78,7 +78,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
     }
 
     /**
-     * Constructor with custom timeout
+     * Constructor with custom timeout and single threaded executorService
      *
      * @param seProxyService : instance of the seProxyService
      * @param dtoNode : Define which DTO sender will be called when a DTO needs to be sent.
@@ -92,7 +92,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
 
 
     /**
-     * Constructor with custom timeout
+     * Constructor with custom timeout and custom executorService
      * 
      * @param seProxyService : instance of the seProxyService
      * @param dtoNode : Define which DTO sender will be called when a DTO needs to be sent.
