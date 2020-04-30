@@ -15,8 +15,6 @@ import org.eclipse.keyple.calypso.command.sam.builder.security.*;
 import org.eclipse.keyple.calypso.command.sam.builder.security.SelectDiversifierCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.parser.security.*;
 import org.eclipse.keyple.calypso.command.sam.parser.security.SelectDiversifierRespPars;
-import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.command.SeCommand;
 
 public enum CalypsoSamCommand implements SeCommand {
@@ -76,10 +74,10 @@ public enum CalypsoSamCommand implements SeCommand {
     private final byte instructionByte;
 
     /** The command builder class. */
-    private final Class<? extends AbstractApduCommandBuilder> commandBuilderClass;
+    private final Class<? extends AbstractSamCommandBuilder> commandBuilderClass;
 
     /** The response parser class. */
-    private final Class<? extends AbstractApduResponseParser> responseParserClass;
+    private final Class<? extends AbstractSamResponseParser> responseParserClass;
 
     /**
      * The generic constructor of CalypsoCommands.
@@ -90,8 +88,8 @@ public enum CalypsoSamCommand implements SeCommand {
      * @param responseParserClass the response parser class
      */
     CalypsoSamCommand(String name, byte instructionByte,
-            Class<? extends AbstractApduCommandBuilder> commandBuilderClass,
-            Class<? extends AbstractApduResponseParser> responseParserClass) {
+            Class<? extends AbstractSamCommandBuilder> commandBuilderClass,
+            Class<? extends AbstractSamResponseParser> responseParserClass) {
         this.name = name;
         this.instructionByte = instructionByte;
         this.commandBuilderClass = commandBuilderClass;
@@ -121,7 +119,7 @@ public enum CalypsoSamCommand implements SeCommand {
      *
      * @return the corresponding command builder class
      */
-    public Class<? extends AbstractApduCommandBuilder> getCommandBuilderClass() {
+    public Class<? extends AbstractSamCommandBuilder> getCommandBuilderClass() {
         return commandBuilderClass;
     }
 
@@ -130,7 +128,7 @@ public enum CalypsoSamCommand implements SeCommand {
      *
      * @return the corresponding response parser class
      */
-    public Class<? extends AbstractApduResponseParser> getResponseParserClass() {
+    public Class<? extends AbstractSamResponseParser> getResponseParserClass() {
         return responseParserClass;
     }
 }
