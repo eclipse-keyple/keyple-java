@@ -15,6 +15,7 @@ import static org.mockito.Mockito.doReturn;
 import java.util.HashMap;
 import java.util.SortedSet;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -65,7 +66,7 @@ public class RemoteSePluginImplTest extends CoreBaseTest {
         doReturn("masterNode1").when(dtoSender).getNodeId();
 
         RemoteSePluginImpl plugin = new RemoteSePluginImpl(new VirtualReaderSessionFactory(),
-                dtoSender, 10000, "pluginName");
+                dtoSender, 10000, "pluginName", Executors.newCachedThreadPool());
 
         SortedSet<SeReader> readers = plugin.getReaders();
 
@@ -82,7 +83,7 @@ public class RemoteSePluginImplTest extends CoreBaseTest {
         removeReaderThread(readers, 10, lock);
 
         // wait for all thread to finish with timeout
-        lock.await(3, TimeUnit.SECONDS);
+        lock.await(10, TimeUnit.SECONDS);
 
         // if all thread finished correctly, lock count should be 0
         Assert.assertEquals(0, lock.getCount());

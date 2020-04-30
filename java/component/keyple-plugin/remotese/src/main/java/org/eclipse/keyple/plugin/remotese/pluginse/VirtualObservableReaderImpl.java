@@ -158,7 +158,7 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
             final VirtualObservableReaderImpl thisReader = this;
             // launch event another thread to permit blocking method to be used in update
             // method (such as transmit)
-            executorService.execute(new Runnable() {
+            rmTxEngine.getExecutorService().execute(new Runnable() {
                 @Override
                 public void run() {
                     thisReader.notifyObservers(event);

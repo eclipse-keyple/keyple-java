@@ -34,14 +34,12 @@ public class AbstractPluginTest extends CoreBaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractPluginTest.class);
 
-    static final Integer X_TIMES = 10; // run tests multiple times
+    static final Integer X_TIMES = 50; // run tests multiple times
 
     @Parameterized.Parameters
     public static Object[][] data() {
         return new Object[X_TIMES][0];
     }
-
-
 
     @Before
     public void setUp() {
@@ -109,13 +107,14 @@ public class AbstractPluginTest extends CoreBaseTest {
         Thread thread = new Thread() {
             public void run() {
                 for (int i = 0; i < N; i++) {
-                    try {
-                        readers.remove(readers.first());
-                        logger.debug("readers: {}, remove first reader", readers.size());
-                    } catch (NoSuchElementException e) {
-                        // list is empty
-                        logger.debug("readers: {}, list is empty", readers.size());
-                    }
+                        try{
+                            SeReader seReader = readers.first();
+                            readers.remove(seReader);
+                            logger.debug("readers: {}, remove first reader", readers.size());
+                        }catch (NoSuchElementException e){
+                            //list is empty
+                            logger.debug("readers: {}, list is empty", readers.size());
+                        }
                     try {
                         Thread.sleep(10);
                     } catch (InterruptedException e) {

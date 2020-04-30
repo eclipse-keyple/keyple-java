@@ -15,8 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -43,8 +41,6 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
     protected final RemoteMethodTxEngine rmTxEngine;
     protected final String slaveNodeId;
     protected final TransmissionMode transmissionMode;
-
-    protected final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     private static final Logger logger = LoggerFactory.getLogger(VirtualReaderImpl.class);
 

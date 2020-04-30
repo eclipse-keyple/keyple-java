@@ -13,6 +13,8 @@ package org.eclipse.keyple.plugin.remotese.rm;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import org.eclipse.keyple.plugin.remotese.transport.DtoHandler;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
@@ -30,10 +32,11 @@ public class RemoteMethodTxPoolEngine implements DtoHandler, IRemoteMethodTxEngi
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteMethodTxPoolEngine.class);
 
-
     // rm id, rm
     private Map<String, AbstractRemoteMethodTx> queue;
 
+    // Executor to run async task required in RemoteMethodTx
+    final private ExecutorService executorService;
     // Dto Sender
     private final DtoSender sender;
 
@@ -45,10 +48,12 @@ public class RemoteMethodTxPoolEngine implements DtoHandler, IRemoteMethodTxEngi
      * @param sender : dtosender used to send the keypleDto
      * @param timeout : timeout to wait for the answer, in milliseconds
      */
-    public RemoteMethodTxPoolEngine(DtoSender sender, long timeout) {
-        this.queue = new HashMap<String, AbstractRemoteMethodTx>();
+    public RemoteMethodTxPoolEngine(DtoSender sender, long timeout,
+            ExecutorService executorService) {
+        this.queue = new ConcurrentHashMap<String, AbstractRemoteMethodTx>();
         this.sender = sender;
         this.timeout = timeout;
+        this.executorService = executorService;
     }
 
 
@@ -91,6 +96,7 @@ public class RemoteMethodTxPoolEngine implements DtoHandler, IRemoteMethodTxEngi
     public void register(final AbstractRemoteMethodTx rm) {
         logger.debug("Register rm to engine : {}", rm);
         rm.setRegistered(true);
+        rm.setExecutorService(executorService);
         queue.put(rm.id, rm);
         rm.setDtoSender(sender);
         rm.setTimeout(timeout);

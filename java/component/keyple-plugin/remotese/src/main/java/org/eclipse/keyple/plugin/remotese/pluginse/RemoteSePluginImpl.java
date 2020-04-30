@@ -12,6 +12,7 @@
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -41,19 +42,21 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
     private final VirtualReaderSessionFactory sessionManager;
     protected final DtoSender dtoSender;
     private final Map<String, String> parameters;
+    private ExecutorService executorService;
 
     /**
      * RemoteSePlugin is wrapped into MasterAPI and instantiated like a standard plugin
      * by @SeProxyService. Use MasterAPI
      */
     RemoteSePluginImpl(VirtualReaderSessionFactory sessionManager, DtoSender dtoSender,
-            long rpcTimeout, String pluginName) {
+            long rpcTimeout, String pluginName, ExecutorService executorService) {
         super(pluginName);
         this.sessionManager = sessionManager;
         logger.info("Init RemoteSePlugin");
         this.dtoSender = dtoSender;
         this.parameters = new HashMap<String, String>();
         this.rpcTimeout = rpcTimeout;
+        this.executorService = executorService;
     }
 
 
@@ -109,12 +112,12 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
         VirtualReaderImpl virtualReader;
         if (Boolean.TRUE.equals(isObservable)) {
             virtualReader = new VirtualObservableReaderImpl(session, nativeReaderName,
-                    new RemoteMethodTxEngine(dtoSender, rpcTimeout), slaveNodeId, transmissionMode,
-                    options);
+                    new RemoteMethodTxEngine(dtoSender, rpcTimeout, executorService), slaveNodeId,
+                    transmissionMode, options);
         } else {
             virtualReader = new VirtualReaderImpl(session, nativeReaderName,
-                    new RemoteMethodTxEngine(dtoSender, rpcTimeout), slaveNodeId, transmissionMode,
-                    options);
+                    new RemoteMethodTxEngine(dtoSender, rpcTimeout, executorService), slaveNodeId,
+                    transmissionMode, options);
         }
         readers.add(virtualReader);
 
