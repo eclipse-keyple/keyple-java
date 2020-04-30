@@ -15,7 +15,6 @@ package org.eclipse.keyple.example.common.calypso.pc.transaction;
 import java.util.Map;
 import java.util.SortedMap;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalArgumentException;
-import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronisedExchangesException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionIllegalStateException;
@@ -251,17 +250,14 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
              */
 
             /* prepare Event Log append record */
-            int appendEventLogParserIndex =
-                    poTransaction.prepareAppendRecord(CalypsoClassicInfo.SFI_EventLog,
-                            ByteArrayUtil.fromHex(CalypsoClassicInfo.eventLog_dataFill));
 
+
+            poTransaction.prepareAppendRecord(CalypsoClassicInfo.SFI_EventLog,
+                    ByteArrayUtil.fromHex(CalypsoClassicInfo.eventLog_dataFill));
             /*
              * A ratification command will be sent (CONTACTLESS_MODE).
              */
             poProcessStatus = poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
-
-            logger.info("Parsing Append EventLog file: " + ((AppendRecordRespPars) poTransaction
-                    .getResponseParser(appendEventLogParserIndex)).toString());
         }
 
         if (poTransaction.isSuccessful()) {
@@ -338,9 +334,8 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
     @Override
     public void processSeMatch(AbstractDefaultSelectionsResponse defaultSelectionsResponse)
             throws KeypleException {
-        CalypsoPo calypsoPo =
-                (CalypsoPo) seSelection.processDefaultSelection(defaultSelectionsResponse)
-                        .getActiveSelection().getMatchingSe();
+        CalypsoPo calypsoPo = (CalypsoPo) seSelection
+                .processDefaultSelection(defaultSelectionsResponse).getActiveMatchingSe();
         if (calypsoPo != null) {
             logger.info("DF RT header: {}", calypsoPo.getDirectoryHeader());
 

@@ -15,7 +15,6 @@ package org.eclipse.keyple.example.calypso.pc.usecase2;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronisedExchangesException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoSecureSessionException;
-import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -180,17 +179,15 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
         switch (event.getEventType()) {
             case SE_MATCHED:
                 SeReader poReader = null;
-                MatchingSelection matchingSelection = null;
+                CalypsoPo calypsoPo = null;
                 try {
-                    matchingSelection = seSelection
+                    calypsoPo = (CalypsoPo) seSelection
                             .processDefaultSelection(event.getDefaultSelectionsResponse())
-                            .getActiveSelection();
+                            .getActiveMatchingSe();
                 } catch (KeypleException e) {
                     // TODO Rework error management
                     e.printStackTrace();
                 }
-
-                CalypsoPo calypsoPo = (CalypsoPo) matchingSelection.getMatchingSe();
 
                 if (calypsoPo.isSelected()) {
                     try {

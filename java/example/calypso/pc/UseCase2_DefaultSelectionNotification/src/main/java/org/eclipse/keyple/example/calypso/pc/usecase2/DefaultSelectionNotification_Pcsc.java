@@ -15,7 +15,6 @@ package org.eclipse.keyple.example.calypso.pc.usecase2;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronisedExchangesException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoSecureSessionException;
-import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -157,12 +156,12 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
     public void update(ReaderEvent event) {
         switch (event.getEventType()) {
             case SE_MATCHED:
-                MatchingSelection matchingSelection = null;
+                CalypsoPo calypsoPo = null;
                 SeReader poReader = null;
                 try {
-                    matchingSelection = seSelection
+                    calypsoPo = (CalypsoPo) seSelection
                             .processDefaultSelection(event.getDefaultSelectionsResponse())
-                            .getActiveSelection();
+                            .getActiveMatchingSe();
 
                     poReader = SeProxyService.getInstance().getPlugin(event.getPluginName())
                             .getReader(event.getReaderName());;
@@ -174,8 +173,6 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
                     // TODO Change this with the correct exception class when defined
                     e.printStackTrace();
                 }
-
-                CalypsoPo calypsoPo = (CalypsoPo) matchingSelection.getMatchingSe();
 
                 logger.info("Observer notification: the selection of the PO has succeeded.");
 

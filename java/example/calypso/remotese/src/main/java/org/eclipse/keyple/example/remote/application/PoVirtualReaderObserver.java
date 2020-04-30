@@ -18,7 +18,6 @@ import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronisedExc
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionIllegalStateException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoSecureSessionException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoUnauthorizedKvcException;
-import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -72,11 +71,11 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
         switch (event.getEventType()) {
 
             case SE_MATCHED:
-                MatchingSelection matchingSelection = null;
+                CalypsoPo calypsoPo = null;
                 try {
-                    matchingSelection = seSelection
+                    calypsoPo = (CalypsoPo) seSelection
                             .processDefaultSelection(event.getDefaultSelectionsResponse())
-                            .getActiveSelection();
+                            .getActiveMatchingSe();
                 } catch (KeypleException e) {
                     // TODO Rework error management
                     e.printStackTrace();
@@ -89,8 +88,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
                     poReader = masterAPI.getPlugin().getReader(event.getReaderName());
 
                     // create a Po Resource
-                    PoResource poResource =
-                            new PoResource(poReader, (CalypsoPo) matchingSelection.getMatchingSe());
+                    PoResource poResource = new PoResource(poReader, calypsoPo);
 
                     // PO has matched
                     // executeReadEventLog(poResource);

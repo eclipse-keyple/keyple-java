@@ -102,13 +102,13 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
     @Override
     public void processSeMatch(AbstractDefaultSelectionsResponse defaultSelectionsResponse)
             throws KeypleException {
-        SelectionsResult selectionsResult =
-                seSelection.processDefaultSelection(defaultSelectionsResponse);
         /* get the SE that matches one of the two selection targets */
-        AbstractMatchingSe selectedSe = selectionsResult.getActiveSelection().getMatchingSe();
+        AbstractMatchingSe selectedSe = seSelection
+                .processDefaultSelection(defaultSelectionsResponse).getActiveMatchingSe();
         if (selectedSe != null) {
             System.out.println("Selection status = " + selectedSe.isSelected());
         } else {
+            // TODO check this. Shouldn't an exception have been raised before?
             System.out.println("No selection matched!");
         }
     }
