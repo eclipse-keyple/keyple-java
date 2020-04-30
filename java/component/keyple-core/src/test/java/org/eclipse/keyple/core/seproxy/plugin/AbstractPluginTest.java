@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
+import java.util.NoSuchElementException;
 import java.util.SortedSet;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
@@ -108,10 +109,11 @@ public class AbstractPluginTest extends CoreBaseTest {
         Thread thread = new Thread() {
             public void run() {
                 for (int i = 0; i < N; i++) {
-                    if (readers.size() > 0) {
+                    try {
                         readers.remove(readers.first());
                         logger.debug("readers: {}, remove first reader", readers.size());
-                    } else {
+                    } catch (NoSuchElementException e) {
+                        // list is empty
                         logger.debug("readers: {}, list is empty", readers.size());
                     }
                     try {
