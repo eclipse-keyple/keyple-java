@@ -628,8 +628,7 @@ public class StubReaderTest extends BaseStubTest {
                     SelectionsResult selectionsResult =
                             seSelection.processExplicitSelection(reader);
 
-                    AbstractMatchingSe matchingSe =
-                            selectionsResult.getActiveSelection().getMatchingSe();
+                    AbstractMatchingSe matchingSe = selectionsResult.getActiveMatchingSe();
 
                     Assert.assertNotNull(matchingSe);
 

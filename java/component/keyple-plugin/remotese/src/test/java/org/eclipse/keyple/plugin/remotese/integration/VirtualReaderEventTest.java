@@ -416,7 +416,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
         logger.info("Explicit SE Selection result : {}", selectionsResult);
 
-        AbstractMatchingSe matchingSe = selectionsResult.getActiveSelection().getMatchingSe();
+        AbstractMatchingSe matchingSe = selectionsResult.getActiveMatchingSe();
 
         nativeReader.removeSe();
 
@@ -460,8 +460,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
                 logger.info("Explicit SE Selection result : {}", selectionsResult);
 
-                AbstractMatchingSe matchingSe =
-                        selectionsResult.getActiveSelection().getMatchingSe();
+                AbstractMatchingSe matchingSe = selectionsResult.getActiveMatchingSe();
 
 
                 Assert.assertNotNull(matchingSe);
