@@ -11,6 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
+import static org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild.ReadMode.MULTIPLE_RECORD;
+import static org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild.ReadMode.ONE_RECORD;
 import java.util.*;
 import org.eclipse.keyple.calypso.SelectFileControl;
 import org.eclipse.keyple.calypso.command.po.*;
@@ -29,6 +31,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1409,127 +1412,78 @@ public final class PoTransaction {
                 .addRegularCommand(new SelectFileCmdBuild(calypsoPo.getPoClass(), selectControl));
     }
 
-    // /**
-    // * Read one or more records from the indicated EF
-    // *
-    // * @param sfi the SFI of the EF
-    // * @param firstRecordNumber the record number to read (or first record to read in case of
-    // * several records)
-    // * @param numberOfRecords the number of records expected
-    // * @param recordSize the record length
-    // * @throws IllegalArgumentException if one of the provided argument is out of range
-    // */
-    // public final void prepareReadRecordFile(byte sfi, int firstRecordNumber, int numberOfRecords,
-    // int recordSize) {
-    //
-    // Assert.getInstance() //
-    // .isInRange((int) sfi, CalypsoPoUtils.SFI_MIN, CalypsoPoUtils.SFI_MAX, "sfi") //
-    // .isInRange(firstRecordNumber, CalypsoPoUtils.NB_REC_MIN, CalypsoPoUtils.NB_REC_MAX,
-    // "firstRecordNumber") //
-    // .isInRange(numberOfRecords, CalypsoPoUtils.NB_REC_MIN,
-    // CalypsoPoUtils.NB_REC_MAX - firstRecordNumber, "numberOfRecords");
-    //
-    // boolean justOne = !(numberOfRecords > 1);
-    // int expectedLength = numberOfRecords * recordSize;
-    //
-    // addCommandBuilder(
-    // new ReadRecordsCmdBuild(poClass, sfi, firstRecordNumber, justOne, expectedLength));
-    // }
-    //
-    // /**
-    // * Read a record of the indicated EF, which should be a count file.
-    // * <p>
-    // * The record will be read up to the counter location indicated in parameter.<br>
-    // * Thus all previous counters will also be read.
-    // *
-    // * @param sfi the SFI of the EF
-    // * @param countersNumber the number of the last counter to be read
-    // * @throws IllegalArgumentException if one of the provided argument is out of range
-    // */
-    // public final void prepareReadCounterFile(byte sfi, int countersNumber) {
-    // prepareReadRecordFile(sfi, 1, 1, countersNumber * 3);
-    // }
 
     /**
-     * Internal method to handle expectedLength checks in public variants
+     * Read a single record from the indicated EF
      *
-     * @param sfi the sfi top select
-     * @param readDataStructureEnum read mode enum to indicate a SINGLE, MULTIPLE or COUNTER read
-     * @param firstRecordNumber the record number to read (or first record to read in case of
-     *        several records)
-     * @param expectedLength the expected length of the record(s)
-     * @return the command index (input order, starting at 0)
-     * @throws IllegalArgumentException - if record number &lt; 1
-     * @throws IllegalArgumentException - if the request is inconsistent
+     * @param sfi the SFI of the EF to read
+     * @param recordNumber the record number to read
+     * @throws IllegalArgumentException if one of the provided argument is out of range
      */
-    private int prepareReadRecordsCmdInternal(byte sfi, ReadDataStructure readDataStructureEnum,
-            byte firstRecordNumber, int expectedLength) {
-
-        /*
-         * the readJustOneRecord flag is set to false only in case of multiple read records, in all
-         * other cases it is set to true
-         */
-        boolean readJustOneRecord =
-                !(readDataStructureEnum == ReadDataStructure.MULTIPLE_RECORD_DATA);
-
-        /*
-         * create and keep the PoCommand, return the command index
-         */
-
-        // return poCommandManager.addRegularCommand(
-        // new ReadRecordsCmdBuild(calypsoPo.getPoClass(), sfi, readDataStructureEnum,
-        // firstRecordNumber, readJustOneRecord, (byte) expectedLength));
-        return 0;
+    public final void prepareReadRecordFile(byte sfi, int recordNumber) {
+        poCommandManager.addRegularCommand(
+                CalypsoPoUtils.prepareReadRecordFile(calypsoPo.getPoClass(), sfi, recordNumber));
     }
 
     /**
-     * Builds a ReadRecords command and add it to the list of commands to be sent with the next
-     * process command.
-     * <p>
-     * The expected length is provided and its value is checked between 1 and 250.
-     * <p>
-     * Returns the associated response parser.
+     * Read one or more records from the indicated EF
      *
-     * @param sfi the sfi top select
-     * @param readDataStructureEnum read mode enum to indicate a SINGLE, MULTIPLE or COUNTER read
+     * @param sfi the SFI of the EF
      * @param firstRecordNumber the record number to read (or first record to read in case of
      *        several records)
-     * @param expectedLength the expected length of the record(s)
-     * @return the command index (input order, starting at 0)
-     * @throws IllegalArgumentException - if record number &lt; 1
-     * @throws IllegalArgumentException - if the request is inconsistent
+     * @param numberOfRecords the number of records expected
+     * @param recordSize the record length
+     * @throws IllegalArgumentException if one of the provided argument is out of range
      */
-    public int prepareReadRecords(byte sfi, ReadDataStructure readDataStructureEnum,
-            byte firstRecordNumber, int expectedLength) {
-        if (expectedLength < 1 || expectedLength > 250) {
-            throw new IllegalArgumentException("Bad length.");
+    public final void prepareReadRecordFile(byte sfi, int firstRecordNumber, int numberOfRecords,
+            int recordSize) {
+
+        Assert.getInstance() //
+                .isInRange((int) sfi, CalypsoPoUtils.SFI_MIN, CalypsoPoUtils.SFI_MAX, "sfi") //
+                .isInRange(firstRecordNumber, CalypsoPoUtils.NB_REC_MIN, CalypsoPoUtils.NB_REC_MAX,
+                        "firstRecordNumber") //
+                .isInRange(numberOfRecords, CalypsoPoUtils.NB_REC_MIN,
+                        CalypsoPoUtils.NB_REC_MAX - firstRecordNumber, "numberOfRecords");
+
+        if (numberOfRecords == 1) {
+            poCommandManager.addRegularCommand(new ReadRecordsCmdBuild(calypsoPo.getPoClass(), sfi,
+                    firstRecordNumber, ONE_RECORD, recordSize));
+        } else {
+            // Manages the reading of multiple records taking into account the transmission capacity
+            // of the PO and the response format (2 extra bytes)
+            // Multiple APDUs can be generated depending on record size and transmission capacity.
+            int recordsPerApdu = calypsoPo.getPayloadCapacity() / (recordSize + 2);
+            int maxSizeDataPerApdu = recordsPerApdu * (recordSize + 2);
+            int remainingRecords = numberOfRecords;
+            int startRecordNumber = firstRecordNumber;
+            while (remainingRecords > 0) {
+                int expectedLength;
+                if (remainingRecords > recordsPerApdu) {
+                    expectedLength = maxSizeDataPerApdu;
+                    remainingRecords = remainingRecords - recordsPerApdu;
+                    startRecordNumber = startRecordNumber + recordsPerApdu;
+                } else {
+                    expectedLength = remainingRecords * (recordSize + 2);
+                    remainingRecords = 0;
+                }
+                poCommandManager.addRegularCommand(new ReadRecordsCmdBuild(calypsoPo.getPoClass(),
+                        sfi, startRecordNumber, MULTIPLE_RECORD, expectedLength));
+            }
         }
-        return prepareReadRecordsCmdInternal(sfi, readDataStructureEnum, firstRecordNumber,
-                expectedLength);
     }
 
     /**
-     * Builds a ReadRecords command and add it to the list of commands to be sent with the next
-     * process command. No expected length is specified, the record output length is handled
-     * automatically.
+     * Read a record of the indicated EF, which should be a count file.
      * <p>
-     * Returns the associated response parser.
+     * The record will be read up to the counter location indicated in parameter.<br>
+     * Thus all previous counters will also be read.
      *
-     * @param sfi the sfi top select
-     * @param readDataStructureEnum read mode enum to indicate a SINGLE, MULTIPLE or COUNTER read
-     * @param firstRecordNumber the record number to read (or first record to read in case of
-     *        several records)
-     * @return the command index (input order, starting at 0)
-     * @throws IllegalArgumentException - if record number &lt; 1
-     * @throws IllegalArgumentException - if the request is inconsistent
+     * @param sfi the SFI of the EF
+     * @param countersNumber the number of the last counter to be read
+     * @throws IllegalArgumentException if one of the provided argument is out of range
      */
-    public int prepareReadRecords(byte sfi, ReadDataStructure readDataStructureEnum,
-            byte firstRecordNumber) {
-        if (poReader.getTransmissionMode() == TransmissionMode.CONTACTS) {
-            throw new IllegalArgumentException(
-                    "In contacts mode, the expected length must be specified.");
-        }
-        return prepareReadRecordsCmdInternal(sfi, readDataStructureEnum, firstRecordNumber, 0);
+    public final void prepareReadCounterFile(byte sfi, int countersNumber) {
+        prepareReadRecordFile(sfi, 1, 1, countersNumber * 3);
     }
 
     /**

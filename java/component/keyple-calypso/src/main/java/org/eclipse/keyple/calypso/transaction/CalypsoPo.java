@@ -294,6 +294,11 @@ public final class CalypsoPo extends AbstractMatchingSe {
         return poAtr;
     }
 
+    public int getPayloadCapacity() {
+        // TODO make this value dependent on the type of PO identified
+        return 250;
+    }
+
     /**
      * Specifies whether the change counter allowed in session is established in number of
      * operations or number of bytes modified.

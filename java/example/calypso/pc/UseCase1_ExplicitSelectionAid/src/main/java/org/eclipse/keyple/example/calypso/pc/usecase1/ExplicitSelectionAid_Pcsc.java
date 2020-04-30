@@ -13,8 +13,6 @@ package org.eclipse.keyple.example.calypso.pc.usecase1;
 
 
 import java.io.IOException;
-import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
-import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
@@ -165,8 +163,7 @@ public class ExplicitSelectionAid_Pcsc {
                  * Prepare the reading order and keep the associated parser for later use once the
                  * transaction has been processed.
                  */
-                int readEventLogParserIndex = poTransaction.prepareReadRecords(
-                        CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
+                poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_EventLog,
                         CalypsoClassicInfo.RECORD_NUMBER_1);
 
                 /*
@@ -179,9 +176,9 @@ public class ExplicitSelectionAid_Pcsc {
                     /*
                      * Retrieve the data read from the parser updated during the transaction process
                      */
-                    byte eventLog[] = (((ReadRecordsRespPars) poTransaction
-                            .getResponseParser(readEventLogParserIndex)).getRecords())
-                                    .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
+                    ElementaryFile efEventLog =
+                            calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+                    byte eventLog[] = efEventLog.getData().getContent();
 
                     /* Log the result */
                     logger.info("EventLog file data: {}", ByteArrayUtil.toHex(eventLog));

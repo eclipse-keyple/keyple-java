@@ -11,8 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.remote.application;
 
-import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
-import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
 import org.eclipse.keyple.calypso.transaction.*;
@@ -175,8 +173,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
              * Prepare the reading order and keep the associated parser for later use once the
              * transaction has been processed.
              */
-            int readEventLogParserIndex = poTransaction.prepareReadRecords(
-                    CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
+            poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_EventLog,
                     CalypsoClassicInfo.RECORD_NUMBER_1);
 
             /*
@@ -190,10 +187,9 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
                 /*
                  * Retrieve the data read from the parser updated during the transaction process
                  */
-                ReadRecordsRespPars readEventLogParser = (ReadRecordsRespPars) poTransaction
-                        .getResponseParser(readEventLogParserIndex);
-                byte eventLog[] = (readEventLogParser.getRecords())
-                        .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
+                ElementaryFile efEventLog =
+                        poResource.getMatchingSe().getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+                byte eventLog[] = efEventLog.getData().getContent();
 
                 /* Log the result */
                 logger.info("{} EventLog file data: {} ", nodeId, ByteArrayUtil.toHex(eventLog));
@@ -254,18 +250,14 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
              * Prepare the reading order and keep the associated parser for later use once the
              * transaction has been processed.
              */
-            int readEventLogParserIndex = poTransaction.prepareReadRecords(
-                    CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
-                    CalypsoClassicInfo.RECORD_NUMBER_1);
-
             poProcessStatus = poTransaction.processPoCommandsInSession();
 
             /*
              * Retrieve the data read from the parser updated during the transaction process
              */
-            byte eventLog[] = (((ReadRecordsRespPars) poTransaction
-                    .getResponseParser(readEventLogParserIndex)).getRecords())
-                            .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
+            ElementaryFile efEventLog =
+                    poResource.getMatchingSe().getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+            byte eventLog[] = efEventLog.getData().getContent();
 
             /* Log the result */
             logger.info("EventLog file data: {}", ByteArrayUtil.toHex(eventLog));

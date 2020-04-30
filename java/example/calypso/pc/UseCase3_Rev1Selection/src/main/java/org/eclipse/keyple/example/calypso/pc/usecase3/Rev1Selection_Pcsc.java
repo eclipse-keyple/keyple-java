@@ -13,8 +13,6 @@ package org.eclipse.keyple.example.calypso.pc.usecase3;
 
 
 import java.io.IOException;
-import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
-import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
@@ -179,11 +177,11 @@ public class Rev1Selection_Pcsc {
                 /*
                  * Prepare the reading order and keep the associated parser for later use once the
                  * transaction has been processed. We provide the expected record length since the
-                 * REV1 PO need it.
+                 * REV1 PO need it. TODO Check if we need to specify the expected length (29 bytes
+                 * here)
                  */
-                int readEventLogParserIndex = poTransaction.prepareReadRecords(
-                        CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
-                        CalypsoClassicInfo.RECORD_NUMBER_1, 29);
+                poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_EventLog,
+                        CalypsoClassicInfo.RECORD_NUMBER_1);
 
                 /*
                  * Actual PO communication: send the prepared read order, then close the channel
@@ -195,9 +193,9 @@ public class Rev1Selection_Pcsc {
                     /*
                      * Retrieve the data read from the parser updated during the transaction process
                      */
-                    byte eventLog[] = (((ReadRecordsRespPars) poTransaction
-                            .getResponseParser(readEventLogParserIndex)).getRecords())
-                                    .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
+                    ElementaryFile efEventLog =
+                            calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+                    byte eventLog[] = efEventLog.getData().getContent();
 
                     /* Log the result */
                     logger.info("EventLog file data: {}", ByteArrayUtil.toHex(eventLog));

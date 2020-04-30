@@ -13,8 +13,6 @@ package org.eclipse.keyple.example.calypso.pc.usecase4;
 
 
 
-import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
-import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.*;
 import org.eclipse.keyple.core.seproxy.*;
@@ -151,8 +149,7 @@ public class PoAuthentication_Pcsc {
                  * Prepare the reading order and keep the associated parser for later use once the
                  * transaction has been processed.
                  */
-                int readEventLogParserIndex = poTransaction.prepareReadRecords(
-                        CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
+                poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_EventLog,
                         CalypsoClassicInfo.RECORD_NUMBER_1);
 
 
@@ -175,8 +172,7 @@ public class PoAuthentication_Pcsc {
                  * Prepare the reading order and keep the associated parser for later use once the
                  * transaction has been processed.
                  */
-                int readEventLogParserIndexBis = poTransaction.prepareReadRecords(
-                        CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
+                poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_EventLog,
                         CalypsoClassicInfo.RECORD_NUMBER_1);
 
                 poProcessStatus = poTransaction.processPoCommandsInSession();
@@ -184,9 +180,8 @@ public class PoAuthentication_Pcsc {
                 /*
                  * Retrieve the data read from the parser updated during the transaction process
                  */
-                byte eventLog[] = (((ReadRecordsRespPars) poTransaction
-                        .getResponseParser(readEventLogParserIndexBis)).getRecords())
-                                .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
+                ElementaryFile efEventLog = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+                byte eventLog[] = efEventLog.getData().getContent();
 
                 /* Log the result */
                 logger.info("EventLog file data: {}", ByteArrayUtil.toHex(eventLog));

@@ -81,7 +81,7 @@ class PoCommandManager {
     /**
      * @return the current PoCommand list
      */
-    public List<PoCommand> getPoCommandList() {
+    List<PoCommand> getPoCommandList() {
         /* Clear the list if no command has been added since the last call to a process method. */
         if (preparedCommandsProcessed) {
             poCommandList.clear();
