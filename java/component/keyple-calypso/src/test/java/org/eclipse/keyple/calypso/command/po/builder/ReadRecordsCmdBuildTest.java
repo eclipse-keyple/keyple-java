@@ -13,8 +13,6 @@ package org.eclipse.keyple.calypso.command.po.builder;
 
 
 import org.eclipse.keyple.calypso.command.PoClass;
-import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
-import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.junit.Assert;
 import org.junit.Test;
@@ -30,7 +28,7 @@ public class ReadRecordsCmdBuildTest {
 
     private final byte expectedLength = 0x00;
 
-    private AbstractApduCommandBuilder apduCommandBuilder;
+    private ReadRecordsCmdBuild readRecordsCmdBuilder;
 
     private ApduRequest apduRequest;
 
@@ -45,11 +43,11 @@ public class ReadRecordsCmdBuildTest {
 
         // revision 2.4
         byte[] request2_4 = {cla, cmd, record_number, p2, 0x00};
-        apduCommandBuilder =
-                new ReadRecordsCmdBuild(PoClass.LEGACY, sfi, ReadDataStructure.SINGLE_RECORD_DATA,
-                        record_number, readJustOneRecord, expectedLength);
-        apduRequest = apduCommandBuilder.getApduRequest();
+        readRecordsCmdBuilder = new ReadRecordsCmdBuild(PoClass.LEGACY, sfi, record_number,
+                readJustOneRecord, expectedLength);
+        apduRequest = readRecordsCmdBuilder.getApduRequest();
         Assert.assertArrayEquals(request2_4, apduRequest.getBytes());
+        Assert.assertFalse(readRecordsCmdBuilder.isReadJustOneRecord());
     }
 
     @Test
@@ -61,13 +59,11 @@ public class ReadRecordsCmdBuildTest {
         byte sfi = (byte) 0x08;
         byte p2 = (byte) ((byte) (sfi * 8) + 5);
 
-
         // revision 3.1
         byte[] request3_1 = {cla, cmd, record_number, p2, 0x00};
-        apduCommandBuilder =
-                new ReadRecordsCmdBuild(PoClass.ISO, sfi, ReadDataStructure.SINGLE_RECORD_DATA,
-                        record_number, readJustOneRecord, expectedLength);
-        apduRequest = apduCommandBuilder.getApduRequest();
+        readRecordsCmdBuilder = new ReadRecordsCmdBuild(PoClass.ISO, sfi, record_number,
+                readJustOneRecord, expectedLength);
+        apduRequest = readRecordsCmdBuilder.getApduRequest();
         Assert.assertArrayEquals(request3_1, apduRequest.getBytes());
     }
 
@@ -81,10 +77,9 @@ public class ReadRecordsCmdBuildTest {
 
         // revision 3.2
         byte[] request3_2 = {cla, cmd, record_number, p2, 0x00};
-        apduCommandBuilder =
-                new ReadRecordsCmdBuild(PoClass.ISO, sfi, ReadDataStructure.SINGLE_RECORD_DATA,
-                        record_number, readJustOneRecord, expectedLength);
-        apduRequest = apduCommandBuilder.getApduRequest();
+        readRecordsCmdBuilder = new ReadRecordsCmdBuild(PoClass.ISO, sfi, record_number,
+                readJustOneRecord, expectedLength);
+        apduRequest = readRecordsCmdBuilder.getApduRequest();
         Assert.assertArrayEquals(request3_2, apduRequest.getBytes());
     }
 

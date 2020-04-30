@@ -14,7 +14,6 @@ package org.eclipse.keyple.example.calypso.android.omapi.activity
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_calypso_example.eventRecyclerView
 import kotlinx.android.synthetic.main.activity_calypso_example.toolbar
-import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest
 import org.eclipse.keyple.calypso.transaction.PoSelector
 import org.eclipse.keyple.core.selection.SeSelection
@@ -127,13 +126,11 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                      * Prepare the reading order and keep the associated parser for later use once
                      * the selection has been made.
                      */
-                    val readEnvironmentParserIndex = poSelectionRequest.prepareReadRecords(
-                            sfiNavigoEFEnvironment, ReadDataStructure.SINGLE_RECORD_DATA,
-                            1.toByte(), 29)
+                    poSelectionRequest.prepareReadRecordFile(
+                            sfiNavigoEFEnvironment, 1)
 
-                    val readTransportEventParserIndex = poSelectionRequest.prepareReadRecords(
-                            sfiNavigoEFTransportEvent, ReadDataStructure.SINGLE_RECORD_DATA,
-                            1.toByte(), 29)
+                    poSelectionRequest.prepareReadRecordFile(
+                            sfiNavigoEFTransportEvent, 1)
 
                     /*
                      * Add the selection case to the current selection (we could have added other
@@ -219,13 +216,10 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                      * Prepare the reading order and keep the associated parser for later use once
                      * the selection has been made.
                      */
-                    val readEnvironmentParserIndex = poSelectionRequest.prepareReadRecords(
-                            sfiHoplinkEFEnvironment, ReadDataStructure.SINGLE_RECORD_DATA,
-                            1.toByte(), 32)
+                    poSelectionRequest.prepareReadRecordFile(sfiHoplinkEFEnvironment, 1)
 
-                    val readUsageParserIndex = poSelectionRequest.prepareReadRecords(
-                            sfiHoplinkEFUsage, ReadDataStructure.SINGLE_RECORD_DATA,
-                            1.toByte(), 48)
+                    poSelectionRequest.prepareReadRecordFile(
+                            sfiHoplinkEFUsage, 1)
 
                     /*
                      * Add the selection case to the current selection (we could have added other

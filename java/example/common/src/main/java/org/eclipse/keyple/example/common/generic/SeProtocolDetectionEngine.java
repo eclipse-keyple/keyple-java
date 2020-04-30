@@ -14,7 +14,6 @@ package org.eclipse.keyple.example.common.generic;
 
 
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalArgumentException;
-import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.core.selection.*;
@@ -71,8 +70,7 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
                                                     new SeSelector.AidSelector.IsoAid(HoplinkAID),
                                                     null)));
 
-                    poSelectionRequest.prepareReadRecords(SFI_T2Environment,
-                            ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01);
+                    poSelectionRequest.prepareReadRecordFile(SFI_T2Environment, 1);
 
                     seSelection.prepareSelection(poSelectionRequest);
 

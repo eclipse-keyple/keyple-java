@@ -113,8 +113,8 @@ public class ExplicitSelectionAid_Pcsc {
              * Prepare the reading order and keep the associated parser for later use once the
              * selection has been made.
              */
-            poSelectionRequest.prepareReadRecords(CalypsoClassicInfo.SFI_EnvironmentAndHolder,
-                    ReadDataStructure.SINGLE_RECORD_DATA, CalypsoClassicInfo.RECORD_NUMBER_1);
+            poSelectionRequest.prepareReadRecordFile(CalypsoClassicInfo.SFI_EnvironmentAndHolder,
+                    CalypsoClassicInfo.RECORD_NUMBER_1);
 
             /*
              * Add the selection case to the current selection (we could have added other cases

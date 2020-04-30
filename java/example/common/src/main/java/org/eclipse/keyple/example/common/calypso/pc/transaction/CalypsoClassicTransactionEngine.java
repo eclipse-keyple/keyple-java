@@ -306,8 +306,12 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
                                 new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
                                 PoSelector.InvalidatedPo.ACCEPT)));
 
-        poSelectionRequestCalypsoAid.prepareReadRecords(CalypsoClassicInfo.SFI_EventLog,
-                ReadDataStructure.SINGLE_RECORD_DATA, CalypsoClassicInfo.RECORD_NUMBER_1);
+        poSelectionRequestCalypsoAid.prepareSelectFile(CalypsoClassicInfo.LID_DF_RT);
+
+        poSelectionRequestCalypsoAid.prepareSelectFile(CalypsoClassicInfo.LID_EventLog);
+
+        poSelectionRequestCalypsoAid.prepareReadRecordFile(CalypsoClassicInfo.SFI_EventLog,
+                CalypsoClassicInfo.RECORD_NUMBER_1);
 
         seSelection.prepareSelection(poSelectionRequestCalypsoAid);
 
@@ -339,6 +343,19 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
                 (CalypsoPo) seSelection.processDefaultSelection(defaultSelectionsResponse)
                         .getActiveSelection().getMatchingSe();
         if (calypsoPo != null) {
+            logger.info("DF RT header: {}", calypsoPo.getDirectoryHeader());
+
+            ElementaryFile eventLogEF = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+
+            logger.info("Event Log header: {}", eventLogEF.getHeader());
+
+            byte[] eventLogBytes =
+                    eventLogEF.getData().getContent(CalypsoClassicInfo.RECORD_NUMBER_1);
+
+            String eventLog = ByteArrayUtil.toHex(eventLogBytes);
+
+            logger.info("EventLog: {}", eventLog);
+
             try {
                 /* first time: check SAM */
                 if (!this.samChannelOpen) {

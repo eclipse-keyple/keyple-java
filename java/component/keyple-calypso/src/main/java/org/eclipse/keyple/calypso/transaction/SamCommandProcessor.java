@@ -108,7 +108,7 @@ class SamCommandProcessor {
 
         if (logger.isDebugEnabled()) {
             logger.debug("Identification: DFNAME = {}, SERIALNUMBER = {}",
-                    ByteArrayUtil.toHex(poResource.getMatchingSe().getDfName()),
+                    ByteArrayUtil.toHex(poResource.getMatchingSe().getDfNameBytes()),
                     ByteArrayUtil.toHex(samResource.getMatchingSe().getSerialNumber()));
         }
         /* diversify only if this has not already been done. */
@@ -124,9 +124,9 @@ class SamCommandProcessor {
             isDiversificationDone = true;
         }
         /* Build the SAM Get Challenge command */
-        byte challengeLength =
-                poResource.getMatchingSe().isRev3_2ModeAvailable() ? CHALLENGE_LENGTH_REV32
-                        : CHALLENGE_LENGTH_REV_INF_32;
+        byte challengeLength = poResource.getMatchingSe().isConfidentialSessionModeSupported()
+                ? CHALLENGE_LENGTH_REV32
+                : CHALLENGE_LENGTH_REV_INF_32;
 
         AbstractSamCommandBuilder samGetChallenge = new SamGetChallengeCmdBuild(
                 samResource.getMatchingSe().getSamRevision(), challengeLength);
@@ -248,7 +248,8 @@ class SamCommandProcessor {
                     samResource.getMatchingSe().getSamRevision(), sessionEncryption,
                     verificationMode);
             logger.debug("initialize: VERIFICATIONMODE = {}, REV32MODE = {} KEYRECNUMBER = {}",
-                    verificationMode, poResource.getMatchingSe().isRev3_2ModeAvailable(),
+                    verificationMode,
+                    poResource.getMatchingSe().isConfidentialSessionModeSupported(),
                     workKeyRecordNumber);
             logger.debug("initialize: KIF = {}, KVC {}, DIGESTDATA = {}",
                     String.format("%02X", poKif), String.format("%02X", poKVC),
@@ -335,7 +336,8 @@ class SamCommandProcessor {
              */
             samApduRequestList
                     .add(new DigestInitCmdBuild(samResource.getMatchingSe().getSamRevision(),
-                            verificationMode, poResource.getMatchingSe().isRev3_2ModeAvailable(),
+                            verificationMode,
+                            poResource.getMatchingSe().isConfidentialSessionModeSupported(),
                             workKeyRecordNumber, workKeyKif, workKeyKVC, poDigestDataCache.get(0))
                                     .getApduRequest());
             poDigestDataCache.remove(0);

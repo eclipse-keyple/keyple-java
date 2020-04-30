@@ -1409,9 +1409,50 @@ public final class PoTransaction {
                 .addRegularCommand(new SelectFileCmdBuild(calypsoPo.getPoClass(), selectControl));
     }
 
+    // /**
+    // * Read one or more records from the indicated EF
+    // *
+    // * @param sfi the SFI of the EF
+    // * @param firstRecordNumber the record number to read (or first record to read in case of
+    // * several records)
+    // * @param numberOfRecords the number of records expected
+    // * @param recordSize the record length
+    // * @throws IllegalArgumentException if one of the provided argument is out of range
+    // */
+    // public final void prepareReadRecordFile(byte sfi, int firstRecordNumber, int numberOfRecords,
+    // int recordSize) {
+    //
+    // Assert.getInstance() //
+    // .isInRange((int) sfi, CalypsoPoUtils.SFI_MIN, CalypsoPoUtils.SFI_MAX, "sfi") //
+    // .isInRange(firstRecordNumber, CalypsoPoUtils.NB_REC_MIN, CalypsoPoUtils.NB_REC_MAX,
+    // "firstRecordNumber") //
+    // .isInRange(numberOfRecords, CalypsoPoUtils.NB_REC_MIN,
+    // CalypsoPoUtils.NB_REC_MAX - firstRecordNumber, "numberOfRecords");
+    //
+    // boolean justOne = !(numberOfRecords > 1);
+    // int expectedLength = numberOfRecords * recordSize;
+    //
+    // addCommandBuilder(
+    // new ReadRecordsCmdBuild(poClass, sfi, firstRecordNumber, justOne, expectedLength));
+    // }
+    //
+    // /**
+    // * Read a record of the indicated EF, which should be a count file.
+    // * <p>
+    // * The record will be read up to the counter location indicated in parameter.<br>
+    // * Thus all previous counters will also be read.
+    // *
+    // * @param sfi the SFI of the EF
+    // * @param countersNumber the number of the last counter to be read
+    // * @throws IllegalArgumentException if one of the provided argument is out of range
+    // */
+    // public final void prepareReadCounterFile(byte sfi, int countersNumber) {
+    // prepareReadRecordFile(sfi, 1, 1, countersNumber * 3);
+    // }
+
     /**
      * Internal method to handle expectedLength checks in public variants
-     * 
+     *
      * @param sfi the sfi top select
      * @param readDataStructureEnum read mode enum to indicate a SINGLE, MULTIPLE or COUNTER read
      * @param firstRecordNumber the record number to read (or first record to read in case of
@@ -1435,9 +1476,10 @@ public final class PoTransaction {
          * create and keep the PoCommand, return the command index
          */
 
-        return poCommandManager.addRegularCommand(
-                new ReadRecordsCmdBuild(calypsoPo.getPoClass(), sfi, readDataStructureEnum,
-                        firstRecordNumber, readJustOneRecord, (byte) expectedLength));
+        // return poCommandManager.addRegularCommand(
+        // new ReadRecordsCmdBuild(calypsoPo.getPoClass(), sfi, readDataStructureEnum,
+        // firstRecordNumber, readJustOneRecord, (byte) expectedLength));
+        return 0;
     }
 
     /**

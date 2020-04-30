@@ -49,6 +49,9 @@ public class CalypsoClassicInfo {
     public final static byte SFI_ContractList = (byte) 0x1E;
     public final static byte SFI_Contracts = (byte) 0x09;
 
+    public final static short LID_DF_RT = 0x2000;
+    public final static short LID_EventLog = 0x2010;
+
     public final static String eventLog_dataFill =
             "00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC";
 }
