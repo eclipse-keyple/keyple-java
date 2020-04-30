@@ -26,12 +26,11 @@ import org.eclipse.keyple.core.seproxy.message.SeResponse;
  * <p>
  * This class may also be extended to add particular features specific to a SE family.
  */
-public abstract class AbstractSeSelectionRequest {
+public abstract class AbstractSeSelectionRequest<T extends AbstractApduCommandBuilder> {
     protected final SeSelector seSelector;
 
     /** optional command builder list of command to be executed following the selection process */
-    private final List<AbstractApduCommandBuilder> commandBuilders =
-            new ArrayList<AbstractApduCommandBuilder>();
+    private final List<T> commandBuilders = new ArrayList<T>();
 
     public AbstractSeSelectionRequest(SeSelector seSelector) {
         this.seSelector = seSelector;
@@ -45,7 +44,7 @@ public abstract class AbstractSeSelectionRequest {
      */
     final SeRequest getSelectionRequest() {
         List<ApduRequest> seSelectionApduRequestList = new ArrayList<ApduRequest>();
-        for (AbstractApduCommandBuilder commandBuilder : commandBuilders) {
+        for (T commandBuilder : commandBuilders) {
             seSelectionApduRequestList.add(commandBuilder.getApduRequest());
         }
         return new SeRequest(seSelector, seSelectionApduRequestList);
@@ -64,14 +63,14 @@ public abstract class AbstractSeSelectionRequest {
      *
      * @param commandBuilder an {@link AbstractApduCommandBuilder}
      */
-    protected final void addCommandBuilder(AbstractApduCommandBuilder commandBuilder) {
+    protected final void addCommandBuilder(T commandBuilder) {
         commandBuilders.add(commandBuilder);
     }
 
     /**
      * @return the current command builder list
      */
-    protected final List<AbstractApduCommandBuilder> getCommandBuilders() {
+    protected final List<T> getCommandBuilders() {
         return commandBuilders;
     }
 
