@@ -14,6 +14,7 @@ package org.eclipse.keyple.example.calypso.android.omapi.activity
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_calypso_example.eventRecyclerView
 import kotlinx.android.synthetic.main.activity_calypso_example.toolbar
+import org.eclipse.keyple.calypso.transaction.CalypsoPo
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest
 import org.eclipse.keyple.calypso.transaction.PoSelector
 import org.eclipse.keyple.core.selection.SeSelection
@@ -73,7 +74,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                          * Check if PO has been selected successfuly
                          */
                         if (selectionsResult.hasActiveSelection()) {
-                            val matchedSe = selectionsResult.activeSelection.matchingSe
+                            val matchedSe = selectionsResult.activeMatchingSe
                             addResultEvent("The selection of the SE has succeeded.")
                             addResultEvent("Application FCI = ${ByteArrayUtil.toHex(matchedSe.selectionStatus.fci.bytes)}")
                         } else {
@@ -149,7 +150,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                         val selectionsResult = seSelection.processExplicitSelection(seReader)
 
                         if (selectionsResult.hasActiveSelection()) {
-                            val matchingSelection = selectionsResult.activeSelection
+                            val calypsoPo = selectionsResult.activeMatchingSe as CalypsoPo
 
                             // val calypsoPo = matchingSelection.matchingSe as CalypsoPo
                             addResultEvent("Selection succeeded for P0 with aid $poAid")
@@ -237,7 +238,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                         val selectionsResult = seSelection.processExplicitSelection(seReader)
 
                         if (selectionsResult.hasActiveSelection()) {
-                            val matchingSelection = selectionsResult.activeSelection
+                            val calypsoPo = selectionsResult.activeMatchingSe as CalypsoPo
 
                             // val calypsoPo = matchingSelection.matchingSe as CalypsoPo
                             addResultEvent("Selection succeeded for P0 with aid $poAid")

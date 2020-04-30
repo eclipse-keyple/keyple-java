@@ -19,6 +19,7 @@ import kotlinx.android.synthetic.main.activity_core_examples.toolbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.eclipse.keyple.core.command.AbstractApduCommandBuilder
 import org.eclipse.keyple.core.selection.AbstractMatchingSe
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest
 import org.eclipse.keyple.core.selection.SeSelection
@@ -133,13 +134,11 @@ class CoreExamplesActivity : AbstractExampleActivity() {
         try {
             val selectionsResult = seSelection.processExplicitSelection(reader)
             if (selectionsResult.hasActiveSelection()) {
-                with(selectionsResult.getMatchingSelection(0)) {
-                    val matchingSe = this.matchingSe
+                    val matchingSe = selectionsResult.activeMatchingSe
                     addResultEvent("Selection status for selection " +
-                            "(indexed ${this.selectionIndex}): \n\t\t" +
+                            "(indexed $index): \n\t\t" +
                             "ATR: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.atr.bytes)}\n\t\t" +
                             "FCI: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.fci.bytes)}")
-                }
             } else {
                 addResultEvent("The selection did not match for case $index.")
             }
@@ -198,9 +197,9 @@ class CoreExamplesActivity : AbstractExampleActivity() {
 
                 if (selectionResult.matchingSelections.size > 0) {
                     selectionResult.matchingSelections.forEach {
-                        val matchingSe = it.matchingSe
+                        val matchingSe = it.value
                         addResultEvent("Selection status for selection " +
-                                "(indexed ${it.selectionIndex}): \n\t\t" +
+                                "(indexed ${it.key}): \n\t\t" +
                                 "ATR: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.atr.bytes)}\n\t\t" +
                                 "FCI: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.fci.bytes)}")
                     }
@@ -266,7 +265,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                     when (event?.eventType) {
                         ReaderEvent.EventType.SE_MATCHED -> {
                             addResultEvent("SE_MATCHED event: A SE corresponding to request has been detected")
-                            val selectedSe = seSelection.processDefaultSelection(event.defaultSelectionsResponse).activeSelection.matchingSe
+                            val selectedSe = seSelection.processDefaultSelection(event.defaultSelectionsResponse).activeMatchingSe
                             if (selectedSe != null) {
                                 addResultEvent("Observer notification: the selection of the SE has succeeded. End of the SE processing.")
                                 addResultEvent("Application FCI = ${ByteArrayUtil.toHex(selectedSe.selectionStatus.fci.bytes)}")
@@ -358,7 +357,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                 val selectionsResult = seSelection.processExplicitSelection(reader)
 
                 if (selectionsResult.hasActiveSelection()) {
-                    val matchedSe = selectionsResult.activeSelection.matchingSe
+                    val matchedSe = selectionsResult.activeMatchingSe
                     addResultEvent("The selection of the SE has succeeded.")
                     addResultEvent("Application FCI = ${ByteArrayUtil.toHex(matchedSe.selectionStatus.fci.bytes)}")
                     addResultEvent("End of the generic SE processing.")
@@ -384,7 +383,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
     /**
      * Create a new class extending AbstractSeSelectionRequest
      */
-    inner class GenericSeSelectionRequest(seSelector: SeSelector) : AbstractSeSelectionRequest(seSelector) {
+    inner class GenericSeSelectionRequest(seSelector: SeSelector) : AbstractSeSelectionRequest<AbstractApduCommandBuilder>(seSelector) {
         private var transmissionMode: TransmissionMode = seSelector.seProtocol.transmissionMode
 
         override fun parse(seResponse: SeResponse): AbstractMatchingSe {

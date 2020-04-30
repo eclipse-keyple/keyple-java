@@ -141,9 +141,9 @@ class CoreExamplesActivity : ExamplesActivity() {
                         val selectionsResult = seSelection.processExplicitSelection(seReader)
                         if (selectionsResult.matchingSelections.size> 0) {
                             selectionsResult.matchingSelections.forEach {
-                                val matchingSe = it.matchingSe
+                                val matchingSe = it.value
                                 addResultEvent("Selection status for selection " +
-                                        "(indexed ${it.selectionIndex}): \n\t\t" +
+                                        "(indexed ${it.key}): \n\t\t" +
                                         "ATR: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.atr.bytes)}\n\t\t" +
                                         "FCI: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.fci.dataOut)}")
                             }
@@ -221,7 +221,7 @@ class CoreExamplesActivity : ExamplesActivity() {
         addActionEvent("Sending multiSelection request based on AID Prefix $seAidPrefix to ${seReader.name}")
         val selectionsResult = seSelection.processExplicitSelection(seReader)
         if (selectionsResult.hasActiveSelection()) {
-            val matchingSe = selectionsResult.getMatchingSelection(0).matchingSe
+            val matchingSe = selectionsResult.activeMatchingSe
             addResultEvent("The SE matched the selection $index.")
 
             addResultEvent("Selection status for case $index: \n\t\t" +
