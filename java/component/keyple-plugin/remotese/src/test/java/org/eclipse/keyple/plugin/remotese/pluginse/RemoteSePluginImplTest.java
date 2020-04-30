@@ -13,6 +13,7 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import static org.mockito.Mockito.doReturn;
 import java.util.HashMap;
+import java.util.NoSuchElementException;
 import java.util.SortedSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -36,7 +37,7 @@ public class RemoteSePluginImplTest extends CoreBaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteSePluginImplTest.class);
 
-    static final Integer X_TIMES = 10; // run tests multiple times
+    static final Integer X_TIMES = 50; // run tests multiple times
 
     @Parameterized.Parameters
     public static Object[][] data() {
@@ -118,12 +119,13 @@ public class RemoteSePluginImplTest extends CoreBaseTest {
         Thread thread = new Thread() {
             public void run() {
                 for (int i = 0; i < N; i++) {
-                    if (readers.size() > 0) {
+                    try {
                         readers.remove(readers.first());
-                        logger.debug("readers: {}, remove first reader", readers.size());
-                    } else {
+                    } catch (NoSuchElementException e) {
+                        // list is empty
                         logger.debug("readers: {}, list is empty", readers.size());
                     }
+
                     try {
                         Thread.sleep(10);
                     } catch (InterruptedException e) {

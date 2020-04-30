@@ -107,14 +107,14 @@ public class AbstractPluginTest extends CoreBaseTest {
         Thread thread = new Thread() {
             public void run() {
                 for (int i = 0; i < N; i++) {
-                        try{
-                            SeReader seReader = readers.first();
-                            readers.remove(seReader);
-                            logger.debug("readers: {}, remove first reader", readers.size());
-                        }catch (NoSuchElementException e){
-                            //list is empty
-                            logger.debug("readers: {}, list is empty", readers.size());
-                        }
+                    try {
+                        SeReader seReader = readers.first();
+                        readers.remove(seReader);
+                        logger.debug("readers: {}, remove first reader", readers.size());
+                    } catch (NoSuchElementException e) {
+                        // list is empty
+                        logger.debug("readers: {}, list is empty", readers.size());
+                    }
                     try {
                         Thread.sleep(10);
                     } catch (InterruptedException e) {
