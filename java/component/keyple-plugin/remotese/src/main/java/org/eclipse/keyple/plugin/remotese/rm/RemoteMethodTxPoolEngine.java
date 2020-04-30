@@ -46,6 +46,7 @@ public class RemoteMethodTxPoolEngine implements DtoHandler, IRemoteMethodTxEngi
      *
      * @param sender : dtosender used to send the keypleDto
      * @param timeout : timeout to wait for the answer, in milliseconds
+     * @param executorService : executorService required to execute async task in RemoteMethodTx
      */
     public RemoteMethodTxPoolEngine(DtoSender sender, long timeout,
             ExecutorService executorService) {

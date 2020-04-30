@@ -45,6 +45,7 @@ public class RemoteMethodTxEngine implements DtoHandler, IRemoteMethodTxEngine {
      *
      * @param sender : dtosender used to send the keypleDto
      * @param timeout : timeout to wait for the answer, in milliseconds
+     * @param executorService : executorService required to execute async task in RemoteMethodTx
      */
     public RemoteMethodTxEngine(DtoSender sender, long timeout, ExecutorService executorService) {
         // this.queue = new LinkedList<RemoteMethodTx>();
