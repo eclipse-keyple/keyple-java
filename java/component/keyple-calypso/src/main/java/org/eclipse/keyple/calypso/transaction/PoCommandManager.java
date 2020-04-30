@@ -20,22 +20,23 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * The PO command manager handles the PoCommand list updated by the "prepare" methods of
- * PoTransaction. It is used to keep builders between the time the commands are created and the time
- * their responses are parsed.
+ * The PO command manager handles the AbstractPoCommandBuilder list updated by the "prepare" methods
+ * of PoTransaction. It is used to keep builders between the time the commands are created and the
+ * time their responses are parsed.
  * <p>
  * A flag (preparedCommandsProcessed) is used to manage the reset of the command list. It allows the
  * builders to be kept until the application creates a new list of commands.
  * <p>
- * This flag is set by calling the method notifyCommandsProcessed and reset when a new PoCommand is
- * added or when a attempt
+ * This flag is set by calling the method notifyCommandsProcessed and reset when a new
+ * AbstractPoCommandBuilder is added or when a attempt
  */
 class PoCommandManager {
     /* logger */
     private static final Logger logger = LoggerFactory.getLogger(PoCommandManager.class);
 
     /** The list to contain the prepared commands and their parsers */
-    private final List<PoCommand> poCommandList = new ArrayList<PoCommand>();
+    private final List<AbstractPoCommandBuilder> poCommandList =
+            new ArrayList<AbstractPoCommandBuilder>();
     /** The command index, incremented each time a command is added */
     private boolean preparedCommandsProcessed;
 
@@ -49,9 +50,8 @@ class PoCommandManager {
      * Handle the clearing of the list if needed.
      *
      * @param commandBuilder the command builder
-     * @return the index to retrieve the parser later
      */
-    int addRegularCommand(AbstractPoCommandBuilder commandBuilder) {
+    void addRegularCommand(AbstractPoCommandBuilder commandBuilder) {
         /**
          * Reset the list if the preparation of the command is done after a previous processing
          * notified by notifyCommandsProcessed.
@@ -62,10 +62,7 @@ class PoCommandManager {
             poCommandList.clear();
             preparedCommandsProcessed = false;
         }
-
-        poCommandList.add(new PoCommand(commandBuilder));
-        /* return the command index */
-        return (poCommandList.size() - 1);
+        poCommandList.add(commandBuilder);
     }
 
     /**
@@ -79,9 +76,9 @@ class PoCommandManager {
     }
 
     /**
-     * @return the current PoCommand list
+     * @return the current AbstractPoCommandBuilder list
      */
-    List<PoCommand> getPoCommandList() {
+    List<AbstractPoCommandBuilder> getPoCommandBuilderList() {
         /* Clear the list if no command has been added since the last call to a process method. */
         if (preparedCommandsProcessed) {
             poCommandList.clear();
@@ -102,6 +99,6 @@ class PoCommandManager {
                     String.format("Bad command index: index = %d, number of commands = %d",
                             commandIndex, poCommandList.size()));
         }
-        return poCommandList.get(commandIndex).getResponseParser();
+        return null;
     }
 }

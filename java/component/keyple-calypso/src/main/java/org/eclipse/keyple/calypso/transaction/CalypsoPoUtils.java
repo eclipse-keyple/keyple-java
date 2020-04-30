@@ -18,12 +18,10 @@ import java.util.List;
 import java.util.Map;
 import org.eclipse.keyple.calypso.SelectFileControl;
 import org.eclipse.keyple.calypso.command.PoClass;
-import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
-import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
-import org.eclipse.keyple.calypso.command.po.builder.SelectFileCmdBuild;
+import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
+import org.eclipse.keyple.calypso.command.po.builder.*;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.SelectFileRespPars;
-import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.Assert;
 
@@ -138,6 +136,75 @@ public final class CalypsoPoUtils {
                         String.format("Unknown file type: 0x%02X", fileType));
         }
     }
+
+    /**
+     * Updated the {@link CalypsoPo} object with the response to a Update Record command sent and
+     * received from the PO <br>
+     * The records read are added to the {@link CalypsoPo} file structure
+     *
+     * @param calypsoPo the {@link CalypsoPo} object to update
+     * @param updateRecordCmdBuild the Update Record command builder
+     * @param apduResponse the response received
+     */
+    private static void updateCalypsoPoUpdateRecord(CalypsoPo calypsoPo,
+            UpdateRecordCmdBuild updateRecordCmdBuild, ApduResponse apduResponse) {}
+
+    /**
+     * Updated the {@link CalypsoPo} object with the response to a Write Record command sent and
+     * received from the PO <br>
+     * The records read are added to the {@link CalypsoPo} file structure
+     * 
+     * @param calypsoPo the {@link CalypsoPo} object to update
+     * @param writeRecordCmdBuild the Write Record command builder
+     * @param apduResponse the response received
+     */
+    private static void updateCalypsoPoWriteRecord(CalypsoPo calypsoPo,
+            WriteRecordCmdBuild writeRecordCmdBuild, ApduResponse apduResponse) {
+
+    }
+
+    /**
+     * Updated the {@link CalypsoPo} object with the response to a Read Records command received
+     * from the PO <br>
+     * The records read are added to the {@link CalypsoPo} file structure
+     * 
+     * @param appendRecordCmdBuild the Append Records command builder
+     * @param calypsoPo the {@link CalypsoPo} object to update
+     * @param apduResponse the response received
+     */
+    private static void updateCalypsoPoAppendRecord(CalypsoPo calypsoPo,
+            AppendRecordCmdBuild appendRecordCmdBuild, ApduResponse apduResponse) {
+
+    }
+
+    /**
+     * Updated the {@link CalypsoPo} object with the response to a Decrease command received from
+     * the PO <br>
+     * The records read are added to the {@link CalypsoPo} file structure
+     * 
+     * @param decreaseCmdBuild the Decrease command builder
+     * @param calypsoPo the {@link CalypsoPo} object to update
+     * @param apduResponse the response received
+     */
+    private static void updateCalypsoPoDecrease(CalypsoPo calypsoPo,
+            DecreaseCmdBuild decreaseCmdBuild, ApduResponse apduResponse) {
+
+    }
+
+    /**
+     * Updated the {@link CalypsoPo} object with the response to a Read Records command received
+     * from the PO <br>
+     * The records read are added to the {@link CalypsoPo} file structure
+     * 
+     * @param increaseCmdBuild the Increase command builder
+     * @param calypsoPo the {@link CalypsoPo} object to update
+     * @param apduResponse the response received
+     */
+    private static void updateCalypsoPoIncrease(CalypsoPo calypsoPo,
+            IncreaseCmdBuild increaseCmdBuild, ApduResponse apduResponse) {
+
+    }
+
 
     /**
      * Parses the proprietaryInformation field of a file identified as an DF and create a
@@ -264,19 +331,39 @@ public final class CalypsoPoUtils {
      * @param commandBuilders the builder of the command that get the data
      * @param apduResponses the APDU response returned by the PO
      */
-    static void updateCalypsoPo(CalypsoPo calypsoPo,
-            List<AbstractApduCommandBuilder> commandBuilders, List<ApduResponse> apduResponses) {
+    static void updateCalypsoPo(CalypsoPo calypsoPo, List<AbstractPoCommandBuilder> commandBuilders,
+            List<ApduResponse> apduResponses) {
         Iterator<ApduResponse> responseIterator = apduResponses.iterator();
 
-        for (AbstractApduCommandBuilder commandBuilder : commandBuilders) {
+        for (AbstractPoCommandBuilder commandBuilder : commandBuilders) {
             ApduResponse apduResponse = responseIterator.next();
-            switch ((CalypsoPoCommand) commandBuilder.getCommandRef()) {
+            switch (commandBuilder.getCommandRef()) {
                 case READ_RECORDS:
                     updateCalypsoPoReadRecords(calypsoPo, (ReadRecordsCmdBuild) commandBuilder,
                             apduResponse);
                     break;
                 case SELECT_FILE:
                     updateCalypsoPoSelectFile(calypsoPo, (SelectFileCmdBuild) commandBuilder,
+                            apduResponse);
+                    break;
+                case UPDATE_RECORD:
+                    updateCalypsoPoUpdateRecord(calypsoPo, (UpdateRecordCmdBuild) commandBuilder,
+                            apduResponse);
+                    break;
+                case WRITE_RECORD:
+                    updateCalypsoPoWriteRecord(calypsoPo, (WriteRecordCmdBuild) commandBuilder,
+                            apduResponse);
+                    break;
+                case APPEND_RECORD:
+                    updateCalypsoPoAppendRecord(calypsoPo, (AppendRecordCmdBuild) commandBuilder,
+                            apduResponse);
+                    break;
+                case DECREASE:
+                    updateCalypsoPoDecrease(calypsoPo, (DecreaseCmdBuild) commandBuilder,
+                            apduResponse);
+                    break;
+                case INCREASE:
+                    updateCalypsoPoIncrease(calypsoPo, (IncreaseCmdBuild) commandBuilder,
                             apduResponse);
                     break;
                 default:
