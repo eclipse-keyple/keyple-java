@@ -299,7 +299,8 @@ public final class CalypsoPoUtils {
                 .isInRange(recordNumber, CalypsoPoUtils.NB_REC_MIN, CalypsoPoUtils.NB_REC_MAX,
                         "recordNumber");
 
-        return new ReadRecordsCmdBuild(poClass, sfi, recordNumber, true, 0);
+        return new ReadRecordsCmdBuild(poClass, sfi, recordNumber,
+                ReadRecordsCmdBuild.ReadMode.ONE_RECORD, 0);
     }
 
     /**
