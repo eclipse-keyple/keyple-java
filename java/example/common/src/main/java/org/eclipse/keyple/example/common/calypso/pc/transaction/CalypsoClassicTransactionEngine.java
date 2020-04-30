@@ -151,13 +151,13 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
          */
 
         /* prepare Event Log read record */
-        ElementaryFile efEventLog = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
-        byte eventLog[] = efEventLog.getData().getContent();
+        poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_EventLog,
+                CalypsoClassicInfo.RECORD_NUMBER_1);
+
 
         /* prepare Contract List read record */
-        ElementaryFile efContractList = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_ContractList);
-
-        byte contractList[] = efEventLog.getData().getContent(1);
+        poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_ContractList,
+                CalypsoClassicInfo.RECORD_NUMBER_1);
 
         if (logger.isInfoEnabled()) {
             logger.info(
@@ -172,9 +172,14 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
                 SessionAccessLevel.SESSION_LVL_DEBIT, CalypsoClassicInfo.SFI_EnvironmentAndHolder,
                 CalypsoClassicInfo.RECORD_NUMBER_1);
 
-        logger.info("Parsing Read EventLog file: {}", ByteArrayUtil.toHex(eventLog));
+        ElementaryFile efEventLog = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+        byte eventLog[] = efEventLog.getData().getContent();
+        logger.info("EventLog file: {}", ByteArrayUtil.toHex(eventLog));
 
-        logger.info("Parsing Read ContractList file: {}", ByteArrayUtil.toHex(contractList));
+        ElementaryFile efContractList = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_ContractList);
+
+        byte contractList[] = efContractList.getData().getContent(1);
+        logger.info("ContractList file: {}", ByteArrayUtil.toHex(contractList));
 
         if (!poTransaction.wasRatified()) {
             logger.info(
