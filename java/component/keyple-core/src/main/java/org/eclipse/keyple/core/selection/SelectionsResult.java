@@ -11,21 +11,20 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.selection;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The SelectionsResult class holds the result of a selection process.
  * <p>
- * embeds a list of {@link MatchingSelection}
- * <p>
- * provides a set of methods to retrieve the active selection (getActiveSelection) or a particular
- * selection specified by its index.
+ * Embeds a map of {@link AbstractMatchingSe}. At most one of these matching SE is active.<br>
+ * Provides a set of methods to retrieve the active selection (getActiveMatchingSe) or a particular
+ * matching SE specified by its index.
  */
 public final class SelectionsResult {
     private boolean hasActiveSelection = false;
-    private final List<MatchingSelection> matchingSelectionList =
-            new ArrayList<MatchingSelection>();
+    private final Map<Integer, AbstractMatchingSe> matchingSeMap =
+            new HashMap<Integer, AbstractMatchingSe>();
 
     /**
      * Constructor
@@ -33,55 +32,53 @@ public final class SelectionsResult {
     SelectionsResult() {}
 
     /**
-     * Append a {@link MatchingSelection} to the internal list
-     * 
-     * @param matchingSelection the item to add
+     * Append a {@link AbstractMatchingSe} to the internal list
+     *
+     * @param selectionIndex the index of the selection that resulted in the matching SE
+     * @param matchingSe the matching SE to add
      */
-    void addMatchingSelection(MatchingSelection matchingSelection) {
-        matchingSelectionList.add(matchingSelection);
+    void addMatchingSe(int selectionIndex, AbstractMatchingSe matchingSe) {
+        if (matchingSe != null)
+            matchingSeMap.put(selectionIndex, matchingSe);
         /* test if the current selection is active */
-        if (matchingSelection.getMatchingSe() != null
-                && matchingSelection.getMatchingSe().isSelected()) {
+        if (matchingSe.isSelected()) {
             hasActiveSelection = true;
         }
     }
 
     /**
-     * @return the currently active (matching) selection
+     * Get the active matching SE. I.e. the SE that has been selected. <br>
+     * The hasActiveSelection method should be called before.
+     * 
+     * @return the currently active matching SE
+     * @throws IllegalStateException if no active matching SE is found
      */
-    public MatchingSelection getActiveSelection() {
-        MatchingSelection activeSelection = null;
-        for (MatchingSelection matchingSelection : matchingSelectionList) {
-            if (matchingSelection != null && matchingSelection.getMatchingSe().isSelected()) {
-                activeSelection = matchingSelection;
-                break;
+    public AbstractMatchingSe getActiveMatchingSe() {
+        for (Map.Entry<Integer, AbstractMatchingSe> entry : matchingSeMap.entrySet()) {
+            if (entry.getValue().isSelected()) {
+                return entry.getValue();
             }
         }
-        return activeSelection;
+        throw new IllegalStateException("No active Matching SE is available");
     }
 
     /**
-     * @return the {@link MatchingSelection} list
+     * @return the {@link AbstractMatchingSe} map
      */
-    public List<MatchingSelection> getMatchingSelections() {
-        return matchingSelectionList;
+    public Map<Integer, AbstractMatchingSe> getMatchingSelections() {
+        return matchingSeMap;
     }
 
     /**
-     * Gets the {@link MatchingSelection} for the specified index.
+     * Gets the {@link AbstractMatchingSe} for the specified index.
      * <p>
-     * Returns null if no {@link MatchingSelection} was found.
+     * Returns null if no {@link AbstractMatchingSe} was found.
      * 
      * @param selectionIndex the selection index
-     * @return the {@link MatchingSelection} or null
+     * @return the {@link AbstractMatchingSe} or null
      */
-    public MatchingSelection getMatchingSelection(int selectionIndex) {
-        for (MatchingSelection matchingSelection : matchingSelectionList) {
-            if (matchingSelection.getSelectionIndex() == selectionIndex) {
-                return matchingSelection;
-            }
-        }
-        return null;
+    public AbstractMatchingSe getMatchingSe(int selectionIndex) {
+        return matchingSeMap.get(selectionIndex);
     }
 
     /**

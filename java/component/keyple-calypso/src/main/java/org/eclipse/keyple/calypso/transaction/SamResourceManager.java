@@ -96,9 +96,8 @@ public abstract class SamResourceManager {
                     "Unable to open a logical channel for SAM!");
         }
 
-        CalypsoSam calypsoSam = (CalypsoSam) selectionsResult.getActiveSelection().getMatchingSe();
+        CalypsoSam calypsoSam = (CalypsoSam) selectionsResult.getActiveMatchingSe();
 
         return new SamResource(samReader, calypsoSam);
     }
-
 }
