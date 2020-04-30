@@ -87,8 +87,8 @@ public final class PoTransaction {
     /** The current secure session access level: PERSO, RELOAD, DEBIT */
     private SessionAccessLevel currentAccessLevel;
     /* modifications counter management */
-    private boolean modificationsCounterIsInBytes;
-    private int modificationsCounterMax;
+    private final boolean modificationsCounterIsInBytes;
+    private final int modificationsCounterMax;
     private int modificationsCounter;
 
     private final PoCommandManager poCommandManager;

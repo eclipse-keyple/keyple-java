@@ -17,6 +17,7 @@ import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.parser.SelectFileRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /**
  * This class provides the dedicated constructor to build the Select File APDU commands.
@@ -66,6 +67,11 @@ public final class SelectFileCmdBuild extends AbstractPoCommandBuilder<SelectFil
         }
 
         request = setApduRequest(cla, command, p1, p2, selectData, (byte) 0x00);
+
+        if (logger.isDebugEnabled()) {
+            String extraInfo = String.format("SELECTIONCONTROL=%s", selectFileControl);
+            this.addSubName(extraInfo);
+        }
     }
 
     /**
@@ -84,6 +90,12 @@ public final class SelectFileCmdBuild extends AbstractPoCommandBuilder<SelectFil
 
         request = setApduRequest(poClass.getValue(), command, (byte) 0x09, (byte) 0x00,
                 selectionPath, (byte) 0x00);
+
+        if (logger.isDebugEnabled()) {
+            String extraInfo =
+                    String.format("SELECTIONPATH=%s", ByteArrayUtil.toHex(selectionPath));
+            this.addSubName(extraInfo);
+        }
     }
 
     @Override
