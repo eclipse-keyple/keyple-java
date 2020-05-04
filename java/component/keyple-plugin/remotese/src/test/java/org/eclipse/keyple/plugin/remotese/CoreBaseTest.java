@@ -9,27 +9,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.plugin.remotese.pluginse;
+package org.eclipse.keyple.plugin.remotese;
 
+import org.junit.Rule;
+import org.junit.rules.TestName;
 
-import java.util.Date;
+public class CoreBaseTest {
 
-/**
- * Stores meta information on the virtual reader such as slave, master node id and createdTime
- */
-public interface VirtualReaderSession {
-
-    /**
-     * Retrieve sessionId
-     * 
-     * @return sessionId
-     */
-    String getSessionId();
-
-    String getSlaveNodeId();
-
-    String getMasterNodeId();
-
-    Date getCreatedTime();
+    @Rule
+    public TestName name = new TestName();
 
 }

@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.rm;
 
+import java.util.concurrent.ExecutorService;
 import org.eclipse.keyple.plugin.remotese.transport.*;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
@@ -27,9 +28,11 @@ public class RemoteMethodTxEngine implements DtoHandler, IRemoteMethodTxEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteMethodTxEngine.class);
 
-
     // waiting transaction, supports only one at the time
     private AbstractRemoteMethodTx remoteMethodTx;
+
+    // Executor to run async task required in RemoteMethodTx
+    final private ExecutorService executorService;
 
     // Dto Sender
     private final DtoSender sender;
@@ -37,17 +40,23 @@ public class RemoteMethodTxEngine implements DtoHandler, IRemoteMethodTxEngine {
     // timeout to wait for the answer, in milliseconds
     private final long timeout;
 
+
     /**
      *
      * @param sender : dtosender used to send the keypleDto
      * @param timeout : timeout to wait for the answer, in milliseconds
+     * @param executorService : executorService required to execute async task in RemoteMethodTx
      */
-    public RemoteMethodTxEngine(DtoSender sender, long timeout) {
+    public RemoteMethodTxEngine(DtoSender sender, long timeout, ExecutorService executorService) {
         // this.queue = new LinkedList<RemoteMethodTx>();
         this.sender = sender;
         this.timeout = timeout;
+        this.executorService = executorService;
     }
 
+    public ExecutorService getExecutorService() {
+        return executorService;
+    }
 
     /**
      * Set Response to a RemoteMethod Invocation
@@ -111,6 +120,7 @@ public class RemoteMethodTxEngine implements DtoHandler, IRemoteMethodTxEngine {
         if (logger.isTraceEnabled()) {
             logger.trace("Register RemoteMethod to engine : {} ", rm.id);
         }
+        rm.setExecutorService(executorService);
         rm.setRegistered(true);
         remoteMethodTx = rm;
         rm.setDtoSender(sender);
