@@ -14,8 +14,8 @@ package org.eclipse.keyple.calypso.transaction;
 import java.util.List;
 import org.eclipse.keyple.calypso.SelectFileControl;
 import org.eclipse.keyple.calypso.command.PoClass;
+import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronisedExchangesException;
-import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Specialized selection request to manage the specific characteristics of Calypso POs */
-public final class PoSelectionRequest extends AbstractSeSelectionRequest {
+public final class PoSelectionRequest extends AbstractSeSelectionRequest<AbstractPoCommandBuilder> {
     private static final Logger logger = LoggerFactory.getLogger(PoSelectionRequest.class);
     private final PoClass poClass;
 
@@ -101,7 +101,7 @@ public final class PoSelectionRequest extends AbstractSeSelectionRequest {
     protected CalypsoPo parse(SeResponse seResponse)
             throws CalypsoDesynchronisedExchangesException {
 
-        List<AbstractApduCommandBuilder> commandBuilders = getCommandBuilders();
+        List<AbstractPoCommandBuilder> commandBuilders = getCommandBuilders();
         List<ApduResponse> apduResponses = seResponse.getApduResponses();
 
         if (commandBuilders.size() != apduResponses.size()) {

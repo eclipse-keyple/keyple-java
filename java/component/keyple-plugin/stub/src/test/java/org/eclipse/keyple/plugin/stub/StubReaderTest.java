@@ -628,8 +628,7 @@ public class StubReaderTest extends BaseStubTest {
                     SelectionsResult selectionsResult =
                             seSelection.processExplicitSelection(reader);
 
-                    AbstractMatchingSe matchingSe =
-                            selectionsResult.getActiveSelection().getMatchingSe();
+                    AbstractMatchingSe matchingSe = selectionsResult.getActiveMatchingSe();
 
                     Assert.assertNotNull(matchingSe);
 
@@ -1068,8 +1067,8 @@ public class StubReaderTest extends BaseStubTest {
 
     static public Set<SeRequest> getRequestIsoDepSetSample() {
         String poAid = "A000000291A000000191";
-        ReadRecordsCmdBuild poReadRecordCmd_T2Env =
-                new ReadRecordsCmdBuild(PoClass.ISO, 0x14, 1, true, 32);
+        ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoClass.ISO, 0x14, 1,
+                ReadRecordsCmdBuild.ReadMode.ONE_RECORD, 32);
 
         List<ApduRequest> poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
 
@@ -1110,12 +1109,12 @@ public class StubReaderTest extends BaseStubTest {
      */
     static public Set<SeRequest> getPartialRequestSet(int scenario) {
         String poAid = "A000000291A000000191";
-        ReadRecordsCmdBuild poReadRecord1CmdBuild =
-                new ReadRecordsCmdBuild(PoClass.ISO, 0x14, 1, true, 0);
+        ReadRecordsCmdBuild poReadRecord1CmdBuild = new ReadRecordsCmdBuild(PoClass.ISO, 0x14, 1,
+                ReadRecordsCmdBuild.ReadMode.ONE_RECORD, 0);
 
         /* this command doesn't in the PartialSE */
-        ReadRecordsCmdBuild poReadRecord2CmdBuild =
-                new ReadRecordsCmdBuild(PoClass.ISO, 0x1E, 1, true, 0);
+        ReadRecordsCmdBuild poReadRecord2CmdBuild = new ReadRecordsCmdBuild(PoClass.ISO, 0x1E, 1,
+                ReadRecordsCmdBuild.ReadMode.ONE_RECORD, 0);
 
         List<ApduRequest> poApduRequestList1 = new ArrayList<ApduRequest>();
         poApduRequestList1.add(poReadRecord1CmdBuild.getApduRequest());
@@ -1185,12 +1184,12 @@ public class StubReaderTest extends BaseStubTest {
     static public SeRequest getPartialRequest(int scenario) {
         String poAid = "A000000291A000000191";
 
-        ReadRecordsCmdBuild poReadRecord1CmdBuild =
-                new ReadRecordsCmdBuild(PoClass.ISO, 0x14, 1, true, 0);
+        ReadRecordsCmdBuild poReadRecord1CmdBuild = new ReadRecordsCmdBuild(PoClass.ISO, 0x14, 1,
+                ReadRecordsCmdBuild.ReadMode.ONE_RECORD, 0);
 
         /* this command doesn't in the PartialSE */
-        ReadRecordsCmdBuild poReadRecord2CmdBuild =
-                new ReadRecordsCmdBuild(PoClass.ISO, 0x1E, 1, true, 0);
+        ReadRecordsCmdBuild poReadRecord2CmdBuild = new ReadRecordsCmdBuild(PoClass.ISO, 0x1E, 1,
+                ReadRecordsCmdBuild.ReadMode.ONE_RECORD, 0);
 
         List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
 
@@ -1360,7 +1359,7 @@ public class StubReaderTest extends BaseStubTest {
             // override methods to fail open connection
             @Override
             public void openPhysicalChannel() throws KeypleReaderIOException {
-                throw new KeypleReaderIOException("Impossible to estasblish connection");
+                throw new KeypleReaderIOException("Impossible to establish connection");
             }
 
             @Override

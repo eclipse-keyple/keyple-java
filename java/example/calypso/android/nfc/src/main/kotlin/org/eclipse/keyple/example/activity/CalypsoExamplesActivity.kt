@@ -21,8 +21,6 @@ import kotlinx.android.synthetic.main.activity_calypso_examples.toolbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure
-import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars
 import org.eclipse.keyple.calypso.transaction.CalypsoPo
 import org.eclipse.keyple.calypso.transaction.PoResource
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest
@@ -207,13 +205,11 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
         try {
             val selectionsResult = seSelection.processExplicitSelection(reader)
             if (selectionsResult.hasActiveSelection()) {
-                with(selectionsResult.getMatchingSelection(0)) {
-                    val matchingSe = this.matchingSe
+                    val matchingSe = selectionsResult.activeMatchingSe
                     addResultEvent("Selection status for selection " +
-                            "(indexed ${this.selectionIndex}): \n\t\t" +
+                            "(indexed $index): \n\t\t" +
                             "ATR: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.atr.bytes)}\n\t\t" +
                             "FCI: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.fci.bytes)}")
-                }
             } else {
                 addResultEvent("The selection did not match for case $index.")
             }
@@ -272,9 +268,9 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
 
                 if (selectionResult.matchingSelections.size > 0) {
                     selectionResult.matchingSelections.forEach {
-                        val matchingSe = it.matchingSe
+                        val matchingSe = it.value
                         addResultEvent("Selection status for selection " +
-                                "(indexed ${it.selectionIndex}): \n\t\t" +
+                                "(indexed ${it.key}): \n\t\t" +
                                 "ATR: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.atr.bytes)}\n\t\t" +
                                 "FCI: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.fci.bytes)}")
                     }
@@ -341,7 +337,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                     when (event?.eventType) {
                         ReaderEvent.EventType.SE_MATCHED -> {
                             addResultEvent("SE_MATCHED event: A SE corresponding to request has been detected")
-                            val selectedSe = seSelection.processDefaultSelection(event.defaultSelectionsResponse).activeSelection.matchingSe
+                            val selectedSe = seSelection.processDefaultSelection(event.defaultSelectionsResponse).activeMatchingSe
                             if (selectedSe != null) {
                                 addResultEvent("Observer notification: the selection of the SE has succeeded. End of the SE processing.")
                                 addResultEvent("Application FCI = ${ByteArrayUtil.toHex(selectedSe.selectionStatus.fci.bytes)}")
@@ -424,7 +420,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                 val selectionsResult = seSelection.processExplicitSelection(reader)
 
                 if (selectionsResult.hasActiveSelection()) {
-                    val matchedSe = selectionsResult.activeSelection.matchingSe
+                    val matchedSe = selectionsResult.activeMatchingSe
                     addResultEvent("The selection of the SE has succeeded.")
                     addResultEvent("Application FCI = ${ByteArrayUtil.toHex(matchedSe.selectionStatus.fci.bytes)}")
                     addResultEvent("End of the generic SE processing.")
@@ -547,7 +543,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
             addResultEvent("1st PO exchange: aid selection")
 
             if (selectionsResult.hasActiveSelection()) {
-                val calypsoPo = selectionsResult.activeSelection.matchingSe as CalypsoPo
+                val calypsoPo = selectionsResult.activeMatchingSe as CalypsoPo
 
                 addResultEvent("Calypso PO selection: ")
                 addResultEvent("AID: ${ByteArrayUtil.fromHex(CalypsoClassicInfo.AID)}")
@@ -570,9 +566,9 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                  * Prepare the reading order and keep the associated parser for later use once the
                  * transaction has been processed.
                  */
-                val readEventLogParserIndex = poTransaction.prepareReadRecords(
-                        CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
-                        CalypsoClassicInfo.RECORD_NUMBER_1)
+                val readEventLogParserIndex = poTransaction.prepareReadRecordFile(
+                        CalypsoClassicInfo.SFI_EventLog,
+                        CalypsoClassicInfo.RECORD_NUMBER_1.toInt())
 
                 /*
                  * Actual PO communication: send the prepared read order, then close the channel
@@ -585,10 +581,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                     /*
                      * Retrieve the data read from the parser updated during the transaction process
                      */
-
-                    val readEventLogParser = poTransaction
-                            .getResponseParser(readEventLogParserIndex) as ReadRecordsRespPars
-                    val eventLog = readEventLogParser.records[CalypsoClassicInfo.RECORD_NUMBER_1.toInt()]
+                    val eventLog = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog).data.content
 
                     /* Log the result */
                     addResultEvent("EventLog file: ${ByteArrayUtil.toHex(eventLog)}")

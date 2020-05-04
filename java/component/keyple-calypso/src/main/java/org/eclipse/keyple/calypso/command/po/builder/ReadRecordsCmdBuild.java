@@ -25,10 +25,14 @@ public final class ReadRecordsCmdBuild extends AbstractPoCommandBuilder<ReadReco
 
     private static final CalypsoPoCommand command = CalypsoPoCommand.READ_RECORDS;
 
+    public enum ReadMode {
+        ONE_RECORD, MULTIPLE_RECORD
+    }
+
     // Construction arguments used for parsing
     private final int sfi;
     private final int firstRecordNumber;
-    private final boolean readJustOneRecord;
+    private final ReadMode readMode;
 
     /**
      * Instantiates a new read records cmd build.
@@ -37,30 +41,30 @@ public final class ReadRecordsCmdBuild extends AbstractPoCommandBuilder<ReadReco
      * @param sfi the sfi top select
      * @param firstRecordNumber the record number to read (or first record to read in case of
      *        several records)
-     * @param readJustOneRecord the read just one record
+     * @param readMode read mode, requests the reading of one or all the records
      * @param expectedLength the expected length of the record(s)
      * @throws IllegalArgumentException - if record number &lt; 1
      * @throws IllegalArgumentException - if the request is inconsistent
      */
-    public ReadRecordsCmdBuild(PoClass poClass, int sfi, int firstRecordNumber,
-            boolean readJustOneRecord, int expectedLength) throws IllegalArgumentException {
+    public ReadRecordsCmdBuild(PoClass poClass, int sfi, int firstRecordNumber, ReadMode readMode,
+            int expectedLength) throws IllegalArgumentException {
         super(command, null);
 
         this.sfi = sfi;
         this.firstRecordNumber = firstRecordNumber;
-        this.readJustOneRecord = readJustOneRecord;
+        this.readMode = readMode;
 
         byte p1 = (byte) firstRecordNumber;
         byte p2 = (sfi == (byte) 0x00) ? (byte) 0x05 : (byte) ((byte) (sfi * 8) + 5);
-        if (readJustOneRecord) {
+        if (readMode == ReadMode.ONE_RECORD) {
             p2 = (byte) (p2 - (byte) 0x01);
         }
         byte le = (byte) expectedLength;
         this.request = setApduRequest(poClass.getValue(), command, p1, p2, null, le);
 
         if (logger.isDebugEnabled()) {
-            String extraInfo = String.format("SFI=%02X, REC=%d, JUSTONE=%s, EXPECTEDLENGTH=%d", sfi,
-                    firstRecordNumber, readJustOneRecord ? "true" : "false", expectedLength);
+            String extraInfo = String.format("SFI=%02X, REC=%d, READMODE=%s, EXPECTEDLENGTH=%d",
+                    sfi, firstRecordNumber, readMode, expectedLength);
             this.addSubName(extraInfo);
         }
     }
@@ -92,7 +96,7 @@ public final class ReadRecordsCmdBuild extends AbstractPoCommandBuilder<ReadReco
     }
 
     /** @return the readJustOneRecord flag */
-    public boolean isReadJustOneRecord() {
-        return readJustOneRecord;
+    public ReadMode getReadMode() {
+        return readMode;
     }
 }

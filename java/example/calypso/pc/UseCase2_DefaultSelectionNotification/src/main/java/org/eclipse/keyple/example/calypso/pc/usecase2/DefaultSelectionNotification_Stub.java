@@ -12,12 +12,9 @@
 package org.eclipse.keyple.example.calypso.pc.usecase2;
 
 
-import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
-import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronisedExchangesException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoSecureSessionException;
-import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -182,17 +179,15 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
         switch (event.getEventType()) {
             case SE_MATCHED:
                 SeReader poReader = null;
-                MatchingSelection matchingSelection = null;
+                CalypsoPo calypsoPo = null;
                 try {
-                    matchingSelection = seSelection
+                    calypsoPo = (CalypsoPo) seSelection
                             .processDefaultSelection(event.getDefaultSelectionsResponse())
-                            .getActiveSelection();
+                            .getActiveMatchingSe();
                 } catch (KeypleException e) {
                     // TODO Rework error management
                     e.printStackTrace();
                 }
-
-                CalypsoPo calypsoPo = (CalypsoPo) matchingSelection.getMatchingSe();
 
                 if (calypsoPo.isSelected()) {
                     try {
@@ -236,8 +231,7 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
                      * Prepare the reading order and keep the associated parser for later use once
                      * the transaction has been processed.
                      */
-                    int readEventLogParserIndex = poTransaction.prepareReadRecords(
-                            CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
+                    poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_EventLog,
                             CalypsoClassicInfo.RECORD_NUMBER_1);
 
                     /*
@@ -252,9 +246,9 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
                              * Retrieve the data read from the parser updated during the transaction
                              * process
                              */
-                            byte eventLog[] = (((ReadRecordsRespPars) poTransaction
-                                    .getResponseParser(readEventLogParserIndex)).getRecords())
-                                            .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
+                            ElementaryFile efEventLog =
+                                    calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+                            byte eventLog[] = efEventLog.getData().getContent();
 
                             /* Log the result */
                             logger.info("EventLog file data: {}", ByteArrayUtil.toHex(eventLog));

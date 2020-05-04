@@ -35,10 +35,8 @@ public class SequentialMultiSelection_Pcsc {
             throws KeypleException {
         SelectionsResult selectionsResult = seSelection.processExplicitSelection(seReader);
         if (selectionsResult.hasActiveSelection()) {
-            AbstractMatchingSe matchingSe =
-                    selectionsResult.getMatchingSelection(0).getMatchingSe();
+            AbstractMatchingSe matchingSe = selectionsResult.getActiveMatchingSe();
             logger.info("The SE matched the selection {}.", index);
-
             logger.info("Selection status for case {}: \n\t\tATR: {}\n\t\tFCI: {}", index,
                     ByteArrayUtil.toHex(matchingSe.getSelectionStatus().getAtr().getBytes()),
                     ByteArrayUtil.toHex(matchingSe.getSelectionStatus().getFci().getDataOut()));

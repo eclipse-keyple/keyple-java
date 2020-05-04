@@ -18,12 +18,10 @@ import java.util.List;
 import java.util.Map;
 import org.eclipse.keyple.calypso.SelectFileControl;
 import org.eclipse.keyple.calypso.command.PoClass;
-import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
-import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
-import org.eclipse.keyple.calypso.command.po.builder.SelectFileCmdBuild;
+import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
+import org.eclipse.keyple.calypso.command.po.builder.*;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.SelectFileRespPars;
-import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.Assert;
 
@@ -89,7 +87,7 @@ public final class CalypsoPoUtils {
      * Updated the {@link CalypsoPo} object with the response to a Read Records command received
      * from the PO <br>
      * The records read are added to the {@link CalypsoPo} file structure
-     * 
+     *
      * @param calypsoPo the {@link CalypsoPo} object to update
      * @param readRecordsCmdBuild the Read Records command builder
      * @param apduResponse the response received
@@ -111,7 +109,7 @@ public final class CalypsoPoUtils {
      * the PO <br>
      * Depending on the content of the response, either a {@link FileHeader} is added or the
      * {@link DirectoryHeader} is updated
-     * 
+     *
      * @param calypsoPo the {@link CalypsoPo} object to update
      * @param selectFileCmdBuild the Select File command builder
      * @param apduResponse the response received
@@ -138,6 +136,80 @@ public final class CalypsoPoUtils {
                         String.format("Unknown file type: 0x%02X", fileType));
         }
     }
+
+    /**
+     * Updated the {@link CalypsoPo} object with the response to a Update Record command sent and
+     * received from the PO <br>
+     * The records read are added to the {@link CalypsoPo} file structure
+     *
+     * @param calypsoPo the {@link CalypsoPo} object to update
+     * @param updateRecordCmdBuild the Update Record command builder
+     */
+    private static void updateCalypsoPoUpdateRecord(CalypsoPo calypsoPo,
+            UpdateRecordCmdBuild updateRecordCmdBuild) {
+        calypsoPo.setContent((byte) updateRecordCmdBuild.getSfi(),
+                updateRecordCmdBuild.getRecordNumber(), updateRecordCmdBuild.getData());
+    }
+
+    /**
+     * Updated the {@link CalypsoPo} object with the response to a Write Record command sent and
+     * received from the PO <br>
+     * The records read are added to the {@link CalypsoPo} file structure
+     *
+     * @param calypsoPo the {@link CalypsoPo} object to update
+     * @param writeRecordCmdBuild the Write Record command builder
+     */
+    private static void updateCalypsoPoWriteRecord(CalypsoPo calypsoPo,
+            WriteRecordCmdBuild writeRecordCmdBuild) {
+        // TODO we should add another method to Calypso to emulate the behavior of Write Record
+        calypsoPo.setContent((byte) writeRecordCmdBuild.getSfi(),
+                writeRecordCmdBuild.getRecordNumber(), writeRecordCmdBuild.getData());
+    }
+
+    /**
+     * Updated the {@link CalypsoPo} object with the response to a Read Records command received
+     * from the PO <br>
+     * The records read are added to the {@link CalypsoPo} file structure
+     *
+     * @param appendRecordCmdBuild the Append Records command builder
+     * @param calypsoPo the {@link CalypsoPo} object to update
+     */
+    private static void updateCalypsoPoAppendRecord(CalypsoPo calypsoPo,
+            AppendRecordCmdBuild appendRecordCmdBuild) {
+        calypsoPo.addCyclicContent((byte) appendRecordCmdBuild.getSfi(),
+                appendRecordCmdBuild.getData());
+    }
+
+    /**
+     * Updated the {@link CalypsoPo} object with the response to a Decrease command received from
+     * the PO <br>
+     * The counter value is updated in the {@link CalypsoPo} file structure
+     *
+     * @param decreaseCmdBuild the Decrease command builder
+     * @param calypsoPo the {@link CalypsoPo} object to update
+     * @param apduResponse the response received
+     */
+    private static void updateCalypsoPoDecrease(CalypsoPo calypsoPo,
+            DecreaseCmdBuild decreaseCmdBuild, ApduResponse apduResponse) {
+        calypsoPo.setContent((byte) decreaseCmdBuild.getSfi(), 1, apduResponse.getDataOut(),
+                3 * (decreaseCmdBuild.getCounterNumber() - 1));
+    }
+
+    /**
+     * Updated the {@link CalypsoPo} object with the response to an Increase command received from
+     * the PO <br>
+     * The counter value is updated in the {@link CalypsoPo} file structure
+     *
+     * @param increaseCmdBuild the Increase command builder
+     * @param calypsoPo the {@link CalypsoPo} object to update
+     * @param apduResponse the response received
+     */
+    private static void updateCalypsoPoIncrease(CalypsoPo calypsoPo,
+            IncreaseCmdBuild increaseCmdBuild, ApduResponse apduResponse) {
+        calypsoPo.setContent((byte) increaseCmdBuild.getSfi(), 1, apduResponse.getDataOut(),
+                3 * (increaseCmdBuild.getCounterNumber() - 1));
+    }
+
 
     /**
      * Parses the proprietaryInformation field of a file identified as an DF and create a
@@ -178,7 +250,7 @@ public final class CalypsoPoUtils {
 
     /**
      * Converts the EF type value from the PO into a {@link FileHeader.FileType} enum
-     * 
+     *
      * @param efType the value returned by the PO
      * @return the corresponding {@link FileHeader.FileType}
      */
@@ -209,7 +281,7 @@ public final class CalypsoPoUtils {
     /**
      * Parses the proprietaryInformation field of a file identified as an EF and create a
      * {@link FileHeader}
-     * 
+     *
      * @param proprietaryInformation from the response to a Select File command
      * @return a {@link FileHeader} object
      */
@@ -259,18 +331,18 @@ public final class CalypsoPoUtils {
     /**
      * (package-private)<br>
      * Fills the CalypsoPo with the PO's response to a command
-     * 
+     *
      * @param calypsoPo the {@link CalypsoPo} object to fill with the provided response from the PO
      * @param commandBuilders the builder of the command that get the data
      * @param apduResponses the APDU response returned by the PO
      */
-    static void updateCalypsoPo(CalypsoPo calypsoPo,
-            List<AbstractApduCommandBuilder> commandBuilders, List<ApduResponse> apduResponses) {
+    static void updateCalypsoPo(CalypsoPo calypsoPo, List<AbstractPoCommandBuilder> commandBuilders,
+            List<ApduResponse> apduResponses) {
         Iterator<ApduResponse> responseIterator = apduResponses.iterator();
 
-        for (AbstractApduCommandBuilder commandBuilder : commandBuilders) {
+        for (AbstractPoCommandBuilder commandBuilder : commandBuilders) {
             ApduResponse apduResponse = responseIterator.next();
-            switch ((CalypsoPoCommand) commandBuilder.getCommandRef()) {
+            switch (commandBuilder.getCommandRef()) {
                 case READ_RECORDS:
                     updateCalypsoPoReadRecords(calypsoPo, (ReadRecordsCmdBuild) commandBuilder,
                             apduResponse);
@@ -279,6 +351,31 @@ public final class CalypsoPoUtils {
                     updateCalypsoPoSelectFile(calypsoPo, (SelectFileCmdBuild) commandBuilder,
                             apduResponse);
                     break;
+                case UPDATE_RECORD:
+                    updateCalypsoPoUpdateRecord(calypsoPo, (UpdateRecordCmdBuild) commandBuilder);
+                    break;
+                case WRITE_RECORD:
+                    updateCalypsoPoWriteRecord(calypsoPo, (WriteRecordCmdBuild) commandBuilder);
+                    break;
+                case APPEND_RECORD:
+                    updateCalypsoPoAppendRecord(calypsoPo, (AppendRecordCmdBuild) commandBuilder);
+                    break;
+                case DECREASE:
+                    updateCalypsoPoDecrease(calypsoPo, (DecreaseCmdBuild) commandBuilder,
+                            apduResponse);
+                    break;
+                case INCREASE:
+                    updateCalypsoPoIncrease(calypsoPo, (IncreaseCmdBuild) commandBuilder,
+                            apduResponse);
+                    break;
+                case OPEN_SESSION_10:
+                case OPEN_SESSION_24:
+                case OPEN_SESSION_31:
+                case OPEN_SESSION_32:
+                case CHANGE_KEY:
+                case GET_DATA_FCI:
+                case GET_DATA_TRACE:
+                    throw new IllegalStateException("Shouldn't happen for now!");
                 default:
                     break;
             }
@@ -287,7 +384,7 @@ public final class CalypsoPoUtils {
 
     /**
      * Create a Read Records command builder for the provided arguments
-     * 
+     *
      * @param poClass the class of the PO
      * @param sfi the SFI of the EF to read
      * @param recordNumber the record number to read
@@ -299,12 +396,13 @@ public final class CalypsoPoUtils {
                 .isInRange(recordNumber, CalypsoPoUtils.NB_REC_MIN, CalypsoPoUtils.NB_REC_MAX,
                         "recordNumber");
 
-        return new ReadRecordsCmdBuild(poClass, sfi, recordNumber, true, 0);
+        return new ReadRecordsCmdBuild(poClass, sfi, recordNumber,
+                ReadRecordsCmdBuild.ReadMode.ONE_RECORD, 0);
     }
 
     /**
      * Create a Select File command builder for the provided LID
-     * 
+     *
      * @param poClass the class of the PO
      * @param lid the LID of the EF to select
      * @return a {@link SelectFileCmdBuild} object
@@ -318,7 +416,7 @@ public final class CalypsoPoUtils {
 
     /**
      * Create a Select File command builder for the provided select control
-     * 
+     *
      * @param poClass the class of the PO
      * @param selectControl provides the navigation case: FIRST, NEXT or CURRENT
      * @return a {@link SelectFileCmdBuild} object

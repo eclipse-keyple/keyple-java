@@ -12,6 +12,7 @@
 package org.eclipse.keyple.example.generic.pc.usecase3;
 
 import java.io.IOException;
+import java.util.Map;
 import org.eclipse.keyple.core.selection.*;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
@@ -92,16 +93,15 @@ public class GroupedMultiSelection_Pcsc {
             SelectionsResult selectionsResult = seSelection.processExplicitSelection(seReader);
 
             if (selectionsResult.getMatchingSelections().size() > 0) {
-                for (MatchingSelection matchingSelection : selectionsResult
-                        .getMatchingSelections()) {
-                    AbstractMatchingSe matchingSe = matchingSelection.getMatchingSe();
+                for (Map.Entry<Integer, AbstractMatchingSe> entry : selectionsResult
+                        .getMatchingSelections().entrySet()) {
                     logger.info(
                             "Selection status for selection (indexed {}): \n\t\tATR: {}\n\t\tFCI: {}",
-                            matchingSelection.getSelectionIndex(),
-                            ByteArrayUtil
-                                    .toHex(matchingSe.getSelectionStatus().getAtr().getBytes()),
-                            ByteArrayUtil
-                                    .toHex(matchingSe.getSelectionStatus().getFci().getDataOut()));
+                            entry.getKey(),
+                            ByteArrayUtil.toHex(
+                                    entry.getValue().getSelectionStatus().getAtr().getBytes()),
+                            ByteArrayUtil.toHex(
+                                    entry.getValue().getSelectionStatus().getFci().getDataOut()));
                 }
             } else {
                 logger.error("No SE matched the selection.");

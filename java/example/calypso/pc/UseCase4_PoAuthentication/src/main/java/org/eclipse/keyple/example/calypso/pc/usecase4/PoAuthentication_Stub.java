@@ -12,12 +12,8 @@
 package org.eclipse.keyple.example.calypso.pc.usecase4;
 
 
-import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
-import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.transaction.*;
-import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
@@ -163,107 +159,97 @@ public class PoAuthentication_Stub {
              * Actual PO communication: operate through a single request the Calypso PO selection
              * and the file read
              */
-            SelectionsResult selectionsResult = seSelection.processExplicitSelection(poReader);
+            CalypsoPo calypsoPo = (CalypsoPo) seSelection.processExplicitSelection(poReader)
+                    .getActiveMatchingSe();
+            logger.info("The selection of the PO has succeeded.");
 
-            if (selectionsResult.hasActiveSelection()) {
-                MatchingSelection matchingSelection = selectionsResult.getActiveSelection();
+            /* Go on with the reading of the first record of the EventLog file */
+            logger.info(
+                    "==================================================================================");
+            logger.info(
+                    "= 2nd PO exchange: open and close a secure session to perform authentication.    =");
+            logger.info(
+                    "==================================================================================");
 
-                CalypsoPo calypsoPo = (CalypsoPo) matchingSelection.getMatchingSe();
-                logger.info("The selection of the PO has succeeded.");
+            PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo),
+                    samResource, CalypsoUtilities.getSecuritySettings());
 
-                /* Go on with the reading of the first record of the EventLog file */
-                logger.info(
-                        "==================================================================================");
-                logger.info(
-                        "= 2nd PO exchange: open and close a secure session to perform authentication.    =");
-                logger.info(
-                        "==================================================================================");
-
-                PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo),
-                        samResource, CalypsoUtilities.getSecuritySettings());
-
-                /*
-                 * Prepare the reading order and keep the associated parser for later use once the
-                 * transaction has been processed.
-                 */
-                int readEventLogParserIndex = poTransaction.prepareReadRecords(
-                        CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
-                        CalypsoClassicInfo.RECORD_NUMBER_1);
+            /*
+             * Prepare the reading order and keep the associated parser for later use once the
+             * transaction has been processed.
+             */
+            poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_EventLog,
+                    CalypsoClassicInfo.RECORD_NUMBER_1);
 
 
-                /*
-                 * Open Session for the debit key
-                 */
-                boolean poProcessStatus =
-                        poTransaction.processOpening(PoTransaction.SessionModificationMode.ATOMIC,
-                                SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0, (byte) 0);
+            /*
+             * Open Session for the debit key
+             */
+            boolean poProcessStatus =
+                    poTransaction.processOpening(PoTransaction.SessionModificationMode.ATOMIC,
+                            SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0, (byte) 0);
 
-                if (!poProcessStatus) {
-                    throw new IllegalStateException("processingOpening failure.");
-                }
-
-                if (!poTransaction.wasRatified()) {
-                    logger.info(
-                            "========= Previous Secure Session was not ratified. =====================");
-                }
-                /*
-                 * Prepare the reading order and keep the associated parser for later use once the
-                 * transaction has been processed.
-                 */
-                int readEventLogParserIndexBis = poTransaction.prepareReadRecords(
-                        CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
-                        CalypsoClassicInfo.RECORD_NUMBER_1);
-
-                poProcessStatus = poTransaction.processPoCommandsInSession();
-
-                /*
-                 * Retrieve the data read from the parser updated during the transaction process
-                 */
-                byte eventLog[] = (((ReadRecordsRespPars) poTransaction
-                        .getResponseParser(readEventLogParserIndexBis)).getRecords())
-                                .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
-
-                /* Log the result */
-                logger.info("EventLog file data: {}", ByteArrayUtil.toHex(eventLog));
-
-                if (!poProcessStatus) {
-                    throw new IllegalStateException("processPoCommandsInSession failure.");
-                }
-
-                /*
-                 * Close the Secure Session.
-                 */
-                if (logger.isInfoEnabled()) {
-                    logger.info(
-                            "========= PO Calypso session ======= Closing ============================");
-                }
-
-                /*
-                 * A ratification command will be sent (CONTACTLESS_MODE).
-                 */
-                poProcessStatus = poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
-
-                if (!poProcessStatus) {
-                    throw new IllegalStateException("processClosing failure.");
-                }
-
-                if (poTransaction.isSuccessful()) {
-                    logger.info("The Calypso session ended successfully.");
-                } else {
-                    logger.error("The Calypso session failed.");
-                }
-
-                logger.info(
-                        "==================================================================================");
-                logger.info(
-                        "= End of the Calypso PO processing.                                              =");
-                logger.info(
-                        "==================================================================================");
-            } else {
-                logger.error("The selection of the PO has failed.");
+            if (!poProcessStatus) {
+                throw new IllegalStateException("processingOpening failure.");
             }
+
+            if (!poTransaction.wasRatified()) {
+                logger.info(
+                        "========= Previous Secure Session was not ratified. =====================");
+            }
+            /*
+             * Prepare the reading order and keep the associated parser for later use once the
+             * transaction has been processed.
+             */
+            poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_EventLog,
+                    CalypsoClassicInfo.RECORD_NUMBER_1);
+
+            poProcessStatus = poTransaction.processPoCommandsInSession();
+
+            /*
+             * Retrieve the data read from the parser updated during the transaction process
+             */
+            ElementaryFile efEventLog = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+            byte eventLog[] = efEventLog.getData().getContent();
+
+            /* Log the result */
+            logger.info("EventLog file data: {}", ByteArrayUtil.toHex(eventLog));
+
+            if (!poProcessStatus) {
+                throw new IllegalStateException("processPoCommandsInSession failure.");
+            }
+
+            /*
+             * Close the Secure Session.
+             */
+            if (logger.isInfoEnabled()) {
+                logger.info(
+                        "========= PO Calypso session ======= Closing ============================");
+            }
+
+            /*
+             * A ratification command will be sent (CONTACTLESS_MODE).
+             */
+            poProcessStatus = poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
+
+            if (!poProcessStatus) {
+                throw new IllegalStateException("processClosing failure.");
+            }
+
+            if (poTransaction.isSuccessful()) {
+                logger.info("The Calypso session ended successfully.");
+            } else {
+                logger.error("The Calypso session failed.");
+            }
+
+            logger.info(
+                    "==================================================================================");
+            logger.info(
+                    "= End of the Calypso PO processing.                                              =");
+            logger.info(
+                    "==================================================================================");
         } else {
-            logger.error("No PO were detected.");
+            logger.error("The selection of the PO has failed.");
         }
         System.exit(0);
     }

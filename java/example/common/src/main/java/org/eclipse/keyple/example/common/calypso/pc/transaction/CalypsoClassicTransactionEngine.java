@@ -12,10 +12,9 @@
 package org.eclipse.keyple.example.common.calypso.pc.transaction;
 
 
+import java.util.Map;
+import java.util.SortedMap;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalArgumentException;
-import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
-import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
-import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronisedExchangesException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionIllegalStateException;
@@ -131,6 +130,8 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
      * <p>
      * The PO logical channel is kept open or closed according to the closeSeChannel flag
      *
+     *
+     * @param calypsoPo the current {@link CalypsoPo}
      * @param poTransaction PoTransaction object
      * @param closeSeChannel flag to ask or not the channel closing at the end of the transaction
      * @throws KeypleReaderException reader exception (defined as public for purposes of javadoc)
@@ -138,8 +139,8 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
      * @throws CalypsoSecureSessionException if PO transaction error occurs
      * @throws CalypsoPoTransactionIllegalStateException if PO transaction is not accurately used
      */
-    public void doCalypsoReadWriteTransaction(PoTransaction poTransaction, boolean closeSeChannel)
-            throws KeypleReaderException, CalypsoUnauthorizedKvcException,
+    public void doCalypsoReadWriteTransaction(CalypsoPo calypsoPo, PoTransaction poTransaction,
+            boolean closeSeChannel) throws KeypleReaderException, CalypsoUnauthorizedKvcException,
             CalypsoSecureSessionException, CalypsoDesynchronisedExchangesException,
             CalypsoPoTransactionIllegalStateException {
 
@@ -150,15 +151,13 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
          */
 
         /* prepare Event Log read record */
-        int readEventLogParserIndex =
-                poTransaction.prepareReadRecords(CalypsoClassicInfo.SFI_EventLog,
-                        ReadDataStructure.SINGLE_RECORD_DATA, CalypsoClassicInfo.RECORD_NUMBER_1);
+        poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_EventLog,
+                CalypsoClassicInfo.RECORD_NUMBER_1);
 
 
         /* prepare Contract List read record */
-        int readContractListParserIndex =
-                poTransaction.prepareReadRecords(CalypsoClassicInfo.SFI_ContractList,
-                        ReadDataStructure.SINGLE_RECORD_DATA, CalypsoClassicInfo.RECORD_NUMBER_1);
+        poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_ContractList,
+                CalypsoClassicInfo.RECORD_NUMBER_1);
 
         if (logger.isInfoEnabled()) {
             logger.info(
@@ -173,12 +172,14 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
                 SessionAccessLevel.SESSION_LVL_DEBIT, CalypsoClassicInfo.SFI_EnvironmentAndHolder,
                 CalypsoClassicInfo.RECORD_NUMBER_1);
 
-        logger.info("Parsing Read EventLog file: "
-                + ((ReadRecordsRespPars) poTransaction.getResponseParser(readEventLogParserIndex))
-                        .toString());
+        ElementaryFile efEventLog = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+        byte eventLog[] = efEventLog.getData().getContent();
+        logger.info("EventLog file: {}", ByteArrayUtil.toHex(eventLog));
 
-        logger.info("Parsing Read ContractList file: " + ((ReadRecordsRespPars) poTransaction
-                .getResponseParser(readContractListParserIndex)).toString());
+        ElementaryFile efContractList = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_ContractList);
+
+        byte contractList[] = efContractList.getData().getContent(1);
+        logger.info("ContractList file: {}", ByteArrayUtil.toHex(contractList));
 
         if (!poTransaction.wasRatified()) {
             logger.info(
@@ -222,17 +223,19 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
                         "========= PO Calypso session ======= Processing of PO commands =======================");
             }
 
-            /* Read contract command (we assume we have determine Contract #1 to be read. */
-            /* prepare Contract #1 read record */
-            int readContractsParserIndex = poTransaction.prepareReadRecords(
-                    CalypsoClassicInfo.SFI_Contracts, ReadDataStructure.MULTIPLE_RECORD_DATA,
-                    CalypsoClassicInfo.RECORD_NUMBER_1);
-
+            /* Read all 4 contracts command, record size set to 29 */
+            poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_Contracts,
+                    CalypsoClassicInfo.RECORD_NUMBER_1, 4, 29);
             /* proceed with the sending of commands, don't close the channel */
             poProcessStatus = poTransaction.processPoCommandsInSession();
 
-            logger.info("Parsing Read Contract file: " + ((ReadRecordsRespPars) poTransaction
-                    .getResponseParser(readContractsParserIndex)).toString());
+            ElementaryFile efContracts = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_Contracts);
+
+            SortedMap<Integer, byte[]> records = efContracts.getData().getAllRecordsContent();
+            for (Map.Entry<Integer, byte[]> entry : records.entrySet()) {
+                logger.info("Contract #{}: {}", entry.getKey(),
+                        ByteArrayUtil.toHex(entry.getValue()));
+            }
 
             if (logger.isInfoEnabled()) {
                 logger.info(
@@ -252,17 +255,14 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
              */
 
             /* prepare Event Log append record */
-            int appendEventLogParserIndex =
-                    poTransaction.prepareAppendRecord(CalypsoClassicInfo.SFI_EventLog,
-                            ByteArrayUtil.fromHex(CalypsoClassicInfo.eventLog_dataFill));
 
+
+            poTransaction.prepareAppendRecord(CalypsoClassicInfo.SFI_EventLog,
+                    ByteArrayUtil.fromHex(CalypsoClassicInfo.eventLog_dataFill));
             /*
              * A ratification command will be sent (CONTACTLESS_MODE).
              */
             poProcessStatus = poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
-
-            logger.info("Parsing Append EventLog file: " + ((AppendRecordRespPars) poTransaction
-                    .getResponseParser(appendEventLogParserIndex)).toString());
         }
 
         if (poTransaction.isSuccessful()) {
@@ -339,9 +339,8 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
     @Override
     public void processSeMatch(AbstractDefaultSelectionsResponse defaultSelectionsResponse)
             throws KeypleException {
-        CalypsoPo calypsoPo =
-                (CalypsoPo) seSelection.processDefaultSelection(defaultSelectionsResponse)
-                        .getActiveSelection().getMatchingSe();
+        CalypsoPo calypsoPo = (CalypsoPo) seSelection
+                .processDefaultSelection(defaultSelectionsResponse).getActiveMatchingSe();
         if (calypsoPo != null) {
             logger.info("DF RT header: {}", calypsoPo.getDirectoryHeader());
 
@@ -374,7 +373,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
                 PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo),
                         samResource, securitySettings);
 
-                doCalypsoReadWriteTransaction(poTransaction, true);
+                doCalypsoReadWriteTransaction(calypsoPo, poTransaction, true);
 
                 profiler.stop();
                 logger.warn(System.getProperty("line.separator") + "{}", profiler);

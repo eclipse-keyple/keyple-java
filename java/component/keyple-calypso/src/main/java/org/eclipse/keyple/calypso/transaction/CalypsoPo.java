@@ -294,6 +294,11 @@ public final class CalypsoPo extends AbstractMatchingSe {
         return poAtr;
     }
 
+    public int getPayloadCapacity() {
+        // TODO make this value dependent on the type of PO identified
+        return 250;
+    }
+
     /**
      * Specifies whether the change counter allowed in session is established in number of
      * operations or number of bytes modified.
@@ -490,7 +495,8 @@ public final class CalypsoPo extends AbstractMatchingSe {
     public ElementaryFile getFileBySfi(byte sfi) {
         ElementaryFile ef = efBySfi.get(sfi);
         if (ef == null) {
-            throw new NoSuchElementException("EF with SFI [" + sfi + "] is not found.");
+            throw new NoSuchElementException(
+                    "EF with SFI [0x" + Integer.toHexString(sfi & 0xFF) + "] is not found.");
         }
         return ef;
     }
@@ -508,7 +514,8 @@ public final class CalypsoPo extends AbstractMatchingSe {
     public ElementaryFile getFileByLid(short lid) {
         Byte sfi = sfiByLid.get(lid);
         if (sfi == null) {
-            throw new NoSuchElementException("EF with LID [" + lid + "] is not found.");
+            throw new NoSuchElementException(
+                    "EF with LID [" + Integer.toHexString(lid & 0xFFFF) + "] is not found.");
         }
         return efBySfi.get(sfi);
     }

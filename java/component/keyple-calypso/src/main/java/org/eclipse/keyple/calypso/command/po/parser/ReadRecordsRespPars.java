@@ -76,7 +76,8 @@ public final class ReadRecordsRespPars extends AbstractPoResponseParser {
      */
     public SortedMap<Integer, byte[]> getRecords() {
         SortedMap<Integer, byte[]> records = new TreeMap<Integer, byte[]>();
-        if (((ReadRecordsCmdBuild) builder).isReadJustOneRecord()) {
+        if (((ReadRecordsCmdBuild) builder)
+                .getReadMode() == ReadRecordsCmdBuild.ReadMode.ONE_RECORD) {
             records.put(((ReadRecordsCmdBuild) builder).getFirstRecordNumber(),
                     response.getDataOut());
         } else {

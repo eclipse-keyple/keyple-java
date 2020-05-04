@@ -151,7 +151,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
                 try {
                     selectedSe = seSelection
                             .processDefaultSelection(event.getDefaultSelectionsResponse())
-                            .getActiveSelection().getMatchingSe();
+                            .getActiveMatchingSe();
                 } catch (KeypleException e) {
                     // TODO Rework error management
                     e.printStackTrace();

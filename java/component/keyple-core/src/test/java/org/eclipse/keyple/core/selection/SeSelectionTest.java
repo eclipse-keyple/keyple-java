@@ -180,7 +180,11 @@ public class SeSelectionTest extends CoreBaseTest {
         }
 
         Assert.assertFalse(selectionsResult.hasActiveSelection());
-        Assert.assertNull(selectionsResult.getActiveSelection());
+        try {
+            selectionsResult.getActiveMatchingSe();
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().contains("No active Matching SE is available"));
+        }
     }
 
     @Test
@@ -218,13 +222,11 @@ public class SeSelectionTest extends CoreBaseTest {
         }
 
         Assert.assertTrue(selectionsResult.hasActiveSelection());
-        Assert.assertNotNull(selectionsResult.getActiveSelection());
-        MatchingSelection matchingSelection = selectionsResult.getActiveSelection();
-        MatchingSe matchingSe = (MatchingSe) matchingSelection.getMatchingSe();
+        Assert.assertNotNull(selectionsResult.getActiveMatchingSe());
+        MatchingSe matchingSe = (MatchingSe) selectionsResult.getActiveMatchingSe();
         Assert.assertTrue(matchingSe.isSelected());
         Assert.assertEquals(true, matchingSe.getSelectionStatus().hasMatched());
         Assert.assertEquals(TransmissionMode.CONTACTLESS, matchingSe.getTransmissionMode());
-        Assert.assertEquals(0, matchingSelection.getSelectionIndex());
     }
 
     /*

@@ -110,8 +110,7 @@ public final class SeSelection {
                  */
                 AbstractMatchingSe matchingSe = seSelectionRequests.get(index).parse(seResponse);
 
-                selectionsResult.addMatchingSelection(new MatchingSelection(index,
-                        seSelectionRequests.get(index), matchingSe, seResponse));
+                selectionsResult.addMatchingSe(index, matchingSe);
             }
             index++;
         }

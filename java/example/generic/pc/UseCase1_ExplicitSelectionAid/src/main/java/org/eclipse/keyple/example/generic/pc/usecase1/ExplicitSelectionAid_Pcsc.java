@@ -114,24 +114,19 @@ public class ExplicitSelectionAid_Pcsc {
             /*
              * Actual SE communication: operate through a single request the SE selection
              */
-            SelectionsResult selectionsResult = seSelection.processExplicitSelection(seReader);
-            if (selectionsResult.hasActiveSelection()) {
-                AbstractMatchingSe matchedSe =
-                        selectionsResult.getActiveSelection().getMatchingSe();
-                logger.info("The selection of the SE has succeeded.");
-                logger.info("Application FCI = {}", matchedSe.getSelectionStatus().getFci());
+            AbstractMatchingSe matchedSe =
+                    seSelection.processExplicitSelection(seReader).getActiveMatchingSe();
+            logger.info("The selection of the SE has succeeded.");
+            logger.info("Application FCI = {}", matchedSe.getSelectionStatus().getFci());
 
-                logger.info(
-                        "==================================================================================");
-                logger.info(
-                        "= End of the generic SE processing.                                              =");
-                logger.info(
-                        "==================================================================================");
-            } else {
-                logger.error("The selection of the SE has failed.");
-            }
+            logger.info(
+                    "==================================================================================");
+            logger.info(
+                    "= End of the generic SE processing.                                              =");
+            logger.info(
+                    "==================================================================================");
         } else {
-            logger.error("No SE were detected.");
+            logger.error("The selection of the SE has failed.");
         }
         System.exit(0);
     }
