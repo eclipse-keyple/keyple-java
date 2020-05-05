@@ -114,10 +114,15 @@ public class ExplicitSelectionAid_Pcsc {
             /*
              * Actual SE communication: operate through a single request the SE selection
              */
-            AbstractMatchingSe matchedSe =
+            AbstractMatchingSe matchingSe =
                     seSelection.processExplicitSelection(seReader).getActiveMatchingSe();
             logger.info("The selection of the SE has succeeded.");
-            logger.info("Application FCI = {}", matchedSe.getSelectionStatus().getFci());
+            if (matchingSe.hasFci()) {
+                logger.info("Application FCI = {}", ByteArrayUtil.toHex(matchingSe.getFci()));
+            }
+            if (matchingSe.hasAtr()) {
+                logger.info("Secure Element ATR = {}", ByteArrayUtil.toHex(matchingSe.getAtr()));
+            }
 
             logger.info(
                     "==================================================================================");

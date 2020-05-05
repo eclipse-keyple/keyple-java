@@ -116,9 +116,10 @@ public class CalypsoUtilities {
 
         try {
             if (samReader.isSePresent()) {
-                calypsoSam = (CalypsoSam) samSelection.processExplicitSelection(samReader)
-                        .getActiveMatchingSe();
-                if (!calypsoSam.isSelected()) {
+                if (samSelection.processExplicitSelection(samReader).hasActiveSelection()) {
+                    calypsoSam = (CalypsoSam) samSelection.processExplicitSelection(samReader)
+                            .getActiveMatchingSe();
+                } else {
                     throw new IllegalStateException("Unable to open a logical channel for SAM!");
                 }
             } else {

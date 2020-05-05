@@ -95,13 +95,14 @@ public class GroupedMultiSelection_Pcsc {
             if (selectionsResult.getMatchingSelections().size() > 0) {
                 for (Map.Entry<Integer, AbstractMatchingSe> entry : selectionsResult
                         .getMatchingSelections().entrySet()) {
+                    AbstractMatchingSe matchingSe = entry.getValue();
                     logger.info(
                             "Selection status for selection (indexed {}): \n\t\tATR: {}\n\t\tFCI: {}",
                             entry.getKey(),
-                            ByteArrayUtil.toHex(
-                                    entry.getValue().getSelectionStatus().getAtr().getBytes()),
-                            ByteArrayUtil.toHex(
-                                    entry.getValue().getSelectionStatus().getFci().getDataOut()));
+                            matchingSe.hasAtr() ? ByteArrayUtil.toHex(matchingSe.getAtr())
+                                    : "no ATR",
+                            matchingSe.hasFci() ? ByteArrayUtil.toHex(matchingSe.getFci())
+                                    : "no FCI");
                 }
             } else {
                 logger.error("No SE matched the selection.");

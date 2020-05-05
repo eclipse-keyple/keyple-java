@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
@@ -179,17 +180,17 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
      */
 
 
-    private KeypleReaderException toKeypleReaderException(KeypleRemoteException e) {
+    private KeypleReaderIOException toKeypleReaderException(KeypleRemoteException e) {
         if (e.getCause() != null) {
             if (e.getCause() instanceof KeypleReaderException) {
-                // KeypleReaderException is inside the KeypleRemoteException
-                return (KeypleReaderException) e.getCause();
+                // KeypleReaderIOException is inside the KeypleRemoteException
+                return (KeypleReaderIOException) e.getCause();
             } else {
-                return new KeypleReaderException(e.getMessage(), e);
+                return new KeypleReaderIOException(e.getMessage(), e);
             }
         } else {
-            // create a new KeypleReaderException
-            return new KeypleReaderException(e.getMessage());
+            // create a new KeypleReaderIOException
+            return new KeypleReaderIOException(e.getMessage());
         }
     }
 

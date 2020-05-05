@@ -418,7 +418,6 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         nativeReader.removeSe();
 
         Assert.assertNotNull(matchingSe);
-        Assert.assertTrue(matchingSe.isSelected());
     }
 
     @Test
@@ -461,7 +460,6 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
 
                 Assert.assertNotNull(matchingSe);
-                Assert.assertTrue(matchingSe.isSelected());
 
                 // unlock thread
                 lock.countDown();

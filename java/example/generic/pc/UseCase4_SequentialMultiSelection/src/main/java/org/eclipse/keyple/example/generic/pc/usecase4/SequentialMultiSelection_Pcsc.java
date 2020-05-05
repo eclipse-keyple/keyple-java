@@ -38,8 +38,8 @@ public class SequentialMultiSelection_Pcsc {
             AbstractMatchingSe matchingSe = selectionsResult.getActiveMatchingSe();
             logger.info("The SE matched the selection {}.", index);
             logger.info("Selection status for case {}: \n\t\tATR: {}\n\t\tFCI: {}", index,
-                    ByteArrayUtil.toHex(matchingSe.getSelectionStatus().getAtr().getBytes()),
-                    ByteArrayUtil.toHex(matchingSe.getSelectionStatus().getFci().getDataOut()));
+                    matchingSe.hasAtr() ? ByteArrayUtil.toHex(matchingSe.getAtr()) : "no ATR",
+                    matchingSe.hasFci() ? ByteArrayUtil.toHex(matchingSe.getFci()) : "no FCI");
         } else {
             logger.info("The selection did not match for case {}.", index);
         }
