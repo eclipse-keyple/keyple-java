@@ -224,8 +224,6 @@ public class SeSelectionTest extends CoreBaseTest {
         Assert.assertTrue(selectionsResult.hasActiveSelection());
         Assert.assertNotNull(selectionsResult.getActiveMatchingSe());
         MatchingSe matchingSe = (MatchingSe) selectionsResult.getActiveMatchingSe();
-        Assert.assertTrue(matchingSe.isSelected());
-        Assert.assertEquals(true, matchingSe.getSelectionStatus().hasMatched());
         Assert.assertEquals(TransmissionMode.CONTACTLESS, matchingSe.getTransmissionMode());
     }
 
