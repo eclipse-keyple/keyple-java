@@ -245,10 +245,9 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
         SeSelection seSelection = new SeSelection();
 
-        GenericSeSelectionRequest genericSeSelectionRequest =
-                new GenericSeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                        null, new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid),
-                                null)));
+        GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
+                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                        new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid))));
 
         seSelection.prepareSelection(genericSeSelectionRequest);
 
@@ -296,10 +295,9 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
         SeSelection seSelection = new SeSelection();
 
-        GenericSeSelectionRequest genericSeSelectionRequest =
-                new GenericSeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                        null, new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid),
-                                null)));
+        GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
+                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                        new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid))));
 
         seSelection.prepareSelection(genericSeSelectionRequest);
 
@@ -358,10 +356,9 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
         SeSelection seSelection = new SeSelection();
 
-        GenericSeSelectionRequest genericSeSelectionRequest =
-                new GenericSeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                        null, new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid),
-                                null)));
+        GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
+                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                        new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid))));
 
         seSelection.prepareSelection(genericSeSelectionRequest);
 
