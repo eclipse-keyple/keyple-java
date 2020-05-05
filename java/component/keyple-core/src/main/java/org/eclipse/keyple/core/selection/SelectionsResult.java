@@ -36,7 +36,8 @@ public final class SelectionsResult {
      *
      * @param selectionIndex the index of the selection that resulted in the matching SE
      * @param matchingSe the matching SE to add
-     * @param isSelected true if the currently added matching SE is selected (its logical channel is open)
+     * @param isSelected true if the currently added matching SE is selected (its logical channel is
+     *        open)
      */
     void addMatchingSe(int selectionIndex, AbstractMatchingSe matchingSe, boolean isSelected) {
         if (matchingSe != null)

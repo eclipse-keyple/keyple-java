@@ -11,6 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.selection;
 
+import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 
@@ -22,8 +24,8 @@ import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
  * they are available.
  */
 public abstract class AbstractMatchingSe {
-    private final byte[] fci;
-    private final byte[] atr;
+    private final byte[] fciBytes;
+    private final byte[] atrBytes;
     private final TransmissionMode transmissionMode;
 
     /**
@@ -33,8 +35,18 @@ public abstract class AbstractMatchingSe {
      * @param transmissionMode the transmission mode, contact or contactless
      */
     protected AbstractMatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode) {
-        this.fci = selectionResponse.getSelectionStatus().getFci().getBytes();
-        this.atr = selectionResponse.getSelectionStatus().getAtr().getBytes();
+        ApduResponse fci = selectionResponse.getSelectionStatus().getFci();
+        if (fci != null) {
+            this.fciBytes = fci.getBytes();
+        } else {
+            this.fciBytes = null;
+        }
+        AnswerToReset atr = selectionResponse.getSelectionStatus().getAtr();
+        if (atr != null) {
+            this.atrBytes = atr.getBytes();
+        } else {
+            this.atrBytes = null;
+        }
         this.transmissionMode = transmissionMode;
     }
 
@@ -49,23 +61,23 @@ public abstract class AbstractMatchingSe {
      * @return true if the matching SE has an FCI
      */
     public boolean hasFci() {
-        return fci != null && fci.length > 0;
+        return fciBytes != null && fciBytes.length > 0;
     }
 
     /**
      * @return true if the matching SE has an ATR
      */
     public boolean hasAtr() {
-        return fci != null && fci.length > 0;
+        return fciBytes != null && fciBytes.length > 0;
     }
 
     /**
      * @return the FCI
      * @throws IllegalStateException if no FCI is available (see hasFci)
      */
-    public byte[] getFci() {
+    public byte[] getFciBytes() {
         if (hasFci()) {
-            return fci;
+            return fciBytes;
         }
         throw new IllegalStateException("No FCI is available in this AbstractMatchingSe");
     }
@@ -74,9 +86,9 @@ public abstract class AbstractMatchingSe {
      * @return the ATR
      * @throws IllegalStateException if no ATR is available (see hasAtr)
      */
-    public byte[] getAtr() {
+    public byte[] getAtrBytes() {
         if (hasAtr()) {
-            return atr;
+            return atrBytes;
         }
         throw new IllegalStateException("No ATR is available in this AbstractMatchingSe");
     }

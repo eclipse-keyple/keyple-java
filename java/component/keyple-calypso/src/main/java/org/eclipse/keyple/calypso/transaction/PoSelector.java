@@ -12,7 +12,6 @@
 package org.eclipse.keyple.calypso.transaction;
 
 import java.util.HashSet;
-import java.util.Set;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 
@@ -35,71 +34,20 @@ public final class PoSelector extends SeSelector {
      * Create a PoSelector to perform the PO selection. See {@link SeSelector}
      *
      * @param seProtocol the SE communication protocol
-     * @param poAtrFilter the ATR filter
-     * @param poAidSelector the AID selection data
+     * @param atrFilter the ATR filter
+     * @param aidSelector the AID selection data
      */
-    public PoSelector(SeProtocol seProtocol, PoAtrFilter poAtrFilter, PoAidSelector poAidSelector) {
-        super(seProtocol, poAtrFilter, poAidSelector);
-    }
-
-    /**
-     * PoAidSelector embedding the Calypo PO additional successful codes list
-     */
-    public static class PoAidSelector extends AidSelector {
-
-        private final static Set<Integer> successfulSelectionStatusCodes = new HashSet<Integer>() {
-            {
-                add(0x6283);
-            }
-        };;
-
-        /**
-         * Create a {@link PoAidSelector} to select a Calypso PO with an AID through a select
-         * application command.
-         * 
-         * @param aidToSelect the application identifier
-         * @param invalidatedPo an enum value to indicate if an invalidated PO should be accepted or
-         *        not
-         * @param fileOccurrence the ISO7816-4 file occurrence parameter (see
-         *        {@link FileOccurrence})
-         * @param fileControlInformation the ISO7816-4 file control information parameter (see
-         *        {@link FileControlInformation})
-         */
-        public PoAidSelector(IsoAid aidToSelect, InvalidatedPo invalidatedPo,
-                FileOccurrence fileOccurrence, FileControlInformation fileControlInformation) {
-            super(aidToSelect,
-                    invalidatedPo == InvalidatedPo.ACCEPT ? successfulSelectionStatusCodes : null,
-                    fileOccurrence, fileControlInformation);
-        }
-
-        /**
-         * Simplified constructor with default values for the FileOccurrence and
-         * FileControlInformation (see {@link AidSelector})
-         * 
-         * @param aidToSelect the application identifier
-         * @param invalidatedPo an enum value to indicate if an invalidated PO should be accepted or
-         *        not
-         */
-        public PoAidSelector(IsoAid aidToSelect, InvalidatedPo invalidatedPo) {
-            super(aidToSelect,
-                    invalidatedPo == InvalidatedPo.ACCEPT ? successfulSelectionStatusCodes : null);
-        }
-    }
-
-    /**
-     * PoAtrFilter to perform a PO selection based on its ATR
-     * <p>
-     * Could be completed to handle Calypso specific ATR filtering process.
-     */
-    public static class PoAtrFilter extends AtrFilter {
-
-        /**
-         * Regular expression based filter
-         *
-         * @param atrRegex String hex regular expression
-         */
-        public PoAtrFilter(String atrRegex) {
-            super(atrRegex);
+    public PoSelector(SeProtocol seProtocol, AtrFilter atrFilter, AidSelector aidSelector,
+            InvalidatedPo authorization) {
+        super(seProtocol, atrFilter, aidSelector);
+        if (authorization == InvalidatedPo.ACCEPT) {
+            aidSelector.setSuccessfulSelectionStatusCodes(new HashSet<Integer>() {
+                {
+                    // 0x6283 is the status word for the response to the select application command
+                    // for an invalidated PO
+                    add(0x6283);
+                }
+            });
         }
     }
 }
