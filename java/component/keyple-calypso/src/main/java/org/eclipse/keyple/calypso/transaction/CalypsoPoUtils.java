@@ -28,7 +28,7 @@ import org.eclipse.keyple.core.util.Assert;
 /**
  * Utility class used to check Calypso specific data.
  */
-public final class CalypsoPoUtils {
+final class CalypsoPoUtils {
     public static final int MASK_3_BITS = 0x7; // 7
     public static final int MASK_4_BITS = 0xF; // 15
     public static final int MASK_5_BITS = 0x1F; // 31
