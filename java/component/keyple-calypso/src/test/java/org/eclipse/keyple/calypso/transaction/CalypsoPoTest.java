@@ -159,7 +159,7 @@ public class CalypsoPoTest {
     @Test
     public void getAtr() {
         Assert.assertArrayEquals(ByteArrayUtil.fromHex(ATR_VALUE),
-                getPoApplicationByte((byte) 0x01).getAtr());
+                getPoApplicationByte((byte) 0x01).getAtrBytes());
     }
 
     @Test

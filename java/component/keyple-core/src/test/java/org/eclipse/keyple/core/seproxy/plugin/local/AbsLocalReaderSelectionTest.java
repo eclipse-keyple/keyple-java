@@ -188,7 +188,8 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
         SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter(ATR);
         SeSelector.AidSelector aidSelector =
-                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(AID), STATUS_CODE);
+                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(AID));
+        aidSelector.setSuccessfulSelectionStatusCodes(STATUS_CODE);
 
         // select both
         SeSelector seSelector = new SeSelector(null, atrFilter, aidSelector);
@@ -302,7 +303,8 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     static public SeSelector getAidSelector() {
         SeSelector.AidSelector aidSelector =
-                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(AID), STATUS_CODE);
+                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(AID));
+        aidSelector.setSuccessfulSelectionStatusCodes(STATUS_CODE);
 
         return new SeSelector(null, null, aidSelector);
     }

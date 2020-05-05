@@ -50,7 +50,7 @@ public class PoSelectionRequestTest {
     public void setUp() throws Exception {
         poSelectionRequest =
                 new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                        new PoSelector.PoAtrFilter(".*"), null));
+                        new PoSelector.AtrFilter(".*"), null, PoSelector.InvalidatedPo.REJECT));
     }
 
     @Test

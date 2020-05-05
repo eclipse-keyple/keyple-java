@@ -251,10 +251,12 @@ public class SeSelectionTest extends CoreBaseTest {
         SeSelection seSelection = new SeSelection();
 
         // create and add two selection cases
-        SeSelector seSelector1 = new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid("AABBCCDDEE"), null,
+        SeSelector.AidSelector aidSelector =
+                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid("AABBCCDDEE"),
                         SeSelector.AidSelector.FileOccurrence.FIRST,
-                        SeSelector.AidSelector.FileControlInformation.FCI));
+                        SeSelector.AidSelector.FileControlInformation.FCI);
+        SeSelector seSelector1 =
+                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null, aidSelector);
 
         // TODO add an implementation of AbstractApduCommandBuilder/Parser
         // // APDU requests
@@ -272,11 +274,13 @@ public class SeSelectionTest extends CoreBaseTest {
             }
         };
 
+        aidSelector = new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid("1122334455"),
+                SeSelector.AidSelector.FileOccurrence.NEXT,
+                SeSelector.AidSelector.FileControlInformation.FCP);
+        aidSelector.setSuccessfulSelectionStatusCodes(successfulSelectionStatusCodes);
+
         SeSelector seSelector2 = new SeSelector(SeCommonProtocols.PROTOCOL_B_PRIME,
-                new SeSelector.AtrFilter(".*"),
-                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid("1122334455"),
-                        successfulSelectionStatusCodes, SeSelector.AidSelector.FileOccurrence.NEXT,
-                        SeSelector.AidSelector.FileControlInformation.FCP));
+                new SeSelector.AtrFilter(".*"), aidSelector);
 
         seSelection.prepareSelection(new SeSelectionRequest(seSelector2, null));
 

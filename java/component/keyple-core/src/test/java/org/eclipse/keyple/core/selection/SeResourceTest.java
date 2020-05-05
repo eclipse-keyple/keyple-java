@@ -14,8 +14,11 @@ package org.eclipse.keyple.core.selection;
 import static org.junit.Assert.*;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +38,9 @@ public class SeResourceTest extends CoreBaseTest {
 
     @Test
     public void testConstructor() {
-        MatchingSe matchingSe = new MatchingSe(new SeResponse(true, true, null, null),
+        SelectionStatus selectionStatus = new SelectionStatus(
+                new AnswerToReset(ByteArrayUtil.fromHex("3B00000000000000")), null, false);
+        MatchingSe matchingSe = new MatchingSe(new SeResponse(true, true, selectionStatus, null),
                 TransmissionMode.CONTACTLESS);
         SeReader seReader = null;
         LocalSeResource localSeResource = new LocalSeResource(seReader, matchingSe);
