@@ -13,7 +13,12 @@ package org.eclipse.keyple.example.calypso.pc.usecase3;
 
 
 import java.io.IOException;
-import org.eclipse.keyple.calypso.transaction.*;
+import org.eclipse.keyple.calypso.transaction.CalypsoPo;
+import org.eclipse.keyple.calypso.transaction.ElementaryFile;
+import org.eclipse.keyple.calypso.transaction.PoResource;
+import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
+import org.eclipse.keyple.calypso.transaction.PoSelector;
+import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
@@ -110,7 +115,8 @@ public class Rev1Selection_Pcsc {
              */
             PoSelectionRequest poSelectionRequest =
                     new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_B_PRIME,
-                            new PoSelector.PoAtrFilter(poAtrRegex), null));
+                            new PoSelector.AtrFilter(poAtrRegex), null,
+                            PoSelector.InvalidatedPo.REJECT));
 
             /*
              * Prepare the selection of the DF RT.

@@ -12,7 +12,8 @@
 package org.eclipse.keyple.example.generic.pc.usecase2;
 
 
-import org.eclipse.keyple.core.selection.*;
+import org.eclipse.keyple.core.selection.AbstractMatchingSe;
+import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
@@ -101,11 +102,10 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
          * Generic selection: configures a SeSelector with all the desired attributes to make the
          * selection
          */
-        GenericSeSelectionRequest seSelector = new GenericSeSelectionRequest(
-                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new SeSelector.AidSelector(
-                                new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAid)),
-                                null)));
+        GenericSeSelectionRequest seSelector =
+                new GenericSeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                        null, new SeSelector.AidSelector(
+                                new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAid)))));
 
         /*
          * Add the selection case to the current selection (we could have added other cases here)

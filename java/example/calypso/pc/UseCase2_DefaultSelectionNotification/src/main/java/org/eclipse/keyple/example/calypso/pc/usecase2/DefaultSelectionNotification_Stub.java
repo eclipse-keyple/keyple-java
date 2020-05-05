@@ -12,11 +12,19 @@
 package org.eclipse.keyple.example.calypso.pc.usecase2;
 
 
-import org.eclipse.keyple.calypso.transaction.*;
+import org.eclipse.keyple.calypso.transaction.CalypsoPo;
+import org.eclipse.keyple.calypso.transaction.ElementaryFile;
+import org.eclipse.keyple.calypso.transaction.PoResource;
+import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
+import org.eclipse.keyple.calypso.transaction.PoSelector;
+import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronisedExchangesException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoSecureSessionException;
 import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.seproxy.*;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -28,7 +36,11 @@ import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.common.calypso.stub.StubCalypsoClassic;
-import org.eclipse.keyple.plugin.stub.*;
+import org.eclipse.keyple.plugin.stub.StubPlugin;
+import org.eclipse.keyple.plugin.stub.StubPluginFactory;
+import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
+import org.eclipse.keyple.plugin.stub.StubReader;
+import org.eclipse.keyple.plugin.stub.StubSecureElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,9 +128,9 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
          */
         PoSelectionRequest poSelectionRequest =
                 new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new PoSelector.PoAidSelector(
-                                new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
-                                PoSelector.InvalidatedPo.REJECT)));
+                        new PoSelector.AidSelector(
+                                new PoSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID)),
+                        PoSelector.InvalidatedPo.REJECT));
 
         /*
          * Prepare the reading order and keep the associated parser for later use once the selection

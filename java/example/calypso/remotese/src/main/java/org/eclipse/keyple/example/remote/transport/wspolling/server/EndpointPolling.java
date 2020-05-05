@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.keyple.plugin.remotese.transport.*;
+import org.eclipse.keyple.plugin.remotese.transport.DtoHandler;
 import org.eclipse.keyple.plugin.remotese.transport.DtoNode;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;

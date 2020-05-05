@@ -13,7 +13,14 @@ package org.eclipse.keyple.example.remote.application;
 
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
-import org.eclipse.keyple.calypso.transaction.*;
+import org.eclipse.keyple.calypso.transaction.CalypsoPo;
+import org.eclipse.keyple.calypso.transaction.ElementaryFile;
+import org.eclipse.keyple.calypso.transaction.PoResource;
+import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.calypso.transaction.SamIdentifier;
+import org.eclipse.keyple.calypso.transaction.SamResource;
+import org.eclipse.keyple.calypso.transaction.SamResourceManager;
+import org.eclipse.keyple.calypso.transaction.SessionAccessLevel;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronisedExchangesException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionIllegalStateException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoSecureSessionException;

@@ -13,8 +13,14 @@ package org.eclipse.keyple.example.generic.pc.usecase3;
 
 import java.io.IOException;
 import java.util.Map;
-import org.eclipse.keyple.core.selection.*;
-import org.eclipse.keyple.core.seproxy.*;
+import org.eclipse.keyple.core.selection.AbstractMatchingSe;
+import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.SelectionsResult;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -69,21 +75,21 @@ public class GroupedMultiSelection_Pcsc {
             /* AID based selection (1st selection, later indexed 0) */
             seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector(
                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                    new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(seAidPrefix), null,
+                    new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(seAidPrefix),
                             SeSelector.AidSelector.FileOccurrence.FIRST,
                             SeSelector.AidSelector.FileControlInformation.FCI))));
 
             /* next selection (2nd selection, later indexed 1) */
             seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector(
                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                    new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(seAidPrefix), null,
+                    new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(seAidPrefix),
                             SeSelector.AidSelector.FileOccurrence.NEXT,
                             SeSelector.AidSelector.FileControlInformation.FCI))));
 
             /* next selection (3rd selection, later indexed 2) */
             seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector(
                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                    new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(seAidPrefix), null,
+                    new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(seAidPrefix),
                             SeSelector.AidSelector.FileOccurrence.NEXT,
                             SeSelector.AidSelector.FileControlInformation.FCI))));
             /*

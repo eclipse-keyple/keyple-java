@@ -13,8 +13,11 @@ package org.eclipse.keyple.example.generic.pc.usecase1;
 
 
 import java.io.IOException;
-import org.eclipse.keyple.core.selection.*;
-import org.eclipse.keyple.core.seproxy.*;
+import org.eclipse.keyple.core.selection.AbstractMatchingSe;
+import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -101,9 +104,8 @@ public class ExplicitSelectionAid_Pcsc {
              */
             GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
                     new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                            new SeSelector.AidSelector(
-                                    new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAid)),
-                                    null)));
+                            new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(
+                                    ByteArrayUtil.fromHex(seAid)))));
 
             /*
              * Add the selection case to the current selection (we could have added other cases
