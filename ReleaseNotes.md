@@ -2,7 +2,8 @@
 
 Releases:
  - Alpha [Keyple Java 20/next](#keyple-java-20next)
- - Master [Keyple Java 20/01](#keyple-java-2001)
+ - Master [Keyple Java 20/05](#keyple-java-2005)
+ - [Keyple Java 20/01](#keyple-java-2001)
  - Master [Keyple Java 19/07](#keyple-java-1907)
 
 ## Keyple Java 20/next
@@ -36,6 +37,46 @@ Releases:
 * Various improvements of OMAPI's example application
 
 
+## Keyple Java 20/05
+
+Release train components:
+ - [keyple-java-core 0.8.1](#keyple-java-core-081)
+ - [keyple-java-calypso 0.8.1](#keyple-java-calypso-081)
+ - [keyple-java-plugin-pcsc 0.8.1](#keyple-java-plugin-pcsc-081)
+ - [keyple-java-plugin-stub 0.8.1](#keyple-java-plugin-stub-081)
+ - [keyple-java-plugin-remotese 0.8.1](#keyple-java-plugin-remotese-081)
+ - [keyple-android-plugin-nfc 0.8.1](#keyple-android-plugin-nfc-081)
+ - [keyple-android-plugin-omapi 0.8.1](#keyple-android-plugin-omapi-081)
+
+### keyple-java-core 0.8.1
+* KEYP-187 : ReaderPoolPlugin#allocate throw a KeypleAllocationReaderException if allocation fails for technical issue
+* KEYP-187 : ReaderPoolPlugin#allocate throw a KeypleAllocationNoReaderAvailableException if no reader is available
+* KEYP-192 : Reorganize plugin and reader abstract classes
+* KEYP-195 : Ensure readers list is thread safe 
+
+### keyple-java-calypso 0.8.1
+* KEYP-187 SamResourceManager throw a CalypsoNoSamResourceAvailableException if unable to allocate a Sam Resource
+
+### keyple-java-plugin-pcsc 0.8.1
+* none
+
+### keyple-java-plugin-stub 0.8.1
+* none
+
+### keyple-java-plugin-remotese 0.8.1
+* KEYP-190 : fix Null Pointer Exception on RemoteMethodTxEngine when remoteMethodTx is null
+* KEYP-203 : fix Concurrent Modification Exception while disconnecting/connecting readers
+* KEYP-208 : fix Class cast exception in VirtualReaderImpl
+* KEYP-212 : allow users to define their own ExecutorService for async task
+* KEYP-212 : add a createdDate in virtual reader session
+
+### keyple-android-plugin-nfc 0.8.1
+* none
+
+### keyple-android-plugin-omapi 0.8.1
+* none
+
+
 ## Keyple Java 20/01
 
 Release train components:
@@ -46,6 +87,7 @@ Release train components:
  - [keyple-java-plugin-remotese 0.8](#keyple-java-plugin-remotese-08)
  - [keyple-android-plugin-nfc 0.8](#keyple-android-plugin-nfc-08)
  - [keyple-android-plugin-omapi 0.8](#keyple-android-plugin-omapi-08)
+
  
 ### keyple-java-core 0.8
 * Se Proxy API

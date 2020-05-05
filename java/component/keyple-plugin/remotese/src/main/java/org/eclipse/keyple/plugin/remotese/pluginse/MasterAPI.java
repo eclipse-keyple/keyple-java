@@ -12,6 +12,8 @@
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
@@ -49,9 +51,10 @@ public class MasterAPI implements DtoHandler {
 
     public static final long DEFAULT_RPC_TIMEOUT = 10000;
 
+    protected final ExecutorService executorService;
+
     /**
-     * Build a new MasterAPI, Entry point for incoming DTO in Master Manages RemoteSePlugin
-     * lifecycle Manages Master Session Dispatch KeypleDTO
+     * Build a new MasterAPI with default rpc timeout and default executor service (cached pool)
      *
      * @param seProxyService : SeProxyService
      * @param dtoNode : outgoing node to send Dto to Slave
@@ -63,24 +66,22 @@ public class MasterAPI implements DtoHandler {
     }
 
     /**
-     * Build a new MasterAPI, Entry point for incoming DTO in Master Manages RemoteSePlugin
-     * lifecycle Manages Master Session Dispatch KeypleDTO
+     * Build a new MasterAPI with custom rpcTimeout and default executor service (cached pool)
      *
      * @param seProxyService : SeProxyService
      * @param dtoNode : outgoing node to send Dto to Slave
-     * @param rpc_timeout : timeout in milliseconds to wait for an answer from slave before throwing
+     * @param rpcTimeout : timeout in milliseconds to wait for an answer from slave before throwing
      *        an exception
      * @throws KeyplePluginInstantiationException if plugin does not instantiate
      */
-    public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode, long rpc_timeout)
+    public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode, long rpcTimeout)
             throws KeyplePluginInstantiationException {
-        this(seProxyService, dtoNode, rpc_timeout, PLUGIN_TYPE_DEFAULT,
+        this(seProxyService, dtoNode, rpcTimeout, PLUGIN_TYPE_DEFAULT,
                 RemoteSePluginImpl.DEFAULT_PLUGIN_NAME);
     }
 
     /**
-     * Build a new MasterAPI, Entry point for incoming DTO in Master Manages RemoteSePlugin
-     * lifecycle Manages Master Session Dispatch KeypleDTO
+     * Build a new MasterAPI with custom rpcTimeout and default executor service (cached pool)
      *
      * @param seProxyService : SeProxyService
      * @param dtoNode : outgoing node to send Dto to Slave
@@ -91,14 +92,38 @@ public class MasterAPI implements DtoHandler {
      * @param pluginName : specify a name for remoteseplugin
      * @throws KeyplePluginInstantiationException if plugin does not instantiate
      *
-     * 
+     *
      */
     public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode, long rpcTimeout,
             int pluginType, String pluginName) throws KeyplePluginInstantiationException {
+        this(seProxyService, dtoNode, rpcTimeout, pluginType, pluginName,
+                Executors.newCachedThreadPool());
+    }
+
+    /**
+     * Build a new MasterAPI with custom rpcTimeout and custom executor service
+     *
+     * @param seProxyService : SeProxyService
+     * @param dtoNode : outgoing node to send Dto to Slave
+     * @param rpcTimeout : timeout in milliseconds to wait for an answer from slave before throwing
+     *        an exception
+     * @param pluginType : either a default plugin or readerPool plugin, use
+     *        {@link #PLUGIN_TYPE_DEFAULT} or @PLUGIN_TYPE_POOL
+     * @param pluginName : specify a name for remoteseplugin
+     * @param executorService : use an external executorService to execute async task
+     * @throws KeyplePluginInstantiationException if plugin does not instantiate
+     *
+     * 
+     */
+    public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode, long rpcTimeout,
+            int pluginType, String pluginName, ExecutorService executorService)
+            throws KeyplePluginInstantiationException {
 
         logger.info("Init MasterAPI with parameters {} {} {} {} {}", seProxyService, dtoNode,
                 rpcTimeout, pluginType, pluginName);
 
+        // init executorService
+        this.executorService = executorService;
 
         this.dtoTransportNode = dtoNode;
         this.pluginType = pluginType;
@@ -122,8 +147,8 @@ public class MasterAPI implements DtoHandler {
                             "plugin name is already registered to the platform : " + pluginName);
                 }
 
-                seProxyService.registerPlugin(
-                        new RemoteSePluginFactory(sessionManager, dtoNode, rpcTimeout, pluginName));
+                seProxyService.registerPlugin(new RemoteSePluginFactory(sessionManager, dtoNode,
+                        rpcTimeout, pluginName, executorService));
 
                 this.plugin = (RemoteSePluginImpl) seProxyService.getPlugin(pluginName);
 
@@ -138,7 +163,7 @@ public class MasterAPI implements DtoHandler {
                 }
 
                 seProxyService.registerPlugin(new RemoteSePoolPluginFactory(sessionManager, dtoNode,
-                        rpcTimeout, pluginName));
+                        rpcTimeout, pluginName, executorService));
 
                 this.plugin = (RemoteSePoolPluginImpl) seProxyService.getPlugin(pluginName);
 
