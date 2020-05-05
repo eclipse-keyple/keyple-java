@@ -185,9 +185,6 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         virtualReader.removeObserver(obs);
 
         Assert.assertEquals(0, lock.getCount());
-
-        // https://github.com/calypsonet/keyple-java/issues/420
-        // Assert.assertEquals(0, masterAPI.getPlugin().getReaders().size());
     }
 
 

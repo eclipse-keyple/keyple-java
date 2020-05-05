@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
+import java.util.concurrent.ExecutorService;
 import org.eclipse.keyple.core.seproxy.AbstractPluginFactory;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
@@ -24,13 +25,15 @@ class RemoteSePoolPluginFactory extends AbstractPluginFactory {
     DtoSender dtoSender;
     long rpc_timeout;
     String pluginName;
+    ExecutorService executorService;
 
     RemoteSePoolPluginFactory(VirtualReaderSessionFactory sessionManager, DtoSender dtoSender,
-            long rpc_timeout, String pluginName) {
+            long rpc_timeout, String pluginName, ExecutorService executorService) {
         this.sessionManager = sessionManager;
         this.dtoSender = dtoSender;
         this.rpc_timeout = rpc_timeout;
         this.pluginName = pluginName;
+        this.executorService = executorService;
     }
 
     @Override
@@ -40,6 +43,7 @@ class RemoteSePoolPluginFactory extends AbstractPluginFactory {
 
     @Override
     protected ReaderPlugin getPluginInstance() {
-        return new RemoteSePoolPluginImpl(sessionManager, dtoSender, rpc_timeout, pluginName);
+        return new RemoteSePoolPluginImpl(sessionManager, dtoSender, rpc_timeout, pluginName,
+                executorService);
     }
 }

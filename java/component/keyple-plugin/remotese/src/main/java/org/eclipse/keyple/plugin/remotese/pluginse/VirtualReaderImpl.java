@@ -15,11 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
@@ -44,8 +41,6 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
     protected final RemoteMethodTxEngine rmTxEngine;
     protected final String slaveNodeId;
     protected final TransmissionMode transmissionMode;
-
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     private static final Logger logger = LoggerFactory.getLogger(VirtualReaderImpl.class);
 
@@ -95,7 +90,8 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
 
     @Override
     public boolean isSePresent() {
-        logger.error("isSePresent is not implemented yet");
+        logger.warn("{} isSePresent is not implemented in VirtualReader, returns false",
+                this.getName());
         return false;// not implemented
     }
 
@@ -120,14 +116,11 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
             // blocking call
             return transmit.execute(rmTxEngine);
         } catch (KeypleRemoteException e) {
-            if (e.getCause() != null) {
-                // KeypleReaderException is inside the KeypleRemoteException
-                throw (KeypleReaderIOException) e.getCause();
-
-            } else {
-                // create a new KeypleReaderIOException
-                throw new KeypleReaderIOException(e.getMessage());
-            }
+            logger.error(
+                    "{} - processSeRequestSet encounters an exception while communicating with slave. "
+                            + "sessionId:{} error:{}",
+                    this.getName(), this.getSession().getSessionId(), e.getMessage());
+            throw toKeypleReaderException(e);
         }
     }
 
@@ -150,68 +143,27 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
             // blocking call
             return transmit.execute(rmTxEngine);
         } catch (KeypleRemoteException e) {
-            e.printStackTrace();
-            throw (KeypleReaderIOException) e.getCause();
+            logger.error(
+                    "{} - processSeRequest encounters an exception while communicating with slave. sessionId:{} error:{}",
+                    this.getName(), this.getSession().getSessionId(), e.getMessage());
+            throw toKeypleReaderException(e);
         }
-
     }
 
     @Override
     public void addSeProtocolSetting(SeProtocol seProtocol, String protocolRule) {
-        logger.error("{} addSeProtocolSetting is not implemented yet", this.getName());
+        logger.warn("{} addSeProtocolSetting is not implemented yet in VirtualReader",
+                this.getName());
     }
 
     @Override
     public void setSeProtocolSetting(Map<SeProtocol, String> protocolSetting) {
-        logger.error("setSeProtocolSetting is not implemented yet");
-    }
-
-    /*
-     * PACKAGE PRIVATE
-     */
-
-    /**
-     * When an event occurs on the Remote LocalReader, notify Observers
-     * 
-     * @param event
-     */
-    void onRemoteReaderEvent(final ReaderEvent event) {
-        final VirtualReaderImpl thisReader = this;
-
-        logger.trace("{} EVENT {} ", this.getName(), event.getEventType());
-
-        // TODO Check this!!!
-        if (thisReader instanceof VirtualObservableReader) {
-            if (((VirtualObservableReader) thisReader).countObservers() > 0) {
-                /*
-                 * thisReader.notifyObservers(event);
-                 */
-
-
-                // launch event another thread to permit blocking method to be used in update
-                // methode
-                // (such as transmit)
-                executorService.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        ((VirtualObservableReader) thisReader).notifyObservers(event);
-                    }
-                });
-
-
-            } else {
-                logger.trace(
-                        "An event was received but no observers are declared into VirtualReader : {} {}",
-                        thisReader.getName(), event.getEventType());
-            }
-        }
+        logger.warn("{} setSeProtocolSetting is not implemented yet in VirtualReader",
+                this.getName());
     }
 
 
-    /**
-     *
-     * HELPERS
-     */
+
     @Override
     public Map<String, String> getParameters() {
         return parameters;
@@ -221,5 +173,25 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
     public void setParameter(String key, String value) throws KeypleReaderIOException {
         parameters.put(key, value);
     }
+
+    /*
+     * PRIVATE HELPERS
+     */
+
+
+    private KeypleReaderException toKeypleReaderException(KeypleRemoteException e) {
+        if (e.getCause() != null) {
+            if (e.getCause() instanceof KeypleReaderException) {
+                // KeypleReaderException is inside the KeypleRemoteException
+                return (KeypleReaderException) e.getCause();
+            } else {
+                return new KeypleReaderException(e.getMessage(), e);
+            }
+        } else {
+            // create a new KeypleReaderException
+            return new KeypleReaderException(e.getMessage());
+        }
+    }
+
 
 }

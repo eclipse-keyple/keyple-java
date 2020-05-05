@@ -14,6 +14,8 @@ package org.eclipse.keyple.plugin.remotese.nativese;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
@@ -67,23 +69,19 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
 
 
     /**
-     * Constructor with a default timeout DEFAULT_RPC_TIMEOUT
+     * Constructor with a default timeout DEFAULT_RPC_TIMEOUT and single threaded executorService
      * 
      * @param seProxyService : instance of the seProxyService
      * @param dtoNode : Define which DTO sender will be called when a DTO needs to be sent.
      * @param masterNodeId : Master Node Id to connect to
      */
     public SlaveAPI(SeProxyService seProxyService, DtoNode dtoNode, String masterNodeId) {
-        this.seProxyService = seProxyService;
-        this.dtoNode = dtoNode;
-        this.rmTxEngine = new RemoteMethodTxEngine(dtoNode, DEFAULT_RPC_TIMEOUT);
-        this.masterNodeId = masterNodeId;
-        this.bindDtoEndpoint(dtoNode);
+        this(seProxyService, dtoNode, masterNodeId, DEFAULT_RPC_TIMEOUT);
     }
 
     /**
-     * Constructor with custom timeout
-     * 
+     * Constructor with custom timeout and single threaded executorService
+     *
      * @param seProxyService : instance of the seProxyService
      * @param dtoNode : Define which DTO sender will be called when a DTO needs to be sent.
      * @param masterNodeId : Master Node Id to connect to
@@ -91,9 +89,24 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
      */
     public SlaveAPI(SeProxyService seProxyService, DtoNode dtoNode, String masterNodeId,
             long timeout) {
+        this(seProxyService, dtoNode, masterNodeId, timeout, Executors.newSingleThreadExecutor());
+    }
+
+
+    /**
+     * Constructor with custom timeout and custom executorService
+     * 
+     * @param seProxyService : instance of the seProxyService
+     * @param dtoNode : Define which DTO sender will be called when a DTO needs to be sent.
+     * @param masterNodeId : Master Node Id to connect to
+     * @param timeout : timeout to be used before a request is abandonned
+     * @param executorService : use an external executorService to execute async task
+     */
+    public SlaveAPI(SeProxyService seProxyService, DtoNode dtoNode, String masterNodeId,
+            long timeout, ExecutorService executorService) {
         this.seProxyService = seProxyService;
         this.dtoNode = dtoNode;
-        this.rmTxEngine = new RemoteMethodTxEngine(dtoNode, timeout);
+        this.rmTxEngine = new RemoteMethodTxEngine(dtoNode, timeout, executorService);
         this.masterNodeId = masterNodeId;
         this.bindDtoEndpoint(dtoNode);
     }
