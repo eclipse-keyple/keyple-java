@@ -91,7 +91,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * @param selectionResponse the response to the selection application command
      * @param transmissionMode the current {@link TransmissionMode} (contacts or contactless)
      */
-    public CalypsoPo(SeResponse selectionResponse, TransmissionMode transmissionMode) {
+    CalypsoPo(SeResponse selectionResponse, TransmissionMode transmissionMode) {
         super(selectionResponse, transmissionMode);
 
         int bufferSizeIndicator;
@@ -290,7 +290,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * 
      * @return a byte array containing the ATR (variable length)
      */
-    public byte[] getAtr() {
+    public byte[] getAtrBytes() {
         return poAtr;
     }
 

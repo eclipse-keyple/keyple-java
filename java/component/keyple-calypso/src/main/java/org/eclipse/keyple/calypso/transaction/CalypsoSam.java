@@ -22,7 +22,7 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CalypsoSam extends AbstractMatchingSe {
+public final class CalypsoSam extends AbstractMatchingSe {
     private static final Logger logger = LoggerFactory.getLogger(CalypsoSam.class);
 
     private SamRevision samRevision;
@@ -40,7 +40,7 @@ public class CalypsoSam extends AbstractMatchingSe {
      * @param selectionResponse the selection response from the SAM
      * @param transmissionMode the current {@link TransmissionMode} (contacts or contactless)
      */
-    public CalypsoSam(SeResponse selectionResponse, TransmissionMode transmissionMode) {
+    CalypsoSam(SeResponse selectionResponse, TransmissionMode transmissionMode) {
         super(selectionResponse, transmissionMode);
 
         String atrString =
