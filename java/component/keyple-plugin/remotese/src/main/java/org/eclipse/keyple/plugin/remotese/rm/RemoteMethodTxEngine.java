@@ -62,52 +62,76 @@ public class RemoteMethodTxEngine implements DtoHandler, IRemoteMethodTxEngine {
      * Set Response to a RemoteMethod Invocation
      * 
      * @param message to be processed
-     * @return TransportDto : response of the processing of the transportDto, can be an empty
-     *         TransportDto
+     * @return TransportDto : response of the message processing, can be a no response
+     *         dto or an dto exception
      */
     @Override
     public TransportDto onDTO(TransportDto message) {
-
         /*
          * Extract KeypleDto
          */
         KeypleDto keypleDto = message.getKeypleDTO();
 
-        /*
-         * Check that KeypleDto is a Response
-         */
-        if (message.getKeypleDTO().isRequest()) {
-            throw new IllegalArgumentException(
-                    "RemoteMethodTxEngine expects a KeypleDto response. " + keypleDto);
-        }
-        /*
-         * Check that a request has been made previously
-         */
-        if (remoteMethodTx == null) {
+        try {
             /*
-             * Response received does not match a request. Ignore it
+             * Check that KeypleDto is a Response
              */
-            logger.error(
-                    "RemoteMethodTxEngine receives a KeypleDto response but no remoteMethodTx are defined : "
-                            + keypleDto);
-
-        } else {
+            if (message.getKeypleDTO().isRequest()) {
+                throw new IllegalArgumentException(
+                        "RemoteMethodTxEngine expects a KeypleDto response. " + keypleDto);
+            }
+            /*
+             * Check that a request has been made previously
+             */
+            if (remoteMethodTx == null) {
+                /*
+                 * Response received does not match a request. Ignore it
+                 */
+                logger.error(
+                        "RemoteMethodTxEngine receives a KeypleDto response but no remoteMethodTx is defined : "
+                                + keypleDto);
+                throw new IllegalArgumentException(
+                        "RemoteMethodTxEngine receives a KeypleDto response but no remoteMethodTx is defined : "
+                                + keypleDto);
+            }
 
             /*
-             * Set keypleDto as a response to the remote method Tx (request)
+             * Check that ids match
+             */
+            if (!remoteMethodTx.getId().equals(keypleDto.getId())) {
+                logger.error(
+                        "RemoteMethodTxEngine receives a KeypleDto response but ids don't match : "
+                                + keypleDto);
+                throw new IllegalArgumentException(
+                        "RemoteMethodTxEngine receives a KeypleDto response but ids don't match : "
+                                + keypleDto);
+            }
+
+
+            /*
+             * All checks are successful Set keypleDto as a response to the remote method Tx
+             * (request)
              */
             remoteMethodTx.setResponse(keypleDto);
+
+
+            /*
+             * init remote engine to receive a new request
+             */
+            // re init remoteMethod
+            remoteMethodTx = null;
+
+            // no dto should be sent back
+            return message.nextTransportDTO(KeypleDtoHelper.NoResponse(keypleDto.getId()));
+
+        } catch (Throwable t) {
+            // catch any exception that might be thrown during the dto processing and convert it
+            // into a keyple dto exception
+            return message.nextTransportDTO(
+                    KeypleDtoHelper.ExceptionDTO(keypleDto.getAction(), t, keypleDto.getSessionId(),
+                            keypleDto.getNativeReaderName(), keypleDto.getVirtualReaderName(),
+                            sender.getNodeId(), keypleDto.getRequesterNodeId(), keypleDto.getId()));
         }
-
-        /*
-         * init remote engine to receive a new request
-         */
-
-        // re init remoteMethod
-        remoteMethodTx = null;
-
-        // no dto should be sent back
-        return message.nextTransportDTO(KeypleDtoHelper.NoResponse(keypleDto.getId()));
     }
 
     /**

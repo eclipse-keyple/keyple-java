@@ -16,6 +16,7 @@ import java.io.IOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -29,13 +30,29 @@ public class KeypleDtoHelperTest {
 
     @Test
     public void testContainsException() {
-
         Exception ex = new KeypleReaderException("keyple Reader Exception message",
                 new IOException("error io"));
+
+        Throwable t =
+                new IllegalStateException("illegal state  message", new IOException("error io"));
+
+        Throwable npe = new NullPointerException("NPE  message");
+
+
         KeypleDto dtoWithException =
                 KeypleDtoHelper.ExceptionDTO("any", ex, "any", "any", "any", "any", "any", "any");
+        KeypleDto dtoWithThrowable =
+                KeypleDtoHelper.ExceptionDTO("any", t, "any", "any", "any", "any", "any", "any");
+        KeypleDto dtoWithNPE =
+                KeypleDtoHelper.ExceptionDTO("any", npe, "any", "any", "any", "any", "any", "any");
+
         logger.debug(KeypleDtoHelper.toJson(dtoWithException));
-        assert KeypleDtoHelper.containsException(dtoWithException);
+        logger.debug(KeypleDtoHelper.toJson(dtoWithNPE));
+        logger.debug(KeypleDtoHelper.toJson(dtoWithThrowable));
+
+        Assert.assertTrue(KeypleDtoHelper.containsException(dtoWithException));
+        Assert.assertTrue(KeypleDtoHelper.containsException(dtoWithThrowable));
+        Assert.assertTrue(KeypleDtoHelper.containsException(dtoWithNPE));
 
 
     }

@@ -124,7 +124,8 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
      * interface {@link DtoHandler}
      * 
      * @param transportDto to be processed
-     * @return Keyple DTO to be sent back
+     * @return a transportDto (can be a NoResponse KeypleDto). If an exception is thrown
+     *         during onDTO processing, a keyple dto exception is returned
      */
     @Override
     public TransportDto onDTO(TransportDto transportDto) {
@@ -138,98 +139,111 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
         logger.debug("{} Remote Method called : {} - isRequest : {}", dtoNode.getNodeId(), method,
                 keypleDTO.isRequest());
 
-        switch (method) {
 
-            /*
-             * Response from Master
-             */
-            case READER_CONNECT:
-            case READER_DISCONNECT:
-                if (keypleDTO.isRequest()) {
-                    throw new IllegalStateException("a " + keypleDTO.getAction()
-                            + " request has been received by SlaveAPI");
-                } else {
-                    // send DTO to TxEngine
-                    out = this.rmTxEngine.onDTO(transportDto);
-                }
-                break;
+        try {
 
-            /*
-             * Request from Master
-             */
-            case READER_TRANSMIT:
-                // must be a request
-                if (keypleDTO.isRequest()) {
-                    IRemoteMethodExecutor rmTransmit = new RmTransmitExecutor(this);
-                    out = rmTransmit.execute(transportDto);
-                } else {
+            switch (method) {
+
+                /*
+                 * Response from Master
+                 */
+                case READER_CONNECT:
+                case READER_DISCONNECT:
+                    if (keypleDTO.isRequest()) {
+                        throw new IllegalStateException("a " + keypleDTO.getAction()
+                                + " request has been received by SlaveAPI");
+                    } else {
+                        // send DTO to TxEngine
+                        out = this.rmTxEngine.onDTO(transportDto);
+                    }
+                    break;
+
+                /*
+                 * Request from Master
+                 */
+                case READER_TRANSMIT:
+                    // must be a request
+                    if (keypleDTO.isRequest()) {
+                        IRemoteMethodExecutor rmTransmit = new RmTransmitExecutor(this);
+                        out = rmTransmit.execute(transportDto);
+                    } else {
+                        throw new IllegalStateException(
+                                "a READER_TRANSMIT response has been received by SlaveAPI");
+                    }
+                    break;
+
+                case READER_TRANSMIT_SET:
+                    // must be a request
+                    if (keypleDTO.isRequest()) {
+                        IRemoteMethodExecutor rmTransmitSet = new RmTransmitSetExecutor(this);
+                        out = rmTransmitSet.execute(transportDto);
+                    } else {
+                        throw new IllegalStateException(
+                                "a READER_TRANSMIT_SET response has been received by SlaveAPI");
+                    }
+                    break;
+
+                case DEFAULT_SELECTION_REQUEST:
+                    // must be a request
+                    if (keypleDTO.isRequest()) {
+                        RmSetDefaultSelectionRequestExecutor rmSetDefaultSelectionRequest =
+                                new RmSetDefaultSelectionRequestExecutor(this);
+                        out = rmSetDefaultSelectionRequest.execute(transportDto);
+                    } else {
+                        throw new IllegalStateException(
+                                "a READER_TRANSMIT response has been received by SlaveAPI");
+                    }
+                    break;
+
+                case POOL_ALLOCATE_READER:
+
+                    // must be a request
+                    if (keypleDTO.isRequest()) {
+                        // executor
+                        RmPoolAllocateExecutor rmPoolAllocateExecutor =
+                                new RmPoolAllocateExecutor(this.readerPoolPlugin);
+                        out = rmPoolAllocateExecutor.execute(transportDto);
+                    } else {
+                        throw new IllegalStateException(
+                                "a POOL_ALLOCATE_READER response has been received by SlaveAPI");
+                    }
+                    break;
+
+                case POOL_RELEASE_READER:
+                    // must be a request
+                    if (keypleDTO.isRequest()) {
+                        RmPoolReleaseExecutor rmPoolReleaseExecutor =
+                                new RmPoolReleaseExecutor(this.readerPoolPlugin);
+                        out = rmPoolReleaseExecutor.execute(transportDto);
+                    } else {
+                        throw new IllegalStateException(
+                                "a POOL_RELEASE_READER response has been received by SlaveAPI");
+                    }
+                    break;
+
+                default:
+                    logger.warn("**** ERROR - UNRECOGNIZED ****");
+                    logger.warn("Receive unrecognized message action : {} {} {} {}",
+                            keypleDTO.getAction(), keypleDTO.getSessionId(), keypleDTO.getBody(),
+                            keypleDTO.isRequest());
                     throw new IllegalStateException(
-                            "a READER_TRANSMIT response has been received by SlaveAPI");
-                }
-                break;
+                            "a  ERROR - UNRECOGNIZED request has been received by SlaveAPI");
+            }
 
-            case READER_TRANSMIT_SET:
-                // must be a request
-                if (keypleDTO.isRequest()) {
-                    IRemoteMethodExecutor rmTransmitSet = new RmTransmitSetExecutor(this);
-                    out = rmTransmitSet.execute(transportDto);
-                } else {
-                    throw new IllegalStateException(
-                            "a READER_TRANSMIT_SET response has been received by SlaveAPI");
-                }
-                break;
+            logger.trace("{} onDto response to be sent {}", dtoNode.getNodeId(),
+                    KeypleDtoHelper.toJson(out.getKeypleDTO()));
 
-            case DEFAULT_SELECTION_REQUEST:
-                // must be a request
-                if (keypleDTO.isRequest()) {
-                    RmSetDefaultSelectionRequestExecutor rmSetDefaultSelectionRequest =
-                            new RmSetDefaultSelectionRequestExecutor(this);
-                    out = rmSetDefaultSelectionRequest.execute(transportDto);
-                } else {
-                    throw new IllegalStateException(
-                            "a READER_TRANSMIT response has been received by SlaveAPI");
-                }
-                break;
+            return out;
 
-            case POOL_ALLOCATE_READER:
-
-                // must be a request
-                if (keypleDTO.isRequest()) {
-                    // executor
-                    RmPoolAllocateExecutor rmPoolAllocateExecutor =
-                            new RmPoolAllocateExecutor(this.readerPoolPlugin);
-                    out = rmPoolAllocateExecutor.execute(transportDto);
-                } else {
-                    throw new IllegalStateException(
-                            "a POOL_ALLOCATE_READER response has been received by SlaveAPI");
-                }
-                break;
-
-            case POOL_RELEASE_READER:
-                // must be a request
-                if (keypleDTO.isRequest()) {
-                    RmPoolReleaseExecutor rmPoolReleaseExecutor =
-                            new RmPoolReleaseExecutor(this.readerPoolPlugin);
-                    out = rmPoolReleaseExecutor.execute(transportDto);
-                } else {
-                    throw new IllegalStateException(
-                            "a POOL_RELEASE_READER response has been received by SlaveAPI");
-                }
-                break;
-
-            default:
-                logger.warn("**** ERROR - UNRECOGNIZED ****");
-                logger.warn("Receive unrecognized message action : {} {} {} {}",
-                        keypleDTO.getAction(), keypleDTO.getSessionId(), keypleDTO.getBody(),
-                        keypleDTO.isRequest());
-                throw new IllegalStateException(
-                        "a  ERROR - UNRECOGNIZED request has been received by SlaveAPI");
+        } catch (Throwable t) {
+            // catch any exception that might be thrown during the dto processing and convert it
+            // into a keyple dto exception
+            return transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(keypleDTO.getAction(),
+                    t, keypleDTO.getSessionId(), keypleDTO.getNativeReaderName(),
+                    keypleDTO.getVirtualReaderName(), dtoNode.getNodeId(),
+                    keypleDTO.getRequesterNodeId(), keypleDTO.getId()));
         }
 
-        logger.trace("{} onDto response to be sent {}", dtoNode.getNodeId(),
-                KeypleDtoHelper.toJson(out.getKeypleDTO()));
-
-        return out;
     }
 
 

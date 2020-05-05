@@ -140,7 +140,7 @@ public final class KeypleDtoHelper {
      * @return true of the keypleDto is of type "Exception"
      */
     public static Boolean containsException(KeypleDto keypleDto) {
-        return keypleDto.getBody().contains("stackTrace");
+        return keypleDto.getBody().contains("\"stackTrace\":[");
     }
 
 
