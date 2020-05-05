@@ -167,10 +167,10 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
 
             /* AID based selection (1st selection, later indexed 0) */
             val selectionRequest1st = PoSelectionRequest(PoSelector(
-                    SeCommonProtocols.PROTOCOL_ISO14443_4, null, PoSelector.PoAidSelector(
-                    SeSelector.AidSelector.IsoAid(seAidPrefix), null,
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null, SeSelector.AidSelector(
+                    SeSelector.AidSelector.IsoAid(seAidPrefix),
                     SeSelector.AidSelector.FileOccurrence.FIRST,
-                    SeSelector.AidSelector.FileControlInformation.FCI)))
+                    SeSelector.AidSelector.FileControlInformation.FCI), PoSelector.InvalidatedPo.REJECT))
 
             seSelection.prepareSelection(selectionRequest1st)
 
@@ -185,10 +185,10 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
             seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER)
 
             val selectionRequest2nd = PoSelectionRequest(PoSelector(
-                    SeCommonProtocols.PROTOCOL_ISO14443_4, null, PoSelector.PoAidSelector(
-                    SeSelector.AidSelector.IsoAid(seAidPrefix), null,
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null, SeSelector.AidSelector(
+                    SeSelector.AidSelector.IsoAid(seAidPrefix),
                     SeSelector.AidSelector.FileOccurrence.NEXT,
-                    SeSelector.AidSelector.FileControlInformation.FCI)))
+                    SeSelector.AidSelector.FileControlInformation.FCI), PoSelector.InvalidatedPo.REJECT))
 
             seSelection.prepareSelection(selectionRequest2nd)
 
@@ -233,28 +233,28 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
         if (reader.isSePresent) {
             /* AID based selection (1st selection, later indexed 0) */
             val selectionRequest1st = PoSelectionRequest(PoSelector(
-                    SeCommonProtocols.PROTOCOL_ISO14443_4, null, PoSelector.PoAidSelector(
-                    SeSelector.AidSelector.IsoAid(seAidPrefix), null,
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null, SeSelector.AidSelector(
+                    SeSelector.AidSelector.IsoAid(seAidPrefix),
                     SeSelector.AidSelector.FileOccurrence.FIRST,
-                    SeSelector.AidSelector.FileControlInformation.FCI)))
+                    SeSelector.AidSelector.FileControlInformation.FCI),PoSelector.InvalidatedPo.REJECT))
 
             seSelection.prepareSelection(selectionRequest1st)
 
             /* next selection (2nd selection, later indexed 1) */
             val selectionRequest2nd = PoSelectionRequest(PoSelector(
-                    SeCommonProtocols.PROTOCOL_ISO14443_4, null, PoSelector.PoAidSelector(
-                    SeSelector.AidSelector.IsoAid(seAidPrefix), null,
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null, SeSelector.AidSelector(
+                    SeSelector.AidSelector.IsoAid(seAidPrefix),
                     SeSelector.AidSelector.FileOccurrence.NEXT,
-                    SeSelector.AidSelector.FileControlInformation.FCI)))
+                    SeSelector.AidSelector.FileControlInformation.FCI), PoSelector.InvalidatedPo.REJECT))
 
             seSelection.prepareSelection(selectionRequest2nd)
 
             /* next selection (3rd selection, later indexed 2) */
             val selectionRequest3rd = PoSelectionRequest(PoSelector(
-                    SeCommonProtocols.PROTOCOL_ISO14443_4, null, PoSelector.PoAidSelector(
-                    SeSelector.AidSelector.IsoAid(seAidPrefix), null,
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null, SeSelector.AidSelector(
+                    SeSelector.AidSelector.IsoAid(seAidPrefix),
                     SeSelector.AidSelector.FileOccurrence.NEXT,
-                    SeSelector.AidSelector.FileControlInformation.FCI)))
+                    SeSelector.AidSelector.FileControlInformation.FCI),PoSelector.InvalidatedPo.REJECT))
 
             seSelection.prepareSelection(selectionRequest3rd)
 
@@ -313,8 +313,8 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
          */
         val selectionRequest = PoSelectionRequest(PoSelector(
                 SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                PoSelector.PoAidSelector(
-                        SeSelector.AidSelector.IsoAid(aid), null)))
+                SeSelector.AidSelector(
+                        SeSelector.AidSelector.IsoAid(aid)),PoSelector.InvalidatedPo.REJECT))
 
         /*
         * Add the selection case to the current selection (we could have added other cases here)
@@ -396,8 +396,8 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
              */
             val selectionRequest = PoSelectionRequest(PoSelector(
                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                    PoSelector.PoAidSelector(
-                            SeSelector.AidSelector.IsoAid(aid), null)))
+                    SeSelector.AidSelector(
+                            SeSelector.AidSelector.IsoAid(aid)), PoSelector.InvalidatedPo.REJECT))
 
             /**
              * Prepare Selection
@@ -458,7 +458,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
              */
         val poSelectionRequest = PoSelectionRequest(PoSelector(
                 SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                PoSelector.PoAidSelector(
+                SeSelector.AidSelector(
                         SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
                         PoSelector.InvalidatedPo.REJECT)))
 

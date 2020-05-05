@@ -61,9 +61,9 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                      */
                     val poSelectionRequest = PoSelectionRequest(
                             PoSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
-                                    PoSelector.PoAidSelector(
-                                            SeSelector.AidSelector.IsoAid(poAid),
-                                            PoSelector.InvalidatedPo.REJECT)))
+                                    SeSelector.AidSelector(
+                                            SeSelector.AidSelector.IsoAid(poAid)),
+                                            PoSelector.InvalidatedPo.REJECT))
                     seSelection.prepareSelection(poSelectionRequest)
 
                     try {
@@ -119,9 +119,9 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                     val seSelection = SeSelection()
                     val poSelectionRequest = PoSelectionRequest(
                             PoSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
-                                    PoSelector.PoAidSelector(
-                                            SeSelector.AidSelector.IsoAid(poAid),
-                                            PoSelector.InvalidatedPo.REJECT)))
+                                    SeSelector.AidSelector(
+                                            SeSelector.AidSelector.IsoAid(poAid)),
+                                            PoSelector.InvalidatedPo.REJECT))
 
                     /*
                      * Prepare the reading order and keep the associated parser for later use once
@@ -209,7 +209,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                      */
                     val poSelectionRequest = PoSelectionRequest(
                             PoSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
-                                    PoSelector.PoAidSelector(
+                                    SeSelector.AidSelector(
                                             SeSelector.AidSelector.IsoAid(poAid),
                                             PoSelector.InvalidatedPo.REJECT)))
 
