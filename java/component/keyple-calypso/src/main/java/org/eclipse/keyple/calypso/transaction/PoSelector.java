@@ -11,7 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
-import java.util.HashSet;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 
@@ -20,6 +19,8 @@ import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
  * the additional successful status codes list (in response to a select application command)
  */
 public final class PoSelector extends SeSelector {
+    private final static int SW_PO_INVALIDATED = 0x6283;
+
     /**
      * Indicates if an invalidated PO should be selected or not.
      * <p>
@@ -41,13 +42,7 @@ public final class PoSelector extends SeSelector {
             InvalidatedPo authorization) {
         super(seProtocol, atrFilter, aidSelector);
         if (authorization == InvalidatedPo.ACCEPT) {
-            aidSelector.setSuccessfulSelectionStatusCodes(new HashSet<Integer>() {
-                {
-                    // 0x6283 is the status word for the response to the select application command
-                    // for an invalidated PO
-                    add(0x6283);
-                }
-            });
+            aidSelector.addSuccessfulStatusCode(SW_PO_INVALIDATED);
         }
     }
 }

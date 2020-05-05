@@ -173,7 +173,11 @@ public class SeRequestTest {
          */
         SeSelector.AidSelector aidSelector = new SeSelector.AidSelector(
                 new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex("AABBCCDDEEFF")));
-        aidSelector.setSuccessfulSelectionStatusCodes(selectionStatusCode);
+        if (selectionStatusCode != null) {
+            for (int statusCode : selectionStatusCode) {
+                aidSelector.addSuccessfulStatusCode(statusCode);
+            }
+        }
         SeSelector seSelector = new SeSelector(getASeProtocol(), null, aidSelector);
         return seSelector;
     }

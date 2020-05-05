@@ -268,16 +268,10 @@ public class SeSelectionTest extends CoreBaseTest {
         //
         // seSelection.prepareSelection(new SeSelectionRequest(seSelector1, apduRequestList));
 
-        Set<Integer> successfulSelectionStatusCodes = new HashSet<Integer>() {
-            {
-                add(0x6283);
-            }
-        };
-
         aidSelector = new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid("1122334455"),
                 SeSelector.AidSelector.FileOccurrence.NEXT,
                 SeSelector.AidSelector.FileControlInformation.FCP);
-        aidSelector.setSuccessfulSelectionStatusCodes(successfulSelectionStatusCodes);
+        aidSelector.addSuccessfulStatusCode(0x6283);
 
         SeSelector seSelector2 = new SeSelector(SeCommonProtocols.PROTOCOL_B_PRIME,
                 new SeSelector.AtrFilter(".*"), aidSelector);

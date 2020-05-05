@@ -323,7 +323,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     static public List<SeResponse> getMatchingResponses() {
         SelectionStatus selectionStatus =
                 new SelectionStatus(null, new ApduResponse(AbsLocalReaderTransmitTest.RESP_SUCCESS,
-                        AbsLocalReaderSelectionTest.STATUS_CODE), true);
+                        AbsLocalReaderSelectionTest.STATUS_CODE_LIST), true);
         SeResponse seResponse = new SeResponse(true, false, selectionStatus, null);
         return Arrays.asList(seResponse);
     }
@@ -331,7 +331,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     static public List<SeResponse> getNotMatchingResponses() {
         SelectionStatus selectionStatus =
                 new SelectionStatus(null, new ApduResponse(AbsLocalReaderTransmitTest.RESP_FAIL,
-                        AbsLocalReaderSelectionTest.STATUS_CODE), false);
+                        AbsLocalReaderSelectionTest.STATUS_CODE_LIST), false);
         SeResponse seResponse = new SeResponse(false, false, selectionStatus, null);
         return Arrays.asList(seResponse);
     }

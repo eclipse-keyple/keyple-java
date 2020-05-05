@@ -181,7 +181,7 @@ public class SeSelector {
         public AidSelector(IsoAid aidToSelect, FileOccurrence fileOccurrence,
                 FileControlInformation fileControlInformation) {
             this.aidToSelect = aidToSelect;
-            this.successfulSelectionStatusCodes = new LinkedHashSet<Integer>();
+            this.successfulSelectionStatusCodes = null;
             this.fileOccurrence = fileOccurrence;
             this.fileControlInformation = fileControlInformation;
         }
@@ -232,12 +232,16 @@ public class SeSelector {
         }
 
         /**
-         * Sets the list of successful selection status codes
+         * Add as status code to be accepted to the list of successful selection status codes
          * 
-         * @param successfulSelectionStatusCodes the list of status codes to be accepted
+         * @param statusCode the status code to be accepted
          */
-        public void setSuccessfulSelectionStatusCodes(Set<Integer> successfulSelectionStatusCodes) {
-            this.successfulSelectionStatusCodes = successfulSelectionStatusCodes;
+        public void addSuccessfulStatusCode(int statusCode) {
+            // the list is kept null until a code is added
+            if (this.successfulSelectionStatusCodes == null) {
+                this.successfulSelectionStatusCodes = new LinkedHashSet<Integer>();
+            }
+            this.successfulSelectionStatusCodes.add(statusCode);
         }
 
         /**
