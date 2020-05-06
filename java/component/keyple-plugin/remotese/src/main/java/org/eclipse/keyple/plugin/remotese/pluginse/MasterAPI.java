@@ -259,7 +259,7 @@ public class MasterAPI implements DtoHandler {
                     VirtualReaderImpl reader = getReaderBySessionId(keypleDTO.getSessionId());
 
                     // process response with the reader rmtx engine
-                    return reader.getRmTxEngine().onDTO(transportDto);
+                    return reader.getRmTxEngine().onResponseDto(transportDto);
 
                 case POOL_ALLOCATE_READER:
                 case POOL_RELEASE_READER:
@@ -275,18 +275,19 @@ public class MasterAPI implements DtoHandler {
                     /*
                      * dispatch message to plugin
                      */
-                    return ((RemoteSePoolPluginImpl) plugin).getRmTxEngine().onDTO(transportDto);
+                    return ((RemoteSePoolPluginImpl) plugin).getRmTxEngine()
+                            .onResponseDto(transportDto);
 
                 default:
                     logger.error("Receive a KeypleDto with no recognised action");
                     return transportDto
                             .nextTransportDTO(KeypleDtoHelper.NoResponse(keypleDTO.getId()));
             }
-        } catch (Throwable t) {
+        } catch (Exception e) {
             // catch any exception that might be thrown during the dto processing and convert it
             // into a keyple dto exception
             return transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(keypleDTO.getAction(),
-                    t, keypleDTO.getSessionId(), keypleDTO.getNativeReaderName(),
+                    e, keypleDTO.getSessionId(), keypleDTO.getNativeReaderName(),
                     keypleDTO.getVirtualReaderName(), dtoTransportNode.getNodeId(),
                     keypleDTO.getRequesterNodeId(), keypleDTO.getId()));
         }

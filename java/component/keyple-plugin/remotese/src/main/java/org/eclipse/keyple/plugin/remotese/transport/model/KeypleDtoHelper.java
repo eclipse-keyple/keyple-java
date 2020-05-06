@@ -90,7 +90,7 @@ public final class KeypleDtoHelper {
     }
 
     /**
-     * Build a keypleDto of type "Exception" containing a Java Throwable
+     * Build a keypleDto of type "Exception" containing a Java Exception
      * <p>
      * This keypleDto send the exception to the other node
      * 
@@ -101,10 +101,10 @@ public final class KeypleDtoHelper {
      * @param requesterNodeId : node id of the sender
      * @param targetNodeId : node id of the destinee
      * @param id : id of the failed request
-     * @param exception : throwable that occurs during the execution of the method
+     * @param exception : exception that occurs during the execution of the method
      * @return keypleDto of type "Exception"
      */
-    public static KeypleDto ExceptionDTO(String action, Throwable exception, String sessionId,
+    public static KeypleDto ExceptionDTO(String action, Exception exception, String sessionId,
             String nativeReaderName, String virtualReaderName, String requesterNodeId,
             String targetNodeId, String id) {
 

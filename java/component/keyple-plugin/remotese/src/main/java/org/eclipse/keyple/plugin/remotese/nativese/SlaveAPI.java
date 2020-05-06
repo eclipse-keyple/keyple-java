@@ -154,7 +154,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
                                 + " request has been received by SlaveAPI");
                     } else {
                         // send DTO to TxEngine
-                        out = this.rmTxEngine.onDTO(transportDto);
+                        out = this.rmTxEngine.onResponseDto(transportDto);
                     }
                     break;
 
@@ -235,11 +235,11 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
 
             return out;
 
-        } catch (Throwable t) {
+        } catch (Exception e) {
             // catch any exception that might be thrown during the dto processing and convert it
             // into a keyple dto exception
             return transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(keypleDTO.getAction(),
-                    t, keypleDTO.getSessionId(), keypleDTO.getNativeReaderName(),
+                    e, keypleDTO.getSessionId(), keypleDTO.getNativeReaderName(),
                     keypleDTO.getVirtualReaderName(), dtoNode.getNodeId(),
                     keypleDTO.getRequesterNodeId(), keypleDTO.getId()));
         }

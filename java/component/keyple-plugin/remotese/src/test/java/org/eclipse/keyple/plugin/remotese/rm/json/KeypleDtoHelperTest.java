@@ -104,10 +104,10 @@ public class KeypleDtoHelperTest {
         Exception ex = new KeypleReaderException("keyple Reader Exception message",
                 new IOException("error io"));
 
-        Throwable t =
+        Exception t =
                 new IllegalStateException("illegal state  message", new IOException("error io"));
 
-        Throwable npe = new NullPointerException("NPE  message");
+        Exception npe = new NullPointerException("NPE  message");
 
         KeypleDto dtoWithException =
                 KeypleDtoHelper.ExceptionDTO("any", ex, "any", "any", "any", "any", "any", "any");
