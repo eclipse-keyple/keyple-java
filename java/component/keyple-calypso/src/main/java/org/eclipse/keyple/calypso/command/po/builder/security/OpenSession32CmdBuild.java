@@ -15,26 +15,35 @@ package org.eclipse.keyple.calypso.command.po.builder.security;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
+import org.eclipse.keyple.calypso.command.po.parser.security.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.OpenSession32RespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 public final class OpenSession32CmdBuild
-        extends AbstractOpenSessionCmdBuild<OpenSession32RespPars> {
+        extends AbstractOpenSessionCmdBuild<AbstractOpenSessionRespPars> {
+
+    // Construction arguments used for parsing
+    private final int sfi;
+    private final int recordNumber;
+
     /**
      * Instantiates a new AbstractOpenSessionCmdBuild.
      *
      * @param keyIndex the key index
      * @param samChallenge the sam challenge returned by the SAM Get Challenge APDU command
-     * @param sfiToSelect the sfi to select
-     * @param recordNumberToRead the record number to read
+     * @param sfi the sfi to select
+     * @param recordNumber the record number to read
      * @throws IllegalArgumentException - if the request is inconsistent
      */
-    public OpenSession32CmdBuild(byte keyIndex, byte[] samChallenge, byte sfiToSelect,
-            byte recordNumberToRead) throws IllegalArgumentException {
+    public OpenSession32CmdBuild(byte keyIndex, byte[] samChallenge, int sfi, int recordNumber)
+            throws IllegalArgumentException {
         super(PoRevision.REV3_2);
 
-        byte p1 = (byte) ((recordNumberToRead * 8) + keyIndex);
-        byte p2 = (byte) ((sfiToSelect * 8) + 2);
+        this.sfi = sfi;
+        this.recordNumber = recordNumber;
+
+        byte p1 = (byte) ((recordNumber * 8) + keyIndex);
+        byte p2 = (byte) ((sfi * 8) + 2);
         /*
          * case 4: this command contains incoming and outgoing data. We define le = 0, the actual
          * length will be processed by the lower layers.
@@ -49,8 +58,8 @@ public final class OpenSession32CmdBuild
                 CalypsoPoCommand.getOpenSessionForRev(PoRevision.REV3_2), p1, p2, dataIn, le);
 
         if (logger.isDebugEnabled()) {
-            String extraInfo = String.format("KEYINDEX=%d, SFI=%02X, REC=%d", keyIndex, sfiToSelect,
-                    recordNumberToRead);
+            String extraInfo =
+                    String.format("KEYINDEX=%d, SFI=%02X, REC=%d", keyIndex, sfi, recordNumber);
             this.addSubName(extraInfo);
         }
     }
@@ -69,5 +78,21 @@ public final class OpenSession32CmdBuild
     @Override
     public boolean isSessionBufferUsed() {
         return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getSfi() {
+        return sfi;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getRecordNumber() {
+        return recordNumber;
     }
 }
