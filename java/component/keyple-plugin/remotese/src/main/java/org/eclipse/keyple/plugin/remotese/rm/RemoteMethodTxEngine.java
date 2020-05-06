@@ -62,8 +62,8 @@ public class RemoteMethodTxEngine implements DtoHandler, IRemoteMethodTxEngine {
      * Set Response to a RemoteMethod Invocation
      * 
      * @param message to be processed
-     * @return TransportDto : response of the message processing, can be a no response
-     *         dto or an dto exception
+     * @return TransportDto : response of the message processing, can be a no response dto or an dto
+     *         exception
      */
     @Override
     public TransportDto onDTO(TransportDto message) {

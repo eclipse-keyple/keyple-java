@@ -124,8 +124,8 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
      * interface {@link DtoHandler}
      * 
      * @param transportDto to be processed
-     * @return a transportDto (can be a NoResponse KeypleDto). If an exception is thrown
-     *         during onDTO processing, a keyple dto exception is returned
+     * @return a transportDto (can be a NoResponse KeypleDto). If an exception is thrown during
+     *         onDTO processing, a keyple dto exception is returned
      */
     @Override
     public TransportDto onDTO(TransportDto transportDto) {

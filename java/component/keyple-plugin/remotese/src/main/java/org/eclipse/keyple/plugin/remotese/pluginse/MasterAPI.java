@@ -202,8 +202,8 @@ public class MasterAPI implements DtoHandler {
      * Handles incoming transportDTO
      * 
      * @param transportDto an incoming TransportDto (embeds a KeypleDto)
-     * @return a transportDto (can be a NoResponse KeypleDto). If an exception is thrown
-     *         during onDTO processing, a keyple dto exception is returned
+     * @return a transportDto (can be a NoResponse KeypleDto). If an exception is thrown during
+     *         onDTO processing, a keyple dto exception is returned
      */
     @Override
     public TransportDto onDTO(TransportDto transportDto) {
