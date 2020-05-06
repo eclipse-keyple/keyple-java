@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  */
 public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
-    protected static final Logger logger =
+    private static final Logger logger =
             LoggerFactory.getLogger(DefaultSelectionNotification_Pcsc.class);
     private SeSelection seSelection;
 
@@ -221,20 +221,20 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
                  * with the PO
                  */
                 try {
-                    if (poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER)) {
-                        logger.info("The reading of the EventLog has succeeded.");
+                    poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER);
 
-                        /*
-                         * Retrieve the data read from the parser updated during the transaction
-                         * process
-                         */
-                        ElementaryFile efEventLog =
-                                calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
-                        byte eventLog[] = efEventLog.getData().getContent();
+                    logger.info("The reading of the EventLog has succeeded.");
 
-                        /* Log the result */
-                        logger.info("EventLog file data: {}", ByteArrayUtil.toHex(eventLog));
-                    }
+                    /*
+                     * Retrieve the data read from the parser updated during the transaction process
+                     */
+                    ElementaryFile efEventLog =
+                            calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+                    byte eventLog[] = efEventLog.getData().getContent();
+
+                    /* Log the result */
+                    logger.info("EventLog file data: {}", ByteArrayUtil.toHex(eventLog));
+
                 } catch (KeypleReaderException e) {
                     e.printStackTrace();
                 } catch (CalypsoSecureSessionException e) {

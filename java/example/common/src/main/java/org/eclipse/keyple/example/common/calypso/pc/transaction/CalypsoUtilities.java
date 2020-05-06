@@ -22,6 +22,7 @@ import org.eclipse.keyple.calypso.transaction.SamSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.SamSelector;
 import org.eclipse.keyple.calypso.transaction.SecuritySettings;
 import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -120,9 +121,10 @@ public class CalypsoUtilities {
 
         try {
             if (samReader.isSePresent()) {
-                if (samSelection.processExplicitSelection(samReader).hasActiveSelection()) {
-                    calypsoSam = (CalypsoSam) samSelection.processExplicitSelection(samReader)
-                            .getActiveMatchingSe();
+                SelectionsResult selectionsResult =
+                        samSelection.processExplicitSelection(samReader);
+                if (selectionsResult.hasActiveSelection()) {
+                    calypsoSam = (CalypsoSam) selectionsResult.getActiveMatchingSe();
                 } else {
                     throw new IllegalStateException("Unable to open a logical channel for SAM!");
                 }

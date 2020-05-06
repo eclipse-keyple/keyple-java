@@ -161,13 +161,9 @@ public class MultipleSession_Pcsc {
             /*
              * Open Session for the debit key
              */
-            boolean poProcessStatus =
-                    poTransaction.processOpening(PoTransaction.SessionModificationMode.MULTIPLE,
-                            SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0, (byte) 0);
 
-            if (!poProcessStatus) {
-                throw new IllegalStateException("processingOpening failure.");
-            }
+            poTransaction.processOpening(PoTransaction.SessionModificationMode.MULTIPLE,
+                    SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0, (byte) 0);
 
             if (!poTransaction.wasRatified()) {
                 logger.info(
@@ -197,7 +193,7 @@ public class MultipleSession_Pcsc {
             }
 
             /* proceed with the sending of commands, don't close the channel */
-            poProcessStatus = poTransaction.processPoCommandsInSession();
+            poTransaction.processPoCommandsInSession();
 
             /*
              * Close the Secure Session.
@@ -209,11 +205,7 @@ public class MultipleSession_Pcsc {
             /*
              * A ratification command will be sent (CONTACTLESS_MODE).
              */
-            poProcessStatus = poTransaction.processClosing(ChannelControl.KEEP_OPEN);
-
-            if (!poProcessStatus) {
-                throw new IllegalStateException("processClosing failure.");
-            }
+            poTransaction.processClosing(ChannelControl.KEEP_OPEN);
 
             logger.info(
                     "==================================================================================");

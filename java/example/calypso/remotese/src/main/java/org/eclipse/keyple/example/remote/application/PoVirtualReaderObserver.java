@@ -186,19 +186,19 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
              * the PO
              */
 
-            if (poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER)) {
-                logger.info("{} The reading of the EventLog has succeeded.", nodeId);
+            poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER);
 
-                /*
-                 * Retrieve the data read from the parser updated during the transaction process
-                 */
-                ElementaryFile efEventLog =
-                        poResource.getMatchingSe().getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
-                byte eventLog[] = efEventLog.getData().getContent();
+            logger.info("{} The reading of the EventLog has succeeded.", nodeId);
 
-                /* Log the result */
-                logger.info("{} EventLog file data: {} ", nodeId, ByteArrayUtil.toHex(eventLog));
-            }
+            /*
+             * Retrieve the data read from the parser updated during the transaction process
+             */
+            ElementaryFile efEventLog =
+                    poResource.getMatchingSe().getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+            byte eventLog[] = efEventLog.getData().getContent();
+
+            /* Log the result */
+            logger.info("{} EventLog file data: {} ", nodeId, ByteArrayUtil.toHex(eventLog));
         } catch (KeypleReaderException e) {
             e.printStackTrace();
         } catch (CalypsoSecureSessionException e) {
@@ -239,13 +239,8 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
             /*
              * Open Session for the debit key
              */
-            boolean poProcessStatus =
-                    poTransaction.processOpening(PoTransaction.SessionModificationMode.ATOMIC,
-                            SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0, (byte) 0);
-
-            if (!poProcessStatus) {
-                throw new IllegalStateException("processingOpening failure.");
-            }
+            poTransaction.processOpening(PoTransaction.SessionModificationMode.ATOMIC,
+                    SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0, (byte) 0);
 
             if (!poTransaction.wasRatified()) {
                 logger.warn(
@@ -255,7 +250,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
              * Prepare the reading order and keep the associated parser for later use once the
              * transaction has been processed.
              */
-            poProcessStatus = poTransaction.processPoCommandsInSession();
+            poTransaction.processPoCommandsInSession();
 
             /*
              * Retrieve the data read from the parser updated during the transaction process
@@ -266,10 +261,6 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
 
             /* Log the result */
             logger.info("EventLog file data: {}", ByteArrayUtil.toHex(eventLog));
-
-            if (!poProcessStatus) {
-                throw new IllegalStateException("processPoCommandsInSession failure.");
-            }
 
             /*
              * Close the Secure Session.
@@ -282,11 +273,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
             /*
              * A ratification command will be sent (CONTACTLESS_MODE).
              */
-            poProcessStatus = poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
-
-            if (!poProcessStatus) {
-                throw new IllegalStateException("processClosing failure.");
-            }
+            poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
 
             logger.warn(
                     "==================================================================================");

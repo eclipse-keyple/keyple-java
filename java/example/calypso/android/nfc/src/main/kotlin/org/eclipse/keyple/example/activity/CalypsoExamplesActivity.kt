@@ -566,7 +566,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                  * Prepare the reading order and keep the associated parser for later use once the
                  * transaction has been processed.
                  */
-                val readEventLogParserIndex = poTransaction.prepareReadRecordFile(
+                poTransaction.prepareReadRecordFile(
                         CalypsoClassicInfo.SFI_EventLog,
                         CalypsoClassicInfo.RECORD_NUMBER_1.toInt())
 
@@ -575,17 +575,16 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                  * with the PO
                  */
                 addActionEvent("processPoCommands")
-                if (poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER)) {
-                    addResultEvent("SUCCESS")
+                poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER))
+                addResultEvent("SUCCESS")
 
-                    /*
-                     * Retrieve the data read from the parser updated during the transaction process
-                     */
-                    val eventLog = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog).data.content
+                /*
+                 * Retrieve the data read from the parser updated during the transaction process
+                 */
+                val eventLog = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog).data.content
 
-                    /* Log the result */
-                    addResultEvent("EventLog file: ${ByteArrayUtil.toHex(eventLog)}")
-                }
+                /* Log the result */
+                addResultEvent("EventLog file: ${ByteArrayUtil.toHex(eventLog)}")
                 addResultEvent("End of the Calypso PO processing.")
                 addResultEvent("You can remove the card now")
             } else {

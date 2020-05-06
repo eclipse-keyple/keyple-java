@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.generic.pc.usecase4;
 
-import java.io.IOException;
+
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * mechanism
  */
 public class SequentialMultiSelection_Pcsc {
-    protected static final Logger logger =
+    private static final Logger logger =
             LoggerFactory.getLogger(SequentialMultiSelection_Pcsc.class);
 
     private static void doAndAnalyseSelection(SeReader seReader, SeSelection seSelection, int index)
@@ -44,15 +44,14 @@ public class SequentialMultiSelection_Pcsc {
             AbstractMatchingSe matchingSe = selectionsResult.getActiveMatchingSe();
             logger.info("The SE matched the selection {}.", index);
             logger.info("Selection status for case {}: \n\t\tATR: {}\n\t\tFCI: {}", index,
-                    matchingSe.hasAtr() ? ByteArrayUtil.toHex(matchingSe.getAtr()) : "no ATR",
-                    matchingSe.hasFci() ? ByteArrayUtil.toHex(matchingSe.getFci()) : "no FCI");
+                    matchingSe.hasAtr() ? ByteArrayUtil.toHex(matchingSe.getAtrBytes()) : "no ATR",
+                    matchingSe.hasFci() ? ByteArrayUtil.toHex(matchingSe.getFciBytes()) : "no FCI");
         } else {
             logger.info("The selection did not match for case {}.", index);
         }
     }
 
-    public static void main(String[] args)
-            throws KeypleException, InterruptedException, IOException {
+    public static void main(String[] args) throws KeypleException {
 
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
@@ -75,8 +74,6 @@ public class SequentialMultiSelection_Pcsc {
                 "=============== UseCase Generic #4: AID based sequential explicit multiple selection "
                         + "==================");
         logger.info("= SE Reader  NAME = {}", seReader.getName());
-
-        AbstractMatchingSe matchingSe;
 
         /* Check if a SE is present in the reader */
         if (seReader.isSePresent()) {

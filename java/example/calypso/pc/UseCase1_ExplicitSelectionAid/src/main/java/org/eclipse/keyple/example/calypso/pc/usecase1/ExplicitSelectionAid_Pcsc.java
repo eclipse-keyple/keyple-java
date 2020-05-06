@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  */
 public class ExplicitSelectionAid_Pcsc {
-    protected static final Logger logger = LoggerFactory.getLogger(ExplicitSelectionAid_Pcsc.class);
+    private static final Logger logger = LoggerFactory.getLogger(ExplicitSelectionAid_Pcsc.class);
 
     public static void main(String[] args)
             throws KeypleException, InterruptedException, IOException {
@@ -171,18 +171,18 @@ public class ExplicitSelectionAid_Pcsc {
              * Actual PO communication: send the prepared read order, then close the channel with
              * the PO
              */
-            if (poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER)) {
-                logger.info("The reading of the EventLog has succeeded.");
+            poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER);
+            logger.info("The reading of the EventLog has succeeded.");
 
-                /*
-                 * Retrieve the data read from the parser updated during the transaction process
-                 */
-                ElementaryFile efEventLog = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
-                byte eventLog[] = efEventLog.getData().getContent();
+            /*
+             * Retrieve the data read from the parser updated during the transaction process
+             */
+            ElementaryFile efEventLog = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+            byte eventLog[] = efEventLog.getData().getContent();
 
-                /* Log the result */
-                logger.info("EventLog file data: {}", ByteArrayUtil.toHex(eventLog));
-            }
+            /* Log the result */
+            logger.info("EventLog file data: {}", ByteArrayUtil.toHex(eventLog));
+
             logger.info(
                     "==================================================================================");
             logger.info(

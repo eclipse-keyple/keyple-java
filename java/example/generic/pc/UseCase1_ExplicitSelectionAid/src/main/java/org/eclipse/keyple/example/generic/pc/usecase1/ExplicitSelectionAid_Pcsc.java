@@ -12,7 +12,7 @@
 package org.eclipse.keyple.example.generic.pc.usecase1;
 
 
-import java.io.IOException;
+
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
@@ -48,12 +48,11 @@ import org.slf4j.LoggerFactory;
  * </ul>
  */
 public class ExplicitSelectionAid_Pcsc {
-    protected static final Logger logger = LoggerFactory.getLogger(ExplicitSelectionAid_Pcsc.class);
+    private static final Logger logger = LoggerFactory.getLogger(ExplicitSelectionAid_Pcsc.class);
     private static String seAid = "A0000004040125090101"; /* Here a Calypso AID */
 
 
-    public static void main(String[] args)
-            throws KeypleException, InterruptedException, IOException {
+    public static void main(String[] args) throws KeypleException {
 
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
@@ -120,10 +119,11 @@ public class ExplicitSelectionAid_Pcsc {
                     seSelection.processExplicitSelection(seReader).getActiveMatchingSe();
             logger.info("The selection of the SE has succeeded.");
             if (matchingSe.hasFci()) {
-                logger.info("Application FCI = {}", ByteArrayUtil.toHex(matchingSe.getFci()));
+                logger.info("Application FCI = {}", ByteArrayUtil.toHex(matchingSe.getFciBytes()));
             }
             if (matchingSe.hasAtr()) {
-                logger.info("Secure Element ATR = {}", ByteArrayUtil.toHex(matchingSe.getAtr()));
+                logger.info("Secure Element ATR = {}",
+                        ByteArrayUtil.toHex(matchingSe.getAtrBytes()));
             }
 
             logger.info(

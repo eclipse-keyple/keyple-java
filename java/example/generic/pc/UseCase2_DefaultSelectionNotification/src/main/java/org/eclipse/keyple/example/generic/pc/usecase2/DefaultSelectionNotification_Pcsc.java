@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  */
 public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
-    protected static final Logger logger =
+    private static final Logger logger =
             LoggerFactory.getLogger(DefaultSelectionNotification_Pcsc.class);
     private String seAid = "A0000004040125090101";
     private SeSelection seSelection;

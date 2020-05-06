@@ -16,6 +16,14 @@ import java.util.Map;
 import java.util.SortedMap;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalArgumentException;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
+import org.eclipse.keyple.calypso.transaction.ElementaryFile;
+import org.eclipse.keyple.calypso.transaction.PoResource;
+import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
+import org.eclipse.keyple.calypso.transaction.PoSelector;
+import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.calypso.transaction.SamResource;
+import org.eclipse.keyple.calypso.transaction.SecuritySettings;
+import org.eclipse.keyple.calypso.transaction.SessionAccessLevel;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronisedExchangesException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionIllegalStateException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoSecureSessionException;
@@ -144,8 +152,6 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
             CalypsoSecureSessionException, CalypsoDesynchronisedExchangesException,
             CalypsoPoTransactionIllegalStateException {
 
-        boolean poProcessStatus;
-
         /*
          * Read commands to execute during the opening step: EventLog, ContractList
          */
@@ -168,7 +174,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
          * Open Session for the debit key - with reading of the first record of the cyclic EF of
          * Environment and Holder file
          */
-        poProcessStatus = poTransaction.processOpening(PoTransaction.SessionModificationMode.ATOMIC,
+        poTransaction.processOpening(PoTransaction.SessionModificationMode.ATOMIC,
                 SessionAccessLevel.SESSION_LVL_DEBIT, CalypsoClassicInfo.SFI_EnvironmentAndHolder,
                 CalypsoClassicInfo.RECORD_NUMBER_1);
 
@@ -204,7 +210,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
             /*
              * A ratification command will be sent (CONTACTLESS_MODE).
              */
-            poProcessStatus = poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
+            poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
 
         } else {
             /*
@@ -227,7 +233,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
             poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_Contracts,
                     CalypsoClassicInfo.RECORD_NUMBER_1, 4, 29);
             /* proceed with the sending of commands, don't close the channel */
-            poProcessStatus = poTransaction.processPoCommandsInSession();
+            poTransaction.processPoCommandsInSession();
 
             ElementaryFile efContracts = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_Contracts);
 
@@ -262,18 +268,10 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
             /*
              * A ratification command will be sent (CONTACTLESS_MODE).
              */
-            poProcessStatus = poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
+            poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
         }
 
-        if (poTransaction.isSuccessful()) {
-            if (logger.isInfoEnabled()) {
-                logger.info(
-                        "========= PO Calypso session ======= SUCCESS !!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            }
-        } else {
-            logger.error(
-                    "========= PO Calypso session ======= ERROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        }
+        logger.info("========= PO Calypso session ======= SUCCESS !!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     }
 
     public AbstractDefaultSelectionsRequest preparePoSelection()
