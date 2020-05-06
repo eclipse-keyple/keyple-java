@@ -17,7 +17,6 @@ import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -76,7 +75,6 @@ public final class CalypsoPo extends AbstractMatchingSe {
             32768, 38967, 46340, 55108, 65536, 77935, 92681, 110217, 131072, 155871, 185363, 220435,
             262144, 311743, 370727, 440871, 524288, 623487, 741455, 881743, 1048576};
 
-    private final byte[] poAtr;
     private final int modificationsCounterMax;
     private boolean modificationCounterIsInBytes = true;
     private DirectoryHeader directoryHeader;
@@ -97,15 +95,11 @@ public final class CalypsoPo extends AbstractMatchingSe {
         int bufferSizeIndicator;
         int bufferSizeValue;
 
-        poAtr = selectionResponse.getSelectionStatus().getAtr().getBytes();
-
-        /* The selectionSeResponse may not include a FCI field (e.g. old PO Calypso Rev 1) */
-        ApduResponse fci = selectionResponse.getSelectionStatus().getFci();
-
-        if (fci.getBytes() != null && fci.getBytes().length > 2) {
+        if (hasFci() && getFciBytes().length > 2) {
 
             /* Parse PO FCI - to retrieve DF Name (AID), Serial Number, &amp; StartupInfo */
-            GetDataFciRespPars poFciRespPars = new GetDataFciRespPars(fci, null);
+            GetDataFciRespPars poFciRespPars =
+                    new GetDataFciRespPars(selectionResponse.getSelectionStatus().getFci(), null);
 
             // 4 fields extracted by the low level parser
             dfName = poFciRespPars.getDfName();
@@ -141,11 +135,16 @@ public final class CalypsoPo extends AbstractMatchingSe {
              * FCI is not provided: we consider it is Calypso PO rev 1, it's serial number is
              * provided in the ATR
              */
-
-            /* basic check: we expect to be here following a selection based on the ATR */
-            if (poAtr.length != PO_REV1_ATR_LENGTH) {
+            if (!hasAtr()) {
                 throw new IllegalStateException(
-                        "Unexpected ATR length: " + ByteArrayUtil.toHex(poAtr));
+                        "Unable to identify this PO: Neither the CFI nor the ATR are available.");
+            }
+
+            byte[] atr = getAtrBytes();
+            /* basic check: we expect to be here following a selection based on the ATR */
+            if (atr.length != PO_REV1_ATR_LENGTH) {
+                throw new IllegalStateException(
+                        "Unexpected ATR length: " + ByteArrayUtil.toHex(getAtrBytes()));
             }
 
             revision = PoRevision.REV1_0;
@@ -156,12 +155,12 @@ public final class CalypsoPo extends AbstractMatchingSe {
             /*
              * the array is initialized with 0 (cf. default value for primitive types)
              */
-            System.arraycopy(poAtr, 12, calypsoSerialNumber, 4, 4);
+            System.arraycopy(atr, 12, calypsoSerialNumber, 4, 4);
             modificationsCounterMax = REV1_PO_DEFAULT_WRITE_OPERATIONS_NUMBER_SUPPORTED_PER_SESSION;
 
             startupInfo = new byte[7];
             // create the startup info with the 6 bytes of the ATR from position 6
-            System.arraycopy(poAtr, 6, startupInfo, 1, 6);
+            System.arraycopy(atr, 6, startupInfo, 1, 6);
 
             // TODO check these flags
             isConfidentialSessionModeSupported = false;
@@ -264,6 +263,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
 
     /**
      * @return the startup info field from the FCI as an HEX string
+     * @since 0.9
      */
     public String getStartupInfo() {
         return ByteArrayUtil.toHex(startupInfo);
@@ -282,18 +282,24 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * readers.
      * <p>
      * When the ATR is obtained in contactless mode, it is in fact reconstructed by the reader from
-     * information obtained from the lower communication layers. Therefore, it may differ from one
+     * information obtained from the lower communication layers.Therefore, it may differ from one
      * reader to another depending on the interpretation that has been made by the manufacturer of
      * the PC/SC standard.
      * <p>
      * This field is not interpreted in the Calypso module.
      * 
-     * @return a byte array containing the ATR (variable length)
+     * @return an HEX chain representing the ATR
+     * @throws IllegalStateException if the ATR is not available (see {@code hasAtr()} method)
+     * @since 0.9
      */
-    public byte[] getAtrBytes() {
-        return poAtr;
+    public String getAtr() {
+        return ByteArrayUtil.toHex(getAtrBytes());
     }
 
+    /**
+     * @return the maximum length of data that an APDU in this PO can carry
+     * @since 0.9
+     */
     public int getPayloadCapacity() {
         // TODO make this value dependent on the type of PO identified
         return 250;
