@@ -23,13 +23,84 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("PMD")
 @RunWith(MockitoJUnitRunner.class)
 public class KeypleDtoHelperTest {
 
     private static final Logger logger = LoggerFactory.getLogger(KeypleDtoHelperTest.class);
 
+
     @Test
-    public void testContainsException() {
+    public void testRequestDto() {
+        String id = "anyId";
+
+        KeypleDto dtoRequest = KeypleDtoHelper.buildRequest("anyAction", "anyBody", "sessionId",
+                "anyReaderNameId", "anyVirtualId", "anyRequesterId", "anyTargetId", id);
+
+        KeypleDto dtoRequestParsed = KeypleDtoHelper.fromJson(KeypleDtoHelper.toJson(dtoRequest));
+
+        logger.trace(KeypleDtoHelper.toJson(dtoRequestParsed));
+
+        Assert.assertFalse(KeypleDtoHelper.containsException(dtoRequestParsed));
+        Assert.assertFalse(KeypleDtoHelper.isNoResponse(dtoRequestParsed));
+        Assert.assertTrue(dtoRequestParsed.isRequest());
+        Assert.assertEquals(id, dtoRequestParsed.getId());
+
+
+    }
+
+    @Test
+    public void testResponseDto() {
+        String id = "anyId";
+
+        KeypleDto dtoResponse = KeypleDtoHelper.buildResponse("anyAction", "anyBody", "sessionId",
+                "anyReaderNameId", "anyVirtualId", "anyRequesterId", "anyTargetId", id);
+
+        KeypleDto dtoResponseParsed = KeypleDtoHelper.fromJson(KeypleDtoHelper.toJson(dtoResponse));
+
+        logger.trace(KeypleDtoHelper.toJson(dtoResponseParsed));
+
+        Assert.assertFalse(dtoResponseParsed.isRequest());
+        Assert.assertEquals(id, dtoResponseParsed.getId());
+        Assert.assertFalse(KeypleDtoHelper.containsException(dtoResponseParsed));
+        Assert.assertFalse(KeypleDtoHelper.isNoResponse(dtoResponseParsed));
+
+    }
+
+    @Test
+    public void testNotificationDto() {
+
+        KeypleDto dtoNotification = KeypleDtoHelper.buildNotification("anyAction", "anyBody",
+                "sessionId", "anyReaderNameId", "anyVirtualId", "anyRequesterId", "anyTargetId");
+
+        KeypleDto dtoNotificationParsed =
+                KeypleDtoHelper.fromJson(KeypleDtoHelper.toJson(dtoNotification));
+        logger.trace(KeypleDtoHelper.toJson(dtoNotificationParsed));
+
+        Assert.assertTrue(dtoNotificationParsed.isRequest());
+        Assert.assertNull(dtoNotificationParsed.getId());
+        Assert.assertFalse(KeypleDtoHelper.containsException(dtoNotificationParsed));
+        Assert.assertFalse(KeypleDtoHelper.isNoResponse(dtoNotificationParsed));
+
+    }
+
+    @Test
+    public void testNoResponseDto() {
+
+        String id = "anyId";
+
+        KeypleDto dtoNoResponse = KeypleDtoHelper.NoResponse(id);
+
+        logger.trace(KeypleDtoHelper.toJson(dtoNoResponse));
+
+        Assert.assertEquals(id, dtoNoResponse.getId());
+        Assert.assertFalse(KeypleDtoHelper.containsException(dtoNoResponse));
+        Assert.assertTrue(KeypleDtoHelper.isNoResponse(dtoNoResponse));
+
+    }
+
+    @Test
+    public void testContainsError() {
         Exception ex = new KeypleReaderException("keyple Reader Exception message",
                 new IOException("error io"));
 
@@ -38,7 +109,6 @@ public class KeypleDtoHelperTest {
 
         Throwable npe = new NullPointerException("NPE  message");
 
-
         KeypleDto dtoWithException =
                 KeypleDtoHelper.ExceptionDTO("any", ex, "any", "any", "any", "any", "any", "any");
         KeypleDto dtoWithThrowable =
@@ -46,13 +116,26 @@ public class KeypleDtoHelperTest {
         KeypleDto dtoWithNPE =
                 KeypleDtoHelper.ExceptionDTO("any", npe, "any", "any", "any", "any", "any", "any");
 
-        logger.debug(KeypleDtoHelper.toJson(dtoWithException));
-        logger.debug(KeypleDtoHelper.toJson(dtoWithNPE));
-        logger.debug(KeypleDtoHelper.toJson(dtoWithThrowable));
+
+
+        KeypleDto dtoWithExceptionParsed =
+                KeypleDtoHelper.fromJson(KeypleDtoHelper.toJson(dtoWithException));
+        KeypleDto dtoWithThrowableParsed =
+                KeypleDtoHelper.fromJson(KeypleDtoHelper.toJson(dtoWithThrowable));
+        KeypleDto dtoWithNPEParsed = KeypleDtoHelper.fromJson(KeypleDtoHelper.toJson(dtoWithNPE));
+
+        logger.trace(KeypleDtoHelper.toJson(dtoWithExceptionParsed));
+        logger.trace(KeypleDtoHelper.toJson(dtoWithNPEParsed));
+        logger.trace(KeypleDtoHelper.toJson(dtoWithThrowableParsed));
+
 
         Assert.assertTrue(KeypleDtoHelper.containsException(dtoWithException));
         Assert.assertTrue(KeypleDtoHelper.containsException(dtoWithThrowable));
         Assert.assertTrue(KeypleDtoHelper.containsException(dtoWithNPE));
+
+        Assert.assertTrue(KeypleDtoHelper.containsException(dtoWithExceptionParsed));
+        Assert.assertTrue(KeypleDtoHelper.containsException(dtoWithThrowableParsed));
+        Assert.assertTrue(KeypleDtoHelper.containsException(dtoWithNPEParsed));
 
 
     }

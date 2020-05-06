@@ -70,7 +70,7 @@ public class RmTransmitTx extends AbstractRemoteMethodTx<SeResponse> {
         if (KeypleDtoHelper.containsException(keypleDto)) {
             logger.trace("KeypleDto contains an exception: {}", keypleDto);
             KeypleReaderException ex =
-                    JsonParser.getGson().fromJson(keypleDto.getBody(), KeypleReaderException.class);
+                    JsonParser.getGson().fromJson(keypleDto.getError(), KeypleReaderException.class);
             throw new KeypleRemoteException(
                     "An exception occurs while calling the remote method transmit", ex);
         } else {

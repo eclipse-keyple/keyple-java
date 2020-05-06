@@ -27,7 +27,7 @@ public class KeypleDto {
     // API method to be called
     private final String action;
 
-    // Arguments of the API (json)
+    // Params of the API (optionnal)
     private final String body;
 
     // Is a request or a response
@@ -35,6 +35,9 @@ public class KeypleDto {
 
     // Id of the request
     private final String id;
+
+    // Error (optionnal)
+    private final String error;
 
     /*
      * Metadata
@@ -72,7 +75,7 @@ public class KeypleDto {
      */
     public KeypleDto(String action, String body, Boolean isRequest, String sessionId,
             String nativeReaderName, String virtualReaderName, String requesterNodeId,
-            String targetNodeId, String id) {
+            String targetNodeId, String id, String error) {
 
         this.sessionId = sessionId;
         this.action = action;
@@ -83,6 +86,8 @@ public class KeypleDto {
         this.requesterNodeId = requesterNodeId;
         this.targetNodeId = targetNodeId;
         this.id = id;
+        this.error = error;
+
     }
 
     /*
@@ -123,6 +128,10 @@ public class KeypleDto {
 
     public String getId() {
         return id;
+    }
+
+    public String getError() {
+        return error;
     }
 
     @Override
