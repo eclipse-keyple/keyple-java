@@ -82,6 +82,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
     private final Map<Byte, ElementaryFile> efBySfiBackup = new HashMap<Byte, ElementaryFile>();
     private final Map<Short, Byte> sfiByLid = new HashMap<Short, Byte>();
     private final Map<Short, Byte> sfiByLidBackup = new HashMap<Short, Byte>();
+    private Boolean isDfRatified = null;
 
     /**
      * Constructor.
@@ -451,6 +452,28 @@ public final class CalypsoPo extends AbstractMatchingSe {
      */
     public boolean isDfInvalidated() {
         return isDfInvalidated;
+    }
+
+    /**
+     * Indicated whether the last session with this PO has been ratified or not.
+     * <p>
+     *
+     * @return true if the PO has been ratified.
+     * @throws IllegalStateException if these methods is call when no session has been opened
+     */
+    public boolean isDfRatified() {
+        if (isDfRatified != null) {
+            return isDfRatified;
+        }
+        throw new IllegalStateException("Unable to determine the ratification status. No session was opened.");
+    }
+
+    /**
+     * Set the ratification status
+     * @param dfRatified true if the session was ratified
+     */
+    public void setDfRatified(boolean dfRatified) {
+        isDfRatified = dfRatified;
     }
 
     /**
