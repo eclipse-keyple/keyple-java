@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * Manages the transaction (request/response) for remote method invocation It holds
  * the @{@link AbstractRemoteMethodTx} untils the answer is received
  */
-public class RemoteMethodTxEngine implements DtoHandler, IRemoteMethodTxEngine {
+public class RemoteMethodTxEngine implements IRemoteMethodTxEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteMethodTxEngine.class);
 
@@ -61,77 +61,65 @@ public class RemoteMethodTxEngine implements DtoHandler, IRemoteMethodTxEngine {
     /**
      * Set Response to a RemoteMethod Invocation
      * 
-     * @param message to be processed
-     * @return TransportDto : response of the message processing, can be a no response dto or an dto
-     *         exception
+     * @param message to be processed, must be a keyple response or a
+     * @return TransportDto : response of the message processing, should be a NoResponse
      */
     @Override
-    public TransportDto onDTO(TransportDto message) {
+    public TransportDto onResponseDto(TransportDto message) {
         /*
          * Extract KeypleDto
          */
         KeypleDto keypleDto = message.getKeypleDTO();
 
-        try {
-            /*
-             * Check that KeypleDto is a Response
-             */
-            if (message.getKeypleDTO().isRequest()) {
-                throw new IllegalArgumentException(
-                        "RemoteMethodTxEngine expects a KeypleDto response. " + keypleDto);
-            }
-            /*
-             * Check that a request has been made previously
-             */
-            if (remoteMethodTx == null) {
-                /*
-                 * Response received does not match a request. Ignore it
-                 */
-                logger.error(
-                        "RemoteMethodTxEngine receives a KeypleDto response but no remoteMethodTx is defined : "
-                                + keypleDto);
-                throw new IllegalArgumentException(
-                        "RemoteMethodTxEngine receives a KeypleDto response but no remoteMethodTx is defined : "
-                                + keypleDto);
-            }
-
-            /*
-             * Check that ids match
-             */
-            if (!remoteMethodTx.getId().equals(keypleDto.getId())) {
-                logger.error(
-                        "RemoteMethodTxEngine receives a KeypleDto response but ids don't match : "
-                                + keypleDto);
-                throw new IllegalArgumentException(
-                        "RemoteMethodTxEngine receives a KeypleDto response but ids don't match : "
-                                + keypleDto);
-            }
-
-
-            /*
-             * All checks are successful Set keypleDto as a response to the remote method Tx
-             * (request)
-             */
-            remoteMethodTx.setResponse(keypleDto);
-
-
-            /*
-             * init remote engine to receive a new request
-             */
-            // re init remoteMethod
-            remoteMethodTx = null;
-
-            // no dto should be sent back
-            return message.nextTransportDTO(KeypleDtoHelper.NoResponse(keypleDto.getId()));
-
-        } catch (Throwable t) {
-            // catch any exception that might be thrown during the dto processing and convert it
-            // into a keyple dto exception
-            return message.nextTransportDTO(
-                    KeypleDtoHelper.ExceptionDTO(keypleDto.getAction(), t, keypleDto.getSessionId(),
-                            keypleDto.getNativeReaderName(), keypleDto.getVirtualReaderName(),
-                            sender.getNodeId(), keypleDto.getRequesterNodeId(), keypleDto.getId()));
+        /*
+         * Check that KeypleDto is a Response
+         */
+        if (message.getKeypleDTO().isRequest()) {
+            throw new IllegalArgumentException(
+                    "RemoteMethodTxEngine expects a KeypleDto response. " + keypleDto);
         }
+        /*
+         * Check that a request has been made previously
+         */
+        if (remoteMethodTx == null) {
+            /*
+             * Response received does not match a request. Ignore it
+             */
+            logger.error(
+                    "RemoteMethodTxEngine receives a KeypleDto response but no remoteMethodTx is defined : "
+                            + keypleDto);
+            throw new IllegalArgumentException(
+                    "RemoteMethodTxEngine receives a KeypleDto response but no remoteMethodTx is defined : "
+                            + keypleDto);
+        }
+
+        /*
+         * Check that ids match
+         */
+        if (!remoteMethodTx.getId().equals(keypleDto.getId())) {
+            logger.error("RemoteMethodTxEngine receives a KeypleDto response but ids don't match : "
+                    + keypleDto);
+            throw new IllegalArgumentException(
+                    "RemoteMethodTxEngine receives a KeypleDto response but ids don't match : "
+                            + keypleDto);
+        }
+
+
+        /*
+         * All checks are successful Set keypleDto as a response to the remote method Tx (request)
+         */
+        remoteMethodTx.setResponse(keypleDto);
+
+
+        /*
+         * init remote engine to receive a new request
+         */
+        // re init remoteMethod
+        remoteMethodTx = null;
+
+        // no dto should be sent back
+        return message.nextTransportDTO(KeypleDtoHelper.NoResponse(keypleDto.getId()));
+
     }
 
     /**
