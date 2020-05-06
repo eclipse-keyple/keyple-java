@@ -330,11 +330,60 @@ final class CalypsoPoUtils {
 
     /**
      * (package-private)<br>
-     * Fills the CalypsoPo with the PO's response to a command
+     * Fills the CalypsoPo with the PO's response to a single command
      *
      * @param calypsoPo the {@link CalypsoPo} object to fill with the provided response from the PO
-     * @param commandBuilders the builder of the command that get the data
-     * @param apduResponses the APDU response returned by the PO
+     * @param commandBuilder the builder of the command that get the response
+     * @param apduResponse the APDU response returned by the PO to the command
+     */
+    static void updateCalypsoPo(CalypsoPo calypsoPo, AbstractPoCommandBuilder commandBuilder,
+                                        ApduResponse apduResponse) {
+        switch (commandBuilder.getCommandRef()) {
+            case READ_RECORDS:
+                updateCalypsoPoReadRecords(calypsoPo, (ReadRecordsCmdBuild) commandBuilder,
+                        apduResponse);
+                break;
+            case SELECT_FILE:
+                updateCalypsoPoSelectFile(calypsoPo, (SelectFileCmdBuild) commandBuilder,
+                        apduResponse);
+                break;
+            case UPDATE_RECORD:
+                updateCalypsoPoUpdateRecord(calypsoPo, (UpdateRecordCmdBuild) commandBuilder);
+                break;
+            case WRITE_RECORD:
+                updateCalypsoPoWriteRecord(calypsoPo, (WriteRecordCmdBuild) commandBuilder);
+                break;
+            case APPEND_RECORD:
+                updateCalypsoPoAppendRecord(calypsoPo, (AppendRecordCmdBuild) commandBuilder);
+                break;
+            case DECREASE:
+                updateCalypsoPoDecrease(calypsoPo, (DecreaseCmdBuild) commandBuilder,
+                        apduResponse);
+                break;
+            case INCREASE:
+                updateCalypsoPoIncrease(calypsoPo, (IncreaseCmdBuild) commandBuilder,
+                        apduResponse);
+                break;
+            case OPEN_SESSION_10:
+            case OPEN_SESSION_24:
+            case OPEN_SESSION_31:
+            case OPEN_SESSION_32:
+            case CHANGE_KEY:
+            case GET_DATA_FCI:
+            case GET_DATA_TRACE:
+                throw new IllegalStateException("Shouldn't happen for now!");
+            default:
+                break;
+        }
+    }
+
+    /**
+     * (package-private)<br>
+     * Fills the CalypsoPo with the PO's responses to a list of commands
+     *
+     * @param calypsoPo the {@link CalypsoPo} object to fill with the provided response from the PO
+     * @param commandBuilders the list of builders that get the responses
+     * @param apduResponses the APDU responses returned by the PO to all commands
      */
     static void updateCalypsoPo(CalypsoPo calypsoPo, List<AbstractPoCommandBuilder> commandBuilders,
             List<ApduResponse> apduResponses) {
@@ -342,43 +391,7 @@ final class CalypsoPoUtils {
 
         for (AbstractPoCommandBuilder commandBuilder : commandBuilders) {
             ApduResponse apduResponse = responseIterator.next();
-            switch (commandBuilder.getCommandRef()) {
-                case READ_RECORDS:
-                    updateCalypsoPoReadRecords(calypsoPo, (ReadRecordsCmdBuild) commandBuilder,
-                            apduResponse);
-                    break;
-                case SELECT_FILE:
-                    updateCalypsoPoSelectFile(calypsoPo, (SelectFileCmdBuild) commandBuilder,
-                            apduResponse);
-                    break;
-                case UPDATE_RECORD:
-                    updateCalypsoPoUpdateRecord(calypsoPo, (UpdateRecordCmdBuild) commandBuilder);
-                    break;
-                case WRITE_RECORD:
-                    updateCalypsoPoWriteRecord(calypsoPo, (WriteRecordCmdBuild) commandBuilder);
-                    break;
-                case APPEND_RECORD:
-                    updateCalypsoPoAppendRecord(calypsoPo, (AppendRecordCmdBuild) commandBuilder);
-                    break;
-                case DECREASE:
-                    updateCalypsoPoDecrease(calypsoPo, (DecreaseCmdBuild) commandBuilder,
-                            apduResponse);
-                    break;
-                case INCREASE:
-                    updateCalypsoPoIncrease(calypsoPo, (IncreaseCmdBuild) commandBuilder,
-                            apduResponse);
-                    break;
-                case OPEN_SESSION_10:
-                case OPEN_SESSION_24:
-                case OPEN_SESSION_31:
-                case OPEN_SESSION_32:
-                case CHANGE_KEY:
-                case GET_DATA_FCI:
-                case GET_DATA_TRACE:
-                    throw new IllegalStateException("Shouldn't happen for now!");
-                default:
-                    break;
-            }
+            updateCalypsoPo(calypsoPo, commandBuilder, apduResponse);
         }
     }
 
