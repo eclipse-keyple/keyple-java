@@ -64,8 +64,8 @@ public class RmPoolAllocateTx extends AbstractRemoteMethodTx<SeReader> {
         logger.trace("KeypleDto : {}", keypleDto);
         if (KeypleDtoHelper.containsException(keypleDto)) {
             logger.trace("KeypleDto contains an exception: {}", keypleDto);
-            KeypleReaderException ex =
-                    JsonParser.getGson().fromJson(keypleDto.getError(), KeypleReaderException.class);
+            KeypleReaderException ex = JsonParser.getGson().fromJson(keypleDto.getError(),
+                    KeypleReaderException.class);
             throw new KeypleRemoteException(
                     "An exception occurs while calling the remote method transmitSet", ex);
         } else {

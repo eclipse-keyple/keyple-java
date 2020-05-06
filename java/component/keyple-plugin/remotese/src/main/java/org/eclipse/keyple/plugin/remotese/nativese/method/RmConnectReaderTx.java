@@ -61,8 +61,8 @@ public class RmConnectReaderTx extends AbstractRemoteMethodTx<String> {
         // if reader connection thrown an exception
         if (KeypleDtoHelper.containsException(keypleDto)) {
             logger.trace("KeypleDto contains an exception: {}", keypleDto);
-            KeypleReaderException ex =
-                    JsonParser.getGson().fromJson(keypleDto.getError(), KeypleReaderException.class);
+            KeypleReaderException ex = JsonParser.getGson().fromJson(keypleDto.getError(),
+                    KeypleReaderException.class);
             throw new KeypleRemoteException(
                     "An exception occurs while calling the remote method connectReader", ex);
         } else {
