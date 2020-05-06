@@ -11,8 +11,12 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.rm;
 
+import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
+
 public interface IRemoteMethodTxEngine {
 
     void register(final AbstractRemoteMethodTx rm);
+
+    TransportDto onResponseDto(TransportDto message);
 
 }

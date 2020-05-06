@@ -202,7 +202,8 @@ public class MasterAPI implements DtoHandler {
      * Handles incoming transportDTO
      * 
      * @param transportDto an incoming TransportDto (embeds a KeypleDto)
-     * @return a Response transportDto (can be a NoResponse KeypleDto)
+     * @return a transportDto (can be a NoResponse KeypleDto). If an exception is thrown during
+     *         onDTO processing, a keyple dto exception is returned
      */
     @Override
     public TransportDto onDTO(TransportDto transportDto) {
@@ -212,86 +213,83 @@ public class MasterAPI implements DtoHandler {
         logger.trace("onDTO, Remote Method called : {} - isRequest : {} - keypleDto : {}", method,
                 keypleDTO.isRequest(), KeypleDtoHelper.toJson(keypleDTO));
 
+        try {
+            switch (method) {
+                /*
+                 * Requests from Slave node
+                 */
+                case READER_CONNECT:
+                    if (keypleDTO.isRequest()) {
+                        return new RmConnectReaderExecutor(this.plugin, this.dtoTransportNode)
+                                .execute(transportDto);
+                    } else {
+                        throw new IllegalStateException(
+                                "a READER_CONNECT response has been received by MasterAPI");
+                    }
+                case READER_DISCONNECT:
+                    if (keypleDTO.isRequest()) {
+                        return new RmDisconnectReaderExecutor(this.plugin).execute(transportDto);
+                    } else {
+                        throw new IllegalStateException(
+                                "a READER_DISCONNECT response has been received by MasterAPI");
+                    }
 
-        switch (method) {
+                    /*
+                     * Notifications from slave
+                     */
 
-            /*
-             * Requests from slave
-             */
-            case READER_CONNECT:
-                if (keypleDTO.isRequest()) {
-                    return new RmConnectReaderExecutor(this.plugin, this.dtoTransportNode)
-                            .execute(transportDto);
-                } else {
-                    throw new IllegalStateException(
-                            "a READER_CONNECT response has been received by MasterAPI");
-                }
-            case READER_DISCONNECT:
-                if (keypleDTO.isRequest()) {
-                    return new RmDisconnectReaderExecutor(this.plugin).execute(transportDto);
-                } else {
-                    throw new IllegalStateException(
-                            "a READER_DISCONNECT response has been received by MasterAPI");
-                }
+                case READER_EVENT:
+                    // process response with the Event Reader RmMethod
+                    return new RmReaderEventExecutor(plugin).execute(transportDto);
 
                 /*
-                 * Notifications from slave
+                 * Response from slave
                  */
 
-            case READER_EVENT:
-                // process response with the Event Reader RmMethod
-                return new RmReaderEventExecutor(plugin).execute(transportDto);
+                case READER_TRANSMIT:
+                case READER_TRANSMIT_SET:
+                case DEFAULT_SELECTION_REQUEST:
+                    if (keypleDTO.isRequest()) {
+                        throw new IllegalStateException("a " + keypleDTO.getAction()
+                                + " request has been received by MasterAPI");
+                    }
 
-            /*
-             * Response from slave
-             */
-
-            case READER_TRANSMIT:
-            case READER_TRANSMIT_SET:
-            case DEFAULT_SELECTION_REQUEST:
-                if (keypleDTO.isRequest()) {
-                    throw new IllegalStateException("a " + keypleDTO.getAction()
-                            + " request has been received by MasterAPI");
-                }
-
-                // dispatch dto to the appropriate reader
-                try {
+                    // dispatch dto to the appropriate reader
                     // find reader by sessionId
                     VirtualReaderImpl reader = getReaderBySessionId(keypleDTO.getSessionId());
 
                     // process response with the reader rmtx engine
-                    return reader.getRmTxEngine().onDTO(transportDto);
+                    return reader.getRmTxEngine().onResponseDto(transportDto);
 
-                } catch (KeypleReaderNotFoundException e) {
-                    // reader not found;
-                    throw new IllegalStateException(
-                            "Virtual Reader was not found while receiving a "
-                                    + keypleDTO.getAction() + " response",
-                            e);
-                } catch (KeypleReaderException e) {
-                    // reader not found;
-                    throw new IllegalStateException("Readers list has not been initiated", e);
-                }
+                case POOL_ALLOCATE_READER:
+                case POOL_RELEASE_READER:
+                    if (keypleDTO.isRequest()) {
+                        throw new IllegalStateException("a " + keypleDTO.getAction()
+                                + " request has been received by MasterAPI");
+                    }
+                    if (pluginType != PLUGIN_TYPE_POOL) {
+                        throw new IllegalStateException("a " + keypleDTO.getAction()
+                                + " request has been received by MasterAPI but plugin is not pool compatible");
+                    }
 
-            case POOL_ALLOCATE_READER:
-            case POOL_RELEASE_READER:
-                if (keypleDTO.isRequest()) {
-                    throw new IllegalStateException("a " + keypleDTO.getAction()
-                            + " request has been received by MasterAPI");
-                }
-                if (pluginType != PLUGIN_TYPE_POOL) {
-                    throw new IllegalStateException("a " + keypleDTO.getAction()
-                            + " request has been received by MasterAPI but plugin is not pool compatible");
-                }
+                    /*
+                     * dispatch message to plugin
+                     */
+                    return ((RemoteSePoolPluginImpl) plugin).getRmTxEngine()
+                            .onResponseDto(transportDto);
 
-                /*
-                 * dispatch message to plugin
-                 */
-                return ((RemoteSePoolPluginImpl) plugin).getRmTxEngine().onDTO(transportDto);
-
-            default:
-                logger.error("Receive a KeypleDto with no recognised action");
-                return transportDto.nextTransportDTO(KeypleDtoHelper.NoResponse(keypleDTO.getId()));
+                default:
+                    logger.error("Receive a KeypleDto with no recognised action");
+                    return transportDto
+                            .nextTransportDTO(KeypleDtoHelper.NoResponse(keypleDTO.getId()));
+            }
+        } catch (Exception e) {
+            // catch any exception that might be thrown during the dto processing and convert it
+            // into a keyple dto exception
+            return transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(keypleDTO.getAction(),
+                    e, keypleDTO.getSessionId(), keypleDTO.getNativeReaderName(),
+                    keypleDTO.getVirtualReaderName(), dtoTransportNode.getNodeId(),
+                    keypleDTO.getRequesterNodeId(), keypleDTO.getId()));
         }
     }
 

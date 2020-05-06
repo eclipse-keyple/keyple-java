@@ -47,7 +47,7 @@ public final class KeypleDtoHelper {
             String nativeReaderName, String virtualReaderName, String requesterNodeId,
             String targetNodeId, String id) {
         return new KeypleDto(action, body, true, sessionId, nativeReaderName, virtualReaderName,
-                requesterNodeId, targetNodeId, id);
+                requesterNodeId, targetNodeId, id, null);
     }
 
     /**
@@ -67,7 +67,7 @@ public final class KeypleDtoHelper {
             String nativeReaderName, String virtualReaderName, String requesterNodeId,
             String targetNodeId, String id) {
         return build(action, body, false, sessionId, nativeReaderName, virtualReaderName,
-                requesterNodeId, targetNodeId, id);
+                requesterNodeId, targetNodeId, id, null);
     }
 
     /**
@@ -86,11 +86,11 @@ public final class KeypleDtoHelper {
             String nativeReaderName, String virtualReaderName, String requesterNodeId,
             String targetNodeId) {
         return new KeypleDto(action, body, true, sessionId, nativeReaderName, virtualReaderName,
-                requesterNodeId, targetNodeId, null);
+                requesterNodeId, targetNodeId, null, null);
     }
 
     /**
-     * Build a keypleDto of type "Exception" containing a Java Throwable
+     * Build a keypleDto of type "Exception" containing a Java Exception
      * <p>
      * This keypleDto send the exception to the other node
      * 
@@ -101,15 +101,15 @@ public final class KeypleDtoHelper {
      * @param requesterNodeId : node id of the sender
      * @param targetNodeId : node id of the destinee
      * @param id : id of the failed request
-     * @param exception : throwable that occurs during the execution of the method
+     * @param exception : exception that occurs during the execution of the method
      * @return keypleDto of type "Exception"
      */
-    public static KeypleDto ExceptionDTO(String action, Throwable exception, String sessionId,
+    public static KeypleDto ExceptionDTO(String action, Exception exception, String sessionId,
             String nativeReaderName, String virtualReaderName, String requesterNodeId,
             String targetNodeId, String id) {
 
-        return buildResponse(action, JsonParser.getGson().toJson(exception), sessionId,
-                nativeReaderName, virtualReaderName, requesterNodeId, targetNodeId, id);
+        return build(action, null, false, sessionId, nativeReaderName, virtualReaderName,
+                requesterNodeId, targetNodeId, id, JsonParser.getGson().toJson(exception));
     }
 
     /**
@@ -120,6 +120,7 @@ public final class KeypleDtoHelper {
      * @return NoResponse KeypleDto
      */
     public static KeypleDto NoResponse(String id) {
+
         return buildResponse("", "", "", "", "", "", "", id);
     }
 
@@ -140,7 +141,7 @@ public final class KeypleDtoHelper {
      * @return true of the keypleDto is of type "Exception"
      */
     public static Boolean containsException(KeypleDto keypleDto) {
-        return keypleDto.getBody().contains("stackTrace");
+        return keypleDto.getError() != null && !keypleDto.getError().isEmpty();
     }
 
 
@@ -195,9 +196,9 @@ public final class KeypleDtoHelper {
 
     private static KeypleDto build(String action, String body, boolean isRequest, String sessionId,
             String nativeReaderName, String virtualReaderName, String requesterNodeId,
-            String targetNodeId, String id) {
+            String targetNodeId, String id, String error) {
         return new KeypleDto(action, body, isRequest, sessionId, nativeReaderName,
-                virtualReaderName, requesterNodeId, targetNodeId, id);
+                virtualReaderName, requesterNodeId, targetNodeId, id, error);
     }
 
     private KeypleDtoHelper() {
