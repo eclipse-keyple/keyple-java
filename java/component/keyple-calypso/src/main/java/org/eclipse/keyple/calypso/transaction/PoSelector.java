@@ -37,6 +37,7 @@ public final class PoSelector extends SeSelector {
      * @param seProtocol the SE communication protocol
      * @param atrFilter the ATR filter
      * @param aidSelector the AID selection data
+     * @param authorization enum to allow invalidated POs to be accepted
      */
     public PoSelector(SeProtocol seProtocol, AtrFilter atrFilter, AidSelector aidSelector,
             InvalidatedPo authorization) {
