@@ -68,7 +68,7 @@ public abstract class AbstractMatchingSe {
      * @return true if the matching SE has an ATR
      */
     public boolean hasAtr() {
-        return fciBytes != null && fciBytes.length > 0;
+        return atrBytes != null && atrBytes.length > 0;
     }
 
     /**
