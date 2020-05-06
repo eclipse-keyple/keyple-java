@@ -78,7 +78,6 @@ public abstract class AbstractApduCommandBuilder {
      * 
      * @param subName the string to append
      */
-    @Deprecated
     public final void addSubName(String subName) {
         if (subName.length() != 0) {
             this.name = this.name + " - " + subName;
