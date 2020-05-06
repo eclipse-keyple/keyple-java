@@ -465,11 +465,13 @@ public final class CalypsoPo extends AbstractMatchingSe {
         if (isDfRatified != null) {
             return isDfRatified;
         }
-        throw new IllegalStateException("Unable to determine the ratification status. No session was opened.");
+        throw new IllegalStateException(
+                "Unable to determine the ratification status. No session was opened.");
     }
 
     /**
      * Set the ratification status
+     * 
      * @param dfRatified true if the session was ratified
      */
     public void setDfRatified(boolean dfRatified) {

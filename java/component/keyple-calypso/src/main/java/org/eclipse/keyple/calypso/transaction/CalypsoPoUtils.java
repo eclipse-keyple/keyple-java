@@ -19,9 +19,17 @@ import java.util.Map;
 import org.eclipse.keyple.calypso.SelectFileControl;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
+import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.builder.*;
+import org.eclipse.keyple.calypso.command.po.builder.security.AbstractOpenSessionCmdBuild;
+import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
+import org.eclipse.keyple.calypso.command.po.parser.DecreaseRespPars;
+import org.eclipse.keyple.calypso.command.po.parser.IncreaseRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.SelectFileRespPars;
+import org.eclipse.keyple.calypso.command.po.parser.UpdateRecordRespPars;
+import org.eclipse.keyple.calypso.command.po.parser.WriteRecordRespPars;
+import org.eclipse.keyple.calypso.command.po.parser.security.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.Assert;
 
@@ -84,6 +92,36 @@ final class CalypsoPoUtils {
     }
 
     /**
+     * Updated the {@link CalypsoPo} object with the response to a Open Secure Session command
+     * received from the PO <br>
+     * The ratification status and the data read at the time of the session opening are added to the
+     * CalypsoPo.
+     *
+     * @param calypsoPo the {@link CalypsoPo} object to update
+     * @param openSessionCmdBuild the Open Secure Session command builder
+     * @param apduResponse the response received
+     * @return the created response parser
+     */
+    private static AbstractOpenSessionRespPars updateCalypsoPoOpenSession(CalypsoPo calypsoPo,
+            AbstractOpenSessionCmdBuild<AbstractOpenSessionRespPars> openSessionCmdBuild,
+            ApduResponse apduResponse) {
+        // create parser
+        AbstractOpenSessionRespPars openSessionRespPars =
+                openSessionCmdBuild.createResponseParser(apduResponse);
+
+        calypsoPo.setDfRatified(openSessionRespPars.wasRatified());
+
+        byte[] recordDataRead = openSessionRespPars.getRecordDataRead();
+
+        if (recordDataRead.length > 0) {
+            calypsoPo.setContent((byte) openSessionCmdBuild.getSfi(),
+                    openSessionCmdBuild.getRecordNumber(), recordDataRead);
+        }
+
+        return openSessionRespPars;
+    }
+
+    /**
      * Updated the {@link CalypsoPo} object with the response to a Read Records command received
      * from the PO <br>
      * The records read are added to the {@link CalypsoPo} file structure
@@ -91,8 +129,9 @@ final class CalypsoPoUtils {
      * @param calypsoPo the {@link CalypsoPo} object to update
      * @param readRecordsCmdBuild the Read Records command builder
      * @param apduResponse the response received
+     * @return the created response parser
      */
-    private static void updateCalypsoPoReadRecords(CalypsoPo calypsoPo,
+    private static ReadRecordsRespPars updateCalypsoPoReadRecords(CalypsoPo calypsoPo,
             ReadRecordsCmdBuild readRecordsCmdBuild, ApduResponse apduResponse) {
         // create parser
         ReadRecordsRespPars readRecordsRespPars =
@@ -102,6 +141,7 @@ final class CalypsoPoUtils {
             calypsoPo.setContent((byte) readRecordsCmdBuild.getSfi(), entry.getKey(),
                     entry.getValue());
         }
+        return readRecordsRespPars;
     }
 
     /**
@@ -114,7 +154,7 @@ final class CalypsoPoUtils {
      * @param selectFileCmdBuild the Select File command builder
      * @param apduResponse the response received
      */
-    private static void updateCalypsoPoSelectFile(CalypsoPo calypsoPo,
+    private static SelectFileRespPars updateCalypsoPoSelectFile(CalypsoPo calypsoPo,
             SelectFileCmdBuild selectFileCmdBuild, ApduResponse apduResponse) {
         SelectFileRespPars selectFileRespPars =
                 selectFileCmdBuild.createResponseParser(apduResponse);
@@ -135,6 +175,7 @@ final class CalypsoPoUtils {
                 throw new IllegalStateException(
                         String.format("Unknown file type: 0x%02X", fileType));
         }
+        return selectFileRespPars;
     }
 
     /**
@@ -145,10 +186,12 @@ final class CalypsoPoUtils {
      * @param calypsoPo the {@link CalypsoPo} object to update
      * @param updateRecordCmdBuild the Update Record command builder
      */
-    private static void updateCalypsoPoUpdateRecord(CalypsoPo calypsoPo,
+    private static UpdateRecordRespPars updateCalypsoPoUpdateRecord(CalypsoPo calypsoPo,
             UpdateRecordCmdBuild updateRecordCmdBuild) {
         calypsoPo.setContent((byte) updateRecordCmdBuild.getSfi(),
                 updateRecordCmdBuild.getRecordNumber(), updateRecordCmdBuild.getData());
+        // return a parser instead of null
+        return null;
     }
 
     /**
@@ -159,11 +202,13 @@ final class CalypsoPoUtils {
      * @param calypsoPo the {@link CalypsoPo} object to update
      * @param writeRecordCmdBuild the Write Record command builder
      */
-    private static void updateCalypsoPoWriteRecord(CalypsoPo calypsoPo,
+    private static WriteRecordRespPars updateCalypsoPoWriteRecord(CalypsoPo calypsoPo,
             WriteRecordCmdBuild writeRecordCmdBuild) {
         // TODO we should add another method to Calypso to emulate the behavior of Write Record
         calypsoPo.setContent((byte) writeRecordCmdBuild.getSfi(),
                 writeRecordCmdBuild.getRecordNumber(), writeRecordCmdBuild.getData());
+        // return a parser instead of null
+        return null;
     }
 
     /**
@@ -174,10 +219,12 @@ final class CalypsoPoUtils {
      * @param appendRecordCmdBuild the Append Records command builder
      * @param calypsoPo the {@link CalypsoPo} object to update
      */
-    private static void updateCalypsoPoAppendRecord(CalypsoPo calypsoPo,
+    private static AppendRecordRespPars updateCalypsoPoAppendRecord(CalypsoPo calypsoPo,
             AppendRecordCmdBuild appendRecordCmdBuild) {
         calypsoPo.addCyclicContent((byte) appendRecordCmdBuild.getSfi(),
                 appendRecordCmdBuild.getData());
+        // return a parser instead of null
+        return null;
     }
 
     /**
@@ -189,10 +236,12 @@ final class CalypsoPoUtils {
      * @param calypsoPo the {@link CalypsoPo} object to update
      * @param apduResponse the response received
      */
-    private static void updateCalypsoPoDecrease(CalypsoPo calypsoPo,
+    private static DecreaseRespPars updateCalypsoPoDecrease(CalypsoPo calypsoPo,
             DecreaseCmdBuild decreaseCmdBuild, ApduResponse apduResponse) {
         calypsoPo.setContent((byte) decreaseCmdBuild.getSfi(), 1, apduResponse.getDataOut(),
                 3 * (decreaseCmdBuild.getCounterNumber() - 1));
+        // return a parser instead of null
+        return null;
     }
 
     /**
@@ -204,10 +253,12 @@ final class CalypsoPoUtils {
      * @param calypsoPo the {@link CalypsoPo} object to update
      * @param apduResponse the response received
      */
-    private static void updateCalypsoPoIncrease(CalypsoPo calypsoPo,
+    private static IncreaseRespPars updateCalypsoPoIncrease(CalypsoPo calypsoPo,
             IncreaseCmdBuild increaseCmdBuild, ApduResponse apduResponse) {
         calypsoPo.setContent((byte) increaseCmdBuild.getSfi(), 1, apduResponse.getDataOut(),
                 3 * (increaseCmdBuild.getCounterNumber() - 1));
+        // return a parser instead of null
+        return null;
     }
 
 
@@ -336,44 +387,41 @@ final class CalypsoPoUtils {
      * @param commandBuilder the builder of the command that get the response
      * @param apduResponse the APDU response returned by the PO to the command
      */
-    static void updateCalypsoPo(CalypsoPo calypsoPo, AbstractPoCommandBuilder commandBuilder,
-                                        ApduResponse apduResponse) {
+    static AbstractPoResponseParser updateCalypsoPo(CalypsoPo calypsoPo,
+            AbstractPoCommandBuilder commandBuilder, ApduResponse apduResponse) {
         switch (commandBuilder.getCommandRef()) {
             case READ_RECORDS:
-                updateCalypsoPoReadRecords(calypsoPo, (ReadRecordsCmdBuild) commandBuilder,
+                return updateCalypsoPoReadRecords(calypsoPo, (ReadRecordsCmdBuild) commandBuilder,
                         apduResponse);
-                break;
             case SELECT_FILE:
-                updateCalypsoPoSelectFile(calypsoPo, (SelectFileCmdBuild) commandBuilder,
+                return updateCalypsoPoSelectFile(calypsoPo, (SelectFileCmdBuild) commandBuilder,
                         apduResponse);
-                break;
             case UPDATE_RECORD:
-                updateCalypsoPoUpdateRecord(calypsoPo, (UpdateRecordCmdBuild) commandBuilder);
-                break;
+                return updateCalypsoPoUpdateRecord(calypsoPo,
+                        (UpdateRecordCmdBuild) commandBuilder);
             case WRITE_RECORD:
-                updateCalypsoPoWriteRecord(calypsoPo, (WriteRecordCmdBuild) commandBuilder);
-                break;
+                return updateCalypsoPoWriteRecord(calypsoPo, (WriteRecordCmdBuild) commandBuilder);
             case APPEND_RECORD:
-                updateCalypsoPoAppendRecord(calypsoPo, (AppendRecordCmdBuild) commandBuilder);
-                break;
+                return updateCalypsoPoAppendRecord(calypsoPo,
+                        (AppendRecordCmdBuild) commandBuilder);
             case DECREASE:
-                updateCalypsoPoDecrease(calypsoPo, (DecreaseCmdBuild) commandBuilder,
+                return updateCalypsoPoDecrease(calypsoPo, (DecreaseCmdBuild) commandBuilder,
                         apduResponse);
-                break;
             case INCREASE:
-                updateCalypsoPoIncrease(calypsoPo, (IncreaseCmdBuild) commandBuilder,
+                return updateCalypsoPoIncrease(calypsoPo, (IncreaseCmdBuild) commandBuilder,
                         apduResponse);
-                break;
             case OPEN_SESSION_10:
             case OPEN_SESSION_24:
             case OPEN_SESSION_31:
             case OPEN_SESSION_32:
+                return updateCalypsoPoOpenSession(calypsoPo,
+                        (AbstractOpenSessionCmdBuild) commandBuilder, apduResponse);
             case CHANGE_KEY:
             case GET_DATA_FCI:
             case GET_DATA_TRACE:
                 throw new IllegalStateException("Shouldn't happen for now!");
             default:
-                break;
+                throw new IllegalStateException("Unknown command reference.");
         }
     }
 
@@ -389,7 +437,7 @@ final class CalypsoPoUtils {
             List<ApduResponse> apduResponses) {
         Iterator<ApduResponse> responseIterator = apduResponses.iterator();
 
-        for (AbstractPoCommandBuilder commandBuilder : commandBuilders) {
+        for (AbstractPoCommandBuilder<AbstractPoResponseParser> commandBuilder : commandBuilders) {
             ApduResponse apduResponse = responseIterator.next();
             updateCalypsoPo(calypsoPo, commandBuilder, apduResponse);
         }
