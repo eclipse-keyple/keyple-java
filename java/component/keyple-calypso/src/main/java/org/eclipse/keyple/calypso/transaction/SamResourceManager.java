@@ -178,14 +178,20 @@ public class SamResourceManager {
                 try {
                     samReader = ((ReaderPoolPlugin) samReaderPlugin)
                             .allocateReader(samIdentifier.getGroupReference());
+
+                    // allocation is successful
+                    if (samReader != null) {
+                        SamResource samResource = createSamResource(samReader);
+                        logger.debug("Allocation succeeded. SAM resource created.");
+                        return samResource;
+                    }
                 } catch (KeypleAllocationReaderException e) {
-                    throw new CalypsoNoSamResourceAvailableException(e.getMessage(), e);
+                    throw new KeypleReaderException(
+                            "Allocation failed due to a plugin technical error", e);
+                } catch (KeypleAllocationNoReaderException e) {
+                    // no reader is available, let's retry
                 }
-                if (samReader != null) {
-                    SamResource samResource = createSamResource(samReader);
-                    logger.debug("Allocation succeeded. SAM resource created.");
-                    return samResource;
-                }
+
             } else {
                 synchronized (localSamResources) {
                     for (SamResource samResource : localSamResources) {
