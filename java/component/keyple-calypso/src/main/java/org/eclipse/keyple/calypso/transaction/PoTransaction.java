@@ -120,15 +120,15 @@ public final class PoTransaction {
      *
      * @param poResource the PO resource (combination of {@link SeReader} and {@link CalypsoPo})
      * @param samResource the SAM resource (combination of {@link SeReader} and {@link CalypsoSam})
-     * @param securitySettings a list of security settings ({@link SecuritySettings}) used in the
-     *        session (such as key identification)
+     * @param poSecuritySettings a list of security settings ({@link PoSecuritySettings}) used in
+     *        the session (such as key identification)
      */
     public PoTransaction(PoResource poResource, SamResource samResource,
-            SecuritySettings securitySettings) {
+            PoSecuritySettings poSecuritySettings) {
 
         this(poResource);
 
-        samCommandProcessor = new SamCommandProcessor(samResource, poResource, securitySettings);
+        samCommandProcessor = new SamCommandProcessor(samResource, poResource, poSecuritySettings);
     }
 
     /**
@@ -278,7 +278,7 @@ public final class PoTransaction {
          * once.
          */
         samCommandProcessor.initializeDigester(accessLevel, false, false,
-                SecuritySettings.DefaultKeyInfo.SAM_DEFAULT_KEY_RECORD_NUMBER, poKif, poKvc,
+                PoSecuritySettings.DefaultKeyInfo.SAM_DEFAULT_KEY_RECORD_NUMBER, poKif, poKvc,
                 poApduResponseList.get(0).getDataOut());
 
         /*

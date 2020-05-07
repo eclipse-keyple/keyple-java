@@ -17,10 +17,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import org.eclipse.keyple.calypso.transaction.CalypsoSam;
+import org.eclipse.keyple.calypso.transaction.PoSecuritySettings;
 import org.eclipse.keyple.calypso.transaction.SamResource;
 import org.eclipse.keyple.calypso.transaction.SamSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.SamSelector;
-import org.eclipse.keyple.calypso.transaction.SecuritySettings;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -94,9 +94,9 @@ public class CalypsoUtilities {
         return samResource;
     }
 
-    public static SecuritySettings getSecuritySettings() {
+    public static PoSecuritySettings getSecuritySettings() {
         /* define the security parameters to provide when creating PoTransaction */
-        return new SecuritySettings();
+        return new PoSecuritySettings();
     }
 
     /**

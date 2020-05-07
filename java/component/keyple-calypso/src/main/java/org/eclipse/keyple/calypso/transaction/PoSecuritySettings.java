@@ -23,7 +23,7 @@ import org.eclipse.keyple.calypso.transaction.exception.CalypsoUnauthorizedKvcEx
  * <p>
  * The getKeyInfo method returns the specified setting value.
  */
-public class SecuritySettings {
+public class PoSecuritySettings {
     /**
      * List of key information that can be provided when the secure session is created.
      */
@@ -58,7 +58,7 @@ public class SecuritySettings {
      * <p>
      * Initialize default values
      */
-    public SecuritySettings() {
+    public PoSecuritySettings() {
         keySettings.put(DefaultKeyInfo.SAM_DEFAULT_KIF_PERSO, DEFAULT_KIF_PERSO);
         keySettings.put(DefaultKeyInfo.SAM_DEFAULT_KIF_LOAD, DEFAULT_KIF_LOAD);
         keySettings.put(DefaultKeyInfo.SAM_DEFAULT_KIF_DEBIT, DEFAULT_KIF_DEBIT);

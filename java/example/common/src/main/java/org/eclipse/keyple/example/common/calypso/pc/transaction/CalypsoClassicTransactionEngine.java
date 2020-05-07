@@ -18,11 +18,11 @@ import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.ElementaryFile;
 import org.eclipse.keyple.calypso.transaction.PoResource;
+import org.eclipse.keyple.calypso.transaction.PoSecuritySettings;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.SamResource;
-import org.eclipse.keyple.calypso.transaction.SecuritySettings;
 import org.eclipse.keyple.calypso.transaction.SessionAccessLevel;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronisedExchangesException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionIllegalStateException;
@@ -77,7 +77,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
     private static Logger logger = LoggerFactory.getLogger(CalypsoClassicTransactionEngine.class);
 
     /* define the SAM parameters to provide when creating PoTransaction */
-    private final SecuritySettings securitySettings = new SecuritySettings();
+    private final PoSecuritySettings PoSecuritySettings = new PoSecuritySettings();
     private SeReader poReader, samReader;
     private SamResource samResource = null;
 
@@ -369,7 +369,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
                 profiler.start("Calypso1");
 
                 PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo),
-                        samResource, securitySettings);
+                        samResource, PoSecuritySettings);
 
                 doCalypsoReadWriteTransaction(calypsoPo, poTransaction, true);
 
