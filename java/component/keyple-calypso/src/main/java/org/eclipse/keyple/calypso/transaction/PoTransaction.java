@@ -735,7 +735,7 @@ public final class PoTransaction {
                     apduResponseIterator.next();
                 }
                 /* Iterate over the poCommandsInsideSession list */
-                for (AbstractPoCommandBuilder commandBuilder : poCommands) {
+                for (AbstractPoCommandBuilder<? extends AbstractPoResponseParser> commandBuilder : poCommands) {
                     if (commandBuilder instanceof ReadRecordsCmdBuild) {
                         ApduRequest apduRequest = apduRequestIterator.next();
                         // TODO improve this ugly code
@@ -772,7 +772,7 @@ public final class PoTransaction {
                 throws CalypsoPoTransactionIllegalStateException {
             List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
             if (poCommands != null) {
-                for (AbstractPoCommandBuilder commandBuilder : poCommands) {
+                for (AbstractPoCommandBuilder<? extends AbstractPoResponseParser> commandBuilder : poCommands) {
                     if (commandBuilder instanceof DecreaseCmdBuild
                             || commandBuilder instanceof IncreaseCmdBuild) {
                         /* response = NNNNNN9000 */
@@ -895,7 +895,8 @@ public final class PoTransaction {
         /* create a sublist of AbstractPoCommandBuilder to be sent atomically */
         List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poAtomicCommandList =
                 new ArrayList<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>>();
-        for (AbstractPoCommandBuilder commandBuilder : poCommandManager.getPoCommandBuilderList()) {
+        for (AbstractPoCommandBuilder<? extends AbstractPoResponseParser> commandBuilder : poCommandManager
+                .getPoCommandBuilderList()) {
             if (!commandBuilder.isSessionBufferUsed()) {
                 /* This command does not affect the PO modifications buffer */
                 poAtomicCommandList.add(commandBuilder);
@@ -1027,7 +1028,8 @@ public final class PoTransaction {
         List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poAtomicBuilderList =
                 new ArrayList<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>>();
 
-        for (AbstractPoCommandBuilder commandBuilder : poCommandManager.getPoCommandBuilderList()) {
+        for (AbstractPoCommandBuilder<? extends AbstractPoResponseParser> commandBuilder : poCommandManager
+                .getPoCommandBuilderList()) {
             if (!commandBuilder.isSessionBufferUsed()) {
                 /* This command does not affect the PO modifications buffer */
                 poAtomicBuilderList.add(commandBuilder);
