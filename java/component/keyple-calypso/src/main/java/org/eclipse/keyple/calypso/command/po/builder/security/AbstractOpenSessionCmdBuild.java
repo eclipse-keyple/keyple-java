@@ -38,8 +38,9 @@ public abstract class AbstractOpenSessionCmdBuild<T extends AbstractPoResponsePa
         super(CalypsoPoCommand.getOpenSessionForRev(revision), null);
     }
 
-    public static AbstractOpenSessionCmdBuild<AbstractOpenSessionRespPars> create(PoRevision revision,
-            byte debitKeyIndex, byte[] sessionTerminalChallenge, int sfi, int recordNumber) {
+    public static AbstractOpenSessionCmdBuild<AbstractOpenSessionRespPars> create(
+            PoRevision revision, byte debitKeyIndex, byte[] sessionTerminalChallenge, int sfi,
+            int recordNumber) {
         switch (revision) {
             case REV1_0:
                 return new OpenSession10CmdBuild(debitKeyIndex, sessionTerminalChallenge, sfi,
