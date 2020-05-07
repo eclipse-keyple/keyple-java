@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.remote.application;
 
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
@@ -204,7 +205,10 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
         } catch (CalypsoSecureSessionException e) {
             e.printStackTrace();
         } catch (CalypsoDesynchronisedExchangesException e) {
-            e.printStackTrace();
+            logger.error("CalypsoDesynchronisedExchangesException: {}", e.getMessage());
+        } catch (CalypsoPoCommandException e) {
+            logger.error("PO command {} failed with the status code 0x{}. {}", e.getCommand(),
+                    Integer.toHexString(e.getStatusCode() & 0xFFFF).toUpperCase(), e.getMessage());
         }
         logger.warn(
                 "==================================================================================");
@@ -291,7 +295,10 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
         } catch (CalypsoPoTransactionIllegalStateException e) {
             e.printStackTrace();
         } catch (CalypsoDesynchronisedExchangesException e) {
-            e.printStackTrace();
+            logger.error("CalypsoDesynchronisedExchangesException: {}", e.getMessage());
+        } catch (CalypsoPoCommandException e) {
+            logger.error("PO command {} failed with the status code 0x{}. {}", e.getCommand(),
+                    Integer.toHexString(e.getStatusCode() & 0xFFFF));
         }
     }
 

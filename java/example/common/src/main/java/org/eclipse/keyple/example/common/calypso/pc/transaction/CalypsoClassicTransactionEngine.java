@@ -14,7 +14,7 @@ package org.eclipse.keyple.example.common.calypso.pc.transaction;
 
 import java.util.Map;
 import java.util.SortedMap;
-import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalArgumentException;
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.ElementaryFile;
 import org.eclipse.keyple.calypso.transaction.PoResource;
@@ -150,7 +150,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
     public void doCalypsoReadWriteTransaction(CalypsoPo calypsoPo, PoTransaction poTransaction,
             boolean closeSeChannel) throws KeypleReaderException, CalypsoUnauthorizedKvcException,
             CalypsoSecureSessionException, CalypsoDesynchronisedExchangesException,
-            CalypsoPoTransactionIllegalStateException {
+            CalypsoPoTransactionIllegalStateException, CalypsoPoCommandException {
 
         /*
          * Read commands to execute during the opening step: EventLog, ContractList
@@ -274,8 +274,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
         logger.info("========= PO Calypso session ======= SUCCESS !!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     }
 
-    public AbstractDefaultSelectionsRequest preparePoSelection()
-            throws CalypsoPoIllegalArgumentException {
+    public AbstractDefaultSelectionsRequest preparePoSelection() {
         /*
          * Initialize the selection process
          */
@@ -376,9 +375,12 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
 
                 profiler.stop();
                 logger.warn(System.getProperty("line.separator") + "{}", profiler);
-            } catch (Exception e) {
-                logger.error("Exception raised: {}", e.getMessage());
+            } catch (CalypsoPoCommandException e) {
+                logger.error("PO command {} failed with the status code 0x{}. {}", e.getCommand(),
+                        Integer.toHexString(e.getStatusCode() & 0xFFFF).toUpperCase(),
+                        e.getMessage());
             }
+
         }
     }
 
