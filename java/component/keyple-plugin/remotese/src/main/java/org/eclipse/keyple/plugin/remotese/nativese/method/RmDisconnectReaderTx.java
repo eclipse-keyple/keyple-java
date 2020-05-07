@@ -62,7 +62,7 @@ public class RmDisconnectReaderTx extends AbstractRemoteMethodTx<Boolean> {
         body.addProperty("sessionId", sessionId);
 
         return KeypleDtoHelper.buildRequest(getMethodName().getName(),
-                JsonParser.getGson().toJson(body, JsonObject.class), null, nativeReaderName, null,
-                requesterNodeId, targetNodeId, id);
+                JsonParser.getGson().toJson(body, JsonObject.class), sessionId, nativeReaderName,
+                null, requesterNodeId, targetNodeId, id);
     }
 }
