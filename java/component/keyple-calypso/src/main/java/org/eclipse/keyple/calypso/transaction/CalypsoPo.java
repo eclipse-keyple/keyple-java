@@ -470,11 +470,13 @@ public final class CalypsoPo extends AbstractMatchingSe {
     }
 
     /**
+     * (package-private)<br>
      * Set the ratification status
      * 
      * @param dfRatified true if the session was ratified
+     * @since 0.9
      */
-    public void setDfRatified(boolean dfRatified) {
+    void setDfRatified(boolean dfRatified) {
         isDfRatified = dfRatified;
     }
 
