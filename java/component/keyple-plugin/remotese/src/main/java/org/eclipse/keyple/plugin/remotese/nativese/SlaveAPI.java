@@ -197,17 +197,17 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
 
                 case POOL_ALLOCATE_READER:
 
-                // must be a request
-                if (keypleDTO.isRequest()) {
-                    // executor
-                    RmPoolAllocateExecutor rmPoolAllocateExecutor =
-                            new RmPoolAllocateExecutor(this.readerPoolPlugin, dtoNode.getNodeId());
-                    out = rmPoolAllocateExecutor.execute(transportDto);
-                } else {
-                    throw new IllegalStateException(
-                            "a POOL_ALLOCATE_READER response has been received by SlaveAPI");
-                }
-                break;
+                    // must be a request
+                    if (keypleDTO.isRequest()) {
+                        // executor
+                        RmPoolAllocateExecutor rmPoolAllocateExecutor = new RmPoolAllocateExecutor(
+                                this.readerPoolPlugin, dtoNode.getNodeId());
+                        out = rmPoolAllocateExecutor.execute(transportDto);
+                    } else {
+                        throw new IllegalStateException(
+                                "a POOL_ALLOCATE_READER response has been received by SlaveAPI");
+                    }
+                    break;
 
                 case POOL_RELEASE_READER:
                     // must be a request

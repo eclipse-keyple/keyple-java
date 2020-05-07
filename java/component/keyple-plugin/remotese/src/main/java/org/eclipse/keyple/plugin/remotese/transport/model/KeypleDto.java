@@ -63,15 +63,16 @@ public class KeypleDto {
     /**
      * Constructor of a KeypleDto
      * 
-     * @param action : API method to be called
-     * @param body : Arguments of the API (json)
-     * @param isRequest : Is a request or a response
-     * @param sessionId : Session Id of current Virtual Reader Session Id
-     * @param nativeReaderName : readerName of the native reader
-     * @param virtualReaderName : readerName of the virtual reader
-     * @param requesterNodeId : node the request is sent from
-     * @param targetNodeId : node the request is sent to
-     * @param id : unique id of this request (null in case of notification)
+     * @param action : API method to be called (required)
+     * @param body : Arguments of the API - json (optional)
+     * @param isRequest : Is a request or a response (required)
+     * @param sessionId : Session Id of current Virtual Reader Session Id (optional)
+     * @param nativeReaderName : readerName of the native reader (required)
+     * @param virtualReaderName : readerName of the virtual reader (optional)
+     * @param requesterNodeId : node the request is sent from (required)
+     * @param targetNodeId : node the request is sent to (required)
+     * @param id : unique id of this request (optional)
+     * @param error : error - java exception (optional)
      */
     public KeypleDto(String action, String body, Boolean isRequest, String sessionId,
             String nativeReaderName, String virtualReaderName, String requesterNodeId,
