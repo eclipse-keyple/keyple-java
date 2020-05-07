@@ -16,7 +16,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import org.eclipse.keyple.calypso.transaction.*;
+import org.eclipse.keyple.calypso.transaction.CalypsoSam;
+import org.eclipse.keyple.calypso.transaction.SamResource;
+import org.eclipse.keyple.calypso.transaction.SamSelectionRequest;
+import org.eclipse.keyple.calypso.transaction.SamSelector;
+import org.eclipse.keyple.calypso.transaction.SecuritySettings;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
@@ -116,9 +120,10 @@ public class CalypsoUtilities {
 
         try {
             if (samReader.isSePresent()) {
-                calypsoSam = (CalypsoSam) samSelection.processExplicitSelection(samReader)
-                        .getActiveMatchingSe();
-                if (!calypsoSam.isSelected()) {
+                if (samSelection.processExplicitSelection(samReader).hasActiveSelection()) {
+                    calypsoSam = (CalypsoSam) samSelection.processExplicitSelection(samReader)
+                            .getActiveMatchingSe();
+                } else {
                     throw new IllegalStateException("Unable to open a logical channel for SAM!");
                 }
             } else {

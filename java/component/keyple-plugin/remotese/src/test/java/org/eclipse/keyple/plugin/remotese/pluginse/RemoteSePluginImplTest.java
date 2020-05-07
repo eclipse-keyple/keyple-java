@@ -9,30 +9,33 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin;
+package org.eclipse.keyple.plugin.remotese.pluginse;
 
+import static org.mockito.Mockito.doReturn;
+import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.SortedSet;
-import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import org.eclipse.keyple.core.CoreBaseTest;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.plugin.mock.BlankAbstractPlugin;
-import org.eclipse.keyple.core.seproxy.plugin.mock.BlankAbstractReader;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.plugin.remotese.CoreBaseTest;
+import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RunWith(Parameterized.class)
-public class AbstractPluginTest extends CoreBaseTest {
+public class RemoteSePluginImplTest extends CoreBaseTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractPluginTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(RemoteSePluginImplTest.class);
 
     static final Integer X_TIMES = 50; // run tests multiple times
 
@@ -40,6 +43,8 @@ public class AbstractPluginTest extends CoreBaseTest {
     public static Object[][] data() {
         return new Object[X_TIMES][0];
     }
+
+
 
     @Before
     public void setUp() {
@@ -49,30 +54,37 @@ public class AbstractPluginTest extends CoreBaseTest {
     }
 
     /**
-     * Test if readers list does not send ConcurrentModificationException
-     * https://keyple.atlassian.net/browse/KEYP-195
-     * 
+     * Test if createVirtualReader does not send ConcurrentModificationException
+     * https://keyple.atlassian.net/browse/KEYP-203
+     *
      * @throws Throwable
      */
     @Test
-    public void addRemoveReadersMultiThreaded() throws InterruptedException {
-        ReaderPlugin plugin = new BlankAbstractPlugin("addRemoveReadersMultiThreaded");
-        SortedSet<SeReader> readers = plugin.getReaders();
-        final CountDownLatch lock = new CountDownLatch(10);
+    public void createVirtualReaderMultiThread()
+            throws InterruptedException, KeypleReaderException {
 
-        addReaderThread(readers, 10, lock);
-        addReaderThread(readers, 10, lock);
+        DtoSender dtoSender = Mockito.mock(DtoSender.class);
+        doReturn("masterNode1").when(dtoSender).getNodeId();
+
+        RemoteSePluginImpl plugin = new RemoteSePluginImpl(new VirtualReaderSessionFactory(),
+                dtoSender, 10000, "pluginName", Executors.newCachedThreadPool());
+
+        SortedSet<SeReader> readers = plugin.getReaders();
+
+        final CountDownLatch lock = new CountDownLatch(9);
+
+        addReaderThread(plugin, dtoSender, 10, lock);
         removeReaderThread(readers, 10, lock);
         listReaders(readers, 10, lock);
-        addReaderThread(readers, 10, lock);
         removeReaderThread(readers, 10, lock);
         listReaders(readers, 10, lock);
+        addReaderThread(plugin, dtoSender, 10, lock);
         removeReaderThread(readers, 10, lock);
         listReaders(readers, 10, lock);
         removeReaderThread(readers, 10, lock);
 
         // wait for all thread to finish with timeout
-        lock.await(2, TimeUnit.SECONDS);
+        lock.await(10, TimeUnit.SECONDS);
 
         // if all thread finished correctly, lock count should be 0
         Assert.assertEquals(0, lock.getCount());
@@ -108,13 +120,12 @@ public class AbstractPluginTest extends CoreBaseTest {
             public void run() {
                 for (int i = 0; i < N; i++) {
                     try {
-                        SeReader seReader = readers.first();
-                        readers.remove(seReader);
-                        logger.debug("readers: {}, remove first reader", readers.size());
+                        readers.remove(readers.first());
                     } catch (NoSuchElementException e) {
                         // list is empty
                         logger.debug("readers: {}, list is empty", readers.size());
                     }
+
                     try {
                         Thread.sleep(10);
                     } catch (InterruptedException e) {
@@ -128,15 +139,23 @@ public class AbstractPluginTest extends CoreBaseTest {
         thread.start();
     }
 
-    public static void addReaderThread(final SortedSet<SeReader> readers, final int N,
-            final CountDownLatch lock) {
+    public static void addReaderThread(final RemoteSePluginImpl plugin, final DtoSender dtoSender,
+            final int N, final CountDownLatch lock) {
         Thread thread = new Thread() {
             public void run() {
+                boolean success = true;
                 for (int i = 0; i < N; i++) {
-                    SeReader reader =
-                            new BlankAbstractReader("pluginName", UUID.randomUUID().toString());
-                    readers.add(reader);
-                    logger.debug("readers: {}, add reader {}", readers.size(), reader.getName());
+                    try {
+                        String readerName =
+                                "nativeReaderName-" + currentThread().getName() + "-" + i;
+                        logger.debug("create virtual reader: {}, add reader {}",
+                                plugin.getReaders().size(), readerName);
+                        plugin.createVirtualReader("slaveNodeId", readerName, dtoSender,
+                                TransmissionMode.CONTACTS, true, new HashMap<String, String>());
+                    } catch (KeypleReaderException e) {
+                        success = false;
+                        e.printStackTrace();
+                    }
 
                     try {
                         Thread.sleep(10);
@@ -145,7 +164,9 @@ public class AbstractPluginTest extends CoreBaseTest {
                     }
                 }
                 // if no error, count down latch
-                lock.countDown();
+                if (success) {
+                    lock.countDown();
+                }
             }
         };
         thread.start();

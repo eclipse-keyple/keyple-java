@@ -12,12 +12,9 @@
 package org.eclipse.keyple.example.common.generic;
 
 
-
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalArgumentException;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
-import org.eclipse.keyple.core.selection.*;
-import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
@@ -63,12 +60,11 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
                     byte SFI_T2Usage = (byte) 0x1A;
                     byte SFI_T2Environment = (byte) 0x14;
 
-                    PoSelectionRequest poSelectionRequest =
-                            new PoSelectionRequest(
-                                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                            new PoSelector.PoAidSelector(
-                                                    new SeSelector.AidSelector.IsoAid(HoplinkAID),
-                                                    null)));
+                    PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
+                            new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                                    new PoSelector.AidSelector(
+                                            new PoSelector.AidSelector.IsoAid(HoplinkAID)),
+                                    PoSelector.InvalidatedPo.REJECT));
 
                     poSelectionRequest.prepareReadRecordFile(SFI_T2Environment, 1);
 
@@ -103,10 +99,9 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
     public void processSeMatch(AbstractDefaultSelectionsResponse defaultSelectionsResponse)
             throws KeypleException {
         /* get the SE that matches one of the two selection targets */
-        AbstractMatchingSe selectedSe = seSelection
-                .processDefaultSelection(defaultSelectionsResponse).getActiveMatchingSe();
-        if (selectedSe != null) {
-            System.out.println("Selection status = " + selectedSe.isSelected());
+        if (seSelection.processDefaultSelection(defaultSelectionsResponse).hasActiveSelection()) {
+            AbstractMatchingSe selectedSe = seSelection
+                    .processDefaultSelection(defaultSelectionsResponse).getActiveMatchingSe();
         } else {
             // TODO check this. Shouldn't an exception have been raised before?
             System.out.println("No selection matched!");

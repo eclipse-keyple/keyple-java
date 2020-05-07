@@ -12,8 +12,14 @@
 package org.eclipse.keyple.example.generic.pc.usecase4;
 
 import java.io.IOException;
-import org.eclipse.keyple.core.selection.*;
-import org.eclipse.keyple.core.seproxy.*;
+import org.eclipse.keyple.core.selection.AbstractMatchingSe;
+import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.SelectionsResult;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -38,8 +44,8 @@ public class SequentialMultiSelection_Pcsc {
             AbstractMatchingSe matchingSe = selectionsResult.getActiveMatchingSe();
             logger.info("The SE matched the selection {}.", index);
             logger.info("Selection status for case {}: \n\t\tATR: {}\n\t\tFCI: {}", index,
-                    ByteArrayUtil.toHex(matchingSe.getSelectionStatus().getAtr().getBytes()),
-                    ByteArrayUtil.toHex(matchingSe.getSelectionStatus().getFci().getDataOut()));
+                    matchingSe.hasAtr() ? ByteArrayUtil.toHex(matchingSe.getAtr()) : "no ATR",
+                    matchingSe.hasFci() ? ByteArrayUtil.toHex(matchingSe.getFci()) : "no FCI");
         } else {
             logger.info("The selection did not match for case {}.", index);
         }
@@ -95,7 +101,7 @@ public class SequentialMultiSelection_Pcsc {
                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                     new SeSelector.AidSelector(
                             new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAidPrefix)),
-                            null, SeSelector.AidSelector.FileOccurrence.FIRST,
+                            SeSelector.AidSelector.FileOccurrence.FIRST,
                             SeSelector.AidSelector.FileControlInformation.FCI))));
 
             /* Do the selection and display the result */
@@ -112,7 +118,7 @@ public class SequentialMultiSelection_Pcsc {
                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                     new SeSelector.AidSelector(
                             new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAidPrefix)),
-                            null, SeSelector.AidSelector.FileOccurrence.NEXT,
+                            SeSelector.AidSelector.FileOccurrence.NEXT,
                             SeSelector.AidSelector.FileControlInformation.FCI))));
 
             /* Do the selection and display the result */

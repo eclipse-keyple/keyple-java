@@ -110,7 +110,16 @@ public final class SeSelection {
                  */
                 AbstractMatchingSe matchingSe = seSelectionRequests.get(index).parse(seResponse);
 
-                selectionsResult.addMatchingSe(index, matchingSe);
+                // determine if the current matching SE is selected
+                SelectionStatus selectionStatus = seResponse.getSelectionStatus();
+                boolean isSelected;
+                if (selectionStatus != null) {
+                    isSelected = selectionStatus.hasMatched() && seResponse.isLogicalChannelOpen();
+                } else {
+                    isSelected = false;
+                }
+
+                selectionsResult.addMatchingSe(index, matchingSe, isSelected);
             }
             index++;
         }

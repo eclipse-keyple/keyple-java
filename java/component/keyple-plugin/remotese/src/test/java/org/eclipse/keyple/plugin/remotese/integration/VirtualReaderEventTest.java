@@ -185,9 +185,6 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         virtualReader.removeObserver(obs);
 
         Assert.assertEquals(0, lock.getCount());
-
-        // https://github.com/calypsonet/keyple-java/issues/420
-        // Assert.assertEquals(0, masterAPI.getPlugin().getReaders().size());
     }
 
 
@@ -248,10 +245,9 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
         SeSelection seSelection = new SeSelection();
 
-        GenericSeSelectionRequest genericSeSelectionRequest =
-                new GenericSeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                        null, new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid),
-                                null)));
+        GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
+                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                        new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid))));
 
         seSelection.prepareSelection(genericSeSelectionRequest);
 
@@ -299,10 +295,9 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
         SeSelection seSelection = new SeSelection();
 
-        GenericSeSelectionRequest genericSeSelectionRequest =
-                new GenericSeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                        null, new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid),
-                                null)));
+        GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
+                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                        new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid))));
 
         seSelection.prepareSelection(genericSeSelectionRequest);
 
@@ -361,10 +356,9 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
         SeSelection seSelection = new SeSelection();
 
-        GenericSeSelectionRequest genericSeSelectionRequest =
-                new GenericSeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                        null, new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid),
-                                null)));
+        GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
+                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                        new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid))));
 
         seSelection.prepareSelection(genericSeSelectionRequest);
 
@@ -421,7 +415,6 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         nativeReader.removeSe();
 
         Assert.assertNotNull(matchingSe);
-        Assert.assertTrue(matchingSe.isSelected());
     }
 
     @Test
@@ -464,7 +457,6 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
 
                 Assert.assertNotNull(matchingSe);
-                Assert.assertTrue(matchingSe.isSelected());
 
                 // unlock thread
                 lock.countDown();

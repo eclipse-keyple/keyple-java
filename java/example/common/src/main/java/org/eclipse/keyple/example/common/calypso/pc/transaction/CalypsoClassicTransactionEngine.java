@@ -15,7 +15,7 @@ package org.eclipse.keyple.example.common.calypso.pc.transaction;
 import java.util.Map;
 import java.util.SortedMap;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalArgumentException;
-import org.eclipse.keyple.calypso.transaction.*;
+import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronisedExchangesException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionIllegalStateException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoSecureSessionException;
@@ -292,8 +292,8 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
          */
         seSelection.prepareSelection(
                 new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(poFakeAid1),
-                                PoSelector.InvalidatedPo.REJECT))));
+                        new PoSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poFakeAid1)),
+                        PoSelector.InvalidatedPo.REJECT)));
 
         /*
          * Add selection case 2: Calypso application, protocol ISO, target rev 2 or 3
@@ -302,9 +302,9 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
          */
         PoSelectionRequest poSelectionRequestCalypsoAid =
                 new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new PoSelector.PoAidSelector(
-                                new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
-                                PoSelector.InvalidatedPo.ACCEPT)));
+                        new PoSelector.AidSelector(
+                                new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID)),
+                        PoSelector.InvalidatedPo.ACCEPT));
 
         poSelectionRequestCalypsoAid.prepareSelectFile(CalypsoClassicInfo.LID_DF_RT);
 
@@ -320,15 +320,16 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
          */
         seSelection.prepareSelection(
                 new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_B_PRIME, null,
-                        new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(poFakeAid2),
-                                PoSelector.InvalidatedPo.REJECT))));
+                        new PoSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poFakeAid2)),
+                        PoSelector.InvalidatedPo.REJECT)));
 
         /*
          * Add selection case 4: ATR selection, rev 1 atrregex
          */
         seSelection.prepareSelection(
                 new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_B_PRIME,
-                        new PoSelector.PoAtrFilter(CalypsoClassicInfo.ATR_REV1_REGEX), null)));
+                        new PoSelector.AtrFilter(CalypsoClassicInfo.ATR_REV1_REGEX), null,
+                        PoSelector.InvalidatedPo.REJECT)));
 
         return seSelection.getSelectionOperation();
     }

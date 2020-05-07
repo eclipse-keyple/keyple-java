@@ -22,7 +22,7 @@ import java.util.Map;
  * matching SE specified by its index.
  */
 public final class SelectionsResult {
-    private boolean hasActiveSelection = false;
+    private Integer activeSelectionIndex = null;
     private final Map<Integer, AbstractMatchingSe> matchingSeMap =
             new HashMap<Integer, AbstractMatchingSe>();
 
@@ -36,13 +36,15 @@ public final class SelectionsResult {
      *
      * @param selectionIndex the index of the selection that resulted in the matching SE
      * @param matchingSe the matching SE to add
+     * @param isSelected true if the currently added matching SE is selected (its logical channel is
+     *        open)
      */
-    void addMatchingSe(int selectionIndex, AbstractMatchingSe matchingSe) {
+    void addMatchingSe(int selectionIndex, AbstractMatchingSe matchingSe, boolean isSelected) {
         if (matchingSe != null)
             matchingSeMap.put(selectionIndex, matchingSe);
-        /* test if the current selection is active */
-        if (matchingSe.isSelected()) {
-            hasActiveSelection = true;
+        // if the current selection is active, we keep its index
+        if (isSelected) {
+            activeSelectionIndex = selectionIndex;
         }
     }
 
@@ -54,12 +56,11 @@ public final class SelectionsResult {
      * @throws IllegalStateException if no active matching SE is found
      */
     public AbstractMatchingSe getActiveMatchingSe() {
-        for (Map.Entry<Integer, AbstractMatchingSe> entry : matchingSeMap.entrySet()) {
-            if (entry.getValue().isSelected()) {
-                return entry.getValue();
-            }
+        AbstractMatchingSe matchingSe = matchingSeMap.get(activeSelectionIndex);
+        if (matchingSe == null) {
+            throw new IllegalStateException("No active Matching SE is available");
         }
-        throw new IllegalStateException("No active Matching SE is available");
+        return matchingSe;
     }
 
     /**
@@ -85,6 +86,27 @@ public final class SelectionsResult {
      * @return true if an active selection is present
      */
     public boolean hasActiveSelection() {
-        return hasActiveSelection;
+        return activeSelectionIndex != null;
+    }
+
+    /**
+     * Get the matching status of a selection for which the index is provided. <br>
+     * Checks for the presence of an entry in the MatchingSe Map for the given index
+     *
+     * @param selectionIndex the selection index
+     * @return true if the selection has matched
+     */
+    boolean hasSelectionMatched(int selectionIndex) {
+        return matchingSeMap.containsKey(selectionIndex);
+    }
+
+    /**
+     * @return the index of the active selection
+     */
+    int getActiveSelectionIndex() {
+        if (hasActiveSelection()) {
+            return activeSelectionIndex;
+        }
+        throw new IllegalStateException("No active Matching SE is available");
     }
 }

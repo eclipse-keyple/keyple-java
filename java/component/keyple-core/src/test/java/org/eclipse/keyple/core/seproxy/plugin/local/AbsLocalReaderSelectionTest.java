@@ -44,7 +44,10 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     final String READER_NAME = "AbstractLocalReaderTest";
 
     static final String AID = "A000000291A000000191";
-    static final Set<Integer> STATUS_CODE = new HashSet(Arrays.asList(1, 2));
+    static final int STATUS_CODE_1 = 1;
+    static final int STATUS_CODE_2 = 2;
+    static final Set<Integer> STATUS_CODE_LIST =
+            new HashSet(Arrays.asList(STATUS_CODE_1, STATUS_CODE_2));
 
     static final String ATR = "0000";
 
@@ -162,7 +165,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
         BlankSmartSelectionReader r = getSmartSpy(PLUGIN_NAME, READER_NAME);
 
         when(r.openChannelForAid(any(SeSelector.AidSelector.class)))
-                .thenReturn(new ApduResponse(RESP_SUCCESS, STATUS_CODE));
+                .thenReturn(new ApduResponse(RESP_SUCCESS, STATUS_CODE_LIST));
         when(r.getATR()).thenReturn(ByteArrayUtil.fromHex(ATR));
         when(r.transmitApdu(any(byte[].class))).thenReturn(RESP_SUCCESS);
 
@@ -188,7 +191,9 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
         SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter(ATR);
         SeSelector.AidSelector aidSelector =
-                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(AID), STATUS_CODE);
+                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(AID));
+        aidSelector.addSuccessfulStatusCode(STATUS_CODE_1);
+        aidSelector.addSuccessfulStatusCode(STATUS_CODE_2);
 
         // select both
         SeSelector seSelector = new SeSelector(null, atrFilter, aidSelector);
@@ -302,7 +307,9 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     static public SeSelector getAidSelector() {
         SeSelector.AidSelector aidSelector =
-                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(AID), STATUS_CODE);
+                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(AID));
+        aidSelector.addSuccessfulStatusCode(STATUS_CODE_1);
+        aidSelector.addSuccessfulStatusCode(STATUS_CODE_2);
 
         return new SeSelector(null, null, aidSelector);
     }

@@ -49,7 +49,7 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
         val seRequest = SeRequest(SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
-                SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(PO_AID), null,
+                SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(PO_AID),
                         SeSelector.AidSelector.FileOccurrence.NEXT,
                         SeSelector.AidSelector.FileControlInformation.FCI)),
                 poApduRequestList)
@@ -68,7 +68,7 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
         val seRequest = SeRequest(SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
-                SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(PO_AID), null,
+                SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(PO_AID),
                         SeSelector.AidSelector.FileOccurrence.NEXT,
                         SeSelector.AidSelector.FileControlInformation.FCI)),
                 poApduRequestList)

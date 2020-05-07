@@ -13,6 +13,7 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 
 
 
+import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +27,7 @@ public class VirtualReaderSessionImpl implements VirtualReaderSession {
     private final String sessionId;
     private final String slaveNodeId;
     private final String masterNodeId;
+    private final Date createdDate;
 
     // constructor
     public VirtualReaderSessionImpl(String sessionId, String slaveNodeId, String masterNodeId) {
@@ -43,6 +45,7 @@ public class VirtualReaderSessionImpl implements VirtualReaderSession {
         this.sessionId = sessionId;
         this.slaveNodeId = slaveNodeId;
         this.masterNodeId = masterNodeId;
+        this.createdDate = new Date();
     }
 
 
@@ -56,11 +59,16 @@ public class VirtualReaderSessionImpl implements VirtualReaderSession {
         return slaveNodeId;
     }
 
-
     @Override
     public String getMasterNodeId() {
         return masterNodeId;
     }
+
+    @Override
+    public Date getCreatedTime() {
+        return createdDate;
+    }
+
 
     @Override
     public String toString() {

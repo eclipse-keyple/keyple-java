@@ -33,7 +33,7 @@ public class SeSelector {
     /**
      * Static nested class to hold the data elements used to perform an AID based selection
      */
-    public static class AidSelector {
+    public static final class AidSelector {
 
         /**
          * FileOccurrence indicates how to carry out the file occurrence in accordance with
@@ -162,11 +162,10 @@ public class SeSelector {
          * List of status codes in response to the select application command that should be
          * considered successful although they are different from 9000
          */
-        private Set<Integer> successfulSelectionStatusCodes = new LinkedHashSet<Integer>();
+        private Set<Integer> successfulSelectionStatusCodes;
 
         /**
-         * AidSelector with additional select application successful status codes, file occurrence
-         * and file control information.
+         * AidSelector with additional file occurrence and file control information.
          * <p>
          * The fileOccurrence parameter defines the selection options P2 of the SELECT command
          * message
@@ -176,33 +175,28 @@ public class SeSelector {
          * Refer to ISO7816-4.2 for detailed information about these parameters
          *
          * @param aidToSelect IsoAid
-         * @param successfulSelectionStatusCodes list of successful status codes for the select
-         *        application response
          * @param fileOccurrence the occurrence parameter (see ISO7816-4 definition)
          * @param fileControlInformation the file control information (see ISO7816-4 definition)
          */
-        public AidSelector(IsoAid aidToSelect, Set<Integer> successfulSelectionStatusCodes,
-                FileOccurrence fileOccurrence, FileControlInformation fileControlInformation) {
+        public AidSelector(IsoAid aidToSelect, FileOccurrence fileOccurrence,
+                FileControlInformation fileControlInformation) {
             this.aidToSelect = aidToSelect;
-            this.successfulSelectionStatusCodes = successfulSelectionStatusCodes;
+            this.successfulSelectionStatusCodes = null;
             this.fileOccurrence = fileOccurrence;
             this.fileControlInformation = fileControlInformation;
         }
 
         /**
-         * AidSelector with additional select application successful status codes
+         * AidSelector
          * <p>
          * The fileOccurrence field is set by default to FIRST
          * <p>
          * The fileControlInformation field is set by default to FCI
          *
-         * @param aidToSelect IsoAid
-         * @param successfulSelectionStatusCodes list of successful status codes for the select
-         *        application response
+         * @param aidToSelect IsoAid application response
          */
-        public AidSelector(IsoAid aidToSelect, Set<Integer> successfulSelectionStatusCodes) {
-            this(aidToSelect, successfulSelectionStatusCodes, FileOccurrence.FIRST,
-                    FileControlInformation.FCI);
+        public AidSelector(IsoAid aidToSelect) {
+            this(aidToSelect, FileOccurrence.FIRST, FileControlInformation.FCI);
         }
 
         /**
@@ -237,6 +231,18 @@ public class SeSelector {
             return successfulSelectionStatusCodes;
         }
 
+        /**
+         * Add as status code to be accepted to the list of successful selection status codes
+         * 
+         * @param statusCode the status code to be accepted
+         */
+        public void addSuccessfulStatusCode(int statusCode) {
+            // the list is kept null until a code is added
+            if (this.successfulSelectionStatusCodes == null) {
+                this.successfulSelectionStatusCodes = new LinkedHashSet<Integer>();
+            }
+            this.successfulSelectionStatusCodes.add(statusCode);
+        }
 
         /**
          * Print out the AID in hex
@@ -254,7 +260,7 @@ public class SeSelector {
     /**
      * Static nested class to hold the data elements used to perform an ATR based filtering
      */
-    public static class AtrFilter {
+    public static final class AtrFilter {
         /**
          * Regular expression dedicated to handle SE logical channel opening based on ATR pattern
          */
@@ -349,7 +355,7 @@ public class SeSelector {
         this.aidSelector = aidSelector;
         this.atrFilter = atrFilter;
         if (logger.isTraceEnabled()) {
-            logger.trace("Selection data: AID = {}, ATRREGEX = {}, EXTRAINFO = {}",
+            logger.trace("Selection data: AID = {}, ATRREGEX = {}",
                     (this.aidSelector == null || this.aidSelector.getAidToSelect() == null) ? "null"
                             : ByteArrayUtil.toHex(this.aidSelector.getAidToSelect().getValue()),
                     this.atrFilter == null ? "null" : this.atrFilter.getAtrRegex());

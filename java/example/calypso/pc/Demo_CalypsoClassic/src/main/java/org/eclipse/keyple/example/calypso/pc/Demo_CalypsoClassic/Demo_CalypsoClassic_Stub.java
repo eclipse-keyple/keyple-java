@@ -22,7 +22,11 @@ import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoClassicTransactionEngine;
 import org.eclipse.keyple.example.common.calypso.stub.StubCalypsoClassic;
 import org.eclipse.keyple.example.common.calypso.stub.StubSamCalypsoClassic;
-import org.eclipse.keyple.plugin.stub.*;
+import org.eclipse.keyple.plugin.stub.StubPlugin;
+import org.eclipse.keyple.plugin.stub.StubPluginFactory;
+import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
+import org.eclipse.keyple.plugin.stub.StubReader;
+import org.eclipse.keyple.plugin.stub.StubSecureElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -12,9 +12,19 @@
 package org.eclipse.keyple.example.calypso.pc.usecase4;
 
 
-import org.eclipse.keyple.calypso.transaction.*;
+import org.eclipse.keyple.calypso.transaction.CalypsoPo;
+import org.eclipse.keyple.calypso.transaction.ElementaryFile;
+import org.eclipse.keyple.calypso.transaction.PoResource;
+import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
+import org.eclipse.keyple.calypso.transaction.PoSelector;
+import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.calypso.transaction.SamResource;
+import org.eclipse.keyple.calypso.transaction.SessionAccessLevel;
 import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.seproxy.*;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -22,7 +32,11 @@ import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.common.calypso.stub.StubCalypsoClassic;
 import org.eclipse.keyple.example.common.calypso.stub.StubSamCalypsoClassic;
-import org.eclipse.keyple.plugin.stub.*;
+import org.eclipse.keyple.plugin.stub.StubPlugin;
+import org.eclipse.keyple.plugin.stub.StubPluginFactory;
+import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
+import org.eclipse.keyple.plugin.stub.StubReader;
+import org.eclipse.keyple.plugin.stub.StubSecureElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -145,9 +159,9 @@ public class PoAuthentication_Stub {
              */
             PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
                     new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                            new PoSelector.PoAidSelector(
-                                    new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
-                                    PoSelector.InvalidatedPo.REJECT)));
+                            new PoSelector.AidSelector(
+                                    new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID)),
+                            PoSelector.InvalidatedPo.REJECT));
 
             /*
              * Add the selection case to the current selection (we could have added other cases

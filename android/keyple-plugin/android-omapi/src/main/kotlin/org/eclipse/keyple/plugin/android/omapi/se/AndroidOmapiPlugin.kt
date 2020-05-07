@@ -56,6 +56,6 @@ internal object AndroidOmapiPlugin : AbstractAndroidOmapiPlugin<Reader, SEServic
         Timber.i("Retrieve available readers...")
 
         // init readers
-        readers = initNativeReaders()
+        readers.addAll(initNativeReaders())
     }
 }
