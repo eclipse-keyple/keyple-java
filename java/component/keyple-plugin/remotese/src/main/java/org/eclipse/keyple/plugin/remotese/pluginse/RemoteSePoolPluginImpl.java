@@ -14,6 +14,7 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 import java.util.SortedSet;
 import java.util.concurrent.ExecutorService;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationNoReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTxPoolEngine;
@@ -59,7 +60,8 @@ class RemoteSePoolPluginImpl extends RemoteSePluginImpl implements RemoteSePoolP
     }
 
     @Override
-    public SeReader allocateReader(String groupReference) throws KeypleAllocationReaderException {
+    public SeReader allocateReader(String groupReference)
+            throws KeypleAllocationReaderException, KeypleAllocationNoReaderException {
 
         if (slaveNodeId == null) {
             throw new IllegalStateException(
@@ -73,10 +75,16 @@ class RemoteSePoolPluginImpl extends RemoteSePluginImpl implements RemoteSePoolP
             // blocking call
             return allocate.execute(rmTxEngine);
         } catch (KeypleRemoteException e) {
-            throw new KeypleAllocationReaderException(
-                    "Reader Allocation failed for group reference: " + groupReference, e);
+            Throwable cause = e.getCause();
+            if (cause instanceof KeypleAllocationReaderException) {
+                throw (KeypleAllocationReaderException) cause;
+            } else if (cause instanceof KeypleAllocationNoReaderException) {
+                throw (KeypleAllocationNoReaderException) cause;
+            } else {
+                throw new KeypleAllocationReaderException(
+                        "Unexpected error while remotely allocating a reader", cause);
+            }
         }
-
     }
 
     @Override
