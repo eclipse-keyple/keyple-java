@@ -45,8 +45,9 @@ public interface ReaderPoolPlugin extends ReaderPlugin {
      *        depending on the implementation made)
      * @return a SeReader object
      * @throws KeypleAllocationReaderException if the allocation failed due to a technical error
-     * @throws KeypleAllocationNoReaderException     if the allocation failed due to lack of available reader
-
+     * @throws KeypleAllocationNoReaderException if the allocation failed due to lack of available
+     *         reader
+     * 
      */
     SeReader allocateReader(String groupReference)
             throws KeypleAllocationReaderException, KeypleAllocationNoReaderException;

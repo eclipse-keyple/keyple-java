@@ -60,7 +60,8 @@ class RemoteSePoolPluginImpl extends RemoteSePluginImpl implements RemoteSePoolP
     }
 
     @Override
-    public SeReader allocateReader(String groupReference) throws KeypleAllocationReaderException, KeypleAllocationNoReaderException  {
+    public SeReader allocateReader(String groupReference)
+            throws KeypleAllocationReaderException, KeypleAllocationNoReaderException {
 
         if (slaveNodeId == null) {
             throw new IllegalStateException(
@@ -75,12 +76,13 @@ class RemoteSePoolPluginImpl extends RemoteSePluginImpl implements RemoteSePoolP
             return allocate.execute(rmTxEngine);
         } catch (KeypleRemoteException e) {
             Throwable cause = e.getCause();
-            if(cause instanceof KeypleAllocationReaderException){
+            if (cause instanceof KeypleAllocationReaderException) {
                 throw (KeypleAllocationReaderException) cause;
-            } else if(cause instanceof KeypleAllocationNoReaderException){
+            } else if (cause instanceof KeypleAllocationNoReaderException) {
                 throw (KeypleAllocationNoReaderException) cause;
             } else {
-                throw new KeypleAllocationReaderException("Unexpected error while remotely allocating a reader", cause);
+                throw new KeypleAllocationReaderException(
+                        "Unexpected error while remotely allocating a reader", cause);
             }
         }
     }

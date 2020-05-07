@@ -101,7 +101,8 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
      * @return seReader if available, null otherwise
      */
     @Override
-    public SeReader allocateReader(String groupReference) throws KeypleAllocationReaderException, KeypleAllocationNoReaderException {
+    public SeReader allocateReader(String groupReference)
+            throws KeypleAllocationReaderException, KeypleAllocationNoReaderException {
 
 
         // find the reader in the readerPool
@@ -114,13 +115,13 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
                             + ". Has the reader being plugged to this referenceGroup?");
         }
         // check if reader is available
-        if(allocatedReader.containsKey(seReader.getName())){
+        if (allocatedReader.containsKey(seReader.getName())) {
             throw new KeypleAllocationNoReaderException(
                     "Impossible to allocate a reader for groupReference : " + groupReference
                             + ". No reader Available");
         }
 
-        //allocate reader
+        // allocate reader
         allocatedReader.put(seReader.getName(), groupReference);
         return seReader;
 

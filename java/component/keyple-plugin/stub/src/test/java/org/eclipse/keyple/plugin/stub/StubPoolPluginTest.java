@@ -86,7 +86,7 @@ public class StubPoolPluginTest extends BaseStubTest {
      */
     @Test
     public void allocate_success()
-            throws KeypleAllocationReaderException,KeypleAllocationNoReaderException {
+            throws KeypleAllocationReaderException, KeypleAllocationNoReaderException {
         // init stubPoolPlugin
         StubPoolPluginImpl stubPoolPlugin =
                 (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)
@@ -112,8 +112,8 @@ public class StubPoolPluginTest extends BaseStubTest {
      * Allocate twice the same reader
      */
     @Test(expected = KeypleAllocationNoReaderException.class)
-    public void allocate_twice()
-            throws InterruptedException, KeypleReaderException, KeypleAllocationReaderException, KeypleAllocationNoReaderException {
+    public void allocate_twice() throws InterruptedException, KeypleReaderException,
+            KeypleAllocationReaderException, KeypleAllocationNoReaderException {
         // init stubPoolPlugin
         StubPoolPluginImpl stubPoolPlugin =
                 (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)
