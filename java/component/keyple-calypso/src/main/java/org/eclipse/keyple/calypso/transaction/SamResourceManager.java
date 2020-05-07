@@ -61,8 +61,7 @@ public class SamResourceManager {
      * @param samReaderFilter the regular expression defining how to identify SAM readers among
      *        others.
      * @param maxBlockingTime the maximum duration for which the allocateSamResource method will
-     *        attempt to allocate a new reader by retrying (in milliseconds). Set to -1 to
-     *        deactivate retry mechanism
+     *        attempt to allocate a new reader by retrying (in milliseconds).
      * @param sleepTime the duration to wait between two retries
      * @throws KeypleReaderException thrown if an error occurs while getting the readers list.
      * @since 0.8.1
