@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  */
 public class Rev1Selection_Pcsc {
-    protected static final Logger logger = LoggerFactory.getLogger(Rev1Selection_Pcsc.class);
+    private static final Logger logger = LoggerFactory.getLogger(Rev1Selection_Pcsc.class);
     private static String poAtrRegex = ".*";
     private static String poDfRtPath = "2000";
 
@@ -185,18 +185,19 @@ public class Rev1Selection_Pcsc {
              * Actual PO communication: send the prepared read order, then close the channel with
              * the PO
              */
-            if (poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER)) {
-                logger.info("The reading of the EventLog has succeeded.");
+            poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER);
 
-                /*
-                 * Retrieve the data read from the parser updated during the transaction process
-                 */
-                ElementaryFile efEventLog = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
-                byte eventLog[] = efEventLog.getData().getContent();
+            logger.info("The reading of the EventLog has succeeded.");
 
-                /* Log the result */
-                logger.info("EventLog file data: {}", ByteArrayUtil.toHex(eventLog));
-            }
+            /*
+             * Retrieve the data read from the parser updated during the transaction process
+             */
+            ElementaryFile efEventLog = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+            byte eventLog[] = efEventLog.getData().getContent();
+
+            /* Log the result */
+            logger.info("EventLog file data: {}", ByteArrayUtil.toHex(eventLog));
+
             logger.info(
                     "==================================================================================");
             logger.info(

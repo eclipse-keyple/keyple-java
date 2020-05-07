@@ -161,13 +161,8 @@ public class PoAuthentication_Pcsc {
             /*
              * Open Session for the debit key
              */
-            boolean poProcessStatus =
-                    poTransaction.processOpening(PoTransaction.SessionModificationMode.ATOMIC,
-                            SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0, (byte) 0);
-
-            if (!poProcessStatus) {
-                throw new IllegalStateException("processingOpening failure.");
-            }
+            poTransaction.processOpening(PoTransaction.SessionModificationMode.ATOMIC,
+                    SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0, (byte) 0);
 
             if (!poTransaction.wasRatified()) {
                 logger.info(
@@ -180,7 +175,7 @@ public class PoAuthentication_Pcsc {
             poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_EventLog,
                     CalypsoClassicInfo.RECORD_NUMBER_1);
 
-            poProcessStatus = poTransaction.processPoCommandsInSession();
+            poTransaction.processPoCommandsInSession();
 
             /*
              * Retrieve the data read from the parser updated during the transaction process
@@ -190,10 +185,6 @@ public class PoAuthentication_Pcsc {
 
             /* Log the result */
             logger.info("EventLog file data: {}", ByteArrayUtil.toHex(eventLog));
-
-            if (!poProcessStatus) {
-                throw new IllegalStateException("processPoCommandsInSession failure.");
-            }
 
             /*
              * Close the Secure Session.
@@ -206,17 +197,9 @@ public class PoAuthentication_Pcsc {
             /*
              * A ratification command will be sent (CONTACTLESS_MODE).
              */
-            poProcessStatus = poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
+            poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
 
-            if (!poProcessStatus) {
-                throw new IllegalStateException("processClosing failure.");
-            }
-
-            if (poTransaction.isSuccessful()) {
-                logger.info("The Calypso session ended successfully.");
-            } else {
-                logger.error("The Calypso session failed.");
-            }
+            logger.info("The Calypso session ended successfully.");
 
             logger.info(
                     "==================================================================================");

@@ -11,7 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.generic.pc.usecase3;
 
-import java.io.IOException;
 import java.util.Map;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.SeSelection;
@@ -35,11 +34,9 @@ import org.slf4j.LoggerFactory;
  * mechanism
  */
 public class GroupedMultiSelection_Pcsc {
-    protected static final Logger logger =
-            LoggerFactory.getLogger(GroupedMultiSelection_Pcsc.class);
+    private static final Logger logger = LoggerFactory.getLogger(GroupedMultiSelection_Pcsc.class);
 
-    public static void main(String[] args)
-            throws KeypleException, InterruptedException, IOException {
+    public static void main(String[] args) throws KeypleException {
 
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
@@ -105,9 +102,9 @@ public class GroupedMultiSelection_Pcsc {
                     logger.info(
                             "Selection status for selection (indexed {}): \n\t\tATR: {}\n\t\tFCI: {}",
                             entry.getKey(),
-                            matchingSe.hasAtr() ? ByteArrayUtil.toHex(matchingSe.getAtr())
+                            matchingSe.hasAtr() ? ByteArrayUtil.toHex(matchingSe.getAtrBytes())
                                     : "no ATR",
-                            matchingSe.hasFci() ? ByteArrayUtil.toHex(matchingSe.getFci())
+                            matchingSe.hasFci() ? ByteArrayUtil.toHex(matchingSe.getFciBytes())
                                     : "no FCI");
                 }
             } else {

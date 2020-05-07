@@ -13,12 +13,8 @@ package org.eclipse.keyple.example.generic.pc.Demo_SeProtocolDetection;
 
 
 import java.util.EnumSet;
-import java.util.SortedSet;
-import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
@@ -39,8 +35,6 @@ public class
 
 Demo_SeProtocolDetection_Stub {
 
-    private SeReader poReader, samReader;
-
     public Demo_SeProtocolDetection_Stub() {
         super();
     }
@@ -52,13 +46,10 @@ Demo_SeProtocolDetection_Stub {
      * @throws IllegalArgumentException in case of a bad argument
      * @throws InterruptedException if thread error occurs
      */
-    public static void main(String[] args) throws IllegalArgumentException, InterruptedException,
+    public static void main(String[] args) throws InterruptedException,
             KeyplePluginNotFoundException, KeyplePluginInstantiationException {
         /* get the SeProxyService instance */
         SeProxyService seProxyService = SeProxyService.getInstance();
-
-        /* add the PcscPlugin to the SeProxyService */
-        SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();
 
         final String STUB_PLUGIN_NAME = "stub1";
 
@@ -76,7 +67,7 @@ Demo_SeProtocolDetection_Stub {
 
         Thread.sleep(200);
 
-        StubReader poReader = null, samReader = null;
+        StubReader poReader = null;
         try {
             poReader = (StubReader) (stubPlugin.getReader("poReader"));
         } catch (KeypleReaderNotFoundException e) {
@@ -109,7 +100,7 @@ Demo_SeProtocolDetection_Stub {
                         + "|3B8D.*");
 
         // Set terminal as Observer of the first reader
-        ((ObservableReader) poReader).addObserver(observer);
+        poReader.addObserver(observer);
 
         // poReader.insertSe(new StubCalypsoClassic());
         //
