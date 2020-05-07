@@ -66,4 +66,13 @@ public abstract class AbstractPoResponseParser extends AbstractApduResponseParse
         }
         return e;
     }
+
+    @Override
+    public void checkStatus() throws CalypsoPoCommandException {
+        try {
+            super.checkStatus();
+        } catch (KeypleSeCommandException e) {
+            throw (CalypsoPoCommandException) e;
+        }
+    }
 }
