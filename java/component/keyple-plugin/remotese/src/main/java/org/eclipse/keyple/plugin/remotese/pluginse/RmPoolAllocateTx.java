@@ -91,8 +91,6 @@ public class RmPoolAllocateTx extends AbstractRemoteMethodTx<SeReader> {
             } catch (KeypleReaderException e) {
                 throw new KeypleRemoteException(e.getMessage());
             }
-
-
         }
     }
 }

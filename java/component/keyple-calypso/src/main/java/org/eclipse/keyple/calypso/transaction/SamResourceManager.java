@@ -43,7 +43,9 @@ public class SamResourceManager {
 
     /* the default maximum time (in milliseconds) during which the BLOCKING mode will wait */
     private final static int MAX_BLOCKING_TIME = 1000; // 1 sec
+    private final static int DEFAULT_SLEEP_TIME = 10; // 10 ms
     private final int maxBlockingTime;
+    private final int sleepTime;
     private final ReaderPlugin samReaderPlugin;
     private final List<SamResource> localSamResources = new ArrayList<SamResource>();
     private final boolean dynamicAllocationPlugin;
@@ -59,13 +61,23 @@ public class SamResourceManager {
      * @param samReaderFilter the regular expression defining how to identify SAM readers among
      *        others.
      * @param maxBlockingTime the maximum duration for which the allocateSamResource method will
-     *        attempt to allocate a new reader by retrying (in milliseconds)
+     *        attempt to allocate a new reader by retrying (in milliseconds). Set to -1 to
+     *        deactivate retry mechanism
+     * @param sleepTime the duration to wait between two retries
      * @throws KeypleReaderException thrown if an error occurs while getting the readers list.
      * @since 0.8.1
      */
     public SamResourceManager(ReaderPlugin samReaderPlugin, String samReaderFilter,
-            int maxBlockingTime) throws KeypleReaderException {
+            int maxBlockingTime, int sleepTime) throws KeypleReaderException {
+        if (sleepTime < 1) {
+            throw new IllegalArgumentException("Sleep time must be greater than 0");
+        }
+        if (maxBlockingTime < 1) {
+            throw new IllegalArgumentException("Max Blocking Time must be greater than 0");
+        }
         this.samReaderPlugin = samReaderPlugin;
+        this.sleepTime = sleepTime;
+
         if (samReaderPlugin instanceof ReaderPoolPlugin) {
             logger.info("Create SAM resource manager from reader pool plugin: {}",
                     samReaderPlugin.getName());
@@ -113,7 +125,7 @@ public class SamResourceManager {
      */
     public SamResourceManager(ReaderPlugin samReaderPlugin, String samReaderFilter)
             throws KeypleReaderException {
-        this(samReaderPlugin, samReaderFilter, MAX_BLOCKING_TIME);
+        this(samReaderPlugin, samReaderFilter, MAX_BLOCKING_TIME, DEFAULT_SLEEP_TIME);
     }
 
     /**
@@ -178,14 +190,23 @@ public class SamResourceManager {
                 try {
                     samReader = ((ReaderPoolPlugin) samReaderPlugin)
                             .allocateReader(samIdentifier.getGroupReference());
+
+                    // allocation is successful
+                    if (samReader != null) {
+                        SamResource samResource = createSamResource(samReader);
+                        logger.debug("Allocation succeeded. SAM resource created.");
+                        return samResource;
+                    } else {
+                        throw new KeypleReaderException(
+                                "Allocation failed due to a plugin technical error, returned reader is null while no exception was thrown");
+                    }
                 } catch (KeypleAllocationReaderException e) {
-                    throw new CalypsoNoSamResourceAvailableException(e.getMessage(), e);
+                    throw new KeypleReaderException(
+                            "Allocation failed due to a plugin technical error", e);
+                } catch (KeypleAllocationNoReaderException e) {
+                    // no reader is available, let's retry
                 }
-                if (samReader != null) {
-                    SamResource samResource = createSamResource(samReader);
-                    logger.debug("Allocation succeeded. SAM resource created.");
-                    return samResource;
-                }
+
             } else {
                 synchronized (localSamResources) {
                     for (SamResource samResource : localSamResources) {
@@ -211,7 +232,7 @@ public class SamResourceManager {
                     noSamResourceLogged = true;
                 }
                 try {
-                    Thread.sleep(10);
+                    Thread.sleep(sleepTime);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt(); // set interrupt flag
                     logger.error("Interrupt exception in Thread.sleep.");

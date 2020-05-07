@@ -13,6 +13,7 @@ package org.eclipse.keyple.plugin.remotese.nativese.method;
 
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationNoReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.plugin.remotese.rm.IRemoteMethodExecutor;
@@ -54,6 +55,11 @@ public class RmPoolAllocateExecutor implements IRemoteMethodExecutor {
         try {
             seReader = poolPlugin.allocateReader(groupReference);
         } catch (KeypleAllocationReaderException e) {
+            // if an exception occurs, send it into a keypleDto to the Master
+            return transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(
+                    getMethodName().getName(), e, null, null, null, keypleDto.getTargetNodeId(),
+                    keypleDto.getRequesterNodeId(), keypleDto.getId()));
+        } catch (KeypleAllocationNoReaderException e) {
             // if an exception occurs, send it into a keypleDto to the Master
             return transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(
                     getMethodName().getName(), e, null, null, null, keypleDto.getTargetNodeId(),
