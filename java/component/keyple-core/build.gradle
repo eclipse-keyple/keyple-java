@@ -2,6 +2,8 @@ apply plugin: 'java'
 apply plugin: 'java-library'
 apply plugin: 'maven'
 apply plugin: 'org.eclipse.keyple'
+apply plugin: 'jacoco'
+apply plugin: 'org.sonarqube'
 
 sourceCompatibility = 1.6
 archivesBaseName = "keyple-java-core"
@@ -163,6 +165,16 @@ task installCore{
         println "Keyple Core library ${project.version} has been installed into maven local repo at path : " + project.getRepositories().get(0).getAt("url")
     }
 }
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.enabled false
+    }
+}
+
+test.finalizedBy jacocoTestReport
 
 dependencies {
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api

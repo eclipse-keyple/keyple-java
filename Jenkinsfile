@@ -70,9 +70,43 @@ pipeline {
                 }
             }
         }
+        stage('Keyple Java: Code Quality') {
+            when {
+                expression { env.GIT_URL == 'https://github.com/eclipse/keyple-java.git' && (env.GIT_BRANCH == "develop" || env.GIT_BRANCH.startsWith('release-0.9')) && env.CHANGE_ID == null && keypleVersion ==~ /.*-SNAPSHOT$/ }
+            }
+            try {
+                steps{
+                    container('java-builder') {
+                        withSonarQubeEnv {
+                            sh './gradlew codeQuality --info'
+                        }
+                    }
+                }
+            } catch(all) {
+                unstable("Unable to log code quality to Sonar.")
+            }
+        }
+        stage('Keyple Android: Code Quality') {
+            when {
+                expression { env.GIT_URL == 'https://github.com/eclipse/keyple-java.git' && (env.GIT_BRANCH == "develop" || env.GIT_BRANCH.startsWith('release-0.9')) && env.CHANGE_ID == null && keypleVersion ==~ /.*-SNAPSHOT$/ }
+            }
+            try {
+                steps{
+                    container('java-builder') {
+                        dir('android') {
+                            withSonarQubeEnv {
+                                sh './gradlew codeQuality'
+                            }
+                        }
+                    }
+                }
+            } catch(all) {
+                unstable("Unable to log code quality to Sonar.")
+            }
+        }
         stage('Keyple Java: Upload artifacts to sonatype') {
             when {
-                expression { env.GIT_URL == 'https://github.com/eclipse/keyple-java.git' && env.GIT_BRANCH == "develop" && env.CHANGE_ID == null && keypleVersion ==~ /.*-SNAPSHOT$/ }
+                expression { env.GIT_URL == 'https://github.com/eclipse/keyple-java.git' && (env.GIT_BRANCH == "develop" || env.GIT_BRANCH.startsWith('release-0.9')) && env.CHANGE_ID == null && keypleVersion ==~ /.*-SNAPSHOT$/ }
             }
             steps{
                 container('java-builder') {
@@ -90,7 +124,7 @@ pipeline {
         }
         stage('Keyple Android: Upload artifacts to sonatype') {
             when {
-                expression { env.GIT_URL == 'https://github.com/eclipse/keyple-java.git' && env.GIT_BRANCH == "develop" && env.CHANGE_ID == null && keypleVersion ==~ /.*-SNAPSHOT$/ }
+                expression { env.GIT_URL == 'https://github.com/eclipse/keyple-java.git' && (env.GIT_BRANCH == "develop" || env.GIT_BRANCH.startsWith('release-0.9')) && env.CHANGE_ID == null && keypleVersion ==~ /.*-SNAPSHOT$/ }
             }
             steps{
                 container('java-builder') {
@@ -107,7 +141,7 @@ pipeline {
         }
         stage('Keyple Java: Generate apks') {
             when {
-                expression { env.GIT_URL == 'https://github.com/eclipse/keyple-java.git' && env.GIT_BRANCH == "develop" && env.CHANGE_ID == null && keypleVersion ==~ /.*-SNAPSHOT$/ }
+                expression { env.GIT_URL == 'https://github.com/eclipse/keyple-java.git' && (env.GIT_BRANCH == "develop" || env.GIT_BRANCH.startsWith('release-0.9')) && env.CHANGE_ID == null && keypleVersion ==~ /.*-SNAPSHOT$/ }
             }
             steps{
                 container('java-builder') {
@@ -116,7 +150,7 @@ pipeline {
                     sh 'keytool -genkey -v -keystore ./java/example/calypso/android/nfc/?/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"'
                     sh 'keytool -genkey -v -keystore ./java/example/calypso/android/omapi/?/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"'
                     dir('java/example/calypso/android/nfc/') {
-                        sh '../../../../../gradlew assembleDebug'
+                        sh '.gradlew assembleDebug'
                     }
                     dir('java/example/calypso/android/omapi') {
                         sh './gradlew assembleDebug'
@@ -126,7 +160,7 @@ pipeline {
         }
         stage('Keyple Java: Deploy to eclipse') {
             when {
-                expression { env.GIT_URL == 'https://github.com/eclipse/keyple-java.git' && env.GIT_BRANCH == "develop" && env.CHANGE_ID == null && keypleVersion ==~ /.*-SNAPSHOT$/ }
+                expression { env.GIT_URL == 'https://github.com/eclipse/keyple-java.git' && (env.GIT_BRANCH == "develop" || env.GIT_BRANCH.startsWith('release-0.9')) && env.CHANGE_ID == null && keypleVersion ==~ /.*-SNAPSHOT$/ }
             }
             steps {
                 container('java-builder') {
