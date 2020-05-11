@@ -297,7 +297,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
             logger.error("CalypsoDesynchronisedExchangesException: {}", e.getMessage());
         } catch (CalypsoPoCommandException e) {
             logger.error("PO command {} failed with the status code 0x{}. {}", e.getCommand(),
-                    Integer.toHexString(e.getStatusCode() & 0xFFFF));
+                    Integer.toHexString(e.getStatusCode() & 0xFFFF), e.getMessage());
         }
     }
 
