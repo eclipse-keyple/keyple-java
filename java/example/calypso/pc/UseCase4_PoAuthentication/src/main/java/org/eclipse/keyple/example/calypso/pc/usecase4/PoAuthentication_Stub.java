@@ -19,7 +19,6 @@ import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.SamResource;
-import org.eclipse.keyple.calypso.transaction.SessionAccessLevel;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
@@ -200,10 +199,10 @@ public class PoAuthentication_Stub {
              * Open Session for the debit key
              */
 
-            poTransaction.processOpening(PoTransaction.SessionModificationMode.ATOMIC,
-                    SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0, (byte) 0);
+            poTransaction
+                    .processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT);
 
-            if (!poTransaction.wasRatified()) {
+            if (!calypsoPo.isDfRatified()) {
                 logger.info(
                         "========= Previous Secure Session was not ratified. =====================");
             }
