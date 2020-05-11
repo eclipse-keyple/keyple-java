@@ -326,15 +326,17 @@ final class CalypsoPoUtils {
                 .accessConditions(accessConditions)//
                 .keyIndexes(keyIndexes)//
                 .dfStatus(dfStatus)//
-                .kvc(SessionAccessLevel.SESSION_LVL_PERSO, proprietaryInformation[SEL_KVCS_OFFSET])//
-                .kvc(SessionAccessLevel.SESSION_LVL_LOAD,
+                .kvc(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_PERSO,
+                        proprietaryInformation[SEL_KVCS_OFFSET])//
+                .kvc(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_LOAD,
                         proprietaryInformation[SEL_KVCS_OFFSET + 1])//
-                .kvc(SessionAccessLevel.SESSION_LVL_DEBIT,
+                .kvc(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT,
                         proprietaryInformation[SEL_KVCS_OFFSET + 2])//
-                .kif(SessionAccessLevel.SESSION_LVL_PERSO, proprietaryInformation[SEL_KIFS_OFFSET])//
-                .kif(SessionAccessLevel.SESSION_LVL_LOAD,
+                .kif(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_PERSO,
+                        proprietaryInformation[SEL_KIFS_OFFSET])//
+                .kif(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_LOAD,
                         proprietaryInformation[SEL_KIFS_OFFSET + 1])//
-                .kif(SessionAccessLevel.SESSION_LVL_DEBIT,
+                .kif(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT,
                         proprietaryInformation[SEL_KIFS_OFFSET + 2])//
                 .build();
     }
@@ -480,9 +482,11 @@ final class CalypsoPoUtils {
             List<ApduResponse> apduResponses) throws CalypsoPoCommandException {
         Iterator<ApduResponse> responseIterator = apduResponses.iterator();
 
-        for (AbstractPoCommandBuilder<? extends AbstractPoResponseParser> commandBuilder : commandBuilders) {
-            ApduResponse apduResponse = responseIterator.next();
-            updateCalypsoPo(calypsoPo, commandBuilder, apduResponse);
+        if (commandBuilders != null && !commandBuilders.isEmpty()) {
+            for (AbstractPoCommandBuilder<? extends AbstractPoResponseParser> commandBuilder : commandBuilders) {
+                ApduResponse apduResponse = responseIterator.next();
+                updateCalypsoPo(calypsoPo, commandBuilder, apduResponse);
+            }
         }
     }
 

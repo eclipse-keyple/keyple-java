@@ -28,8 +28,8 @@ public class DirectoryHeader implements Serializable {
     private final byte[] accessConditions;
     private final byte[] keyIndexes;
     private final byte dfStatus;
-    private final HashMap<SessionAccessLevel, Byte> kif;
-    private final HashMap<SessionAccessLevel, Byte> kvc;
+    private final HashMap<PoTransaction.SessionSetting.AccessLevel, Byte> kif;
+    private final HashMap<PoTransaction.SessionSetting.AccessLevel, Byte> kvc;
 
     /** Private constructor */
     private DirectoryHeader(DirectoryHeaderBuilder builder) {
@@ -51,10 +51,10 @@ public class DirectoryHeader implements Serializable {
         private byte[] accessConditions;
         private byte[] keyIndexes;
         private byte dfStatus;
-        private final HashMap<SessionAccessLevel, Byte> kif =
-                new HashMap<SessionAccessLevel, Byte>();
-        private final HashMap<SessionAccessLevel, Byte> kvc =
-                new HashMap<SessionAccessLevel, Byte>();
+        private final HashMap<PoTransaction.SessionSetting.AccessLevel, Byte> kif =
+                new HashMap<PoTransaction.SessionSetting.AccessLevel, Byte>();
+        private final HashMap<PoTransaction.SessionSetting.AccessLevel, Byte> kvc =
+                new HashMap<PoTransaction.SessionSetting.AccessLevel, Byte>();
 
         /** Private constructor */
         private DirectoryHeaderBuilder() {}
@@ -115,7 +115,7 @@ public class DirectoryHeader implements Serializable {
          * @param kif the KIF value
          * @return the builder instance
          */
-        DirectoryHeaderBuilder kif(SessionAccessLevel level, byte kif) {
+        DirectoryHeaderBuilder kif(PoTransaction.SessionSetting.AccessLevel level, byte kif) {
             this.kif.put(level, kif);
             return this;
         }
@@ -128,7 +128,7 @@ public class DirectoryHeader implements Serializable {
          * @param kvc the KVC value
          * @return the builder instance
          */
-        DirectoryHeaderBuilder kvc(SessionAccessLevel level, byte kvc) {
+        DirectoryHeaderBuilder kvc(PoTransaction.SessionSetting.AccessLevel level, byte kvc) {
             this.kvc.put(level, kvc);
             return this;
         }
@@ -193,7 +193,7 @@ public class DirectoryHeader implements Serializable {
      * @throws NoSuchElementException if KIF is not found.
      * @since 0.9
      */
-    public byte getKif(SessionAccessLevel level) {
+    public byte getKif(PoTransaction.SessionSetting.AccessLevel level) {
 
         Assert.getInstance().notNull(level, "level");
 
@@ -214,7 +214,7 @@ public class DirectoryHeader implements Serializable {
      * @throws NoSuchElementException if KVC is not found.
      * @since 0.9
      */
-    public byte getKvc(SessionAccessLevel level) {
+    public byte getKvc(PoTransaction.SessionSetting.AccessLevel level) {
 
         Assert.getInstance().notNull(level, "level");
 

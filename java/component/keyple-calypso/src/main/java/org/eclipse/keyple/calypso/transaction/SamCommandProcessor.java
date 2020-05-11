@@ -175,7 +175,7 @@ class SamCommandProcessor {
      * @return true if the kvc is authorized
      */
     public boolean isAuthorizedKvc(byte kvc) {
-        return poSecuritySettings.isAuthorizedKvc(kvc);
+        return poSecuritySettings.isSessionKvcAuthorized(kvc);
     }
 
     /**
@@ -190,24 +190,11 @@ class SamCommandProcessor {
      * @param accessLevel the session access level
      * @return the work KIF value byte
      */
-    private byte determineWorkKif(byte poKif, SessionAccessLevel accessLevel) {
+    private byte determineWorkKif(byte poKif,
+            PoTransaction.SessionSetting.AccessLevel accessLevel) {
         byte workKeyKif;
         if (poKif == KIF_UNDEFINED) {
-            switch (accessLevel) {
-                case SESSION_LVL_PERSO:
-                    workKeyKif = poSecuritySettings
-                            .getKeyInfo(PoSecuritySettings.DefaultKeyInfo.SAM_DEFAULT_KIF_PERSO);
-                    break;
-                case SESSION_LVL_LOAD:
-                    workKeyKif = poSecuritySettings
-                            .getKeyInfo(PoSecuritySettings.DefaultKeyInfo.SAM_DEFAULT_KIF_LOAD);
-                    break;
-                case SESSION_LVL_DEBIT:
-                default:
-                    workKeyKif = poSecuritySettings
-                            .getKeyInfo(PoSecuritySettings.DefaultKeyInfo.SAM_DEFAULT_KIF_DEBIT);
-                    break;
-            }
+            workKeyKif = poSecuritySettings.getSessionDefaultKif(accessLevel);
         } else {
             workKeyKif = poKif;
         }
@@ -231,14 +218,15 @@ class SamCommandProcessor {
      * @param digestData a first packet of data to digest.
      * @return true if the initialization is successful
      */
-    boolean initializeDigester(SessionAccessLevel accessLevel, boolean sessionEncryption,
-            boolean verificationMode, PoSecuritySettings.DefaultKeyInfo workKeyRecordNumber,
-            byte poKif, byte poKVC, byte[] digestData) {
+    boolean initializeDigester(PoTransaction.SessionSetting.AccessLevel accessLevel,
+            boolean sessionEncryption, boolean verificationMode, byte poKif, byte poKVC,
+            byte[] digestData) {
 
         this.sessionEncryption = sessionEncryption;
         this.verificationMode = verificationMode;
-        this.workKeyRecordNumber = poSecuritySettings.getKeyInfo(workKeyRecordNumber);
+        this.workKeyRecordNumber = poSecuritySettings.getSessionDefaultKeyRecordNumber(accessLevel);
         this.workKeyKif = determineWorkKif(poKif, accessLevel);
+        // TODO handle Rev 1.0 case where KVC is not available
         this.workKeyKVC = poKVC;
 
         if (logger.isDebugEnabled()) {
