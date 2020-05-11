@@ -12,6 +12,7 @@
 package org.eclipse.keyple.example.calypso.pc.usecase2;
 
 
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.ElementaryFile;
 import org.eclipse.keyple.calypso.transaction.PoResource;
@@ -269,7 +270,10 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
                 } catch (CalypsoSecureSessionException e) {
                     e.printStackTrace();
                 } catch (CalypsoDesynchronisedExchangesException e) {
-                    e.printStackTrace();
+                    logger.error("CalypsoDesynchronisedExchangesException: {}", e.getMessage());
+                } catch (CalypsoPoCommandException e) {
+                    logger.error("PO command {} failed with the status code 0x{}. {}",
+                            e.getCommand(), Integer.toHexString(e.getStatusCode() & 0xFFFF));
                 }
                 logger.info(
                         "==================================================================================");

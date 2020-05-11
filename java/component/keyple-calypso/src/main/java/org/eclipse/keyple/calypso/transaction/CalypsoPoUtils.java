@@ -22,6 +22,7 @@ import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.builder.*;
 import org.eclipse.keyple.calypso.command.po.builder.security.AbstractOpenSessionCmdBuild;
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
 import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.DecreaseRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.IncreaseRespPars;
@@ -132,10 +133,14 @@ final class CalypsoPoUtils {
      * @return the created response parser
      */
     private static ReadRecordsRespPars updateCalypsoPoReadRecords(CalypsoPo calypsoPo,
-            ReadRecordsCmdBuild readRecordsCmdBuild, ApduResponse apduResponse) {
+            ReadRecordsCmdBuild readRecordsCmdBuild, ApduResponse apduResponse)
+            throws CalypsoPoCommandException {
         // create parser
         ReadRecordsRespPars readRecordsRespPars =
                 readRecordsCmdBuild.createResponseParser(apduResponse);
+
+        readRecordsRespPars.checkStatus();
+
         // iterate over read records to fill the CalypsoPo
         for (Map.Entry<Integer, byte[]> entry : readRecordsRespPars.getRecords().entrySet()) {
             calypsoPo.setContent((byte) readRecordsCmdBuild.getSfi(), entry.getKey(),
@@ -155,9 +160,13 @@ final class CalypsoPoUtils {
      * @param apduResponse the response received
      */
     private static SelectFileRespPars updateCalypsoPoSelectFile(CalypsoPo calypsoPo,
-            SelectFileCmdBuild selectFileCmdBuild, ApduResponse apduResponse) {
+            SelectFileCmdBuild selectFileCmdBuild, ApduResponse apduResponse)
+            throws CalypsoPoCommandException {
         SelectFileRespPars selectFileRespPars =
                 selectFileCmdBuild.createResponseParser(apduResponse);
+
+        selectFileRespPars.checkStatus();
+
         byte[] proprietaryInformation = selectFileRespPars.getProprietaryInformation();
         byte sfi = proprietaryInformation[SEL_SFI_OFFSET];
         byte fileType = proprietaryInformation[SEL_TYPE_OFFSET];
@@ -185,13 +194,20 @@ final class CalypsoPoUtils {
      *
      * @param calypsoPo the {@link CalypsoPo} object to update
      * @param updateRecordCmdBuild the Update Record command builder
+     * @param apduResponse the response received
      */
     private static UpdateRecordRespPars updateCalypsoPoUpdateRecord(CalypsoPo calypsoPo,
-            UpdateRecordCmdBuild updateRecordCmdBuild) {
+            UpdateRecordCmdBuild updateRecordCmdBuild, ApduResponse apduResponse)
+            throws CalypsoPoCommandException {
+        UpdateRecordRespPars updateRecordRespPars =
+                updateRecordCmdBuild.createResponseParser(apduResponse);
+
+        updateRecordRespPars.checkStatus();
+
         calypsoPo.setContent((byte) updateRecordCmdBuild.getSfi(),
                 updateRecordCmdBuild.getRecordNumber(), updateRecordCmdBuild.getData());
-        // return a parser instead of null
-        return null;
+
+        return updateRecordRespPars;
     }
 
     /**
@@ -201,14 +217,21 @@ final class CalypsoPoUtils {
      *
      * @param calypsoPo the {@link CalypsoPo} object to update
      * @param writeRecordCmdBuild the Write Record command builder
+     * @param apduResponse the response received
      */
     private static WriteRecordRespPars updateCalypsoPoWriteRecord(CalypsoPo calypsoPo,
-            WriteRecordCmdBuild writeRecordCmdBuild) {
+            WriteRecordCmdBuild writeRecordCmdBuild, ApduResponse apduResponse)
+            throws CalypsoPoCommandException {
+        WriteRecordRespPars writeRecordRespPars =
+                writeRecordCmdBuild.createResponseParser(apduResponse);
+
+        writeRecordRespPars.checkStatus();
+
         // TODO we should add another method to Calypso to emulate the behavior of Write Record
         calypsoPo.setContent((byte) writeRecordCmdBuild.getSfi(),
                 writeRecordCmdBuild.getRecordNumber(), writeRecordCmdBuild.getData());
-        // return a parser instead of null
-        return null;
+
+        return writeRecordRespPars;
     }
 
     /**
@@ -218,13 +241,20 @@ final class CalypsoPoUtils {
      *
      * @param appendRecordCmdBuild the Append Records command builder
      * @param calypsoPo the {@link CalypsoPo} object to update
+     * @param apduResponse the response received
      */
     private static AppendRecordRespPars updateCalypsoPoAppendRecord(CalypsoPo calypsoPo,
-            AppendRecordCmdBuild appendRecordCmdBuild) {
+            AppendRecordCmdBuild appendRecordCmdBuild, ApduResponse apduResponse)
+            throws CalypsoPoCommandException {
+        AppendRecordRespPars appendRecordRespPars =
+                appendRecordCmdBuild.createResponseParser(apduResponse);
+
+        appendRecordRespPars.checkStatus();
+
         calypsoPo.addCyclicContent((byte) appendRecordCmdBuild.getSfi(),
                 appendRecordCmdBuild.getData());
-        // return a parser instead of null
-        return null;
+
+        return appendRecordRespPars;
     }
 
     /**
@@ -237,11 +267,16 @@ final class CalypsoPoUtils {
      * @param apduResponse the response received
      */
     private static DecreaseRespPars updateCalypsoPoDecrease(CalypsoPo calypsoPo,
-            DecreaseCmdBuild decreaseCmdBuild, ApduResponse apduResponse) {
+            DecreaseCmdBuild decreaseCmdBuild, ApduResponse apduResponse)
+            throws CalypsoPoCommandException {
+        DecreaseRespPars decreaseRespPars = decreaseCmdBuild.createResponseParser(apduResponse);
+
+        decreaseRespPars.checkStatus();
+
         calypsoPo.setContent((byte) decreaseCmdBuild.getSfi(), 1, apduResponse.getDataOut(),
                 3 * (decreaseCmdBuild.getCounterNumber() - 1));
-        // return a parser instead of null
-        return null;
+
+        return decreaseRespPars;
     }
 
     /**
@@ -254,11 +289,16 @@ final class CalypsoPoUtils {
      * @param apduResponse the response received
      */
     private static IncreaseRespPars updateCalypsoPoIncrease(CalypsoPo calypsoPo,
-            IncreaseCmdBuild increaseCmdBuild, ApduResponse apduResponse) {
+            IncreaseCmdBuild increaseCmdBuild, ApduResponse apduResponse)
+            throws CalypsoPoCommandException {
+        IncreaseRespPars increaseRespPars = increaseCmdBuild.createResponseParser(apduResponse);
+
+        increaseRespPars.checkStatus();
+
         calypsoPo.setContent((byte) increaseCmdBuild.getSfi(), 1, apduResponse.getDataOut(),
                 3 * (increaseCmdBuild.getCounterNumber() - 1));
-        // return a parser instead of null
-        return null;
+
+        return increaseRespPars;
     }
 
 
@@ -388,7 +428,8 @@ final class CalypsoPoUtils {
      * @param apduResponse the APDU response returned by the PO to the command
      */
     static AbstractPoResponseParser updateCalypsoPo(CalypsoPo calypsoPo,
-            AbstractPoCommandBuilder commandBuilder, ApduResponse apduResponse) {
+            AbstractPoCommandBuilder<? extends AbstractPoResponseParser> commandBuilder,
+            ApduResponse apduResponse) throws CalypsoPoCommandException {
         switch (commandBuilder.getCommandRef()) {
             case READ_RECORDS:
                 return updateCalypsoPoReadRecords(calypsoPo, (ReadRecordsCmdBuild) commandBuilder,
@@ -397,13 +438,14 @@ final class CalypsoPoUtils {
                 return updateCalypsoPoSelectFile(calypsoPo, (SelectFileCmdBuild) commandBuilder,
                         apduResponse);
             case UPDATE_RECORD:
-                return updateCalypsoPoUpdateRecord(calypsoPo,
-                        (UpdateRecordCmdBuild) commandBuilder);
+                return updateCalypsoPoUpdateRecord(calypsoPo, (UpdateRecordCmdBuild) commandBuilder,
+                        apduResponse);
             case WRITE_RECORD:
-                return updateCalypsoPoWriteRecord(calypsoPo, (WriteRecordCmdBuild) commandBuilder);
+                return updateCalypsoPoWriteRecord(calypsoPo, (WriteRecordCmdBuild) commandBuilder,
+                        apduResponse);
             case APPEND_RECORD:
-                return updateCalypsoPoAppendRecord(calypsoPo,
-                        (AppendRecordCmdBuild) commandBuilder);
+                return updateCalypsoPoAppendRecord(calypsoPo, (AppendRecordCmdBuild) commandBuilder,
+                        apduResponse);
             case DECREASE:
                 return updateCalypsoPoDecrease(calypsoPo, (DecreaseCmdBuild) commandBuilder,
                         apduResponse);
@@ -433,11 +475,12 @@ final class CalypsoPoUtils {
      * @param commandBuilders the list of builders that get the responses
      * @param apduResponses the APDU responses returned by the PO to all commands
      */
-    static void updateCalypsoPo(CalypsoPo calypsoPo, List<AbstractPoCommandBuilder> commandBuilders,
-            List<ApduResponse> apduResponses) {
+    static void updateCalypsoPo(CalypsoPo calypsoPo,
+            List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> commandBuilders,
+            List<ApduResponse> apduResponses) throws CalypsoPoCommandException {
         Iterator<ApduResponse> responseIterator = apduResponses.iterator();
 
-        for (AbstractPoCommandBuilder<AbstractPoResponseParser> commandBuilder : commandBuilders) {
+        for (AbstractPoCommandBuilder<? extends AbstractPoResponseParser> commandBuilder : commandBuilders) {
             ApduResponse apduResponse = responseIterator.next();
             updateCalypsoPo(calypsoPo, commandBuilder, apduResponse);
         }

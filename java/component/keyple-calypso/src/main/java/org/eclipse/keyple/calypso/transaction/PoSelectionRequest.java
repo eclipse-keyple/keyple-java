@@ -15,6 +15,8 @@ import java.util.List;
 import org.eclipse.keyple.calypso.SelectFileControl;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
+import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronisedExchangesException;
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
@@ -23,7 +25,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Specialized selection request to manage the specific characteristics of Calypso POs */
-public final class PoSelectionRequest extends AbstractSeSelectionRequest<AbstractPoCommandBuilder> {
+public final class PoSelectionRequest extends
+        AbstractSeSelectionRequest<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> {
     private static final Logger logger = LoggerFactory.getLogger(PoSelectionRequest.class);
     private final PoClass poClass;
 
@@ -99,9 +102,10 @@ public final class PoSelectionRequest extends AbstractSeSelectionRequest<Abstrac
      */
     @Override
     protected CalypsoPo parse(SeResponse seResponse)
-            throws CalypsoDesynchronisedExchangesException {
+            throws CalypsoDesynchronisedExchangesException, CalypsoPoCommandException {
 
-        List<AbstractPoCommandBuilder> commandBuilders = getCommandBuilders();
+        List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> commandBuilders =
+                getCommandBuilders();
         List<ApduResponse> apduResponses = seResponse.getApduResponses();
 
         if (commandBuilders.size() != apduResponses.size()) {

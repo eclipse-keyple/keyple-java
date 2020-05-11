@@ -14,6 +14,7 @@ package org.eclipse.keyple.calypso.transaction;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
+import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,8 +36,8 @@ class PoCommandManager {
     private static final Logger logger = LoggerFactory.getLogger(PoCommandManager.class);
 
     /** The list to contain the prepared commands and their parsers */
-    private final List<AbstractPoCommandBuilder> poCommandList =
-            new ArrayList<AbstractPoCommandBuilder>();
+    private final List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poCommandList =
+            new ArrayList<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>>();
     /** The command index, incremented each time a command is added */
     private boolean preparedCommandsProcessed;
 
@@ -78,7 +79,7 @@ class PoCommandManager {
     /**
      * @return the current AbstractPoCommandBuilder list
      */
-    List<AbstractPoCommandBuilder> getPoCommandBuilderList() {
+    List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> getPoCommandBuilderList() {
         /* Clear the list if no command has been added since the last call to a process method. */
         if (preparedCommandsProcessed) {
             poCommandList.clear();
