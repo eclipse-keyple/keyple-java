@@ -2,6 +2,8 @@ apply plugin: 'java'
 apply plugin: 'java-library'
 apply plugin: 'maven'
 apply plugin: 'org.eclipse.keyple'
+apply plugin: 'jacoco'
+apply plugin: 'org.sonarqube'
 
 project.description ='Keyple Remote SE Plugin Master and Slave'
 archivesBaseName = "keyple-java-plugin-remotese"
@@ -175,6 +177,15 @@ dependencies {
 
 }
 
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.enabled false
+    }
+}
+
+test.finalizedBy jacocoTestReport
 
 /*
 //Create jar for Native Reader Client

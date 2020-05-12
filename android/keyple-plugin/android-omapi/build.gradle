@@ -5,6 +5,9 @@ apply plugin: 'maven'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 //apply plugin: 'org.eclipse.keyple'
+apply plugin: 'jacoco'
+apply plugin: 'jacoco-android'
+apply plugin: 'org.sonarqube'
 
 archivesBaseName = "keyple-android-plugin-omapi"
 
@@ -26,6 +29,9 @@ android {
         release {
             minifyEnabled false
         }
+        debug {
+            testCoverageEnabled = true 
+        }
     }
     
     compileOptions {
@@ -35,8 +41,12 @@ android {
 
     testOptions {
         unitTests.returnDefaultValues = true//mock Log Android object
+        unitTests.all {
+            jacoco {
+                includeNoLocationClasses = true
+            }
+        }
     }
-
 
     lintOptions {
         abortOnError false
@@ -89,6 +99,22 @@ android {
         test.java.srcDirs += 'src/test/kotlin'
     }
 
+}
+
+jacoco {
+    toolVersion "0.8.5"
+}
+
+jacocoAndroidUnitTestReport {
+  csv.enabled false
+  html.enabled true
+  xml.enabled true
+}
+
+sonarqube {
+    properties {
+        property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacocoTestDebugUnitTestReport/jacocoTestDebugUnitTestReport.xml"
+    }
 }
 
 //build sources jar
