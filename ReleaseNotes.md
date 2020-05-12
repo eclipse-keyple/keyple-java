@@ -1,9 +1,9 @@
 # Keyple - Release Notes
 
 Releases:
- - [Patch - Keyple Java 20/05](#patch-keyple-java-2005)
- - [Master - Keyple Java 20/01](#master-keyple-java-2001)
- - [Master - Keyple Java 19/07](#master-keyple-java-1907)
+ - [Patch - Keyple Java 20/05](#patch---keyple-java-2005)
+ - [Master - Keyple Java 20/01](#master---keyple-java-2001)
+ - [Master - Keyple Java 19/07](#master---keyple-java-1907)
 
 
 ## Patch - Keyple Java 20/05
