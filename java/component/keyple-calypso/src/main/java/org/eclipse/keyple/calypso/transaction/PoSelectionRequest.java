@@ -17,7 +17,7 @@ import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
-import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronisedExchangesException;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronizedExchangesException;
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
@@ -97,19 +97,19 @@ public final class PoSelectionRequest extends
      *
      * @param seResponse the SE response received
      * @return a {@link CalypsoPo}
-     * @throws CalypsoDesynchronisedExchangesException if the number of responses is different from
+     * @throws CalypsoDesynchronizedExchangesException if the number of responses is different from
      *         the number of requests
      */
     @Override
     protected CalypsoPo parse(SeResponse seResponse)
-            throws CalypsoDesynchronisedExchangesException, CalypsoPoCommandException {
+            throws CalypsoDesynchronizedExchangesException, CalypsoPoCommandException {
 
         List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> commandBuilders =
                 getCommandBuilders();
         List<ApduResponse> apduResponses = seResponse.getApduResponses();
 
         if (commandBuilders.size() != apduResponses.size()) {
-            throw new CalypsoDesynchronisedExchangesException(
+            throw new CalypsoDesynchronizedExchangesException(
                     "Mismatch in the number of requests/responses");
         }
 

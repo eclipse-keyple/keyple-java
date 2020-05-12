@@ -52,6 +52,15 @@ final class CalypsoPoUtils {
     // Record number
     public static final int NB_REC_MIN = 1;
     public static final int NB_REC_MAX = 255;
+
+    // Counter number
+    public static final int NB_CNT_MIN = 1;
+    public static final int NB_CNT_MAX = 255;
+
+    // Counter value
+    public static final int CNT_VALUE_MIN = 0;
+    public static final int CNT_VALUE_MAX = 16777215;
+
     // Le max
     public static final int LE_MAX = 255;
 
