@@ -45,7 +45,7 @@ Release train components:
 * none
 
 ### keyple-android-plugin-omapi 0.8.1
-* none
+* KEYP-195 : update init readers method to use ConcurrentSkipListSet
 
 
 ## Keyple Java 20/01
