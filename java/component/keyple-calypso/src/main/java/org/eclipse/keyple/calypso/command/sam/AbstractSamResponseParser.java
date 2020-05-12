@@ -79,4 +79,13 @@ public abstract class AbstractSamResponseParser extends AbstractApduResponsePars
         }
         return e;
     }
+
+    @Override
+    public void checkStatus() throws CalypsoSamCommandException {
+        try {
+            super.checkStatus();
+        } catch (KeypleSeCommandException e) {
+            throw (CalypsoSamCommandException) e;
+        }
+    }
 }

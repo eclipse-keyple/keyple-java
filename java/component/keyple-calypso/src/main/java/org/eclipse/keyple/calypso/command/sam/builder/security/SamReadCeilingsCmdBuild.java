@@ -14,11 +14,13 @@ package org.eclipse.keyple.calypso.command.sam.builder.security;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
+import org.eclipse.keyple.calypso.command.sam.parser.security.SamReadCeilingsRespPars;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
  * Builder for the SAM Read Ceilings APDU command.
  */
-public class SamReadCeilingsCmdBuild extends AbstractSamCommandBuilder {
+public class SamReadCeilingsCmdBuild extends AbstractSamCommandBuilder<SamReadCeilingsRespPars> {
     /** The command reference. */
     private static final CalypsoSamCommand command = CalypsoSamCommand.READ_CEILINGS;
 
@@ -30,6 +32,13 @@ public class SamReadCeilingsCmdBuild extends AbstractSamCommandBuilder {
         CEILING_RECORD, SINGLE_CEILING
     }
 
+    /**
+     * Instantiates a new SamReadCeilingsCmdBuild.
+     *
+     * @param revision revision of the SAM
+     * @param operationType the counter operation type
+     * @param index the counter index
+     */
     public SamReadCeilingsCmdBuild(SamRevision revision, CeilingsOperationType operationType,
             int index) {
 
@@ -73,4 +82,8 @@ public class SamReadCeilingsCmdBuild extends AbstractSamCommandBuilder {
         request = setApduRequest(cla, command, p1, p2, null, (byte) 0x00);
     }
 
+    @Override
+    public SamReadCeilingsRespPars createResponseParser(ApduResponse apduResponse) {
+        return new SamReadCeilingsRespPars(apduResponse, this);
+    }
 }

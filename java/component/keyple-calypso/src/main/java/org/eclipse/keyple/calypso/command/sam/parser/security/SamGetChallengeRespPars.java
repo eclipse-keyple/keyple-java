@@ -16,9 +16,8 @@ package org.eclipse.keyple.calypso.command.sam.parser.security;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
-import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
+import org.eclipse.keyple.calypso.command.sam.builder.security.SamGetChallengeCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
-import org.eclipse.keyple.core.command.SeCommand;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
@@ -45,9 +44,10 @@ public class SamGetChallengeRespPars extends AbstractSamResponseParser {
      * Instantiates a new SamGetChallengeRespPars .
      *
      * @param response of the SamGetChallengeCmdBuild
+     * @param builder the reference to the builder that created this parser
      */
-    public SamGetChallengeRespPars(ApduResponse response) {
-        super(response, null);
+    public SamGetChallengeRespPars(ApduResponse response, SamGetChallengeCmdBuild builder) {
+        super(response, builder);
     }
 
     /**
@@ -57,10 +57,5 @@ public class SamGetChallengeRespPars extends AbstractSamResponseParser {
      */
     public byte[] getChallenge() {
         return isSuccessful() ? response.getDataOut() : null;
-    }
-
-    @Override
-    protected SeCommand getCommandRef() {
-        return CalypsoSamCommand.GET_CHALLENGE;
     }
 }

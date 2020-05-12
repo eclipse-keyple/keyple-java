@@ -15,11 +15,14 @@ package org.eclipse.keyple.calypso.command.sam.builder.security;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
+import org.eclipse.keyple.calypso.command.sam.parser.security.DigestAuthenticateRespPars;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
  * Builder for the Digest Authenticate APDU command.
  */
-public class DigestAuthenticateCmdBuild extends AbstractSamCommandBuilder {
+public class DigestAuthenticateCmdBuild
+        extends AbstractSamCommandBuilder<DigestAuthenticateRespPars> {
 
     /** The command. */
     private static final CalypsoSamCommand command = CalypsoSamCommand.DIGEST_AUTHENTICATE;
@@ -31,8 +34,7 @@ public class DigestAuthenticateCmdBuild extends AbstractSamCommandBuilder {
      * @param signature the signature
      * @throws IllegalArgumentException - if the signature is null or has a wrong length.
      */
-    public DigestAuthenticateCmdBuild(SamRevision revision, byte[] signature)
-            throws IllegalArgumentException {
+    public DigestAuthenticateCmdBuild(SamRevision revision, byte[] signature) {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
@@ -49,5 +51,10 @@ public class DigestAuthenticateCmdBuild extends AbstractSamCommandBuilder {
         byte p2 = (byte) 0x00;
 
         request = setApduRequest(cla, command, p1, p2, signature, null);
+    }
+
+    @Override
+    public DigestAuthenticateRespPars createResponseParser(ApduResponse apduResponse) {
+        return new DigestAuthenticateRespPars(apduResponse, this);
     }
 }

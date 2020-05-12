@@ -14,11 +14,13 @@ package org.eclipse.keyple.calypso.command.sam.builder.security;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
+import org.eclipse.keyple.calypso.command.sam.parser.security.SamGetChallengeRespPars;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
  * Builder for the SAM Get Challenge APDU command.
  */
-public class SamGetChallengeCmdBuild extends AbstractSamCommandBuilder {
+public class SamGetChallengeCmdBuild extends AbstractSamCommandBuilder<SamGetChallengeRespPars> {
 
     /** The command reference. */
     private static final CalypsoSamCommand command = CalypsoSamCommand.GET_CHALLENGE;
@@ -30,8 +32,7 @@ public class SamGetChallengeCmdBuild extends AbstractSamCommandBuilder {
      * @param expectedResponseLength the expected response length
      * @throws IllegalArgumentException - if the expected response length has wrong value.
      */
-    public SamGetChallengeCmdBuild(SamRevision revision, byte expectedResponseLength)
-            throws IllegalArgumentException {
+    public SamGetChallengeCmdBuild(SamRevision revision, byte expectedResponseLength) {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
@@ -46,5 +47,10 @@ public class SamGetChallengeCmdBuild extends AbstractSamCommandBuilder {
 
         // CalypsoRequest calypsoRequest = new CalypsoRequest();
         request = setApduRequest(cla, command, p1, p2, null, expectedResponseLength);
+    }
+
+    @Override
+    public SamGetChallengeRespPars createResponseParser(ApduResponse apduResponse) {
+        return new SamGetChallengeRespPars(apduResponse, this);
     }
 }

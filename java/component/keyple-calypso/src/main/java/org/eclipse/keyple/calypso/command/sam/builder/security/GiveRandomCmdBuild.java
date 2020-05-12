@@ -14,11 +14,13 @@ package org.eclipse.keyple.calypso.command.sam.builder.security;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
+import org.eclipse.keyple.calypso.command.sam.parser.security.GiveRandomRespPars;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
  * Builder for the SAM Give Random APDU command.
  */
-public class GiveRandomCmdBuild extends AbstractSamCommandBuilder {
+public class GiveRandomCmdBuild extends AbstractSamCommandBuilder<GiveRandomRespPars> {
 
     /** The command reference. */
     private static final CalypsoSamCommand command = CalypsoSamCommand.GIVE_RANDOM;
@@ -45,5 +47,10 @@ public class GiveRandomCmdBuild extends AbstractSamCommandBuilder {
         }
 
         request = setApduRequest(cla, command, p1, p2, random, null);
+    }
+
+    @Override
+    public GiveRandomRespPars createResponseParser(ApduResponse apduResponse) {
+        return new GiveRandomRespPars(apduResponse, this);
     }
 }
