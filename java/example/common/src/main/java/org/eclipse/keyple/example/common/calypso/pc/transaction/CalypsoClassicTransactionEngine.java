@@ -15,6 +15,7 @@ package org.eclipse.keyple.example.common.calypso.pc.transaction;
 import java.util.Map;
 import java.util.SortedMap;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
+import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.ElementaryFile;
 import org.eclipse.keyple.calypso.transaction.PoResource;
@@ -23,10 +24,7 @@ import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.SamResource;
-import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronisedExchangesException;
-import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionIllegalStateException;
-import org.eclipse.keyple.calypso.transaction.exception.CalypsoSecureSessionException;
-import org.eclipse.keyple.calypso.transaction.exception.CalypsoUnauthorizedKvcException;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -34,7 +32,6 @@ import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
@@ -140,15 +137,14 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
      * @param calypsoPo the current {@link CalypsoPo}
      * @param poTransaction PoTransaction object
      * @param closeSeChannel flag to ask or not the channel closing at the end of the transaction
-     * @throws KeypleReaderException reader exception (defined as public for purposes of javadoc)
-     * @throws CalypsoUnauthorizedKvcException if the PO KVC is not authorized
-     * @throws CalypsoSecureSessionException if PO transaction error occurs
-     * @throws CalypsoPoTransactionIllegalStateException if PO transaction is not accurately used
+     * @throws CalypsoPoTransactionException if a functional error occurs (including PO and SAM IO
+     *         errors)
+     * @throws CalypsoPoCommandException if a PO command failed
+     * @throws CalypsoSamCommandException if a SAM command failed
      */
     public void doCalypsoReadWriteTransaction(CalypsoPo calypsoPo, PoTransaction poTransaction,
-            boolean closeSeChannel) throws KeypleReaderException, CalypsoUnauthorizedKvcException,
-            CalypsoSecureSessionException, CalypsoDesynchronisedExchangesException,
-            CalypsoPoTransactionIllegalStateException, CalypsoPoCommandException {
+            boolean closeSeChannel) throws CalypsoPoTransactionException, CalypsoPoCommandException,
+            CalypsoSamCommandException {
 
         /*
          * Read commands to execute during the opening step: EventLog, ContractList

@@ -13,6 +13,7 @@ package org.eclipse.keyple.example.remote.application;
 
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
+import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException;
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.ElementaryFile;
@@ -21,10 +22,7 @@ import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.SamIdentifier;
 import org.eclipse.keyple.calypso.transaction.SamResource;
 import org.eclipse.keyple.calypso.transaction.SamResourceManager;
-import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronisedExchangesException;
-import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionIllegalStateException;
-import org.eclipse.keyple.calypso.transaction.exception.CalypsoSecureSessionException;
-import org.eclipse.keyple.calypso.transaction.exception.CalypsoUnauthorizedKvcException;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -199,15 +197,12 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
 
             /* Log the result */
             logger.info("{} EventLog file data: {} ", nodeId, ByteArrayUtil.toHex(eventLog));
-        } catch (KeypleReaderException e) {
-            e.printStackTrace();
-        } catch (CalypsoSecureSessionException e) {
-            e.printStackTrace();
-        } catch (CalypsoDesynchronisedExchangesException e) {
-            logger.error("CalypsoDesynchronisedExchangesException: {}", e.getMessage());
+
         } catch (CalypsoPoCommandException e) {
             logger.error("PO command {} failed with the status code 0x{}. {}", e.getCommand(),
                     Integer.toHexString(e.getStatusCode() & 0xFFFF).toUpperCase(), e.getMessage());
+        } catch (CalypsoPoTransactionException e) {
+            logger.error("CalypsoPoTransactionException: {}", e.getMessage());
         }
         logger.warn(
                 "==================================================================================");
@@ -218,10 +213,9 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
                 "==================================================================================");
     }
 
-
     /**
      * Performs a PO Authenticated transaction with an explicit selection
-     * 
+     *
      * @param samResource : Required SAM Resource to execute this transaction
      * @param poResource : Reference to the matching PO embeeded in a PoResource
      */
@@ -285,20 +279,14 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
             logger.warn(
                     "==================================================================================");
 
-        } catch (KeypleReaderException e) {
-            e.printStackTrace();
-        } catch (CalypsoUnauthorizedKvcException e) {
-            e.printStackTrace();
-        } catch (CalypsoSecureSessionException e) {
-            e.printStackTrace();
-        } catch (CalypsoPoTransactionIllegalStateException e) {
-            e.printStackTrace();
-        } catch (CalypsoDesynchronisedExchangesException e) {
-            logger.error("CalypsoDesynchronisedExchangesException: {}", e.getMessage());
+        } catch (CalypsoPoTransactionException e) {
+            logger.error("CalypsoPoTransactionException: {}", e.getMessage());
+        } catch (CalypsoSamCommandException e) {
+            logger.error("SAM command {} failed with the status code 0x{}. {}", e.getCommand(),
+                    Integer.toHexString(e.getStatusCode() & 0xFFFF), e.getMessage());
         } catch (CalypsoPoCommandException e) {
             logger.error("PO command {} failed with the status code 0x{}. {}", e.getCommand(),
                     Integer.toHexString(e.getStatusCode() & 0xFFFF), e.getMessage());
         }
     }
-
 }
