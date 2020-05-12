@@ -17,10 +17,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import org.eclipse.keyple.calypso.transaction.CalypsoSam;
+import org.eclipse.keyple.calypso.transaction.PoSecuritySettings;
+import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.SamResource;
 import org.eclipse.keyple.calypso.transaction.SamSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.SamSelector;
-import org.eclipse.keyple.calypso.transaction.SecuritySettings;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -30,8 +31,8 @@ import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CalypsoUtilities {
-    private final static Logger logger = LoggerFactory.getLogger(CalypsoUtilities.class);
+public final class CalypsoUtilities {
+    private static final Logger logger = LoggerFactory.getLogger(CalypsoUtilities.class);
 
     private static Properties properties;
 
@@ -51,11 +52,13 @@ public class CalypsoUtilities {
                         "property file '" + propertiesFileName + "' not found!");
             }
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            logger.error("File not found exception: {}", e.getMessage());
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("IO exception: {}", e.getMessage());
         }
     }
+
+    private CalypsoUtilities() {}
 
     /**
      * Get the default reader for PO communications
@@ -89,14 +92,39 @@ public class CalypsoUtilities {
          *
          * (We expect the right is inserted)
          */
-        SamResource samResource = checkSamAndOpenChannel(samReader);
-
-        return samResource;
+        return checkSamAndOpenChannel(samReader);
     }
 
-    public static SecuritySettings getSecuritySettings() {
+    public static PoSecuritySettings getSecuritySettings() {
+
+        // The default KIF values for personalization, loading and debiting
+        final byte DEFAULT_KIF_PERSO = (byte) 0x21;
+        final byte DEFAULT_KIF_LOAD = (byte) 0x27;
+        final byte DEFAULT_KIF_DEBIT = (byte) 0x30;
+        // The default key record number values for personalization, loading and debiting
+        // The actual value should be adjusted.
+        final byte DEFAULT_KEY_RECORD_NUMBER_PERSO = (byte) 0x01;
+        final byte DEFAULT_KEY_RECORD_NUMBER_LOAD = (byte) 0x02;
+        final byte DEFAULT_KEY_RECORD_NUMBER_DEBIT = (byte) 0x03;
         /* define the security parameters to provide when creating PoTransaction */
-        return new SecuritySettings();
+        PoSecuritySettings poSecuritySettings = new PoSecuritySettings();
+        poSecuritySettings.setSessionDefaultKif(
+                PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_PERSO, DEFAULT_KIF_PERSO);
+        poSecuritySettings.setSessionDefaultKif(
+                PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_LOAD, DEFAULT_KIF_LOAD);
+        poSecuritySettings.setSessionDefaultKif(
+                PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT, DEFAULT_KIF_DEBIT);
+        poSecuritySettings.setSessionDefaultKeyRecordNumber(
+                PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_PERSO,
+                DEFAULT_KEY_RECORD_NUMBER_PERSO);
+        poSecuritySettings.setSessionDefaultKeyRecordNumber(
+                PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_LOAD,
+                DEFAULT_KEY_RECORD_NUMBER_LOAD);
+        poSecuritySettings.setSessionDefaultKeyRecordNumber(
+                PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT,
+                DEFAULT_KEY_RECORD_NUMBER_DEBIT);
+
+        return poSecuritySettings;
     }
 
     /**

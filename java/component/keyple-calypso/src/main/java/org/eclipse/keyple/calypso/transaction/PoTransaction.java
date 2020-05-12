@@ -11,8 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
-import static org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild.ReadMode.MULTIPLE_RECORD;
-import static org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild.ReadMode.ONE_RECORD;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,6 +19,7 @@ import java.util.Map;
 import org.eclipse.keyple.calypso.SelectFileControl;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
+import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.PoCustomCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.AppendRecordCmdBuild;
@@ -88,6 +87,8 @@ public final class PoTransaction {
 
     /** The reader for PO. */
     private final ProxyReader poReader;
+    /** The PO security settings used to manage the secure session */
+    private PoSecuritySettings poSecuritySettings;
     /** The SAM commands processor */
     private SamCommandProcessor samCommandProcessor;
     /** The current CalypsoPo */
@@ -96,14 +97,8 @@ public final class PoTransaction {
     private SessionState sessionState;
     /** The PO Secure Session final status according to mutual authentication result */
     private boolean transactionResult;
-    /** The previous PO Secure Session ratification status */
-    private boolean wasRatified;
-    /** The data read at opening */
-    private byte[] openRecordDataRead;
-    /** The current secure session modification mode: ATOMIC or MULTIPLE */
-    private SessionModificationMode currentModificationMode;
     /** The current secure session access level: PERSO, RELOAD, DEBIT */
-    private SessionAccessLevel currentAccessLevel;
+    private SessionSetting.AccessLevel currentAccessLevel;
     /* modifications counter management */
     private final boolean modificationsCounterIsInBytes;
     private final int modificationsCounterMax;
@@ -120,15 +115,17 @@ public final class PoTransaction {
      *
      * @param poResource the PO resource (combination of {@link SeReader} and {@link CalypsoPo})
      * @param samResource the SAM resource (combination of {@link SeReader} and {@link CalypsoSam})
-     * @param securitySettings a list of security settings ({@link SecuritySettings}) used in the
-     *        session (such as key identification)
+     * @param poSecuritySettings a list of security settings ({@link PoSecuritySettings}) used in
+     *        the session (such as key identification)
      */
     public PoTransaction(PoResource poResource, SamResource samResource,
-            SecuritySettings securitySettings) {
+            PoSecuritySettings poSecuritySettings) {
 
         this(poResource);
 
-        samCommandProcessor = new SamCommandProcessor(samResource, poResource, securitySettings);
+        this.poSecuritySettings = poSecuritySettings;
+
+        samCommandProcessor = new SamCommandProcessor(samResource, poResource, poSecuritySettings);
     }
 
     /**
@@ -186,18 +183,13 @@ public final class PoTransaction {
      * </ul>
      *
      * @param accessLevel access level of the session (personalization, load or debit).
-     * @param openingSfiToSelect SFI of the file to select (0 means no file to select)
-     * @param openingRecordNumberToRead number of the record to read
      * @param poCommands the po commands inside session
-     * @return SeResponse response to all executed commands including the self generated "Open
-     *         Secure Session" command
      * @throws KeypleReaderException the IO reader exception
      * @throws CalypsoUnauthorizedKvcException if the PO KVC is not authorized
      * @throws CalypsoSecureSessionException if PO transaction error occurs
      * @throws CalypsoDesynchronisedExchangesException if PO exchanges APDU are desynchronized
      */
-    private SeResponse processAtomicOpening(SessionAccessLevel accessLevel, byte openingSfiToSelect,
-            byte openingRecordNumberToRead,
+    private void processAtomicOpening(PoTransaction.SessionSetting.AccessLevel accessLevel,
             List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poCommands)
             throws KeypleReaderException, CalypsoUnauthorizedKvcException,
             CalypsoSecureSessionException, CalypsoDesynchronisedExchangesException,
@@ -209,11 +201,36 @@ public final class PoTransaction {
         /* PO ApduRequest List to hold Open Secure Session and other optional commands */
         List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
 
+        /*
+         * The sfi and record number to be read when the open secure session command is executed.
+         * The default value is 0 (no record to read) but we will optimize the exchanges if a read
+         * record command has been prepared.
+         */
+        int sfi = 0;
+        int recordNumber = 0;
+
+        /*
+         * Let's check if we have a read record command at the top of the command list.
+         *
+         * If so, then the command is withdrawn in favour of its equivalent executed at the same
+         * time as the open secure session command.
+         */
+        if (poCommands != null && !poCommands.isEmpty()) {
+            AbstractPoCommandBuilder<? extends AbstractPoResponseParser> poCommand =
+                    poCommands.get(0);
+            if (poCommand.getCommandRef() == CalypsoPoCommand.READ_RECORDS
+                    && ((ReadRecordsCmdBuild) poCommand)
+                            .getReadMode() == ReadRecordsCmdBuild.ReadMode.ONE_RECORD) {
+                sfi = ((ReadRecordsCmdBuild) poCommand).getSfi();
+                recordNumber = ((ReadRecordsCmdBuild) poCommand).getFirstRecordNumber();
+                poCommands.remove(0);
+            }
+        }
+
         /* Build the PO Open Secure Session command */
         AbstractOpenSessionCmdBuild<AbstractOpenSessionRespPars> openSessionCmdBuild =
                 AbstractOpenSessionCmdBuild.create(calypsoPo.getRevision(),
-                        accessLevel.getSessionKey(), sessionTerminalChallenge, openingSfiToSelect,
-                        openingRecordNumberToRead);
+                        accessLevel.getSessionKey(), sessionTerminalChallenge, sfi, recordNumber);
 
         /* Add the resulting ApduRequest to the PO ApduRequest list */
         poApduRequestList.add(openSessionCmdBuild.getApduRequest());
@@ -252,10 +269,10 @@ public final class PoTransaction {
         byte[] sessionCardChallenge = poOpenSessionPars.getPoChallenge();
 
         /* Build the Digest Init command from PO Open Session */
-        /** The PO KIF */
+        // The PO KIF
         byte poKif = poOpenSessionPars.getSelectedKif();
-        /** The PO KVC */
-        byte poKvc = poOpenSessionPars.getSelectedKvc();
+        // The PO KVC, may be null for PO Rev 1.0
+        Byte poKvc = poOpenSessionPars.getSelectedKvc();
 
         if (logger.isDebugEnabled()) {
             logger.debug(
@@ -268,17 +285,12 @@ public final class PoTransaction {
             throw new CalypsoUnauthorizedKvcException(String.format("PO KVC = %02X", poKvc));
         }
 
-        /* Keep the ratification status and read data */
-        wasRatified = poOpenSessionPars.wasRatified();
-        openRecordDataRead = poOpenSessionPars.getRecordDataRead();
-
         /*
          * Initialize the digest processor. It will store all digest operations (Digest Init, Digest
          * Update) until the session closing. At this moment, all SAM Apdu will be processed at
          * once.
          */
-        samCommandProcessor.initializeDigester(accessLevel, false, false,
-                SecuritySettings.DefaultKeyInfo.SAM_DEFAULT_KEY_RECORD_NUMBER, poKif, poKvc,
+        samCommandProcessor.initializeDigester(accessLevel, false, false, poKif, poKvc,
                 poApduResponseList.get(0).getDataOut());
 
         /*
@@ -302,7 +314,7 @@ public final class PoTransaction {
         /* Remove Open Secure Session response and create a new SeResponse */
         poApduResponseList.remove(0);
 
-        return new SeResponse(true, true, poSeResponse.getSelectionStatus(), poApduResponseList);
+        CalypsoPoUtils.updateCalypsoPo(calypsoPo, poCommands, poApduResponseList);
     }
 
     /**
@@ -338,16 +350,16 @@ public final class PoTransaction {
      * @param poCommands the po commands inside session
      * @param channelControl indicated if the SE channel of the PO reader must be closed after the
      *        last command
-     * @return SeResponse all responses to the provided commands
      *
      * @throws KeypleReaderException IO Reader exception
      * @throws CalypsoSecureSessionException if PO transaction error occurs
      * @throws CalypsoDesynchronisedExchangesException if PO exchanges APDU are desynchronized
      */
-    private SeResponse processAtomicPoCommands(
+    private void processAtomicPoCommands(
             List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poCommands,
-            ChannelControl channelControl) throws KeypleReaderException,
-            CalypsoSecureSessionException, CalypsoDesynchronisedExchangesException {
+            ChannelControl channelControl)
+            throws KeypleReaderException, CalypsoSecureSessionException,
+            CalypsoDesynchronisedExchangesException, CalypsoPoCommandException {
 
         // Get the PO ApduRequest List
         List<ApduRequest> poApduRequestList = this.getApduRequests(poCommands);
@@ -391,7 +403,8 @@ public final class PoTransaction {
                         poApduResponseList.get(i));
             }
         }
-        return poSeResponse;
+
+        CalypsoPoUtils.updateCalypsoPo(calypsoPo, poCommands, poSeResponse.getApduResponses());
     }
 
     /**
@@ -624,47 +637,63 @@ public final class PoTransaction {
                 channelControl);
     }
 
-    /**
-     * Get the ratification status obtained at Session Opening
-     * 
-     * @return true or false
-     */
-    public boolean wasRatified() {
-        if (sessionState == SessionState.SESSION_UNINITIALIZED) {
-            throw new IllegalStateException("No active session.");
+    public static class SessionSetting {
+        /**
+         * The modification mode indicates whether the secure session can be closed and reopened to
+         * manage the limitation of the PO buffer memory.
+         */
+        public enum ModificationMode {
+            /**
+             * The secure session is atomic. The consistency of the content of the resulting PO
+             * memory is guaranteed.
+             */
+            ATOMIC,
+            /**
+             * Several secure sessions can be chained (to manage the writing of large amounts of
+             * data). The resulting content of the PO's memory can be inconsistent if the PO is
+             * removed during the process.
+             */
+            MULTIPLE
         }
-        return wasRatified;
+
+        /**
+         * The PO Transaction Access Level: personalization, loading or debiting.
+         */
+        public enum AccessLevel {
+
+            /** Session Access Level used for personalization purposes. */
+            SESSION_LVL_PERSO("perso", (byte) 0x01),
+            /** Session Access Level used for reloading purposes. */
+            SESSION_LVL_LOAD("load", (byte) 0x02),
+            /** Session Access Level used for validating and debiting purposes. */
+            SESSION_LVL_DEBIT("debit", (byte) 0x03);
+
+            private final String name;
+            private final byte sessionKey;
+
+            AccessLevel(String name, byte sessionKey) {
+                this.name = name;
+                this.sessionKey = sessionKey;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public byte getSessionKey() {
+                return sessionKey;
+            }
+        }
+
+        /**
+         * The ratification mode defines the behavior of processClosing regarding the ratification
+         * process.
+         */
+        public enum RatificationMode {
+            CLOSE_RATIFIED, CLOSE_NOT_RATIFIED
+        }
     }
 
-    /**
-     * Get the data read at Session Opening
-     * 
-     * @return a byte array containing the data
-     */
-    public byte[] getOpenRecordDataRead() {
-        if (sessionState == SessionState.SESSION_UNINITIALIZED) {
-            throw new IllegalStateException("No active session.");
-        }
-        return openRecordDataRead;
-    }
-
-    /**
-     * The modification mode indicates whether the secure session can be closed and reopened to
-     * manage the limitation of the PO buffer memory.
-     */
-    public enum SessionModificationMode {
-        /**
-         * The secure session is atomic. The consistency of the content of the resulting PO memory
-         * is guaranteed.
-         */
-        ATOMIC,
-        /**
-         * Several secure sessions can be chained (to manage the writing of large amounts of data).
-         * The resulting content of the PO's memory can be inconsistent if the PO is removed during
-         * the process.
-         */
-        MULTIPLE
-    }
 
     /**
      * The PO Transaction State defined with the elements: ‘IOError’, ‘SEInserted’ and ‘SERemoval’.
@@ -871,11 +900,7 @@ public final class PoTransaction {
      * the PO and made available with the getCommandParser method.</li>
      * </ul>
      *
-     * @param modificationMode the modification mode: ATOMIC or MULTIPLE (see
-     *        {@link SessionModificationMode})
      * @param accessLevel access level of the session (personalization, load or debit).
-     * @param openingSfiToSelect SFI of the file to select (0 means no file to select)
-     * @param openingRecordNumberToRead number of the record to read
      * @throws KeypleReaderException the IO reader exception
      * @throws CalypsoUnauthorizedKvcException if the PO KVC is not authorized
      * @throws CalypsoSecureSessionException if PO transaction error occurs
@@ -883,14 +908,11 @@ public final class PoTransaction {
      * @throws CalypsoPoTransactionIllegalStateException if PO transaction is not accurately used
      * @throws CalypsoPoCommandException if a PO command failed
      */
-    public void processOpening(SessionModificationMode modificationMode,
-            SessionAccessLevel accessLevel, byte openingSfiToSelect, byte openingRecordNumberToRead)
+    public void processOpening(PoTransaction.SessionSetting.AccessLevel accessLevel)
             throws KeypleReaderException, CalypsoUnauthorizedKvcException,
             CalypsoSecureSessionException, CalypsoDesynchronisedExchangesException,
             CalypsoPoTransactionIllegalStateException, CalypsoPoCommandException {
-        currentModificationMode = modificationMode;
         currentAccessLevel = accessLevel;
-        byte localOpeningRecordNumberToRead = openingRecordNumberToRead;
 
         /* create a sublist of AbstractPoCommandBuilder to be sent atomically */
         List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poAtomicCommandList =
@@ -905,23 +927,12 @@ public final class PoTransaction {
                 int neededSessionBufferSpace = commandBuilder.getApduRequest().getBytes().length
                         + SESSION_BUFFER_CMD_ADDITIONAL_COST;
                 if (isSessionBufferOverflowed(neededSessionBufferSpace)) {
-                    if (currentModificationMode == SessionModificationMode.ATOMIC) {
+                    if (poSecuritySettings
+                            .getSessionModificationMode() == SessionSetting.ModificationMode.ATOMIC) {
                         throw new IllegalStateException(
                                 "ATOMIC mode error! This command would overflow the PO modifications buffer: "
                                         + commandBuilder.toString());
                     }
-                    SeResponse seResponseOpening =
-                            processAtomicOpening(currentAccessLevel, openingSfiToSelect,
-                                    localOpeningRecordNumberToRead, poAtomicCommandList);
-
-                    /*
-                     * inhibit record reading for next round, keep file selection (TODO check this)
-                     */
-                    localOpeningRecordNumberToRead = (byte) 0x00;
-
-                    CalypsoPoUtils.updateCalypsoPo(calypsoPo,
-                            poCommandManager.getPoCommandBuilderList(),
-                            seResponseOpening.getApduResponses());
 
                     /*
                      * Closes the session, resets the modifications buffer counters for the next
@@ -948,11 +959,7 @@ public final class PoTransaction {
             }
         }
 
-        SeResponse seResponseOpening = processAtomicOpening(currentAccessLevel, openingSfiToSelect,
-                localOpeningRecordNumberToRead, poAtomicCommandList);
-
-        CalypsoPoUtils.updateCalypsoPo(calypsoPo, poCommandManager.getPoCommandBuilderList(),
-                seResponseOpening.getApduResponses());
+        processAtomicOpening(currentAccessLevel, poAtomicCommandList);
 
         /* sets the flag indicating that the commands have been executed */
         poCommandManager.notifyCommandsProcessed();
@@ -985,12 +992,7 @@ public final class PoTransaction {
         }
 
         /* PO commands sent outside a Secure Session. No modifications buffer limitation. */
-        SeResponse seResponsePoCommands =
-                processAtomicPoCommands(poCommandManager.getPoCommandBuilderList(), channelControl);
-
-        CalypsoPoUtils.updateCalypsoPo(calypsoPo, poCommandManager.getPoCommandBuilderList(),
-                seResponsePoCommands.getApduResponses());
-
+        processAtomicPoCommands(poCommandManager.getPoCommandBuilderList(), channelControl);
 
         /* sets the flag indicating that the commands have been executed */
         poCommandManager.notifyCommandsProcessed();
@@ -1038,7 +1040,8 @@ public final class PoTransaction {
                 int neededSessionBufferSpace = commandBuilder.getApduRequest().getBytes().length
                         + SESSION_BUFFER_CMD_ADDITIONAL_COST;
                 if (isSessionBufferOverflowed(neededSessionBufferSpace)) {
-                    if (currentModificationMode == SessionModificationMode.ATOMIC) {
+                    if (poSecuritySettings
+                            .getSessionModificationMode() == SessionSetting.ModificationMode.ATOMIC) {
                         throw new IllegalStateException(
                                 "ATOMIC mode error! This command would overflow the PO modifications buffer: "
                                         + commandBuilder.toString());
@@ -1048,11 +1051,7 @@ public final class PoTransaction {
                      * send the current commands and update the parsers. The parsers Iterator is
                      * kept all along the process.
                      */
-                    SeResponse seResponsePoCommands =
-                            processAtomicPoCommands(poAtomicBuilderList, ChannelControl.KEEP_OPEN);
-
-                    CalypsoPoUtils.updateCalypsoPo(calypsoPo, poAtomicBuilderList,
-                            seResponsePoCommands.getApduResponses());
+                    processAtomicPoCommands(poAtomicBuilderList, ChannelControl.KEEP_OPEN);
 
                     /*
                      * Close the session and reset the modifications buffer counters for the next
@@ -1061,7 +1060,7 @@ public final class PoTransaction {
                     processAtomicClosing(null, TransmissionMode.CONTACTS, ChannelControl.KEEP_OPEN);
                     resetModificationsBufferCounter();
                     /* We reopen a new session for the remaining commands to be sent */
-                    processAtomicOpening(currentAccessLevel, (byte) 0x00, (byte) 0x00, null);
+                    processAtomicOpening(currentAccessLevel, null);
                     /*
                      * Clear the list and add the command that did not fit in the PO modifications
                      * buffer. We also update the usage counter without checking the result.
@@ -1082,11 +1081,7 @@ public final class PoTransaction {
         }
 
         if (!poAtomicBuilderList.isEmpty()) {
-            SeResponse seResponsePoCommands =
-                    processAtomicPoCommands(poAtomicBuilderList, ChannelControl.KEEP_OPEN);
-
-            CalypsoPoUtils.updateCalypsoPo(calypsoPo, poAtomicBuilderList,
-                    seResponsePoCommands.getApduResponses());
+            processAtomicPoCommands(poAtomicBuilderList, ChannelControl.KEEP_OPEN);
         }
 
         /* sets the flag indicating that the commands have been executed */
@@ -1133,7 +1128,8 @@ public final class PoTransaction {
         List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poAtomicBuilderList =
                 new ArrayList<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>>();
         SeResponse seResponseClosing;
-        for (AbstractPoCommandBuilder commandBuilder : poCommandManager.getPoCommandBuilderList()) {
+        for (AbstractPoCommandBuilder<? extends AbstractPoResponseParser> commandBuilder : poCommandManager
+                .getPoCommandBuilderList()) {
             if (!commandBuilder.isSessionBufferUsed()) {
                 /*
                  * This command does not affect the PO modifications buffer. We will call
@@ -1146,7 +1142,8 @@ public final class PoTransaction {
                 int neededSessionBufferSpace = commandBuilder.getApduRequest().getBytes().length
                         + SESSION_BUFFER_CMD_ADDITIONAL_COST;
                 if (isSessionBufferOverflowed(neededSessionBufferSpace)) {
-                    if (currentModificationMode == SessionModificationMode.ATOMIC) {
+                    if (poSecuritySettings
+                            .getSessionModificationMode() == SessionSetting.ModificationMode.ATOMIC) {
                         throw new IllegalStateException(
                                 "ATOMIC mode error! This command would overflow the PO modifications buffer: "
                                         + commandBuilder.toString());
@@ -1156,7 +1153,7 @@ public final class PoTransaction {
                      * this current processClosing
                      */
                     if (sessionPreviouslyClosed) {
-                        processAtomicOpening(currentAccessLevel, (byte) 0x00, (byte) 0x00, null);
+                        processAtomicOpening(currentAccessLevel, null);
                     }
 
                     /*
@@ -1167,19 +1164,15 @@ public final class PoTransaction {
                         List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poCommands =
                                 new ArrayList<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>>();
                         poCommands.addAll(poAtomicBuilderList);
-                        seResponseClosing =
-                                processAtomicPoCommands(poCommands, ChannelControl.KEEP_OPEN);
+                        processAtomicPoCommands(poCommands, ChannelControl.KEEP_OPEN);
                         atLeastOneReadCommand = false;
                     } else {
                         /* All commands in the list are 'modifying' */
-                        seResponseClosing = processAtomicClosing(poAtomicBuilderList,
-                                TransmissionMode.CONTACTS, ChannelControl.KEEP_OPEN);
+                        processAtomicClosing(poAtomicBuilderList, TransmissionMode.CONTACTS,
+                                ChannelControl.KEEP_OPEN);
                         resetModificationsBufferCounter();
                         sessionPreviouslyClosed = true;
                     }
-
-                    CalypsoPoUtils.updateCalypsoPo(calypsoPo, poAtomicBuilderList,
-                            seResponseClosing.getApduResponses());
 
                     /*
                      * Clear the list and add the command that did not fit in the PO modifications
@@ -1204,7 +1197,7 @@ public final class PoTransaction {
              * Reopen if needed, to close the session with the requested conditions
              * (CommunicationMode and channelControl)
              */
-            processAtomicOpening(currentAccessLevel, (byte) 0x00, (byte) 0x00, null);
+            processAtomicOpening(currentAccessLevel, null);
         }
 
         /* Finally, close the session as requested */
@@ -1386,7 +1379,7 @@ public final class PoTransaction {
 
         if (numberOfRecords == 1) {
             poCommandManager.addRegularCommand(new ReadRecordsCmdBuild(calypsoPo.getPoClass(), sfi,
-                    firstRecordNumber, ONE_RECORD, recordSize));
+                    firstRecordNumber, ReadRecordsCmdBuild.ReadMode.ONE_RECORD, recordSize));
         } else {
             // Manages the reading of multiple records taking into account the transmission capacity
             // of the PO and the response format (2 extra bytes)
@@ -1405,8 +1398,9 @@ public final class PoTransaction {
                     expectedLength = remainingRecords * (recordSize + 2);
                     remainingRecords = 0;
                 }
-                poCommandManager.addRegularCommand(new ReadRecordsCmdBuild(calypsoPo.getPoClass(),
-                        sfi, startRecordNumber, MULTIPLE_RECORD, expectedLength));
+                poCommandManager.addRegularCommand(
+                        new ReadRecordsCmdBuild(calypsoPo.getPoClass(), sfi, startRecordNumber,
+                                ReadRecordsCmdBuild.ReadMode.MULTIPLE_RECORD, expectedLength));
             }
         }
     }

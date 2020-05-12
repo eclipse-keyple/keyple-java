@@ -56,7 +56,7 @@ class SamCommandProcessor {
     /** The PO resource */
     private final PoResource poResource;
     /** The security settings. */
-    private final SecuritySettings securitySettings;
+    private final PoSecuritySettings poSecuritySettings;
     /*
      * The digest data cache stores all PO data to be send to SAM during a Secure Session. The 1st
      * buffer is the data buffer to be provided with Digest Init. The following buffers are PO
@@ -76,13 +76,13 @@ class SamCommandProcessor {
      * 
      * @param samResource the SAM resource containing the SAM reader and the Calypso SAM information
      * @param poResource the PO resource containing the PO reader and the Calypso PO information
-     * @param securitySettings the security settings from the application layer
+     * @param poSecuritySettings the security settings from the application layer
      */
     SamCommandProcessor(SamResource samResource, PoResource poResource,
-            SecuritySettings securitySettings) {
+            PoSecuritySettings poSecuritySettings) {
         this.samResource = samResource;
         this.poResource = poResource;
-        this.securitySettings = securitySettings;
+        this.poSecuritySettings = poSecuritySettings;
         samReader = (ProxyReader) this.samResource.getSeReader();
     }
 
@@ -175,14 +175,14 @@ class SamCommandProcessor {
      * @return true if the kvc is authorized
      */
     public boolean isAuthorizedKvc(byte kvc) {
-        return securitySettings.isAuthorizedKvc(kvc);
+        return poSecuritySettings.isSessionKvcAuthorized(kvc);
     }
 
     /**
      * Determine the work KIF from the value returned by the PO and the session access level.
      * <p>
      * If the value provided by the PO undetermined (FFh), the actual value of the work KIF is found
-     * in the SecuritySettings according to the session access level.
+     * in the PoSecuritySettings according to the session access level.
      * <p>
      * If the value provided by the PO is not undetermined, the work KIF is set to this value.
      *
@@ -190,24 +190,11 @@ class SamCommandProcessor {
      * @param accessLevel the session access level
      * @return the work KIF value byte
      */
-    private byte determineWorkKif(byte poKif, SessionAccessLevel accessLevel) {
+    private byte determineWorkKif(byte poKif,
+            PoTransaction.SessionSetting.AccessLevel accessLevel) {
         byte workKeyKif;
         if (poKif == KIF_UNDEFINED) {
-            switch (accessLevel) {
-                case SESSION_LVL_PERSO:
-                    workKeyKif = securitySettings
-                            .getKeyInfo(SecuritySettings.DefaultKeyInfo.SAM_DEFAULT_KIF_PERSO);
-                    break;
-                case SESSION_LVL_LOAD:
-                    workKeyKif = securitySettings
-                            .getKeyInfo(SecuritySettings.DefaultKeyInfo.SAM_DEFAULT_KIF_LOAD);
-                    break;
-                case SESSION_LVL_DEBIT:
-                default:
-                    workKeyKif = securitySettings
-                            .getKeyInfo(SecuritySettings.DefaultKeyInfo.SAM_DEFAULT_KIF_DEBIT);
-                    break;
-            }
+            workKeyKif = poSecuritySettings.getSessionDefaultKif(accessLevel);
         } else {
             workKeyKif = poKif;
         }
@@ -231,14 +218,15 @@ class SamCommandProcessor {
      * @param digestData a first packet of data to digest.
      * @return true if the initialization is successful
      */
-    boolean initializeDigester(SessionAccessLevel accessLevel, boolean sessionEncryption,
-            boolean verificationMode, SecuritySettings.DefaultKeyInfo workKeyRecordNumber,
-            byte poKif, byte poKVC, byte[] digestData) {
+    boolean initializeDigester(PoTransaction.SessionSetting.AccessLevel accessLevel,
+            boolean sessionEncryption, boolean verificationMode, byte poKif, byte poKVC,
+            byte[] digestData) {
 
         this.sessionEncryption = sessionEncryption;
         this.verificationMode = verificationMode;
-        this.workKeyRecordNumber = securitySettings.getKeyInfo(workKeyRecordNumber);
+        this.workKeyRecordNumber = poSecuritySettings.getSessionDefaultKeyRecordNumber(accessLevel);
         this.workKeyKif = determineWorkKif(poKif, accessLevel);
+        // TODO handle Rev 1.0 case where KVC is not available
         this.workKeyKVC = poKVC;
 
         if (logger.isDebugEnabled()) {

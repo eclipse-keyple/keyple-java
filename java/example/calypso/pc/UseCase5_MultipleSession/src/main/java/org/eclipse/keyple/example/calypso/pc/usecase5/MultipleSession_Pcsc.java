@@ -14,11 +14,11 @@ package org.eclipse.keyple.example.calypso.pc.usecase5;
 
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.PoResource;
+import org.eclipse.keyple.calypso.transaction.PoSecuritySettings;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.SamResource;
-import org.eclipse.keyple.calypso.transaction.SessionAccessLevel;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
@@ -155,17 +155,23 @@ public class MultipleSession_Pcsc {
             logger.info(
                     "==================================================================================");
 
+            PoSecuritySettings poSecuritySettings = CalypsoUtilities.getSecuritySettings();
+
+            // change the default security settings to enable MULTIPLE mode
+            poSecuritySettings.setSessionModificationMode(
+                    PoTransaction.SessionSetting.ModificationMode.MULTIPLE);
+
             PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo),
-                    samResource, CalypsoUtilities.getSecuritySettings());
+                    samResource, poSecuritySettings);
 
             /*
              * Open Session for the debit key
              */
 
-            poTransaction.processOpening(PoTransaction.SessionModificationMode.MULTIPLE,
-                    SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0, (byte) 0);
+            poTransaction
+                    .processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT);
 
-            if (!poTransaction.wasRatified()) {
+            if (!calypsoPo.isDfRatified()) {
                 logger.info(
                         "========= Previous Secure Session was not ratified. =====================");
             }

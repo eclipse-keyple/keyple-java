@@ -21,7 +21,6 @@ import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.SamIdentifier;
 import org.eclipse.keyple.calypso.transaction.SamResource;
 import org.eclipse.keyple.calypso.transaction.SamResourceManager;
-import org.eclipse.keyple.calypso.transaction.SessionAccessLevel;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronisedExchangesException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionIllegalStateException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoSecureSessionException;
@@ -243,10 +242,10 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
             /*
              * Open Session for the debit key
              */
-            poTransaction.processOpening(PoTransaction.SessionModificationMode.ATOMIC,
-                    SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0, (byte) 0);
+            poTransaction
+                    .processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT);
 
-            if (!poTransaction.wasRatified()) {
+            if (!poResource.getMatchingSe().isDfRatified()) {
                 logger.warn(
                         "========= Previous Secure Session was not ratified. =====================");
             }
@@ -298,7 +297,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
             logger.error("CalypsoDesynchronisedExchangesException: {}", e.getMessage());
         } catch (CalypsoPoCommandException e) {
             logger.error("PO command {} failed with the status code 0x{}. {}", e.getCommand(),
-                    Integer.toHexString(e.getStatusCode() & 0xFFFF));
+                    Integer.toHexString(e.getStatusCode() & 0xFFFF), e.getMessage());
         }
     }
 
