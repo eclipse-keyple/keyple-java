@@ -15,7 +15,7 @@ package org.eclipse.keyple.calypso.transaction;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
-import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronisedExchangesException;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronizedExchangesException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -56,7 +56,7 @@ public class PoSelectionRequestTest {
 
     @Test
     public void testPrepareReadRecordFile()
-            throws CalypsoDesynchronisedExchangesException, CalypsoPoCommandException {
+            throws CalypsoDesynchronizedExchangesException, CalypsoPoCommandException {
         byte sfi1 = (byte) 0x10;
         byte sfi2 = (byte) 0x11;
         int recNumber = 1;
@@ -84,7 +84,7 @@ public class PoSelectionRequestTest {
 
     @Test
     public void testPrepareSelectFile()
-            throws CalypsoDesynchronisedExchangesException, CalypsoPoCommandException {
+            throws CalypsoDesynchronizedExchangesException, CalypsoPoCommandException {
         short lid1 = 0x2010;
         short lid2 = 0x3F00;
         poSelectionRequest.prepareSelectFile(lid1);

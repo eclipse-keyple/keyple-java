@@ -31,11 +31,11 @@ public class SelectDiversifierRespParsTest {
         ApduResponse apduResponse = new ApduResponse(new byte[] {(byte) 0x90, 0x00}, null);
         ApduResponse apduResponse1 = new ApduResponse(new byte[] {(byte) 0x80, 0x00}, null);
 
-        AbstractApduResponseParser apduResponseParser = new SelectDiversifierRespPars(apduResponse);
+        AbstractApduResponseParser apduResponseParser = new SelectDiversifierRespPars(apduResponse, null);
 
         Assert.assertEquals(0x9000, apduResponseParser.getApduResponse().getStatusCode());
 
-        apduResponseParser = new SelectDiversifierRespPars(apduResponse1);
+        apduResponseParser = new SelectDiversifierRespPars(apduResponse1, null);
 
         Assert.assertThat(apduResponseParser.getApduResponse().getStatusCode(), IsNot.not(0x9000));
     }

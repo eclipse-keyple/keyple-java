@@ -40,7 +40,7 @@ public class DigestAuthenticateRespParsTest {
                         responses);
 
         AbstractApduResponseParser apduResponseParser =
-                new DigestAuthenticateRespPars(seResponse.getApduResponses().get(0));
+                new DigestAuthenticateRespPars(seResponse.getApduResponses().get(0), null);
         byte[] responseActual = apduResponseParser.getApduResponse().getBytes();
         Assert.assertArrayEquals(new byte[] {90, 0}, responseActual);
     }
