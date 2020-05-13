@@ -45,7 +45,10 @@ pipeline {
             steps{
                 container('java-builder') {
                     sh './gradlew installAll --info'
-                    sh './gradlew check --info'
+                    catchError(buildResult: 'UNSTABLE', message: 'There were failing tests.', stageResult: 'UNSTABLE') {
+                        sh './gradlew check --info'
+                    }
+                    junit allowEmptyResults: true, testResults: 'java/component/**/build/test-results/test/*.xml'
 
                     script {
                         keypleVersion = sh(script: 'grep version java/component/keyple-core/gradle.properties | cut -d= -f2 | tr -d "[:space:]"', returnStdout: true)
@@ -59,6 +62,7 @@ pipeline {
                     dir('android') {
                         sh './gradlew :keyple-plugin:keyple-plugin-android-nfc:check'
                         sh './gradlew :keyple-plugin:keyple-plugin-android-omapi:check'
+                        junit allowEmptyResults: true, testResults: 'keyple-plugin/**/build/test-results/testDebugUnitTest/*.xml'
                     }
                 }
             }
@@ -74,34 +78,30 @@ pipeline {
             when {
                 expression { env.GIT_URL == 'https://github.com/eclipse/keyple-java.git' && (env.GIT_BRANCH == "develop" || env.GIT_BRANCH.startsWith('release-0.9')) && env.CHANGE_ID == null && keypleVersion ==~ /.*-SNAPSHOT$/ }
             }
-            try {
-                steps{
+            steps {
+                catchError(buildResult: 'SUCCESS', message: 'Unable to log code quality to Sonar.', stageResult: 'FAILURE') {
                     container('java-builder') {
-                        withSonarQubeEnv {
+                        withSonarQubeEnv('Eclipse Sonar') {
                             sh './gradlew codeQuality --info'
                         }
                     }
                 }
-            } catch(all) {
-                unstable("Unable to log code quality to Sonar.")
             }
         }
         stage('Keyple Android: Code Quality') {
             when {
                 expression { env.GIT_URL == 'https://github.com/eclipse/keyple-java.git' && (env.GIT_BRANCH == "develop" || env.GIT_BRANCH.startsWith('release-0.9')) && env.CHANGE_ID == null && keypleVersion ==~ /.*-SNAPSHOT$/ }
             }
-            try {
-                steps{
+            steps {
+                catchError(buildResult: 'SUCCESS', message: 'Unable to log code quality to Sonar.', stageResult: 'FAILURE') {
                     container('java-builder') {
                         dir('android') {
-                            withSonarQubeEnv {
+                            withSonarQubeEnv('Eclipse Sonar') {
                                 sh './gradlew codeQuality'
                             }
                         }
                     }
                 }
-            } catch(all) {
-                unstable("Unable to log code quality to Sonar.")
             }
         }
         stage('Keyple Java: Upload artifacts to sonatype') {
