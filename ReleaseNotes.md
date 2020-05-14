@@ -1,12 +1,12 @@
 # Keyple - Release Notes
 
 Releases:
- - [Keyple Java 20/05](#keyple-java-2005)
- - [Keyple Java 20/01](#keyple-java-2001)
- - [Keyple Java 19/07](#keyple-java-1907)
+ - [Patch - Keyple Java 20/05](#patch---keyple-java-2005)
+ - [Master - Keyple Java 20/01](#master---keyple-java-2001)
+ - [Master - Keyple Java 19/07](#master---keyple-java-1907)
 
 
-## Keyple Java 20/05
+## Patch - Keyple Java 20/05
 
 Release train components:
  - [keyple-java-core 0.8.1](#keyple-java-core-081)
@@ -45,10 +45,10 @@ Release train components:
 * none
 
 ### keyple-android-plugin-omapi 0.8.1
-* none
+* KEYP-195 : update init readers method to use ConcurrentSkipListSet
 
 
-## Keyple Java 20/01
+## Master - Keyple Java 20/01
 
 Release train components:
  - [keyple-java-core 0.8](#keyple-java-core-08)
@@ -129,7 +129,7 @@ Release train components:
 
 ___
 
-## Keyple Java 19/07
+## Master - Keyple Java 19/07
 
 Release train components:
  - [keyple-java-core 0.7](#keyple-java-core-07)
