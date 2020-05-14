@@ -105,13 +105,13 @@ repositories {
 
 dependencies {
      //Keyple core is a mandatory library for using Keyple, in this case import the last version of keyple-java-core
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: '0.8'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: '0.8.1'
 
     //Import Calypso library to support Calypso Portable Object, in this case import the last version of keyple-java-calypso
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: '0.8'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: '0.8.1'
    
     //Import PCSC library to use a Pcsc reader, in this case import the last version of keyple-java-plugin-pcsc
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-pcsc', version: '0.8'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-pcsc', version: '0.8.1'
     ...
 }
 ```
