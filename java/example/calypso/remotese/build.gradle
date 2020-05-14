@@ -37,7 +37,7 @@ task('runWsK_MasterServer', dependsOn: 'classes', type: JavaExec, group:'keyple'
 }
 
 compileJava.doFirst {
-    println "Using keyple_v parameter with value " + keyple_v
+    println "Using keyple_v parameter with value " + keyple_version
 }
 
 
