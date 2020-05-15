@@ -94,8 +94,7 @@ public class Demo_Slave {
                 }.start();
 
                 // if slave is server, must specify which master to connect to
-                slaveAPI =
-                        new SlaveAPI(SeProxyService.getInstance(), node, masterNodeId, RPC_TIMEOUT);
+                slaveAPI = new SlaveAPI(SeProxyService.getInstance(), node, masterNodeId);
 
                 initPoReader();
 

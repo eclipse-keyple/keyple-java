@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information regarding copyright
  * ownership.
@@ -9,14 +9,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.plugin.remotese.rm;
+package org.eclipse.keyple.plugin.remotese;
 
-import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
+import org.junit.Rule;
+import org.junit.rules.TestName;
 
-public interface IRemoteMethodTxEngine {
+public class CoreBaseTest {
 
-    void register(final AbstractRemoteMethodTx rm);
-
-    TransportDto onResponseDto(TransportDto message);
+    @Rule
+    public TestName name = new TestName();
 
 }

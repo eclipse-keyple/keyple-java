@@ -61,8 +61,8 @@ public class RmConnectReaderTx extends AbstractRemoteMethodTx<String> {
         // if reader connection thrown an exception
         if (KeypleDtoHelper.containsException(keypleDto)) {
             logger.trace("KeypleDto contains an exception: {}", keypleDto);
-            KeypleReaderException ex =
-                    JsonParser.getGson().fromJson(keypleDto.getBody(), KeypleReaderException.class);
+            KeypleReaderException ex = JsonParser.getGson().fromJson(keypleDto.getError(),
+                    KeypleReaderException.class);
             throw new KeypleRemoteException(
                     "An exception occurs while calling the remote method connectReader", ex);
         } else {
@@ -110,7 +110,10 @@ public class RmConnectReaderTx extends AbstractRemoteMethodTx<String> {
         body.addProperty("isObservable", localReader instanceof ObservableReader);
         body.addProperty("options", JsonParser.getGson().toJson(options));
 
-        return KeypleDtoHelper.buildRequest(getMethodName().getName(), body.toString(), null,
-                localReader.getName(), null, requesterNodeId, targetNodeId, id);
+        return KeypleDtoHelper.buildRequest(getMethodName().getName(), body.toString(), null, // no
+                                                                                              // session
+                                                                                              // yet
+                localReader.getName(), null, // no virtualreader yet
+                requesterNodeId, targetNodeId, id);
     }
 }

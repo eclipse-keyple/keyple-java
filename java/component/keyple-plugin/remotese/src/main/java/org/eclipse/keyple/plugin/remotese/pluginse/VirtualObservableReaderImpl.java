@@ -11,8 +11,12 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
-import java.util.Map;
+import static org.eclipse.keyple.core.seproxy.ChannelControl.CLOSE_AFTER;
+import java.util.*;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.pluginse.method.RmSetDefaultSelectionRequestTx;
@@ -21,13 +25,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Observable Virtual Reader add Observable methods to VirtualReaderImpl
+ * Observable Virtual Reader
+ *
+ * add Observable methods to VirtualReaderImpl
  */
 final class VirtualObservableReaderImpl extends VirtualReaderImpl
         implements VirtualObservableReader {
 
     private static final Logger logger = LoggerFactory.getLogger(VirtualObservableReaderImpl.class);
 
+    /* The observers of this object */
+    private List<ReaderObserver> observers;
+    /*
+     * this object will be used to synchronize the access to the observers list in order to be
+     * thread safe
+     */
+    private final Object sync = new Object();
 
     public VirtualObservableReaderImpl(VirtualReaderSession session, String nativeReaderName,
             RemoteMethodTxEngine rmTxEngine, String slaveNodeId, TransmissionMode transmissionMode,
@@ -37,16 +50,127 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
 
 
     @Override
+    public final void addObserver(final ObservableReader.ReaderObserver observer) {
+        if (observer == null) {
+            return;
+        }
+
+        logger.trace("Adding '{}' as an observer of '{}'.", observer.getClass().getSimpleName(),
+                getName());
+
+        synchronized (sync) {
+            if (observers == null) {
+                observers = new ArrayList<ReaderObserver>(1);
+            }
+            observers.add(observer);
+        }
+    }
+
+    @Override
+    public final void removeObserver(final ObservableReader.ReaderObserver observer) {
+        if (observer == null) {
+            return;
+        }
+
+        logger.trace("[{}] Deleting a reader observer", this.getName());
+
+        synchronized (sync) {
+            if (observers != null) {
+                observers.remove(observer);
+            }
+        }
+    }
+
+    @Override
+    public final void notifyObservers(final ReaderEvent event) {
+
+        logger.trace("[{}] Notifying a reader event to {} observers. EVENTNAME = {}",
+                this.getName(), this.countObservers(), event.getEventType().getName());
+
+        List<ReaderObserver> observersCopy;
+
+        synchronized (sync) {
+            if (observers == null) {
+                return;
+            }
+            observersCopy = new ArrayList<ReaderObserver>(observers);
+        }
+
+        for (ObservableReader.ReaderObserver observer : observersCopy) {
+            observer.update(event);
+        }
+    }
+
+    @Override
+    public final int countObservers() {
+        return observers == null ? 0 : observers.size();
+    }
+
+    @Override
+    public final void clearObservers() {
+        if (observers != null) {
+            this.observers.clear();
+        }
+    }
+
+    @Override
+    public final void notifySeProcessed() {
+        if (forceClosing) {
+            try {
+                // close the physical channel thanks to CLOSE_AFTER flag
+                processSeRequest(null, CLOSE_AFTER);
+                logger.trace(
+                        "Explicit communication closing requested, starting removal sequence.");
+            } catch (KeypleReaderException e) {
+                logger.error("KeypleReaderException while terminating. {}", e.getMessage());
+            }
+        } else {
+            logger.trace("Explicit physical channel closing already requested.");
+        }
+    }
+
+    @Override
     public void startSeDetection(PollingMode pollingMode) {
-        logger.error(
-                "startSeDetection is not implemented in VirtualObservableReaderImpl, please use the local method");
+        logger.warn(
+                "startSeDetection is not implemented in VirtualObservableReaderImpl, please use the method on the slave node");
     }
 
     @Override
     public void stopSeDetection() {
-        logger.error(
-                "stopSeDetection is not implemented in VirtualObservableReaderImpl, please use the local method");
+        logger.warn(
+                "stopSeDetection is not implemented in VirtualObservableReaderImpl, please use the method on the slave node");
     }
+
+    /*
+     * PACKAGE PRIVATE
+     */
+
+    /**
+     * When an event occurs on the Remote LocalReader, notify Observers
+     *
+     * @param event
+     */
+    void onRemoteReaderEvent(final ReaderEvent event) {
+
+        logger.debug("{} EVENT {} ", this.getName(), event.getEventType());
+
+        if (this.countObservers() > 0) {
+            final VirtualObservableReaderImpl thisReader = this;
+            // launch event another thread to permit blocking method to be used in update
+            // method (such as transmit)
+            rmTxEngine.getExecutorService().execute(new Runnable() {
+                @Override
+                public void run() {
+                    thisReader.notifyObservers(event);
+                }
+            });
+        } else {
+            logger.debug(
+                    "An event was received but no observers are declared into VirtualReader : {} {}",
+                    this.getName(), event.getEventType());
+        }
+    }
+
 
     @Override
     public void setDefaultSelectionRequest(

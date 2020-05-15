@@ -107,5 +107,4 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
             throws IllegalArgumentException, KeypleBaseException {
 
     }
-
 }

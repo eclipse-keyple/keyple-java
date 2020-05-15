@@ -12,7 +12,10 @@
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import java.util.SortedSet;
+import java.util.concurrent.ExecutorService;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationNoReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTxPoolEngine;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
@@ -37,11 +40,11 @@ class RemoteSePoolPluginImpl extends RemoteSePluginImpl implements RemoteSePoolP
      * Only {@link MasterAPI} can instantiate a RemoteSePlugin
      */
     RemoteSePoolPluginImpl(VirtualReaderSessionFactory sessionManager, DtoSender sender,
-            long rpcTimeout, String pluginName) {
-        super(sessionManager, sender, rpcTimeout, pluginName);
+            long rpcTimeout, String pluginName, ExecutorService executorService) {
+        super(sessionManager, sender, rpcTimeout, pluginName, executorService);
 
         // allocate a rmTxPoolEngine
-        rmTxEngine = new RemoteMethodTxPoolEngine(sender, rpcTimeout);
+        rmTxEngine = new RemoteMethodTxPoolEngine(sender, rpcTimeout, executorService);
     }
 
     public void bind(String slaveNodeId) {
@@ -57,7 +60,8 @@ class RemoteSePoolPluginImpl extends RemoteSePluginImpl implements RemoteSePoolP
     }
 
     @Override
-    public SeReader allocateReader(String groupReference) {
+    public SeReader allocateReader(String groupReference)
+            throws KeypleAllocationReaderException, KeypleAllocationNoReaderException {
 
         if (slaveNodeId == null) {
             throw new IllegalStateException(
@@ -71,9 +75,16 @@ class RemoteSePoolPluginImpl extends RemoteSePluginImpl implements RemoteSePoolP
             // blocking call
             return allocate.execute(rmTxEngine);
         } catch (KeypleRemoteException e) {
-            return null;// todo throw exception here
+            Throwable cause = e.getCause();
+            if (cause instanceof KeypleAllocationReaderException) {
+                throw (KeypleAllocationReaderException) cause;
+            } else if (cause instanceof KeypleAllocationNoReaderException) {
+                throw (KeypleAllocationNoReaderException) cause;
+            } else {
+                throw new KeypleAllocationReaderException(
+                        "Unexpected error while remotely allocating a reader", cause);
+            }
         }
-
     }
 
     @Override
@@ -92,9 +103,10 @@ class RemoteSePoolPluginImpl extends RemoteSePluginImpl implements RemoteSePoolP
 
         VirtualReaderImpl virtualReader = (VirtualReaderImpl) seReader;
 
-        // call remote method for allocateReader
+        // call remote method for releaseReader
         RmPoolReleaseTx releaseTx = new RmPoolReleaseTx(virtualReader.getNativeReaderName(),
-                virtualReader.getName(), this, this.dtoSender, slaveNodeId, dtoSender.getNodeId());
+                virtualReader.getName(), this, this.dtoSender,
+                virtualReader.getSession().getSessionId(), slaveNodeId, dtoSender.getNodeId());
 
         try {
             // blocking call

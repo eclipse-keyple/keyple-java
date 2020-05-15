@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.rm;
 
+import java.util.concurrent.ExecutorService;
 import org.eclipse.keyple.plugin.remotese.transport.*;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
@@ -23,13 +24,15 @@ import org.slf4j.LoggerFactory;
  * Manages the transaction (request/response) for remote method invocation It holds
  * the @{@link AbstractRemoteMethodTx} untils the answer is received
  */
-public class RemoteMethodTxEngine implements DtoHandler, IRemoteMethodTxEngine {
+public class RemoteMethodTxEngine implements IRemoteMethodTxEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteMethodTxEngine.class);
 
-
     // waiting transaction, supports only one at the time
     private AbstractRemoteMethodTx remoteMethodTx;
+
+    // Executor to run async task required in RemoteMethodTx
+    final private ExecutorService executorService;
 
     // Dto Sender
     private final DtoSender sender;
@@ -37,28 +40,32 @@ public class RemoteMethodTxEngine implements DtoHandler, IRemoteMethodTxEngine {
     // timeout to wait for the answer, in milliseconds
     private final long timeout;
 
+
     /**
      *
      * @param sender : dtosender used to send the keypleDto
      * @param timeout : timeout to wait for the answer, in milliseconds
+     * @param executorService : executorService required to execute async task in RemoteMethodTx
      */
-    public RemoteMethodTxEngine(DtoSender sender, long timeout) {
+    public RemoteMethodTxEngine(DtoSender sender, long timeout, ExecutorService executorService) {
         // this.queue = new LinkedList<RemoteMethodTx>();
         this.sender = sender;
         this.timeout = timeout;
+        this.executorService = executorService;
     }
 
+    public ExecutorService getExecutorService() {
+        return executorService;
+    }
 
     /**
      * Set Response to a RemoteMethod Invocation
      * 
-     * @param message to be processed
-     * @return TransportDto : response of the processing of the transportDto, can be an empty
-     *         TransportDto
+     * @param message to be processed, must be a keyple response or a
+     * @return TransportDto : response of the message processing, should be a NoResponse
      */
     @Override
-    public TransportDto onDTO(TransportDto message) {
-
+    public TransportDto onResponseDto(TransportDto message) {
         /*
          * Extract KeypleDto
          */
@@ -76,20 +83,43 @@ public class RemoteMethodTxEngine implements DtoHandler, IRemoteMethodTxEngine {
          */
         if (remoteMethodTx == null) {
             /*
-             * Should not happen, response received does not match a request. Ignore it
+             * Response received does not match a request. Ignore it
              */
             logger.error(
-                    "RemoteMethodTxEngine receives a KeypleDto response but no remoteMethodTx are defined : "
+                    "RemoteMethodTxEngine receives a KeypleDto response but no remoteMethodTx is defined : "
+                            + keypleDto);
+            throw new IllegalArgumentException(
+                    "RemoteMethodTxEngine receives a KeypleDto response but no remoteMethodTx is defined : "
                             + keypleDto);
         }
 
-        // only one operation is allowed at the time
+        /*
+         * Check that ids match
+         */
+        if (!remoteMethodTx.getId().equals(keypleDto.getId())) {
+            logger.error("RemoteMethodTxEngine receives a KeypleDto response but ids don't match : "
+                    + keypleDto);
+            throw new IllegalArgumentException(
+                    "RemoteMethodTxEngine receives a KeypleDto response but ids don't match : "
+                            + keypleDto);
+        }
+
+
+        /*
+         * All checks are successful Set keypleDto as a response to the remote method Tx (request)
+         */
         remoteMethodTx.setResponse(keypleDto);
 
+
+        /*
+         * init remote engine to receive a new request
+         */
         // re init remoteMethod
         remoteMethodTx = null;
 
+        // no dto should be sent back
         return message.nextTransportDTO(KeypleDtoHelper.NoResponse(keypleDto.getId()));
+
     }
 
     /**
@@ -99,7 +129,10 @@ public class RemoteMethodTxEngine implements DtoHandler, IRemoteMethodTxEngine {
      */
     @Override
     public void register(final AbstractRemoteMethodTx rm) {
-        logger.debug("Register rm to engine : {} {}", rm.getMethodName(), rm.id);
+        if (logger.isTraceEnabled()) {
+            logger.trace("Register RemoteMethod to engine : {} ", rm.id);
+        }
+        rm.setExecutorService(executorService);
         rm.setRegistered(true);
         remoteMethodTx = rm;
         rm.setDtoSender(sender);

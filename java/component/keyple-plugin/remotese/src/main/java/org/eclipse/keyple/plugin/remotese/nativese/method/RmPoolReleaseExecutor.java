@@ -57,15 +57,17 @@ public class RmPoolReleaseExecutor implements IRemoteMethodExecutor {
             JsonObject bodyResp = new JsonObject();
             bodyResp.addProperty("nativeReaderName", seReader.getName());
 
-            out = transportDto.nextTransportDTO(
-                    KeypleDtoHelper.buildResponse(getMethodName().getName(), bodyResp.toString(),
-                            null, seReader.getName(), null, keypleDto.getTargetNodeId(),
+            out = transportDto
+                    .nextTransportDTO(KeypleDtoHelper.buildResponse(getMethodName().getName(),
+                            bodyResp.toString(), keypleDto.getSessionId(), seReader.getName(),
+                            keypleDto.getVirtualReaderName(), keypleDto.getTargetNodeId(),
                             keypleDto.getRequesterNodeId(), keypleDto.getId()));
 
         } catch (KeypleReaderNotFoundException e) {
             // if an exception occurs, send it into a keypleDto to the Master
             out = transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(
-                    getMethodName().getName(), e, null, null, null, keypleDto.getTargetNodeId(),
+                    getMethodName().getName(), e, keypleDto.getSessionId(), seReader.getName(),
+                    keypleDto.getVirtualReaderName(), keypleDto.getTargetNodeId(),
                     keypleDto.getRequesterNodeId(), keypleDto.getId()));
         }
 

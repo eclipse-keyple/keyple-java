@@ -45,8 +45,8 @@ public class RmDisconnectReaderTx extends AbstractRemoteMethodTx<Boolean> {
         // if reader connection thrown an exception
         if (KeypleDtoHelper.containsException(keypleDto)) {
             // logger.trace("KeypleDto contains an exception: {}", keypleDto);
-            KeypleReaderException ex =
-                    JsonParser.getGson().fromJson(keypleDto.getBody(), KeypleReaderException.class);
+            KeypleReaderException ex = JsonParser.getGson().fromJson(keypleDto.getError(),
+                    KeypleReaderException.class);
             throw new KeypleRemoteException(
                     "An exception occurs while calling the remote method disconnectReader", ex);
         } else {
@@ -62,7 +62,7 @@ public class RmDisconnectReaderTx extends AbstractRemoteMethodTx<Boolean> {
         body.addProperty("sessionId", sessionId);
 
         return KeypleDtoHelper.buildRequest(getMethodName().getName(),
-                JsonParser.getGson().toJson(body, JsonObject.class), null, nativeReaderName, null,
-                requesterNodeId, targetNodeId, id);
+                JsonParser.getGson().toJson(body, JsonObject.class), sessionId, nativeReaderName,
+                null, requesterNodeId, targetNodeId, id);
     }
 }

@@ -31,9 +31,9 @@ public class RmPoolReleaseTx extends AbstractRemoteMethodTx<Boolean> {
     DtoSender dtoSender;
 
     public RmPoolReleaseTx(String nativeReaderName, String virtualReaderName,
-            RemoteSePoolPluginImpl virtualPoolPlugin, DtoSender dtoSender, String slaveNodeId,
-            String requesterNodeId) {
-        super(null, nativeReaderName, virtualReaderName, slaveNodeId, requesterNodeId);
+            RemoteSePoolPluginImpl virtualPoolPlugin, DtoSender dtoSender, String sessionId,
+            String slaveNodeId, String requesterNodeId) {
+        super(sessionId, nativeReaderName, virtualReaderName, slaveNodeId, requesterNodeId);
         this.dtoSender = dtoSender;
         this.virtualPoolPlugin = virtualPoolPlugin;
     }
@@ -48,7 +48,7 @@ public class RmPoolReleaseTx extends AbstractRemoteMethodTx<Boolean> {
         JsonObject body = new JsonObject();
         body.addProperty("nativeReaderName", nativeReaderName);
 
-        return KeypleDtoHelper.buildRequest(getMethodName().getName(), body.toString(), null,
+        return KeypleDtoHelper.buildRequest(getMethodName().getName(), body.toString(), sessionId,
                 nativeReaderName, virtualReaderName, requesterNodeId, targetNodeId, id);
     }
 
@@ -58,8 +58,8 @@ public class RmPoolReleaseTx extends AbstractRemoteMethodTx<Boolean> {
         logger.trace("KeypleDto : {}", keypleDto);
         if (KeypleDtoHelper.containsException(keypleDto)) {
             logger.trace("KeypleDto contains an exception: {}", keypleDto);
-            KeypleReaderException ex =
-                    JsonParser.getGson().fromJson(keypleDto.getBody(), KeypleReaderException.class);
+            KeypleReaderException ex = JsonParser.getGson().fromJson(keypleDto.getError(),
+                    KeypleReaderException.class);
             throw new KeypleRemoteException(
                     "An exception occurs while calling the remote method transmitSet", ex);
         } else {
