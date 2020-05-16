@@ -126,8 +126,9 @@ class SamCommandProcessor {
                 ? CHALLENGE_LENGTH_REV32
                 : CHALLENGE_LENGTH_REV_INF_32;
 
-        AbstractSamCommandBuilder getChallengeCmdBuild = new SamGetChallengeCmdBuild(
-                samResource.getMatchingSe().getSamRevision(), challengeLength);
+        AbstractSamCommandBuilder<? extends AbstractSamResponseParser> getChallengeCmdBuild =
+                new SamGetChallengeCmdBuild(samResource.getMatchingSe().getSamRevision(),
+                        challengeLength);
 
         apduRequests.add(getChallengeCmdBuild.getApduRequest());
 
@@ -244,7 +245,7 @@ class SamCommandProcessor {
      * @param request PO request
      * @param response PO response
      */
-    void pushPoExchangeData(ApduRequest request, ApduResponse response) {
+    private void pushPoExchangeData(ApduRequest request, ApduResponse response) {
 
         logger.trace("pushPoExchangeData: REQUEST = {}", request);
 
@@ -262,6 +263,23 @@ class SamCommandProcessor {
 
         // Add an ApduResponse to the digest computation
         poDigestDataCache.add(response.getBytes());
+    }
+
+    /**
+     * Appends a list full PO exchange (request and response) to the digest data cache.<br>
+     * The startIndex argument makes it possible not to include the beginning of the list when
+     * necessary.
+     * 
+     * @param requests PO request list
+     * @param responses PO response list
+     * @param startIndex starting point in the list
+     */
+    void pushPoExchangeDataList(List<ApduRequest> requests, List<ApduResponse> responses,
+            int startIndex) {
+        for (int i = startIndex; i < requests.size(); i++) {
+            // Add requests and responses to the digest processor
+            pushPoExchangeData(requests.get(i), responses.get(i));
+        }
     }
 
     /**
