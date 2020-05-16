@@ -49,7 +49,7 @@ public class DigestUpdateCmdBuild extends AbstractSamCommandBuilder<DigestUpdate
             p2 = (byte) 0x80;
         }
 
-        if (digestData != null && digestData.length > 255) {
+        if (digestData == null || digestData.length > 255) {
             throw new IllegalArgumentException("Digest data null or too long!");
         }
 
