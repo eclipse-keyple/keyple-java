@@ -2,6 +2,8 @@ apply plugin: 'java'
 apply plugin: 'java-library'
 apply plugin: 'maven'
 apply plugin: 'org.eclipse.keyple'
+apply plugin: 'jacoco'
+apply plugin: 'org.sonarqube'
 
 sourceCompatibility = 1.6
 archivesBaseName = "keyple-java-plugin-pcsc"
@@ -182,6 +184,13 @@ dependencies {
     testImplementation "org.slf4j:slf4j-simple:${slf4jsimple_version}"
 }
 
-test {
-    exclude '**'
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.enabled false
+    }
 }
+
+test.exclude '**'
+test.finalizedBy jacocoTestReport
