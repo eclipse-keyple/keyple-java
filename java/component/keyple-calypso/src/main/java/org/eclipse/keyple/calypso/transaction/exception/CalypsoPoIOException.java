@@ -19,7 +19,7 @@ public class CalypsoPoIOException extends CalypsoPoTransactionException {
     /**
      * @param message the message to identify the exception context
      */
-    protected CalypsoPoIOException(String message) {
+    public CalypsoPoIOException(String message) {
         super(message);
     }
 
@@ -29,7 +29,7 @@ public class CalypsoPoIOException extends CalypsoPoTransactionException {
      * @param message message to identify the exception context
      * @param cause the cause
      */
-    protected CalypsoPoIOException(String message, Throwable cause) {
+    public CalypsoPoIOException(String message, Throwable cause) {
         super(message, cause);
     }
 }

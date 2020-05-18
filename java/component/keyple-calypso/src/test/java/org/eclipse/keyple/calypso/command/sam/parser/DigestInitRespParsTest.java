@@ -39,7 +39,7 @@ public class DigestInitRespParsTest {
                         responses);
 
         AbstractApduResponseParser apduResponseParser =
-                new DigestInitRespPars(seResponse.getApduResponses().get(0));
+                new DigestInitRespPars(seResponse.getApduResponses().get(0), null);
         Assert.assertArrayEquals(new byte[] {(byte) 0x90, 0x00},
                 apduResponseParser.getApduResponse().getBytes());
     }

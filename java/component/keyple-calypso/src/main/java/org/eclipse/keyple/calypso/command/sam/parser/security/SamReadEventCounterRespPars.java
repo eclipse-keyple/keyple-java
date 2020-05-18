@@ -14,10 +14,9 @@ package org.eclipse.keyple.calypso.command.sam.parser.security;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
-import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
+import org.eclipse.keyple.calypso.command.sam.builder.security.SamReadEventCounterCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCounterOverflowException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
-import org.eclipse.keyple.core.command.SeCommand;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
@@ -48,9 +47,10 @@ public class SamReadEventCounterRespPars extends AbstractSamResponseParser {
      * Instantiates a new SamReadEventCounterRespPars.
      *
      * @param response of the SamReadEventCounterRespPars
+     * @param builder the reference to the builder that created this parser
      */
-    public SamReadEventCounterRespPars(ApduResponse response) {
-        super(response, null);
+    public SamReadEventCounterRespPars(ApduResponse response, SamReadEventCounterCmdBuild builder) {
+        super(response, builder);
     }
 
     /**
@@ -60,10 +60,5 @@ public class SamReadEventCounterRespPars extends AbstractSamResponseParser {
      */
     public byte[] getCounterData() {
         return isSuccessful() ? response.getDataOut() : null;
-    }
-
-    @Override
-    protected SeCommand getCommandRef() {
-        return CalypsoSamCommand.READ_EVENT_COUNTER;
     }
 }

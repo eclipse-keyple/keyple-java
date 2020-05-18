@@ -15,13 +15,15 @@ package org.eclipse.keyple.calypso.command.sam.builder.security;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
+import org.eclipse.keyple.calypso.command.sam.parser.security.DigestUpdateRespPars;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
  * Builder for the SAM Digest Update APDU command. This command have to be sent twice for each
  * command executed during a session. First time for the command sent and second time for the answer
  * received
  */
-public class DigestUpdateCmdBuild extends AbstractSamCommandBuilder {
+public class DigestUpdateCmdBuild extends AbstractSamCommandBuilder<DigestUpdateRespPars> {
 
     /** The command reference. */
 
@@ -34,10 +36,8 @@ public class DigestUpdateCmdBuild extends AbstractSamCommandBuilder {
      * @param encryptedSession the encrypted session
      * @param digestData all bytes from command sent by the PO or response from the command
      * @throws IllegalArgumentException - if the digest data is null or has a length &gt; 255
-     * @throws IllegalArgumentException - if the request is inconsistent
      */
-    public DigestUpdateCmdBuild(SamRevision revision, boolean encryptedSession, byte[] digestData)
-            throws IllegalArgumentException {
+    public DigestUpdateCmdBuild(SamRevision revision, boolean encryptedSession, byte[] digestData) {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
@@ -49,11 +49,15 @@ public class DigestUpdateCmdBuild extends AbstractSamCommandBuilder {
             p2 = (byte) 0x80;
         }
 
-        if (digestData != null && digestData.length > 255) {
+        if (digestData == null || digestData.length > 255) {
             throw new IllegalArgumentException("Digest data null or too long!");
         }
 
-        // CalypsoRequest calypsoRequest = new CalypsoRequest(cla, command, p1, p2, digestData);
         request = setApduRequest(cla, command, p1, p2, digestData, null);
+    }
+
+    @Override
+    public DigestUpdateRespPars createResponseParser(ApduResponse apduResponse) {
+        return new DigestUpdateRespPars(apduResponse, this);
     }
 }

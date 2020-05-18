@@ -15,9 +15,8 @@ package org.eclipse.keyple.calypso.command.sam.parser.security;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
-import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
+import org.eclipse.keyple.calypso.command.sam.builder.security.DigestCloseCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamAccessForbiddenException;
-import org.eclipse.keyple.core.command.SeCommand;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
@@ -44,9 +43,10 @@ public class DigestCloseRespPars extends AbstractSamResponseParser {
      * Instantiates a new DigestCloseRespPars.
      *
      * @param response from the DigestCloseCmdBuild
+     * @param builder the reference to the builder that created this parser
      */
-    public DigestCloseRespPars(ApduResponse response) {
-        super(response, null);
+    public DigestCloseRespPars(ApduResponse response, DigestCloseCmdBuild builder) {
+        super(response, builder);
     }
 
     /**
@@ -56,10 +56,5 @@ public class DigestCloseRespPars extends AbstractSamResponseParser {
      */
     public byte[] getSignature() {
         return isSuccessful() ? response.getDataOut() : null;
-    }
-
-    @Override
-    protected SeCommand getCommandRef() {
-        return CalypsoSamCommand.DIGEST_CLOSE;
     }
 }

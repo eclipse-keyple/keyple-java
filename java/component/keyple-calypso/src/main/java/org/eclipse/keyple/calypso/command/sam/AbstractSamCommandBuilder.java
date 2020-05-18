@@ -11,15 +11,18 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.command.sam;
 
+import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.command.AbstractIso7816CommandBuilder;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
  * Superclass for all SAM command builders.
  * <p>
  * Used directly, this class can serve as low level command builder.
  */
-public abstract class AbstractSamCommandBuilder extends AbstractIso7816CommandBuilder {
+public abstract class AbstractSamCommandBuilder<T extends AbstractSamResponseParser>
+        extends AbstractIso7816CommandBuilder {
 
     protected SamRevision defaultRevision = SamRevision.S1D;// 94
 
@@ -27,6 +30,17 @@ public abstract class AbstractSamCommandBuilder extends AbstractIso7816CommandBu
         super(reference, request);
     }
 
+    /**
+     * Create the response parser matching the builder
+     *
+     * @param apduResponse the response data from the SE
+     * @return an {@link AbstractApduResponseParser}
+     */
+    public abstract T createResponseParser(ApduResponse apduResponse);
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CalypsoSamCommand getCommandRef() {
         return (CalypsoSamCommand) commandRef;

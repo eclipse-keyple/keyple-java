@@ -15,11 +15,10 @@ package org.eclipse.keyple.calypso.command.sam.parser.security;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
-import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
+import org.eclipse.keyple.calypso.command.sam.builder.security.DigestUpdateMultipleCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamAccessForbiddenException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIncorrectInputDataException;
-import org.eclipse.keyple.core.command.SeCommand;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
@@ -54,13 +53,10 @@ public class DigestUpdateMultipleRespPars extends AbstractSamResponseParser {
      * Instantiates a new DigestUpdateMultipleRespPars.
      *
      * @param response the response
+     * @param builder the reference to the builder that created this parser
      */
-    public DigestUpdateMultipleRespPars(ApduResponse response) {
-        super(response, null);
-    }
-
-    @Override
-    protected SeCommand getCommandRef() {
-        return CalypsoSamCommand.DIGEST_UPDATE_MULTIPLE;
+    public DigestUpdateMultipleRespPars(ApduResponse response,
+            DigestUpdateMultipleCmdBuild builder) {
+        super(response, builder);
     }
 }

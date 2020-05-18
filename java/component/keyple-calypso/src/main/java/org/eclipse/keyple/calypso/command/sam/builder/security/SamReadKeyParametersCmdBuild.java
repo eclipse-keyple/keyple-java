@@ -14,11 +14,14 @@ package org.eclipse.keyple.calypso.command.sam.builder.security;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
+import org.eclipse.keyple.calypso.command.sam.parser.security.SamReadKeyParametersRespPars;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
  * Builder for the SAM Read Key Parameters APDU command.
  */
-public class SamReadKeyParametersCmdBuild extends AbstractSamCommandBuilder {
+public class SamReadKeyParametersCmdBuild
+        extends AbstractSamCommandBuilder<SamReadKeyParametersRespPars> {
     /** The command reference. */
     private static final CalypsoSamCommand command = CalypsoSamCommand.READ_KEY_PARAMETERS;
 
@@ -153,4 +156,8 @@ public class SamReadKeyParametersCmdBuild extends AbstractSamCommandBuilder {
         request = setApduRequest(cla, command, (byte) 0x00, p2, sourceKeyId, (byte) 0x00);
     }
 
+    @Override
+    public SamReadKeyParametersRespPars createResponseParser(ApduResponse apduResponse) {
+        return new SamReadKeyParametersRespPars(apduResponse, this);
+    }
 }

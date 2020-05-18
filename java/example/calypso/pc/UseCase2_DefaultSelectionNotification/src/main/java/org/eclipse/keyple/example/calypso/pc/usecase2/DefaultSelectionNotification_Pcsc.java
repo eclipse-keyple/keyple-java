@@ -19,8 +19,7 @@ import org.eclipse.keyple.calypso.transaction.PoResource;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
-import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronisedExchangesException;
-import org.eclipse.keyple.calypso.transaction.exception.CalypsoSecureSessionException;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
@@ -30,7 +29,6 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -236,19 +234,14 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
                     /* Log the result */
                     logger.info("EventLog file data: {}", ByteArrayUtil.toHex(eventLog));
 
-                } catch (KeypleReaderException e) {
-                    e.printStackTrace();
-                } catch (CalypsoSecureSessionException e) {
-                    e.printStackTrace();
-                } catch (CalypsoDesynchronisedExchangesException e) {
-                    logger.error("CalypsoDesynchronisedExchangesException: {}", e.getMessage());
+                } catch (CalypsoPoTransactionException e) {
+                    logger.error("CalypsoPoTransactionException: {}", e.getMessage());
                 } catch (CalypsoPoCommandException e) {
                     logger.error("PO command {} failed with the status code 0x{}. {}",
                             e.getCommand(),
                             Integer.toHexString(e.getStatusCode() & 0xFFFF).toUpperCase(),
                             e.getMessage());
                 }
-
                 logger.info(
                         "==================================================================================");
                 logger.info(

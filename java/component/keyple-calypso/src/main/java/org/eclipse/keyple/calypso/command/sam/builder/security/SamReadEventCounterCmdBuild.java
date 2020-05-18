@@ -14,11 +14,14 @@ package org.eclipse.keyple.calypso.command.sam.builder.security;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
+import org.eclipse.keyple.calypso.command.sam.parser.security.SamReadEventCounterRespPars;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
  * Builder for the SAM Read Event Counter APDU command.
  */
-public class SamReadEventCounterCmdBuild extends AbstractSamCommandBuilder {
+public class SamReadEventCounterCmdBuild
+        extends AbstractSamCommandBuilder<SamReadEventCounterRespPars> {
     /** The command reference. */
     private static final CalypsoSamCommand command = CalypsoSamCommand.READ_EVENT_COUNTER;
 
@@ -30,6 +33,13 @@ public class SamReadEventCounterCmdBuild extends AbstractSamCommandBuilder {
         COUNTER_RECORD, SINGLE_COUNTER
     }
 
+    /**
+     * Instantiate a new SamReadEventCounterCmdBuild
+     * 
+     * @param revision revision of the SAM
+     * @param operationType the counter operation type
+     * @param index the counter index
+     */
     public SamReadEventCounterCmdBuild(SamRevision revision,
             SamEventCounterOperationType operationType, int index) {
 
@@ -71,4 +81,8 @@ public class SamReadEventCounterCmdBuild extends AbstractSamCommandBuilder {
         request = setApduRequest(cla, command, (byte) 0x00, p2, null, (byte) 0x00);
     }
 
+    @Override
+    public SamReadEventCounterRespPars createResponseParser(ApduResponse apduResponse) {
+        return new SamReadEventCounterRespPars(apduResponse, this);
+    }
 }

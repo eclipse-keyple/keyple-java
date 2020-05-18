@@ -15,11 +15,13 @@ package org.eclipse.keyple.calypso.command.sam.builder.security;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
+import org.eclipse.keyple.calypso.command.sam.parser.security.DigestInitRespPars;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
  * Builder for the SAM Digest Init APDU command.
  */
-public class DigestInitCmdBuild extends AbstractSamCommandBuilder {
+public class DigestInitCmdBuild extends AbstractSamCommandBuilder<DigestInitRespPars> {
 
     /**
      * The command.
@@ -41,8 +43,7 @@ public class DigestInitCmdBuild extends AbstractSamCommandBuilder {
      * @throws IllegalArgumentException - if the request is inconsistent
      */
     public DigestInitCmdBuild(SamRevision revision, boolean verificationMode, boolean rev3_2Mode,
-            byte workKeyRecordNumber, byte workKeyKif, byte workKeyKVC, byte[] digestData)
-            throws IllegalArgumentException {
+            byte workKeyRecordNumber, byte workKeyKif, byte workKeyKVC, byte[] digestData) {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
@@ -82,5 +83,10 @@ public class DigestInitCmdBuild extends AbstractSamCommandBuilder {
         // p1, p2, dataIn);
         request = setApduRequest(cla, CalypsoSamCommand.DIGEST_INIT, p1, p2, dataIn, null);
 
+    }
+
+    @Override
+    public DigestInitRespPars createResponseParser(ApduResponse apduResponse) {
+        return new DigestInitRespPars(apduResponse, this);
     }
 }

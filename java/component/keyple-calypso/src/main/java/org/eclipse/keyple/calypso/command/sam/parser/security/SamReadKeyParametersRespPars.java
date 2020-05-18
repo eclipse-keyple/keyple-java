@@ -14,11 +14,10 @@ package org.eclipse.keyple.calypso.command.sam.parser.security;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
-import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
+import org.eclipse.keyple.calypso.command.sam.builder.security.SamReadKeyParametersCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCounterOverflowException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamDataAccessException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
-import org.eclipse.keyple.core.command.SeCommand;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
@@ -53,9 +52,11 @@ public class SamReadKeyParametersRespPars extends AbstractSamResponseParser {
      * Instantiates a new SamReadKeyParametersRespPars.
      *
      * @param response of the SamReadKeyParametersRespPars
+     * @param builder the reference to the builder that created this parser
      */
-    public SamReadKeyParametersRespPars(ApduResponse response) {
-        super(response, null);
+    public SamReadKeyParametersRespPars(ApduResponse response,
+            SamReadKeyParametersCmdBuild builder) {
+        super(response, builder);
     }
 
     /**
@@ -65,10 +66,5 @@ public class SamReadKeyParametersRespPars extends AbstractSamResponseParser {
      */
     public byte[] getKeyParameters() {
         return isSuccessful() ? response.getDataOut() : null;
-    }
-
-    @Override
-    protected SeCommand getCommandRef() {
-        return CalypsoSamCommand.READ_KEY_PARAMETERS;
     }
 }

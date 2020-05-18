@@ -12,16 +12,16 @@
 package org.eclipse.keyple.calypso.transaction.exception;
 
 /**
- * The exception {@code CalypsoDesynchronisedExchangesException} indicates a desynchronization of
+ * The exception {@code CalypsoDesynchronizedExchangesException} indicates a desynchronization of
  * the APDU exchanges.<br>
  * This means that the number of APDU requests is different from the number of APDU responses.
  */
-public class CalypsoDesynchronisedExchangesException extends CalypsoPoTransactionException {
+public class CalypsoDesynchronizedExchangesException extends CalypsoPoTransactionException {
 
     /**
      * @param message the message to identify the exception context
      */
-    public CalypsoDesynchronisedExchangesException(String message) {
+    public CalypsoDesynchronizedExchangesException(String message) {
         super(message);
     }
 }

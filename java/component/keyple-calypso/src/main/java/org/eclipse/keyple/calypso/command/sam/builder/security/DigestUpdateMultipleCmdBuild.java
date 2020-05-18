@@ -15,14 +15,15 @@ package org.eclipse.keyple.calypso.command.sam.builder.security;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
+import org.eclipse.keyple.calypso.command.sam.parser.security.DigestUpdateMultipleRespPars;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class provides the dedicated constructor to build the SAM Digest Update Multiple APDU
  * command.
- *
  */
-public class DigestUpdateMultipleCmdBuild extends AbstractSamCommandBuilder {
+public class DigestUpdateMultipleCmdBuild
+        extends AbstractSamCommandBuilder<DigestUpdateMultipleRespPars> {
 
     /** The command. */
     private static final CalypsoSamCommand command = CalypsoSamCommand.DIGEST_UPDATE_MULTIPLE;
@@ -32,10 +33,8 @@ public class DigestUpdateMultipleCmdBuild extends AbstractSamCommandBuilder {
      *
      * @param revision the revision
      * @param digestData the digest data
-     * @throws IllegalArgumentException - if the request is inconsistent
      */
-    public DigestUpdateMultipleCmdBuild(SamRevision revision, byte[] digestData)
-            throws IllegalArgumentException {
+    public DigestUpdateMultipleCmdBuild(SamRevision revision, byte[] digestData) {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
@@ -45,5 +44,10 @@ public class DigestUpdateMultipleCmdBuild extends AbstractSamCommandBuilder {
         byte p2 = (byte) 0x00;
 
         request = setApduRequest(cla, command, p1, p2, digestData, null);
+    }
+
+    @Override
+    public DigestUpdateMultipleRespPars createResponseParser(ApduResponse apduResponse) {
+        return new DigestUpdateMultipleRespPars(apduResponse, this);
     }
 }
