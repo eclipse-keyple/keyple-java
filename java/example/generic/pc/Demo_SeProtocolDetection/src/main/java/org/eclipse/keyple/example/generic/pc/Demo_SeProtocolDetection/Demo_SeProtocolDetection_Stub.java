@@ -48,21 +48,19 @@ Demo_SeProtocolDetection_Stub {
      */
     public static void main(String[] args) throws InterruptedException,
             KeyplePluginNotFoundException, KeyplePluginInstantiationException {
-        /* get the SeProxyService instance */
+        // get the SeProxyService instance
         SeProxyService seProxyService = SeProxyService.getInstance();
 
         final String STUB_PLUGIN_NAME = "stub1";
 
-        /* Register Stub plugin in the platform */
+        // Register Stub plugin in the platform
         seProxyService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
         ReaderPlugin stubPlugin = seProxyService.getPlugin(STUB_PLUGIN_NAME);
 
-        /* create an observer class to handle the SE operations */
+        // create an observer class to handle the SE operations
         SeProtocolDetectionEngine observer = new SeProtocolDetectionEngine();
 
-        /*
-         * Plug PO reader.
-         */
+        // Plug PO reader.
         ((StubPlugin) stubPlugin).plugStubReader("poReader", true);
 
         Thread.sleep(200);
@@ -102,16 +100,6 @@ Demo_SeProtocolDetection_Stub {
         // Set terminal as Observer of the first reader
         poReader.addObserver(observer);
 
-        // poReader.insertSe(new StubCalypsoClassic());
-        //
-        // Thread.sleep(300);
-        //
-        // poReader.removeSe();
-
-        // Thread.sleep(100);
-        //
-        // poReader.insertSe(new StubCalypsoBPrime());
-
         Thread.sleep(300);
 
         poReader.removeSe();
@@ -126,7 +114,7 @@ Demo_SeProtocolDetection_Stub {
 
         Thread.sleep(100);
 
-        /* insert Mifare UltraLight */
+        // insert Mifare UltraLight
         poReader.insertSe(new StubMifareUL());
 
         Thread.sleep(300);
@@ -135,7 +123,7 @@ Demo_SeProtocolDetection_Stub {
 
         Thread.sleep(100);
 
-        /* insert Mifare Desfire */
+        // insert Mifare Desfire
         poReader.insertSe(new StubMifareDesfire());
 
         Thread.sleep(300);

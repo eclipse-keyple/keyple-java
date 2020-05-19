@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information regarding copyright
  * ownership.
@@ -23,6 +23,7 @@ import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
@@ -68,28 +69,26 @@ import org.slf4j.LoggerFactory;
 public class PoAuthentication_Stub {
     private static final Logger logger = LoggerFactory.getLogger(PoAuthentication_Stub.class);
 
-    public static void main(String[] args) throws KeypleException, InterruptedException {
+    public static void main(String[] args) throws KeypleException {
 
-        /* Get the instance of the SeProxyService (Singleton pattern) */
+        // Get the instance of the SeProxyService (Singleton pattern)
         SeProxyService seProxyService = SeProxyService.getInstance();
 
         final String STUB_PLUGIN_NAME = "stub1";
 
-        /* Register Stub plugin in the platform */
+        // Register Stub plugin in the platform
         seProxyService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
         ReaderPlugin stubPlugin = seProxyService.getPlugin(STUB_PLUGIN_NAME);
 
-        /* Plug PO and SAM stub reader. */
+        // Plug PO and SAM stub reader.
         ((StubPlugin) stubPlugin).plugStubReader("poReader", true);
         ((StubPlugin) stubPlugin).plugStubReader("samReader", true);
 
-        /*
-         * Get a PO and a SAM reader ready to work with a Calypso PO.
-         */
-        StubReader poReader = (StubReader) (stubPlugin.getReader("poReader"));
-        StubReader samReader = (StubReader) (stubPlugin.getReader("samReader"));
+        // Get a PO and a SAM reader ready to work with a Calypso PO.
+        SeReader poReader = stubPlugin.getReader("poReader");
+        SeReader samReader = stubPlugin.getReader("samReader");
 
-        /* Check if the reader exists */
+        // Check if the reader exists
         if (poReader == null || samReader == null) {
             throw new IllegalStateException("Bad PO or SAM reader setup");
         }
@@ -98,29 +97,21 @@ public class PoAuthentication_Stub {
                 StubProtocolSetting.STUB_PROTOCOL_SETTING
                         .get(SeCommonProtocols.PROTOCOL_ISO7816_3));
 
-        /* Create 'virtual' Calypso PO */
+        // Create 'virtual' Calypso PO
         StubSecureElement calypsoStubSe = new StubCalypsoClassic();
 
         logger.info("Insert stub PO.");
-        poReader.insertSe(calypsoStubSe);
+        ((StubReader) poReader).insertSe(calypsoStubSe);
 
-        /* Create 'virtual' Calypso SAM */
+        // Create 'virtual' Calypso SAM
         StubSecureElement calypsoSamStubSe = new StubSamCalypsoClassic();
 
         logger.info("Insert stub SAM.");
-        samReader.insertSe(calypsoSamStubSe);
+        ((StubReader) samReader).insertSe(calypsoSamStubSe);
 
-        /*
-         * Open logical channel for the SAM inserted in the reader
-         *
-         * (We expect the right is inserted)
-         */
+        // Open logical channel for the SAM inserted in the reader
+        // (We expect the right is inserted)
         SamResource samResource = CalypsoUtilities.checkSamAndOpenChannel(samReader);
-
-        /* Check if the readers exists */
-        if (poReader == null || samReader == null) {
-            throw new IllegalStateException("Bad PO or SAM reader setup");
-        }
 
         logger.info("=============== UseCase Calypso #4: Po Authentication ==================");
         logger.info("= PO Reader  NAME = {}", poReader.getName());
@@ -130,119 +121,105 @@ public class PoAuthentication_Stub {
                 StubProtocolSetting.STUB_PROTOCOL_SETTING
                         .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
-        /* Check if a PO is present in the reader */
+        // Check if a PO is present in the reader
         if (poReader.isSePresent()) {
 
             logger.info(
-                    "==================================================================================");
-            logger.info(
-                    "= 1st PO exchange: AID based selection with reading of Environment file.         =");
-            logger.info(
-                    "==================================================================================");
+                    "= ##### 1st PO exchange: AID based selection with reading of Environment file.");
 
-            /*
-             * Prepare a Calypso PO selection
-             */
+            // Prepare a Calypso PO selection
             SeSelection seSelection = new SeSelection();
 
-            /*
-             * Setting of an AID based selection of a Calypso REV3 PO
-             *
-             * Select the first application matching the selection AID whatever the SE communication
-             * protocol keep the logical channel open after the selection
-             */
+            // Setting of an AID based selection of a Calypso REV3 PO
+            // Select the first application matching the selection AID whatever the SE communication
+            // protocol keep the logical channel open after the selection
 
-            /*
-             * Calypso selection: configures a PoSelectionRequest with all the desired attributes to
-             * make the selection and read additional information afterwards
-             */
+            // Calypso selection: configures a PoSelectionRequest with all the desired attributes to
+            // make the selection and read additional information afterwards
             PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
                     new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                            new PoSelector.AidSelector(
+                            new SeSelector.AidSelector(
                                     new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID)),
                             PoSelector.InvalidatedPo.REJECT));
 
-            /*
-             * Add the selection case to the current selection (we could have added other cases
-             * here)
-             */
+            // Prepare the reading of the Environment and Holder file.
+            poSelectionRequest.prepareReadRecordFile(CalypsoClassicInfo.SFI_EnvironmentAndHolder,
+                    CalypsoClassicInfo.RECORD_NUMBER_1);
+
+            // Add the selection case to the current selection
+            // (we could have added other cases here)
             seSelection.prepareSelection(poSelectionRequest);
 
-            /*
-             * Actual PO communication: operate through a single request the Calypso PO selection
-             * and the file read
-             */
+            // Actual PO communication: operate through a single request the Calypso PO selection
+            // and the file read
             CalypsoPo calypsoPo = (CalypsoPo) seSelection.processExplicitSelection(poReader)
                     .getActiveMatchingSe();
+
             logger.info("The selection of the PO has succeeded.");
 
-            /* Go on with the reading of the first record of the EventLog file */
+            // All data collected from the PO are available in CalypsoPo
+            // Get the Environment and Holder data
+            ElementaryFile efEnvironmentAndHolder =
+                    calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EnvironmentAndHolder);
+
+            String environmentAndHolder =
+                    ByteArrayUtil.toHex(efEnvironmentAndHolder.getData().getContent());
+            logger.info("File Environment and Holder: {}", environmentAndHolder);
+
+            // Go on with the reading of the first record of the EventLog file
             logger.info(
-                    "==================================================================================");
-            logger.info(
-                    "= 2nd PO exchange: open and close a secure session to perform authentication.    =");
-            logger.info(
-                    "==================================================================================");
+                    "= ##### 2nd PO exchange: open and close a secure session to perform authentication.");
 
             PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo),
                     samResource, CalypsoUtilities.getSecuritySettings());
 
-            /*
-             * Prepare the reading order and keep the associated parser for later use once the
-             * transaction has been processed.
-             */
+            // Read the EventLog file at the Session Opening
             poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_EventLog,
                     CalypsoClassicInfo.RECORD_NUMBER_1);
 
-
-            /*
-             * Open Session for the debit key
-             */
-
+            // Open Session for the debit key
             poTransaction
                     .processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT);
+
+            // Get the EventLog data
+            ElementaryFile efEventLog = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+
+            String eventLog = ByteArrayUtil.toHex(efEventLog.getData().getContent());
+            logger.info("File Event log: {}", eventLog);
 
             if (!calypsoPo.isDfRatified()) {
                 logger.info(
                         "========= Previous Secure Session was not ratified. =====================");
             }
-            /*
-             * Prepare the reading order and keep the associated parser for later use once the
-             * transaction has been processed.
-             */
-            poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_EventLog,
+
+            // Read the ContractList file inside the Secure Session
+            poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_ContractList,
                     CalypsoClassicInfo.RECORD_NUMBER_1);
 
             poTransaction.processPoCommandsInSession();
 
-            /*
-             * Retrieve the data read from the parser updated during the transaction process
-             */
-            ElementaryFile efEventLog = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
-            byte eventLog[] = efEventLog.getData().getContent();
+            // Get the ContractList data
+            ElementaryFile efContractList =
+                    calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_ContractList);
 
-            /* Log the result */
-            logger.info("EventLog file data: {}", ByteArrayUtil.toHex(eventLog));
+            String contractList = ByteArrayUtil.toHex(efContractList.getData().getContent());
+            logger.info("File Contract List: {}", contractList);
 
-            /*
-             * Close the Secure Session.
-             */
+            // Append a new record to EventLog.
+            // Does not change the content as in the PC/SC example due to the Stub limitations
+            poTransaction.prepareAppendRecord(CalypsoClassicInfo.SFI_EventLog,
+                    efEventLog.getData().getContent());
+
+            // Execute Append Record and close the Secure Session.
             logger.info(
                     "========= PO Calypso session ======= Closing ============================");
 
-            /*
-             * A ratification command will be sent (CONTACTLESS_MODE).
-             */
+            // A ratification command will be sent (CONTACTLESS_MODE).
             poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
 
             logger.info("The Calypso session ended successfully.");
 
-            logger.info(
-                    "==================================================================================");
-            logger.info(
-                    "= End of the Calypso PO processing.                                              =");
-            logger.info(
-                    "==================================================================================");
+            logger.info("= ##### End of the Calypso PO processing.");
         } else {
             logger.error("The selection of the PO has failed.");
         }

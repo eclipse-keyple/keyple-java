@@ -39,7 +39,7 @@ public class Demo_ObservableReaderNotification_Stub {
         final String READER1_NAME = "Reader1";
         final String READER2_NAME = "Reader2";
 
-        /* Register Stub plugin in the platform */
+        // Register Stub plugin in the platform
         seProxyService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
         ReaderPlugin stubPlugin = seProxyService.getPlugin(STUB_PLUGIN_NAME);
 
@@ -64,7 +64,7 @@ public class Demo_ObservableReaderNotification_Stub {
 
         StubReader reader2 = (StubReader) (stubPlugin.getReader(READER2_NAME));
 
-        /* Create 'virtual' Hoplink and SAM SE */
+        // Create 'virtual' Hoplink and SAM SE
         StubSecureElement se1 = new StubSe1();
         StubSecureElement se2 = new StubSe2();
 

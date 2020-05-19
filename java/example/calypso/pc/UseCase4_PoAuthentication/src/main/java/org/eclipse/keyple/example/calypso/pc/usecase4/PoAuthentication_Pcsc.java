@@ -23,6 +23,7 @@ import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.SeSelector.AidSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -76,16 +77,11 @@ public class PoAuthentication_Pcsc {
         // CalypsoUtilities class.
         SamResource samResource = CalypsoUtilities.getDefaultSamResource();
 
-        // Check if the readers exists
-        if (poReader == null || samResource == null) {
-            throw new IllegalStateException("Bad PO or SAM reader setup");
-        }
-
+        String samSerialNumber = ByteArrayUtil.toHex(samResource.getMatchingSe().getSerialNumber());
         logger.info("=============== UseCase Calypso #4: Po Authentication ==================");
         logger.info("= PO Reader  NAME = {}", poReader.getName());
         logger.info("= SAM Reader  NAME = {}, SERIAL NUMBER = {}",
-                samResource.getSeReader().getName(),
-                ByteArrayUtil.toHex(samResource.getMatchingSe().getSerialNumber()));
+                samResource.getSeReader().getName(), samSerialNumber);
 
         // Check if a PO is present in the reader
         if (poReader.isSePresent()) {
@@ -103,10 +99,9 @@ public class PoAuthentication_Pcsc {
 
             // Calypso selection: configures a PoSelectionRequest with all the desired attributes to
             // make the selection and read additional information afterwards
-            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
-                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                            new PoSelector.AidSelector(
-                                    new PoSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID)),
+            PoSelectionRequest poSelectionRequest =
+                    new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                            null, new AidSelector(new AidSelector.IsoAid(CalypsoClassicInfo.AID)),
                             PoSelector.InvalidatedPo.REJECT));
 
             // Prepare the reading of the Environment and Holder file.
@@ -130,8 +125,9 @@ public class PoAuthentication_Pcsc {
             ElementaryFile efEnvironmentAndHolder =
                     calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EnvironmentAndHolder);
 
-            logger.info("File Environment and Holder: {}",
-                    ByteArrayUtil.toHex(efEnvironmentAndHolder.getData().getContent()));
+            String environmentAndHolder =
+                    ByteArrayUtil.toHex(efEnvironmentAndHolder.getData().getContent());
+            logger.info("File Environment and Holder: {}", environmentAndHolder);
 
             // Go on with the reading of the first record of the EventLog file
             logger.info(
@@ -151,8 +147,8 @@ public class PoAuthentication_Pcsc {
             // Get the EventLog data
             ElementaryFile efEventLog = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
 
-            logger.info("File Event log: {}",
-                    ByteArrayUtil.toHex(efEventLog.getData().getContent()));
+            String eventLog = ByteArrayUtil.toHex(efEventLog.getData().getContent());
+            logger.info("File Event log: {}", eventLog);
 
             if (!calypsoPo.isDfRatified()) {
                 logger.info(
@@ -169,8 +165,8 @@ public class PoAuthentication_Pcsc {
             ElementaryFile efContractList =
                     calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_ContractList);
 
-            logger.info("File Contract List: {}",
-                    ByteArrayUtil.toHex(efContractList.getData().getContent()));
+            String contractList = ByteArrayUtil.toHex(efContractList.getData().getContent());
+            logger.info("File Contract List: {}", contractList);
 
             // Append a new record to EventLog. Just increment the first byte.
             byte[] log = efEventLog.getData().getContent();

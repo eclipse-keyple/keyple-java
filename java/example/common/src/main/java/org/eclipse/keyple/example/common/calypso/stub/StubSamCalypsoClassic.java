@@ -18,10 +18,11 @@ import org.eclipse.keyple.plugin.stub.StubSecureElement;
 /**
  * This class is an example of a Stub SAM
  */
-public class StubSamCalypsoClassic extends StubSecureElement {
+public final class StubSamCalypsoClassic extends StubSecureElement {
 
-    final static String seProtocol = "PROTOCOL_ISO7816_3";
-    final String ATR_HEX = "3B3F9600805A0080C120000012345678829000";// serial number : 12345678
+    private static final String SE_PROTOCOL = "PROTOCOL_ISO7816_3";
+    private static final String ATR_HEX = "3B3F9600805A0080C120000012345678829000";// serial number
+                                                                                   // : 12345678
 
     public StubSamCalypsoClassic() {
         /* Select Diversifier */
@@ -31,6 +32,10 @@ public class StubSamCalypsoClassic extends StubSecureElement {
         /* Digest Init */
         addHexCommand(
                 "808A00FF27307E0308306C00307E1D24B928480800000606F000120000000000000000000000000000000000",
+                "9000");
+        /* Digest Init */
+        addHexCommand(
+                "808A00FF273079030490980030791D01112233445566778899AABBCCDDEEFF00112233445566778899AABBCC",
                 "9000");
         /* Digest Update */
         addHexCommand("808C00000500B2014400", "9000");
@@ -59,6 +64,10 @@ public class StubSamCalypsoClassic extends StubSecureElement {
         addHexCommand(
                 "808C00007E011D00000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF021D00000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF031D00000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF041D00000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9000",
                 "9000");
+        /* Digest Update */
+        addHexCommand(
+                "808C00002200E200401D01112233445566778899AABBCCDDEEFF00112233445566778899AABBCC",
+                "9000");
         /* Digest Close */
         addHexCommand("808E000004", "050607089000");
         /* Digest Authenticate */
@@ -72,7 +81,7 @@ public class StubSamCalypsoClassic extends StubSecureElement {
 
     @Override
     public String getSeProcotol() {
-        return seProtocol;
+        return SE_PROTOCOL;
     }
 
 
