@@ -91,8 +91,8 @@ public final class SelectFileCmdBuild extends AbstractPoCommandBuilder<SelectFil
         // handle the REV1 case
         byte p1 = (byte) (poClass == PoClass.LEGACY ? 0x08 : 0x09);
 
-        request = setApduRequest(poClass.getValue(), command, p1, (byte) 0x00,
-                selectionPath, (byte) 0x00);
+        request = setApduRequest(poClass.getValue(), command, p1, (byte) 0x00, selectionPath,
+                (byte) 0x00);
 
         if (logger.isDebugEnabled()) {
             String extraInfo =
