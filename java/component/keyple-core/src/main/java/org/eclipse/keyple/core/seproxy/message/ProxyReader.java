@@ -68,19 +68,6 @@ public interface ProxyReader extends SeReader {
             throws KeypleReaderIOException;
 
     /**
-     * Transmits a {@link List} of {@link SeRequest} (list of {@link SeRequest}) to a SE application
-     * and get back the corresponding a List of {@link SeResponse}.
-     * <p>
-     * The {@link MultiSeRequestProcessing} and {@link ChannelControl} flags are set to their
-     * standard value.
-     *
-     * @param seRequests a {@link List} of application requests
-     * @return the SE response
-     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
-     */
-    List<SeResponse> transmitSeRequests(List<SeRequest> seRequests) throws KeypleReaderIOException;
-
-    /**
      * Transmits a single {@link SeRequest} (list of {@link ApduRequest}) and get back the
      * corresponding {@link SeResponse}
      * <p>
@@ -102,20 +89,4 @@ public interface ProxyReader extends SeReader {
      */
     SeResponse transmitSeRequest(SeRequest seRequest, ChannelControl channelControl)
             throws KeypleReaderIOException;
-
-    /**
-     * Transmits a single {@link SeRequest} (list of {@link ApduRequest}) and get back the
-     * corresponding {@link SeResponse}
-     * <p>
-     * The usage of this method is conditioned to the presence of a SE in the selected reader.
-     * <p>
-     * The {@link SeRequest} is processed and the received {@link SeResponse} is returned.
-     * <p>
-     * The {@link ChannelControl} flag is set to its standard value.
-     *
-     * @param seRequest the SeRequest to transmit
-     * @return SeResponse the response to the SeRequest
-     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
-     */
-    SeResponse transmitSeRequest(SeRequest seRequest) throws KeypleReaderIOException;
 }

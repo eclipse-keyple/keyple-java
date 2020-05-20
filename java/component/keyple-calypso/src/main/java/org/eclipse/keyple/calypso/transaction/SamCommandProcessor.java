@@ -25,6 +25,7 @@ import org.eclipse.keyple.calypso.command.sam.parser.security.SamGetChallengeRes
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronizedExchangesException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoSamIOException;
 import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -135,7 +136,8 @@ class SamCommandProcessor {
         // Transmit the SeRequest to the SAM and get back the SeResponse (list of ApduResponse)
         SeResponse samSeResponse;
         try {
-            samSeResponse = samReader.transmitSeRequest(new SeRequest(apduRequests));
+            samSeResponse = samReader.transmitSeRequest(new SeRequest(apduRequests),
+                    ChannelControl.KEEP_OPEN);
         } catch (KeypleReaderIOException e) {
             throw new CalypsoSamIOException("SAM IO Exception while getting terminal challenge.",
                     e);
@@ -373,7 +375,7 @@ class SamCommandProcessor {
         SeResponse samSeResponse;
 
         try {
-            samSeResponse = samReader.transmitSeRequest(samSeRequest);
+            samSeResponse = samReader.transmitSeRequest(samSeRequest, ChannelControl.KEEP_OPEN);
         } catch (KeypleReaderIOException e) {
             throw new CalypsoSamIOException("SAM IO Exception while transmitting digest data.", e);
         }
@@ -429,7 +431,7 @@ class SamCommandProcessor {
 
         SeResponse samSeResponse;
         try {
-            samSeResponse = samReader.transmitSeRequest(samSeRequest);
+            samSeResponse = samReader.transmitSeRequest(samSeRequest, ChannelControl.KEEP_OPEN);
         } catch (KeypleReaderIOException e) {
             throw new CalypsoSamIOException("SAM IO Exception while transmitting digest data.", e);
         }

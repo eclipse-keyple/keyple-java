@@ -98,7 +98,8 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
                 Integration.getFakeDtoNode(), TransmissionMode.CONTACTLESS, false,
                 new HashMap<String, String>());
 
-        reader.transmitSeRequests(StubReaderTest.getRequestIsoDepSetSample());
+        reader.transmitSeRequests(StubReaderTest.getRequestIsoDepSetSample(),
+                MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
 
     }
@@ -132,7 +133,8 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
         List<SeRequest> seRequests = SampleFactory.getASeRequestList();
 
         // test transmitSeRequest without parameter
-        ((ProxyReader) virtualReader).transmitSeRequests(seRequests);
+        ((ProxyReader) virtualReader).transmitSeRequests(seRequests,
+                MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
         // condition -> the nativeReader execute the method executed on the virtual reader
         verify(nativeReader, times(1)).transmitSeRequests(seRequests,
@@ -168,7 +170,7 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
         SeRequest seRequest = SampleFactory.getASeRequest();
 
         // test transmitSeRequest without parameter
-        ((ProxyReader) virtualReader).transmitSeRequest(seRequest);
+        ((ProxyReader) virtualReader).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN);
 
         // condition -> the nativeReader execute the method executed on the virtual reader
         verify(nativeReader, times(1)).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN); // default

@@ -80,7 +80,7 @@ public class AbsReaderTest extends CoreBaseTest {
     @Test(expected = IllegalArgumentException.class)
     public void ts_transmit2_null() throws Exception {
         AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
-        r.transmitSeRequests(null);
+        r.transmitSeRequests(null, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
     }
 
     @Test
@@ -107,7 +107,7 @@ public class AbsReaderTest extends CoreBaseTest {
     @Test(expected = IllegalArgumentException.class)
     public void transmit2_null() throws Exception {
         AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
-        r.transmitSeRequest(null);
+        r.transmitSeRequest(null, ChannelControl.KEEP_OPEN);
     }
 
     @Test

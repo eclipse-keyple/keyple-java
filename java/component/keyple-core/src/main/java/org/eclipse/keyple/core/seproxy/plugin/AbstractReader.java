@@ -162,20 +162,6 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
     }
 
     /**
-     * Simplified version of transmitSet for standard use.
-     *
-     * @param seRequests the request list
-     * @return the response set
-     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
-     */
-    @Override
-    public final List<SeResponse> transmitSeRequests(List<SeRequest> seRequests)
-            throws KeypleReaderIOException {
-        return transmitSeRequests(seRequests, MultiSeRequestProcessing.FIRST_MATCH,
-                ChannelControl.KEEP_OPEN);
-    }
-
-    /**
      * Abstract method implemented by the AbstractLocalReader and VirtualReader classes.
      * <p>
      * This method is handled by transmitSet.
@@ -244,18 +230,6 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
         }
 
         return seResponse;
-    }
-
-    /**
-     * Simplified version of transmit for standard use.
-     *
-     * @param seRequest the request to be transmitted
-     * @return the received response
-     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
-     */
-    @Override
-    public final SeResponse transmitSeRequest(SeRequest seRequest) throws KeypleReaderIOException {
-        return transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN);
     }
 
     /**
