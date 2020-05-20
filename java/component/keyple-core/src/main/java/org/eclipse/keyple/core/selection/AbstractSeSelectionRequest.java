@@ -43,11 +43,11 @@ public abstract class AbstractSeSelectionRequest<T extends AbstractApduCommandBu
      * @return the selection SeRequest
      */
     final SeRequest getSelectionRequest() {
-        List<ApduRequest> seSelectionApduRequestList = new ArrayList<ApduRequest>();
+        List<ApduRequest> seSelectionApduRequests = new ArrayList<ApduRequest>();
         for (T commandBuilder : commandBuilders) {
-            seSelectionApduRequestList.add(commandBuilder.getApduRequest());
+            seSelectionApduRequests.add(commandBuilder.getApduRequest());
         }
-        return new SeRequest(seSelector, seSelectionApduRequestList);
+        return new SeRequest(seSelector, seSelectionApduRequests);
     }
 
     public SeSelector getSeSelector() {

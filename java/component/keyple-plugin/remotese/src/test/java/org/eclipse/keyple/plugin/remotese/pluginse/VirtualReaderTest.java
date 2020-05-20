@@ -78,7 +78,8 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
     }
 
     /**
-     * Invoke a transmitSet on a failing DtoNode, no Dto will be received, timeout should be thrown
+     * Invoke a transmitSeRequests on a failing DtoNode, no Dto will be received, timeout should be
+     * thrown
      * 
      * @throws Exception
      */
@@ -97,13 +98,13 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
                 Integration.getFakeDtoNode(), TransmissionMode.CONTACTLESS, false,
                 new HashMap<String, String>());
 
-        reader.transmitSet(StubReaderTest.getRequestIsoDepSetSample());
+        reader.transmitSeRequests(StubReaderTest.getRequestIsoDepSetSample());
 
 
     }
 
     /**
-     * Successful TransmitSet with MultiSeRequestProcessing and ChannelControl
+     * Successful transmitSeRequests with MultiSeRequestProcessing and ChannelControl
      * 
      * @throws Exception
      */
@@ -111,31 +112,33 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
     @Ignore
     // TODO Mock does not work, see this#connectMockReader()
     // execute at hand and check logs
-    public void transmitSet_withParameters() throws Exception {
-        Set<SeRequest> requestSet = SampleFactory.getASeRequestSet();
+    public void transmitSeRequests_withParameters() throws Exception {
+        List<SeRequest> seRequests = SampleFactory.getASeRequestList();
 
-        // test transmitSet with Parameters
-        ((ProxyReader) virtualReader).transmitSet(requestSet, MultiSeRequestProcessing.PROCESS_ALL,
-                ChannelControl.CLOSE_AFTER);
+        // test transmitSeRequests with Parameters
+        ((ProxyReader) virtualReader).transmitSeRequests(seRequests,
+                MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
 
         // condition -> the nativeReader execute the method executed on the virtual reader
-        verify(nativeReader, times(1)).transmitSet(requestSet, MultiSeRequestProcessing.PROCESS_ALL,
-                ChannelControl.CLOSE_AFTER);
+        verify(nativeReader, times(1)).transmitSeRequests(seRequests,
+                MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
     }
 
     @Test
     @Ignore
     // TODO Mock does not work, see this#connectMockReader()
     // execute at hand and check logs
-    public void transmitSet_witNoParameters() throws Exception {
-        Set<SeRequest> requestSet = SampleFactory.getASeRequestSet();
+    public void transmitSeRequests_withNoParameters() throws Exception {
+        List<SeRequest> seRequests = SampleFactory.getASeRequestList();
 
-        // test transmitSet without parameter
-        ((ProxyReader) virtualReader).transmitSet(requestSet);
+        // test transmitSeRequest without parameter
+        ((ProxyReader) virtualReader).transmitSeRequests(seRequests);
 
         // condition -> the nativeReader execute the method executed on the virtual reader
-        verify(nativeReader, times(1)).transmitSet(requestSet, MultiSeRequestProcessing.FIRST_MATCH,
-                ChannelControl.KEEP_OPEN); // default value when no param is specified
+        verify(nativeReader, times(1)).transmitSeRequests(seRequests,
+                MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN); // default value
+                                                                                 // when no param is
+                                                                                 // specified
     }
 
     /**
@@ -147,31 +150,31 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
     @Ignore
     // TODO Mock does not work, see this#connectMockReader()
     // execute at hand and check logs
-    public void transmit_withParameters() throws Exception {
+    public void transmitSeRequest_withParameters() throws Exception {
         SeRequest seRequest = SampleFactory.getASeRequest();
 
-        // test transmitSet with Parameters
-        ((ProxyReader) virtualReader).transmit(seRequest, ChannelControl.KEEP_OPEN);
+        // test transmitSeRequest with Parameters
+        ((ProxyReader) virtualReader).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN);
 
         // condition -> the nativeReader execute the method executed on the virtual reader
-        verify(nativeReader, times(1)).transmit(seRequest, ChannelControl.KEEP_OPEN);
+        verify(nativeReader, times(1)).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN);
     }
 
     @Test
     @Ignore
     // TODO Mock does not work, see this#connectMockReader()
     // execute at hand and check logs
-    public void transmit_withNoParam() throws Exception {
+    public void transmitSeRequest_withNoParam() throws Exception {
         SeRequest seRequest = SampleFactory.getASeRequest();
 
-        // test transmitSet without parameter
-        ((ProxyReader) virtualReader).transmit(seRequest);
+        // test transmitSeRequest without parameter
+        ((ProxyReader) virtualReader).transmitSeRequest(seRequest);
 
         // condition -> the nativeReader execute the method executed on the virtual reader
-        verify(nativeReader, times(1)).transmit(seRequest, ChannelControl.KEEP_OPEN); // default
-                                                                                      // value when
-                                                                                      // no param is
-                                                                                      // specified
+        verify(nativeReader, times(1)).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN); // default
+        // value when
+        // no param is
+        // specified
     }
 
 
@@ -181,8 +184,8 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
         ProxyReader mockReader = Mockito.spy(ProxyReader.class);
         doReturn(readerName).when(mockReader).getName();
         doReturn(TransmissionMode.CONTACTLESS).when(mockReader).getTransmissionMode();
-        doReturn(new ArrayList<SeResponse>()).when(mockReader).transmitSet(
-                ArgumentMatchers.<SeRequest>anySet(), any(MultiSeRequestProcessing.class),
+        doReturn(new ArrayList<SeResponse>()).when(mockReader).transmitSeRequests(
+                ArgumentMatchers.<SeRequest>anyList(), any(MultiSeRequestProcessing.class),
                 any(ChannelControl.class));
 
         // Configure slaveAPI to find mockReader

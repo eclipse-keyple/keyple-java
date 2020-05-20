@@ -14,9 +14,8 @@ package org.eclipse.keyple.core.seproxy.event;
 import static org.eclipse.keyple.core.seproxy.plugin.local.AbsObservableLocalReaderTest.getNotMatchingResponses;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
@@ -62,14 +61,14 @@ public class DefaultSelectionTest {
                 AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
 
         // configure parameters
-        Set<SeRequest> selections = new HashSet<SeRequest>();
+        List<SeRequest> selections = new ArrayList<SeRequest>();
         MultiSeRequestProcessing multi = MultiSeRequestProcessing.PROCESS_ALL;
         ChannelControl channel = ChannelControl.CLOSE_AFTER;
         ObservableReader.NotificationMode mode = ObservableReader.NotificationMode.ALWAYS;
 
         // mock return matching selection
         List<SeResponse> responses = getNotMatchingResponses();
-        doReturn(responses).when(r).transmitSet(selections, multi, channel);
+        doReturn(responses).when(r).transmitSeRequests(selections, multi, channel);
 
         // test
         r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel),
@@ -79,7 +78,7 @@ public class DefaultSelectionTest {
         // assert
         Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
         Assert.assertEquals(responses,
-                event.getDefaultSelectionsResponse().getSelectionSeResponseSet());
+                event.getDefaultSelectionsResponse().getSelectionSeResponses());
         Assert.assertEquals(PLUGIN_NAME, event.getPluginName());
         Assert.assertEquals(READER_NAME, event.getReaderName());
 
@@ -94,7 +93,7 @@ public class DefaultSelectionTest {
                 AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
 
         // configure parameters
-        Set<SeRequest> selections = new HashSet<SeRequest>();
+        List<SeRequest> selections = new ArrayList<SeRequest>();
         MultiSeRequestProcessing multi = MultiSeRequestProcessing.PROCESS_ALL;
         ChannelControl channel = ChannelControl.CLOSE_AFTER;
         ObservableReader.NotificationMode mode = ObservableReader.NotificationMode.MATCHED_ONLY;
@@ -102,7 +101,7 @@ public class DefaultSelectionTest {
         // mock
         // return success selection
         List<SeResponse> responses = AbsObservableLocalReaderTest.getMatchingResponses();
-        doReturn(responses).when(r).transmitSet(selections, multi, channel);
+        doReturn(responses).when(r).transmitSeRequests(selections, multi, channel);
 
         // test
         r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel),
@@ -111,7 +110,7 @@ public class DefaultSelectionTest {
 
         Assert.assertEquals(ReaderEvent.EventType.SE_MATCHED, event.getEventType());
         Assert.assertEquals(responses,
-                event.getDefaultSelectionsResponse().getSelectionSeResponseSet());
+                event.getDefaultSelectionsResponse().getSelectionSeResponses());
         Assert.assertEquals(PLUGIN_NAME, event.getPluginName());
         Assert.assertEquals(READER_NAME, event.getReaderName());
 
@@ -128,13 +127,13 @@ public class DefaultSelectionTest {
                 AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
 
         // configure parameters
-        Set<SeRequest> selections = new HashSet<SeRequest>();
+        List<SeRequest> selections = new ArrayList<SeRequest>();
         MultiSeRequestProcessing multi = MultiSeRequestProcessing.PROCESS_ALL;
         ChannelControl channel = ChannelControl.CLOSE_AFTER;
         ObservableReader.NotificationMode mode = ObservableReader.NotificationMode.MATCHED_ONLY;
 
         // mock return matching selection
-        doReturn(getNotMatchingResponses()).when(r).transmitSet(selections, multi, channel);
+        doReturn(getNotMatchingResponses()).when(r).transmitSeRequests(selections, multi, channel);
 
         // test
         r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel),
@@ -155,14 +154,14 @@ public class DefaultSelectionTest {
                 AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
 
         // configure parameters
-        Set<SeRequest> selections = new HashSet<SeRequest>();
+        List<SeRequest> selections = new ArrayList<SeRequest>();
         MultiSeRequestProcessing multi = MultiSeRequestProcessing.PROCESS_ALL;
         ChannelControl channel = ChannelControl.CLOSE_AFTER;
         ObservableReader.NotificationMode mode = ObservableReader.NotificationMode.ALWAYS;
 
         // throw IO
         doThrow(new KeypleReaderIOException("io error when selecting")).when(r)
-                .transmitSet(selections, multi, channel);
+                .transmitSeRequests(selections, multi, channel);
 
 
         // test

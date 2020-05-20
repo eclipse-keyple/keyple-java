@@ -439,12 +439,12 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
              */
             boolean aSeMatched = false;
             try {
-                List<SeResponse> seResponseList =
-                        transmitSet(defaultSelectionsRequest.getSelectionSeRequestSet(),
+                List<SeResponse> seResponses =
+                        transmitSeRequests(defaultSelectionsRequest.getSelectionSeRequests(),
                                 defaultSelectionsRequest.getMultiSeRequestProcessing(),
                                 defaultSelectionsRequest.getChannelControl());
 
-                for (SeResponse seResponse : seResponseList) {
+                for (SeResponse seResponse : seResponses) {
                     if (seResponse != null && seResponse.getSelectionStatus().hasMatched()) {
                         if (logger.isTraceEnabled()) {
                             logger.trace("[{}] a default selection has matched", getName());
@@ -459,7 +459,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
                     if (aSeMatched) {
                         return new ReaderEvent(getPluginName(), getName(),
                                 ReaderEvent.EventType.SE_MATCHED,
-                                new DefaultSelectionsResponse(seResponseList));
+                                new DefaultSelectionsResponse(seResponses));
                     } else {
                         if (logger.isTraceEnabled()) {
                             logger.trace("[{}] selection hasn't matched"
@@ -474,7 +474,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
                         /* The SE matched, notify a SE_MATCHED event with the received response */
                         return new ReaderEvent(getPluginName(), getName(),
                                 ReaderEvent.EventType.SE_MATCHED,
-                                new DefaultSelectionsResponse(seResponseList));
+                                new DefaultSelectionsResponse(seResponses));
                     } else {
                         /*
                          * The SE didn't match, notify an SE_INSERTED event with the received
@@ -482,11 +482,11 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
                          */
                         if (logger.isTraceEnabled()) {
                             logger.trace("[{}] none of {} default selection matched", getName(),
-                                    seResponseList.size());
+                                    seResponses.size());
                         }
                         return new ReaderEvent(getPluginName(), getName(),
                                 ReaderEvent.EventType.SE_INSERTED,
-                                new DefaultSelectionsResponse(seResponseList));
+                                new DefaultSelectionsResponse(seResponses));
                     }
                 }
             } catch (KeypleReaderException e) {

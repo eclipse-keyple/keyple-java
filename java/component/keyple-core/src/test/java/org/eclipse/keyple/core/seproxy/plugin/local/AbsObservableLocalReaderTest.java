@@ -15,7 +15,6 @@ import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.*;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
@@ -211,7 +210,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     public void notifySeProcessed_withForceClosing() throws Exception {
         AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
         // keep open
-        r.transmit(SeRequestTest.getSeRequestSample(), ChannelControl.KEEP_OPEN);
+        r.transmitSeRequest(SeRequestTest.getSeRequestSample(), ChannelControl.KEEP_OPEN);
         // force closing
         r.notifySeProcessed();
         verify(r, times(1)).processSeRequest(null, ChannelControl.CLOSE_AFTER);
@@ -222,7 +221,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
         SeRequest request = SeRequestTest.getSeRequestSample();
         // close after
-        r.transmit(request, ChannelControl.CLOSE_AFTER);
+        r.transmitSeRequest(request, ChannelControl.CLOSE_AFTER);
         r.notifySeProcessed();
 
         // force closing is not called (only the transmit)
@@ -314,7 +313,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
                 Mockito.spy(new BlankObservableLocalReader(pluginName, readerName));
         doReturn(SeResponseTest.getASeResponse()).when(r).processSeRequest(any(SeRequest.class),
                 any(ChannelControl.class));
-        doReturn(getSeResponses()).when(r).processSeRequestSet(any(Set.class),
+        doReturn(getSeResponses()).when(r).processSeRequests(any(List.class),
                 any(MultiSeRequestProcessing.class), any(ChannelControl.class));
         return r;
     }

@@ -125,7 +125,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
             if (!isPhysicalChannelOpen()) {
                 openPhysicalChannel();
             }
-            // the requestSet will be executed only if the protocol match the requestElement
+            // the request will be executed only if the protocol match the requestElement
             String selectionMask = protocolsMap.get(protocolFlag);
             if (selectionMask == null) {
                 throw new KeypleReaderIOException("Target selector mask not found!", null);

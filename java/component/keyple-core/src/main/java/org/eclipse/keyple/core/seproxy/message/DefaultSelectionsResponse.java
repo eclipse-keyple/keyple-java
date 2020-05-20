@@ -21,14 +21,14 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
  */
 public final class DefaultSelectionsResponse extends AbstractDefaultSelectionsResponse {
     /** The List of {@link SeResponse} */
-    private final List<SeResponse> selectionSeResponseSet;
+    private final List<SeResponse> selectionSeResponses;
 
     public DefaultSelectionsResponse(List<SeResponse> selectionSeResponseSet) {
-        this.selectionSeResponseSet = selectionSeResponseSet;
+        this.selectionSeResponses = selectionSeResponseSet;
     }
 
     @Override
-    public List<SeResponse> getSelectionSeResponseSet() {
-        return selectionSeResponseSet;
+    public List<SeResponse> getSelectionSeResponses() {
+        return selectionSeResponses;
     }
 }

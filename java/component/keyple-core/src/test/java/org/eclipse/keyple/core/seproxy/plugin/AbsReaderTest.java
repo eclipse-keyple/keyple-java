@@ -16,9 +16,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
@@ -75,22 +73,23 @@ public class AbsReaderTest extends CoreBaseTest {
     @Test(expected = IllegalArgumentException.class)
     public void ts_transmit_null() throws Exception {
         AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
-        r.transmitSet(null, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
+        r.transmitSeRequests(null, MultiSeRequestProcessing.FIRST_MATCH,
+                ChannelControl.CLOSE_AFTER);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void ts_transmit2_null() throws Exception {
         AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
-        r.transmitSet(null);
+        r.transmitSeRequests(null);
     }
 
     @Test
     public void ts_transmit() throws Exception {
         AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
-        Set<SeRequest> set = getSeRequestSet();
-        List<SeResponse> responses = r.transmitSet(set, MultiSeRequestProcessing.FIRST_MATCH,
-                ChannelControl.CLOSE_AFTER);
-        verify(r, times(1)).processSeRequestSet(set, MultiSeRequestProcessing.FIRST_MATCH,
+        List<SeRequest> seRequests = getSeRequestList();
+        List<SeResponse> responses = r.transmitSeRequests(seRequests,
+                MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
+        verify(r, times(1)).processSeRequests(seRequests, MultiSeRequestProcessing.FIRST_MATCH,
                 ChannelControl.CLOSE_AFTER);
         Assert.assertNotNull(responses);
     }
@@ -102,20 +101,20 @@ public class AbsReaderTest extends CoreBaseTest {
     @Test(expected = IllegalArgumentException.class)
     public void transmit_null() throws Exception {
         AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
-        r.transmit(null, ChannelControl.CLOSE_AFTER);
+        r.transmitSeRequest(null, ChannelControl.CLOSE_AFTER);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void transmit2_null() throws Exception {
         AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
-        r.transmit(null);
+        r.transmitSeRequest(null);
     }
 
     @Test
     public void transmit() throws Exception {
         AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
         SeRequest request = SeRequestTest.getSeRequestSample();
-        SeResponse response = r.transmit(request, ChannelControl.CLOSE_AFTER);
+        SeResponse response = r.transmitSeRequest(request, ChannelControl.CLOSE_AFTER);
         verify(r, times(1)).processSeRequest(request, ChannelControl.CLOSE_AFTER);
         Assert.assertNotNull(response);
     }
@@ -137,15 +136,15 @@ public class AbsReaderTest extends CoreBaseTest {
         AbstractReader r = Mockito.spy(new BlankAbstractReader(pluginName, readerName));
         when(r.processSeRequest(any(SeRequest.class), any(ChannelControl.class)))
                 .thenReturn(SeResponseTest.getASeResponse());
-        when(r.processSeRequestSet(any(Set.class), any(MultiSeRequestProcessing.class),
+        when(r.processSeRequests(any(List.class), any(MultiSeRequestProcessing.class),
                 any(ChannelControl.class))).thenReturn(getSeResponses());
         return r;
     }
 
-    static public Set<SeRequest> getSeRequestSet() {
-        Set<SeRequest> set = new HashSet<SeRequest>();
-        set.add(SeRequestTest.getSeRequestSample());
-        return set;
+    static public List<SeRequest> getSeRequestList() {
+        List<SeRequest> seRequests = new ArrayList<SeRequest>();
+        seRequests.add(SeRequestTest.getSeRequestSample());
+        return seRequests;
     }
 
     static public List<SeResponse> getSeResponses() {

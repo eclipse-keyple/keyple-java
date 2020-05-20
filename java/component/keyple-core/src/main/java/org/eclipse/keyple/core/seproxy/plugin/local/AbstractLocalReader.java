@@ -442,30 +442,31 @@ public abstract class AbstractLocalReader extends AbstractReader {
     /** ==== SeRequestSe and SeRequest transmission management ============= */
 
     /**
-     * Do the transmission of all needed requestSet requests contained in the provided requestSet
-     * according to the protocol flag selection logic. The responseSet responses are returned in the
-     * responseSet object. The requestSet requests are ordered at application level and the
-     * responses match this order. When a requestSet is not matching the current PO, the responseSet
-     * responses pushed in the responseSet object is set to null.
+     * Do the transmission of all requests according to the protocol flag selection logic.<br>
+     * <br>
+     * The received responses are returned as {@link List} of {@link SeResponse} The requests are
+     * ordered at application level and the responses match this order.<br>
+     * When a request is not matching the current PO, the response responses pushed in the response
+     * List object is set to null.
      *
-     * @param requestSet the request set
+     * @param seRequests the request list
      * @param multiSeRequestProcessing the multi se processing mode
      * @param channelControl indicates if the channel has to be closed at the end of the processing
      * @return the response list
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
-    protected final List<SeResponse> processSeRequestSet(Set<SeRequest> requestSet,
+    protected final List<SeResponse> processSeRequests(List<SeRequest> seRequests,
             MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
             throws KeypleReaderIOException {
 
-        boolean[] requestMatchesProtocol = new boolean[requestSet.size()];
+        boolean[] requestMatchesProtocol = new boolean[seRequests.size()];
         int requestIndex = 0;
         int lastRequestIndex;
 
         // Determine which requests are matching the current ATR
         // All requests without selector are considered matching
-        for (SeRequest request : requestSet) {
+        for (SeRequest request : seRequests) {
             SeSelector seSelector = request.getSeSelector();
             if (seSelector != null) {
                 requestMatchesProtocol[requestIndex] =
@@ -485,22 +486,21 @@ public abstract class AbstractLocalReader extends AbstractReader {
         requestIndex = 0;
 
         /*
-         * The current requestSet is possibly made of several APDU command lists.
+         * The current request list is possibly made of several APDU command lists.
          *
-         * If the requestMatchesProtocol is true we process the requestSet.
+         * If the requestMatchesProtocol is true we process the SeRequest.
          *
-         * If the requestMatchesProtocol is false we skip to the next requestSet.
+         * If the requestMatchesProtocol is false we skip to the next SeRequest.
          *
          * If keepChannelOpen is false, we close the physical channel for the last request.
          */
         List<SeResponse> responses = new ArrayList<SeResponse>();
         boolean stopProcess = false;
-        for (SeRequest request : requestSet) {
+        for (SeRequest request : seRequests) {
 
             if (!stopProcess) {
                 if (requestMatchesProtocol[requestIndex]) {
-                    logger.debug("[{}] processSeRequestSet => transmit {}", this.getName(),
-                            request);
+                    logger.debug("[{}] processSeRequests => transmit {}", this.getName(), request);
                     SeResponse response;
                     try {
                         response = processSeRequestLogical(request);
@@ -512,15 +512,14 @@ public abstract class AbstractLocalReader extends AbstractReader {
                         /* Add the latest (and partial) SeResponse to the current list. */
                         responses.add(ex.getSeResponse());
                         /* Build a List of SeResponse with the available data. */
-                        ex.setSeResponseList(responses);
+                        ex.setSeResponses(responses);
                         logger.debug(
-                                "[{}] processSeRequestSet => transmit : process interrupted, collect previous responses {}",
+                                "[{}] processSeRequests => transmit : process interrupted, collect previous responses {}",
                                 this.getName(), responses);
                         throw ex;
                     }
                     responses.add(response);
-                    logger.debug("[{}] processSeRequestSet => receive {}", this.getName(),
-                            response);
+                    logger.debug("[{}] processSeRequests => receive {}", this.getName(), response);
                 } else {
                     /*
                      * in case the protocolFlag of a SeRequest doesn't match the reader status, a
@@ -619,7 +618,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
     /**
      * Implements the logical processSeRequest.
      * <p>
-     * This method is called by processSeRequestSet and processSeRequest.
+     * This method is called by processSeRequests and processSeRequest.
      * <p>
      * It opens both physical and logical channels if needed.
      * <p>
@@ -633,7 +632,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
         boolean previouslyOpen = true;
         SelectionStatus selectionStatus = null;
 
-        List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
+        List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
 
         if (logger.isDebugEnabled()) {
             logger.debug("[{}] processSeRequest => Logical channel open = {}", this.getName(),
@@ -729,7 +728,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
         if (seRequest.getApduRequests() != null) {
             for (ApduRequest apduRequest : seRequest.getApduRequests()) {
                 try {
-                    apduResponseList.add(processApduRequest(apduRequest));
+                    apduResponses.add(processApduRequest(apduRequest));
                 } catch (KeypleReaderIOException ex) {
                     /*
                      * The process has been interrupted. We close the logical channel and launch a
@@ -738,15 +737,14 @@ public abstract class AbstractLocalReader extends AbstractReader {
                     logger.debug(
                             "The process has been interrupted, collect Apdu responses collected so far");
                     closeLogicalAndPhysicalChannels();
-                    ex.setSeResponse(new SeResponse(false, previouslyOpen, selectionStatus,
-                            apduResponseList));
+                    ex.setSeResponse(
+                            new SeResponse(false, previouslyOpen, selectionStatus, apduResponses));
                     throw ex;
                 }
             }
         }
 
-        return new SeResponse(logicalChannelIsOpen, previouslyOpen, selectionStatus,
-                apduResponseList);
+        return new SeResponse(logicalChannelIsOpen, previouslyOpen, selectionStatus, apduResponses);
     }
 
     /** ==== APDU transmission management ================================== */

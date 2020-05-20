@@ -100,7 +100,7 @@ public final class SeSelection {
 
         /* Check SeResponses */
         for (SeResponse seResponse : ((DefaultSelectionsResponse) defaultSelectionsResponse)
-                .getSelectionSeResponseSet()) {
+                .getSelectionSeResponses()) {
             /* test if the selection is successful: we should have either a FCI or an ATR */
             if (seResponse != null && seResponse.getSelectionStatus() != null
                     && seResponse.getSelectionStatus().hasMatched()) {
@@ -150,7 +150,7 @@ public final class SeSelection {
         if (logger.isTraceEnabled()) {
             logger.trace("Process default SELECTIONRESPONSE ({} response(s))",
                     ((DefaultSelectionsResponse) defaultSelectionsResponse)
-                            .getSelectionSeResponseSet().size());
+                            .getSelectionSeResponses().size());
         }
 
         return processSelection(defaultSelectionsResponse);
@@ -174,19 +174,19 @@ public final class SeSelection {
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     public SelectionsResult processExplicitSelection(SeReader seReader) throws KeypleException {
-        Set<SeRequest> selectionRequestSet = new LinkedHashSet<SeRequest>();
+        List<SeRequest> selectionRequests = new ArrayList<SeRequest>();
         for (AbstractSeSelectionRequest seSelectionRequest : seSelectionRequests) {
-            selectionRequestSet.add(seSelectionRequest.getSelectionRequest());
+            selectionRequests.add(seSelectionRequest.getSelectionRequest());
         }
         if (logger.isTraceEnabled()) {
-            logger.trace("Transmit SELECTIONREQUEST ({} request(s))", selectionRequestSet.size());
+            logger.trace("Transmit SELECTIONREQUEST ({} request(s))", selectionRequests.size());
         }
 
         /* Communicate with the SE to do the selection */
-        List<SeResponse> seResponseList = ((ProxyReader) seReader).transmitSet(selectionRequestSet,
-                multiSeRequestProcessing, channelControl);
+        List<SeResponse> seResponses = ((ProxyReader) seReader)
+                .transmitSeRequests(selectionRequests, multiSeRequestProcessing, channelControl);
 
-        return processSelection(new DefaultSelectionsResponse(seResponseList));
+        return processSelection(new DefaultSelectionsResponse(seResponses));
     }
 
     /**
@@ -198,11 +198,11 @@ public final class SeSelection {
      *         prepareSelection
      */
     public AbstractDefaultSelectionsRequest getSelectionOperation() {
-        Set<SeRequest> selectionRequestSet = new LinkedHashSet<SeRequest>();
+        List<SeRequest> selectionRequests = new ArrayList<SeRequest>();
         for (AbstractSeSelectionRequest seSelectionRequest : seSelectionRequests) {
-            selectionRequestSet.add(seSelectionRequest.getSelectionRequest());
+            selectionRequests.add(seSelectionRequest.getSelectionRequest());
         }
-        return new DefaultSelectionsRequest(selectionRequestSet, multiSeRequestProcessing,
+        return new DefaultSelectionsRequest(selectionRequests, multiSeRequestProcessing,
                 channelControl);
     }
 }

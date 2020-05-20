@@ -14,9 +14,7 @@ package org.eclipse.keyple.core.seproxy.plugin.local;
 import static org.eclipse.keyple.core.seproxy.plugin.local.AbsLocalReaderSelectionTest.ATR;
 import static org.mockito.Mockito.*;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
@@ -68,15 +66,15 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
         AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
         // init Request
-        Set<SeRequest> seRequestSet = getPartialRequestSet(reader, 0);
+        List<SeRequest> seRequests = getPartialRequestList(reader, 0);
         try {
             // test
-            reader.processSeRequestSet(seRequestSet, MultiSeRequestProcessing.PROCESS_ALL,
+            reader.processSeRequests(seRequests, MultiSeRequestProcessing.PROCESS_ALL,
                     ChannelControl.CLOSE_AFTER);
             Assert.fail();
         } catch (KeypleReaderIOException ex) {
-            Assert.assertEquals(ex.getSeResponseList().size(), 1);
-            Assert.assertEquals(ex.getSeResponseList().get(0).getApduResponses().size(), 2);
+            Assert.assertEquals(ex.getSeResponses().size(), 1);
+            Assert.assertEquals(ex.getSeResponses().get(0).getApduResponses().size(), 2);
         }
     }
 
@@ -84,18 +82,18 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     public void transmit_partial_response_set_1() throws Exception {
         AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
-        Set<SeRequest> seRequestSet = getPartialRequestSet(reader, 1);
+        List<SeRequest> seRequests = getPartialRequestList(reader, 1);
         try {
             // test
-            reader.processSeRequestSet(seRequestSet, MultiSeRequestProcessing.PROCESS_ALL,
+            reader.processSeRequests(seRequests, MultiSeRequestProcessing.PROCESS_ALL,
                     ChannelControl.CLOSE_AFTER);
             Assert.fail();
 
         } catch (KeypleReaderIOException ex) {
-            Assert.assertEquals(ex.getSeResponseList().size(), 2);
-            Assert.assertEquals(ex.getSeResponseList().get(0).getApduResponses().size(), 4);
-            Assert.assertEquals(ex.getSeResponseList().get(1).getApduResponses().size(), 2);
-            Assert.assertEquals(ex.getSeResponseList().get(1).getApduResponses().size(), 2);
+            Assert.assertEquals(ex.getSeResponses().size(), 2);
+            Assert.assertEquals(ex.getSeResponses().get(0).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponses().get(1).getApduResponses().size(), 2);
+            Assert.assertEquals(ex.getSeResponses().get(1).getApduResponses().size(), 2);
         }
     }
 
@@ -105,18 +103,18 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
         AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
 
-        Set<SeRequest> seRequestSet = getPartialRequestSet(reader, 2);
+        List<SeRequest> seRequests = getPartialRequestList(reader, 2);
         try {
             // test
-            reader.processSeRequestSet(seRequestSet, MultiSeRequestProcessing.PROCESS_ALL,
+            reader.processSeRequests(seRequests, MultiSeRequestProcessing.PROCESS_ALL,
                     ChannelControl.CLOSE_AFTER);
             Assert.fail();
 
         } catch (KeypleReaderIOException ex) {
-            Assert.assertEquals(ex.getSeResponseList().size(), 3);
-            Assert.assertEquals(ex.getSeResponseList().get(0).getApduResponses().size(), 4);
-            Assert.assertEquals(ex.getSeResponseList().get(1).getApduResponses().size(), 4);
-            Assert.assertEquals(ex.getSeResponseList().get(2).getApduResponses().size(), 2);
+            Assert.assertEquals(ex.getSeResponses().size(), 3);
+            Assert.assertEquals(ex.getSeResponses().get(0).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponses().get(1).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponses().get(2).getApduResponses().size(), 2);
         }
     }
 
@@ -125,10 +123,10 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
         AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
 
-        Set<SeRequest> seRequestSet = getPartialRequestSet(reader, 3);
+        List<SeRequest> seRequests = getPartialRequestList(reader, 3);
         try {
             // test
-            List<SeResponse> responses = reader.processSeRequestSet(seRequestSet,
+            List<SeResponse> responses = reader.processSeRequests(seRequests,
                     MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
             Assert.assertEquals(3, responses.size());
             Assert.assertEquals(4, responses.get(0).getApduResponses().size());
@@ -144,10 +142,10 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     public void transmit_first_match() throws Exception {
         AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
-        Set<SeRequest> seRequestSet = getPartialRequestSet(reader, 3);
+        List<SeRequest> seRequests = getPartialRequestList(reader, 3);
         try {
             // test
-            List<SeResponse> responses = reader.processSeRequestSet(seRequestSet,
+            List<SeResponse> responses = reader.processSeRequests(seRequests,
                     MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
             Assert.assertEquals(1, responses.size());
             Assert.assertEquals(4, responses.get(0).getApduResponses().size());
@@ -160,10 +158,10 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     public void transmit_partial_response_0() throws Exception {
         AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
-        SeRequest seRequestSet = getPartialRequest(reader, 0);
+        SeRequest seRequest = getPartialRequest(reader, 0);
         try {
             // test
-            reader.processSeRequest(seRequestSet, ChannelControl.KEEP_OPEN);
+            reader.processSeRequest(seRequest, ChannelControl.KEEP_OPEN);
         } catch (KeypleReaderIOException ex) {
             logger.error("", ex);
             Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 0);
@@ -176,10 +174,10 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
         AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
 
-        SeRequest seRequestSet = getPartialRequest(reader, 1);
+        SeRequest seRequest = getPartialRequest(reader, 1);
         try {
             // test
-            reader.processSeRequest(seRequestSet, ChannelControl.CLOSE_AFTER);
+            reader.processSeRequest(seRequest, ChannelControl.CLOSE_AFTER);
             Assert.fail("Should throw exception");
 
         } catch (KeypleReaderIOException ex) {
@@ -191,10 +189,10 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     public void transmit_partial_response_2() throws Exception {
         AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
-        SeRequest seRequestSet = getPartialRequest(reader, 2);
+        SeRequest seRequest = getPartialRequest(reader, 2);
         try {
             // test
-            reader.processSeRequest(seRequestSet, ChannelControl.CLOSE_AFTER);
+            reader.processSeRequest(seRequest, ChannelControl.CLOSE_AFTER);
             Assert.fail("Should throw exception");
 
         } catch (KeypleReaderIOException ex) {
@@ -206,11 +204,10 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     public void transmit_partial_response_3() throws Exception {
         AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
-        SeRequest seRequestSet = getPartialRequest(reader, 3);
+        SeRequest seRequest = getPartialRequest(reader, 3);
         try {
             // test
-            SeResponse seResponse =
-                    reader.processSeRequest(seRequestSet, ChannelControl.CLOSE_AFTER);
+            SeResponse seResponse = reader.processSeRequest(seRequest, ChannelControl.CLOSE_AFTER);
             Assert.assertEquals(seResponse.getApduResponses().size(), 3);
         } catch (KeypleReaderException ex) {
             Assert.fail("Should not throw exception");
@@ -224,7 +221,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
      *
      * An Exception will be thrown.
      */
-    static public Set<SeRequest> getPartialRequestSet(AbstractLocalReader r, int scenario)
+    static public List<SeRequest> getPartialRequestList(AbstractLocalReader r, int scenario)
             throws KeypleReaderException {
 
         SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter(ATR);
@@ -237,67 +234,67 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
         ApduRequest apduOK = new ApduRequest(APDU_SUCCESS, false);
         ApduRequest apduKO = new ApduRequest(APDU_IOEXC, false);
 
-        List<ApduRequest> poApduRequestList1 = new ArrayList<ApduRequest>();
-        poApduRequestList1.add(apduOK);
-        poApduRequestList1.add(apduOK);
-        poApduRequestList1.add(apduOK);
-        poApduRequestList1.add(apduOK);
+        List<ApduRequest> poApduRequests1 = new ArrayList<ApduRequest>();
+        poApduRequests1.add(apduOK);
+        poApduRequests1.add(apduOK);
+        poApduRequests1.add(apduOK);
+        poApduRequests1.add(apduOK);
 
-        List<ApduRequest> poApduRequestList2 = new ArrayList<ApduRequest>();
-        poApduRequestList2.add(apduOK);
-        poApduRequestList2.add(apduOK);
-        poApduRequestList2.add(apduOK);
-        poApduRequestList2.add(apduOK);
+        List<ApduRequest> poApduRequests2 = new ArrayList<ApduRequest>();
+        poApduRequests2.add(apduOK);
+        poApduRequests2.add(apduOK);
+        poApduRequests2.add(apduOK);
+        poApduRequests2.add(apduOK);
 
-        List<ApduRequest> poApduRequestList3 = new ArrayList<ApduRequest>();
-        poApduRequestList3.add(apduOK);
-        poApduRequestList3.add(apduOK);
-        poApduRequestList3.add(apduKO);
-        poApduRequestList3.add(apduOK);
+        List<ApduRequest> poApduRequests3 = new ArrayList<ApduRequest>();
+        poApduRequests3.add(apduOK);
+        poApduRequests3.add(apduOK);
+        poApduRequests3.add(apduKO);
+        poApduRequests3.add(apduOK);
 
-        SeRequest seRequest1 = new SeRequest(selector, poApduRequestList1);
-        SeRequest seRequest2 = new SeRequest(selector, poApduRequestList2);
+        SeRequest seRequest1 = new SeRequest(selector, poApduRequests1);
+        SeRequest seRequest2 = new SeRequest(selector, poApduRequests2);
 
-        SeRequest seRequest4 = new SeRequest(failSelector, poApduRequestList1);
+        SeRequest seRequest4 = new SeRequest(failSelector, poApduRequests1);
 
         /* This SeRequest fails at step 3 */
-        SeRequest seRequest3 = new SeRequest(selector, poApduRequestList3);
+        SeRequest seRequest3 = new SeRequest(selector, poApduRequests3);
 
-        Set<SeRequest> seRequestSets = new LinkedHashSet<SeRequest>();
+        List<SeRequest> seRequests = new ArrayList<SeRequest>();
 
         switch (scenario) {
             case 0:
                 /* 0 response Set */
-                seRequestSets.add(seRequest3); // fails
-                seRequestSets.add(seRequest1); // succeeds
-                seRequestSets.add(seRequest2); // succeeds
+                seRequests.add(seRequest3); // fails
+                seRequests.add(seRequest1); // succeeds
+                seRequests.add(seRequest2); // succeeds
                 break;
             case 1:
                 /* 1 response Set */
-                seRequestSets.add(seRequest1); // succeeds
-                seRequestSets.add(seRequest3); // fails
-                seRequestSets.add(seRequest2); // succeeds
+                seRequests.add(seRequest1); // succeeds
+                seRequests.add(seRequest3); // fails
+                seRequests.add(seRequest2); // succeeds
                 break;
             case 2:
                 /* 2 responses Set */
-                seRequestSets.add(seRequest1); // succeeds
-                seRequestSets.add(seRequest2); // succeeds
-                seRequestSets.add(seRequest3); // fails
+                seRequests.add(seRequest1); // succeeds
+                seRequests.add(seRequest2); // succeeds
+                seRequests.add(seRequest3); // fails
                 break;
             case 3:
                 /* 3 responses Set */
-                seRequestSets.add(seRequest1); // succeeds
-                seRequestSets.add(seRequest2); // succeeds
-                seRequestSets.add(seRequest4); // selection fails
+                seRequests.add(seRequest1); // succeeds
+                seRequests.add(seRequest2); // succeeds
+                seRequests.add(seRequest4); // selection fails
                 break;
             case 4:
                 /* 3 responses Set */
-                seRequestSets.add(seRequest1); // succeeds
+                seRequests.add(seRequest1); // succeeds
                 break;
             default:
         }
 
-        return seRequestSets;
+        return seRequests;
     }
 
 
@@ -316,34 +313,34 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
         ApduRequest apduOK = new ApduRequest(APDU_SUCCESS, false);
         ApduRequest apduKO = new ApduRequest(APDU_IOEXC, false);
 
-        List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
+        List<ApduRequest> poApduRequests = new ArrayList<ApduRequest>();
 
         switch (scenario) {
             case 0:
-                poApduRequestList.add(apduKO); // fails
-                poApduRequestList.add(apduOK); // succeeds
-                poApduRequestList.add(apduOK); // succeeds
+                poApduRequests.add(apduKO); // fails
+                poApduRequests.add(apduOK); // succeeds
+                poApduRequests.add(apduOK); // succeeds
                 break;
             case 1:
-                poApduRequestList.add(apduOK); // succeeds
-                poApduRequestList.add(apduKO); // fails
-                poApduRequestList.add(apduOK); // succeeds
+                poApduRequests.add(apduOK); // succeeds
+                poApduRequests.add(apduKO); // fails
+                poApduRequests.add(apduOK); // succeeds
                 break;
             case 2:
-                poApduRequestList.add(apduOK); // succeeds
-                poApduRequestList.add(apduOK); // succeeds
-                poApduRequestList.add(apduKO); // fails
+                poApduRequests.add(apduOK); // succeeds
+                poApduRequests.add(apduOK); // succeeds
+                poApduRequests.add(apduKO); // fails
                 break;
             case 3:
-                poApduRequestList.add(apduOK); // succeeds
-                poApduRequestList.add(apduOK); // succeeds
-                poApduRequestList.add(apduOK); // succeeds
+                poApduRequests.add(apduOK); // succeeds
+                poApduRequests.add(apduOK); // succeeds
+                poApduRequests.add(apduOK); // succeeds
                 break;
             default:
                 break;
         }
 
-        return new SeRequest(aidSelector, poApduRequestList);
+        return new SeRequest(aidSelector, poApduRequests);
     }
     /*
      * Partial response: multiple read records commands, one is not defined in the StubSE

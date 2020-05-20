@@ -135,20 +135,20 @@ class SamCommandProcessor {
         // Transmit the SeRequest to the SAM and get back the SeResponse (list of ApduResponse)
         SeResponse samSeResponse;
         try {
-            samSeResponse = samReader.transmit(new SeRequest(apduRequests));
+            samSeResponse = samReader.transmitSeRequest(new SeRequest(apduRequests));
         } catch (KeypleReaderIOException e) {
             throw new CalypsoSamIOException("SAM IO Exception while getting terminal challenge.",
                     e);
         }
 
-        List<ApduResponse> samApduResponseList = samSeResponse.getApduResponses();
+        List<ApduResponse> samApduResponses = samSeResponse.getApduResponses();
         byte[] sessionTerminalChallenge;
 
         int numberOfSamCmd = apduRequests.size();
-        if (samApduResponseList.size() == numberOfSamCmd) {
+        if (samApduResponses.size() == numberOfSamCmd) {
             SamGetChallengeRespPars getChallengeRespPars =
                     (SamGetChallengeRespPars) getChallengeCmdBuild
-                            .createResponseParser(samApduResponseList.get(numberOfSamCmd - 1));
+                            .createResponseParser(samApduResponses.get(numberOfSamCmd - 1));
 
             getChallengeRespPars.checkStatus();
 
@@ -160,7 +160,7 @@ class SamCommandProcessor {
         } else {
             throw new CalypsoDesynchronizedExchangesException(
                     "The number of commands/responses does not match: cmd=" + numberOfSamCmd
-                            + ", resp=" + samApduResponseList.size());
+                            + ", resp=" + samApduResponses.size());
         }
         return sessionTerminalChallenge;
     }
@@ -373,28 +373,28 @@ class SamCommandProcessor {
         SeResponse samSeResponse;
 
         try {
-            samSeResponse = samReader.transmit(samSeRequest);
+            samSeResponse = samReader.transmitSeRequest(samSeRequest);
         } catch (KeypleReaderIOException e) {
             throw new CalypsoSamIOException("SAM IO Exception while transmitting digest data.", e);
         }
 
-        List<ApduResponse> samApduResponseList = samSeResponse.getApduResponses();
+        List<ApduResponse> samApduResponses = samSeResponse.getApduResponses();
 
-        if (samApduResponseList.size() != samCommands.size()) {
+        if (samApduResponses.size() != samCommands.size()) {
             throw new CalypsoDesynchronizedExchangesException(
                     "The number of commands/responses does not match: cmd=" + samCommands.size()
-                            + ", resp=" + samApduResponseList.size());
+                            + ", resp=" + samApduResponses.size());
         }
 
         // check all responses status
-        for (int i = 0; i < samApduResponseList.size(); i++) {
-            samCommands.get(i).createResponseParser(samApduResponseList.get(i)).checkStatus();
+        for (int i = 0; i < samApduResponses.size(); i++) {
+            samCommands.get(i).createResponseParser(samApduResponses.get(i)).checkStatus();
         }
 
         // Get Terminal Signature from the latest response
         DigestCloseRespPars digestCloseRespPars =
                 (DigestCloseRespPars) samCommands.get(samCommands.size() - 1)
-                        .createResponseParser(samApduResponseList.get(samCommands.size() - 1));
+                        .createResponseParser(samApduResponses.get(samCommands.size() - 1));
 
         byte[] sessionTerminalSignature = digestCloseRespPars.getSignature();
 
@@ -422,28 +422,28 @@ class SamCommandProcessor {
         DigestAuthenticateCmdBuild digestAuthenticateCmdBuild = new DigestAuthenticateCmdBuild(
                 samResource.getMatchingSe().getSamRevision(), poSignatureLo);
 
-        List<ApduRequest> samApduRequestList = new ArrayList<ApduRequest>();
-        samApduRequestList.add(digestAuthenticateCmdBuild.getApduRequest());
+        List<ApduRequest> samApduRequests = new ArrayList<ApduRequest>();
+        samApduRequests.add(digestAuthenticateCmdBuild.getApduRequest());
 
-        SeRequest samSeRequest = new SeRequest(samApduRequestList);
+        SeRequest samSeRequest = new SeRequest(samApduRequests);
 
         SeResponse samSeResponse;
         try {
-            samSeResponse = samReader.transmit(samSeRequest);
+            samSeResponse = samReader.transmitSeRequest(samSeRequest);
         } catch (KeypleReaderIOException e) {
             throw new CalypsoSamIOException("SAM IO Exception while transmitting digest data.", e);
         }
 
         // Get transaction result parsing the response
-        List<ApduResponse> samApduResponseList = samSeResponse.getApduResponses();
+        List<ApduResponse> samApduResponses = samSeResponse.getApduResponses();
 
-        if (samApduResponseList == null || samApduResponseList.isEmpty()) {
+        if (samApduResponses == null || samApduResponses.isEmpty()) {
             throw new CalypsoDesynchronizedExchangesException(
                     "No response to Digest Authenticate command.");
         }
 
         DigestAuthenticateRespPars digestAuthenticateRespPars =
-                digestAuthenticateCmdBuild.createResponseParser(samApduResponseList.get(0));
+                digestAuthenticateCmdBuild.createResponseParser(samApduResponses.get(0));
 
         digestAuthenticateRespPars.checkStatus();
     }

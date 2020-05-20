@@ -424,10 +424,10 @@ public class StubReaderTest extends BaseStubTest {
                 Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
                 Assert.assertEquals(ReaderEvent.EventType.SE_MATCHED, event.getEventType());
                 Assert.assertTrue(((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                        .getSelectionSeResponseSet().get(0).getSelectionStatus().hasMatched());
+                        .getSelectionSeResponses().get(0).getSelectionStatus().hasMatched());
                 Assert.assertArrayEquals(
                         ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                                .getSelectionSeResponseSet().get(0).getSelectionStatus().getAtr()
+                                .getSelectionSeResponses().get(0).getSelectionStatus().getAtr()
                                 .getBytes(),
                         hoplinkSE().getATR());
 
@@ -451,7 +451,7 @@ public class StubReaderTest extends BaseStubTest {
 
                 Assert.assertArrayEquals(
                         ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                                .getSelectionSeResponseSet().get(0).getSelectionStatus().getFci()
+                                .getSelectionSeResponses().get(0).getSelectionStatus().getFci()
                                 .getBytes(),
                         fci);
 
@@ -566,7 +566,7 @@ public class StubReaderTest extends BaseStubTest {
                 // card has not match
                 Assert.assertFalse(
                         ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                                .getSelectionSeResponseSet().get(0).getSelectionStatus()
+                                .getSelectionSeResponses().get(0).getSelectionStatus()
                                 .hasMatched());
 
                 lock.countDown();// should be called
@@ -731,7 +731,7 @@ public class StubReaderTest extends BaseStubTest {
         Assert.assertEquals(1, stubPlugin.getReaders().size());
         StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         // init Request
-        Set<SeRequest> requests = getRequestIsoDepSetSample();
+        List<SeRequest> requests = getRequestIsoDepSetSample();
 
         // init SE
         reader.insertSe(hoplinkSE());
@@ -745,7 +745,7 @@ public class StubReaderTest extends BaseStubTest {
         genericSelectSe(reader);
 
         // test
-        List<SeResponse> seResponse = ((ProxyReader) reader).transmitSet(requests);
+        List<SeResponse> seResponse = ((ProxyReader) reader).transmitSeRequests(requests);
 
         // assert
         Assert.assertTrue(seResponse.get(0).getApduResponses().get(0).isSuccessful());
@@ -758,14 +758,14 @@ public class StubReaderTest extends BaseStubTest {
     // // no SE
     //
     // // init request
-    // SeRequestSet seRequest = getRequestIsoDepSetSample();
+    // SeRequest seRequest = getRequestIsoDepSetSample();
     //
     // // add Protocol flag
     // reader.addSeProtocolSetting(
     // new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
     //
     // // test
-    // SeResponseSet resp = reader.transmit(seRequest);
+    // SeResponse resp = reader.transmit(seRequest);
     //
     // Assert.assertNull(resp.get(0));
     // }
@@ -777,7 +777,7 @@ public class StubReaderTest extends BaseStubTest {
         Assert.assertEquals(1, stubPlugin.getReaders().size());
         StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         // init Request
-        Set<SeRequest> requests = getNoResponseRequest();
+        List<SeRequest> requests = getNoResponseRequest();
 
         // init SE
         reader.insertSe(noApduResponseSE());
@@ -791,7 +791,7 @@ public class StubReaderTest extends BaseStubTest {
         genericSelectSe(reader);
 
         // test
-        List<SeResponse> seResponse = ((ProxyReader) reader).transmitSet(requests);
+        List<SeResponse> seResponse = ((ProxyReader) reader).transmitSeRequests(requests);
     }
 
     @Test
@@ -800,7 +800,7 @@ public class StubReaderTest extends BaseStubTest {
         Assert.assertEquals(1, stubPlugin.getReaders().size());
         StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         // init Request
-        Set<SeRequest> seRequestSet = getPartialRequestSet(0);
+        List<SeRequest> seRequests = getPartialRequestList(0);
 
         // init SE
         reader.insertSe(partialSE());
@@ -815,12 +815,12 @@ public class StubReaderTest extends BaseStubTest {
 
         // test
         try {
-            List<SeResponse> seResponseList = ((ProxyReader) reader).transmitSet(seRequestSet);
+            List<SeResponse> seResponses = ((ProxyReader) reader).transmitSeRequests(seRequests);
             Assert.fail("Should throw exception");
 
         } catch (KeypleReaderIOException ex) {
-            Assert.assertEquals(ex.getSeResponseList().size(), 1);
-            Assert.assertEquals(ex.getSeResponseList().get(0).getApduResponses().size(), 2);
+            Assert.assertEquals(ex.getSeResponses().size(), 1);
+            Assert.assertEquals(ex.getSeResponses().get(0).getApduResponses().size(), 2);
         }
     }
 
@@ -830,7 +830,7 @@ public class StubReaderTest extends BaseStubTest {
         Assert.assertEquals(1, stubPlugin.getReaders().size());
         StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         // init Request
-        Set<SeRequest> seRequestSet = getPartialRequestSet(1);
+        List<SeRequest> seRequests = getPartialRequestList(1);
 
         // init SE
         reader.insertSe(partialSE());
@@ -845,14 +845,14 @@ public class StubReaderTest extends BaseStubTest {
 
         // test
         try {
-            List<SeResponse> seResponseList = ((ProxyReader) reader).transmitSet(seRequestSet);
+            List<SeResponse> seResponses = ((ProxyReader) reader).transmitSeRequests(seRequests);
             Assert.fail("Should throw exception");
 
         } catch (KeypleReaderIOException ex) {
-            Assert.assertEquals(ex.getSeResponseList().size(), 2);
-            Assert.assertEquals(ex.getSeResponseList().get(0).getApduResponses().size(), 4);
-            Assert.assertEquals(ex.getSeResponseList().get(1).getApduResponses().size(), 2);
-            Assert.assertEquals(ex.getSeResponseList().get(1).getApduResponses().size(), 2);
+            Assert.assertEquals(ex.getSeResponses().size(), 2);
+            Assert.assertEquals(ex.getSeResponses().get(0).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponses().get(1).getApduResponses().size(), 2);
+            Assert.assertEquals(ex.getSeResponses().get(1).getApduResponses().size(), 2);
         }
     }
 
@@ -863,7 +863,7 @@ public class StubReaderTest extends BaseStubTest {
         Assert.assertEquals(1, stubPlugin.getReaders().size());
         StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         // init Request
-        Set<SeRequest> seRequestSet = getPartialRequestSet(2);
+        List<SeRequest> seRequests = getPartialRequestList(2);
 
         // init SE
         reader.insertSe(partialSE());
@@ -878,14 +878,14 @@ public class StubReaderTest extends BaseStubTest {
 
         // test
         try {
-            List<SeResponse> seResponseList = ((ProxyReader) reader).transmitSet(seRequestSet);
+            List<SeResponse> seResponses = ((ProxyReader) reader).transmitSeRequests(seRequests);
             Assert.fail("Should throw exception");
 
         } catch (KeypleReaderIOException ex) {
-            Assert.assertEquals(ex.getSeResponseList().size(), 3);
-            Assert.assertEquals(ex.getSeResponseList().get(0).getApduResponses().size(), 4);
-            Assert.assertEquals(ex.getSeResponseList().get(1).getApduResponses().size(), 4);
-            Assert.assertEquals(ex.getSeResponseList().get(2).getApduResponses().size(), 2);
+            Assert.assertEquals(ex.getSeResponses().size(), 3);
+            Assert.assertEquals(ex.getSeResponses().get(0).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponses().get(1).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponses().get(2).getApduResponses().size(), 2);
         }
     }
 
@@ -895,7 +895,7 @@ public class StubReaderTest extends BaseStubTest {
         Assert.assertEquals(1, stubPlugin.getReaders().size());
         StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         // init Request
-        Set<SeRequest> seRequestSet = getPartialRequestSet(3);
+        List<SeRequest> seRequests = getPartialRequestList(3);
 
         // init SE
         reader.insertSe(partialSE());
@@ -910,11 +910,11 @@ public class StubReaderTest extends BaseStubTest {
 
         // test
         try {
-            List<SeResponse> seResponseList = ((ProxyReader) reader).transmitSet(seRequestSet);
-            Assert.assertEquals(seResponseList.size(), 3);
-            Assert.assertEquals(seResponseList.get(0).getApduResponses().size(), 4);
-            Assert.assertEquals(seResponseList.get(1).getApduResponses().size(), 4);
-            Assert.assertEquals(seResponseList.get(2).getApduResponses().size(), 4);
+            List<SeResponse> seResponses = ((ProxyReader) reader).transmitSeRequests(seRequests);
+            Assert.assertEquals(seResponses.size(), 3);
+            Assert.assertEquals(seResponses.get(0).getApduResponses().size(), 4);
+            Assert.assertEquals(seResponses.get(1).getApduResponses().size(), 4);
+            Assert.assertEquals(seResponses.get(2).getApduResponses().size(), 4);
         } catch (KeypleReaderException ex) {
             Assert.fail("Should not throw exception");
         }
@@ -941,7 +941,7 @@ public class StubReaderTest extends BaseStubTest {
 
         // test
         try {
-            SeResponse seResponse = ((ProxyReader) reader).transmit(seRequest);
+            SeResponse seResponse = ((ProxyReader) reader).transmitSeRequest(seRequest);
             Assert.fail("Should throw exception");
 
         } catch (KeypleReaderIOException ex) {
@@ -971,7 +971,7 @@ public class StubReaderTest extends BaseStubTest {
 
         // test
         try {
-            SeResponse seResponse = ((ProxyReader) reader).transmit(seRequest);
+            SeResponse seResponse = ((ProxyReader) reader).transmitSeRequest(seRequest);
             Assert.fail("Should throw exception");
 
         } catch (KeypleReaderIOException ex) {
@@ -1000,7 +1000,7 @@ public class StubReaderTest extends BaseStubTest {
 
         // test
         try {
-            SeResponse seResponse = ((ProxyReader) reader).transmit(seRequest);
+            SeResponse seResponse = ((ProxyReader) reader).transmitSeRequest(seRequest);
             Assert.fail("Should throw exception");
 
         } catch (KeypleReaderIOException ex) {
@@ -1029,7 +1029,7 @@ public class StubReaderTest extends BaseStubTest {
 
         // test
         try {
-            SeResponse seResponse = ((ProxyReader) reader).transmit(seRequest);
+            SeResponse seResponse = ((ProxyReader) reader).transmitSeRequest(seRequest);
             Assert.assertEquals(seResponse.getApduResponses().size(), 3);
         } catch (KeypleReaderException ex) {
             Assert.fail("Should not throw exception");
@@ -1071,20 +1071,20 @@ public class StubReaderTest extends BaseStubTest {
      */
 
 
-    static public Set<SeRequest> getRequestIsoDepSetSample() {
+    static public List<SeRequest> getRequestIsoDepSetSample() {
         String poAid = "A000000291A000000191";
         ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoClass.ISO, 0x14, 1,
                 ReadRecordsCmdBuild.ReadMode.ONE_RECORD, 32);
 
-        List<ApduRequest> poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
+        List<ApduRequest> poApduRequests = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
 
-        SeRequest seRequest = new SeRequest(poApduRequestList);
+        SeRequest seRequest = new SeRequest(poApduRequests);
 
-        Set<SeRequest> seRequestSet = new LinkedHashSet<SeRequest>();
+        List<SeRequest> seRequests = new ArrayList<SeRequest>();
 
-        seRequestSet.add(seRequest);
+        seRequests.add(seRequest);
 
-        return seRequestSet;
+        return seRequests;
     }
 
     /*
@@ -1092,20 +1092,20 @@ public class StubReaderTest extends BaseStubTest {
      *
      * An Exception will be thrown.
      */
-    static public Set<SeRequest> getNoResponseRequest() {
+    static public List<SeRequest> getNoResponseRequest() {
 
         IncreaseCmdBuild poIncreaseCmdBuild =
                 new IncreaseCmdBuild(PoClass.ISO, (byte) 0x14, (byte) 0x01, 0);
 
-        List<ApduRequest> poApduRequestList = Arrays.asList(poIncreaseCmdBuild.getApduRequest());
+        List<ApduRequest> poApduRequests = Arrays.asList(poIncreaseCmdBuild.getApduRequest());
 
-        SeRequest seRequest = new SeRequest(poApduRequestList);
+        SeRequest seRequest = new SeRequest(poApduRequests);
 
-        Set<SeRequest> seRequestSet = new LinkedHashSet<SeRequest>();
+        List<SeRequest> seRequests = new ArrayList<SeRequest>();
 
-        seRequestSet.add(seRequest);
+        seRequests.add(seRequest);
 
-        return seRequestSet;
+        return seRequests;
     }
 
     /*
@@ -1113,7 +1113,7 @@ public class StubReaderTest extends BaseStubTest {
      *
      * An Exception will be thrown.
      */
-    static public Set<SeRequest> getPartialRequestSet(int scenario) {
+    static public List<SeRequest> getPartialRequestList(int scenario) {
         String poAid = "A000000291A000000191";
         ReadRecordsCmdBuild poReadRecord1CmdBuild = new ReadRecordsCmdBuild(PoClass.ISO, 0x14, 1,
                 ReadRecordsCmdBuild.ReadMode.ONE_RECORD, 0);
@@ -1122,64 +1122,64 @@ public class StubReaderTest extends BaseStubTest {
         ReadRecordsCmdBuild poReadRecord2CmdBuild = new ReadRecordsCmdBuild(PoClass.ISO, 0x1E, 1,
                 ReadRecordsCmdBuild.ReadMode.ONE_RECORD, 0);
 
-        List<ApduRequest> poApduRequestList1 = new ArrayList<ApduRequest>();
-        poApduRequestList1.add(poReadRecord1CmdBuild.getApduRequest());
-        poApduRequestList1.add(poReadRecord1CmdBuild.getApduRequest());
-        poApduRequestList1.add(poReadRecord1CmdBuild.getApduRequest());
-        poApduRequestList1.add(poReadRecord1CmdBuild.getApduRequest());
+        List<ApduRequest> poApduRequests1 = new ArrayList<ApduRequest>();
+        poApduRequests1.add(poReadRecord1CmdBuild.getApduRequest());
+        poApduRequests1.add(poReadRecord1CmdBuild.getApduRequest());
+        poApduRequests1.add(poReadRecord1CmdBuild.getApduRequest());
+        poApduRequests1.add(poReadRecord1CmdBuild.getApduRequest());
 
-        List<ApduRequest> poApduRequestList2 = new ArrayList<ApduRequest>();
-        poApduRequestList2.add(poReadRecord1CmdBuild.getApduRequest());
-        poApduRequestList2.add(poReadRecord1CmdBuild.getApduRequest());
-        poApduRequestList2.add(poReadRecord1CmdBuild.getApduRequest());
-        poApduRequestList2.add(poReadRecord1CmdBuild.getApduRequest());
+        List<ApduRequest> poApduRequests2 = new ArrayList<ApduRequest>();
+        poApduRequests2.add(poReadRecord1CmdBuild.getApduRequest());
+        poApduRequests2.add(poReadRecord1CmdBuild.getApduRequest());
+        poApduRequests2.add(poReadRecord1CmdBuild.getApduRequest());
+        poApduRequests2.add(poReadRecord1CmdBuild.getApduRequest());
 
-        List<ApduRequest> poApduRequestList3 = new ArrayList<ApduRequest>();
-        poApduRequestList3.add(poReadRecord1CmdBuild.getApduRequest());
-        poApduRequestList3.add(poReadRecord1CmdBuild.getApduRequest());
-        poApduRequestList3.add(poReadRecord2CmdBuild.getApduRequest());
-        poApduRequestList3.add(poReadRecord1CmdBuild.getApduRequest());
+        List<ApduRequest> poApduRequests3 = new ArrayList<ApduRequest>();
+        poApduRequests3.add(poReadRecord1CmdBuild.getApduRequest());
+        poApduRequests3.add(poReadRecord1CmdBuild.getApduRequest());
+        poApduRequests3.add(poReadRecord2CmdBuild.getApduRequest());
+        poApduRequests3.add(poReadRecord1CmdBuild.getApduRequest());
 
-        SeRequest seRequest1 = new SeRequest(poApduRequestList1);
+        SeRequest seRequest1 = new SeRequest(poApduRequests1);
 
-        SeRequest seRequest2 = new SeRequest(poApduRequestList2);
+        SeRequest seRequest2 = new SeRequest(poApduRequests2);
 
         /* This SeRequest fails at step 3 */
-        SeRequest seRequest3 = new SeRequest(poApduRequestList3);
+        SeRequest seRequest3 = new SeRequest(poApduRequests3);
 
-        SeRequest seRequest4 = new SeRequest(poApduRequestList1);
+        SeRequest seRequest4 = new SeRequest(poApduRequests1);
 
-        Set<SeRequest> seRequestSets = new LinkedHashSet<SeRequest>();
+        List<SeRequest> seRequests = new ArrayList<SeRequest>();
 
         switch (scenario) {
             case 0:
-                /* 0 response Set */
-                seRequestSets.add(seRequest3); // fails
-                seRequestSets.add(seRequest1); // succeeds
-                seRequestSets.add(seRequest2); // succeeds
+                /* 0 response */
+                seRequests.add(seRequest3); // fails
+                seRequests.add(seRequest1); // succeeds
+                seRequests.add(seRequest2); // succeeds
                 break;
             case 1:
-                /* 1 response Set */
-                seRequestSets.add(seRequest1); // succeeds
-                seRequestSets.add(seRequest3); // fails
-                seRequestSets.add(seRequest2); // succeeds
+                /* 1 response */
+                seRequests.add(seRequest1); // succeeds
+                seRequests.add(seRequest3); // fails
+                seRequests.add(seRequest2); // succeeds
                 break;
             case 2:
-                /* 2 responses Set */
-                seRequestSets.add(seRequest1); // succeeds
-                seRequestSets.add(seRequest2); // succeeds
-                seRequestSets.add(seRequest3); // fails
+                /* 2 responses */
+                seRequests.add(seRequest1); // succeeds
+                seRequests.add(seRequest2); // succeeds
+                seRequests.add(seRequest3); // fails
                 break;
             case 3:
-                /* 3 responses Set */
-                seRequestSets.add(seRequest1); // succeeds
-                seRequestSets.add(seRequest2); // succeeds
-                seRequestSets.add(seRequest4); // succeeds
+                /* 3 responses */
+                seRequests.add(seRequest1); // succeeds
+                seRequests.add(seRequest2); // succeeds
+                seRequests.add(seRequest4); // succeeds
                 break;
             default:
         }
 
-        return seRequestSets;
+        return seRequests;
     }
 
     /*
@@ -1197,28 +1197,28 @@ public class StubReaderTest extends BaseStubTest {
         ReadRecordsCmdBuild poReadRecord2CmdBuild = new ReadRecordsCmdBuild(PoClass.ISO, 0x1E, 1,
                 ReadRecordsCmdBuild.ReadMode.ONE_RECORD, 0);
 
-        List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
+        List<ApduRequest> poApduRequests = new ArrayList<ApduRequest>();
 
         switch (scenario) {
             case 0:
-                poApduRequestList.add(poReadRecord2CmdBuild.getApduRequest()); // fails
-                poApduRequestList.add(poReadRecord1CmdBuild.getApduRequest()); // succeeds
-                poApduRequestList.add(poReadRecord1CmdBuild.getApduRequest()); // succeeds
+                poApduRequests.add(poReadRecord2CmdBuild.getApduRequest()); // fails
+                poApduRequests.add(poReadRecord1CmdBuild.getApduRequest()); // succeeds
+                poApduRequests.add(poReadRecord1CmdBuild.getApduRequest()); // succeeds
                 break;
             case 1:
-                poApduRequestList.add(poReadRecord1CmdBuild.getApduRequest()); // succeeds
-                poApduRequestList.add(poReadRecord2CmdBuild.getApduRequest()); // fails
-                poApduRequestList.add(poReadRecord1CmdBuild.getApduRequest()); // succeeds
+                poApduRequests.add(poReadRecord1CmdBuild.getApduRequest()); // succeeds
+                poApduRequests.add(poReadRecord2CmdBuild.getApduRequest()); // fails
+                poApduRequests.add(poReadRecord1CmdBuild.getApduRequest()); // succeeds
                 break;
             case 2:
-                poApduRequestList.add(poReadRecord1CmdBuild.getApduRequest()); // succeeds
-                poApduRequestList.add(poReadRecord1CmdBuild.getApduRequest()); // succeeds
-                poApduRequestList.add(poReadRecord2CmdBuild.getApduRequest()); // fails
+                poApduRequests.add(poReadRecord1CmdBuild.getApduRequest()); // succeeds
+                poApduRequests.add(poReadRecord1CmdBuild.getApduRequest()); // succeeds
+                poApduRequests.add(poReadRecord2CmdBuild.getApduRequest()); // fails
                 break;
             case 3:
-                poApduRequestList.add(poReadRecord1CmdBuild.getApduRequest()); // succeeds
-                poApduRequestList.add(poReadRecord1CmdBuild.getApduRequest()); // succeeds
-                poApduRequestList.add(poReadRecord1CmdBuild.getApduRequest()); // succeeds
+                poApduRequests.add(poReadRecord1CmdBuild.getApduRequest()); // succeeds
+                poApduRequests.add(poReadRecord1CmdBuild.getApduRequest()); // succeeds
+                poApduRequests.add(poReadRecord1CmdBuild.getApduRequest()); // succeeds
                 break;
             default:
                 break;
@@ -1228,7 +1228,7 @@ public class StubReaderTest extends BaseStubTest {
                 new SeSelector.AidSelector(
                         new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(poAid))));
 
-        return new SeRequest(poApduRequestList);
+        return new SeRequest(poApduRequests);
     }
 
     static public StubSecureElement hoplinkSE() {
