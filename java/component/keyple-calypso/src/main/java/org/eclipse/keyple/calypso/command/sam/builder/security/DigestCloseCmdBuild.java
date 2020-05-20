@@ -12,16 +12,18 @@
 package org.eclipse.keyple.calypso.command.sam.builder.security;
 
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
-import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommands;
+import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
+import org.eclipse.keyple.calypso.command.sam.parser.security.DigestCloseRespPars;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
  * Builder for the SAM Digest Close APDU command.
  */
-public class DigestCloseCmdBuild extends AbstractSamCommandBuilder {
+public class DigestCloseCmdBuild extends AbstractSamCommandBuilder<DigestCloseRespPars> {
 
     /** The command. */
-    private static final CalypsoSamCommands command = CalypsoSamCommands.DIGEST_CLOSE;
+    private static final CalypsoSamCommand command = CalypsoSamCommand.DIGEST_CLOSE;
 
     /**
      * Instantiates a new DigestCloseCmdBuild .
@@ -30,8 +32,7 @@ public class DigestCloseCmdBuild extends AbstractSamCommandBuilder {
      * @param expectedResponseLength the expected response length
      * @throws IllegalArgumentException - if the expected response length is wrong.
      */
-    public DigestCloseCmdBuild(SamRevision revision, byte expectedResponseLength)
-            throws IllegalArgumentException {
+    public DigestCloseCmdBuild(SamRevision revision, byte expectedResponseLength) {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
@@ -42,11 +43,14 @@ public class DigestCloseCmdBuild extends AbstractSamCommandBuilder {
         }
 
         byte cla = this.defaultRevision.getClassByte();
-        byte p1 = 0x00;
+        byte p1 = (byte) 0x00;
         byte p2 = (byte) 0x00;
 
-        // CalypsoRequest calypsoRequest = new CalypsoRequest(cla, command, p1, p2, null,
-        // expectedResponseLength);
         request = setApduRequest(cla, command, p1, p2, null, expectedResponseLength);
+    }
+
+    @Override
+    public DigestCloseRespPars createResponseParser(ApduResponse apduResponse) {
+        return new DigestCloseRespPars(apduResponse, this);
     }
 }

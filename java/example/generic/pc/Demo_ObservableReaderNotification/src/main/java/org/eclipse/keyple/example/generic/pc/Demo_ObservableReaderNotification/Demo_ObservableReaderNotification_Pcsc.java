@@ -15,26 +15,30 @@ package org.eclipse.keyple.example.generic.pc.Demo_ObservableReaderNotification;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.example.common.generic.ObservableReaderNotificationEngine;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class Demo_ObservableReaderNotification_Pcsc {
-    public final static Object waitBeforeEnd = new Object();
+    private static final Logger logger =
+            LoggerFactory.getLogger(Demo_ObservableReaderNotification_Pcsc.class);
+    public static final Object waitBeforeEnd = new Object();
 
     public static void main(String[] args) throws Exception {
         ObservableReaderNotificationEngine demoEngine = new ObservableReaderNotificationEngine();
 
-        /* Get the instance of the SeProxyService (Singleton pattern) */
+        // Get the instance of the SeProxyService (Singleton pattern)
         SeProxyService seProxyService = SeProxyService.getInstance();
 
-        /* Assign PcscPlugin to the SeProxyService */
+        // Assign PcscPlugin to the SeProxyService
         seProxyService.registerPlugin(new PcscPluginFactory());
 
-        /* Set observers */
+        // /* Set observers *//**/
         demoEngine.setPluginObserver();
 
-        System.out.println("Wait for reader or SE insertion/removal");
+        logger.info("Wait for reader or SE insertion/removal");
 
-        /* Wait indefinitely. CTRL-C to exit. */
+        // Wait indefinitely. CTRL-C to exit.
         synchronized (waitBeforeEnd) {
             waitBeforeEnd.wait();
         }

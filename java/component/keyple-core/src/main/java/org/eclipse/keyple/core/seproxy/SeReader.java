@@ -13,7 +13,7 @@ package org.eclipse.keyple.core.seproxy;
 
 
 import java.util.Map;
-import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.Configurable;
@@ -35,9 +35,9 @@ public interface SeReader extends Nameable, Configurable, Comparable<SeReader> {
      * Checks if is SE present.
      *
      * @return true if a Secure Element is present in the reader
-     * @throws KeypleIOReaderException if error while reading SE
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    boolean isSePresent() throws KeypleIOReaderException;
+    boolean isSePresent() throws KeypleReaderIOException;
 
     /**
      * A protocol setting is an association that establish the link between a protocol identifier

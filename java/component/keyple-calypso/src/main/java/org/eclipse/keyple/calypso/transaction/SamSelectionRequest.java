@@ -11,7 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
-import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 
@@ -36,14 +35,6 @@ public class SamSelectionRequest extends AbstractSeSelectionRequest {
      */
     @Override
     protected CalypsoSam parse(SeResponse seResponse) {
-        return new CalypsoSam(seResponse, seSelector.getSeProtocol().getTransmissionMode(),
-                seSelector.getExtraInfo());
-    }
-
-    @Override
-    public AbstractSamResponseParser getCommandParser(SeResponse seResponse, int commandIndex) {
-        /* not yet implemented in keyple-calypso */
-        // TODO add a generic command parser
-        throw new IllegalStateException("No parsers available for this request.");
+        return new CalypsoSam(seResponse, seSelector.getSeProtocol().getTransmissionMode());
     }
 }

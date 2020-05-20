@@ -15,7 +15,7 @@ package org.eclipse.keyple.example.calypso.pc.Demo_CalypsoClassic;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.example.common.PcscReadersSettings;
@@ -39,10 +39,10 @@ public class Demo_CalypsoClassic_Pcsc {
      * main program entry
      *
      * @param args the program arguments
-     * @throws KeypleBaseException setParameter exception
+     * @throws KeypleException setParameter exception
      * @throws InterruptedException thread exception
      */
-    public static void main(String[] args) throws KeypleBaseException, InterruptedException {
+    public static void main(String[] args) throws KeypleException, InterruptedException {
         Logger logger = LoggerFactory.getLogger(Demo_CalypsoClassic_Pcsc.class);
 
         /* Get the instance of the SeProxyService (Singleton pattern) */

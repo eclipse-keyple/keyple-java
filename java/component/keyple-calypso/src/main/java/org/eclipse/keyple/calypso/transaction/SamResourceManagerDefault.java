@@ -302,6 +302,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
          */
         @Override
         public void update(ReaderEvent event) {
+            // TODO revise exception management
             SeReader samReader = null;
             try {
                 samReader = samReaderPlugin.getReader(event.getReaderName());
@@ -327,10 +328,9 @@ public class SamResourceManagerDefault extends SamResourceManager {
                              * STATIC
                              */
                             newSamResource = createSamResource(samReader);
-                        } catch (KeypleReaderException e) {
-                            logger.error("Reader failure while creating a SamResource from {}",
+                        } catch (CalypsoNoSamResourceAvailableException e) {
+                            logger.error("Failed to create a SamResource from {}",
                                     samReader.getName());
-                            e.printStackTrace();
                         }
                         /* failures are ignored */
                         if (newSamResource != null) {
@@ -380,18 +380,16 @@ public class SamResourceManagerDefault extends SamResourceManager {
 
             /* Shared mode */
             samReader.setParameter("mode", "shared");
-        } catch (KeypleBaseException e) {
+            if (samReader.isSePresent()) {
+                logger.trace("Create SAM resource: {}", samReader.getName());
+                synchronized (localSamResources) {
+                    localSamResources.add(createSamResource(samReader));
+                }
+            }
+        } catch (KeypleException e) {
             throw new IllegalArgumentException(
                     "Parameters are not supported for this reader : protocol:TO, mode:shared");
         }
-
-        if (samReader.isSePresent()) {
-            logger.trace("Create SAM resource: {}", samReader.getName());
-            synchronized (localSamResources) {
-                localSamResources.add(createSamResource(samReader));
-            }
-        }
-
 
         if (samReader instanceof ObservableReader && readerObserver != null) {
             logger.trace("Add observer and start detection READERNAME = {}", samReader.getName());

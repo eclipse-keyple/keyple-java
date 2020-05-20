@@ -22,6 +22,8 @@ import javax.smartcardio.CardTerminals;
 import javax.smartcardio.TerminalFactory;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleRuntimeException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
@@ -63,7 +65,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
     }
 
     @Override
-    public void setParameter(String key, String value) throws IllegalArgumentException {
+    public void setParameter(String key, String value) throws KeypleReaderIOException {
 
     }
 
@@ -71,10 +73,10 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
      * Fetch the list of connected native reader (from smartcardio) and returns their names
      *
      * @return connected readers' name list
-     * @throws KeypleReaderException if a reader error occurs
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
-    public SortedSet<String> fetchNativeReadersNames() throws KeypleReaderException {
+    public SortedSet<String> fetchNativeReadersNames() throws KeypleReaderIOException {
         SortedSet<String> nativeReadersNames = new ConcurrentSkipListSet<String>();
         CardTerminals terminals = getCardTerminals();
         try {
@@ -88,7 +90,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
                 logger.trace(
                         "[{}] fetchNativeReadersNames => Terminal list is not accessible. Exception: {}",
                         this.getName(), e.getMessage());
-                throw new KeypleReaderException("Could not access terminals list", e);
+                throw new KeypleReaderIOException("Could not access terminals list", e);
             }
         }
         return nativeReadersNames;
@@ -102,7 +104,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
      * @throws KeypleReaderException if a reader error occurs
      */
     @Override
-    protected SortedSet<SeReader> initNativeReaders() throws KeypleReaderException {
+    protected SortedSet<SeReader> initNativeReaders() throws KeypleReaderIOException {
         SortedSet<SeReader> nativeReaders = new ConcurrentSkipListSet<SeReader>();
 
         /*
@@ -127,7 +129,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
             } else {
                 logger.trace("[{}] Terminal list is not accessible. Exception: {}", this.getName(),
                         e.getMessage());
-                // throw new KeypleReaderException("Could not access terminals list", e); do not
+                // throw new KeypleReaderIOException("Could not access terminals list", e); do not
                 // propagate exception at the constructor will propagate it as a
                 // org.eclipse.keyple.core.seproxy.exception.KeypleRuntimeException
 
@@ -144,10 +146,12 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
      *
      * @param name name of the reader
      * @return the reader object
-     * @throws KeypleReaderException if a reader error occurs
+     * @throws KeypleReaderNotFoundException if a reader is not found by its name
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
-    protected SeReader fetchNativeReader(String name) throws KeypleReaderException {
+    protected SeReader fetchNativeReader(String name)
+            throws KeypleReaderNotFoundException, KeypleReaderIOException {
         // return the current reader if it is already listed
         for (SeReader reader : readers) {
             if (reader.getName().equals(name)) {
@@ -171,10 +175,10 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
         } catch (CardException e) {
             logger.trace("[{}] Terminal list is not accessible. Exception: {}", this.getName(),
                     e.getMessage());
-            throw new KeypleReaderException("Could not access terminals list", e);
+            throw new KeypleReaderIOException("Could not access terminals list", e);
         }
         if (reader == null) {
-            throw new KeypleReaderException("Reader " + name + " not found!");
+            throw new KeypleReaderNotFoundException("Reader " + name + " not found!");
         }
         return reader;
     }

@@ -12,12 +12,19 @@
 package org.eclipse.keyple.example.calypso.pc.usecase5;
 
 
-import org.eclipse.keyple.calypso.transaction.*;
-import org.eclipse.keyple.core.selection.MatchingSelection;
+import org.eclipse.keyple.calypso.transaction.CalypsoPo;
+import org.eclipse.keyple.calypso.transaction.PoResource;
+import org.eclipse.keyple.calypso.transaction.PoSecuritySettings;
+import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
+import org.eclipse.keyple.calypso.transaction.PoSelector;
+import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.calypso.transaction.SamResource;
 import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.*;
-import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.SeSelector.AidSelector;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
@@ -65,179 +72,115 @@ import org.slf4j.LoggerFactory;
 public class MultipleSession_Pcsc {
     private static final Logger logger = LoggerFactory.getLogger(MultipleSession_Pcsc.class);
 
-    public static void main(String[] args) throws KeypleBaseException {
+    public static void main(String[] args) throws KeypleException {
 
-        /* Get the instance of the SeProxyService (Singleton pattern) */
+        // Get the instance of the SeProxyService (Singleton pattern)
         SeProxyService seProxyService = SeProxyService.getInstance();
 
-        /* Assign PcscPlugin to the SeProxyService */
+        // Assign PcscPlugin to the SeProxyService
         seProxyService.registerPlugin(new PcscPluginFactory());
 
-        /*
-         * Get a PO reader ready to work with Calypso PO. Use the getReader helper method from the
-         * CalypsoUtilities class.
-         */
+        // Get a PO reader ready to work with Calypso PO. Use the getReader helper method from the
+        // CalypsoUtilities class.
         SeReader poReader = CalypsoUtilities.getDefaultPoReader();
 
 
-        /*
-         * Get a SAM reader ready to work with Calypso PO. Use the getReader helper method from the
-         * CalypsoUtilities class.
-         */
+        // Get a SAM reader ready to work with Calypso PO. Use the getReader helper method from
+        // the
+        // CalypsoUtilities class.
         SamResource samResource = CalypsoUtilities.getDefaultSamResource();
-
-        /* Check if the readers exists */
-        if (poReader == null || samResource == null) {
-            throw new IllegalStateException("Bad PO or SAM reader setup");
-        }
 
         logger.info("=============== UseCase Calypso #5: Po Authentication ==================");
         logger.info("= PO Reader  NAME = {}", poReader.getName());
         logger.info("= SAM Reader  NAME = {}", samResource.getSeReader().getName());
 
-        /* Check if a PO is present in the reader */
+        // Check if a PO is present in the reader
         if (poReader.isSePresent()) {
 
             logger.info(
-                    "==================================================================================");
-            logger.info(
-                    "= 1st PO exchange: AID based selection with reading of Environment file.         =");
-            logger.info(
-                    "==================================================================================");
+                    "= #### 1st PO exchange: AID based selection with reading of Environment file.");
 
-            /*
-             * Prepare a Calypso PO selection
-             */
+            // Prepare a Calypso PO selection
             SeSelection seSelection = new SeSelection();
 
-            /*
-             * Setting of an AID based selection of a Calypso REV3 PO
-             *
-             * Select the first application matching the selection AID whatever the SE communication
-             * protocol keep the logical channel open after the selection
-             */
+            // Setting of an AID based selection of a Calypso REV3 PO
+            //
+            // Select the first application matching the selection AID whatever the SE
+            // communication
+            // protocol keep the logical channel open after the selection
 
-            /*
-             * Calypso selection: configures a PoSelectionRequest with all the desired attributes to
-             * make the selection and read additional information afterwards
-             */
-            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
-                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                    new PoSelector.PoAidSelector(
-                            new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
-                            PoSelector.InvalidatedPo.REJECT),
-                    "AID: " + CalypsoClassicInfo.AID));
+            // Calypso selection: configures a PoSelectionRequest with all the desired attributes
+            // to
+            // make the selection and read additional information afterwards
+            PoSelectionRequest poSelectionRequest =
+                    new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                            null, new AidSelector(new AidSelector.IsoAid(CalypsoClassicInfo.AID)),
+                            PoSelector.InvalidatedPo.REJECT));
 
-            /*
-             * Add the selection case to the current selection (we could have added other cases
-             * here)
-             */
+            // Add the selection case to the current selection (we could have added other cases
+            // here)
             seSelection.prepareSelection(poSelectionRequest);
 
-            /*
-             * Actual PO communication: operate through a single request the Calypso PO selection
-             * and the file read
-             */
-            SelectionsResult selectionsResult = seSelection.processExplicitSelection(poReader);
+            // Actual PO communication: operate through a single request the Calypso PO selection
+            // and the file read
+            CalypsoPo calypsoPo = (CalypsoPo) seSelection.processExplicitSelection(poReader)
+                    .getActiveMatchingSe();
+            logger.info("The selection of the PO has succeeded.");
 
-            if (selectionsResult.hasActiveSelection()) {
-                MatchingSelection matchingSelection = selectionsResult.getActiveSelection();
+            // Go on with the reading of the first record of the EventLog file
+            logger.info(
+                    "= #### 2nd PO exchange: open and close a secure session to perform authentication.");
 
-                CalypsoPo calypsoPo = (CalypsoPo) matchingSelection.getMatchingSe();
-                logger.info("The selection of the PO has succeeded.");
+            PoSecuritySettings poSecuritySettings = CalypsoUtilities.getSecuritySettings();
 
-                /* Go on with the reading of the first record of the EventLog file */
+            // change the default security settings to enable MULTIPLE mode
+            poSecuritySettings.setSessionModificationMode(
+                    PoTransaction.SessionSetting.ModificationMode.MULTIPLE);
+
+            PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo),
+                    samResource, poSecuritySettings);
+
+            // Open Session for the debit key
+            poTransaction
+                    .processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT);
+
+            if (!calypsoPo.isDfRatified()) {
                 logger.info(
-                        "==================================================================================");
-                logger.info(
-                        "= 2nd PO exchange: open and close a secure session to perform authentication.    =");
-                logger.info(
-                        "==================================================================================");
-
-                PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo),
-                        samResource, CalypsoUtilities.getSecuritySettings());
-
-                /*
-                 * Open Session for the debit key
-                 */
-                boolean poProcessStatus = poTransaction.processOpening(
-                        PoTransaction.ModificationMode.MULTIPLE,
-                        PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0, (byte) 0);
-
-                if (!poProcessStatus) {
-                    throw new IllegalStateException("processingOpening failure.");
-                }
-
-                if (!poTransaction.wasRatified()) {
-                    logger.info(
-                            "========= Previous Secure Session was not ratified. =====================");
-                }
-                /*
-                 * Compute the number of append records (29 bytes) commands that will overflow the
-                 * PO modifications buffer. Each append records will consume 35 (29 + 6) bytes in
-                 * the buffer.
-                 *
-                 * We'll send one more command to demonstrate the MULTIPLE mode
-                 */
-                int modificationsBufferSize = calypsoPo.getModificationsCounter();
-
-                int nbCommands = (modificationsBufferSize / 35) + 1;
-
-                int appendRecordParsers[] = new int[nbCommands];
-
-                logger.info(
-                        "==== Send {} Append Record commands. Modifications buffer capacity = {} bytes i.e. {} 29-byte commands ====",
-                        nbCommands, modificationsBufferSize, modificationsBufferSize / 35);
-
-                for (int i = 0; i < nbCommands; i++) {
-                    appendRecordParsers[i] =
-                            poTransaction.prepareAppendRecordCmd(CalypsoClassicInfo.SFI_EventLog,
-                                    ByteArrayUtil.fromHex(CalypsoClassicInfo.eventLog_dataFill),
-                                    String.format("EventLog (SFI=%02X) #%d",
-                                            CalypsoClassicInfo.SFI_EventLog, i));
-                }
-
-                /* proceed with the sending of commands, don't close the channel */
-                poProcessStatus = poTransaction.processPoCommandsInSession();
-
-                if (!poProcessStatus) {
-                    for (int i = 0; i < nbCommands; i++) {
-                        if (!poTransaction.getResponseParser(appendRecordParsers[i])
-                                .isSuccessful()) {
-                            logger.error("Append record #%d failed with errror %s.", i,
-                                    poTransaction.getResponseParser(appendRecordParsers[i])
-                                            .getStatusInformation());
-                        }
-                    }
-                }
-
-                /*
-                 * Close the Secure Session.
-                 */
-
-                logger.info(
-                        "========= PO Calypso session ======= Closing ============================");
-
-                /*
-                 * A ratification command will be sent (CONTACTLESS_MODE).
-                 */
-                poProcessStatus = poTransaction.processClosing(ChannelControl.KEEP_OPEN);
-
-                if (!poProcessStatus) {
-                    throw new IllegalStateException("processClosing failure.");
-                }
-
-                logger.info(
-                        "==================================================================================");
-                logger.info(
-                        "= End of the Calypso PO processing.                                              =");
-                logger.info(
-                        "==================================================================================");
-            } else {
-                logger.error("The selection of the PO has failed.");
+                        "========= Previous Secure Session was not ratified. =====================");
             }
+            // Compute the number of append records (29 bytes) commands that will overflow the PO
+            // modifications buffer. Each append records will consume 35 (29 + 6) bytes in the
+            // buffer.
+            //
+            // We'll send one more command to demonstrate the MULTIPLE mode
+            int modificationsBufferSize = 430; // not all PO have this buffer size
+
+            int nbCommands = (modificationsBufferSize / 35) + 1;
+
+            logger.info(
+                    "==== Send {} Append Record commands. Modifications buffer capacity = {} bytes i.e. {} 29-byte commands ====",
+                    nbCommands, modificationsBufferSize, modificationsBufferSize / 35);
+
+            for (int i = 0; i < nbCommands; i++) {
+
+                poTransaction.prepareAppendRecord(CalypsoClassicInfo.SFI_EventLog,
+                        ByteArrayUtil.fromHex(CalypsoClassicInfo.eventLog_dataFill));
+            }
+
+            // proceed with the sending of commands, don't close the channel
+            poTransaction.processPoCommandsInSession();
+
+            // Close the Secure Session.
+
+            logger.info(
+                    "========= PO Calypso session ======= Closing ============================");
+
+            // A ratification command will be sent (CONTACTLESS_MODE).
+            poTransaction.processClosing(ChannelControl.KEEP_OPEN);
+
+            logger.info("= #### End of the Calypso PO processing.");
         } else {
-            logger.error("No PO were detected.");
+            logger.error("The selection of the PO has failed.");
         }
         System.exit(0);
     }

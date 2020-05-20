@@ -22,8 +22,9 @@ import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import java.io.IOException
-import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException
+import org.eclipse.keyple.core.seproxy.exception.KeypleException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode
@@ -188,7 +189,7 @@ class AndroidNfcReaderImplTest {
     }
 
     @Test
-    @Throws(KeypleBaseException::class, IOException::class)
+    @Throws(KeypleException::class, IOException::class)
     fun protocolFlagMatchesTrue() {
         // init
         presentMockTag()
@@ -242,7 +243,7 @@ class AndroidNfcReaderImplTest {
 
     @Test
     fun onTagReceivedException() {
-        every { TagProxy.getTagProxy(tag) } throws KeypleReaderException("")
+        every { TagProxy.getTagProxy(tag) } throws KeypleReaderIOException("")
         reader.onTagDiscovered(tag) // Should not throw an exception
     }
 

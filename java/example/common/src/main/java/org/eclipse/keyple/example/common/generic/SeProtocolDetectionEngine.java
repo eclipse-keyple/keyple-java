@@ -12,16 +12,17 @@
 package org.eclipse.keyple.example.common.generic;
 
 
-
-import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalArgumentException;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
-import org.eclipse.keyple.core.selection.*;
-import org.eclipse.keyple.core.seproxy.*;
+import org.eclipse.keyple.core.selection.AbstractMatchingSe;
+import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /**
  * This code demonstrates the multi-protocols capability of the Keyple SeProxy
@@ -49,7 +50,8 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
         this.poReader = poReader;
     }
 
-    public AbstractDefaultSelectionsRequest prepareSeSelection() {
+    public AbstractDefaultSelectionsRequest prepareSeSelection()
+            throws CalypsoPoIllegalArgumentException {
 
         seSelection = new SeSelection();
 
@@ -64,16 +66,11 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
 
                     PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
                             new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                    new PoSelector.PoAidSelector(
-                                            new SeSelector.AidSelector.IsoAid(HoplinkAID), null),
-                                    "Hoplink selector"));
+                                    new PoSelector.AidSelector(
+                                            new PoSelector.AidSelector.IsoAid(HoplinkAID)),
+                                    PoSelector.InvalidatedPo.REJECT));
 
-                    poSelectionRequest.preparePoCustomReadCmd("Standard Get Data",
-                            ByteArrayUtil.fromHex("FFCA000000"));
-
-                    poSelectionRequest.prepareReadRecordsCmd(SFI_T2Environment,
-                            ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01,
-                            "Hoplink T2 Environment");
+                    poSelectionRequest.prepareReadRecordFile(SFI_T2Environment, 1);
 
                     seSelection.prepareSelection(poSelectionRequest);
 
@@ -90,7 +87,7 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
                     /* Add a generic selector */
                     seSelection.prepareSelection(new GenericSeSelectionRequest(
                             new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                                    new SeSelector.AtrFilter(".*"), null, "Default selector")));
+                                    new SeSelector.AtrFilter(".*"), null)));
                     break;
             }
         }
@@ -103,15 +100,14 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
      * {@link AbstractDefaultSelectionsResponse} showing the APDUs exchanges
      */
     @Override
-    public void processSeMatch(AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
-        SelectionsResult selectionsResult =
-                seSelection.processDefaultSelection(defaultSelectionsResponse);
+    public void processSeMatch(AbstractDefaultSelectionsResponse defaultSelectionsResponse)
+            throws KeypleException {
         /* get the SE that matches one of the two selection targets */
-        AbstractMatchingSe selectedSe = selectionsResult.getActiveSelection().getMatchingSe();
-        if (selectedSe != null) {
-            System.out.println("Selector: " + selectedSe.getSelectionExtraInfo()
-                    + ", selection status = " + selectedSe.isSelected());
+        if (seSelection.processDefaultSelection(defaultSelectionsResponse).hasActiveSelection()) {
+            AbstractMatchingSe selectedSe = seSelection
+                    .processDefaultSelection(defaultSelectionsResponse).getActiveMatchingSe();
         } else {
+            // TODO check this. Shouldn't an exception have been raised before?
             System.out.println("No selection matched!");
         }
     }

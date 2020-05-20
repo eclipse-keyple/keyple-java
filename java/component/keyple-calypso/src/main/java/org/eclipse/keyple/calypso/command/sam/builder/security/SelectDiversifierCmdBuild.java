@@ -13,18 +13,19 @@ package org.eclipse.keyple.calypso.command.sam.builder.security;
 
 
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
-import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommands;
+import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
+import org.eclipse.keyple.calypso.command.sam.parser.security.SelectDiversifierRespPars;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class provides the dedicated constructor to build the SAM Select Diversifier APDU command.
- *
  */
-public class SelectDiversifierCmdBuild extends AbstractSamCommandBuilder {
+public class SelectDiversifierCmdBuild
+        extends AbstractSamCommandBuilder<SelectDiversifierRespPars> {
 
     /** The command. */
-    private static final CalypsoSamCommands command = CalypsoSamCommands.SELECT_DIVERSIFIER;
+    private static final CalypsoSamCommand command = CalypsoSamCommand.SELECT_DIVERSIFIER;
 
     /**
      * Instantiates a new SelectDiversifierCmdBuild.
@@ -32,10 +33,8 @@ public class SelectDiversifierCmdBuild extends AbstractSamCommandBuilder {
      * @param revision the SAM revision
      * @param diversifier the application serial number
      * @throws IllegalArgumentException - if the diversifier is null or has a wrong length
-     * @throws IllegalArgumentException - if the request is inconsistent
      */
-    public SelectDiversifierCmdBuild(SamRevision revision, byte[] diversifier)
-            throws IllegalArgumentException {
+    public SelectDiversifierCmdBuild(SamRevision revision, byte[] diversifier) {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
@@ -43,11 +42,16 @@ public class SelectDiversifierCmdBuild extends AbstractSamCommandBuilder {
         if (diversifier == null || (diversifier.length != 4 && diversifier.length != 8)) {
             throw new IllegalArgumentException("Bad diversifier value!");
         }
+
         byte cla = this.defaultRevision.getClassByte();
         byte p1 = 0x00;
         byte p2 = 0x00;
 
         request = setApduRequest(cla, command, p1, p2, diversifier, null);
+    }
 
+    @Override
+    public SelectDiversifierRespPars createResponseParser(ApduResponse apduResponse) {
+        return new SelectDiversifierRespPars(apduResponse, this);
     }
 }

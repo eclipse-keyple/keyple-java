@@ -12,16 +12,18 @@
 package org.eclipse.keyple.calypso.command.sam.builder.security;
 
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
-import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommands;
+import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
+import org.eclipse.keyple.calypso.command.sam.parser.security.SamWriteKeyRespPars;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
  * Builder for the SAM Write Key APDU command.
  */
-public class SamWriteKeyCmdBuild extends AbstractSamCommandBuilder {
+public class SamWriteKeyCmdBuild extends AbstractSamCommandBuilder<SamWriteKeyRespPars> {
     /** The command reference. */
 
-    private static final CalypsoSamCommands command = CalypsoSamCommands.WRITE_KEY;
+    private static final CalypsoSamCommand command = CalypsoSamCommand.WRITE_KEY;
 
     /**
      * Builder constructor
@@ -43,10 +45,15 @@ public class SamWriteKeyCmdBuild extends AbstractSamCommandBuilder {
             throw new IllegalArgumentException("Key data null!");
         }
 
-        if (keyData.length < 48 && keyData.length > 80) {
+        if (keyData.length < 48 || keyData.length > 80) {
             throw new IllegalArgumentException("Key data should be between 40 and 80 bytes long!");
         }
 
         request = setApduRequest(cla, command, writingMode, keyReference, keyData, null);
+    }
+
+    @Override
+    public SamWriteKeyRespPars createResponseParser(ApduResponse apduResponse) {
+        return new SamWriteKeyRespPars(apduResponse, this);
     }
 }

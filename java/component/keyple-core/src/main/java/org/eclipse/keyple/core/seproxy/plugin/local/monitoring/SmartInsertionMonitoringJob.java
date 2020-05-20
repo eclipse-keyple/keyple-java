@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin.local.monitoring;
 
-import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState;
 import org.eclipse.keyple.core.seproxy.plugin.local.MonitoringJob;
@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * When an SE is present, an internal SE_INSERTED event is fired.
  * <p>
- * If a communication problem with the reader occurs (KeypleIOReaderException) an internal
+ * If a communication problem with the reader occurs (KeypleReaderIOException) an internal
  * STOP_DETECT event is fired.
  */
 public class SmartInsertionMonitoringJob implements MonitoringJob {
@@ -55,7 +55,7 @@ public class SmartInsertionMonitoringJob implements MonitoringJob {
                     if (reader.waitForCardPresent()) {
                         state.onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
                     }
-                } catch (KeypleIOReaderException e) {
+                } catch (KeypleReaderIOException e) {
                     logger.trace(
                             "[{}] waitForCardPresent => Error while polling SE with waitForCardPresent",
                             reader.getName());

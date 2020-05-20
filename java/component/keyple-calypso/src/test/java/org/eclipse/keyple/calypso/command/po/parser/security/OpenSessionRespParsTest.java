@@ -14,6 +14,7 @@ package org.eclipse.keyple.calypso.command.po.parser.security;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
+import org.eclipse.keyple.calypso.command.po.builder.security.AbstractOpenSessionCmdBuild;
 import org.eclipse.keyple.calypso.util.TestsUtilsResponseTabByteGenerator;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
@@ -26,6 +27,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OpenSessionRespParsTest {
+    byte keyIndex = (byte) 0x01;
+    byte[] terminalChallenge = ByteArrayUtil.fromHex("11223344");
 
     private void check(AbstractOpenSessionRespPars resp) {
         Assert.assertTrue(resp.isSuccessful());
@@ -46,7 +49,11 @@ public class OpenSessionRespParsTest {
                 new SelectionStatus(null, responseMockOpenSecureSession, true), apduResponses);
         ApduResponse response = responseMock.getApduResponses().get(0);
 
-        check(AbstractOpenSessionRespPars.create(response, PoRevision.REV2_4));
+        AbstractOpenSessionCmdBuild openSessionCmdBuild = AbstractOpenSessionCmdBuild
+                .create(PoRevision.REV2_4, keyIndex, terminalChallenge, (byte) 0x00, (byte) 0x00);
+        AbstractOpenSessionRespPars abstractOpenSessionRespPars =
+                (AbstractOpenSessionRespPars) openSessionCmdBuild.createResponseParser(response);
+        check(abstractOpenSessionRespPars);
     }
 
     @Test
@@ -63,7 +70,11 @@ public class OpenSessionRespParsTest {
                 new SelectionStatus(null, responseMockOpenSecureSession, true), apduResponses);
         ApduResponse response = responseMock.getApduResponses().get(0);
 
-        check(AbstractOpenSessionRespPars.create(response, PoRevision.REV2_4));
+        AbstractOpenSessionCmdBuild openSessionCmdBuild = AbstractOpenSessionCmdBuild
+                .create(PoRevision.REV2_4, keyIndex, terminalChallenge, (byte) 0x00, (byte) 0x00);
+        AbstractOpenSessionRespPars abstractOpenSessionRespPars =
+                (AbstractOpenSessionRespPars) openSessionCmdBuild.createResponseParser(response);
+        check(abstractOpenSessionRespPars);
     }
 
     @Test
@@ -81,7 +92,11 @@ public class OpenSessionRespParsTest {
                 new SelectionStatus(null, responseMockOpenSecureSession, true), apduResponses);
         ApduResponse response = responseMock.getApduResponses().get(0);
 
-        check(AbstractOpenSessionRespPars.create(response, PoRevision.REV2_4));
+        AbstractOpenSessionCmdBuild openSessionCmdBuild = AbstractOpenSessionCmdBuild
+                .create(PoRevision.REV2_4, keyIndex, terminalChallenge, (byte) 0x00, (byte) 0x00);
+        AbstractOpenSessionRespPars abstractOpenSessionRespPars =
+                (AbstractOpenSessionRespPars) openSessionCmdBuild.createResponseParser(response);
+        check(abstractOpenSessionRespPars);
     }
 
     @Test
@@ -98,7 +113,11 @@ public class OpenSessionRespParsTest {
                 new SelectionStatus(null, responseMockOpenSecureSession, true), apduResponses);
         ApduResponse response = responseMock.getApduResponses().get(0);
 
-        check(AbstractOpenSessionRespPars.create(response, PoRevision.REV2_4));
+        AbstractOpenSessionCmdBuild openSessionCmdBuild = AbstractOpenSessionCmdBuild
+                .create(PoRevision.REV2_4, keyIndex, terminalChallenge, (byte) 0x00, (byte) 0x00);
+        AbstractOpenSessionRespPars abstractOpenSessionRespPars =
+                (AbstractOpenSessionRespPars) openSessionCmdBuild.createResponseParser(response);
+        check(abstractOpenSessionRespPars);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -116,7 +135,11 @@ public class OpenSessionRespParsTest {
                 new SelectionStatus(null, responseMockOpenSecureSession, true), apduResponses);
         ApduResponse response = responseMock.getApduResponses().get(0);
 
-        check(AbstractOpenSessionRespPars.create(response, PoRevision.REV2_4));
+        AbstractOpenSessionCmdBuild openSessionCmdBuild = AbstractOpenSessionCmdBuild
+                .create(PoRevision.REV2_4, keyIndex, terminalChallenge, (byte) 0x00, (byte) 0x00);
+        AbstractOpenSessionRespPars abstractOpenSessionRespPars =
+                (AbstractOpenSessionRespPars) openSessionCmdBuild.createResponseParser(response);
+        check(abstractOpenSessionRespPars);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -134,7 +157,11 @@ public class OpenSessionRespParsTest {
                 new SelectionStatus(null, responseMockOpenSecureSession, true), apduResponses);
         ApduResponse response = responseMock.getApduResponses().get(0);
 
-        check(AbstractOpenSessionRespPars.create(response, PoRevision.REV2_4));
+        AbstractOpenSessionCmdBuild openSessionCmdBuild = AbstractOpenSessionCmdBuild
+                .create(PoRevision.REV2_4, keyIndex, terminalChallenge, (byte) 0x00, (byte) 0x00);
+        AbstractOpenSessionRespPars abstractOpenSessionRespPars =
+                (AbstractOpenSessionRespPars) openSessionCmdBuild.createResponseParser(response);
+        check(abstractOpenSessionRespPars);
     }
 
     @Test
@@ -151,7 +178,11 @@ public class OpenSessionRespParsTest {
                 new SelectionStatus(null, responseMockFci, true), apduResponses);
         ApduResponse response = responseMock.getApduResponses().get(0);
 
-        check(AbstractOpenSessionRespPars.create(response, PoRevision.REV3_1));
+        AbstractOpenSessionCmdBuild openSessionCmdBuild = AbstractOpenSessionCmdBuild
+                .create(PoRevision.REV3_1, keyIndex, terminalChallenge, (byte) 0x00, (byte) 0x00);
+        AbstractOpenSessionRespPars abstractOpenSessionRespPars =
+                (AbstractOpenSessionRespPars) openSessionCmdBuild.createResponseParser(response);
+        check(abstractOpenSessionRespPars);
     }
 
     @Test
@@ -170,7 +201,11 @@ public class OpenSessionRespParsTest {
                 new SelectionStatus(null, responseMockFci, true), apduResponses);
         ApduResponse response = responseMock.getApduResponses().get(0);
 
-        check(AbstractOpenSessionRespPars.create(response, PoRevision.REV3_2));
+        AbstractOpenSessionCmdBuild openSessionCmdBuild = AbstractOpenSessionCmdBuild
+                .create(PoRevision.REV3_2, keyIndex, terminalChallenge, (byte) 0x00, (byte) 0x00);
+        AbstractOpenSessionRespPars abstractOpenSessionRespPars =
+                (AbstractOpenSessionRespPars) openSessionCmdBuild.createResponseParser(response);
+        check(abstractOpenSessionRespPars);
     }
 
 }

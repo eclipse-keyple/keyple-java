@@ -12,19 +12,51 @@
 package org.eclipse.keyple.calypso.command.sam.parser.security;
 
 
+import java.util.HashMap;
+import java.util.Map;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
+import org.eclipse.keyple.calypso.command.sam.builder.security.DigestInitCmdBuild;
+import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamAccessForbiddenException;
+import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCounterOverflowException;
+import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamDataAccessException;
+import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
  * Digest init response parser. See specs: Calypso / page 54 / 7.4.2 - Session MAC computation
  */
 public class DigestInitRespPars extends AbstractSamResponseParser {
+
+    private static final Map<Integer, StatusProperties> STATUS_TABLE;
+
+    static {
+        Map<Integer, StatusProperties> m =
+                new HashMap<Integer, StatusProperties>(AbstractSamResponseParser.STATUS_TABLE);
+        m.put(0x6700,
+                new StatusProperties("Incorrect Lc.", CalypsoSamIllegalParameterException.class));
+        m.put(0x6900, new StatusProperties("An event counter cannot be incremented.",
+                CalypsoSamCounterOverflowException.class));
+        m.put(0x6985, new StatusProperties("Preconditions not satisfied.",
+                CalypsoSamAccessForbiddenException.class));
+        m.put(0x6A00,
+                new StatusProperties("Incorrect P2.", CalypsoSamIllegalParameterException.class));
+        m.put(0x6A83, new StatusProperties("Record not found: signing key not found.",
+                CalypsoSamDataAccessException.class));
+        STATUS_TABLE = m;
+    }
+
+    @Override
+    protected Map<Integer, StatusProperties> getStatusTable() {
+        return STATUS_TABLE;
+    }
+
     /**
      * Instantiates a new DigestInitRespPars.
      *
      * @param response from DigestInitCmdBuild
+     * @param builder the reference to the builder that created this parser
      */
-    public DigestInitRespPars(ApduResponse response) {
-        super(response);
+    public DigestInitRespPars(ApduResponse response, DigestInitCmdBuild builder) {
+        super(response, builder);
     }
 }

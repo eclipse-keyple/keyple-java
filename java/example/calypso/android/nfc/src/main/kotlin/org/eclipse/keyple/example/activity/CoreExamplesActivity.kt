@@ -19,6 +19,7 @@ import kotlinx.android.synthetic.main.activity_core_examples.toolbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.eclipse.keyple.core.command.AbstractApduCommandBuilder
 import org.eclipse.keyple.core.selection.AbstractMatchingSe
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest
 import org.eclipse.keyple.core.selection.SeSelection
@@ -97,9 +98,9 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                     GenericSeSelectionRequest(
                             SeSelector(
                                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                    SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix), null,
+                                    SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix),
                                             SeSelector.AidSelector.FileOccurrence.FIRST,
-                                            SeSelector.AidSelector.FileControlInformation.FCI), "Initial selection #1")))
+                                            SeSelector.AidSelector.FileControlInformation.FCI))))
 
             /* Do the selection and display the result */
             addActionEvent("FIRST MATCH Calypso PO selection for prefix: $seAidPrefix")
@@ -116,9 +117,9 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                     GenericSeSelectionRequest(
                             SeSelector(
                                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                    SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix), null,
+                                    SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix),
                                             SeSelector.AidSelector.FileOccurrence.NEXT,
-                                            SeSelector.AidSelector.FileControlInformation.FCI), "Initial selection #2")))
+                                            SeSelector.AidSelector.FileControlInformation.FCI))))
 
             /* Do the selection and display the result */
             addActionEvent("NEXT MATCH Calypso PO selection for prefix: $seAidPrefix")
@@ -133,13 +134,11 @@ class CoreExamplesActivity : AbstractExampleActivity() {
         try {
             val selectionsResult = seSelection.processExplicitSelection(reader)
             if (selectionsResult.hasActiveSelection()) {
-                with(selectionsResult.getMatchingSelection(0)) {
-                    val matchingSe = this.matchingSe
-                    addResultEvent("Selection status for selection ${this.extraInfo} " +
-                            "(indexed ${this.selectionIndex}): \n\t\t" +
-                            "ATR: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.atr.bytes)}\n\t\t" +
-                            "FCI: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.fci.bytes)}")
-                }
+                    val matchingSe = selectionsResult.activeMatchingSe
+                    addResultEvent("Selection status for selection " +
+                            "(indexed $index): \n\t\t" +
+                            "ATR: ${ByteArrayUtil.toHex(matchingSe.atrBytes)}\n\t\t" +
+                            "FCI: ${ByteArrayUtil.toHex(matchingSe.fciBytes)}")
             } else {
                 addResultEvent("The selection did not match for case $index.")
             }
@@ -166,27 +165,27 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                     GenericSeSelectionRequest(
                             SeSelector(
                                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                    SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix), null,
+                                    SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix),
                                             SeSelector.AidSelector.FileOccurrence.FIRST,
-                                            SeSelector.AidSelector.FileControlInformation.FCI), "Initial selection #1")))
+                                            SeSelector.AidSelector.FileControlInformation.FCI))))
 
             /* next selection (2nd selection, later indexed 1) */
             seSelection.prepareSelection(
                     GenericSeSelectionRequest(
                             SeSelector(
                                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                    SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix), null,
+                                    SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix),
                                             SeSelector.AidSelector.FileOccurrence.NEXT,
-                                            SeSelector.AidSelector.FileControlInformation.FCI), "Initial selection #2")))
+                                            SeSelector.AidSelector.FileControlInformation.FCI))))
 
             /* next selection (3rd selection, later indexed 2) */
             seSelection.prepareSelection(
                     GenericSeSelectionRequest(
                             SeSelector(
                                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                    SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix), null,
+                                    SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix),
                                             SeSelector.AidSelector.FileOccurrence.NEXT,
-                                            SeSelector.AidSelector.FileControlInformation.FCI), "Initial selection #3")))
+                                            SeSelector.AidSelector.FileControlInformation.FCI))))
 
             addActionEvent("Calypso PO selection for prefix: $seAidPrefix")
 
@@ -198,11 +197,11 @@ class CoreExamplesActivity : AbstractExampleActivity() {
 
                 if (selectionResult.matchingSelections.size > 0) {
                     selectionResult.matchingSelections.forEach {
-                        val matchingSe = it.matchingSe
-                        addResultEvent("Selection status for selection ${it.extraInfo} " +
-                                "(indexed ${it.selectionIndex}): \n\t\t" +
-                                "ATR: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.atr.bytes)}\n\t\t" +
-                                "FCI: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.fci.bytes)}")
+                        val matchingSe = it.value
+                        addResultEvent("Selection status for selection " +
+                                "(indexed ${it.key}): \n\t\t" +
+                                "ATR: ${ByteArrayUtil.toHex(matchingSe.atrBytes)}\n\t\t" +
+                                "FCI: ${ByteArrayUtil.toHex(matchingSe.fciBytes)}")
                     }
                     addResultEvent("End of selection")
                 } else {
@@ -243,8 +242,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
         val seSelector = GenericSeSelectionRequest(SeSelector(
                 SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                 SeSelector.AidSelector(
-                        SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(aid)), null),
-                "AID: $aid"))
+                        SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(aid)))))
 
         /*
         * Add the selection case to the current selection (we could have added other cases here)
@@ -267,10 +265,10 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                     when (event?.eventType) {
                         ReaderEvent.EventType.SE_MATCHED -> {
                             addResultEvent("SE_MATCHED event: A SE corresponding to request has been detected")
-                            val selectedSe = seSelection.processDefaultSelection(event.defaultSelectionsResponse).activeSelection.matchingSe
+                            val selectedSe = seSelection.processDefaultSelection(event.defaultSelectionsResponse).activeMatchingSe
                             if (selectedSe != null) {
                                 addResultEvent("Observer notification: the selection of the SE has succeeded. End of the SE processing.")
-                                addResultEvent("Application FCI = ${ByteArrayUtil.toHex(selectedSe.selectionStatus.fci.bytes)}")
+                                addResultEvent("Application FCI = ${ByteArrayUtil.toHex(selectedSe.fciBytes)}")
                             } else {
                                 addResultEvent("The selection of the SE has failed. Should not have occurred due to the MATCHED_ONLY selection mode.")
                             }
@@ -336,8 +334,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                     SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
                             null,
                             SeSelector.AidSelector(
-                                    SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(aid)), null),
-                            "AID: $aid"))
+                                    SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(aid)))))
 
             /**
              * Prepare Selection
@@ -360,9 +357,9 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                 val selectionsResult = seSelection.processExplicitSelection(reader)
 
                 if (selectionsResult.hasActiveSelection()) {
-                    val matchedSe = selectionsResult.activeSelection.matchingSe
+                    val matchedSe = selectionsResult.activeMatchingSe
                     addResultEvent("The selection of the SE has succeeded.")
-                    addResultEvent("Application FCI = ${ByteArrayUtil.toHex(matchedSe.selectionStatus.fci.bytes)}")
+                    addResultEvent("Application FCI = ${ByteArrayUtil.toHex(matchedSe.fciBytes)}")
                     addResultEvent("End of the generic SE processing.")
                 } else {
                     addResultEvent("The selection of the SE has failed.")
@@ -386,16 +383,15 @@ class CoreExamplesActivity : AbstractExampleActivity() {
     /**
      * Create a new class extending AbstractSeSelectionRequest
      */
-    inner class GenericSeSelectionRequest(seSelector: SeSelector) : AbstractSeSelectionRequest(seSelector) {
+    inner class GenericSeSelectionRequest(seSelector: SeSelector) : AbstractSeSelectionRequest<AbstractApduCommandBuilder>(seSelector) {
         private var transmissionMode: TransmissionMode = seSelector.seProtocol.transmissionMode
 
         override fun parse(seResponse: SeResponse): AbstractMatchingSe {
             class GenericMatchingSe(
                 selectionResponse: SeResponse,
-                transmissionMode: TransmissionMode,
-                extraInfo: String
-            ) : AbstractMatchingSe(selectionResponse, transmissionMode, extraInfo)
-            return GenericMatchingSe(seResponse, transmissionMode, "Generic Matching SE")
+                transmissionMode: TransmissionMode
+            ) : AbstractMatchingSe(selectionResponse, transmissionMode)
+            return GenericMatchingSe(seResponse, transmissionMode)
         }
     }
 }

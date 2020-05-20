@@ -14,8 +14,7 @@ package org.eclipse.keyple.example.calypso.android.omapi.activity
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_calypso_example.eventRecyclerView
 import kotlinx.android.synthetic.main.activity_calypso_example.toolbar
-import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure
-import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars
+import org.eclipse.keyple.calypso.transaction.CalypsoPo
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest
 import org.eclipse.keyple.calypso.transaction.PoSelector
 import org.eclipse.keyple.core.selection.SeSelection
@@ -62,10 +61,9 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                      */
                     val poSelectionRequest = PoSelectionRequest(
                             PoSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
-                                    PoSelector.PoAidSelector(
-                                            SeSelector.AidSelector.IsoAid(poAid),
-                                            PoSelector.InvalidatedPo.REJECT),
-                                    "AID: $poAid"))
+                                    SeSelector.AidSelector(
+                                            SeSelector.AidSelector.IsoAid(poAid)),
+                                            PoSelector.InvalidatedPo.REJECT))
                     seSelection.prepareSelection(poSelectionRequest)
 
                     try {
@@ -76,9 +74,9 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                          * Check if PO has been selected successfuly
                          */
                         if (selectionsResult.hasActiveSelection()) {
-                            val matchedSe = selectionsResult.activeSelection.matchingSe
+                            val matchedSe = selectionsResult.activeMatchingSe
                             addResultEvent("The selection of the SE has succeeded.")
-                            addResultEvent("Application FCI = ${ByteArrayUtil.toHex(matchedSe.selectionStatus.fci.bytes)}")
+                            addResultEvent("Application FCI = ${ByteArrayUtil.toHex(matchedSe.fciBytes)}")
                         } else {
                             addResultEvent("The selection of the PO Failed")
                         }
@@ -121,24 +119,19 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                     val seSelection = SeSelection()
                     val poSelectionRequest = PoSelectionRequest(
                             PoSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
-                                    PoSelector.PoAidSelector(
-                                            SeSelector.AidSelector.IsoAid(poAid),
-                                            PoSelector.InvalidatedPo.REJECT),
-                                    "AID: $poAid"))
+                                    SeSelector.AidSelector(
+                                            SeSelector.AidSelector.IsoAid(poAid)),
+                                            PoSelector.InvalidatedPo.REJECT))
 
                     /*
                      * Prepare the reading order and keep the associated parser for later use once
                      * the selection has been made.
                      */
-                    val readEnvironmentParserIndex = poSelectionRequest.prepareReadRecordsCmd(
-                            sfiNavigoEFEnvironment, ReadDataStructure.SINGLE_RECORD_DATA,
-                            1.toByte(), 29, String.format("Navigo2013 EF environment (SFI=%02X)",
-                            sfiNavigoEFEnvironment))
+                    poSelectionRequest.prepareReadRecordFile(
+                            sfiNavigoEFEnvironment, 1)
 
-                    val readTransportEventParserIndex = poSelectionRequest.prepareReadRecordsCmd(
-                            sfiNavigoEFTransportEvent, ReadDataStructure.SINGLE_RECORD_DATA,
-                            1.toByte(), 29, String.format("Navigo2013 EF TransportEvent (SFI=%02X)",
-                            sfiNavigoEFTransportEvent))
+                    poSelectionRequest.prepareReadRecordFile(
+                            sfiNavigoEFTransportEvent, 1)
 
                     /*
                      * Add the selection case to the current selection (we could have added other
@@ -157,30 +150,15 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                         val selectionsResult = seSelection.processExplicitSelection(seReader)
 
                         if (selectionsResult.hasActiveSelection()) {
-                            val matchingSelection = selectionsResult.activeSelection
+                            val calypsoPo = selectionsResult.activeMatchingSe as CalypsoPo
 
-                            // val calypsoPo = matchingSelection.matchingSe as CalypsoPo
                             addResultEvent("Selection succeeded for P0 with aid $poAid")
 
-                            val readEnvironmentParser = matchingSelection
-                                    .getResponseParser(readEnvironmentParserIndex) as ReadRecordsRespPars
-
-                            /*
-                             * Retrieve the data read from the parser updated during the selection
-                             * process (Environment)
-                             */
-                            val environmentAndHolder = readEnvironmentParser.records[1]
+                            val environmentAndHolder = calypsoPo.getFileBySfi(sfiNavigoEFEnvironment).data.content
                             addResultEvent("Environment file data: ${ByteArrayUtil.toHex(environmentAndHolder)}")
 
-                            val readTransportEventParser = matchingSelection
-                                    .getResponseParser(readTransportEventParserIndex) as ReadRecordsRespPars
-
-                            /*
-                             * Retrieve the data read from the parser updated during the selection
-                             * process (Usage)
-                             */
-                            val transportEvents = readTransportEventParser.records[1]
-                            addResultEvent("Transport Event file data: ${ByteArrayUtil.toHex(transportEvents)}")
+                            val transportEvent = calypsoPo.getFileBySfi(sfiNavigoEFTransportEvent).data.content
+                            addResultEvent("Transport Event file data: ${ByteArrayUtil.toHex(transportEvent)}")
                         } else {
                             addResultEvent("The selection of the PO Failed")
                         }
@@ -216,24 +194,18 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                      */
                     val poSelectionRequest = PoSelectionRequest(
                             PoSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
-                                    PoSelector.PoAidSelector(
-                                            SeSelector.AidSelector.IsoAid(poAid),
-                                            PoSelector.InvalidatedPo.REJECT),
-                                    "AID: $poAid"))
+                                    SeSelector.AidSelector(
+                                            SeSelector.AidSelector.IsoAid(poAid)),
+                                    PoSelector.InvalidatedPo.REJECT))
 
                     /*
                      * Prepare the reading order and keep the associated parser for later use once
                      * the selection has been made.
                      */
-                    val readEnvironmentParserIndex = poSelectionRequest.prepareReadRecordsCmd(
-                            sfiHoplinkEFEnvironment, ReadDataStructure.SINGLE_RECORD_DATA,
-                            1.toByte(), 32, String.format("Hoplink EF T2Environment (SFI=%02X)",
-                            sfiHoplinkEFEnvironment))
+                    poSelectionRequest.prepareReadRecordFile(sfiHoplinkEFEnvironment, 1)
 
-                    val readUsageParserIndex = poSelectionRequest.prepareReadRecordsCmd(
-                            sfiHoplinkEFUsage, ReadDataStructure.SINGLE_RECORD_DATA,
-                            1.toByte(), 48, String.format("Hoplink EF T2Usage (SFI=%02X)",
-                            sfiHoplinkEFUsage))
+                    poSelectionRequest.prepareReadRecordFile(
+                            sfiHoplinkEFUsage, 1)
 
                     /*
                      * Add the selection case to the current selection (we could have added other
@@ -251,30 +223,16 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                         val selectionsResult = seSelection.processExplicitSelection(seReader)
 
                         if (selectionsResult.hasActiveSelection()) {
-                            val matchingSelection = selectionsResult.activeSelection
+                            val calypsoPo = selectionsResult.activeMatchingSe as CalypsoPo
 
                             // val calypsoPo = matchingSelection.matchingSe as CalypsoPo
                             addResultEvent("Selection succeeded for P0 with aid $poAid")
 
-                            val readEnvironmentParser = matchingSelection
-                                    .getResponseParser(readEnvironmentParserIndex) as ReadRecordsRespPars
-
-                            /*
-                             * Retrieve the data read from the parser updated during the selection
-                             * process (Environment)
-                             */
-                            val environmentAndHolder = readEnvironmentParser.records[1]
+                            val environmentAndHolder = calypsoPo.getFileBySfi(sfiHoplinkEFEnvironment).data.content
                             addResultEvent("Environment file data: ${ByteArrayUtil.toHex(environmentAndHolder)}")
 
-                            val readUsageParser = matchingSelection
-                                    .getResponseParser(readUsageParserIndex) as ReadRecordsRespPars
-
-                            /*
-                             * Retrieve the data read from the parser updated during the selection
-                             * process (Usage)
-                             */
-                            val transportEvents = readUsageParser.records[1]
-                            addResultEvent("Transport Event file data: ${ByteArrayUtil.toHex(transportEvents)}")
+                            val usage = calypsoPo.getFileBySfi(sfiHoplinkEFUsage).data.content
+                            addResultEvent("Environment file data: ${ByteArrayUtil.toHex(usage)}")
                         } else {
                             addResultEvent("The selection of the PO Failed")
                         }

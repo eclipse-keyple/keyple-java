@@ -24,8 +24,9 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
@@ -223,7 +224,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                 byte[] fci = null;
                 try {
                     fci = hoplinkSE().processApdu(selectApplicationCommand);
-                } catch (KeypleIOReaderException e) {
+                } catch (KeypleReaderIOException e) {
                     e.printStackTrace();
                 }
 
@@ -246,8 +247,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
         GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
                 new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid), null),
-                        "AID: " + poAid));
+                        new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid))));
 
         seSelection.prepareSelection(genericSeSelectionRequest);
 
@@ -297,8 +297,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
         GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
                 new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid), null),
-                        "AID: " + poAid));
+                        new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid))));
 
         seSelection.prepareSelection(genericSeSelectionRequest);
 
@@ -359,8 +358,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
         GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
                 new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid), null),
-                        "AID: " + poAid));
+                        new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid))));
 
         seSelection.prepareSelection(genericSeSelectionRequest);
 
@@ -396,23 +394,27 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                 new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
         GenericSeSelectionRequest genericSeSelectionRequest =
                 new GenericSeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                        new SeSelector.AtrFilter("3B.*"), null, "Test " + "ATR"));
+                        new SeSelector.AtrFilter("3B.*"), null));
 
         /* Prepare selector, ignore AbstractMatchingSe here */
         seSelection.prepareSelection(genericSeSelectionRequest);
 
         logger.info("Process explicit SE Selection");
 
-        SelectionsResult selectionsResult = seSelection.processExplicitSelection(virtualReader);
+        SelectionsResult selectionsResult = null;
+        try {
+            selectionsResult = seSelection.processExplicitSelection(virtualReader);
+        } catch (KeypleException e) {
+            Assert.fail("Unexpected exception");
+        }
 
         logger.info("Explicit SE Selection result : {}", selectionsResult);
 
-        AbstractMatchingSe matchingSe = selectionsResult.getActiveSelection().getMatchingSe();
+        AbstractMatchingSe matchingSe = selectionsResult.getActiveMatchingSe();
 
         nativeReader.removeSe();
 
         Assert.assertNotNull(matchingSe);
-        Assert.assertTrue(matchingSe.isSelected());
     }
 
     @Test
@@ -432,7 +434,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                         ChannelControl.KEEP_OPEN);
                 GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
                         new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                                new SeSelector.AtrFilter("3B.*"), null, "Test " + "ATR"));
+                                new SeSelector.AtrFilter("3B.*"), null));
 
                 /* Prepare selector, ignore AbstractMatchingSe here */
                 seSelection.prepareSelection(genericSeSelectionRequest);
@@ -444,17 +446,17 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                     selectionsResult = seSelection.processExplicitSelection(virtualReader);
 
                 } catch (KeypleReaderException e) {
-                    e.printStackTrace();
+                    Assert.fail("Unexpected exception");
+                } catch (KeypleException e) {
+                    Assert.fail("Unexpected exception");
                 }
 
                 logger.info("Explicit SE Selection result : {}", selectionsResult);
 
-                AbstractMatchingSe matchingSe =
-                        selectionsResult.getActiveSelection().getMatchingSe();
+                AbstractMatchingSe matchingSe = selectionsResult.getActiveMatchingSe();
 
 
                 Assert.assertNotNull(matchingSe);
-                Assert.assertTrue(matchingSe.isSelected());
 
                 // unlock thread
                 lock.countDown();
@@ -501,11 +503,11 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         protected AbstractMatchingSe parse(SeResponse seResponse) {
             class GenericMatchingSe extends AbstractMatchingSe {
                 public GenericMatchingSe(SeResponse selectionResponse,
-                        TransmissionMode transmissionMode, String extraInfo) {
-                    super(selectionResponse, transmissionMode, extraInfo);
+                        TransmissionMode transmissionMode) {
+                    super(selectionResponse, transmissionMode);
                 }
             }
-            return new GenericMatchingSe(seResponse, transmissionMode, "Generic Matching SE");
+            return new GenericMatchingSe(seResponse, transmissionMode);
         }
     }
 

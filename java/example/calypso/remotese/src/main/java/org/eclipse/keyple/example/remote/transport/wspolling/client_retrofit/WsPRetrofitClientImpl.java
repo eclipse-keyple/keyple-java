@@ -16,7 +16,7 @@ import java.net.SocketTimeoutException;
 import java.util.Observable;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.example.remote.transport.wspolling.WsPTransportDTO;
-import org.eclipse.keyple.plugin.remotese.transport.*;
+import org.eclipse.keyple.plugin.remotese.transport.DtoHandler;
 import org.eclipse.keyple.plugin.remotese.transport.factory.ClientNode;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;

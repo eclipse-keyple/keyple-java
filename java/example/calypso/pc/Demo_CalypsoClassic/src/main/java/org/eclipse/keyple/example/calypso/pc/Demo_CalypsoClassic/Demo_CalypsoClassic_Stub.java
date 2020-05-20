@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.calypso.pc.Demo_CalypsoClassic;
 
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalArgumentException;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -21,7 +22,11 @@ import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoClassicTransactionEngine;
 import org.eclipse.keyple.example.common.calypso.stub.StubCalypsoClassic;
 import org.eclipse.keyple.example.common.calypso.stub.StubSamCalypsoClassic;
-import org.eclipse.keyple.plugin.stub.*;
+import org.eclipse.keyple.plugin.stub.StubPlugin;
+import org.eclipse.keyple.plugin.stub.StubPluginFactory;
+import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
+import org.eclipse.keyple.plugin.stub.StubReader;
+import org.eclipse.keyple.plugin.stub.StubSecureElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,8 +38,9 @@ public class Demo_CalypsoClassic_Stub {
      * @param args the program arguments
      * @throws InterruptedException thread exception
      */
-    public static void main(String[] args) throws InterruptedException,
-            KeyplePluginNotFoundException, KeyplePluginInstantiationException {
+    public static void main(String[] args)
+            throws InterruptedException, KeyplePluginNotFoundException,
+            KeyplePluginInstantiationException, CalypsoPoIllegalArgumentException {
         final Logger logger = LoggerFactory.getLogger(Demo_CalypsoClassic_Stub.class);
 
         /* Get the instance of the SeProxyService (Singleton pattern) */

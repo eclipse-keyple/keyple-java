@@ -11,19 +11,27 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.remote.application;
 
-import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
-import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
+import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException;
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
-import org.eclipse.keyple.calypso.transaction.*;
-import org.eclipse.keyple.core.selection.MatchingSelection;
+import org.eclipse.keyple.calypso.transaction.CalypsoPo;
+import org.eclipse.keyple.calypso.transaction.ElementaryFile;
+import org.eclipse.keyple.calypso.transaction.PoResource;
+import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.calypso.transaction.SamIdentifier;
+import org.eclipse.keyple.calypso.transaction.SamResource;
+import org.eclipse.keyple.calypso.transaction.SamResourceManager;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
@@ -38,10 +46,10 @@ import org.slf4j.LoggerFactory;
 public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver {
     private static final Logger logger = LoggerFactory.getLogger(PoVirtualReaderObserver.class);
 
-    final private MasterAPI masterAPI;
-    final private String nodeId;// for logging purposes
-    final private SeSelection seSelection;
-    final private SamResourceManager samResourceManager;
+    private final MasterAPI masterAPI;
+    private final String nodeId;// for logging purposes
+    private final SeSelection seSelection;
+    private final SamResourceManager samResourceManager;
 
 
     /**
@@ -68,9 +76,14 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
         switch (event.getEventType()) {
 
             case SE_MATCHED:
-                MatchingSelection matchingSelection =
-                        seSelection.processDefaultSelection(event.getDefaultSelectionsResponse())
-                                .getActiveSelection();
+                CalypsoPo calypsoPo = null;
+                try {
+                    calypsoPo = (CalypsoPo) seSelection
+                            .processDefaultSelection(event.getDefaultSelectionsResponse())
+                            .getActiveMatchingSe();
+                } catch (KeypleException e) {
+                    logger.error("Keyple Exception: {}", e.getMessage());
+                }
 
                 // retrieve PO virtual reader
                 SeReader poReader = null;
@@ -79,8 +92,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
                     poReader = masterAPI.getPlugin().getReader(event.getReaderName());
 
                     // create a Po Resource
-                    PoResource poResource =
-                            new PoResource(poReader, (CalypsoPo) matchingSelection.getMatchingSe());
+                    PoResource poResource = new PoResource(poReader, calypsoPo);
 
                     // PO has matched
                     // executeReadEventLog(poResource);
@@ -93,20 +105,20 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
                             new SamIdentifier(SamRevision.AUTO, ".*", ""));
 
                     if (samResource == null) {
-                        throw new KeypleReaderException(
+                        throw new KeypleReaderIOException(
                                 "No Sam resources available during the timeout");
                     }
 
                     executeCalypso4_PoAuthentication(poResource, samResource);
 
                 } catch (KeypleReaderNotFoundException e) {
-                    e.printStackTrace();
+                    logger.error("Reader not found exception: {}", e.getMessage());
                 } catch (KeypleReaderException e) {
-                    e.printStackTrace();
+                    logger.error("Reader exception: {}", e.getMessage());
                 } catch (CalypsoNoSamResourceAvailableException e) {
-                    e.printStackTrace();
+                    logger.error("SAM resource not available {}", e.getMessage());
                 } catch (KeypleAllocationReaderException e) {
-                    e.printStackTrace();
+                    logger.error("SAM resource allocation error exception {}", e.getMessage());
                 } finally {
                     /**
                      * Release SamResource
@@ -160,36 +172,35 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
             PoTransaction poTransaction = new PoTransaction(poResource);
 
             /*
-             * Prepare the reading order and keep the associated parser for later use once the
-             * transaction has been processed.
+             * Prepare the reading order.
              */
-            int readEventLogParserIndex = poTransaction.prepareReadRecordsCmd(
-                    CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
-                    CalypsoClassicInfo.RECORD_NUMBER_1,
-                    String.format("EventLog (SFI=%02X, recnbr=%d))",
-                            CalypsoClassicInfo.SFI_EventLog, CalypsoClassicInfo.RECORD_NUMBER_1));
+            poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_EventLog,
+                    CalypsoClassicInfo.RECORD_NUMBER_1);
 
             /*
              * Actual PO communication: send the prepared read order, then close the channel with
              * the PO
              */
 
-            if (poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER)) {
-                logger.info("{} The reading of the EventLog has succeeded.", nodeId);
+            poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER);
 
-                /*
-                 * Retrieve the data read from the parser updated during the transaction process
-                 */
-                ReadRecordsRespPars readEventLogParser = (ReadRecordsRespPars) poTransaction
-                        .getResponseParser(readEventLogParserIndex);
-                byte eventLog[] = (readEventLogParser.getRecords())
-                        .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
+            logger.info("{} The reading of the EventLog has succeeded.", nodeId);
 
-                /* Log the result */
-                logger.info("{} EventLog file data: {} ", nodeId, ByteArrayUtil.toHex(eventLog));
-            }
-        } catch (KeypleReaderException e) {
-            e.printStackTrace();
+            /*
+             * Retrieve the data read from the CalyspoPo updated during the transaction process
+             */
+            ElementaryFile efEventLog =
+                    poResource.getMatchingSe().getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+            String eventLog = ByteArrayUtil.toHex(efEventLog.getData().getContent());
+
+            /* Log the result */
+            logger.info("{} EventLog file data: {} ", nodeId, eventLog);
+
+        } catch (CalypsoPoCommandException e) {
+            logger.error("PO command {} failed with the status code 0x{}. {}", e.getCommand(),
+                    Integer.toHexString(e.getStatusCode() & 0xFFFF).toUpperCase(), e.getMessage());
+        } catch (CalypsoPoTransactionException e) {
+            logger.error("CalypsoPoTransactionException: {}", e.getMessage());
         }
         logger.warn(
                 "==================================================================================");
@@ -200,10 +211,9 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
                 "==================================================================================");
     }
 
-
     /**
      * Performs a PO Authenticated transaction with an explicit selection
-     * 
+     *
      * @param samResource : Required SAM Resource to execute this transaction
      * @param poResource : Reference to the matching PO embeeded in a PoResource
      */
@@ -214,7 +224,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
             logger.warn(
                     "==================================================================================");
             logger.warn(
-                    "= 2nd PO exchange: open and close a secure session to perform authentication.    =");
+                    "= 2nd PO exchange: open and close a secure session to perform authentication.");
             logger.warn(
                     "==================================================================================");
 
@@ -224,15 +234,10 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
             /*
              * Open Session for the debit key
              */
-            boolean poProcessStatus =
-                    poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
-                            PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0, (byte) 0);
+            poTransaction
+                    .processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT);
 
-            if (!poProcessStatus) {
-                throw new IllegalStateException("processingOpening failure.");
-            }
-
-            if (!poTransaction.wasRatified()) {
+            if (!poResource.getMatchingSe().isDfRatified()) {
                 logger.warn(
                         "========= Previous Secure Session was not ratified. =====================");
             }
@@ -240,27 +245,17 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
              * Prepare the reading order and keep the associated parser for later use once the
              * transaction has been processed.
              */
-            int readEventLogParserIndex = poTransaction.prepareReadRecordsCmd(
-                    CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
-                    CalypsoClassicInfo.RECORD_NUMBER_1,
-                    String.format("EventLog (SFI=%02X, recnbr=%d))",
-                            CalypsoClassicInfo.SFI_EventLog, CalypsoClassicInfo.RECORD_NUMBER_1));
-
-            poProcessStatus = poTransaction.processPoCommandsInSession();
+            poTransaction.processPoCommandsInSession();
 
             /*
-             * Retrieve the data read from the parser updated during the transaction process
+             * Retrieve the data read from the CalyspoPo updated during the transaction process
              */
-            byte eventLog[] = (((ReadRecordsRespPars) poTransaction
-                    .getResponseParser(readEventLogParserIndex)).getRecords())
-                            .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
+            ElementaryFile efEventLog =
+                    poResource.getMatchingSe().getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+            String eventLog = ByteArrayUtil.toHex(efEventLog.getData().getContent());
 
             /* Log the result */
-            logger.info("EventLog file data: {}", ByteArrayUtil.toHex(eventLog));
-
-            if (!poProcessStatus) {
-                throw new IllegalStateException("processPoCommandsInSession failure.");
-            }
+            logger.info("EventLog file data: {}", eventLog);
 
             /*
              * Close the Secure Session.
@@ -273,22 +268,22 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
             /*
              * A ratification command will be sent (CONTACTLESS_MODE).
              */
-            poProcessStatus = poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
-
-            if (!poProcessStatus) {
-                throw new IllegalStateException("processClosing failure.");
-            }
+            poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
 
             logger.warn(
                     "==================================================================================");
-            logger.warn(
-                    "= End of the Calypso PO processing.                                              =");
+            logger.warn("= End of the Calypso PO processing.");
             logger.warn(
                     "==================================================================================");
 
-        } catch (KeypleReaderException e) {
-            e.printStackTrace();
+        } catch (CalypsoPoTransactionException e) {
+            logger.error("CalypsoPoTransactionException: {}", e.getMessage());
+        } catch (CalypsoSamCommandException e) {
+            logger.error("SAM command {} failed with the status code 0x{}. {}", e.getCommand(),
+                    Integer.toHexString(e.getStatusCode() & 0xFFFF), e.getMessage());
+        } catch (CalypsoPoCommandException e) {
+            logger.error("PO command {} failed with the status code 0x{}. {}", e.getCommand(),
+                    Integer.toHexString(e.getStatusCode() & 0xFFFF), e.getMessage());
         }
     }
-
 }

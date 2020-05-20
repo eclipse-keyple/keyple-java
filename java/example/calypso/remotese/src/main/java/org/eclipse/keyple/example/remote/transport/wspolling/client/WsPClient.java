@@ -19,7 +19,7 @@ import java.net.URL;
 import java.util.Scanner;
 import org.eclipse.keyple.example.remote.transport.wspolling.WsPTransportDTO;
 import org.eclipse.keyple.example.remote.transport.wspolling.client_retrofit.WsPollingFactory;
-import org.eclipse.keyple.plugin.remotese.transport.*;
+import org.eclipse.keyple.plugin.remotese.transport.DtoHandler;
 import org.eclipse.keyple.plugin.remotese.transport.factory.ClientNode;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;

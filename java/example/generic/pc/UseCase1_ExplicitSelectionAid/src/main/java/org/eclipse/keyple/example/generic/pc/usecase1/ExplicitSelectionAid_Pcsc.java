@@ -12,10 +12,13 @@
 package org.eclipse.keyple.example.generic.pc.usecase1;
 
 
-import java.io.IOException;
-import org.eclipse.keyple.core.selection.*;
-import org.eclipse.keyple.core.seproxy.*;
-import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+
+import org.eclipse.keyple.core.selection.AbstractMatchingSe;
+import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
@@ -45,94 +48,66 @@ import org.slf4j.LoggerFactory;
  * </ul>
  */
 public class ExplicitSelectionAid_Pcsc {
-    protected static final Logger logger = LoggerFactory.getLogger(ExplicitSelectionAid_Pcsc.class);
+    private static final Logger logger = LoggerFactory.getLogger(ExplicitSelectionAid_Pcsc.class);
     private static String seAid = "A0000004040125090101"; /* Here a Calypso AID */
 
 
-    public static void main(String[] args)
-            throws KeypleBaseException, InterruptedException, IOException {
+    public static void main(String[] args) throws KeypleException {
 
-        /* Get the instance of the SeProxyService (Singleton pattern) */
+        // Get the instance of the SeProxyService (Singleton pattern)
         SeProxyService seProxyService = SeProxyService.getInstance();
 
-        /* Assign PcscPlugin to the SeProxyService */
+        // Assign PcscPlugin to the SeProxyService
         seProxyService.registerPlugin(new PcscPluginFactory());
 
-        /*
-         * Get a SE reader ready to work with generic SE. Use the getReader helper method from the
-         * ReaderUtilities class.
-         */
+        // Get a SE reader ready to work with generic SE. Use the getReader helper method from the
+        // ReaderUtilities class.
         SeReader seReader = ReaderUtilities.getDefaultContactLessSeReader();
-
-        /* Check if the reader exists */
-        if (seReader == null) {
-            throw new IllegalStateException("Bad SE reader setup");
-        }
 
         logger.info(
                 "=============== UseCase Generic #1: AID based explicit selection ==================");
         logger.info("= SE Reader  NAME = {}", seReader.getName());
 
-        /* Check if a SE is present in the reader */
+        // Check if a SE is present in the reader
         if (seReader.isSePresent()) {
 
-            logger.info(
-                    "==================================================================================");
-            logger.info(
-                    "= AID based selection.                                                           =");
-            logger.info(
-                    "==================================================================================");
+            logger.info("= #### AID based selection.");
 
-            /*
-             * Prepare the SE selection
-             */
+            // Prepare the SE selection
             SeSelection seSelection = new SeSelection();
 
-            /*
-             * Setting of an AID based selection (in this example a Calypso REV3 PO)
-             *
-             * Select the first application matching the selection AID whatever the SE communication
-             * protocol keep the logical channel open after the selection
-             */
+            // Setting of an AID based selection (in this example a Calypso REV3 PO)
+            //
+            // Select the first application matching the selection AID whatever the SE communication
+            // protocol keep the logical channel open after the selection
 
-            /*
-             * Generic selection: configures a SeSelector with all the desired attributes to make
-             * the selection and read additional information afterwards
-             */
+            // Generic selection: configures a SeSelector with all the desired attributes to make
+            // the selection and read additional information afterwards
             GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
                     new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                            new SeSelector.AidSelector(
-                                    new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAid)),
-                                    null),
-                            "AID: " + seAid));
+                            new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(
+                                    ByteArrayUtil.fromHex(seAid)))));
 
-            /*
-             * Add the selection case to the current selection (we could have added other cases
-             * here)
-             */
+            // Add the selection case to the current selection (we could have added other cases
+            // here)
             seSelection.prepareSelection(genericSeSelectionRequest);
 
-            /*
-             * Actual SE communication: operate through a single request the SE selection
-             */
-            SelectionsResult selectionsResult = seSelection.processExplicitSelection(seReader);
-            if (selectionsResult.hasActiveSelection()) {
-                AbstractMatchingSe matchedSe =
-                        selectionsResult.getActiveSelection().getMatchingSe();
-                logger.info("The selection of the SE has succeeded.");
-                logger.info("Application FCI = {}", matchedSe.getSelectionStatus().getFci());
-
-                logger.info(
-                        "==================================================================================");
-                logger.info(
-                        "= End of the generic SE processing.                                              =");
-                logger.info(
-                        "==================================================================================");
-            } else {
-                logger.error("The selection of the SE has failed.");
+            // Actual SE communication: operate through a single request the SE selection
+            AbstractMatchingSe matchingSe =
+                    seSelection.processExplicitSelection(seReader).getActiveMatchingSe();
+            logger.info("The selection of the SE has succeeded.");
+            if (matchingSe.hasFci()) {
+                String fci = ByteArrayUtil.toHex(matchingSe.getFciBytes());
+                logger.info("Application FCI = {}", fci);
             }
+            if (matchingSe.hasAtr()) {
+                String atr = ByteArrayUtil.toHex(matchingSe.getAtrBytes());
+                logger.info("Secure Element ATR = {}", atr);
+            }
+
+            logger.info("= #### End of the generic SE processing.");
         } else {
-            logger.error("No SE were detected.");
+            logger.error("The selection of the SE has failed.");
         }
         System.exit(0);
     }

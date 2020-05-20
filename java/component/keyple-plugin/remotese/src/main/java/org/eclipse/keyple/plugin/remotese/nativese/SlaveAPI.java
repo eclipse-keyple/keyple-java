@@ -23,13 +23,15 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.nativese.method.*;
 import org.eclipse.keyple.plugin.remotese.rm.IRemoteMethodExecutor;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTxEngine;
-import org.eclipse.keyple.plugin.remotese.transport.*;
+import org.eclipse.keyple.plugin.remotese.transport.DtoHandler;
+import org.eclipse.keyple.plugin.remotese.transport.DtoNode;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
@@ -274,7 +276,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
             // blocking call
             return connect.execute(rmTxEngine);
         } catch (KeypleRemoteException e) {
-            throw new KeypleReaderException("An error occurred while calling connectReader", e);
+            throw new KeypleReaderIOException("An error occurred while calling connectReader", e);
         }
 
     }
@@ -309,7 +311,8 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
                 logger.trace("Disconnected reader is not observable");
             }
         } catch (KeypleRemoteException e) {
-            throw new KeypleReaderException("An error occurred while calling disconnectReader", e);
+            throw new KeypleReaderIOException("An error occurred while calling disconnectReader",
+                    e);
         } catch (KeypleReaderNotFoundException e) {
             logger.warn("SlaveAPI#disconnectReader() : reader with name was not found",
                     nativeReaderName);

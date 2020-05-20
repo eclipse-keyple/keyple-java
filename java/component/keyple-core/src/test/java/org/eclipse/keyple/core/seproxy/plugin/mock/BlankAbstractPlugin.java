@@ -15,8 +15,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
 
 /**
@@ -29,7 +28,7 @@ public class BlankAbstractPlugin extends AbstractPlugin {
     }
 
     @Override
-    protected SortedSet<SeReader> initNativeReaders() throws KeypleReaderException {
+    protected SortedSet<SeReader> initNativeReaders() throws KeypleReaderIOException {
         return new TreeSet<SeReader>();
     }
 
@@ -40,5 +39,5 @@ public class BlankAbstractPlugin extends AbstractPlugin {
 
     @Override
     public void setParameter(String key, String value)
-            throws IllegalArgumentException, KeypleBaseException {}
+            throws IllegalArgumentException, KeypleReaderIOException {}
 }

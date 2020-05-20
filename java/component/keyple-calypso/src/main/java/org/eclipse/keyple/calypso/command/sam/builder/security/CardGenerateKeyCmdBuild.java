@@ -13,15 +13,17 @@ package org.eclipse.keyple.calypso.command.sam.builder.security;
 
 import org.eclipse.keyple.calypso.KeyReference;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
-import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommands;
+import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
+import org.eclipse.keyple.calypso.command.sam.parser.security.CardGenerateKeyRespPars;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
  * Builder for the SAM Give Random APDU command.
  */
-public class CardGenerateKeyCmdBuild extends AbstractSamCommandBuilder {
+public class CardGenerateKeyCmdBuild extends AbstractSamCommandBuilder<CardGenerateKeyRespPars> {
     /** The command reference. */
-    private static final CalypsoSamCommands command = CalypsoSamCommands.CARD_GENERATE_KEY;
+    private static final CalypsoSamCommand command = CalypsoSamCommand.CARD_GENERATE_KEY;
 
     /**
      * Instantiates a new DigestUpdateCmdBuild and generate the ciphered data for a key ciphered by
@@ -73,5 +75,10 @@ public class CardGenerateKeyCmdBuild extends AbstractSamCommandBuilder {
         }
 
         request = setApduRequest(cla, command, p1, p2, data, null);
+    }
+
+    @Override
+    public CardGenerateKeyRespPars createResponseParser(ApduResponse apduResponse) {
+        return new CardGenerateKeyRespPars(apduResponse, this);
     }
 }

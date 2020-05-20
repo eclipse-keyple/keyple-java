@@ -30,6 +30,7 @@ import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForStartDetect;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.core.util.Configurable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +72,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     /**
      * This constructor should only be called by PcscPlugin PCSC reader parameters are initialized
      * with their default values as defined in setParameter. See
-     * {@link #setParameter(String, String)} for more details
+     * {@link Configurable#setParameter(String, String)} for more details
      *
      * @param pluginName the name of the plugin
      * @param terminal the PC/SC terminal
@@ -99,7 +100,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
             setParameter(SETTING_KEY_PROTOCOL, null);
             setParameter(SETTING_KEY_MODE, null);
             setParameter(SETTING_KEY_DISCONNECT, null);
-        } catch (KeypleBaseException ex) {
+        } catch (KeypleException ex) {
             // can not fail with null value
         }
     }
@@ -140,7 +141,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     }
 
     @Override
-    protected void closePhysicalChannel() throws KeypleChannelControlException {
+    protected void closePhysicalChannel() throws KeypleReaderIOException {
         try {
             if (card != null) {
                 logger.debug("[{}] closePhysicalChannel => closing the channel.", this.getName());
@@ -153,18 +154,18 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
 
             }
         } catch (CardException e) {
-            throw new KeypleChannelControlException("Error while closing physical channel", e);
+            throw new KeypleReaderIOException("Error while closing physical channel", e);
         }
     }
 
     @Override
-    protected boolean checkSePresence() throws KeypleIOReaderException {
+    protected boolean checkSePresence() throws KeypleReaderIOException {
         try {
             return terminal.isCardPresent();
         } catch (CardException e) {
             logger.debug("[{}] Exception occurred in isSePresent. Message: {}", this.getName(),
                     e.getMessage());
-            throw new KeypleIOReaderException("Exception occurred in isSePresent", e);
+            throw new KeypleReaderIOException("Exception occurred in isSePresent", e);
         }
     }
 
@@ -172,7 +173,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
      * Implements from SmartInsertionReader
      */
     @Override
-    public boolean waitForCardPresent() throws KeypleIOReaderException {
+    public boolean waitForCardPresent() throws KeypleReaderIOException {
         logger.debug("[{}] waitForCardPresent => loop with latency of {} ms.", this.getName(),
                 insertLatency);
 
@@ -199,7 +200,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
             // if loop was stopped
             return false;
         } catch (CardException e) {
-            throw new KeypleIOReaderException(
+            throw new KeypleReaderIOException(
                     "[" + this.getName() + "] Exception occurred in waitForCardPresent. "
                             + "Message: " + e.getMessage());
         } catch (Throwable t) {
@@ -226,7 +227,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
      * @return true if the card is removed within the delay
      */
     @Override
-    public boolean waitForCardAbsentNative() throws KeypleIOReaderException {
+    public boolean waitForCardAbsentNative() throws KeypleReaderIOException {
         logger.debug("[{}] waitForCardAbsentNative => loop with latency of {} ms.", this.getName(),
                 removalLatency);
 
@@ -251,7 +252,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
             }
             return false;
         } catch (CardException e) {
-            throw new KeypleIOReaderException(
+            throw new KeypleReaderIOException(
                     "[" + this.getName() + "] Exception occurred in waitForCardAbsentNative. "
                             + "Message: " + e.getMessage());
         } catch (Throwable t) {
@@ -275,24 +276,24 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
      *
      * @param apduIn APDU in buffer
      * @return apduOut buffer
-     * @throws KeypleIOReaderException if the transmission failed
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
-    protected byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
+    protected byte[] transmitApdu(byte[] apduIn) throws KeypleReaderIOException {
         ResponseAPDU apduResponseData;
 
         if (channel != null) {
             try {
                 apduResponseData = channel.transmit(new CommandAPDU(apduIn));
             } catch (CardException e) {
-                throw new KeypleIOReaderException(this.getName() + ":" + e.getMessage());
+                throw new KeypleReaderIOException(this.getName() + ":" + e.getMessage());
             } catch (IllegalArgumentException e) {
                 // card could have been removed prematurely
-                throw new KeypleIOReaderException(this.getName() + ":" + e.getMessage());
+                throw new KeypleReaderIOException(this.getName() + ":" + e.getMessage());
             }
         } else {
             // could occur if the SE was removed
-            throw new KeypleIOReaderException(this.getName() + ": null channel.");
+            throw new KeypleReaderIOException(this.getName() + ": null channel.");
         }
         return apduResponseData.getBytes();
     }
@@ -304,10 +305,10 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
      *
      * @param protocolFlag the protocol flag
      * @return true if the current SE matches the protocol flag
-     * @throws KeypleReaderException if the protocol mask is not found
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
-    protected boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderException {
+    protected boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderIOException {
         boolean result;
         // Test protocolFlag to check if ATR based protocol filtering is required
         if (protocolFlag != null) {
@@ -317,7 +318,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
             // the requestSet will be executed only if the protocol match the requestElement
             String selectionMask = protocolsMap.get(protocolFlag);
             if (selectionMask == null) {
-                throw new KeypleReaderException("Target selector mask not found!", null);
+                throw new KeypleReaderIOException("Target selector mask not found!", null);
             }
             Pattern p = Pattern.compile(selectionMask);
             String atr = ByteArrayUtil.toHex(card.getATR().getBytes());
@@ -371,15 +372,11 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
      *
      * @param name Parameter name
      * @param value Parameter value
-     * @throws KeypleBaseException This method can fail when disabling the exclusive mode as it's
-     *         executed instantly
-     * @throws IllegalArgumentException when parameter is wrong
-     *
-     *
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed,
+     *         when disabling the exclusive mode as it's executed instantly
      */
     @Override
-    public void setParameter(String name, String value)
-            throws IllegalArgumentException, KeypleBaseException {
+    public void setParameter(String name, String value) throws KeypleReaderIOException {
 
         logger.debug("[{}] setParameter => PCSC: Set a parameter. NAME = {}, VALUE = {}",
                 this.getName(), name, value);
@@ -415,7 +412,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                     try {
                         card.endExclusive();
                     } catch (CardException e) {
-                        throw new KeypleReaderException("Couldn't disable exclusive mode", e);
+                        throw new KeypleReaderIOException("Couldn't disable exclusive mode", e);
                     }
                 }
                 cardExclusiveMode = false;
@@ -497,10 +494,10 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
      * In this case be aware that on some platforms (ex. Windows 8+), the exclusivity is granted for
      * a limited time (ex. 5 seconds). After this delay, the card is automatically resetted.
      *
-     * @throws KeypleChannelControlException if a reader error occurs
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
-    protected void openPhysicalChannel() throws KeypleChannelControlException {
+    protected void openPhysicalChannel() throws KeypleReaderIOException {
         // init of the physical SE channel: if not yet established, opening of a new physical
         // channel
         try {
@@ -519,7 +516,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
             }
             this.channel = card.getBasicChannel();
         } catch (CardException e) {
-            throw new KeypleChannelControlException("Error while opening Physical Channel", e);
+            throw new KeypleReaderIOException("Error while opening Physical Channel", e);
         }
     }
 

@@ -13,7 +13,7 @@ package org.eclipse.keyple.plugin.remotese.rm.json;
 
 
 import java.io.IOException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.junit.Test;
@@ -30,7 +30,7 @@ public class KeypleDtoHelperTest {
     @Test
     public void testContainsException() {
 
-        Exception ex = new KeypleReaderException("keyple Reader Exception message",
+        Exception ex = new KeypleReaderIOException("keyple Reader Exception message",
                 new IOException("error io"));
         KeypleDto dtoWithException =
                 KeypleDtoHelper.ExceptionDTO("any", ex, "any", "any", "any", "any", "any", "any");

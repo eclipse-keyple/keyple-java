@@ -15,21 +15,26 @@ import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.command.AbstractIso7816CommandBuilder;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract class for all PO command builders.
  */
-public abstract class AbstractPoCommandBuilder<T extends AbstractApduResponseParser>
+public abstract class AbstractPoCommandBuilder<T extends AbstractPoResponseParser>
         extends AbstractIso7816CommandBuilder {
+
+    /** common logger for all builders */
+    protected static Logger logger = LoggerFactory.getLogger(AbstractPoCommandBuilder.class);
 
     /**
      * Constructor dedicated for the building of referenced Calypso commands
      * 
-     * @param reference a command reference from the Calypso command table
+     * @param commandRef a command reference from the Calypso command table
      * @param request the ApduRequest (the instruction byte will be overwritten)
      */
-    public AbstractPoCommandBuilder(CalypsoPoCommands reference, ApduRequest request) {
-        super(reference, request);
+    public AbstractPoCommandBuilder(CalypsoPoCommand commandRef, ApduRequest request) {
+        super(commandRef, request);
     }
 
     /**
@@ -39,4 +44,21 @@ public abstract class AbstractPoCommandBuilder<T extends AbstractApduResponsePar
      * @return an {@link AbstractApduResponseParser}
      */
     public abstract T createResponseParser(ApduResponse apduResponse);
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CalypsoPoCommand getCommandRef() {
+        return (CalypsoPoCommand) commandRef;
+    }
+
+    /**
+     * Indicates if the session buffer is used when executing this command.
+     * <p>
+     * Allows the management of the overflow of this buffer.
+     *
+     * @return true if this command uses the session buffer
+     */
+    public abstract boolean isSessionBufferUsed();
 }

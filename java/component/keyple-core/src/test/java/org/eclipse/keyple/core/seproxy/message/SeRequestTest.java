@@ -172,9 +172,13 @@ public class SeRequestTest {
          * test is to verify the proper format of the request.
          */
         SeSelector.AidSelector aidSelector = new SeSelector.AidSelector(
-                new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex("AABBCCDDEEFF")),
-                selectionStatusCode);
-        SeSelector seSelector = new SeSelector(getASeProtocol(), null, aidSelector, null);
+                new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex("AABBCCDDEEFF")));
+        if (selectionStatusCode != null) {
+            for (int statusCode : selectionStatusCode) {
+                aidSelector.addSuccessfulStatusCode(statusCode);
+            }
+        }
+        SeSelector seSelector = new SeSelector(getASeProtocol(), null, aidSelector);
         return seSelector;
     }
 

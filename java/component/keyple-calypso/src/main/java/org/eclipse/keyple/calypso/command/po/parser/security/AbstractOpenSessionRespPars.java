@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
+import org.eclipse.keyple.calypso.command.po.builder.security.*;
+import org.eclipse.keyple.calypso.command.po.exception.*;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
@@ -29,23 +31,35 @@ public abstract class AbstractOpenSessionRespPars extends AbstractPoResponsePars
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(AbstractApduResponseParser.STATUS_TABLE);
-        m.put(0x6700, new StatusProperties(false, "Lc value not supported."));
-        m.put(0x6900, new StatusProperties(false, "Transaction Counter is 0"));
-        m.put(0x6981, new StatusProperties(false,
-                "Command forbidden (read requested and current EF is a Binary file)."));
-        m.put(0x6982, new StatusProperties(false,
+        m.put(0x6700, new StatusProperties("Lc value not supported.",
+                CalypsoPoIllegalParameterException.class));
+        m.put(0x6900, new StatusProperties("Transaction Counter is 0",
+                CalypsoPoTerminatedException.class));
+        m.put(0x6981,
+                new StatusProperties(
+                        "Command forbidden (read requested and current EF is a Binary file).",
+                        CalypsoPoDataAccessException.class));
+        m.put(0x6982, new StatusProperties(
                 "Security conditions not fulfilled (PIN code not presented, AES key forbidding the "
-                        + "compatibility mode, encryption required)."));
-        m.put(0x6985, new StatusProperties(false,
-                "Access forbidden (Never access mode, Session already opened)."));
-        m.put(0x6986, new StatusProperties(false,
-                "Command not allowed (read requested and no current EF)."));
-        m.put(0x6A81, new StatusProperties(false, "Wrong key index."));
-        m.put(0x6A82, new StatusProperties(false, "File not found."));
-        m.put(0x6A83,
-                new StatusProperties(false, "Record not found (record index is above NumRec)."));
-        m.put(0x6B00, new StatusProperties(false,
-                "P1 or P2 value not supported (key index incorrect, wrong P2)."));
+                        + "compatibility mode, encryption required).",
+                CalypsoPoSecurityContextException.class));
+        m.put(0x6985,
+                new StatusProperties(
+                        "Access forbidden (Never access mode, Session already opened).",
+                        CalypsoPoAccessForbiddenException.class));
+        m.put(0x6986,
+                new StatusProperties("Command not allowed (read requested and no current EF).",
+                        CalypsoPoDataAccessException.class));
+        m.put(0x6A81,
+                new StatusProperties("Wrong key index.", CalypsoPoIllegalParameterException.class));
+        m.put(0x6A82, new StatusProperties("File not found.", CalypsoPoDataAccessException.class));
+        m.put(0x6A83, new StatusProperties("Record not found (record index is above NumRec).",
+                CalypsoPoDataAccessException.class));
+        m.put(0x6B00,
+                new StatusProperties(
+                        "P1 or P2 value not supported (key index incorrect, wrong P2).",
+                        CalypsoPoIllegalParameterException.class));
+        m.put(0x61FF, new StatusProperties("Correct execution (ISO7816 T=0).", null));
         STATUS_TABLE = m;
     }
 
@@ -55,8 +69,6 @@ public abstract class AbstractOpenSessionRespPars extends AbstractPoResponsePars
         return STATUS_TABLE;
     }
 
-    private final PoRevision revision;
-
     /** The secure session. */
     SecureSession secureSession;
 
@@ -64,25 +76,26 @@ public abstract class AbstractOpenSessionRespPars extends AbstractPoResponsePars
      * Instantiates a new AbstractOpenSessionRespPars.
      *
      * @param response the response from Open secure session APDU command
+     * @param builder the reference to the builder that created this parser
      * @param revision the revision of the PO
      */
-    AbstractOpenSessionRespPars(ApduResponse response, PoRevision revision) {
-        super(response);
-        this.revision = revision;
+    AbstractOpenSessionRespPars(ApduResponse response, AbstractOpenSessionCmdBuild builder,
+            PoRevision revision) {
+        super(response, builder);
         this.secureSession = toSecureSession(response.getDataOut());
     }
 
-    public static AbstractOpenSessionRespPars create(ApduResponse response, PoRevision revision) {
+    public AbstractOpenSessionRespPars create(ApduResponse response, PoRevision revision) {
         switch (revision) {
             case REV1_0:
-                return new OpenSession10RespPars(response);
+                return new OpenSession10RespPars(response, (OpenSession10CmdBuild) builder);
             case REV2_4:
-                return new OpenSession24RespPars(response);
+                return new OpenSession24RespPars(response, (OpenSession24CmdBuild) builder);
             case REV3_1:
             case REV3_1_CLAP:
-                return new OpenSession31RespPars(response);
+                return new OpenSession31RespPars(response, (OpenSession31CmdBuild) builder);
             case REV3_2:
-                return new OpenSession32RespPars(response);
+                return new OpenSession32RespPars(response, (OpenSession32CmdBuild) builder);
             default:
                 throw new IllegalArgumentException("Unknow revision " + revision);
         }

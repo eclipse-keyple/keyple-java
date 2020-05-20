@@ -18,6 +18,8 @@ import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,9 +45,9 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
      * their names (or id)
      *
      * @return connected readers' name list
-     * @throws KeypleReaderException if a reader error occurs
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    protected abstract SortedSet<String> fetchNativeReadersNames() throws KeypleReaderException;
+    protected abstract SortedSet<String> fetchNativeReadersNames() throws KeypleReaderIOException;
 
     /**
      * Fetch connected native reader (from third party library) by its name Returns the current
@@ -54,9 +56,11 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
      *
      * @param name the reader name
      * @return the list of AbstractReader objects.
-     * @throws KeypleReaderException if a reader error occurs
+     * @throws KeypleReaderNotFoundException if the reader was not found by its name
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    protected abstract SeReader fetchNativeReader(String name) throws KeypleReaderException;
+    protected abstract SeReader fetchNativeReader(String name)
+            throws KeypleReaderNotFoundException, KeypleReaderIOException;
 
     /**
      * Add a plugin observer.

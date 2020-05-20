@@ -15,14 +15,16 @@ import java.util.regex.Pattern;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 
-public class ReaderUtilities {
+public final class ReaderUtilities {
+    private ReaderUtilities() {}
+
     /**
      * Get the terminal which names match the expected pattern
      *
@@ -46,10 +48,10 @@ public class ReaderUtilities {
      * Get a fully configured contactless proxy reader
      * 
      * @return the targeted SeReader to do contactless communications
-     * @throws KeypleBaseException in case of an error while retrieving the reader or setting its
+     * @throws KeypleException in case of an error while retrieving the reader or setting its
      *         parameters
      */
-    public static SeReader getDefaultContactLessSeReader() throws KeypleBaseException {
+    public static SeReader getDefaultContactLessSeReader() throws KeypleException {
         SeReader seReader =
                 ReaderUtilities.getReaderByName(PcscReadersSettings.PO_READER_NAME_REGEX);
 
@@ -62,9 +64,9 @@ public class ReaderUtilities {
      * Sets the reader parameters for contactless secure elements
      * 
      * @param reader the reader to configure
-     * @throws KeypleBaseException in case of an error while settings the parameters
+     * @throws KeypleException in case of an error while settings the parameters
      */
-    public static void setContactlessSettings(SeReader reader) throws KeypleBaseException {
+    public static void setContactlessSettings(SeReader reader) throws KeypleException {
         /* Contactless SE works with T1 protocol */
         reader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T1);
 
@@ -92,9 +94,9 @@ public class ReaderUtilities {
      * Sets the reader parameters for contacts secure elements
      *
      * @param reader the reader to configure
-     * @throws KeypleBaseException in case of an error while settings the parameters
+     * @throws KeypleException in case of an error while settings the parameters
      */
-    public static void setContactsSettings(SeReader reader) throws KeypleBaseException {
+    public static void setContactsSettings(SeReader reader) throws KeypleException {
         /* Contactless SE works with T0 protocol */
         reader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
 

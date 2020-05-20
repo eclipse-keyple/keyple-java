@@ -16,6 +16,7 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.slf4j.Logger;
@@ -31,7 +32,7 @@ public abstract class AbstractReaderObserverEngine implements ObservableReader.R
 
 
     protected abstract void processSeMatch(
-            AbstractDefaultSelectionsResponse defaultSelectionsResponse);
+            AbstractDefaultSelectionsResponse defaultSelectionsResponse) throws KeypleException;
 
     protected abstract void processSeInserted(); // alternative AID selection
 
@@ -46,68 +47,78 @@ public abstract class AbstractReaderObserverEngine implements ObservableReader.R
      */
     boolean currentlyProcessingSe = false;
 
+    private void runProcessSeInserted(final ReaderEvent event) {
+        /* Run the PO processing asynchronously in a detach thread */
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                currentlyProcessingSe = true;
+                processSeInserted(); // optional, to process alternative AID selection
+                /**
+                 * Informs the underlying layer of the end of the SE processing, in order to manage
+                 * the removal sequence.
+                 * <p>
+                 * If closing has already been requested, this method will do nothing.
+                 */
+                try {
+                    ((ObservableReader) SeProxyService.getInstance()
+                            .getPlugin(event.getPluginName()).getReader(event.getReaderName()))
+                                    .notifySeProcessed();
+                } catch (KeypleReaderNotFoundException e) {
+                    logger.error("Reader not found exception: {}", e.getMessage());
+                } catch (KeyplePluginNotFoundException e) {
+                    logger.error("Plugin not found exception: {}", e.getMessage());
+                }
+                currentlyProcessingSe = false;
+            }
+        });
+        thread.start();
+    }
+
+    private void runProcessSeMatched(final ReaderEvent event) {
+        /* Run the PO processing asynchronously in a detach thread */
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                currentlyProcessingSe = true;
+                try {
+                    processSeMatch(event.getDefaultSelectionsResponse()); // to process the
+                } catch (KeypleException e) {
+                    logger.error("Keyple exception: {}", e.getMessage());
+                }
+                // selected
+                // application
+                /**
+                 * Informs the underlying layer of the end of the SE processing, in order to manage
+                 * the removal sequence.
+                 * <p>
+                 * If closing has already been requested, this method will do nothing.
+                 */
+                try {
+                    ((ObservableReader) SeProxyService.getInstance()
+                            .getPlugin(event.getPluginName()).getReader(event.getReaderName()))
+                                    .notifySeProcessed();
+                } catch (KeypleReaderNotFoundException e) {
+                    logger.error("Reader not found exception: {}", e.getMessage());
+                } catch (KeyplePluginNotFoundException e) {
+                    logger.error("Plugin not found exception: {}", e.getMessage());
+                }
+                currentlyProcessingSe = false;
+            }
+        });
+        thread.start();
+    }
+
     public void update(final ReaderEvent event) {
         logger.info("New reader event: {}", event.getReaderName());
 
         switch (event.getEventType()) {
-            case SE_INSERTED: {
-                /* Run the PO processing asynchronously in a detach thread */
-                Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        currentlyProcessingSe = true;
-                        processSeInserted(); // optional, to process alternative AID selection
-                        /**
-                         * Informs the underlying layer of the end of the SE processing, in order to
-                         * manage the removal sequence.
-                         * <p>
-                         * If closing has already been requested, this method will do nothing.
-                         */
-                        try {
-                            ((ObservableReader) SeProxyService.getInstance()
-                                    .getPlugin(event.getPluginName())
-                                    .getReader(event.getReaderName())).notifySeProcessed();
-                        } catch (KeypleReaderNotFoundException e) {
-                            e.printStackTrace();
-                        } catch (KeyplePluginNotFoundException e) {
-                            e.printStackTrace();
-                        }
-                        currentlyProcessingSe = false;
-                    }
-                });
-                thread.start();
-            }
+            case SE_INSERTED:
+                runProcessSeInserted(event);
                 break;
 
-            case SE_MATCHED: {
-                /* Run the PO processing asynchronously in a detach thread */
-                Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        currentlyProcessingSe = true;
-                        processSeMatch(event.getDefaultSelectionsResponse()); // to process the
-                                                                              // selected
-                                                                              // application
-                        /**
-                         * Informs the underlying layer of the end of the SE processing, in order to
-                         * manage the removal sequence.
-                         * <p>
-                         * If closing has already been requested, this method will do nothing.
-                         */
-                        try {
-                            ((ObservableReader) SeProxyService.getInstance()
-                                    .getPlugin(event.getPluginName())
-                                    .getReader(event.getReaderName())).notifySeProcessed();
-                        } catch (KeypleReaderNotFoundException e) {
-                            e.printStackTrace();
-                        } catch (KeyplePluginNotFoundException e) {
-                            e.printStackTrace();
-                        }
-                        currentlyProcessingSe = false;
-                    }
-                });
-                thread.start();
-            }
+            case SE_MATCHED:
+                runProcessSeMatched(event);
                 break;
 
             case SE_REMOVED:

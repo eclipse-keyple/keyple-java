@@ -12,7 +12,7 @@
 package org.eclipse.keyple.core.seproxy.plugin.local;
 
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 
 /**
  * Interface implemented by the readers able to handle natively the SE removal process.
@@ -35,10 +35,9 @@ public interface SmartRemovalReader extends ObservableReader {
      * *
      *
      * @return presence status
-     * @throws KeypleIOReaderException in the event of a communication failure with the reader
-     *         (disconnection)
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    boolean waitForCardAbsentNative() throws KeypleIOReaderException;
+    boolean waitForCardAbsentNative() throws KeypleReaderIOException;
 
 
 

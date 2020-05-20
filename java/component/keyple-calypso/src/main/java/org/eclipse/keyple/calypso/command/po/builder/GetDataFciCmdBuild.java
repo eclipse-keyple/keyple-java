@@ -13,7 +13,7 @@ package org.eclipse.keyple.calypso.command.po.builder;
 
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
-import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
+import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
@@ -26,7 +26,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  */
 public final class GetDataFciCmdBuild extends AbstractPoCommandBuilder<GetDataFciRespPars> {
 
-    private static final CalypsoPoCommands command = CalypsoPoCommands.GET_DATA_FCI;
+    private static final CalypsoPoCommand command = CalypsoPoCommand.GET_DATA_FCI;
 
     /**
      * Instantiates a new GetDataFciCmdBuild.
@@ -42,6 +42,17 @@ public final class GetDataFciCmdBuild extends AbstractPoCommandBuilder<GetDataFc
 
     @Override
     public GetDataFciRespPars createResponseParser(ApduResponse apduResponse) {
-        return new GetDataFciRespPars(apduResponse);
+        return new GetDataFciRespPars(apduResponse, this);
+    }
+
+    /**
+     * This command doesn't modify the contents of the PO and therefore doesn't uses the session
+     * buffer.
+     * 
+     * @return false
+     */
+    @Override
+    public boolean isSessionBufferUsed() {
+        return false;
     }
 }

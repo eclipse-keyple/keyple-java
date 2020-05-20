@@ -17,9 +17,7 @@ import org.eclipse.keyple.core.seproxy.AbstractSeProxyComponent;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
@@ -118,12 +116,12 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
      * @param multiSeRequestProcessing the multi SE request processing mode
      * @param channelControl the channel control indicator
      * @return the response set
-     * @throws KeypleReaderException if a reader error occurs
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
     public final List<SeResponse> transmitSet(Set<SeRequest> requestSet,
             MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
-            throws KeypleReaderException {
+            throws KeypleReaderIOException {
         if (requestSet == null) {
             throw new IllegalArgumentException("seRequestSet must not be null");
         }
@@ -143,15 +141,7 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
 
         try {
             responseSet = processSeRequestSet(requestSet, multiSeRequestProcessing, channelControl);
-        } catch (KeypleChannelControlException ex) {
-            long timeStamp = System.nanoTime();
-            double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
-            this.before = timeStamp;
-            logger.debug("[{}] transmit => SEREQUESTSET channel failure. elapsed {}",
-                    this.getName(), elapsedMs);
-            /* Throw an exception with the responses collected so far. */
-            throw ex;
-        } catch (KeypleIOReaderException ex) {
+        } catch (KeypleReaderIOException ex) {
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
@@ -177,11 +167,11 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
      *
      * @param requestSet the request set
      * @return the response set
-     * @throws KeypleReaderException if a reader error occurs
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
     public final List<SeResponse> transmitSet(Set<SeRequest> requestSet)
-            throws KeypleReaderException {
+            throws KeypleReaderIOException {
         return transmitSet(requestSet, MultiSeRequestProcessing.FIRST_MATCH,
                 ChannelControl.KEEP_OPEN);
     }
@@ -195,11 +185,11 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
      * @param multiSeRequestProcessing the multi se processing mode
      * @param channelControl indicates if the channel has to be closed at the end of the processing
      * @return the List of {@link SeResponse} (responses to the Set of {@link SeRequest})
-     * @throws KeypleReaderException if reader error occurs
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     protected abstract List<SeResponse> processSeRequestSet(Set<SeRequest> requestSet,
             MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
-            throws KeypleReaderException;
+            throws KeypleReaderIOException;
 
     /**
      * Execute the transmission of a {@link SeRequest} and returns a {@link SeResponse}
@@ -212,11 +202,11 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
      * @param seRequest the request to be transmitted
      * @param channelControl indicates if the channel has to be closed at the end of the processing
      * @return the received response
-     * @throws KeypleReaderException if a reader error occurs
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
     public final SeResponse transmit(SeRequest seRequest, ChannelControl channelControl)
-            throws KeypleReaderException {
+            throws KeypleReaderIOException {
         if (seRequest == null) {
             throw new IllegalArgumentException("seRequest must not be null");
         }
@@ -236,15 +226,7 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
 
         try {
             seResponse = processSeRequest(seRequest, channelControl);
-        } catch (KeypleChannelControlException ex) {
-            long timeStamp = System.nanoTime();
-            double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
-            this.before = timeStamp;
-            logger.debug("[{}] transmit => SEREQUEST channel failure. elapsed {}", this.getName(),
-                    elapsedMs);
-            /* Throw an exception with the responses collected so far (ex.getSeResponse()). */
-            throw ex;
-        } catch (KeypleIOReaderException ex) {
+        } catch (KeypleReaderIOException ex) {
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
@@ -270,10 +252,10 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
      *
      * @param seRequest the request to be transmitted
      * @return the received response
-     * @throws KeypleReaderException if a reader error occurs
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
-    public final SeResponse transmit(SeRequest seRequest) throws KeypleReaderException {
+    public final SeResponse transmit(SeRequest seRequest) throws KeypleReaderIOException {
         return transmit(seRequest, ChannelControl.KEEP_OPEN);
     }
 
@@ -286,9 +268,9 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
      * @param channelControl a flag indicating if the channel has to be closed after the processing
      *        of the {@link SeRequest}
      * @return the {@link SeResponse} (responses to the {@link SeRequest})
-     * @throws KeypleReaderException if reader error occurs
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     protected abstract SeResponse processSeRequest(SeRequest seRequest,
-            ChannelControl channelControl) throws KeypleReaderException;
+            ChannelControl channelControl) throws KeypleReaderIOException;
 
 }

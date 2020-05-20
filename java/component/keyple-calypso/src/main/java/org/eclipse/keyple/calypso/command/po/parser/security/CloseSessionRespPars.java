@@ -15,6 +15,11 @@ package org.eclipse.keyple.calypso.command.po.parser.security;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
+import org.eclipse.keyple.calypso.command.po.builder.security.CloseSessionCmdBuild;
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoAccessForbiddenException;
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalParameterException;
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoSecurityDataException;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
@@ -22,19 +27,22 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  * Close Secure Session (008E) response parser. See specs: Calypso / page 104 / 9.5.2 - Close Secure
  * Session
  */
-public final class CloseSessionRespPars extends AbstractApduResponseParser {
+public final class CloseSessionRespPars extends AbstractPoResponseParser {
 
     private static final Map<Integer, StatusProperties> STATUS_TABLE;
 
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(AbstractApduResponseParser.STATUS_TABLE);
-        m.put(0x6700, new StatusProperties(false,
-                "Lc signatureLo not supported (e.g. Lc=4 with a Revision 3.2 mode for Open Secure Session)."));
-        m.put(0x6B00, new StatusProperties(false, "P1 or P2 signatureLo not supported."));
-        m.put(0x6988, new StatusProperties(false, "incorrect signatureLo."));
-        m.put(0x6985, new StatusProperties(false, "No session was opened."));
-
+        m.put(0x6700, new StatusProperties(
+                "Lc signatureLo not supported (e.g. Lc=4 with a Revision 3.2 mode for Open Secure Session).",
+                CalypsoPoIllegalParameterException.class));
+        m.put(0x6B00, new StatusProperties("P1 or P2 signatureLo not supported.",
+                CalypsoPoIllegalParameterException.class));
+        m.put(0x6988, new StatusProperties("incorrect signatureLo.",
+                CalypsoPoSecurityDataException.class));
+        m.put(0x6985, new StatusProperties("No session was opened.",
+                CalypsoPoAccessForbiddenException.class));
         STATUS_TABLE = m;
     }
 
@@ -53,9 +61,10 @@ public final class CloseSessionRespPars extends AbstractApduResponseParser {
      * Instantiates a new CloseSessionRespPars from the response.
      *
      * @param response from CloseSessionCmdBuild
+     * @param builder the reference to the builder that created this parser
      */
-    public CloseSessionRespPars(ApduResponse response) {
-        super(response);
+    public CloseSessionRespPars(ApduResponse response, CloseSessionCmdBuild builder) {
+        super(response, builder);
         parse(response.getDataOut());
     }
 

@@ -20,8 +20,8 @@ import java.util.concurrent.CountDownLatch;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.plugin.mock.BlankSmartInsertionTheadedReader;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.After;
@@ -160,7 +160,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
     @Test
     public void isSePresentPing_false() throws Exception {
         r = getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
-        doThrow(new KeypleIOReaderException("ping failed")).when(r).transmitApdu(any(byte[].class));
+        doThrow(new KeypleReaderIOException("ping failed")).when(r).transmitApdu(any(byte[].class));
 
         Assert.assertEquals(false, r.isSePresentPing());
     }
@@ -245,7 +245,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
      * doReturn(true).when(r).processSeInserted();
      * 
      * // Card removed doThrow(new
-     * KeypleIOReaderException("ping failed")).when(r).transmitApdu(any(byte[].class));
+     * KeypleReaderIOException("ping failed")).when(r).transmitApdu(any(byte[].class));
      * 
      * r.addObserver(getObs()); //Thread.sleep(100);
      * r.startSeDetection(ObservableReader.PollingMode.REPEATING); //Thread.sleep(500);
@@ -257,7 +257,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
      * READER_NAME, 1);// present one card once for this test
      * 
      * doReturn(true).when(r).processSeInserted(); // Card removed doThrow(new
-     * KeypleIOReaderException("ping failed")).when(r).transmitApdu(any(byte[].class));
+     * KeypleReaderIOException("ping failed")).when(r).transmitApdu(any(byte[].class));
      * 
      * 
      * r.addObserver(getObs()); Thread.sleep(100);
@@ -273,7 +273,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
      * READER_NAME, 1);// present one card once for this test
      * 
      * doReturn(true).when(r).processSeInserted(); // Card removed doThrow(new
-     * KeypleIOReaderException("ping failed")).when(r).transmitApdu(any(byte[].class));
+     * KeypleReaderIOException("ping failed")).when(r).transmitApdu(any(byte[].class));
      * 
      * 
      * r.addObserver(getObs()); Thread.sleep(100);

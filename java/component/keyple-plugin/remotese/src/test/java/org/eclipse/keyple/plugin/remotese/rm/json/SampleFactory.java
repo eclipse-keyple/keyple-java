@@ -17,21 +17,20 @@ import java.util.*;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 public class SampleFactory {
 
-    public static KeypleBaseException getAStackedKeypleException() {
-        return new KeypleReaderException("Keyple Reader Exception", new IOException("IO Error",
+    public static KeypleReaderIOException getAStackedKeypleException() {
+        return new KeypleReaderIOException("Keyple Reader Exception", new IOException("IO Error",
                 new IOException("IO Error2", new RuntimeException("sdfsdf"))));
     }
 
-    public static KeypleBaseException getASimpleKeypleException() {
-        return new KeypleReaderException("Keyple Reader Exception");
+    public static KeypleReaderIOException getASimpleKeypleException() {
+        return new KeypleReaderIOException("Keyple Reader Exception");
     }
 
     public static AbstractDefaultSelectionsRequest getSelectionRequest() {
@@ -49,7 +48,7 @@ public class SampleFactory {
         poApduRequestList = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
         SeSelector seSelector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid), null), null);
+                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid)));
 
         SeRequest seRequest = new SeRequest(seSelector, poApduRequestList);
 
@@ -85,7 +84,7 @@ public class SampleFactory {
         poApduRequestList = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
         SeSelector seSelector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid), null), null);
+                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid)));
 
         SeRequest seRequest = new SeRequest(seSelector, poApduRequestList);
         return seRequest;
@@ -111,10 +110,10 @@ public class SampleFactory {
         poApduRequestList = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
         SeSelector aidSelector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid), null), null);
+                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid)));
 
         SeSelector atrSelector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3,
-                new SeSelector.AtrFilter("/regex/"), null, null);
+                new SeSelector.AtrFilter("/regex/"), null);
 
         SeRequest seRequest = new SeRequest(aidSelector, poApduRequestList);
 

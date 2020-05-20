@@ -11,13 +11,25 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.exception;
 
-public class KeyplePluginInstantiationException extends KeypleBaseException {
+/**
+ * The exception {@code KeyplePluginInstantiationException} indicates that the plugin cannot be
+ * instantiated, possibly due to a problem with one of the associated readers.
+ */
+public class KeyplePluginInstantiationException extends KeyplePluginException {
 
-
+    /**
+     * @param message the message to identify the exception context
+     */
     public KeyplePluginInstantiationException(String message) {
         super(message);
     }
 
+    /**
+     * Encapsulates a lower level plugin exception
+     *
+     * @param message message to identify the exception context
+     * @param cause the cause
+     */
     public KeyplePluginInstantiationException(String message, Throwable cause) {
         super(message, cause);
     }

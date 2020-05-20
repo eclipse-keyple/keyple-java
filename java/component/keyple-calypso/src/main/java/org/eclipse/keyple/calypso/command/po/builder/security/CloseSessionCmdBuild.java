@@ -14,7 +14,7 @@ package org.eclipse.keyple.calypso.command.po.builder.security;
 
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
-import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
+import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.parser.security.CloseSessionRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -26,7 +26,7 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
 public final class CloseSessionCmdBuild extends AbstractPoCommandBuilder<CloseSessionRespPars> {
 
     /** The command. */
-    private final static CalypsoPoCommands command = CalypsoPoCommands.CLOSE_SESSION;
+    private final static CalypsoPoCommand command = CalypsoPoCommand.CLOSE_SESSION;
 
     /**
      * Instantiates a new CloseSessionCmdBuild depending of the revision of the PO.
@@ -75,6 +75,17 @@ public final class CloseSessionCmdBuild extends AbstractPoCommandBuilder<CloseSe
 
     @Override
     public CloseSessionRespPars createResponseParser(ApduResponse apduResponse) {
-        return new CloseSessionRespPars(apduResponse);
+        return new CloseSessionRespPars(apduResponse, this);
+    }
+
+    /**
+     *
+     * This command can't be executed in session and therefore doesn't uses the session buffer.
+     * 
+     * @return false
+     */
+    @Override
+    public boolean isSessionBufferUsed() {
+        return false;
     }
 }

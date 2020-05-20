@@ -12,14 +12,15 @@
 package org.eclipse.keyple.example.generic.pc.usecase2;
 
 
-import org.eclipse.keyple.core.selection.*;
+import org.eclipse.keyple.core.selection.AbstractMatchingSe;
+import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
@@ -52,7 +53,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  */
 public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
-    protected static final Logger logger =
+    private static final Logger logger =
             LoggerFactory.getLogger(DefaultSelectionNotification_Pcsc.class);
     private String seAid = "A0000004040125090101";
     private SeSelection seSelection;
@@ -63,20 +64,18 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
      */
     private static final Object waitForEnd = new Object();
 
-    public DefaultSelectionNotification_Pcsc() throws KeypleBaseException, InterruptedException {
-        /* Get the instance of the SeProxyService (Singleton pattern) */
+    public DefaultSelectionNotification_Pcsc() throws KeypleException, InterruptedException {
+        // Get the instance of the SeProxyService (Singleton pattern)
         SeProxyService seProxyService = SeProxyService.getInstance();
 
-        /* Assign PcscPlugin to the SeProxyService */
+        // Assign PcscPlugin to the SeProxyService
         seProxyService.registerPlugin(new PcscPluginFactory());
 
-        /*
-         * Get a SE reader ready to work with contactless SE. Use the getReader helper method from
-         * the ReaderUtilities class.
-         */
+        // Get a SE reader ready to work with contactless SE. Use the getReader helper method from
+        // the ReaderUtilities class.
         SeReader seReader = ReaderUtilities.getDefaultContactLessSeReader();
 
-        /* Check if the reader exists */
+        // Check if the reader exists
         if (seReader == null) {
             throw new IllegalStateException("Bad SE reader setup");
         }
@@ -85,53 +84,37 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
                 "=============== UseCase Generic #2: AID based default selection ===================");
         logger.info("= SE Reader  NAME = {}", seReader.getName());
 
-        /*
-         * Prepare a SE selection
-         */
+        // Prepare a SE selection
         seSelection = new SeSelection();
 
-        /*
-         * Setting of an AID based selection
-         *
-         * Select the first application matching the selection AID whatever the SE communication
-         * protocol keep the logical channel open after the selection
-         */
+        // Setting of an AID based selection
+        //
+        // Select the first application matching the selection AID whatever the SE communication
+        // protocol keep the logical channel open after the selection
 
-        /*
-         * Generic selection: configures a SeSelector with all the desired attributes to make the
-         * selection
-         */
-        GenericSeSelectionRequest seSelector = new GenericSeSelectionRequest(new SeSelector(
-                SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                new SeSelector.AidSelector(
-                        new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAid)), null),
-                "AID: " + seAid));
+        // Generic selection: configures a SeSelector with all the desired attributes to make the
+        // selection
+        GenericSeSelectionRequest seSelector =
+                new GenericSeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                        null, new SeSelector.AidSelector(
+                                new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAid)))));
 
-        /*
-         * Add the selection case to the current selection (we could have added other cases here)
-         */
+        // Add the selection case to the current selection (we could have added other cases here)
         seSelection.prepareSelection(seSelector);
 
-        /*
-         * Provide the SeReader with the selection operation to be processed when a SE is inserted.
-         */
+        // Provide the SeReader with the selection operation to be processed when a SE is inserted.
         ((ObservableReader) seReader).setDefaultSelectionRequest(
                 seSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY,
                 ObservableReader.PollingMode.REPEATING);
 
-        /* Set the current class as Observer of the first reader */
+        // Set the current class as Observer of the first reader
         ((ObservableReader) seReader).addObserver(this);
 
         logger.info(
-                "==================================================================================");
-        logger.info(
-                "= Wait for a SE. The default AID based selection to be processed as soon as the  =");
-        logger.info(
-                "= SE is detected.                                                                =");
-        logger.info(
-                "==================================================================================");
+                "= #### Wait for a SE. The default AID based selection to be processed as soon as the");
+        logger.info("= SE is detected.");
 
-        /* Wait for ever (exit with CTRL-C) */
+        // Wait for ever (exit with CTRL-C)
         synchronized (waitForEnd) {
             waitForEnd.wait();
         }
@@ -146,20 +129,20 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
     public void update(ReaderEvent event) {
         switch (event.getEventType()) {
             case SE_MATCHED:
-                /* the selection has one target, get the result at index 0 */
-                AbstractMatchingSe selectedSe =
-                        seSelection.processDefaultSelection(event.getDefaultSelectionsResponse())
-                                .getActiveSelection().getMatchingSe();
+                // the selection has one target, get the result at index 0
+                AbstractMatchingSe selectedSe = null;
+                try {
+                    selectedSe = seSelection
+                            .processDefaultSelection(event.getDefaultSelectionsResponse())
+                            .getActiveMatchingSe();
+                } catch (KeypleException e) {
+                    logger.error("Exception: {}", e.getMessage());
+                }
 
                 if (selectedSe != null) {
                     logger.info("Observer notification: the selection of the SE has succeeded.");
 
-                    logger.info(
-                            "==================================================================================");
-                    logger.info(
-                            "= End of the SE processing.                                                      =");
-                    logger.info(
-                            "==================================================================================");
+                    logger.info("= #### End of the SE processing.");
                 } else {
                     logger.error(
                             "The selection of the SE has failed. Should not have occurred due to the MATCHED_ONLY selection mode.");
@@ -177,18 +160,16 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
         }
         if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED
                 || event.getEventType() == ReaderEvent.EventType.SE_MATCHED) {
-            /*
-             * Informs the underlying layer of the end of the SE processing, in order to manage the
-             * removal sequence. <p>If closing has already been requested, this method will do
-             * nothing.
-             */
+            // Informs the underlying layer of the end of the SE processing, in order to manage the
+            // removal sequence. <p>If closing has already been requested, this method will do
+            // nothing.
             try {
                 ((ObservableReader) SeProxyService.getInstance().getPlugin(event.getPluginName())
                         .getReader(event.getReaderName())).notifySeProcessed();
             } catch (KeypleReaderNotFoundException e) {
-                e.printStackTrace();
+                logger.error("Reader not found exception: {}", e.getMessage());
             } catch (KeyplePluginNotFoundException e) {
-                e.printStackTrace();
+                logger.error("Plugin not found exception: {}", e.getMessage());
             }
         }
     }
@@ -196,8 +177,8 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
     /**
      * main program entry
      */
-    public static void main(String[] args) throws InterruptedException, KeypleBaseException {
-        /* Create the observable object to handle the SE processing */
-        DefaultSelectionNotification_Pcsc m = new DefaultSelectionNotification_Pcsc();
+    public static void main(String[] args) throws InterruptedException, KeypleException {
+        // Create the observable object to handle the SE processing
+        new DefaultSelectionNotification_Pcsc();
     }
 }

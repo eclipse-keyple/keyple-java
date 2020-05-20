@@ -170,6 +170,8 @@ dependencies {
     */
     // https://mvnrepository.com/artifact/junit/junit
     testImplementation "junit:junit:${junit_version}"
+    // https://search.maven.org/artifact/org.assertj/assertj-core/2.9.1/bundle
+    testImplementation "org.assertj:assertj-core:${assertj_version}"
     // https://mvnrepository.com/artifact/org.mockito/mockito-core
     testImplementation "org.mockito:mockito-core:${mockitocore_version}"
     //add slf4j simple logger implementation

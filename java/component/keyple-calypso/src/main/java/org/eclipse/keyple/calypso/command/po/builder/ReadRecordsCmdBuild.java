@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information regarding copyright
  * ownership.
@@ -13,85 +13,90 @@ package org.eclipse.keyple.calypso.command.po.builder;
 
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
-import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
-import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
-import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
+import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
- * The Class ReadRecordsCmdBuild. This class provides the dedicated constructor to build the Read
+ * The {@link ReadRecordsCmdBuild} class provides the dedicated constructor to build the Read
  * Records APDU command.
  */
-public final class ReadRecordsCmdBuild extends AbstractPoCommandBuilder<ReadRecordsRespPars>
-        implements PoSendableInSession {
+public final class ReadRecordsCmdBuild extends AbstractPoCommandBuilder<ReadRecordsRespPars> {
 
-    /** The command. */
-    private static final CalypsoPoCommands command = CalypsoPoCommands.READ_RECORDS;
+    private static final CalypsoPoCommand command = CalypsoPoCommand.READ_RECORDS;
 
-    private final byte firstRecordNumber;
-    private final ReadDataStructure readDataStructure;
+    public enum ReadMode {
+        ONE_RECORD, MULTIPLE_RECORD
+    }
+
+    // Construction arguments used for parsing
+    private final int sfi;
+    private final int firstRecordNumber;
+    private final ReadMode readMode;
 
     /**
      * Instantiates a new read records cmd build.
      *
      * @param poClass indicates which CLA byte should be used for the Apdu
      * @param sfi the sfi top select
-     * @param readDataStructure file structure type (used to create the parser)
      * @param firstRecordNumber the record number to read (or first record to read in case of
      *        several records)
-     * @param readJustOneRecord the read just one record
+     * @param readMode read mode, requests the reading of one or all the records
      * @param expectedLength the expected length of the record(s)
-     * @param extraInfo extra information included in the logs (can be null or empty)
      * @throws IllegalArgumentException - if record number &lt; 1
      * @throws IllegalArgumentException - if the request is inconsistent
      */
-    public ReadRecordsCmdBuild(PoClass poClass, byte sfi, ReadDataStructure readDataStructure,
-            byte firstRecordNumber, boolean readJustOneRecord, byte expectedLength,
-            String extraInfo) throws IllegalArgumentException {
+    public ReadRecordsCmdBuild(PoClass poClass, int sfi, int firstRecordNumber, ReadMode readMode,
+            int expectedLength) throws IllegalArgumentException {
         super(command, null);
 
-        if (firstRecordNumber < 1) {
-            throw new IllegalArgumentException("Bad record number (< 1)");
-        }
-
+        this.sfi = sfi;
         this.firstRecordNumber = firstRecordNumber;
-        this.readDataStructure = readDataStructure;
+        this.readMode = readMode;
 
+        byte p1 = (byte) firstRecordNumber;
         byte p2 = (sfi == (byte) 0x00) ? (byte) 0x05 : (byte) ((byte) (sfi * 8) + 5);
-        if (readJustOneRecord) {
+        if (readMode == ReadMode.ONE_RECORD) {
             p2 = (byte) (p2 - (byte) 0x01);
         }
-        this.request = setApduRequest(poClass.getValue(), command, firstRecordNumber, p2, null,
-                expectedLength);
-        if (extraInfo != null) {
+        byte le = (byte) expectedLength;
+        this.request = setApduRequest(poClass.getValue(), command, p1, p2, null, le);
+
+        if (logger.isDebugEnabled()) {
+            String extraInfo = String.format("SFI=%02X, REC=%d, READMODE=%s, EXPECTEDLENGTH=%d",
+                    sfi, firstRecordNumber, readMode, expectedLength);
             this.addSubName(extraInfo);
         }
     }
 
     /**
-     * Instantiates a new read records cmd build without specifying the expected length. This
-     * constructor is allowed only in contactless mode.
-     *
-     * @param poClass indicates which CLA byte should be used for the Apdu
-     * @param readDataStructure file structure type
-     * @param sfi the sfi top select
-     * @param firstRecordNumber the record number to read (or first record to read in case of
-     *        several records)
-     * @param readJustOneRecord the read just one record
-     * @param extraInfo extra information included in the logs (can be null or empty)
-     * @throws IllegalArgumentException - if record number &lt; 1
-     * @throws IllegalArgumentException - if the request is inconsistent
+     * {@inheritDoc}
      */
-    public ReadRecordsCmdBuild(PoClass poClass, byte sfi, ReadDataStructure readDataStructure,
-            byte firstRecordNumber, boolean readJustOneRecord, String extraInfo)
-            throws IllegalArgumentException {
-        this(poClass, sfi, readDataStructure, firstRecordNumber, readJustOneRecord, (byte) 0x00,
-                extraInfo);
-    }
-
     @Override
     public ReadRecordsRespPars createResponseParser(ApduResponse apduResponse) {
-        return new ReadRecordsRespPars(apduResponse, readDataStructure, firstRecordNumber);
+        return new ReadRecordsRespPars(apduResponse, this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isSessionBufferUsed() {
+        return false;
+    }
+
+    /** @return the SFI of the accessed file */
+    public int getSfi() {
+        return sfi;
+    }
+
+    /** @return the number of the first record to read */
+    public int getFirstRecordNumber() {
+        return firstRecordNumber;
+    }
+
+    /** @return the readJustOneRecord flag */
+    public ReadMode getReadMode() {
+        return readMode;
     }
 }

@@ -44,7 +44,10 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     final String READER_NAME = "AbstractLocalReaderTest";
 
     static final String AID = "A000000291A000000191";
-    static final Set<Integer> STATUS_CODE = new HashSet(Arrays.asList(1, 2));
+    static final int STATUS_CODE_1 = 1;
+    static final int STATUS_CODE_2 = 2;
+    static final Set<Integer> STATUS_CODE_LIST =
+            new HashSet(Arrays.asList(STATUS_CODE_1, STATUS_CODE_2));
 
     static final String ATR = "0000";
 
@@ -115,7 +118,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     }
 
-    @Test(expected = KeypleIOReaderException.class)
+    @Test(expected = KeypleReaderIOException.class)
     public void select_byAtr_null() throws Exception {
         AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
         // mock ATR
@@ -162,7 +165,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
         BlankSmartSelectionReader r = getSmartSpy(PLUGIN_NAME, READER_NAME);
 
         when(r.openChannelForAid(any(SeSelector.AidSelector.class)))
-                .thenReturn(new ApduResponse(RESP_SUCCESS, STATUS_CODE));
+                .thenReturn(new ApduResponse(RESP_SUCCESS, STATUS_CODE_LIST));
         when(r.getATR()).thenReturn(ByteArrayUtil.fromHex(ATR));
         when(r.transmitApdu(any(byte[].class))).thenReturn(RESP_SUCCESS);
 
@@ -188,10 +191,12 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
         SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter(ATR);
         SeSelector.AidSelector aidSelector =
-                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(AID), STATUS_CODE);
+                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(AID));
+        aidSelector.addSuccessfulStatusCode(STATUS_CODE_1);
+        aidSelector.addSuccessfulStatusCode(STATUS_CODE_2);
 
         // select both
-        SeSelector seSelector = new SeSelector(null, atrFilter, aidSelector, "extraInfo");
+        SeSelector seSelector = new SeSelector(null, atrFilter, aidSelector);
 
         SelectionStatus status = r.openLogicalChannel(seSelector);
         Assert.assertEquals(true, status.hasMatched());
@@ -206,7 +211,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     public void select_no_param() throws Exception {
         AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
 
-        SeSelector seSelector = new SeSelector(null, null, null, "extraInfo");
+        SeSelector seSelector = new SeSelector(null, null, null);
 
         SelectionStatus status = r.openLogicalChannel(seSelector);
         Assert.assertEquals(true, status.hasMatched());
@@ -218,7 +223,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
      * open logical channel
      */
 
-    @Test(expected = KeypleApplicationSelectionException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void open_channel_null() throws Exception {
         AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
         r.openLogicalChannelAndSelect(null);
@@ -237,7 +242,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
         verify(r, times(1)).openLogicalChannel(seSelector);
     }
 
-    @Test(expected = KeypleChannelControlException.class)
+    @Test(expected = KeypleReaderIOException.class)
     public void open_channel_fail() throws Exception {
         AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
         when(r.getATR()).thenReturn(ByteArrayUtil.fromHex(ATR));
@@ -302,16 +307,18 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     static public SeSelector getAidSelector() {
         SeSelector.AidSelector aidSelector =
-                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(AID), STATUS_CODE);
+                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(AID));
+        aidSelector.addSuccessfulStatusCode(STATUS_CODE_1);
+        aidSelector.addSuccessfulStatusCode(STATUS_CODE_2);
 
-        return new SeSelector(null, null, aidSelector, "aidSelector : " + AID);
+        return new SeSelector(null, null, aidSelector);
     }
 
     static public SeSelector getAtrSelector() {
 
         SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter(ATR);
 
-        return new SeSelector(null, atrFilter, null, "atrFilter");
+        return new SeSelector(null, atrFilter, null);
     }
 
 

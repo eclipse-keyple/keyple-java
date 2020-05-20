@@ -66,12 +66,12 @@ public class BlankSmartPresenceTheadedReader extends AbstractObservableLocalRead
     }
 
     @Override
-    public void openPhysicalChannel() throws KeypleChannelControlException {
+    public void openPhysicalChannel() {
 
     }
 
     @Override
-    public void closePhysicalChannel() throws KeypleChannelControlException {
+    public void closePhysicalChannel() {
 
     }
 
@@ -81,12 +81,12 @@ public class BlankSmartPresenceTheadedReader extends AbstractObservableLocalRead
     }
 
     @Override
-    public boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderException {
+    public boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderIOException {
         return false;
     }
 
     @Override
-    public byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
+    public byte[] transmitApdu(byte[] apduIn) throws KeypleReaderIOException {
         return new byte[0];
     }
 
@@ -101,8 +101,7 @@ public class BlankSmartPresenceTheadedReader extends AbstractObservableLocalRead
     }
 
     @Override
-    public void setParameter(String key, String value)
-            throws IllegalArgumentException, KeypleBaseException {
+    public void setParameter(String key, String value) throws KeypleReaderIOException {
 
     }
 

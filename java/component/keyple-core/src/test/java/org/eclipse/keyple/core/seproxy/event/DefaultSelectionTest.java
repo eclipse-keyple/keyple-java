@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Set;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
-import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
@@ -161,7 +161,7 @@ public class DefaultSelectionTest {
         ObservableReader.NotificationMode mode = ObservableReader.NotificationMode.ALWAYS;
 
         // throw IO
-        doThrow(new KeypleIOReaderException("io error when selecting")).when(r)
+        doThrow(new KeypleReaderIOException("io error when selecting")).when(r)
                 .transmitSet(selections, multi, channel);
 
 

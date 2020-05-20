@@ -14,7 +14,7 @@ package org.eclipse.keyple.core.seproxy.exception;
 /**
  * The exception {@code KeypleAllocationReaderException} indicates that a reader allocation failed.
  */
-public class KeypleAllocationReaderException extends KeypleBaseException {
+public class KeypleAllocationReaderException extends KeypleException {
 
     /**
      * @param message the message to identify the exception context

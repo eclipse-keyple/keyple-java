@@ -13,29 +13,37 @@ package org.eclipse.keyple.calypso.command.po.builder.security;
 
 
 import org.eclipse.keyple.calypso.command.PoClass;
-import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
+import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
+import org.eclipse.keyple.calypso.command.po.parser.security.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.OpenSession31RespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 public final class OpenSession31CmdBuild
-        extends AbstractOpenSessionCmdBuild<OpenSession31RespPars> {
+        extends AbstractOpenSessionCmdBuild<AbstractOpenSessionRespPars> {
+
+    // Construction arguments used for parsing
+    private final int sfi;
+    private final int recordNumber;
+
     /**
      * Instantiates a new AbstractOpenSessionCmdBuild.
      *
      * @param keyIndex the key index
      * @param samChallenge the sam challenge returned by the SAM Get Challenge APDU command
-     * @param sfiToSelect the sfi to select
-     * @param recordNumberToRead the record number to read
-     * @param extraInfo extra information included in the logs (can be null or empty)
+     * @param sfi the sfi to select
+     * @param recordNumber the record number to read
      * @throws IllegalArgumentException - if the request is inconsistent
      */
-    public OpenSession31CmdBuild(byte keyIndex, byte[] samChallenge, byte sfiToSelect,
-            byte recordNumberToRead, String extraInfo) throws IllegalArgumentException {
+    public OpenSession31CmdBuild(byte keyIndex, byte[] samChallenge, int sfi, int recordNumber)
+            throws IllegalArgumentException {
         super(PoRevision.REV3_1);
 
-        byte p1 = (byte) ((recordNumberToRead * 8) + keyIndex);
-        byte p2 = (byte) ((sfiToSelect * 8) + 1);
+        this.sfi = sfi;
+        this.recordNumber = recordNumber;
+
+        byte p1 = (byte) ((recordNumber * 8) + keyIndex);
+        byte p2 = (byte) ((sfi * 8) + 1);
         /*
          * case 4: this command contains incoming and outgoing data. We define le = 0, the actual
          * length will be processed by the lower layers.
@@ -43,15 +51,44 @@ public final class OpenSession31CmdBuild
         byte le = 0;
 
         this.request = setApduRequest(PoClass.ISO.getValue(),
-                CalypsoPoCommands.getOpenSessionForRev(PoRevision.REV3_1), p1, p2, samChallenge,
-                le);
-        if (extraInfo != null) {
+                CalypsoPoCommand.getOpenSessionForRev(PoRevision.REV3_1), p1, p2, samChallenge, le);
+
+        if (logger.isDebugEnabled()) {
+            String extraInfo =
+                    String.format("KEYINDEX=%d, SFI=%02X, REC=%d", keyIndex, sfi, recordNumber);
             this.addSubName(extraInfo);
         }
     }
 
     @Override
     public OpenSession31RespPars createResponseParser(ApduResponse apduResponse) {
-        return new OpenSession31RespPars(apduResponse);
+        return new OpenSession31RespPars(apduResponse, this);
+    }
+
+    /**
+     *
+     * This command can't be executed in session and therefore doesn't uses the session buffer.
+     * 
+     * @return false
+     */
+    @Override
+    public boolean isSessionBufferUsed() {
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getSfi() {
+        return sfi;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getRecordNumber() {
+        return recordNumber;
     }
 }

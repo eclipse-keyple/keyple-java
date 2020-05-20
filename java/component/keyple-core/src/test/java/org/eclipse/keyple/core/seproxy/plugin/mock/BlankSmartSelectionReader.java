@@ -38,12 +38,12 @@ public class BlankSmartSelectionReader extends AbstractLocalReader implements Sm
     }
 
     @Override
-    public void openPhysicalChannel() throws KeypleChannelControlException {
+    public void openPhysicalChannel() {
 
     }
 
     @Override
-    public void closePhysicalChannel() throws KeypleChannelControlException {
+    public void closePhysicalChannel() {
 
     }
 
@@ -53,19 +53,17 @@ public class BlankSmartSelectionReader extends AbstractLocalReader implements Sm
     }
 
     @Override
-    public boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderException {
+    public boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderIOException {
         return false;
     }
 
     @Override
-    public byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
+    public byte[] transmitApdu(byte[] apduIn) throws KeypleReaderIOException {
         return new byte[0];
     }
 
     @Override
-    public ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector)
-            throws KeypleIOReaderException, KeypleChannelControlException,
-            KeypleApplicationSelectionException {
+    public ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector) {
         return null;
     }
 
@@ -80,8 +78,7 @@ public class BlankSmartSelectionReader extends AbstractLocalReader implements Sm
     }
 
     @Override
-    public void setParameter(String key, String value)
-            throws IllegalArgumentException, KeypleBaseException {
+    public void setParameter(String key, String value) throws KeypleReaderIOException {
 
     }
 }

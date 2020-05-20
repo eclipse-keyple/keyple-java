@@ -21,8 +21,6 @@ import kotlinx.android.synthetic.main.activity_calypso_examples.toolbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure
-import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars
 import org.eclipse.keyple.calypso.transaction.CalypsoPo
 import org.eclipse.keyple.calypso.transaction.PoResource
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest
@@ -169,10 +167,10 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
 
             /* AID based selection (1st selection, later indexed 0) */
             val selectionRequest1st = PoSelectionRequest(PoSelector(
-                    SeCommonProtocols.PROTOCOL_ISO14443_4, null, PoSelector.PoAidSelector(
-                    SeSelector.AidSelector.IsoAid(seAidPrefix), null,
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null, SeSelector.AidSelector(
+                    SeSelector.AidSelector.IsoAid(seAidPrefix),
                     SeSelector.AidSelector.FileOccurrence.FIRST,
-                    SeSelector.AidSelector.FileControlInformation.FCI), "Initial selection #1"))
+                    SeSelector.AidSelector.FileControlInformation.FCI), PoSelector.InvalidatedPo.REJECT))
 
             seSelection.prepareSelection(selectionRequest1st)
 
@@ -187,10 +185,10 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
             seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER)
 
             val selectionRequest2nd = PoSelectionRequest(PoSelector(
-                    SeCommonProtocols.PROTOCOL_ISO14443_4, null, PoSelector.PoAidSelector(
-                    SeSelector.AidSelector.IsoAid(seAidPrefix), null,
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null, SeSelector.AidSelector(
+                    SeSelector.AidSelector.IsoAid(seAidPrefix),
                     SeSelector.AidSelector.FileOccurrence.NEXT,
-                    SeSelector.AidSelector.FileControlInformation.FCI), "Initial selection #2"))
+                    SeSelector.AidSelector.FileControlInformation.FCI), PoSelector.InvalidatedPo.REJECT))
 
             seSelection.prepareSelection(selectionRequest2nd)
 
@@ -207,13 +205,11 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
         try {
             val selectionsResult = seSelection.processExplicitSelection(reader)
             if (selectionsResult.hasActiveSelection()) {
-                with(selectionsResult.getMatchingSelection(0)) {
-                    val matchingSe = this.matchingSe
-                    addResultEvent("Selection status for selection ${this.extraInfo} " +
-                            "(indexed ${this.selectionIndex}): \n\t\t" +
-                            "ATR: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.atr.bytes)}\n\t\t" +
-                            "FCI: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.fci.bytes)}")
-                }
+                    val matchingSe = selectionsResult.activeMatchingSe
+                    addResultEvent("Selection status for selection " +
+                            "(indexed $index): \n\t\t" +
+                            "ATR: ${ByteArrayUtil.toHex(matchingSe.atrBytes)}\n\t\t" +
+                            "FCI: ${ByteArrayUtil.toHex(matchingSe.fciBytes)}")
             } else {
                 addResultEvent("The selection did not match for case $index.")
             }
@@ -237,28 +233,28 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
         if (reader.isSePresent) {
             /* AID based selection (1st selection, later indexed 0) */
             val selectionRequest1st = PoSelectionRequest(PoSelector(
-                    SeCommonProtocols.PROTOCOL_ISO14443_4, null, PoSelector.PoAidSelector(
-                    SeSelector.AidSelector.IsoAid(seAidPrefix), null,
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null, SeSelector.AidSelector(
+                    SeSelector.AidSelector.IsoAid(seAidPrefix),
                     SeSelector.AidSelector.FileOccurrence.FIRST,
-                    SeSelector.AidSelector.FileControlInformation.FCI), "Initial selection #1"))
+                    SeSelector.AidSelector.FileControlInformation.FCI), PoSelector.InvalidatedPo.REJECT))
 
             seSelection.prepareSelection(selectionRequest1st)
 
             /* next selection (2nd selection, later indexed 1) */
             val selectionRequest2nd = PoSelectionRequest(PoSelector(
-                    SeCommonProtocols.PROTOCOL_ISO14443_4, null, PoSelector.PoAidSelector(
-                    SeSelector.AidSelector.IsoAid(seAidPrefix), null,
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null, SeSelector.AidSelector(
+                    SeSelector.AidSelector.IsoAid(seAidPrefix),
                     SeSelector.AidSelector.FileOccurrence.NEXT,
-                    SeSelector.AidSelector.FileControlInformation.FCI), "Next selection #2"))
+                    SeSelector.AidSelector.FileControlInformation.FCI), PoSelector.InvalidatedPo.REJECT))
 
             seSelection.prepareSelection(selectionRequest2nd)
 
             /* next selection (3rd selection, later indexed 2) */
             val selectionRequest3rd = PoSelectionRequest(PoSelector(
-                    SeCommonProtocols.PROTOCOL_ISO14443_4, null, PoSelector.PoAidSelector(
-                    SeSelector.AidSelector.IsoAid(seAidPrefix), null,
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null, SeSelector.AidSelector(
+                    SeSelector.AidSelector.IsoAid(seAidPrefix),
                     SeSelector.AidSelector.FileOccurrence.NEXT,
-                    SeSelector.AidSelector.FileControlInformation.FCI), "Next selection #3"))
+                    SeSelector.AidSelector.FileControlInformation.FCI), PoSelector.InvalidatedPo.REJECT))
 
             seSelection.prepareSelection(selectionRequest3rd)
 
@@ -272,11 +268,11 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
 
                 if (selectionResult.matchingSelections.size > 0) {
                     selectionResult.matchingSelections.forEach {
-                        val matchingSe = it.matchingSe
-                        addResultEvent("Selection status for selection ${it.extraInfo} " +
-                                "(indexed ${it.selectionIndex}): \n\t\t" +
-                                "ATR: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.atr.bytes)}\n\t\t" +
-                                "FCI: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.fci.bytes)}")
+                        val matchingSe = it.value
+                        addResultEvent("Selection status for selection " +
+                                "(indexed ${it.key}): \n\t\t" +
+                                "ATR: ${ByteArrayUtil.toHex(matchingSe.atrBytes)}\n\t\t" +
+                                "FCI: ${ByteArrayUtil.toHex(matchingSe.fciBytes)}")
                     }
                     addResultEvent("End of selection")
                 } else {
@@ -317,9 +313,8 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
          */
         val selectionRequest = PoSelectionRequest(PoSelector(
                 SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                PoSelector.PoAidSelector(
-                        SeSelector.AidSelector.IsoAid(aid), null),
-                "AID: $aid"))
+                SeSelector.AidSelector(
+                        SeSelector.AidSelector.IsoAid(aid)), PoSelector.InvalidatedPo.REJECT))
 
         /*
         * Add the selection case to the current selection (we could have added other cases here)
@@ -342,10 +337,10 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                     when (event?.eventType) {
                         ReaderEvent.EventType.SE_MATCHED -> {
                             addResultEvent("SE_MATCHED event: A SE corresponding to request has been detected")
-                            val selectedSe = seSelection.processDefaultSelection(event.defaultSelectionsResponse).activeSelection.matchingSe
+                            val selectedSe = seSelection.processDefaultSelection(event.defaultSelectionsResponse).activeMatchingSe
                             if (selectedSe != null) {
                                 addResultEvent("Observer notification: the selection of the SE has succeeded. End of the SE processing.")
-                                addResultEvent("Application FCI = ${ByteArrayUtil.toHex(selectedSe.selectionStatus.fci.bytes)}")
+                                addResultEvent("Application FCI = ${ByteArrayUtil.toHex(selectedSe.fciBytes)}")
                             } else {
                                 addResultEvent("The selection of the SE has failed. Should not have occurred due to the MATCHED_ONLY selection mode.")
                             }
@@ -401,9 +396,8 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
              */
             val selectionRequest = PoSelectionRequest(PoSelector(
                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                    PoSelector.PoAidSelector(
-                            SeSelector.AidSelector.IsoAid(aid), null),
-                    "AID: $aid"))
+                    SeSelector.AidSelector(
+                            SeSelector.AidSelector.IsoAid(aid)), PoSelector.InvalidatedPo.REJECT))
 
             /**
              * Prepare Selection
@@ -426,9 +420,9 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                 val selectionsResult = seSelection.processExplicitSelection(reader)
 
                 if (selectionsResult.hasActiveSelection()) {
-                    val matchedSe = selectionsResult.activeSelection.matchingSe
+                    val matchedSe = selectionsResult.activeMatchingSe
                     addResultEvent("The selection of the SE has succeeded.")
-                    addResultEvent("Application FCI = ${ByteArrayUtil.toHex(matchedSe.selectionStatus.fci.bytes)}")
+                    addResultEvent("Application FCI = ${ByteArrayUtil.toHex(matchedSe.fciBytes)}")
                     addResultEvent("End of the generic SE processing.")
                 } else {
                     addResultEvent("The selection of the SE has failed.")
@@ -464,20 +458,17 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
              */
         val poSelectionRequest = PoSelectionRequest(PoSelector(
                 SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                PoSelector.PoAidSelector(
-                        SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
-                        PoSelector.InvalidatedPo.REJECT),
-                "AID: " + CalypsoClassicInfo.AID))
+                SeSelector.AidSelector(
+                        SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID)),
+                PoSelector.InvalidatedPo.REJECT))
 
         /*
              * Prepare the reading order and keep the associated parser for later use once the
              * selection has been made.
              */
-        readEnvironmentParserIndex = poSelectionRequest.prepareReadRecordsCmd(
+        poSelectionRequest.prepareReadRecordFile(
                 CalypsoClassicInfo.SFI_EnvironmentAndHolder,
-                ReadDataStructure.SINGLE_RECORD_DATA, CalypsoClassicInfo.RECORD_NUMBER_1,
-                String.format("EnvironmentAndHolder (SFI=%02X))",
-                        CalypsoClassicInfo.SFI_EnvironmentAndHolder))
+                CalypsoClassicInfo.RECORD_NUMBER_1.toInt())
 
         /*
          * Add the selection case to the current selection (we could have added other cases
@@ -551,7 +542,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
             addResultEvent("1st PO exchange: aid selection")
 
             if (selectionsResult.hasActiveSelection()) {
-                val calypsoPo = selectionsResult.activeSelection.matchingSe as CalypsoPo
+                val calypsoPo = selectionsResult.activeMatchingSe as CalypsoPo
 
                 addResultEvent("Calypso PO selection: ")
                 addResultEvent("AID: ${ByteArrayUtil.fromHex(CalypsoClassicInfo.AID)}")
@@ -559,12 +550,9 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                 /*
                  * Retrieve the data read from the parser updated during the selection process
                  */
-                val readEnvironmentParser = selectionsResult
-                        .activeSelection.getResponseParser(readEnvironmentParserIndex) as ReadRecordsRespPars
 
-                val environmentAndHolder = readEnvironmentParser.records[CalypsoClassicInfo.RECORD_NUMBER_1.toInt()]
-
-                addResultEvent("Environment and Holder file: $environmentAndHolder")
+                val environmentAndHolder = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EnvironmentAndHolder).data.content
+                addResultEvent("Environment file data: ${ByteArrayUtil.toHex(environmentAndHolder)}")
 
                 addResultEvent("2nd PO exchange: read the event log file")
                 val poTransaction = PoTransaction(PoResource(reader, calypsoPo))
@@ -573,32 +561,25 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                  * Prepare the reading order and keep the associated parser for later use once the
                  * transaction has been processed.
                  */
-                val readEventLogParserIndex = poTransaction.prepareReadRecordsCmd(
-                        CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
-                        CalypsoClassicInfo.RECORD_NUMBER_1,
-                        String.format("EventLog (SFI=%02X, recnbr=%d))",
-                                CalypsoClassicInfo.SFI_EventLog,
-                                CalypsoClassicInfo.RECORD_NUMBER_1))
+                poTransaction.prepareReadRecordFile(
+                        CalypsoClassicInfo.SFI_EventLog,
+                        CalypsoClassicInfo.RECORD_NUMBER_1.toInt())
 
                 /*
                  * Actual PO communication: send the prepared read order, then close the channel
                  * with the PO
                  */
                 addActionEvent("processPoCommands")
-                if (poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER)) {
-                    addResultEvent("SUCCESS")
+                poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER)
+                addResultEvent("SUCCESS")
 
-                    /*
-                     * Retrieve the data read from the parser updated during the transaction process
-                     */
+                /*
+                 * Retrieve the data read from the parser updated during the transaction process
+                 */
+                val eventLog = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog).data.content
 
-                    val readEventLogParser = poTransaction
-                            .getResponseParser(readEventLogParserIndex) as ReadRecordsRespPars
-                    val eventLog = readEventLogParser.records[CalypsoClassicInfo.RECORD_NUMBER_1.toInt()]
-
-                    /* Log the result */
-                    addResultEvent("EventLog file: ${ByteArrayUtil.toHex(eventLog)}")
-                }
+                /* Log the result */
+                addResultEvent("EventLog file: ${ByteArrayUtil.toHex(eventLog)}")
                 addResultEvent("End of the Calypso PO processing.")
                 addResultEvent("You can remove the card now")
             } else {

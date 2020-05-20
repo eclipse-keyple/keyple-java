@@ -86,11 +86,9 @@ public abstract class AbstractPlugin extends AbstractSeProxyComponent implements
      * this method is called once in the plugin constructor.
      *
      * @return the list of AbstractReader objects.
-     * @throws KeypleReaderException if a reader error when readers list initialization, it will be
-     *         thrown by the constructor in a KeypleRuntimeException to be caught at a higher level
-     *         by the {@link org.eclipse.keyple.core.seproxy.AbstractPluginFactory}
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    protected abstract SortedSet<SeReader> initNativeReaders() throws KeypleReaderException;
+    protected abstract SortedSet<SeReader> initNativeReaders() throws KeypleReaderIOException;
 
     /**
      * Compare the name of the current ReaderPlugin to the name of the ReaderPlugin provided in

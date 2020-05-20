@@ -15,7 +15,12 @@ import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.SamResourceManager;
 import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.seproxy.*;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
@@ -80,11 +85,11 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
                      * Calypso selection: configures a PoSelectionRequest with all the desired
                      * attributes to make the selection and read additional information afterwards
                      */
-                    PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
-                            new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                    new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(
-                                            CalypsoClassicInfo.AID), null),
-                                    "AID: " + CalypsoClassicInfo.AID));
+                    PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
+                            SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                            new PoSelector.AidSelector(
+                                    new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID)),
+                            PoSelector.InvalidatedPo.ACCEPT));
 
                     logger.info("{} Create a PoSelectionRequest", nodeId);
 

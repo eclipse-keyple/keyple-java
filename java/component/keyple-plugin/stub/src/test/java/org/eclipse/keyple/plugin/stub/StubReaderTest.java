@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.builder.IncreaseCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
-import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
@@ -31,9 +30,9 @@ import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.*;
-import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -44,6 +43,7 @@ import org.junit.runners.MethodSorters;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 
 @SuppressWarnings("PMD.SignatureDeclareThrowsException")
@@ -445,7 +445,7 @@ public class StubReaderTest extends BaseStubTest {
                 byte[] fci = null;
                 try {
                     fci = hoplinkSE().processApdu(selectApplicationCommand);
-                } catch (KeypleIOReaderException e) {
+                } catch (KeypleReaderIOException e) {
                     e.printStackTrace();
                 }
 
@@ -466,10 +466,10 @@ public class StubReaderTest extends BaseStubTest {
 
         SeSelection seSelection = new SeSelection();
 
-        PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
-                SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(poAid), null),
-                "AID: " + poAid));
+        PoSelectionRequest poSelectionRequest =
+                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                        new PoSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid)),
+                        PoSelector.InvalidatedPo.REJECT));
 
         seSelection.prepareSelection(poSelectionRequest);
 
@@ -517,10 +517,10 @@ public class StubReaderTest extends BaseStubTest {
 
         SeSelection seSelection = new SeSelection();
 
-        PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
-                SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(poAid), null),
-                "AID: " + poAid));
+        PoSelectionRequest poSelectionRequest =
+                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                        new PoSelector.AidSelector(new PoSelector.AidSelector.IsoAid(poAid)),
+                        PoSelector.InvalidatedPo.REJECT));
 
         seSelection.prepareSelection(poSelectionRequest);
 
@@ -580,10 +580,10 @@ public class StubReaderTest extends BaseStubTest {
 
         SeSelection seSelection = new SeSelection();
 
-        PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
-                SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(poAid), null),
-                "AID: " + poAid));
+        PoSelectionRequest poSelectionRequest =
+                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                        new PoSelector.AidSelector(new PoSelector.AidSelector.IsoAid(poAid)),
+                        PoSelector.InvalidatedPo.REJECT));
 
         seSelection.prepareSelection(poSelectionRequest);
 
@@ -623,7 +623,8 @@ public class StubReaderTest extends BaseStubTest {
 
                 PoSelectionRequest poSelectionRequest =
                         new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_B_PRIME,
-                                new PoSelector.PoAtrFilter("3B.*"), null, "Test" + " ATR"));
+                                new PoSelector.AtrFilter("3B.*"), null,
+                                PoSelector.InvalidatedPo.REJECT));
 
                 /* Prepare selector, ignore AbstractMatchingSe here */
                 seSelection.prepareSelection(poSelectionRequest);
@@ -632,12 +633,13 @@ public class StubReaderTest extends BaseStubTest {
                     SelectionsResult selectionsResult =
                             seSelection.processExplicitSelection(reader);
 
-                    AbstractMatchingSe matchingSe =
-                            selectionsResult.getActiveSelection().getMatchingSe();
+                    AbstractMatchingSe matchingSe = selectionsResult.getActiveMatchingSe();
 
                     Assert.assertNotNull(matchingSe);
 
                 } catch (KeypleReaderException e) {
+                    Assert.fail("Unexcepted exception");
+                } catch (KeypleException e) {
                     Assert.fail("Unexcepted exception");
                 }
                 // unlock thread
@@ -695,10 +697,10 @@ public class StubReaderTest extends BaseStubTest {
 
         SeSelection seSelection = new SeSelection();
 
-        PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
-                SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(poAid), null),
-                "AID: " + poAid));
+        PoSelectionRequest poSelectionRequest =
+                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                        new PoSelector.AidSelector(new PoSelector.AidSelector.IsoAid(poAid)),
+                        PoSelector.InvalidatedPo.REJECT));
 
         seSelection.prepareSelection(poSelectionRequest);
 
@@ -816,9 +818,9 @@ public class StubReaderTest extends BaseStubTest {
             List<SeResponse> seResponseList = ((ProxyReader) reader).transmitSet(seRequestSet);
             Assert.fail("Should throw exception");
 
-        } catch (KeypleReaderException ex) {
-            Assert.assertEquals(ex.getSeResponseSet().size(), 1);
-            Assert.assertEquals(ex.getSeResponseSet().get(0).getApduResponses().size(), 2);
+        } catch (KeypleReaderIOException ex) {
+            Assert.assertEquals(ex.getSeResponseList().size(), 1);
+            Assert.assertEquals(ex.getSeResponseList().get(0).getApduResponses().size(), 2);
         }
     }
 
@@ -846,11 +848,11 @@ public class StubReaderTest extends BaseStubTest {
             List<SeResponse> seResponseList = ((ProxyReader) reader).transmitSet(seRequestSet);
             Assert.fail("Should throw exception");
 
-        } catch (KeypleReaderException ex) {
-            Assert.assertEquals(ex.getSeResponseSet().size(), 2);
-            Assert.assertEquals(ex.getSeResponseSet().get(0).getApduResponses().size(), 4);
-            Assert.assertEquals(ex.getSeResponseSet().get(1).getApduResponses().size(), 2);
-            Assert.assertEquals(ex.getSeResponseSet().get(1).getApduResponses().size(), 2);
+        } catch (KeypleReaderIOException ex) {
+            Assert.assertEquals(ex.getSeResponseList().size(), 2);
+            Assert.assertEquals(ex.getSeResponseList().get(0).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponseList().get(1).getApduResponses().size(), 2);
+            Assert.assertEquals(ex.getSeResponseList().get(1).getApduResponses().size(), 2);
         }
     }
 
@@ -879,11 +881,11 @@ public class StubReaderTest extends BaseStubTest {
             List<SeResponse> seResponseList = ((ProxyReader) reader).transmitSet(seRequestSet);
             Assert.fail("Should throw exception");
 
-        } catch (KeypleReaderException ex) {
-            Assert.assertEquals(ex.getSeResponseSet().size(), 3);
-            Assert.assertEquals(ex.getSeResponseSet().get(0).getApduResponses().size(), 4);
-            Assert.assertEquals(ex.getSeResponseSet().get(1).getApduResponses().size(), 4);
-            Assert.assertEquals(ex.getSeResponseSet().get(2).getApduResponses().size(), 2);
+        } catch (KeypleReaderIOException ex) {
+            Assert.assertEquals(ex.getSeResponseList().size(), 3);
+            Assert.assertEquals(ex.getSeResponseList().get(0).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponseList().get(1).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponseList().get(2).getApduResponses().size(), 2);
         }
     }
 
@@ -942,7 +944,7 @@ public class StubReaderTest extends BaseStubTest {
             SeResponse seResponse = ((ProxyReader) reader).transmit(seRequest);
             Assert.fail("Should throw exception");
 
-        } catch (KeypleReaderException ex) {
+        } catch (KeypleReaderIOException ex) {
             Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 0);
         }
     }
@@ -972,7 +974,7 @@ public class StubReaderTest extends BaseStubTest {
             SeResponse seResponse = ((ProxyReader) reader).transmit(seRequest);
             Assert.fail("Should throw exception");
 
-        } catch (KeypleReaderException ex) {
+        } catch (KeypleReaderIOException ex) {
             Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 1);
         }
     }
@@ -1001,7 +1003,7 @@ public class StubReaderTest extends BaseStubTest {
             SeResponse seResponse = ((ProxyReader) reader).transmit(seRequest);
             Assert.fail("Should throw exception");
 
-        } catch (KeypleReaderException ex) {
+        } catch (KeypleReaderIOException ex) {
             Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 2);
         }
     }
@@ -1071,10 +1073,8 @@ public class StubReaderTest extends BaseStubTest {
 
     static public Set<SeRequest> getRequestIsoDepSetSample() {
         String poAid = "A000000291A000000191";
-
-        ReadRecordsCmdBuild poReadRecordCmd_T2Env =
-                new ReadRecordsCmdBuild(PoClass.ISO, (byte) 0x14,
-                        ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true, (byte) 0x20, "");
+        ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoClass.ISO, 0x14, 1,
+                ReadRecordsCmdBuild.ReadMode.ONE_RECORD, 32);
 
         List<ApduRequest> poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
 
@@ -1085,7 +1085,6 @@ public class StubReaderTest extends BaseStubTest {
         seRequestSet.add(seRequest);
 
         return seRequestSet;
-
     }
 
     /*
@@ -1096,7 +1095,7 @@ public class StubReaderTest extends BaseStubTest {
     static public Set<SeRequest> getNoResponseRequest() {
 
         IncreaseCmdBuild poIncreaseCmdBuild =
-                new IncreaseCmdBuild(PoClass.ISO, (byte) 0x14, (byte) 0x01, 0, "");
+                new IncreaseCmdBuild(PoClass.ISO, (byte) 0x14, (byte) 0x01, 0);
 
         List<ApduRequest> poApduRequestList = Arrays.asList(poIncreaseCmdBuild.getApduRequest());
 
@@ -1116,13 +1115,12 @@ public class StubReaderTest extends BaseStubTest {
      */
     static public Set<SeRequest> getPartialRequestSet(int scenario) {
         String poAid = "A000000291A000000191";
-
-        ReadRecordsCmdBuild poReadRecord1CmdBuild = new ReadRecordsCmdBuild(PoClass.ISO,
-                (byte) 0x14, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true, "");
+        ReadRecordsCmdBuild poReadRecord1CmdBuild = new ReadRecordsCmdBuild(PoClass.ISO, 0x14, 1,
+                ReadRecordsCmdBuild.ReadMode.ONE_RECORD, 0);
 
         /* this command doesn't in the PartialSE */
-        ReadRecordsCmdBuild poReadRecord2CmdBuild = new ReadRecordsCmdBuild(PoClass.ISO,
-                (byte) 0x1E, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true, "");
+        ReadRecordsCmdBuild poReadRecord2CmdBuild = new ReadRecordsCmdBuild(PoClass.ISO, 0x1E, 1,
+                ReadRecordsCmdBuild.ReadMode.ONE_RECORD, 0);
 
         List<ApduRequest> poApduRequestList1 = new ArrayList<ApduRequest>();
         poApduRequestList1.add(poReadRecord1CmdBuild.getApduRequest());
@@ -1192,12 +1190,12 @@ public class StubReaderTest extends BaseStubTest {
     static public SeRequest getPartialRequest(int scenario) {
         String poAid = "A000000291A000000191";
 
-        ReadRecordsCmdBuild poReadRecord1CmdBuild = new ReadRecordsCmdBuild(PoClass.ISO,
-                (byte) 0x14, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true, "");
+        ReadRecordsCmdBuild poReadRecord1CmdBuild = new ReadRecordsCmdBuild(PoClass.ISO, 0x14, 1,
+                ReadRecordsCmdBuild.ReadMode.ONE_RECORD, 0);
 
         /* this command doesn't in the PartialSE */
-        ReadRecordsCmdBuild poReadRecord2CmdBuild = new ReadRecordsCmdBuild(PoClass.ISO,
-                (byte) 0x1E, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true, "");
+        ReadRecordsCmdBuild poReadRecord2CmdBuild = new ReadRecordsCmdBuild(PoClass.ISO, 0x1E, 1,
+                ReadRecordsCmdBuild.ReadMode.ONE_RECORD, 0);
 
         List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
 
@@ -1228,8 +1226,7 @@ public class StubReaderTest extends BaseStubTest {
 
         SeSelector selector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                 new SeSelector.AidSelector(
-                        new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(poAid)), null),
-                null);
+                        new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(poAid))));
 
         return new SeRequest(poApduRequestList);
     }
@@ -1240,7 +1237,7 @@ public class StubReaderTest extends BaseStubTest {
         return new StubSecureElement() {
 
             @Override
-            public byte[] processApdu(byte[] apduIn) throws KeypleIOReaderException {
+            public byte[] processApdu(byte[] apduIn) throws KeypleReaderIOException {
                 addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00",
                         "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
 
@@ -1271,7 +1268,7 @@ public class StubReaderTest extends BaseStubTest {
     static public StubSecureElement revision1SE() {
         return new StubSecureElement() {
             @Override
-            public byte[] processApdu(byte[] apduIn) throws KeypleIOReaderException {
+            public byte[] processApdu(byte[] apduIn) throws KeypleReaderIOException {
                 addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00",
                         "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
 
@@ -1301,7 +1298,7 @@ public class StubReaderTest extends BaseStubTest {
         return new StubSecureElement() {
 
             @Override
-            public byte[] processApdu(byte[] apduIn) throws KeypleIOReaderException {
+            public byte[] processApdu(byte[] apduIn) throws KeypleReaderIOException {
 
                 addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00",
                         "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
@@ -1325,7 +1322,7 @@ public class StubReaderTest extends BaseStubTest {
     static public StubSecureElement partialSE() {
         return new StubSecureElement() {
             @Override
-            public byte[] processApdu(byte[] apduIn) throws KeypleIOReaderException {
+            public byte[] processApdu(byte[] apduIn) throws KeypleReaderIOException {
 
                 addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00",
                         "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
@@ -1365,18 +1362,18 @@ public class StubReaderTest extends BaseStubTest {
 
             // override methods to fail open connection
             @Override
-            public void openPhysicalChannel() throws KeypleChannelControlException {
-                throw new KeypleChannelControlException("Impossible to estasblish connection");
+            public void openPhysicalChannel() throws KeypleReaderIOException {
+                throw new KeypleReaderIOException("Impossible to establish connection");
             }
 
             @Override
-            public void closePhysicalChannel() throws KeypleChannelControlException {
-                throw new KeypleChannelControlException("Channel is not open");
+            public void closePhysicalChannel() throws KeypleReaderIOException {
+                throw new KeypleReaderIOException("Channel is not open");
             }
 
             @Override
-            public byte[] processApdu(byte[] apduIn) throws KeypleIOReaderException {
-                throw new KeypleIOReaderException("Error while transmitting apdu");
+            public byte[] processApdu(byte[] apduIn) throws KeypleReaderIOException {
+                throw new KeypleReaderIOException("Error while transmitting apdu");
             }
 
             @Override
@@ -1391,7 +1388,7 @@ public class StubReaderTest extends BaseStubTest {
         return new ApduRequest(ByteArrayUtil.fromHex("FEDCBA98 9005h"), false);
     }
 
-    static public void genericSelectSe(SeReader reader) throws KeypleReaderException {
+    static public void genericSelectSe(SeReader reader) throws KeypleReaderIOException {
         /**
          * Create a new local class extending AbstractSeSelectionRequest
          */
@@ -1407,11 +1404,11 @@ public class StubReaderTest extends BaseStubTest {
             protected AbstractMatchingSe parse(SeResponse seResponse) {
                 class GenericMatchingSe extends AbstractMatchingSe {
                     public GenericMatchingSe(SeResponse selectionResponse,
-                            TransmissionMode transmissionMode, String extraInfo) {
-                        super(selectionResponse, transmissionMode, extraInfo);
+                            TransmissionMode transmissionMode) {
+                        super(selectionResponse, transmissionMode);
                     }
                 }
-                return new GenericMatchingSe(seResponse, transmissionMode, "Generic Matching SE");
+                return new GenericMatchingSe(seResponse, transmissionMode);
             }
         }
 
@@ -1420,11 +1417,15 @@ public class StubReaderTest extends BaseStubTest {
         // ChannelControl.CLOSE_AFTER);
         GenericSeSelectionRequest genericSeSelectionRequest =
                 new GenericSeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                        new SeSelector.AtrFilter("3B.*"), null, "ATR selection"));
+                        new SeSelector.AtrFilter("3B.*"), null));
 
         /* Prepare selector, ignore AbstractMatchingSe here */
         seSelection.prepareSelection(genericSeSelectionRequest);
 
-        seSelection.processExplicitSelection(reader);
+        try {
+            seSelection.processExplicitSelection(reader);
+        } catch (KeypleException e) {
+            Assert.fail("Unexcepted exception");
+        }
     }
 }

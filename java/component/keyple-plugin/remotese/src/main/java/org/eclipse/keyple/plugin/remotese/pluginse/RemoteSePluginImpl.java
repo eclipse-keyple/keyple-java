@@ -17,6 +17,7 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservablePlugin;
@@ -91,7 +92,7 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
 
         try {
             if (getReaderByRemoteName(nativeReaderName, slaveNodeId) != null) {
-                throw new KeypleReaderException(
+                throw new KeypleReaderIOException(
                         "Virtual Reader already exists for reader " + nativeReaderName);
             }
         } catch (KeypleReaderNotFoundException e) {

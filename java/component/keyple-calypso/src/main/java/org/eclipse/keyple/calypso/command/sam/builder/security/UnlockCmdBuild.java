@@ -12,16 +12,18 @@
 package org.eclipse.keyple.calypso.command.sam.builder.security;
 
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
-import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommands;
+import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
+import org.eclipse.keyple.calypso.command.sam.parser.security.UnlockRespPars;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
  * Builder for the SAM Unlock APDU command.
  */
-public class UnlockCmdBuild extends AbstractSamCommandBuilder {
+public class UnlockCmdBuild extends AbstractSamCommandBuilder<UnlockRespPars> {
     /** The command reference. */
 
-    private static final CalypsoSamCommands command = CalypsoSamCommands.UNLOCK;
+    private static final CalypsoSamCommand command = CalypsoSamCommand.UNLOCK;
 
     /**
      * Builder constructor
@@ -47,5 +49,10 @@ public class UnlockCmdBuild extends AbstractSamCommandBuilder {
         }
 
         request = setApduRequest(cla, command, p1, p2, unlockData, null);
+    }
+
+    @Override
+    public UnlockRespPars createResponseParser(ApduResponse apduResponse) {
+        return new UnlockRespPars(apduResponse, this);
     }
 }

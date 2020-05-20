@@ -14,16 +14,17 @@ package org.eclipse.keyple.calypso.command.po.builder.security;
 
 
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
-import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
+import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
+import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
+import org.eclipse.keyple.calypso.command.po.parser.security.AbstractOpenSessionRespPars;
 
 /**
  * The Class AbstractOpenSessionCmdBuild. This class provides the dedicated constructor to build the
  * Open Secure Session APDU command.
  *
  */
-public abstract class AbstractOpenSessionCmdBuild<T extends AbstractApduResponseParser>
+public abstract class AbstractOpenSessionCmdBuild<T extends AbstractPoResponseParser>
         extends AbstractPoCommandBuilder<T> {
 
     /**
@@ -34,27 +35,34 @@ public abstract class AbstractOpenSessionCmdBuild<T extends AbstractApduResponse
      * @throws IllegalArgumentException - if the request is inconsistent
      */
     public AbstractOpenSessionCmdBuild(PoRevision revision) {
-        super(CalypsoPoCommands.getOpenSessionForRev(revision), null);
+        super(CalypsoPoCommand.getOpenSessionForRev(revision), null);
     }
 
-    public static AbstractOpenSessionCmdBuild create(PoRevision revision, byte debitKeyIndex,
-            byte[] sessionTerminalChallenge, byte sfi, byte recordNb, String extraInfo) {
+    public static AbstractOpenSessionCmdBuild<AbstractOpenSessionRespPars> create(
+            PoRevision revision, byte debitKeyIndex, byte[] sessionTerminalChallenge, int sfi,
+            int recordNumber) {
         switch (revision) {
             case REV1_0:
                 return new OpenSession10CmdBuild(debitKeyIndex, sessionTerminalChallenge, sfi,
-                        recordNb, extraInfo);
+                        recordNumber);
             case REV2_4:
                 return new OpenSession24CmdBuild(debitKeyIndex, sessionTerminalChallenge, sfi,
-                        recordNb, extraInfo);
+                        recordNumber);
             case REV3_1:
             case REV3_1_CLAP:
                 return new OpenSession31CmdBuild(debitKeyIndex, sessionTerminalChallenge, sfi,
-                        recordNb, extraInfo);
+                        recordNumber);
             case REV3_2:
                 return new OpenSession32CmdBuild(debitKeyIndex, sessionTerminalChallenge, sfi,
-                        recordNb, extraInfo);
+                        recordNumber);
             default:
                 throw new IllegalArgumentException("Revision " + revision + " isn't supported");
         }
     }
+
+    /** @return the SFI of the file read while opening the secure session */
+    public abstract int getSfi();
+
+    /** @return the record number to read */
+    public abstract int getRecordNumber();
 }
