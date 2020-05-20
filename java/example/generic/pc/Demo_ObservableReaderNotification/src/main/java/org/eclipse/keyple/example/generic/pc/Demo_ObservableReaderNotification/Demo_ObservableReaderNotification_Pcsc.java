@@ -27,18 +27,18 @@ public class Demo_ObservableReaderNotification_Pcsc {
     public static void main(String[] args) throws Exception {
         ObservableReaderNotificationEngine demoEngine = new ObservableReaderNotificationEngine();
 
-        /* Get the instance of the SeProxyService (Singleton pattern) */
+        // Get the instance of the SeProxyService (Singleton pattern)
         SeProxyService seProxyService = SeProxyService.getInstance();
 
-        /* Assign PcscPlugin to the SeProxyService */
+        // Assign PcscPlugin to the SeProxyService
         seProxyService.registerPlugin(new PcscPluginFactory());
 
-        /* Set observers */
+        // /* Set observers *//**/
         demoEngine.setPluginObserver();
 
         logger.info("Wait for reader or SE insertion/removal");
 
-        /* Wait indefinitely. CTRL-C to exit. */
+        // Wait indefinitely. CTRL-C to exit.
         synchronized (waitBeforeEnd) {
             waitBeforeEnd.wait();
         }

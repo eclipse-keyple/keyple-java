@@ -48,28 +48,24 @@ public class Demo_SeProtocolDetection_Pcsc {
      * @throws KeypleException if a reader error occurs
      */
     public static void main(String[] args) throws KeypleException {
-        /* get the SeProxyService instance */
+        // get the SeProxyService instance
         SeProxyService seProxyService = SeProxyService.getInstance();
 
-        /* Assign PcscPlugin to the SeProxyService */
+        // Assign PcscPlugin to the SeProxyService
         seProxyService.registerPlugin(new PcscPluginFactory());
 
-        /* attempt to get the SeReader (the right reader should be ready here) */
+        // attempt to get the SeReader (the right reader should be ready here)
         SeReader poReader =
                 ReaderUtilities.getReaderByName(PcscReadersSettings.PO_READER_NAME_REGEX);
 
-        if (poReader == null) {
-            throw new IllegalStateException("Bad PO/SAM setup");
-        }
-
         logger.info("PO Reader  : {}", poReader.getName());
 
-        /* create an observer class to handle the SE operations */
+        // create an observer class to handle the SE operations
         SeProtocolDetectionEngine observer = new SeProtocolDetectionEngine();
 
         observer.setReader(poReader);
 
-        /* configure reader */
+        // configure reader
         poReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T1);
 
         // Protocol detection settings.
@@ -110,7 +106,7 @@ public class Demo_SeProtocolDetection_Pcsc {
             try {
                 c = br.read();
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("IO Exception: {}", e.getMessage());
             }
             if (c == 0x0A) {
                 logger.info("Exiting...");

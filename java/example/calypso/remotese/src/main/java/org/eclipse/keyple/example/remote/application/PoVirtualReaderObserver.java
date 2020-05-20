@@ -46,10 +46,10 @@ import org.slf4j.LoggerFactory;
 public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver {
     private static final Logger logger = LoggerFactory.getLogger(PoVirtualReaderObserver.class);
 
-    final private MasterAPI masterAPI;
-    final private String nodeId;// for logging purposes
-    final private SeSelection seSelection;
-    final private SamResourceManager samResourceManager;
+    private final MasterAPI masterAPI;
+    private final String nodeId;// for logging purposes
+    private final SeSelection seSelection;
+    private final SamResourceManager samResourceManager;
 
 
     /**
@@ -82,8 +82,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
                             .processDefaultSelection(event.getDefaultSelectionsResponse())
                             .getActiveMatchingSe();
                 } catch (KeypleException e) {
-                    // TODO Rework error management
-                    e.printStackTrace();
+                    logger.error("Keyple Exception: {}", e.getMessage());
                 }
 
                 // retrieve PO virtual reader
@@ -113,13 +112,13 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
                     executeCalypso4_PoAuthentication(poResource, samResource);
 
                 } catch (KeypleReaderNotFoundException e) {
-                    e.printStackTrace();
+                    logger.error("Reader not found exception: {}", e.getMessage());
                 } catch (KeypleReaderException e) {
-                    e.printStackTrace();
+                    logger.error("Reader exception: {}", e.getMessage());
                 } catch (CalypsoNoSamResourceAvailableException e) {
-                    e.printStackTrace();
+                    logger.error("SAM resource not available {}", e.getMessage());
                 } catch (KeypleAllocationReaderException e) {
-                    e.printStackTrace();
+                    logger.error("SAM resource allocation error exception {}", e.getMessage());
                 } finally {
                     /**
                      * Release SamResource
@@ -173,8 +172,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
             PoTransaction poTransaction = new PoTransaction(poResource);
 
             /*
-             * Prepare the reading order and keep the associated parser for later use once the
-             * transaction has been processed.
+             * Prepare the reading order.
              */
             poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_EventLog,
                     CalypsoClassicInfo.RECORD_NUMBER_1);
@@ -189,14 +187,14 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
             logger.info("{} The reading of the EventLog has succeeded.", nodeId);
 
             /*
-             * Retrieve the data read from the parser updated during the transaction process
+             * Retrieve the data read from the CalyspoPo updated during the transaction process
              */
             ElementaryFile efEventLog =
                     poResource.getMatchingSe().getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
-            byte eventLog[] = efEventLog.getData().getContent();
+            String eventLog = ByteArrayUtil.toHex(efEventLog.getData().getContent());
 
             /* Log the result */
-            logger.info("{} EventLog file data: {} ", nodeId, ByteArrayUtil.toHex(eventLog));
+            logger.info("{} EventLog file data: {} ", nodeId, eventLog);
 
         } catch (CalypsoPoCommandException e) {
             logger.error("PO command {} failed with the status code 0x{}. {}", e.getCommand(),
@@ -226,7 +224,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
             logger.warn(
                     "==================================================================================");
             logger.warn(
-                    "= 2nd PO exchange: open and close a secure session to perform authentication.    =");
+                    "= 2nd PO exchange: open and close a secure session to perform authentication.");
             logger.warn(
                     "==================================================================================");
 
@@ -250,14 +248,14 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
             poTransaction.processPoCommandsInSession();
 
             /*
-             * Retrieve the data read from the parser updated during the transaction process
+             * Retrieve the data read from the CalyspoPo updated during the transaction process
              */
             ElementaryFile efEventLog =
                     poResource.getMatchingSe().getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
-            byte eventLog[] = efEventLog.getData().getContent();
+            String eventLog = ByteArrayUtil.toHex(efEventLog.getData().getContent());
 
             /* Log the result */
-            logger.info("EventLog file data: {}", ByteArrayUtil.toHex(eventLog));
+            logger.info("EventLog file data: {}", eventLog);
 
             /*
              * Close the Secure Session.
@@ -274,8 +272,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
 
             logger.warn(
                     "==================================================================================");
-            logger.warn(
-                    "= End of the Calypso PO processing.                                              =");
+            logger.warn("= End of the Calypso PO processing.");
             logger.warn(
                     "==================================================================================");
 

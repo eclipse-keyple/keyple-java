@@ -76,7 +76,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                         if (selectionsResult.hasActiveSelection()) {
                             val matchedSe = selectionsResult.activeMatchingSe
                             addResultEvent("The selection of the SE has succeeded.")
-                            addResultEvent("Application FCI = ${ByteArrayUtil.toHex(matchedSe.selectionStatus.fci.bytes)}")
+                            addResultEvent("Application FCI = ${ByteArrayUtil.toHex(matchedSe.fciBytes)}")
                         } else {
                             addResultEvent("The selection of the PO Failed")
                         }
@@ -152,28 +152,13 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                         if (selectionsResult.hasActiveSelection()) {
                             val calypsoPo = selectionsResult.activeMatchingSe as CalypsoPo
 
-                            // val calypsoPo = matchingSelection.matchingSe as CalypsoPo
                             addResultEvent("Selection succeeded for P0 with aid $poAid")
-// TODO Review this code with the new 0.9 API
-//                            val readEnvironmentParser = matchingSelection
-//                                    .getResponseParser(readEnvironmentParserIndex) as ReadRecordsRespPars
-//
-//                            /*
-//                             * Retrieve the data read from the parser updated during the selection
-//                             * process (Environment)
-//                             */
-//                            val environmentAndHolder = readEnvironmentParser.records[1]
-//                            addResultEvent("Environment file data: ${ByteArrayUtil.toHex(environmentAndHolder)}")
-//
-//                            val readTransportEventParser = matchingSelection
-//                                    .getResponseParser(readTransportEventParserIndex) as ReadRecordsRespPars
-//
-//                            /*
-//                             * Retrieve the data read from the parser updated during the selection
-//                             * process (Usage)
-//                             */
-//                            val transportEvents = readTransportEventParser.records[1]
-//                            addResultEvent("Transport Event file data: ${ByteArrayUtil.toHex(transportEvents)}")
+
+                            val environmentAndHolder = calypsoPo.getFileBySfi(sfiNavigoEFEnvironment).data.content
+                            addResultEvent("Environment file data: ${ByteArrayUtil.toHex(environmentAndHolder)}")
+
+                            val transportEvent = calypsoPo.getFileBySfi(sfiNavigoEFTransportEvent).data.content
+                            addResultEvent("Transport Event file data: ${ByteArrayUtil.toHex(transportEvent)}")
                         } else {
                             addResultEvent("The selection of the PO Failed")
                         }
@@ -210,8 +195,8 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                     val poSelectionRequest = PoSelectionRequest(
                             PoSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
                                     SeSelector.AidSelector(
-                                            SeSelector.AidSelector.IsoAid(poAid),
-                                            PoSelector.InvalidatedPo.REJECT)))
+                                            SeSelector.AidSelector.IsoAid(poAid)),
+                                    PoSelector.InvalidatedPo.REJECT))
 
                     /*
                      * Prepare the reading order and keep the associated parser for later use once
@@ -242,26 +227,12 @@ class CalypsoExamplesActivity : ExamplesActivity() {
 
                             // val calypsoPo = matchingSelection.matchingSe as CalypsoPo
                             addResultEvent("Selection succeeded for P0 with aid $poAid")
-// TODO Review this code with the new 0.9 API
-//                            val readEnvironmentParser = matchingSelection
-//                                    .getResponseParser(readEnvironmentParserIndex) as ReadRecordsRespPars
-//
-//                            /*
-//                             * Retrieve the data read from the parser updated during the selection
-//                             * process (Environment)
-//                             */
-//                            val environmentAndHolder = readEnvironmentParser.records[1]
-//                            addResultEvent("Environment file data: ${ByteArrayUtil.toHex(environmentAndHolder)}")
-//
-//                            val readUsageParser = matchingSelection
-//                                    .getResponseParser(readUsageParserIndex) as ReadRecordsRespPars
-//
-//                            /*
-//                             * Retrieve the data read from the parser updated during the selection
-//                             * process (Usage)
-//                             */
-//                            val transportEvents = readUsageParser.records[1]
-//                            addResultEvent("Transport Event file data: ${ByteArrayUtil.toHex(transportEvents)}")
+
+                            val environmentAndHolder = calypsoPo.getFileBySfi(sfiHoplinkEFEnvironment).data.content
+                            addResultEvent("Environment file data: ${ByteArrayUtil.toHex(environmentAndHolder)}")
+
+                            val usage = calypsoPo.getFileBySfi(sfiHoplinkEFUsage).data.content
+                            addResultEvent("Environment file data: ${ByteArrayUtil.toHex(usage)}")
                         } else {
                             addResultEvent("The selection of the PO Failed")
                         }

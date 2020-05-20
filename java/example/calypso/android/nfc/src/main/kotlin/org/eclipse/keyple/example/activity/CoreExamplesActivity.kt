@@ -98,7 +98,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                     GenericSeSelectionRequest(
                             SeSelector(
                                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                    SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix), null,
+                                    SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix),
                                             SeSelector.AidSelector.FileOccurrence.FIRST,
                                             SeSelector.AidSelector.FileControlInformation.FCI))))
 
@@ -117,7 +117,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                     GenericSeSelectionRequest(
                             SeSelector(
                                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                    SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix), null,
+                                    SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix),
                                             SeSelector.AidSelector.FileOccurrence.NEXT,
                                             SeSelector.AidSelector.FileControlInformation.FCI))))
 
@@ -137,8 +137,8 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                     val matchingSe = selectionsResult.activeMatchingSe
                     addResultEvent("Selection status for selection " +
                             "(indexed $index): \n\t\t" +
-                            "ATR: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.atr.bytes)}\n\t\t" +
-                            "FCI: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.fci.bytes)}")
+                            "ATR: ${ByteArrayUtil.toHex(matchingSe.atrBytes)}\n\t\t" +
+                            "FCI: ${ByteArrayUtil.toHex(matchingSe.fciBytes)}")
             } else {
                 addResultEvent("The selection did not match for case $index.")
             }
@@ -165,7 +165,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                     GenericSeSelectionRequest(
                             SeSelector(
                                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                    SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix), null,
+                                    SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix),
                                             SeSelector.AidSelector.FileOccurrence.FIRST,
                                             SeSelector.AidSelector.FileControlInformation.FCI))))
 
@@ -174,7 +174,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                     GenericSeSelectionRequest(
                             SeSelector(
                                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                    SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix), null,
+                                    SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix),
                                             SeSelector.AidSelector.FileOccurrence.NEXT,
                                             SeSelector.AidSelector.FileControlInformation.FCI))))
 
@@ -183,7 +183,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                     GenericSeSelectionRequest(
                             SeSelector(
                                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                    SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix), null,
+                                    SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix),
                                             SeSelector.AidSelector.FileOccurrence.NEXT,
                                             SeSelector.AidSelector.FileControlInformation.FCI))))
 
@@ -200,8 +200,8 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                         val matchingSe = it.value
                         addResultEvent("Selection status for selection " +
                                 "(indexed ${it.key}): \n\t\t" +
-                                "ATR: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.atr.bytes)}\n\t\t" +
-                                "FCI: ${ByteArrayUtil.toHex(matchingSe.selectionStatus.fci.bytes)}")
+                                "ATR: ${ByteArrayUtil.toHex(matchingSe.atrBytes)}\n\t\t" +
+                                "FCI: ${ByteArrayUtil.toHex(matchingSe.fciBytes)}")
                     }
                     addResultEvent("End of selection")
                 } else {
@@ -242,7 +242,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
         val seSelector = GenericSeSelectionRequest(SeSelector(
                 SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                 SeSelector.AidSelector(
-                        SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(aid)), null)))
+                        SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(aid)))))
 
         /*
         * Add the selection case to the current selection (we could have added other cases here)
@@ -268,7 +268,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                             val selectedSe = seSelection.processDefaultSelection(event.defaultSelectionsResponse).activeMatchingSe
                             if (selectedSe != null) {
                                 addResultEvent("Observer notification: the selection of the SE has succeeded. End of the SE processing.")
-                                addResultEvent("Application FCI = ${ByteArrayUtil.toHex(selectedSe.selectionStatus.fci.bytes)}")
+                                addResultEvent("Application FCI = ${ByteArrayUtil.toHex(selectedSe.fciBytes)}")
                             } else {
                                 addResultEvent("The selection of the SE has failed. Should not have occurred due to the MATCHED_ONLY selection mode.")
                             }
@@ -334,7 +334,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                     SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
                             null,
                             SeSelector.AidSelector(
-                                    SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(aid)), null)))
+                                    SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(aid)))))
 
             /**
              * Prepare Selection
@@ -359,7 +359,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                 if (selectionsResult.hasActiveSelection()) {
                     val matchedSe = selectionsResult.activeMatchingSe
                     addResultEvent("The selection of the SE has succeeded.")
-                    addResultEvent("Application FCI = ${ByteArrayUtil.toHex(matchedSe.selectionStatus.fci.bytes)}")
+                    addResultEvent("Application FCI = ${ByteArrayUtil.toHex(matchedSe.fciBytes)}")
                     addResultEvent("End of the generic SE processing.")
                 } else {
                     addResultEvent("The selection of the SE has failed.")

@@ -43,9 +43,12 @@ public class SequentialMultiSelection_Pcsc {
         if (selectionsResult.hasActiveSelection()) {
             AbstractMatchingSe matchingSe = selectionsResult.getActiveMatchingSe();
             logger.info("The SE matched the selection {}.", index);
-            logger.info("Selection status for case {}: \n\t\tATR: {}\n\t\tFCI: {}", index,
-                    matchingSe.hasAtr() ? ByteArrayUtil.toHex(matchingSe.getAtrBytes()) : "no ATR",
-                    matchingSe.hasFci() ? ByteArrayUtil.toHex(matchingSe.getFciBytes()) : "no FCI");
+            String atr =
+                    matchingSe.hasAtr() ? ByteArrayUtil.toHex(matchingSe.getAtrBytes()) : "no ATR";
+            String fci =
+                    matchingSe.hasFci() ? ByteArrayUtil.toHex(matchingSe.getFciBytes()) : "no FCI";
+            logger.info("Selection status for case {}: \n\t\tATR: {}\n\t\tFCI: {}", index, atr,
+                    fci);
         } else {
             logger.info("The selection did not match for case {}.", index);
         }
@@ -53,47 +56,36 @@ public class SequentialMultiSelection_Pcsc {
 
     public static void main(String[] args) throws KeypleException {
 
-        /* Get the instance of the SeProxyService (Singleton pattern) */
+        // Get the instance of the SeProxyService (Singleton pattern)
         SeProxyService seProxyService = SeProxyService.getInstance();
 
-        /* Assign PcscPlugin to the SeProxyService */
+        // Assign PcscPlugin to the SeProxyService
         seProxyService.registerPlugin(new PcscPluginFactory());
 
-        /*
-         * Get a SE reader ready to work with generic SE. Use the getReader helper method from the
-         * ReaderUtilities class.
-         */
+        // Get a SE reader ready to work with generic SE. Use the getReader helper method from the
+        // ReaderUtilities class.
         SeReader seReader = ReaderUtilities.getDefaultContactLessSeReader();
-
-        /* Check if the reader exists */
-        if (seReader == null) {
-            throw new IllegalStateException("Bad SE reader setup");
-        }
 
         logger.info(
                 "=============== UseCase Generic #4: AID based sequential explicit multiple selection "
                         + "==================");
         logger.info("= SE Reader  NAME = {}", seReader.getName());
 
-        /* Check if a SE is present in the reader */
+        // Check if a SE is present in the reader
         if (seReader.isSePresent()) {
 
             SeSelection seSelection;
 
-            /*
-             * operate SE AID selection (change the AID prefix here to adapt it to the SE used for
-             * the test [the SE should have at least two applications matching the AID prefix])
-             */
+            // operate SE AID selection (change the AID prefix here to adapt it to the SE used for
+            // the test [the SE should have at least two applications matching the AID prefix])
             String seAidPrefix = "315449432E494341";
 
-            /* First selection case */
+            // First selection case
             seSelection =
                     new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
-            /*
-             * AID based selection: get the first application occurrence matching the AID, keep the
-             * physical channel open
-             */
+            // AID based selection: get the first application occurrence matching the AID, keep the
+            // physical channel open
             seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector(
                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                     new SeSelector.AidSelector(
@@ -101,13 +93,11 @@ public class SequentialMultiSelection_Pcsc {
                             SeSelector.AidSelector.FileOccurrence.FIRST,
                             SeSelector.AidSelector.FileControlInformation.FCI))));
 
-            /* Do the selection and display the result */
+            // Do the selection and display the result
             doAndAnalyseSelection(seReader, seSelection, 1);
 
-            /*
-             * New selection: get the next application occurrence matching the same AID, close the
-             * physical channel after
-             */
+            // New selection: get the next application occurrence matching the same AID, close the
+            // physical channel after
             seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
                     ChannelControl.CLOSE_AFTER);
 
@@ -118,7 +108,7 @@ public class SequentialMultiSelection_Pcsc {
                             SeSelector.AidSelector.FileOccurrence.NEXT,
                             SeSelector.AidSelector.FileControlInformation.FCI))));
 
-            /* Do the selection and display the result */
+            // Do the selection and display the result
             doAndAnalyseSelection(seReader, seSelection, 2);
 
         } else {

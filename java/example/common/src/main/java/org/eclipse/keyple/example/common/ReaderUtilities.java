@@ -22,7 +22,9 @@ import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 
-public class ReaderUtilities {
+public final class ReaderUtilities {
+    private ReaderUtilities() {}
+
     /**
      * Get the terminal which names match the expected pattern
      *
