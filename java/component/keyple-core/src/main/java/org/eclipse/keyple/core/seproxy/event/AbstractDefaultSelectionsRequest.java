@@ -37,7 +37,7 @@ public abstract class AbstractDefaultSelectionsRequest {
     private final MultiSeRequestProcessing multiSeRequestProcessing;
     private final ChannelControl channelControl;
 
-    public AbstractDefaultSelectionsRequest(List<SeRequest> selectionSeRequests,
+    protected AbstractDefaultSelectionsRequest(List<SeRequest> selectionSeRequests,
             MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl) {
         this.selectionSeRequests = selectionSeRequests;
         this.multiSeRequestProcessing = multiSeRequestProcessing;
