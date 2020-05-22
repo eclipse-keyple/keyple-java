@@ -13,7 +13,6 @@ package org.eclipse.keyple.core.seproxy.plugin.mock;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
@@ -33,7 +32,7 @@ public class BlankAbstractReader extends AbstractReader {
     }
 
     @Override
-    protected List<SeResponse> processSeRequestSet(Set<SeRequest> requestSet,
+    protected List<SeResponse> processSeRequests(List<SeRequest> seRequests,
             MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
             throws KeypleReaderIOException {
         return null;

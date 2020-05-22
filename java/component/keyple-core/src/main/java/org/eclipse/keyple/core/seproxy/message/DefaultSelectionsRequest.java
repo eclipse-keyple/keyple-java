@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.message;
 
-import java.util.Set;
+import java.util.List;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
@@ -23,21 +23,21 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
  */
 public final class DefaultSelectionsRequest extends AbstractDefaultSelectionsRequest {
 
-    private Set<SeRequest> selectionSeRequestSet;
+    private final List<SeRequest> selectionSeRequests;
 
-    private MultiSeRequestProcessing multiSeRequestProcessing;
+    private final MultiSeRequestProcessing multiSeRequestProcessing;
 
-    private ChannelControl channelControl;
+    private final ChannelControl channelControl;
 
-    public DefaultSelectionsRequest(Set<SeRequest> selectionSeRequestSet,
+    public DefaultSelectionsRequest(List<SeRequest> selectionSeRequests,
             MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl) {
-        this.selectionSeRequestSet = selectionSeRequestSet;
+        this.selectionSeRequests = selectionSeRequests;
         this.multiSeRequestProcessing = multiSeRequestProcessing;
         this.channelControl = channelControl;
     }
 
-    public DefaultSelectionsRequest(Set<SeRequest> selectionSeRequestSet) {
-        this(selectionSeRequestSet, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+    public DefaultSelectionsRequest(List<SeRequest> selectionSeRequests) {
+        this(selectionSeRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
     }
 
     @Override
@@ -51,7 +51,7 @@ public final class DefaultSelectionsRequest extends AbstractDefaultSelectionsReq
     }
 
     @Override
-    public Set<SeRequest> getSelectionSeRequestSet() {
-        return selectionSeRequestSet;
+    public List<SeRequest> getSelectionSeRequests() {
+        return selectionSeRequests;
     }
 }

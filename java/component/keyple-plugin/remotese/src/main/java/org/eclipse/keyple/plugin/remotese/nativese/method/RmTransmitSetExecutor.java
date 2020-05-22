@@ -12,9 +12,7 @@
 package org.eclipse.keyple.plugin.remotese.nativese.method;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -59,7 +57,7 @@ public class RmTransmitSetExecutor implements IRemoteMethodExecutor {
     public TransportDto execute(TransportDto transportDto) {
         KeypleDto keypleDto = transportDto.getKeypleDTO();
         TransportDto out = null;
-        List<SeResponse> seResponseList = null;
+        List<SeResponse> seResponses = null;
         MultiSeRequestProcessing multiSeRequestProcessing;
         ChannelControl channelControl;
 
@@ -72,14 +70,14 @@ public class RmTransmitSetExecutor implements IRemoteMethodExecutor {
 
         channelControl = ChannelControl.valueOf(bodyJsonO.get("channelControl").getAsString());
 
-        Set<SeRequest> seRequestSet =
-                JsonParser.getGson().fromJson(bodyJsonO.get("seRequestSet").getAsString(),
-                        new TypeToken<LinkedHashSet<SeRequest>>() {}.getType());
+        List<SeRequest> seRequests =
+                JsonParser.getGson().fromJson(bodyJsonO.get("seRequests").getAsString(),
+                        new TypeToken<ArrayList<SeRequest>>() {}.getType());
 
 
         // prepare transmitSet on nativeReader
         String nativeReaderName = keypleDto.getNativeReaderName();
-        logger.trace("Execute locally seRequestSet : {} with params {} {}", seRequestSet,
+        logger.trace("Execute locally seRequests : {} with params {} {}", seRequests,
                 channelControl, multiSeRequestProcessing);
 
         try {
@@ -87,11 +85,11 @@ public class RmTransmitSetExecutor implements IRemoteMethodExecutor {
             ProxyReader reader = (ProxyReader) slaveAPI.findLocalReader(nativeReaderName);
 
             // execute transmitSet
-            seResponseList =
-                    reader.transmitSet(seRequestSet, multiSeRequestProcessing, channelControl);
+            seResponses =
+                    reader.transmitSeRequests(seRequests, multiSeRequestProcessing, channelControl);
 
             // prepare response
-            String parseBody = JsonParser.getGson().toJson(seResponseList,
+            String parseBody = JsonParser.getGson().toJson(seResponses,
                     new TypeToken<ArrayList<SeResponse>>() {}.getType());
             out = transportDto.nextTransportDTO(KeypleDtoHelper.buildResponse(
                     getMethodName().getName(), parseBody, keypleDto.getSessionId(),

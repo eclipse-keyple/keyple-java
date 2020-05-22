@@ -48,7 +48,7 @@ public class RemoteMethodTxEngine implements DtoHandler, IRemoteMethodTxEngine {
      * @param executorService : executorService required to execute async task in RemoteMethodTx
      */
     public RemoteMethodTxEngine(DtoSender sender, long timeout, ExecutorService executorService) {
-        // this.queue = new LinkedList<RemoteMethodTx>();
+        // this.queue = new Linkers<RemoteMethodTx>();
         this.sender = sender;
         this.timeout = timeout;
         this.executorService = executorService;

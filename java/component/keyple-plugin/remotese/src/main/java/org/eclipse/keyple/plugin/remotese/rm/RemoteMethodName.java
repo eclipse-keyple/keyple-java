@@ -16,9 +16,9 @@ import java.util.Map;
 
 public enum RemoteMethodName {
 
-    READER_TRANSMIT_SET("reader_transmitSet"),
+    READER_TRANSMIT_SET("reader_transmit_se_requests"),
 
-    READER_TRANSMIT("reader_transmit"),
+    READER_TRANSMIT("reader_transmit_se_request"),
 
     READER_CONNECT("reader_connect"),
 

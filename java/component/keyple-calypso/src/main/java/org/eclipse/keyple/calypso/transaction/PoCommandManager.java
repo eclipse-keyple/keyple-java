@@ -36,7 +36,7 @@ class PoCommandManager {
     private static final Logger logger = LoggerFactory.getLogger(PoCommandManager.class);
 
     /** The list to contain the prepared commands and their parsers */
-    private final List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poCommandList =
+    private final List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poCommands =
             new ArrayList<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>>();
     /** The command index, incremented each time a command is added */
     private boolean preparedCommandsProcessed;
@@ -60,10 +60,10 @@ class PoCommandManager {
          * However, the parsers have remained available until now.
          */
         if (preparedCommandsProcessed) {
-            poCommandList.clear();
+            poCommands.clear();
             preparedCommandsProcessed = false;
         }
-        poCommandList.add(commandBuilder);
+        poCommands.add(commandBuilder);
     }
 
     /**
@@ -79,13 +79,13 @@ class PoCommandManager {
     /**
      * @return the current AbstractPoCommandBuilder list
      */
-    List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> getPoCommandBuilderList() {
+    List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> getPoCommandBuilders() {
         /* Clear the list if no command has been added since the last call to a process method. */
         if (preparedCommandsProcessed) {
-            poCommandList.clear();
+            poCommands.clear();
             preparedCommandsProcessed = false;
         }
-        return poCommandList;
+        return poCommands;
     }
 
     /**
@@ -95,10 +95,10 @@ class PoCommandManager {
      * @return the parser
      */
     public AbstractApduResponseParser getResponseParser(int commandIndex) {
-        if (commandIndex < 0 || commandIndex >= poCommandList.size()) {
+        if (commandIndex < 0 || commandIndex >= poCommands.size()) {
             throw new IllegalArgumentException(
                     String.format("Bad command index: index = %d, number of commands = %d",
-                            commandIndex, poCommandList.size()));
+                            commandIndex, poCommands.size()));
         }
         return null;
     }

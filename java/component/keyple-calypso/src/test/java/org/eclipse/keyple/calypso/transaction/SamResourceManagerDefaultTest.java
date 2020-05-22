@@ -123,7 +123,7 @@ public class SamResourceManagerDefaultTest extends CalypsoBaseTest {
         ProxyReader reader = Mockito.mock(ProxyReader.class);
         when(reader.getName()).thenReturn(SAM_READER_NAME);
         when(reader.isSePresent()).thenReturn(true);
-        doReturn(selectionResponses).when(reader).transmitSet(any(Set.class),
+        doReturn(selectionResponses).when(reader).transmitSeRequests(any(List.class),
                 any(MultiSeRequestProcessing.class), any(ChannelControl.class));
 
         // create a list of mock readers

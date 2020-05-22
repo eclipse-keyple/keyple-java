@@ -184,7 +184,7 @@ public final class PoTransaction {
         byte[] sessionTerminalChallenge = samCommandProcessor.getSessionTerminalChallenge();
 
         // PO ApduRequest List to hold Open Secure Session and other optional commands
-        List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
+        List<ApduRequest> poApduRequests = new ArrayList<ApduRequest>();
 
         // The sfi and record number to be read when the open secure session command is executed.
         // The default value is 0 (no record to read) but we will optimize the exchanges if a read
@@ -214,31 +214,31 @@ public final class PoTransaction {
                         accessLevel.getSessionKey(), sessionTerminalChallenge, sfi, recordNumber);
 
         // Add the resulting ApduRequest to the PO ApduRequest list
-        poApduRequestList.add(openSessionCmdBuild.getApduRequest());
+        poApduRequests.add(openSessionCmdBuild.getApduRequest());
 
         // Add all optional commands to the PO ApduRequest list
         if (poCommands != null) {
-            poApduRequestList.addAll(getApduRequests(poCommands));
+            poApduRequests.addAll(getApduRequests(poCommands));
         }
 
         // Create a SeRequest from the ApduRequest list, PO AID as Selector, keep channel open
-        SeRequest poSeRequest = new SeRequest(poApduRequestList);
+        SeRequest poSeRequest = new SeRequest(poApduRequests);
 
         // Transmit the commands to the PO
         SeResponse poSeResponse = safePoTransmit(poSeRequest, ChannelControl.KEEP_OPEN);
 
 
         // Retrieve and check the ApduResponses
-        List<ApduResponse> poApduResponseList = poSeResponse.getApduResponses();
+        List<ApduResponse> poApduResponses = poSeResponse.getApduResponses();
 
         // Do some basic checks
-        checkCommandsResponsesSynchronization(poApduRequestList.size(), poApduResponseList.size());
+        checkCommandsResponsesSynchronization(poApduRequests.size(), poApduResponses.size());
 
-        // Parse the response to Open Secure Session (the first item of poApduResponseList)
+        // Parse the response to Open Secure Session (the first item of poApduResponses)
         // The updateCalypsoPo method fills the CalypsoPo object with the command data and return
         // the parser used for an internal usage here.
         AbstractOpenSessionRespPars poOpenSessionPars = (AbstractOpenSessionRespPars) CalypsoPoUtils
-                .updateCalypsoPo(calypsoPo, openSessionCmdBuild, poApduResponseList.get(0));
+                .updateCalypsoPo(calypsoPo, openSessionCmdBuild, poApduResponses.get(0));
         // Build the Digest Init command from PO Open Session
         // the session challenge is needed for the SAM digest computation
         byte[] sessionCardChallenge = poOpenSessionPars.getPoChallenge();
@@ -264,23 +264,23 @@ public final class PoTransaction {
         // Update) until the session closing. At this moment, all SAM Apdu will be processed at
         // once.
         samCommandProcessor.initializeDigester(accessLevel, false, false, poKif, poKvc,
-                poApduResponseList.get(0).getDataOut());
+                poApduResponses.get(0).getDataOut());
 
         // Add all commands data to the digest computation. The first command in the list is the
         // open secure session command. This command is not included in the digest computation, so
         // we skip it and start the loop at index 1.
         if ((poCommands != null) && !poCommands.isEmpty()) {
             // Add requests and responses to the digest processor
-            samCommandProcessor.pushPoExchangeDataList(poApduRequestList, poApduResponseList, 1);
+            samCommandProcessor.pushPoExchangeDataList(poApduRequests, poApduResponses, 1);
         }
 
         sessionState = SessionState.SESSION_OPEN;
 
         // Remove Open Secure Session response and create a new SeResponse
-        poApduResponseList.remove(0);
+        poApduResponses.remove(0);
 
         // update CalypsoPo with the received data
-        CalypsoPoUtils.updateCalypsoPo(calypsoPo, poCommands, poApduResponseList);
+        CalypsoPoUtils.updateCalypsoPo(calypsoPo, poCommands, poApduResponses);
     }
 
     /**
@@ -325,25 +325,25 @@ public final class PoTransaction {
             throws CalypsoPoTransactionException, CalypsoPoCommandException {
 
         // Get the PO ApduRequest List
-        List<ApduRequest> poApduRequestList = getApduRequests(poCommands);
+        List<ApduRequest> poApduRequests = getApduRequests(poCommands);
 
         // Create a SeRequest from the ApduRequest list, PO AID as Selector, manage the logical
         // channel according to the channelControl enum
-        SeRequest poSeRequest = new SeRequest(poApduRequestList);
+        SeRequest poSeRequest = new SeRequest(poApduRequests);
 
         // Transmit the commands to the PO
         SeResponse poSeResponse = safePoTransmit(poSeRequest, channelControl);
 
         // Retrieve and check the ApduResponses
-        List<ApduResponse> poApduResponseList = poSeResponse.getApduResponses();
+        List<ApduResponse> poApduResponses = poSeResponse.getApduResponses();
 
         // Do some basic checks
-        checkCommandsResponsesSynchronization(poApduRequestList.size(), poApduResponseList.size());
+        checkCommandsResponsesSynchronization(poApduRequests.size(), poApduResponses.size());
 
         // Add all commands data to the digest computation if this method is called within a Secure
         // Session.
         if (sessionState == SessionState.SESSION_OPEN) {
-            samCommandProcessor.pushPoExchangeDataList(poApduRequestList, poApduResponseList, 0);
+            samCommandProcessor.pushPoExchangeDataList(poApduRequests, poApduResponses, 0);
         }
 
         CalypsoPoUtils.updateCalypsoPo(calypsoPo, poCommands, poSeResponse.getApduResponses());
@@ -415,16 +415,15 @@ public final class PoTransaction {
         }
 
         // Get the PO ApduRequest List - for the first PO exchange
-        List<ApduRequest> poApduRequestList = getApduRequests(poModificationCommands);
+        List<ApduRequest> poApduRequests = getApduRequests(poModificationCommands);
 
         // Compute "anticipated" Digest Update (for optional poModificationCommands)
-        if ((poModificationCommands != null) && !poApduRequestList.isEmpty()) {
-            checkCommandsResponsesSynchronization(poApduRequestList.size(),
+        if ((poModificationCommands != null) && !poApduRequests.isEmpty()) {
+            checkCommandsResponsesSynchronization(poApduRequests.size(),
                     poAnticipatedResponses.size());
             // Add all commands data to the digest computation: commands and anticipated
             // responses.
-            samCommandProcessor.pushPoExchangeDataList(poApduRequestList, poAnticipatedResponses,
-                    0);
+            samCommandProcessor.pushPoExchangeDataList(poApduRequests, poAnticipatedResponses, 0);
         }
 
         // All SAM digest operations will now run at once.
@@ -455,22 +454,22 @@ public final class PoTransaction {
         CloseSessionCmdBuild closeSessionCmdBuild = new CloseSessionCmdBuild(calypsoPo.getPoClass(),
                 ratificationAsked, sessionTerminalSignature);
 
-        poApduRequestList.add(closeSessionCmdBuild.getApduRequest());
+        poApduRequests.add(closeSessionCmdBuild.getApduRequest());
 
         // Keep the position of the Close Session command in request list
-        int closeCommandIndex = poApduRequestList.size() - 1;
+        int closeCommandIndex = poApduRequests.size() - 1;
 
         // Add the PO Ratification command if any
         if (ratificationCommand != null) {
-            poApduRequestList.add(ratificationCommand.getApduRequest());
+            poApduRequests.add(ratificationCommand.getApduRequest());
         }
 
         // Transfer PO commands
-        SeRequest poSeRequest = new SeRequest(poApduRequestList);
+        SeRequest poSeRequest = new SeRequest(poApduRequests);
 
         SeResponse poSeResponse;
         try {
-            poSeResponse = poReader.transmit(poSeRequest, channelControl);
+            poSeResponse = poReader.transmitSeRequest(poSeRequest, channelControl);
         } catch (KeypleReaderIOException ex) {
             poSeResponse = ex.getSeResponse();
             // The current exception may have been caused by a communication issue with the PO
@@ -481,17 +480,17 @@ public final class PoTransaction {
             //
             // We should have one response less than requests.
             if (ratificationAsked || poSeResponse == null
-                    || poSeResponse.getApduResponses().size() != poApduRequestList.size() - 1) {
+                    || poSeResponse.getApduResponses().size() != poApduRequests.size() - 1) {
                 throw new CalypsoPoIOException("PO IO Exception while transmitting commands.", ex);
             }
         }
 
-        List<ApduResponse> poApduResponseList = poSeResponse.getApduResponses();
+        List<ApduResponse> poApduResponses = poSeResponse.getApduResponses();
 
         // TODO add support of poRevision parameter to CloseSessionRespPars for REV2.4 PO CLass byte
         // before last if ratification, otherwise last one
-        CloseSessionRespPars poCloseSessionPars = closeSessionCmdBuild
-                .createResponseParser(poApduResponseList.get(closeCommandIndex));
+        CloseSessionRespPars poCloseSessionPars =
+                closeSessionCmdBuild.createResponseParser(poApduResponses.get(closeCommandIndex));
 
         poCloseSessionPars.checkStatus();
 
@@ -501,12 +500,12 @@ public final class PoTransaction {
 
         // Remove ratification response if any
         if (!ratificationAsked) {
-            poApduResponseList.remove(poApduResponseList.size() - 1);
+            poApduResponses.remove(poApduResponses.size() - 1);
         }
         // Remove Close Secure Session response and create a new SeResponse
-        poApduResponseList.remove(poApduResponseList.size() - 1);
+        poApduResponses.remove(poApduResponses.size() - 1);
 
-        CalypsoPoUtils.updateCalypsoPo(calypsoPo, poModificationCommands, poApduResponseList);
+        CalypsoPoUtils.updateCalypsoPo(calypsoPo, poModificationCommands, poApduResponses);
     }
 
     /**
@@ -722,14 +721,14 @@ public final class PoTransaction {
         currentAccessLevel = accessLevel;
 
         // create a sublist of AbstractPoCommandBuilder to be sent atomically
-        List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poAtomicCommandList =
+        List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poAtomicCommands =
                 new ArrayList<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>>();
 
         AtomicInteger neededSessionBufferSpace = new AtomicInteger();
         AtomicBoolean overflow = new AtomicBoolean();
 
         for (AbstractPoCommandBuilder<? extends AbstractPoResponseParser> commandBuilder : poCommandManager
-                .getPoCommandBuilderList()) {
+                .getPoCommandBuilders()) {
             // check if the command is a modifying one and get it status (overflow yes/no,
             // neededSessionBufferSpace)
             // if the command overflows the session buffer in atomic modification mode, an exception
@@ -742,21 +741,21 @@ public final class PoTransaction {
                     resetModificationsBufferCounter();
                     // Clear the list and add the command that did not fit in the PO modifications
                     // buffer. We also update the usage counter without checking the result.
-                    poAtomicCommandList.clear();
-                    poAtomicCommandList.add(commandBuilder);
+                    poAtomicCommands.clear();
+                    poAtomicCommands.add(commandBuilder);
                     // just update modifications buffer usage counter, ignore result (always false)
                     isSessionBufferOverflowed(neededSessionBufferSpace.get());
                 } else {
                     // The command fits in the PO modifications buffer, just add it to the list
-                    poAtomicCommandList.add(commandBuilder);
+                    poAtomicCommands.add(commandBuilder);
                 }
             } else {
                 // This command does not affect the PO modifications buffer
-                poAtomicCommandList.add(commandBuilder);
+                poAtomicCommands.add(commandBuilder);
             }
         }
 
-        processAtomicOpening(currentAccessLevel, poAtomicCommandList);
+        processAtomicOpening(currentAccessLevel, poAtomicCommands);
 
         // sets the flag indicating that the commands have been executed
         poCommandManager.notifyCommandsProcessed();
@@ -786,7 +785,7 @@ public final class PoTransaction {
         }
 
         // PO commands sent outside a Secure Session. No modifications buffer limitation.
-        processAtomicPoCommands(poCommandManager.getPoCommandBuilderList(), channelControl);
+        processAtomicPoCommands(poCommandManager.getPoCommandBuilders(), channelControl);
 
         // sets the flag indicating that the commands have been executed
         poCommandManager.notifyCommandsProcessed();
@@ -817,14 +816,14 @@ public final class PoTransaction {
         }
 
         // A session is open, we have to care about the PO modifications buffer
-        List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poAtomicBuilderList =
+        List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poAtomicBuilders =
                 new ArrayList<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>>();
 
         AtomicInteger neededSessionBufferSpace = new AtomicInteger();
         AtomicBoolean overflow = new AtomicBoolean();
 
         for (AbstractPoCommandBuilder<? extends AbstractPoResponseParser> commandBuilder : poCommandManager
-                .getPoCommandBuilderList()) {
+                .getPoCommandBuilders()) {
             // check if the command is a modifying one and get it status (overflow yes/no,
             // neededSessionBufferSpace)
             // if the command overflows the session buffer in atomic modification mode, an exception
@@ -834,7 +833,7 @@ public final class PoTransaction {
                     // The current command would overflow the modifications buffer in the PO. We
                     // send the current commands and update the parsers. The parsers Iterator is
                     // kept all along the process.
-                    processAtomicPoCommands(poAtomicBuilderList, ChannelControl.KEEP_OPEN);
+                    processAtomicPoCommands(poAtomicBuilders, ChannelControl.KEEP_OPEN);
                     // Close the session and reset the modifications buffer counters for the next
                     // round (set the contact mode to avoid the transmission of the ratification)
                     processAtomicClosing(null, TransmissionMode.CONTACTS, ChannelControl.KEEP_OPEN);
@@ -843,22 +842,22 @@ public final class PoTransaction {
                     processAtomicOpening(currentAccessLevel, null);
                     // Clear the list and add the command that did not fit in the PO modifications
                     // buffer. We also update the usage counter without checking the result.
-                    poAtomicBuilderList.clear();
-                    poAtomicBuilderList.add(commandBuilder);
+                    poAtomicBuilders.clear();
+                    poAtomicBuilders.add(commandBuilder);
                     // just update modifications buffer usage counter, ignore result (always false)
                     isSessionBufferOverflowed(neededSessionBufferSpace.get());
                 } else {
                     // The command fits in the PO modifications buffer, just add it to the list
-                    poAtomicBuilderList.add(commandBuilder);
+                    poAtomicBuilders.add(commandBuilder);
                 }
             } else {
                 // This command does not affect the PO modifications buffer
-                poAtomicBuilderList.add(commandBuilder);
+                poAtomicBuilders.add(commandBuilder);
             }
         }
 
-        if (!poAtomicBuilderList.isEmpty()) {
-            processAtomicPoCommands(poAtomicBuilderList, ChannelControl.KEEP_OPEN);
+        if (!poAtomicBuilders.isEmpty()) {
+            processAtomicPoCommands(poAtomicBuilders, ChannelControl.KEEP_OPEN);
         }
 
         // sets the flag indicating that the commands have been executed
@@ -897,10 +896,10 @@ public final class PoTransaction {
         AtomicInteger neededSessionBufferSpace = new AtomicInteger();
         AtomicBoolean overflow = new AtomicBoolean();
 
-        List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poAtomicCommandList =
+        List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poAtomicCommands =
                 new ArrayList<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>>();
         for (AbstractPoCommandBuilder<? extends AbstractPoResponseParser> commandBuilder : poCommandManager
-                .getPoCommandBuilderList()) {
+                .getPoCommandBuilders()) {
             // check if the command is a modifying one and get it status (overflow yes/no,
             // neededSessionBufferSpace)
             // if the command overflows the session buffer in atomic modification mode, an exception
@@ -916,11 +915,11 @@ public final class PoTransaction {
                     // If at least one non-modifying was prepared, we use processAtomicPoCommands
                     // instead of processAtomicClosing to send the list
                     if (atLeastOneReadCommand) {
-                        processAtomicPoCommands(poAtomicCommandList, ChannelControl.KEEP_OPEN);
+                        processAtomicPoCommands(poAtomicCommands, ChannelControl.KEEP_OPEN);
                         atLeastOneReadCommand = false;
                     } else {
                         // All commands in the list are 'modifying the PO'
-                        processAtomicClosing(poAtomicCommandList, TransmissionMode.CONTACTS,
+                        processAtomicClosing(poAtomicCommands, TransmissionMode.CONTACTS,
                                 ChannelControl.KEEP_OPEN);
                         resetModificationsBufferCounter();
                         sessionPreviouslyClosed = true;
@@ -928,17 +927,17 @@ public final class PoTransaction {
 
                     // Clear the list and add the command that did not fit in the PO modifications
                     // buffer. We also update the usage counter without checking the result.
-                    poAtomicCommandList.clear();
-                    poAtomicCommandList.add(commandBuilder);
+                    poAtomicCommands.clear();
+                    poAtomicCommands.add(commandBuilder);
                     // just update modifications buffer usage counter, ignore result (always false)
                     isSessionBufferOverflowed(neededSessionBufferSpace.get());
                 } else {
                     // The command fits in the PO modifications buffer, just add it to the list
-                    poAtomicCommandList.add(commandBuilder);
+                    poAtomicCommands.add(commandBuilder);
                 }
             } else {
                 // This command does not affect the PO modifications buffer
-                poAtomicCommandList.add(commandBuilder);
+                poAtomicCommands.add(commandBuilder);
                 atLeastOneReadCommand = true;
             }
         }
@@ -949,7 +948,7 @@ public final class PoTransaction {
         }
 
         // Finally, close the session as requested
-        processAtomicClosing(poAtomicCommandList, calypsoPo.getTransmissionMode(), channelControl);
+        processAtomicClosing(poAtomicCommands, calypsoPo.getTransmissionMode(), channelControl);
 
         // sets the flag indicating that the commands have been executed
         poCommandManager.notifyCommandsProcessed();
@@ -971,16 +970,16 @@ public final class PoTransaction {
     public void processCancel(ChannelControl channelControl)
             throws CalypsoPoTransactionException, CalypsoPoCommandException {
         // PO ApduRequest List to hold Close Secure Session command
-        List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
+        List<ApduRequest> poApduRequests = new ArrayList<ApduRequest>();
 
         // Build the PO Close Session command (in "abort" mode since no signature is provided).
         CloseSessionCmdBuild closeSessionCmdBuild =
                 new CloseSessionCmdBuild(calypsoPo.getPoClass());
 
-        poApduRequestList.add(closeSessionCmdBuild.getApduRequest());
+        poApduRequests.add(closeSessionCmdBuild.getApduRequest());
 
         // Transfer PO commands
-        SeRequest poSeRequest = new SeRequest(poApduRequestList);
+        SeRequest poSeRequest = new SeRequest(poApduRequests);
 
         SeResponse poSeResponse = safePoTransmit(poSeRequest, channelControl);
 
@@ -998,7 +997,7 @@ public final class PoTransaction {
     private SeResponse safePoTransmit(SeRequest poSeRequest, ChannelControl channelControl)
             throws CalypsoPoIOException {
         try {
-            return poReader.transmit(poSeRequest, channelControl);
+            return poReader.transmitSeRequest(poSeRequest, channelControl);
         } catch (KeypleReaderIOException e) {
             throw new CalypsoPoIOException("PO IO Exception while transmitting commands.", e);
         }

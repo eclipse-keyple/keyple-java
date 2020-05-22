@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.event;
 
-import java.util.Set;
+import java.util.List;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
@@ -32,9 +32,9 @@ import org.eclipse.keyple.core.seproxy.message.SeRequest;
 
 public abstract class AbstractDefaultSelectionsRequest {
     /**
-     * @return the selection request set
+     * @return the selection request list
      */
-    protected abstract Set<SeRequest> getSelectionSeRequestSet();
+    protected abstract List<SeRequest> getSelectionSeRequests();
 
     /**
      * @return the multi SE request mode

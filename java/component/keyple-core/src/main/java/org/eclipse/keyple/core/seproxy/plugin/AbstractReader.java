@@ -12,7 +12,6 @@
 package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.List;
-import java.util.Set;
 import org.eclipse.keyple.core.seproxy.AbstractSeProxyComponent;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
@@ -112,40 +111,40 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
      * <p>
      * As the method is final, it cannot be extended.
      *
-     * @param requestSet the request set
+     * @param seRequests the request set
      * @param multiSeRequestProcessing the multi SE request processing mode
      * @param channelControl the channel control indicator
      * @return the response set
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
-    public final List<SeResponse> transmitSet(Set<SeRequest> requestSet,
+    public final List<SeResponse> transmitSeRequests(List<SeRequest> seRequests,
             MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
             throws KeypleReaderIOException {
-        if (requestSet == null) {
-            throw new IllegalArgumentException("seRequestSet must not be null");
+        if (seRequests == null) {
+            throw new IllegalArgumentException("The SeRequest list must not be null");
         }
 
         /* sets the forceClosing flag */
         forceClosing = channelControl == ChannelControl.KEEP_OPEN;
 
-        List<SeResponse> responseSet;
+        List<SeResponse> seResponses;
 
         if (logger.isDebugEnabled()) {
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
-            logger.debug("[{}] transmit => SEREQUESTSET = {}, elapsed {} ms.", this.getName(),
-                    requestSet, elapsedMs);
+            logger.debug("[{}] transmit => SEREQUESTLIST = {}, elapsed {} ms.", this.getName(),
+                    seRequests, elapsedMs);
         }
 
         try {
-            responseSet = processSeRequestSet(requestSet, multiSeRequestProcessing, channelControl);
+            seResponses = processSeRequests(seRequests, multiSeRequestProcessing, channelControl);
         } catch (KeypleReaderIOException ex) {
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
-            logger.debug("[{}] transmit => SEREQUESTSET IO failure. elapsed {}", this.getName(),
+            logger.debug("[{}] transmit => SEREQUESTLIST IO failure. elapsed {}", this.getName(),
                     elapsedMs);
             /* Throw an exception with the responses collected so far. */
             throw ex;
@@ -155,25 +154,11 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - before) / 100000) / 10;
             this.before = timeStamp;
-            logger.debug("[{}] transmit => SERESPONSESET = {}, elapsed {} ms.", this.getName(),
-                    responseSet, elapsedMs);
+            logger.debug("[{}] transmit => SERESPONSELIST = {}, elapsed {} ms.", this.getName(),
+                    seResponses, elapsedMs);
         }
 
-        return responseSet;
-    }
-
-    /**
-     * Simplified version of transmitSet for standard use.
-     *
-     * @param requestSet the request set
-     * @return the response set
-     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
-     */
-    @Override
-    public final List<SeResponse> transmitSet(Set<SeRequest> requestSet)
-            throws KeypleReaderIOException {
-        return transmitSet(requestSet, MultiSeRequestProcessing.FIRST_MATCH,
-                ChannelControl.KEEP_OPEN);
+        return seResponses;
     }
 
     /**
@@ -181,13 +166,13 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
      * <p>
      * This method is handled by transmitSet.
      *
-     * @param requestSet the Set of {@link SeRequest} to be processed
+     * @param seRequests a {@link List} of {@link SeRequest} to be processed
      * @param multiSeRequestProcessing the multi se processing mode
      * @param channelControl indicates if the channel has to be closed at the end of the processing
      * @return the List of {@link SeResponse} (responses to the Set of {@link SeRequest})
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    protected abstract List<SeResponse> processSeRequestSet(Set<SeRequest> requestSet,
+    protected abstract List<SeResponse> processSeRequests(List<SeRequest> seRequests,
             MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
             throws KeypleReaderIOException;
 
@@ -205,7 +190,7 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
-    public final SeResponse transmit(SeRequest seRequest, ChannelControl channelControl)
+    public final SeResponse transmitSeRequest(SeRequest seRequest, ChannelControl channelControl)
             throws KeypleReaderIOException {
         if (seRequest == null) {
             throw new IllegalArgumentException("seRequest must not be null");
@@ -245,18 +230,6 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
         }
 
         return seResponse;
-    }
-
-    /**
-     * Simplified version of transmit for standard use.
-     *
-     * @param seRequest the request to be transmitted
-     * @return the received response
-     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
-     */
-    @Override
-    public final SeResponse transmit(SeRequest seRequest) throws KeypleReaderIOException {
-        return transmit(seRequest, ChannelControl.KEEP_OPEN);
     }
 
     /**

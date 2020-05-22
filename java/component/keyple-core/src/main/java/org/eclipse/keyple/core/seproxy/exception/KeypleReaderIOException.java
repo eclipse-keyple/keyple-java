@@ -25,7 +25,7 @@ public class KeypleReaderIOException extends KeypleReaderException {
      * in communication with the SE.
      */
     private SeResponse seResponse;
-    private List<SeResponse> seResponseList;
+    private List<SeResponse> seResponses;
 
     /**
      * @param message the message to identify the exception context
@@ -44,12 +44,12 @@ public class KeypleReaderIOException extends KeypleReaderException {
         super(message, cause);
     }
 
-    public List<SeResponse> getSeResponseList() {
-        return seResponseList;
+    public List<SeResponse> getSeResponses() {
+        return seResponses;
     }
 
-    public void setSeResponseList(List<SeResponse> seResponseList) {
-        this.seResponseList = seResponseList;
+    public void setSeResponses(List<SeResponse> seResponses) {
+        this.seResponses = seResponses;
     }
 
     public SeResponse getSeResponse() {

@@ -34,59 +34,59 @@ public class SampleFactory {
     }
 
     public static AbstractDefaultSelectionsRequest getSelectionRequest() {
-        return new DefaultSelectionsRequest(getASeRequestSet_ISO14443_4());
+        return new DefaultSelectionsRequest(getASeRequestList_ISO14443_4());
     }
 
     public static ObservableReader.NotificationMode getNotificationMode() {
         return ObservableReader.NotificationMode.ALWAYS;
     }
 
-    public static Set<SeRequest> getASeRequestSet_ISO14443_4() {
+    public static List<SeRequest> getASeRequestList_ISO14443_4() {
         String poAid = "A000000291A000000191";
 
-        List<ApduRequest> poApduRequestList;
-        poApduRequestList = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
+        List<ApduRequest> poApduRequests;
+        poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
         SeSelector seSelector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                 new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid)));
 
-        SeRequest seRequest = new SeRequest(seSelector, poApduRequestList);
+        SeRequest seRequest = new SeRequest(seSelector, poApduRequests);
 
-        Set<SeRequest> seRequestSet = new LinkedHashSet<SeRequest>();
+        List<SeRequest> seRequests = new ArrayList<SeRequest>();
 
-        seRequestSet.add(seRequest);
+        seRequests.add(seRequest);
 
-        return seRequestSet;
+        return seRequests;
 
     }
 
 
-    public static Set<SeRequest> getASeRequestSet() {
+    public static List<SeRequest> getASeRequestList() {
         String poAid = "A000000291A000000191";
 
-        List<ApduRequest> poApduRequestList;
-        poApduRequestList = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
+        List<ApduRequest> poApduRequests;
+        poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
-        SeRequest seRequest = new SeRequest(poApduRequestList);
+        SeRequest seRequest = new SeRequest(poApduRequests);
 
-        Set<SeRequest> seRequestSet = new LinkedHashSet<SeRequest>();
+        List<SeRequest> seRequests = new ArrayList<SeRequest>();
 
-        seRequestSet.add(seRequest);
+        seRequests.add(seRequest);
 
-        return seRequestSet;
+        return seRequests;
 
     }
 
     public static SeRequest getASeRequest_ISO14443_4() {
         String poAid = "A000000291A000000191";
 
-        List<ApduRequest> poApduRequestList;
-        poApduRequestList = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
+        List<ApduRequest> poApduRequests;
+        poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
         SeSelector seSelector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                 new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid)));
 
-        SeRequest seRequest = new SeRequest(seSelector, poApduRequestList);
+        SeRequest seRequest = new SeRequest(seSelector, poApduRequests);
         return seRequest;
 
     }
@@ -94,20 +94,20 @@ public class SampleFactory {
     public static SeRequest getASeRequest() {
         String poAid = "A000000291A000000191";
 
-        List<ApduRequest> poApduRequestList;
-        poApduRequestList = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
+        List<ApduRequest> poApduRequests;
+        poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
-        SeRequest seRequest = new SeRequest(poApduRequestList);
+        SeRequest seRequest = new SeRequest(poApduRequests);
         return seRequest;
 
     }
 
-    public static Set<SeRequest> getCompleteRequestSet() {
+    public static List<SeRequest> getCompleteRequestList() {
         String poAid = "A000000291A000000191";
 
-        List<ApduRequest> poApduRequestList;
+        List<ApduRequest> poApduRequests;
 
-        poApduRequestList = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
+        poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
         SeSelector aidSelector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                 new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid)));
@@ -115,21 +115,15 @@ public class SampleFactory {
         SeSelector atrSelector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3,
                 new SeSelector.AtrFilter("/regex/"), null);
 
-        SeRequest seRequest = new SeRequest(aidSelector, poApduRequestList);
+        SeRequest seRequest = new SeRequest(aidSelector, poApduRequests);
 
-        SeRequest seRequest2 = new SeRequest(atrSelector, poApduRequestList);
+        SeRequest seRequest2 = new SeRequest(atrSelector, poApduRequests);
 
-        Set<SeRequest> seRequests = new HashSet<SeRequest>();
+        List<SeRequest> seRequests = new ArrayList<SeRequest>();
         seRequests.add(seRequest);
         seRequests.add(seRequest2);
 
-        Set<SeRequest> seRequestSet = new LinkedHashSet<SeRequest>();
-
-        seRequestSet.add(seRequest);
-
-        return seRequestSet;
-
-
+        return seRequests;
     }
 
     public static List<SeResponse> getCompleteResponseSet() {

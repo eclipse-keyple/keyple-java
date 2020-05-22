@@ -70,7 +70,7 @@ public class RmTransmitExecutor implements IRemoteMethodExecutor {
             ProxyReader reader = (ProxyReader) slaveAPI.findLocalReader(nativeReaderName);
 
             // execute transmitSet
-            seResponse = reader.transmit(seRequest, channelControl);
+            seResponse = reader.transmitSeRequest(seRequest, channelControl);
 
             // prepare response
             String parseBody = JsonParser.getGson().toJson(seResponse, SeResponse.class);

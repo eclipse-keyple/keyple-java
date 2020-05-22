@@ -14,7 +14,6 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -97,20 +96,20 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
     }
 
     /**
-     * Blocking TransmitSet
+     * Blocking TransmitSeRequests
      * 
-     * @param seRequestSet : Set of SeRequest to be transmitted to SE
+     * @param seRequests : List of SeRequest to be transmitted to SE
      * @param multiSeRequestProcessing the multi se processing mode
      * @param channelControl indicates if the channel has to be closed at the end of the processing
      * @return List of SeResponse from SE
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
-    protected List<SeResponse> processSeRequestSet(Set<SeRequest> seRequestSet,
+    protected List<SeResponse> processSeRequests(List<SeRequest> seRequests,
             MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
             throws KeypleReaderIOException {
 
-        RmTransmitSetTx transmit = new RmTransmitSetTx(seRequestSet, multiSeRequestProcessing,
+        RmTransmitSetTx transmit = new RmTransmitSetTx(seRequests, multiSeRequestProcessing,
                 channelControl, session.getSessionId(), this.getNativeReaderName(), this.getName(),
                 session.getMasterNodeId(), session.getSlaveNodeId());
         try {
@@ -118,7 +117,7 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
             return transmit.execute(rmTxEngine);
         } catch (KeypleRemoteException e) {
             logger.error(
-                    "{} - processSeRequestSet encounters an exception while communicating with slave. "
+                    "{} - processSeRequests encounters an exception while communicating with slave. "
                             + "sessionId:{} error:{}",
                     this.getName(), this.getSession().getSessionId(), e.getMessage());
             throw toKeypleReaderException(e);

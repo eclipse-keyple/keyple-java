@@ -62,12 +62,12 @@ public class SeSelectionTest extends CoreBaseTest {
                 ((DefaultSelectionsRequest) selectionOperation).getChannelControl());
 
         // get the serequest set
-        Set<SeRequest> selectionSeRequestSet =
-                ((DefaultSelectionsRequest) selectionOperation).getSelectionSeRequestSet();
-        Assert.assertEquals(2, selectionSeRequestSet.size());
+        List<SeRequest> selectionSeRequests =
+                ((DefaultSelectionsRequest) selectionOperation).getSelectionSeRequests();
+        Assert.assertEquals(2, selectionSeRequests.size());
 
         // get the two se requests
-        Iterator<SeRequest> iterator = selectionSeRequestSet.iterator();
+        Iterator<SeRequest> iterator = selectionSeRequests.iterator();
         SeRequest seRequest1 = iterator.next();
         SeRequest seRequest2 = iterator.next();
 
@@ -130,9 +130,9 @@ public class SeSelectionTest extends CoreBaseTest {
         SeSelection seSelection = createSeSelection();
 
         AbstractDefaultSelectionsResponse defaultSelectionsResponse;
-        List<SeResponse> seResponseList = new ArrayList<SeResponse>();
+        List<SeResponse> seResponses = new ArrayList<SeResponse>();
 
-        defaultSelectionsResponse = new DefaultSelectionsResponse(seResponseList);
+        defaultSelectionsResponse = new DefaultSelectionsResponse(seResponses);
 
         SelectionsResult selectionsResult = null;
         try {
@@ -152,24 +152,24 @@ public class SeSelectionTest extends CoreBaseTest {
 
         // create a selection response
         AbstractDefaultSelectionsResponse defaultSelectionsResponse;
-        List<SeResponse> seResponseList = new ArrayList<SeResponse>();
+        List<SeResponse> seResponses = new ArrayList<SeResponse>();
 
         ApduResponse apduResponse = new ApduResponse(ByteArrayUtil.fromHex(
                 "CC 11223344 9999 00112233445566778899AABBCCDDEEFF 00112233445566778899AABBCC 9000"),
                 null);
 
-        List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
+        List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
 
-        apduResponseList.add(apduResponse);
+        apduResponses.add(apduResponse);
 
         SelectionStatus selectionStatus = new SelectionStatus(null,
                 new ApduResponse(ByteArrayUtil.fromHex("001122334455669000"), null), false);
 
-        SeResponse seResponse = new SeResponse(true, true, selectionStatus, apduResponseList);
+        SeResponse seResponse = new SeResponse(true, true, selectionStatus, apduResponses);
 
-        seResponseList.add(seResponse);
+        seResponses.add(seResponse);
 
-        defaultSelectionsResponse = new DefaultSelectionsResponse(seResponseList);
+        defaultSelectionsResponse = new DefaultSelectionsResponse(seResponses);
 
         // process the selection response with the SeSelection
         SelectionsResult selectionsResult = null;
@@ -194,24 +194,24 @@ public class SeSelectionTest extends CoreBaseTest {
 
         // create a selection response
         AbstractDefaultSelectionsResponse defaultSelectionsResponse;
-        List<SeResponse> seResponseList = new ArrayList<SeResponse>();
+        List<SeResponse> seResponses = new ArrayList<SeResponse>();
 
         ApduResponse apduResponse = new ApduResponse(ByteArrayUtil.fromHex(
                 "CC 11223344 9999 00112233445566778899AABBCCDDEEFF 00112233445566778899AABBCC 9000"),
                 null);
 
-        List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
+        List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
 
-        apduResponseList.add(apduResponse);
+        apduResponses.add(apduResponse);
 
         SelectionStatus selectionStatus = new SelectionStatus(null,
                 new ApduResponse(ByteArrayUtil.fromHex("001122334455669000"), null), true);
 
-        SeResponse seResponse = new SeResponse(true, true, selectionStatus, apduResponseList);
+        SeResponse seResponse = new SeResponse(true, true, selectionStatus, apduResponses);
 
-        seResponseList.add(seResponse);
+        seResponses.add(seResponse);
 
-        defaultSelectionsResponse = new DefaultSelectionsResponse(seResponseList);
+        defaultSelectionsResponse = new DefaultSelectionsResponse(seResponses);
 
         // process the selection response with the SeSelection
         SelectionsResult selectionsResult = null;
@@ -260,7 +260,7 @@ public class SeSelectionTest extends CoreBaseTest {
 
         // TODO add an implementation of AbstractApduCommandBuilder/Parser
         // // APDU requests
-        // List<ApduRequest> apduRequestList = new ArrayList<ApduRequest>();
+        // List<ApduRequest> apduRequests= new ArrayList<ApduRequest>();
         // apduRequestList.add(
         // new ApduRequest("Apdu 001122334455", ByteArrayUtil.fromHex("001122334455"), false));
         // apduRequestList.add(

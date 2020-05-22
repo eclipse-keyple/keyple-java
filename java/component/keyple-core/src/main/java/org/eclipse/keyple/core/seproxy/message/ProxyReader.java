@@ -13,7 +13,6 @@ package org.eclipse.keyple.core.seproxy.message;
 
 
 import java.util.List;
-import java.util.Set;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -57,29 +56,15 @@ public interface ProxyReader extends SeReader {
      * reader’s exception (SE missing, IO error, wrong card currentState, timeout) have to be caught
      * during the processing of the SE request transmission.
      *
-     * @param seApplicationRequest the Set of application requests
+     * @param seRequests a {@link List} of application requests
      * @param multiSeRequestProcessing the multi se processing mode
      * @param channelControl indicates if the channel has to be closed at the end of the
      *        transmission
      * @return the SE response
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    List<SeResponse> transmitSet(Set<SeRequest> seApplicationRequest,
+    List<SeResponse> transmitSeRequests(List<SeRequest> seRequests,
             MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
-            throws KeypleReaderIOException;
-
-    /**
-     * Transmits a Set of {@link SeRequest} (list of {@link SeRequest}) to a SE application and get
-     * back the corresponding a List of {@link SeResponse}.
-     * <p>
-     * The {@link MultiSeRequestProcessing} and {@link ChannelControl} flags are set to their
-     * standard value.
-     *
-     * @param seApplicationRequest the Set of application requests
-     * @return the SE response
-     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
-     */
-    List<SeResponse> transmitSet(Set<SeRequest> seApplicationRequest)
             throws KeypleReaderIOException;
 
     /**
@@ -97,27 +82,11 @@ public interface ProxyReader extends SeReader {
      * reader’s exception (SE missing, IO error, wrong card currentState, timeout) have to be caught
      * during the processing of the SE request transmission. *
      * 
-     * @param seApplicationRequest the SeRequest to transmit
+     * @param seRequest the SeRequest to transmit
      * @param channelControl a flag to tell if the channel has to be closed at the end
      * @return SeResponse the response to the SeRequest
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    SeResponse transmit(SeRequest seApplicationRequest, ChannelControl channelControl)
+    SeResponse transmitSeRequest(SeRequest seRequest, ChannelControl channelControl)
             throws KeypleReaderIOException;
-
-    /**
-     * Transmits a single {@link SeRequest} (list of {@link ApduRequest}) and get back the
-     * corresponding {@link SeResponse}
-     * <p>
-     * The usage of this method is conditioned to the presence of a SE in the selected reader.
-     * <p>
-     * The {@link SeRequest} is processed and the received {@link SeResponse} is returned.
-     * <p>
-     * The {@link ChannelControl} flag is set to its standard value.
-     *
-     * @param seApplicationRequest the SeRequest to transmit
-     * @return SeResponse the response to the SeRequest
-     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
-     */
-    SeResponse transmit(SeRequest seApplicationRequest) throws KeypleReaderIOException;
 }

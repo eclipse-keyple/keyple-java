@@ -117,7 +117,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         nativeReader = mockReaderWithExceptionOnOpenLogicalChannel(IOException())
         reader = buildOmapiReaderImpl(nativeReader)
         // test
-        reader.transmitSet(getSampleSeRequest())
+        reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
     @Test(expected = KeypleReaderIOException::class)
@@ -125,7 +125,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         nativeReader = mockReaderWithExceptionOnOpenLogicalChannel(SecurityException())
         reader = buildOmapiReaderImpl(nativeReader)
         // test
-        reader.transmitSet(getSampleSeRequest())
+        reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
     @Test
@@ -133,7 +133,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         nativeReader = mockReaderWithExceptionOnOpenLogicalChannel(NoSuchElementException())
         reader = buildOmapiReaderImpl(nativeReader)
         // test
-        val seResponseList = reader.transmitSet(getSampleSeRequest())
+        val seResponseList = reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
         Assert.assertNull(seResponseList[0]) // If container is not found a null responsed is returned
     }
 
@@ -142,7 +142,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         nativeReader = mockReaderWithNullOnOpenLogicalChannel()
         reader = buildOmapiReaderImpl(nativeReader)
         // test
-        reader.transmitSet(getSampleSeRequest())
+        reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
     @Test(expected = KeypleReaderIOException::class)
@@ -150,7 +150,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         nativeReader = mockReaderWithNullOnOpenBasicChannel()
         reader = buildOmapiReaderImpl(nativeReader)
         // test
-        reader.transmitSet(getNoAidSampleSeRequest())
+        reader.transmitSeRequests(getNoAidSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
     @Test(expected = KeypleReaderIOException::class)
@@ -158,7 +158,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         nativeReader = mockReaderWithExceptionOnOpenBasicChannel(IOException())
         reader = buildOmapiReaderImpl(nativeReader)
         // test
-        reader.transmitSet(getNoAidSampleSeRequest())
+        reader.transmitSeRequests(getNoAidSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
     @Test(expected = KeypleReaderIOException::class)
@@ -166,7 +166,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         nativeReader = mockReaderWithExceptionOnOpenBasicChannel(SecurityException())
         reader = buildOmapiReaderImpl(nativeReader)
         // test
-        reader.transmitSet(getNoAidSampleSeRequest())
+        reader.transmitSeRequests(getNoAidSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
     @Test
@@ -177,7 +177,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader = buildOmapiReaderImpl(nativeReader)
 
         // test
-        val seResponseList = reader.transmitSet(getSampleSeRequest())
+        val seResponseList = reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
 
         // assert
         Assert.assertNull(seResponseList[0])
@@ -193,9 +193,9 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
                 SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(poAid))), ArrayList())
 
         // test
-        val seRequestSet = LinkedHashSet<SeRequest>()
-        seRequestSet.add(seRequest)
-        val seResponseList = reader.transmitSet(seRequestSet)
+        val seRequests = ArrayList<SeRequest>()
+        seRequests.add(seRequest)
+        val seResponseList = reader.transmitSeRequests(seRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
 
         // assert
         Assert.assertNull(seResponseList[0])
@@ -209,7 +209,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader = buildOmapiReaderImpl(nativeReader)
 
         // test
-        reader.transmitSet(getSampleSeRequest())
+        reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
     @Test
@@ -220,7 +220,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader = buildOmapiReaderImpl(nativeReader)
 
         // test
-        val seResponseList = reader.transmitSet(getSampleSeRequest(), MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER)
+        val seResponseList = reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER)
         Assert.assertNotNull(seResponseList)
     }
 
@@ -232,7 +232,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader = buildOmapiReaderImpl(nativeReader)
 
         // test
-        reader.transmitSet(getSampleSeRequest(), MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER)
+        reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER)
     }
 
     @Test(expected = KeypleReaderIOException::class)
@@ -242,29 +242,29 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader = buildOmapiReaderImpl(nativeReader)
 
         // test
-        reader.transmitSet(getSampleSeRequest())
+        reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
-    private fun getSampleSeRequest(): Set<SeRequest> {
+    private fun getSampleSeRequest(): List<SeRequest> {
 
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
         val seRequest = SeRequest(SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
                 SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(PO_AID))), poApduRequestList)
 
-        val seRequestSet = LinkedHashSet<SeRequest>()
+        val seRequestSet = ArrayList<SeRequest>()
         seRequestSet.add(seRequest)
         return seRequestSet
     }
 
-    private fun getNoAidSampleSeRequest(): Set<SeRequest> {
+    private fun getNoAidSampleSeRequest(): List<SeRequest> {
 
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
         val seRequest = SeRequest(SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
                 SeSelector.AidSelector(null)), poApduRequestList)
 
-        val seRequestSet = LinkedHashSet<SeRequest>()
+        val seRequestSet = ArrayList<SeRequest>()
         seRequestSet.add(seRequest)
         return seRequestSet
     }

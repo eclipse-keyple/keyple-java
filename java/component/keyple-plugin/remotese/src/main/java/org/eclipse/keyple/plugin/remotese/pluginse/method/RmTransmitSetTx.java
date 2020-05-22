@@ -12,9 +12,7 @@
 package org.eclipse.keyple.plugin.remotese.pluginse.method;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
@@ -38,7 +36,7 @@ public class RmTransmitSetTx extends AbstractRemoteMethodTx<List<SeResponse>> {
 
     private static final Logger logger = LoggerFactory.getLogger(RmTransmitSetTx.class);
 
-    private final Set<SeRequest> seRequestSet;
+    private final List<SeRequest> seRequests;
     private final MultiSeRequestProcessing multiSeRequestProcessing;
     private final ChannelControl channelControl;
 
@@ -47,12 +45,12 @@ public class RmTransmitSetTx extends AbstractRemoteMethodTx<List<SeResponse>> {
         return RemoteMethodName.READER_TRANSMIT_SET;
     }
 
-    public RmTransmitSetTx(Set<SeRequest> seRequestSet,
+    public RmTransmitSetTx(List<SeRequest> seRequests,
             MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl,
             String sessionId, String nativeReaderName, String virtualReaderName,
             String requesterNodeId, String slaveNodeId) {
         super(sessionId, nativeReaderName, virtualReaderName, slaveNodeId, requesterNodeId);
-        this.seRequestSet = seRequestSet;
+        this.seRequests = seRequests;
         this.multiSeRequestProcessing = multiSeRequestProcessing;
         this.channelControl = channelControl;
     }
@@ -63,8 +61,8 @@ public class RmTransmitSetTx extends AbstractRemoteMethodTx<List<SeResponse>> {
 
         JsonObject body = new JsonObject();
 
-        body.addProperty("seRequestSet", JsonParser.getGson().toJson(seRequestSet,
-                new TypeToken<LinkedHashSet<SeRequest>>() {}.getType()));
+        body.addProperty("seRequests", JsonParser.getGson().toJson(seRequests,
+                new TypeToken<ArrayList<SeRequest>>() {}.getType()));
 
         body.addProperty("multiSeRequestProcessing", multiSeRequestProcessing.name());
 
@@ -86,7 +84,7 @@ public class RmTransmitSetTx extends AbstractRemoteMethodTx<List<SeResponse>> {
             KeypleReaderIOException ex = JsonParser.getGson().fromJson(keypleDto.getBody(),
                     KeypleReaderIOException.class);
             throw new KeypleRemoteException(
-                    "An exception occurs while calling the remote method transmitSet", ex);
+                    "An exception occurs while calling the remote method transmitSeRequests", ex);
         } else {
             logger.trace("KeypleDto contains a response: {}", keypleDto);
             return JsonParser.getGson().fromJson(keypleDto.getBody(),

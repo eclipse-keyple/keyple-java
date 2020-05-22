@@ -40,21 +40,21 @@ public class JsonParserTest {
      */
 
     @Test
-    public void testHoplinkSeRequestSet() {
-        Set<SeRequest> seRequestSet = SampleFactory.getASeRequestSet_ISO14443_4();
-        testSerializeDeserializeObj(seRequestSet, Set.class);
+    public void testHoplinkSeRequestList() {
+        List<SeRequest> seRequests = SampleFactory.getASeRequestList_ISO14443_4();
+        testSerializeDeserializeObj(seRequests, Set.class);
     }
 
     @Test
-    public void testCompleteSeRequestSet() {
-        Set<SeRequest> seRequestSet = SampleFactory.getCompleteRequestSet();
-        testSerializeDeserializeObj(seRequestSet, Set.class);
+    public void testCompleteSeRequestList() {
+        List<SeRequest> seRequests = SampleFactory.getCompleteRequestList();
+        testSerializeDeserializeObj(seRequests, Set.class);
     }
 
     @Test
-    public void testSeResponseSet() {
-        List<SeResponse> responseSet = SampleFactory.getCompleteResponseSet();
-        testSerializeDeserializeObj(responseSet, List.class);
+    public void testSeResponses() {
+        List<SeResponse> seResponses = SampleFactory.getCompleteResponseSet();
+        testSerializeDeserializeObj(seResponses, List.class);
 
     }
 

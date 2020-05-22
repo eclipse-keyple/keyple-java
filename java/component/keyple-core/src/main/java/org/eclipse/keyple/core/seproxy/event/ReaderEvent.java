@@ -31,7 +31,7 @@ public final class ReaderEvent {
      * The response to the selection request Note: although the object is instantiated externally,
      * we use DefaultSelectionsResponse here to keep ReaderEvent serializable
      */
-    private final DefaultSelectionsResponse defaultResponseSet;
+    private final DefaultSelectionsResponse defaultResponses;
 
     /**
      * The different types of reader events, reflecting the status of the reader regarding the
@@ -89,7 +89,7 @@ public final class ReaderEvent {
         this.pluginName = pluginName;
         this.readerName = readerName;
         this.eventType = eventType;
-        this.defaultResponseSet = (DefaultSelectionsResponse) defaultSelectionsResponse;
+        this.defaultResponses = (DefaultSelectionsResponse) defaultSelectionsResponse;
     }
 
 
@@ -106,6 +106,6 @@ public final class ReaderEvent {
     }
 
     public AbstractDefaultSelectionsResponse getDefaultSelectionsResponse() {
-        return defaultResponseSet;
+        return defaultResponses;
     }
 }
