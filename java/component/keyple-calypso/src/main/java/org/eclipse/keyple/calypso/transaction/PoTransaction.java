@@ -104,18 +104,16 @@ public class PoTransaction {
      * </ul>
      *
      * @param poResource the PO resource (combination of {@link SeReader} and {@link CalypsoPo})
-     * @param samResource the SAM resource (combination of {@link SeReader} and {@link CalypsoSam})
      * @param poSecuritySettings a list of security settings ({@link PoSecuritySettings}) used in
      *        the session (such as key identification)
      */
-    public PoTransaction(PoResource poResource, SamResource samResource,
-            PoSecuritySettings poSecuritySettings) {
+    public PoTransaction(PoResource poResource, PoSecuritySettings poSecuritySettings) {
 
         this(poResource);
 
         this.poSecuritySettings = poSecuritySettings;
 
-        samCommandProcessor = new SamCommandProcessor(samResource, poResource, poSecuritySettings);
+        samCommandProcessor = new SamCommandProcessor(poResource, poSecuritySettings);
     }
 
     /**
