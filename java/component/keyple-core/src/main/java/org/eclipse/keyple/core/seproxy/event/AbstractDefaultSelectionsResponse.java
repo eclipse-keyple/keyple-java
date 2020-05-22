@@ -19,11 +19,18 @@ import org.eclipse.keyple.core.seproxy.message.SeResponse;
  * The abstract class defining the default selections response in return to the default selection
  * made when the SE was inserted..
  * <p>
- * The default selections response provides a list of {@link SeResponse}
+ * The default selections response provides a list of {@link SeResponse}<br>
+ * The purpose of this abstract class is to hide the constructor that is defined in its
+ * implementation {@link org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest}.
  */
 public abstract class AbstractDefaultSelectionsResponse {
+    /** The List of {@link SeResponse} set by the implementations constructor */
+    protected List<SeResponse> selectionSeResponses;
+
     /**
      * @return the list of {@link SeResponse}
      */
-    protected abstract List<SeResponse> getSelectionSeResponses();
+    public final List<SeResponse> getSelectionSeResponses() {
+        return selectionSeResponses;
+    }
 }

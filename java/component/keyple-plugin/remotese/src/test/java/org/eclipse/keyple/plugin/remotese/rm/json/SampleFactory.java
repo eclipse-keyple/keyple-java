@@ -14,6 +14,8 @@ package org.eclipse.keyple.plugin.remotese.rm.json;
 
 import java.io.IOException;
 import java.util.*;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -34,7 +36,8 @@ public class SampleFactory {
     }
 
     public static AbstractDefaultSelectionsRequest getSelectionRequest() {
-        return new DefaultSelectionsRequest(getASeRequestList_ISO14443_4());
+        return new DefaultSelectionsRequest(getASeRequestList_ISO14443_4(),
+                MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
     }
 
     public static ObservableReader.NotificationMode getNotificationMode() {
