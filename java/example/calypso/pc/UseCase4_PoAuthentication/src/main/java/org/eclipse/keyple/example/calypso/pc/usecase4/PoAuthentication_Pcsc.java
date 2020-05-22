@@ -134,7 +134,7 @@ public class PoAuthentication_Pcsc {
                     "= ##### 2nd PO exchange: open and close a secure session to perform authentication.");
 
             PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo),
-                    samResource, CalypsoUtilities.getSecuritySettings());
+                    CalypsoUtilities.getSecuritySettings(samResource));
 
             // Read the EventLog file at the Session Opening
             poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_EventLog,

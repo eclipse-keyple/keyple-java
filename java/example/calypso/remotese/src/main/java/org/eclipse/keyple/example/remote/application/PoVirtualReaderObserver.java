@@ -228,8 +228,8 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
             logger.warn(
                     "==================================================================================");
 
-            PoTransaction poTransaction = new PoTransaction(poResource, samResource,
-                    CalypsoUtilities.getSecuritySettings());
+            PoTransaction poTransaction = new PoTransaction(poResource,
+                    CalypsoUtilities.getSecuritySettings(samResource));
 
             /*
              * Open Session for the debit key

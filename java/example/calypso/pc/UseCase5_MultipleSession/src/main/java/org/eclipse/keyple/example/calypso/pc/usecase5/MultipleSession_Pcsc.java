@@ -131,14 +131,26 @@ public class MultipleSession_Pcsc {
             logger.info(
                     "= #### 2nd PO exchange: open and close a secure session to perform authentication.");
 
-            PoSecuritySettings poSecuritySettings = CalypsoUtilities.getSecuritySettings();
+            // The default KIF values for debiting
+            final byte DEFAULT_KIF_DEBIT = (byte) 0x30;
+            // The default key record number values for debiting
+            // The actual value should be adjusted.
+            final byte DEFAULT_KEY_RECORD_NUMBER_DEBIT = (byte) 0x03;
+            // define the security parameters to provide when creating PoTransaction
+            PoSecuritySettings poSecuritySettings =
+                    new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)//
+                            .sessionDefaultKif(
+                                    PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT,
+                                    DEFAULT_KIF_DEBIT)//
+                            .sessionDefaultKeyRecordNumber(
+                                    PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT,
+                                    DEFAULT_KEY_RECORD_NUMBER_DEBIT)//
+                            .sessionModificationMode(
+                                    PoTransaction.SessionSetting.ModificationMode.MULTIPLE)
+                            .build();
 
-            // change the default security settings to enable MULTIPLE mode
-            poSecuritySettings.setSessionModificationMode(
-                    PoTransaction.SessionSetting.ModificationMode.MULTIPLE);
-
-            PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo),
-                    samResource, poSecuritySettings);
+            PoTransaction poTransaction =
+                    new PoTransaction(new PoResource(poReader, calypsoPo), poSecuritySettings);
 
             // Open Session for the debit key
             poTransaction

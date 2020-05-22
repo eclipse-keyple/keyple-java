@@ -363,10 +363,11 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
                 profiler.start("Calypso1");
 
                 /* define the SAM parameters to provide when creating PoTransaction */
-                PoSecuritySettings poSecuritySettings = CalypsoUtilities.getSecuritySettings();
+                PoSecuritySettings poSecuritySettings =
+                        CalypsoUtilities.getSecuritySettings(samResource);
 
-                PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo),
-                        samResource, poSecuritySettings);
+                PoTransaction poTransaction =
+                        new PoTransaction(new PoResource(poReader, calypsoPo), poSecuritySettings);
 
                 doCalypsoReadWriteTransaction(calypsoPo, poTransaction, true);
 
