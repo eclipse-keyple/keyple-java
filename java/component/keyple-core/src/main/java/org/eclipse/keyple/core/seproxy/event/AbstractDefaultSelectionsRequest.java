@@ -28,17 +28,21 @@ import org.eclipse.keyple.core.seproxy.message.SeRequest;
  * <li>an indicator to control the physical channel to stipulate whether it should be closed or left
  * open at the end of the selection process
  * </ul>
- * The purpose of this abstract class is to hide the constructor that is defined in its
+ * The purpose of this abstract class is to hide the constructor that is defined as public in its
  * implementation {@link org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest}.
  */
 
 public abstract class AbstractDefaultSelectionsRequest {
-    /**
-     * These fields are initialized in the constructor defined by the implementation of this class.
-     */
-    protected List<SeRequest> selectionSeRequests;
-    protected MultiSeRequestProcessing multiSeRequestProcessing;
-    protected ChannelControl channelControl;
+    private final List<SeRequest> selectionSeRequests;
+    private final MultiSeRequestProcessing multiSeRequestProcessing;
+    private final ChannelControl channelControl;
+
+    public AbstractDefaultSelectionsRequest(List<SeRequest> selectionSeRequests,
+            MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl) {
+        this.selectionSeRequests = selectionSeRequests;
+        this.multiSeRequestProcessing = multiSeRequestProcessing;
+        this.channelControl = channelControl;
+    }
 
     /**
      * @return the flag indicating whether the selection process should stop after the first

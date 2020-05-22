@@ -18,11 +18,11 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 /**
  * Class containing the List of {@link SeResponse} used from a default selection made at the
  * {@link ObservableReader} level.<br>
- * It implements the {@link AbstractDefaultSelectionsResponse} class by providing it with a
+ * It implements the {@link AbstractDefaultSelectionsResponse} class by providing it with a public
  * constructor.
  */
 public final class DefaultSelectionsResponse extends AbstractDefaultSelectionsResponse {
     public DefaultSelectionsResponse(List<SeResponse> selectionSeResponseSet) {
-        this.selectionSeResponses = selectionSeResponseSet;
+        super(selectionSeResponseSet);
     }
 }
