@@ -19,39 +19,13 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 
 /**
  * Class containing the Set of {@link SeRequest} used to make a default selection at the
- * {@link ObservableReader} level.
+ * {@link ObservableReader} level.<br>
+ * It implements the {@link AbstractDefaultSelectionsRequest} class by providing it with a public
+ * constructor.
  */
 public final class DefaultSelectionsRequest extends AbstractDefaultSelectionsRequest {
-
-    private final List<SeRequest> selectionSeRequests;
-
-    private final MultiSeRequestProcessing multiSeRequestProcessing;
-
-    private final ChannelControl channelControl;
-
     public DefaultSelectionsRequest(List<SeRequest> selectionSeRequests,
             MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl) {
-        this.selectionSeRequests = selectionSeRequests;
-        this.multiSeRequestProcessing = multiSeRequestProcessing;
-        this.channelControl = channelControl;
-    }
-
-    public DefaultSelectionsRequest(List<SeRequest> selectionSeRequests) {
-        this(selectionSeRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
-    }
-
-    @Override
-    public MultiSeRequestProcessing getMultiSeRequestProcessing() {
-        return multiSeRequestProcessing;
-    }
-
-    @Override
-    public ChannelControl getChannelControl() {
-        return channelControl;
-    }
-
-    @Override
-    public List<SeRequest> getSelectionSeRequests() {
-        return selectionSeRequests;
+        super(selectionSeRequests, multiSeRequestProcessing, channelControl);
     }
 }
