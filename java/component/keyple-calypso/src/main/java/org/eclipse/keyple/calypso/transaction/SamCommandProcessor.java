@@ -76,15 +76,13 @@ class SamCommandProcessor {
     /**
      * Constructor
      * 
-     * @param samResource the SAM resource containing the SAM reader and the Calypso SAM information
      * @param poResource the PO resource containing the PO reader and the Calypso PO information
      * @param poSecuritySettings the security settings from the application layer
      */
-    SamCommandProcessor(SamResource samResource, PoResource poResource,
-            PoSecuritySettings poSecuritySettings) {
-        this.samResource = samResource;
+    SamCommandProcessor(PoResource poResource, PoSecuritySettings poSecuritySettings) {
         this.poResource = poResource;
         this.poSecuritySettings = poSecuritySettings;
+        this.samResource = poSecuritySettings.getSamResource();
         samReader = (ProxyReader) this.samResource.getSeReader();
     }
 

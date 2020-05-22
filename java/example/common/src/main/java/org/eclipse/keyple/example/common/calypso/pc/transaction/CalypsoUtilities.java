@@ -12,13 +12,13 @@
 package org.eclipse.keyple.example.common.calypso.pc.transaction;
 
 import static org.eclipse.keyple.calypso.command.sam.SamRevision.C1;
+import static org.eclipse.keyple.calypso.transaction.PoTransaction.SessionSetting.AccessLevel;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import org.eclipse.keyple.calypso.transaction.CalypsoSam;
 import org.eclipse.keyple.calypso.transaction.PoSecuritySettings;
-import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.SamResource;
 import org.eclipse.keyple.calypso.transaction.SamSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.SamSelector;
@@ -95,7 +95,7 @@ public final class CalypsoUtilities {
         return checkSamAndOpenChannel(samReader);
     }
 
-    public static PoSecuritySettings getSecuritySettings() {
+    public static PoSecuritySettings getSecuritySettings(SamResource samResource) {
 
         // The default KIF values for personalization, loading and debiting
         final byte DEFAULT_KIF_PERSO = (byte) 0x21;
@@ -107,24 +107,17 @@ public final class CalypsoUtilities {
         final byte DEFAULT_KEY_RECORD_NUMBER_LOAD = (byte) 0x02;
         final byte DEFAULT_KEY_RECORD_NUMBER_DEBIT = (byte) 0x03;
         /* define the security parameters to provide when creating PoTransaction */
-        PoSecuritySettings poSecuritySettings = new PoSecuritySettings();
-        poSecuritySettings.setSessionDefaultKif(
-                PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_PERSO, DEFAULT_KIF_PERSO);
-        poSecuritySettings.setSessionDefaultKif(
-                PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_LOAD, DEFAULT_KIF_LOAD);
-        poSecuritySettings.setSessionDefaultKif(
-                PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT, DEFAULT_KIF_DEBIT);
-        poSecuritySettings.setSessionDefaultKeyRecordNumber(
-                PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_PERSO,
-                DEFAULT_KEY_RECORD_NUMBER_PERSO);
-        poSecuritySettings.setSessionDefaultKeyRecordNumber(
-                PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_LOAD,
-                DEFAULT_KEY_RECORD_NUMBER_LOAD);
-        poSecuritySettings.setSessionDefaultKeyRecordNumber(
-                PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT,
-                DEFAULT_KEY_RECORD_NUMBER_DEBIT);
-
-        return poSecuritySettings;
+        return new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)//
+                .sessionDefaultKif(AccessLevel.SESSION_LVL_PERSO, DEFAULT_KIF_PERSO)//
+                .sessionDefaultKif(AccessLevel.SESSION_LVL_LOAD, DEFAULT_KIF_LOAD)//
+                .sessionDefaultKif(AccessLevel.SESSION_LVL_DEBIT, DEFAULT_KIF_DEBIT)//
+                .sessionDefaultKeyRecordNumber(AccessLevel.SESSION_LVL_PERSO,
+                        DEFAULT_KEY_RECORD_NUMBER_PERSO)//
+                .sessionDefaultKeyRecordNumber(AccessLevel.SESSION_LVL_LOAD,
+                        DEFAULT_KEY_RECORD_NUMBER_LOAD)//
+                .sessionDefaultKeyRecordNumber(AccessLevel.SESSION_LVL_DEBIT,
+                        DEFAULT_KEY_RECORD_NUMBER_DEBIT)
+                .build();
     }
 
     /**

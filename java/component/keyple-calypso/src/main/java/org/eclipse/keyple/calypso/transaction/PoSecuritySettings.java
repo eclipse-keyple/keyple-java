@@ -24,99 +24,164 @@ import java.util.List;
  * The getKeyInfo method returns the specified setting value.
  */
 public class PoSecuritySettings {
+    private final SamResource samResource;
     /** List of authorized KVCs */
-    private List<Byte> authorizedKvcList;
+    private final List<Byte> authorizedKvcList;
 
     /** EnumMap associating session levels and corresponding KIFs */
-    private static EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte> defaultKif =
-            new EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte>(
-                    PoTransaction.SessionSetting.AccessLevel.class);
-    private static EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte> defaultKvc =
-            new EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte>(
-                    PoTransaction.SessionSetting.AccessLevel.class);
-    private static EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte> defaultKeyRecordNumber =
-            new EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte>(
-                    PoTransaction.SessionSetting.AccessLevel.class);
+    private final EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte> defaultKif;
+    private final EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte> defaultKvc;
+    private final EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte> defaultKeyRecordNumber;
 
-    PoTransaction.SessionSetting.ModificationMode sessionModificationMode =
-            PoTransaction.SessionSetting.ModificationMode.ATOMIC;
-    PoTransaction.SessionSetting.RatificationMode ratificationMode =
-            PoTransaction.SessionSetting.RatificationMode.CLOSE_RATIFIED;
+    private final PoTransaction.SessionSetting.ModificationMode sessionModificationMode;
+    private final PoTransaction.SessionSetting.RatificationMode ratificationMode;
 
-    /**
-     * Constructor.
-     */
-    public PoSecuritySettings() {}
-
-    /**
-     * Set the Session Modification Mode<br>
-     * The default value is ATOMIC
-     * 
-     * @param sessionModificationMode the desired Session Modification Mode
-     * @since 0.9
-     */
-    public void setSessionModificationMode(
-            PoTransaction.SessionSetting.ModificationMode sessionModificationMode) {
-        this.sessionModificationMode = sessionModificationMode;
+    /** Private constructor */
+    private PoSecuritySettings(PoSecuritySettingsBuilder builder) {
+        this.samResource = builder.samResource;
+        this.authorizedKvcList = builder.authorizedKvcList;
+        this.defaultKif = builder.defaultKif;
+        this.defaultKvc = builder.defaultKvc;
+        this.defaultKeyRecordNumber = builder.defaultKeyRecordNumber;
+        this.sessionModificationMode = builder.sessionModificationMode;
+        this.ratificationMode = builder.ratificationMode;
     }
 
     /**
-     * Set the Ratification Mode<br>
-     * The default value is CLOSE_RATIFIED
-     * 
-     * @param ratificationMode the desired Ratification Mode
-     * @since 0.9
+     * Builder pattern
      */
-    public void setRatificationMode(
-            PoTransaction.SessionSetting.RatificationMode ratificationMode) {
-        this.ratificationMode = ratificationMode;
+    public static final class PoSecuritySettingsBuilder {
+        private final SamResource samResource;
+        /** List of authorized KVCs */
+        private List<Byte> authorizedKvcList;
+
+        /** EnumMap associating session levels and corresponding KIFs */
+        private final EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte> defaultKif =
+                new EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte>(
+                        PoTransaction.SessionSetting.AccessLevel.class);
+        private final EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte> defaultKvc =
+                new EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte>(
+                        PoTransaction.SessionSetting.AccessLevel.class);
+        private final EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte> defaultKeyRecordNumber =
+                new EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte>(
+                        PoTransaction.SessionSetting.AccessLevel.class);
+
+        PoTransaction.SessionSetting.ModificationMode sessionModificationMode =
+                PoTransaction.SessionSetting.ModificationMode.ATOMIC;
+        PoTransaction.SessionSetting.RatificationMode ratificationMode =
+                PoTransaction.SessionSetting.RatificationMode.CLOSE_RATIFIED;
+
+        /**
+         * Constructor
+         * 
+         * @param samResource the SAM resource we'll be working with<br>
+         *        Needed in any cases.
+         */
+        public PoSecuritySettingsBuilder(SamResource samResource) {
+            this.samResource = samResource;
+        }
+
+        /**
+         * Set the Session Modification Mode<br>
+         * The default value is ATOMIC
+         * 
+         * @param sessionModificationMode the desired Session Modification Mode
+         * @return the builder instance
+         * @since 0.9
+         */
+        public PoSecuritySettingsBuilder sessionModificationMode(
+                PoTransaction.SessionSetting.ModificationMode sessionModificationMode) {
+            this.sessionModificationMode = sessionModificationMode;
+            return this;
+        }
+
+        /**
+         * Set the Ratification Mode<br>
+         * The default value is CLOSE_RATIFIED
+         * 
+         * @param ratificationMode the desired Ratification Mode
+         * @return the builder instance
+         * @since 0.9
+         */
+        public PoSecuritySettingsBuilder ratificationMode(
+                PoTransaction.SessionSetting.RatificationMode ratificationMode) {
+            this.ratificationMode = ratificationMode;
+            return this;
+        }
+
+        /**
+         * Set the default KIF<br>
+         *
+         * @param sessionAccessLevel the session level
+         * @param kif the desired default KIF
+         * @return the builder instance
+         * @since 0.9
+         */
+        public PoSecuritySettingsBuilder sessionDefaultKif(
+                PoTransaction.SessionSetting.AccessLevel sessionAccessLevel, byte kif) {
+            defaultKif.put(sessionAccessLevel, kif);
+            return this;
+        }
+
+        /**
+         * Set the default KVC<br>
+         *
+         * @param sessionAccessLevel the session level
+         * @param kvc the desired default KVC
+         * @return the builder instance
+         * @since 0.9
+         */
+        public PoSecuritySettingsBuilder sessionDefaultKvc(
+                PoTransaction.SessionSetting.AccessLevel sessionAccessLevel, byte kvc) {
+            defaultKvc.put(sessionAccessLevel, kvc);
+            return this;
+        }
+
+        /**
+         * Set the default key record number<br>
+         *
+         * @param sessionAccessLevel the session level
+         * @param keyRecordNumber the desired default key record number
+         * @return the builder instance
+         * @since 0.9
+         */
+        public PoSecuritySettingsBuilder sessionDefaultKeyRecordNumber(
+                PoTransaction.SessionSetting.AccessLevel sessionAccessLevel, byte keyRecordNumber) {
+            defaultKeyRecordNumber.put(sessionAccessLevel, keyRecordNumber);
+            return this;
+        }
+
+        /**
+         * Provides a list of authorized KVC
+         *
+         * If this method is not called, the list will remain empty and all KVCs will be accepted.
+         *
+         * @param authorizedKvcList the list of authorized KVCs
+         * @return the builder instance
+         */
+        public PoSecuritySettingsBuilder sessionAuthorizedKvcList(List<Byte> authorizedKvcList) {
+            this.authorizedKvcList = authorizedKvcList;
+            return this;
+        }
+
+        /**
+         * Build a new {@code PoSecuritySettings}.
+         *
+         * @return a new instance
+         */
+        public PoSecuritySettings build() {
+            return new PoSecuritySettings(this);
+        }
     }
 
     /**
-     * Set the default KIF<br>
+     * (package-private)<br>
      *
-     * @param sessionAccessLevel the session level
-     * @param kif the desired default KIF
+     * @return the Sam resource
      * @since 0.9
      */
-    public void setSessionDefaultKif(PoTransaction.SessionSetting.AccessLevel sessionAccessLevel,
-            byte kif) {
-        defaultKif.put(sessionAccessLevel, kif);
-    }
-
-    /**
-     * Set the default KVC<br>
-     *
-     * @param sessionAccessLevel the session level
-     * @param kvc the desired default KVC
-     * @since 0.9
-     */
-    public void setSessionDefaultKvc(PoTransaction.SessionSetting.AccessLevel sessionAccessLevel,
-            byte kvc) {
-        defaultKvc.put(sessionAccessLevel, kvc);
-    }
-
-    /**
-     * Set the default key record number<br>
-     *
-     * @param sessionAccessLevel the session level
-     * @param keyRecordNumber the desired default key record number
-     * @since 0.9
-     */
-    public void setSessionDefaultKeyRecordNumber(
-            PoTransaction.SessionSetting.AccessLevel sessionAccessLevel, byte keyRecordNumber) {
-        defaultKeyRecordNumber.put(sessionAccessLevel, keyRecordNumber);
-    }
-
-    /**
-     * Provides a list of authorized KVC
-     *
-     * If this method is not called, the list will remain empty and all KVCs will be accepted.
-     *
-     * @param authorizedKvcList the list of authorized KVCs
-     */
-    public void setSessionAuthorizedKvcList(List<Byte> authorizedKvcList) {
-        this.authorizedKvcList = authorizedKvcList;
+    SamResource getSamResource() {
+        return samResource;
     }
 
     /**

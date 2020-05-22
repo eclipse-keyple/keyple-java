@@ -64,7 +64,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Calypso Networks Association
  */
-public final class PoTransaction {
+public class PoTransaction {
 
     /**
      * commands that modify the content of the PO in session have a cost on the session buffer equal
@@ -104,18 +104,16 @@ public final class PoTransaction {
      * </ul>
      *
      * @param poResource the PO resource (combination of {@link SeReader} and {@link CalypsoPo})
-     * @param samResource the SAM resource (combination of {@link SeReader} and {@link CalypsoSam})
      * @param poSecuritySettings a list of security settings ({@link PoSecuritySettings}) used in
      *        the session (such as key identification)
      */
-    public PoTransaction(PoResource poResource, SamResource samResource,
-            PoSecuritySettings poSecuritySettings) {
+    public PoTransaction(PoResource poResource, PoSecuritySettings poSecuritySettings) {
 
         this(poResource);
 
         this.poSecuritySettings = poSecuritySettings;
 
-        samCommandProcessor = new SamCommandProcessor(samResource, poResource, poSecuritySettings);
+        samCommandProcessor = new SamCommandProcessor(poResource, poSecuritySettings);
     }
 
     /**
@@ -715,7 +713,7 @@ public final class PoTransaction {
      * @throws CalypsoPoCommandException if a response from the PO was unexpected
      * @throws CalypsoSamCommandException if a response from the SAM was unexpected
      */
-    public void processOpening(PoTransaction.SessionSetting.AccessLevel accessLevel)
+    public final void processOpening(PoTransaction.SessionSetting.AccessLevel accessLevel)
             throws CalypsoPoTransactionException, CalypsoPoCommandException,
             CalypsoSamCommandException {
         currentAccessLevel = accessLevel;
@@ -776,7 +774,7 @@ public final class PoTransaction {
      *         errors)
      * @throws CalypsoPoCommandException if a response from the PO was unexpected
      */
-    public void processPoCommands(ChannelControl channelControl)
+    public final void processPoCommands(ChannelControl channelControl)
             throws CalypsoPoTransactionException, CalypsoPoCommandException {
 
         /** This method should be called only if no session was previously open */
@@ -807,7 +805,7 @@ public final class PoTransaction {
      * @throws CalypsoPoCommandException if a response from the PO was unexpected
      * @throws CalypsoSamCommandException if a response from the SAM was unexpected
      */
-    public void processPoCommandsInSession() throws CalypsoPoTransactionException,
+    public final void processPoCommandsInSession() throws CalypsoPoTransactionException,
             CalypsoPoCommandException, CalypsoSamCommandException {
 
         /** This method should be called only if a session was previously open */
@@ -888,8 +886,9 @@ public final class PoTransaction {
      * @throws CalypsoPoCommandException if a response from the PO was unexpected
      * @throws CalypsoSamCommandException if a response from the SAM was unexpected
      */
-    public void processClosing(ChannelControl channelControl) throws CalypsoPoTransactionException,
-            CalypsoPoCommandException, CalypsoSamCommandException {
+    public final void processClosing(ChannelControl channelControl)
+            throws CalypsoPoTransactionException, CalypsoPoCommandException,
+            CalypsoSamCommandException {
         boolean atLeastOneReadCommand = false;
         boolean sessionPreviouslyClosed = false;
 
@@ -967,7 +966,7 @@ public final class PoTransaction {
      *         errors)
      * @throws CalypsoPoCommandException if a response from the PO was unexpected
      */
-    public void processCancel(ChannelControl channelControl)
+    public final void processCancel(ChannelControl channelControl)
             throws CalypsoPoTransactionException, CalypsoPoCommandException {
         // PO ApduRequest List to hold Close Secure Session command
         List<ApduRequest> poApduRequests = new ArrayList<ApduRequest>();
