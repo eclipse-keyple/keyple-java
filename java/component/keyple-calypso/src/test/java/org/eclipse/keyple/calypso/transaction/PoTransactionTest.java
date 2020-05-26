@@ -94,7 +94,7 @@ public class PoTransactionTest {
 
         // Open Secure Session V3.1 + read sfi 7 / rec 1
         poCommandsTestSet.put("008A0B3904C1C2C3C400",
-                "030490980030791D00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC9000");
+                "030490980030791D71111111111111111111111111111111111111111111111111111111119000");
         // Read Recordsfi 8 / rec 1
         poCommandsTestSet.put("00B2014400",
                 "CCBBAA99887766554433221100FFEEDDCCBBAA998877665544332211009000");
@@ -131,7 +131,7 @@ public class PoTransactionTest {
 
         // Open Secure Session V3.1 + read sfi 7 / rec 1
         poCommandsTestSet.put("008A0B3904C1C2C3C400",
-                "030490980030791D00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC9000");
+                "030490980030791D71111111111111111111111111111111111111111111111111111111119000");
         // Read Recordsfi 8 / rec 1
         poCommandsTestSet.put("00B2014400",
                 "CCBBAA99887766554433221100FFEEDDCCBBAA998877665544332211009000");
@@ -140,7 +140,7 @@ public class PoTransactionTest {
         poTransaction.prepareReadRecordFile((byte) 0x08, 1);
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
         Assert.assertArrayEquals(
-                ByteArrayUtil.fromHex("00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC"),
+                ByteArrayUtil.fromHex("7111111111111111111111111111111111111111111111111111111111"),
                 calypsoPoRev31.getFileBySfi((byte) 0x07).getData().getContent());
         Assert.assertArrayEquals(
                 ByteArrayUtil.fromHex("CCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100"),
@@ -176,7 +176,7 @@ public class PoTransactionTest {
 
         // Open Secure Session V3.1 + read sfi 7 / rec 1 / DF not ratified (01)
         poCommandsTestSet.put("008A0B3904C1C2C3C400",
-                "030490980130791D00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC9000");
+                "030490980130791D71111111111111111111111111111111111111111111111111111111119000");
         // Read Recordsfi 8 / rec 1
         poCommandsTestSet.put("00B2014400",
                 "CCBBAA99887766554433221100FFEEDDCCBBAA998877665544332211009000");
@@ -185,7 +185,7 @@ public class PoTransactionTest {
         poTransaction.prepareReadRecordFile((byte) 0x08, 1);
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
         Assert.assertArrayEquals(
-                ByteArrayUtil.fromHex("00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC"),
+                ByteArrayUtil.fromHex("7111111111111111111111111111111111111111111111111111111111"),
                 calypsoPoRev31.getFileBySfi((byte) 0x07).getData().getContent());
         Assert.assertArrayEquals(
                 ByteArrayUtil.fromHex("CCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100"),
@@ -215,15 +215,15 @@ public class PoTransactionTest {
         poCommandsTestSet.put("008A030104C1C2C3C400", "03049098003079009000");
         // Read Recordsfi 7 / rec 3 and 4
         poCommandsTestSet.put("00B2033D3E",
-                "031DCCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100041D00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC9000");
+                "031D7333333333333333333333333333333333333333333333333333333333041D74444444444444444444444444444444444444444444444444444444449000");
 
         poTransaction.prepareReadRecordFile((byte) 0x07, 3, 2, 29);
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
         Assert.assertArrayEquals(
-                ByteArrayUtil.fromHex("CCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100"),
+                ByteArrayUtil.fromHex("7333333333333333333333333333333333333333333333333333333333"),
                 calypsoPoRev31.getFileBySfi((byte) 0x07).getData().getContent(3));
         Assert.assertArrayEquals(
-                ByteArrayUtil.fromHex("00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC"),
+                ByteArrayUtil.fromHex("7444444444444444444444444444444444444444444444444444444444"),
                 calypsoPoRev31.getFileBySfi((byte) 0x07).getData().getContent(4));
     }
 
@@ -252,7 +252,7 @@ public class PoTransactionTest {
 
         // Open Secure Session V3.1 + read sfi 7 / rec 1
         poCommandsTestSet.put("008A0B3904C1C2C3C400",
-                "030490980030781D00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC9000");
+                "030490980030781D71111111111111111111111111111111111111111111111111111111119000");
 
         poTransaction.prepareReadRecordFile((byte) 0x07, 1);
         try {
@@ -287,15 +287,15 @@ public class PoTransactionTest {
 
         // Open Secure Session V3.1 + read sfi 7 / rec 1
         poCommandsTestSet.put("008A0B3904C1C2C3C400",
-                "030490980030791D00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC9000");
+                "030490980030791D71111111111111111111111111111111111111111111111111111111119000");
         // Update Record SFI 7 rec 1 29 bytes
         poCommandsTestSet.put(
-                "00DC01441DCCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100", "9000");
+                "00DC01441D8111111111111111111111111111111111111111111111111111111111", "9000");
         // Update Record SFI 8 rec 1 10 bytes
         poCommandsTestSet.put("00DC01440433221100", "9000");
         // Reader record SFI 7 1 rec
         poCommandsTestSet.put("00B2013C00",
-                "00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC9000");
+                "71111111111111111111111111111111111111111111111111111111119000");
 
         // add additional non modifying commands (should not affect the session buffer)
         for (int i = 0; i < 4; i++) {
@@ -304,7 +304,7 @@ public class PoTransactionTest {
         // 12 x update (29 b) = 12 x (29 + 6) = 420 consumed in the session buffer
         for (int i = 0; i < 12; i++) {
             poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil
-                    .fromHex("CCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100"));
+                    .fromHex("8111111111111111111111111111111111111111111111111111111111"));
         }
         // insert additional non modifying commands (should not affect the session buffer)
         for (int i = 0; i < 4; i++) {
@@ -342,10 +342,10 @@ public class PoTransactionTest {
 
         // Open Secure Session V3.1 + read sfi 7 / rec 1
         poCommandsTestSet.put("008A0B3904C1C2C3C400",
-                "030490980030791D00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC9000");
-        // Update Record SFI 7 rec 1 29 bytes
+                "030490980030791D71111111111111111111111111111111111111111111111111111111119000");
+        // Update Record SFI 8 rec 1 29 bytes
         poCommandsTestSet.put(
-                "00DC01441DCCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100", "9000");
+                "00DC01441D8111111111111111111111111111111111111111111111111111111111", "9000");
         // Update Record SFI 8 rec 1 10 bytes
         poCommandsTestSet.put("00DC0144054433221100", "9000");
 
@@ -354,7 +354,7 @@ public class PoTransactionTest {
         // 12 x update (29 b) = 12 x (29 + 6) = 420 consumed in the session buffer
         for (int i = 0; i < 12; i++) {
             poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil
-                    .fromHex("CCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100"));
+                    .fromHex("8111111111111111111111111111111111111111111111111111111111"));
         }
         // 5 additional bytes (11 b consumed)
         poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1,
@@ -395,15 +395,15 @@ public class PoTransactionTest {
         // Open Secure Session V2.4 + read sfi 7 / rec 1
         poCommandsTestSet.put("948A8B3804C1C2C3C400",
                 "79030D307124B928480805CBABAE30001240800000000000000000000000000000009000");
-        // Update Record SFI 7 rec 1 29 bytes
+        // Update Record SFI 8 rec 1 29 bytes
         poCommandsTestSet.put(
-                "94DC01441DCCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100", "9000");
+                "94DC01441D8111111111111111111111111111111111111111111111111111111111", "9000");
 
         poTransaction.prepareReadRecordFile((byte) 0x07, 1);
         // 6 x update (29 b) = 6 operations consumed in the session buffer
         for (int i = 0; i < 6; i++) {
             poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil
-                    .fromHex("CCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100"));
+                    .fromHex("8111111111111111111111111111111111111111111111111111111111"));
         }
         // ATOMIC transaction should be ok (6 / 6 operations consumed)
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
@@ -437,15 +437,15 @@ public class PoTransactionTest {
         // Open Secure Session V2.4 + read sfi 7 / rec 1
         poCommandsTestSet.put("948A8B3804C1C2C3C400",
                 "79030D307124B928480805CBABAE30001240800000000000000000000000000000009000");
-        // Update Record SFI 7 rec 1 29 bytes
+        // Update Record SFI 8 rec 1 29 bytes
         poCommandsTestSet.put(
-                "94DC01441DCCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100", "9000");
+                "94DC01441D8111111111111111111111111111111111111111111111111111111111", "9000");
 
         poTransaction.prepareReadRecordFile((byte) 0x07, 1);
         // 7 x update (29 b) = 7 operations consumed in the session buffer
         for (int i = 0; i < 7; i++) {
             poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil
-                    .fromHex("CCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100"));
+                    .fromHex("8111111111111111111111111111111111111111111111111111111111"));
         }
         // ATOMIC transaction should be ko (7 / 6 operations consumed)
         try {
@@ -483,11 +483,11 @@ public class PoTransactionTest {
         samCommandsTestSet.put("8084000004", "C1C2C3C49000");
         // Digest Init
         samCommandsTestSet.put(
-                "808A00FF273079030490980030791D00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC",
+                "808A00FF273079030490980030791D7111111111111111111111111111111111111111111111111111111111",
                 "9000");
         // Digest Update
         samCommandsTestSet.put(
-                "808C00002200DC01441DCCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100",
+                "808C00002200DC01441D8111111111111111111111111111111111111111111111111111111111",
                 "9000");
         // Digest Update
         samCommandsTestSet.put("808C0000029000", "9000");
@@ -498,12 +498,12 @@ public class PoTransactionTest {
 
         // Open Secure Session V3.1 + read sfi 7 / rec 1
         poCommandsTestSet.put("008A0B3904C1C2C3C400",
-                "030490980030791D00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC9000");
+                "030490980030791D71111111111111111111111111111111111111111111111111111111119000");
         // Open Secure Session V3.1
         poCommandsTestSet.put("008A030104C1C2C3C400", "03049098003079009000");
-        // Update Record SFI 7 rec 1 29 bytes
+        // Update Record SFI 8 rec 1 29 bytes
         poCommandsTestSet.put(
-                "00DC01441DCCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100", "9000");
+                "00DC01441D8111111111111111111111111111111111111111111111111111111111", "9000");
         // Update Record SFI 8 rec 1 10 bytes
         poCommandsTestSet.put("00DC0144054433221100", "9000");
         // Close Secure Session
@@ -514,7 +514,7 @@ public class PoTransactionTest {
         // 12 x update (29 b) = 12 x (29 + 6) = 420 consumed in the session buffer
         for (int i = 0; i < 12; i++) {
             poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil
-                    .fromHex("CCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100"));
+                    .fromHex("8111111111111111111111111111111111111111111111111111111111"));
         }
         // 5 additional bytes (11 b consumed)
         poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1,
@@ -585,7 +585,7 @@ public class PoTransactionTest {
 
         // Open Secure Session V3.1 + read sfi 7 / rec 1
         poCommandsTestSet.put("008A0B3904C1C2C3C400",
-                "030490980030791D00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC9000");
+                "030490980030791D71111111111111111111111111111111111111111111111111111111119000");
         // Read Recordsfi 8 / rec 1
         poCommandsTestSet.put("00B2014400",
                 "81111111111111111111111111111111111111111111111111111111119000");
@@ -746,9 +746,9 @@ public class PoTransactionTest {
         // Open Secure Session V3.1 + read sfi 7 / rec 1
         poCommandsTestSet.put("008A0B3904C1C2C3C400",
                 "030490980030791D71111111111111111111111111111111111111111111111111111111119000");
-        // Update Record SFI 7 rec 1 29 bytes
+        // Update Record SFI 8 rec 1 29 bytes
         poCommandsTestSet.put(
-                "00DC01441DCCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100", "9000");
+                "00DC01441D8111111111111111111111111111111111111111111111111111111111", "9000");
         // Read Record SFI 0x10 counter
         poCommandsTestSet.put("00B2018400",
                 "001122000000000000000000000000000000000000000000000000000000000000009000");
@@ -827,7 +827,7 @@ public class PoTransactionTest {
         samCommandsTestSet.put("808C00000500B2013C00", "9000");
         // Digest update
         samCommandsTestSet.put(
-                "808C00002200DC013C1DCCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100",
+                "808C00002200DC01441D8111111111111111111111111111111111111111111111111111111111",
                 "9000");
         // Digest Update
         samCommandsTestSet.put("808C00000900DC013C0433221100", "9000");
@@ -842,10 +842,10 @@ public class PoTransactionTest {
         poCommandsTestSet.put("008A030104C1C2C3C400", "03049098003079009000");
         // Reader record SFI 7 1 rec
         poCommandsTestSet.put("00B2013C00",
-                "00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC9000");
+                "71111111111111111111111111111111111111111111111111111111119000");
         // Update Record SFI 8 rec 1 29 bytes
         poCommandsTestSet.put(
-                "00DC013C1DCCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100", "9000");
+                "00DC01441D8111111111111111111111111111111111111111111111111111111111", "9000");
         // Update Record SFI 7 rec 1 4 bytes
         poCommandsTestSet.put("00DC013C0433221100", "9000");
         // Close Session
@@ -859,8 +859,8 @@ public class PoTransactionTest {
         }
         // 12 x update (29 b) = 12 x (29 + 6) = 420 consumed in the session buffer
         for (int i = 0; i < 12; i++) {
-            poTransaction.prepareUpdateRecord((byte) 0x07, (byte) 1, ByteArrayUtil
-                    .fromHex("CCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100"));
+            poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil
+                    .fromHex("8111111111111111111111111111111111111111111111111111111111"));
         }
         // insert additional non modifying commands (should not affect the session buffer)
         for (int i = 0; i < 4; i++) {
@@ -907,7 +907,7 @@ public class PoTransactionTest {
         samCommandsTestSet.put("808C00000500B2013C00", "9000");
         // Digest update
         samCommandsTestSet.put(
-                "808C00002200DC013C1DCCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100",
+                "808C00002200DC013C1D8111111111111111111111111111111111111111111111111111111111",
                 "9000");
         // Digest Update
         samCommandsTestSet.put("808C00000900DC013C0433221100", "9000");
@@ -922,10 +922,10 @@ public class PoTransactionTest {
         poCommandsTestSet.put("008A030104C1C2C3C400", "03049098003079009000");
         // Reader record SFI 7 1 rec
         poCommandsTestSet.put("00B2013C00",
-                "00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC9000");
+                "71111111111111111111111111111111111111111111111111111111119000");
         // Update Record SFI 8 rec 1 29 bytes
         poCommandsTestSet.put(
-                "00DC013C1DCCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100", "9000");
+                "00DC013C1D8111111111111111111111111111111111111111111111111111111111", "9000");
         // Update Record SFI 7 rec 1 5 bytes
         poCommandsTestSet.put("00DC013C054433221100", "9000");
         // Close Session
@@ -939,15 +939,15 @@ public class PoTransactionTest {
         }
         // 12 x update (29 b) = 12 x (29 + 6) = 420 consumed in the session buffer
         for (int i = 0; i < 12; i++) {
-            poTransaction.prepareUpdateRecord((byte) 0x07, (byte) 1, ByteArrayUtil
-                    .fromHex("CCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100"));
+            poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil
+                    .fromHex("8111111111111111111111111111111111111111111111111111111111"));
         }
         // insert additional non modifying commands (should not affect the session buffer)
         for (int i = 0; i < 4; i++) {
             poTransaction.prepareReadRecordFile((byte) 0x07, 1);
         }
         // 4 additional bytes (10 b consumed)
-        poTransaction.prepareUpdateRecord((byte) 0x07, (byte) 1,
+        poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1,
                 ByteArrayUtil.fromHex("4433221100"));
 
         try {
@@ -995,11 +995,11 @@ public class PoTransactionTest {
         samCommandsTestSet.put("808C00000500B2013C00", "9000");
         // Digest update
         samCommandsTestSet.put(
-                "808C00002200DC013C1DCCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100",
+                "808C00002200DC01441D8111111111111111111111111111111111111111111111111111111111",
                 "9000");
         // Digest update
         samCommandsTestSet.put(
-                "808C00001F00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC9000", "9000");
+                "808C00001F71111111111111111111111111111111111111111111111111111111119000", "9000");
         // Digest Update
         samCommandsTestSet.put("808C00000900DC013C0433221100", "9000");
         // Digest Update
@@ -1014,10 +1014,10 @@ public class PoTransactionTest {
         poCommandsTestSet.put("008A030104C1C2C3C400", "03049098003079009000");
         // Reader record SFI 7 1 rec
         poCommandsTestSet.put("00B2013C00",
-                "00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC9000");
+                "71111111111111111111111111111111111111111111111111111111119000");
         // Update Record SFI 8 rec 1 29 bytes
         poCommandsTestSet.put(
-                "00DC013C1DCCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100", "9000");
+                "00DC01441D8111111111111111111111111111111111111111111111111111111111", "9000");
         // Update Record SFI 7 rec 1 5 bytes
         poCommandsTestSet.put("00DC013C054433221100", "9000");
         // Close Session
@@ -1031,8 +1031,8 @@ public class PoTransactionTest {
         }
         // 12 x update (29 b) = 12 x (29 + 6) = 420 consumed in the session buffer
         for (int i = 0; i < 12; i++) {
-            poTransaction.prepareUpdateRecord((byte) 0x07, (byte) 1, ByteArrayUtil
-                    .fromHex("CCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100"));
+            poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil
+                    .fromHex("8111111111111111111111111111111111111111111111111111111111"));
         }
         // insert additional non modifying commands (should not affect the session buffer)
         for (int i = 0; i < 4; i++) {
@@ -1084,11 +1084,6 @@ public class PoTransactionTest {
         // Open Secure Session V3.1 + read sfi 7 / rec 1
         poCommandsTestSet.put("008A0B3904C1C2C3C400",
                 "030490980030791D71111111111111111111111111111111111111111111111111111111119000");
-        // Update Record SFI 7 rec 1 29 bytes
-        poCommandsTestSet.put(
-                "00DC01441DCCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100", "9000");
-        // Update Record SFI 8 rec 1 10 bytes
-        poCommandsTestSet.put("00DC01440433221100", "9000");
         // Close Session not ratified
         poCommandsTestSet.put("008E0000041122334400", "556677889000");
         // Ratification command
@@ -1129,11 +1124,11 @@ public class PoTransactionTest {
         samCommandsTestSet.put("808C00000500B2013C00", "9000");
         // Digest update
         samCommandsTestSet.put(
-                "808C00002200DC013C1DCCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100",
+                "808C00002200DC013C1D8111111111111111111111111111111111111111111111111111111111",
                 "9000");
         // Digest update
         samCommandsTestSet.put(
-                "808C00001F00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC9000", "9000");
+                "808C00001F71111111111111111111111111111111111111111111111111111111119000", "9000");
         // Digest Update
         samCommandsTestSet.put("808C00000900DC013C0433221100", "9000");
         // Digest Update
@@ -1148,10 +1143,10 @@ public class PoTransactionTest {
         poCommandsTestSet.put("008A030104C1C2C3C400", "03049098003079009000");
         // Reader record SFI 7 1 rec
         poCommandsTestSet.put("00B2013C00",
-                "00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC9000");
+                "71111111111111111111111111111111111111111111111111111111119000");
         // Update Record SFI 8 rec 1 29 bytes
         poCommandsTestSet.put(
-                "00DC013C1DCCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100", "9000");
+                "00DC01441D8111111111111111111111111111111111111111111111111111111111", "9000");
         // Update Record SFI 7 rec 1 5 bytes
         poCommandsTestSet.put("00DC013C054433221100", "9000");
         // Close Session
@@ -1159,8 +1154,8 @@ public class PoTransactionTest {
 
         // 4 x update (29 b) = 4 x (29 + 6) = 140 consumed in the session buffer
         for (int i = 0; i < 4; i++) {
-            poTransaction.prepareUpdateRecord((byte) 0x07, (byte) 1, ByteArrayUtil
-                    .fromHex("CCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100"));
+            poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil
+                    .fromHex("8111111111111111111111111111111111111111111111111111111111"));
         }
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
 
@@ -1170,8 +1165,8 @@ public class PoTransactionTest {
         }
         // 4 x update (29 b) = 4 x (29 + 6) = 140 consumed in the session buffer
         for (int i = 0; i < 4; i++) {
-            poTransaction.prepareUpdateRecord((byte) 0x07, (byte) 1, ByteArrayUtil
-                    .fromHex("CCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100"));
+            poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil
+                    .fromHex("8111111111111111111111111111111111111111111111111111111111"));
         }
         // insert additional non modifying commands (should not affect the session buffer)
         for (int i = 0; i < 4; i++) {
@@ -1181,8 +1176,8 @@ public class PoTransactionTest {
 
         // 5 x update (29 b) = 5 x (29 + 6) = 140 consumed in the session buffer
         for (int i = 0; i < 4; i++) {
-            poTransaction.prepareUpdateRecord((byte) 0x07, (byte) 1, ByteArrayUtil
-                    .fromHex("CCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100"));
+            poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil
+                    .fromHex("8111111111111111111111111111111111111111111111111111111111"));
         }
         // 4 additional bytes (10 b consumed)
         poTransaction.prepareUpdateRecord((byte) 0x07, (byte) 1,
@@ -1229,11 +1224,11 @@ public class PoTransactionTest {
         samCommandsTestSet.put("808C00000500B2013C00", "9000");
         // Digest update
         samCommandsTestSet.put(
-                "808C00002200DC013C1DCCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100",
+                "808C00002200DC01441D8111111111111111111111111111111111111111111111111111111111",
                 "9000");
         // Digest update
         samCommandsTestSet.put(
-                "808C00001F00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC9000", "9000");
+                "808C00001F71111111111111111111111111111111111111111111111111111111119000", "9000");
         // Digest Update
         samCommandsTestSet.put("808C00000900DC013C0433221100", "9000");
         // Digest Update
@@ -1248,10 +1243,10 @@ public class PoTransactionTest {
         poCommandsTestSet.put("008A030104C1C2C3C400", "03049098003079009000");
         // Reader record SFI 7 1 rec
         poCommandsTestSet.put("00B2013C00",
-                "00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC9000");
+                "71111111111111111111111111111111111111111111111111111111119000");
         // Update Record SFI 8 rec 1 29 bytes
         poCommandsTestSet.put(
-                "00DC013C1DCCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100", "9000");
+                "00DC01441D8111111111111111111111111111111111111111111111111111111111", "9000");
         // Update Record SFI 7 rec 1 5 bytes
         poCommandsTestSet.put("00DC013C054433221100", "9000");
         // Close Session
@@ -1259,8 +1254,8 @@ public class PoTransactionTest {
 
         // 4 x update (29 b) = 4 x (29 + 6) = 140 consumed in the session buffer
         for (int i = 0; i < 4; i++) {
-            poTransaction.prepareUpdateRecord((byte) 0x07, (byte) 1, ByteArrayUtil
-                    .fromHex("CCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100"));
+            poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil
+                    .fromHex("8111111111111111111111111111111111111111111111111111111111"));
         }
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
 
@@ -1271,8 +1266,8 @@ public class PoTransactionTest {
         // 24 x update (29 b) = 24 x (29 + 6) = 840 consumed in the session buffer
         // force multiple cycles
         for (int i = 0; i < 24; i++) {
-            poTransaction.prepareUpdateRecord((byte) 0x07, (byte) 1, ByteArrayUtil
-                    .fromHex("CCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100"));
+            poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil
+                    .fromHex("8111111111111111111111111111111111111111111111111111111111"));
         }
         // insert additional non modifying commands (should not affect the session buffer)
         for (int i = 0; i < 4; i++) {
@@ -1283,8 +1278,8 @@ public class PoTransactionTest {
         // 24 x update (29 b) = 24 x (29 + 6) = 840 consumed in the session buffer
         // force multiple cycles
         for (int i = 0; i < 24; i++) {
-            poTransaction.prepareUpdateRecord((byte) 0x07, (byte) 1, ByteArrayUtil
-                    .fromHex("CCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100"));
+            poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil
+                    .fromHex("8111111111111111111111111111111111111111111111111111111111"));
         }
         // 4 additional bytes (10 b consumed)
         poTransaction.prepareUpdateRecord((byte) 0x07, (byte) 1,
@@ -1315,12 +1310,12 @@ public class PoTransactionTest {
 
         // Open Secure Session V3.1 + read sfi 7 / rec 1
         poCommandsTestSet.put("008A0B3904C1C2C3C400",
-                "030490980030791D00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC9000");
+                "030490980030791D71111111111111111111111111111111111111111111111111111111119000");
         // Open Secure Session V3.1
         poCommandsTestSet.put("008A030104C1C2C3C400", "03049098003079009000");
         // Read Recordsfi 8 / rec 1
         poCommandsTestSet.put("00B2014400",
-                "CCBBAA99887766554433221100FFEEDDCCBBAA998877665544332211009000");
+                "81111111111111111111111111111111111111111111111111111111119000");
         // Abort session
         poCommandsTestSet.put("008E000000", "9000");
 
@@ -1328,10 +1323,10 @@ public class PoTransactionTest {
         poTransaction.prepareReadRecordFile((byte) 0x08, 1);
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
         Assert.assertArrayEquals(
-                ByteArrayUtil.fromHex("00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC"),
+                ByteArrayUtil.fromHex("7111111111111111111111111111111111111111111111111111111111"),
                 calypsoPoRev31.getFileBySfi((byte) 0x07).getData().getContent());
         Assert.assertArrayEquals(
-                ByteArrayUtil.fromHex("CCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100"),
+                ByteArrayUtil.fromHex("8111111111111111111111111111111111111111111111111111111111"),
                 calypsoPoRev31.getFileBySfi((byte) 0x08).getData().getContent());
         Assert.assertTrue(calypsoPoRev31.isDfRatified());
         poTransaction.processCancel(ChannelControl.KEEP_OPEN);
