@@ -71,11 +71,12 @@ public class PoTransaction {
      * to the length of the outgoing data plus 6 bytes
      */
     private static final int SESSION_BUFFER_CMD_ADDITIONAL_COST = 6;
+    private static final int APDU_HEADER_LENGTH = 5;
 
     /** Ratification command APDU for rev <= 2.4 */
-    private static final byte[] RATIFICATION_CMD_APDU_LEGACY = ByteArrayUtil.fromHex("94B2000000");
+    private static final byte[] RATIFICATION_CMD_APDU_LEGACY = ByteArrayUtil.fromHex("94B2010000");
     /** Ratification command APDU for rev > 2.4 */
-    private static final byte[] RATIFICATION_CMD_APDU = ByteArrayUtil.fromHex("00B2000000");
+    private static final byte[] RATIFICATION_CMD_APDU = ByteArrayUtil.fromHex("00B2010000");
 
     private static final Logger logger = LoggerFactory.getLogger(PoTransaction.class);
 
@@ -178,6 +179,14 @@ public class PoTransaction {
             throws CalypsoPoTransactionException, CalypsoPoCommandException,
             CalypsoSamCommandException {
 
+        if (sessionState == SessionState.SESSION_OPEN) {
+            throw new CalypsoPoTransactionIllegalStateException("A session is already open");
+        }
+
+        if (poSecuritySettings == null) {
+            throw new CalypsoPoTransactionIllegalStateException("No SAM resource is available");
+        }
+
         // gets the terminal challenge
         byte[] sessionTerminalChallenge = samCommandProcessor.getSessionTerminalChallenge();
 
@@ -272,13 +281,13 @@ public class PoTransaction {
             samCommandProcessor.pushPoExchangeDataList(poApduRequests, poApduResponses, 1);
         }
 
-        sessionState = SessionState.SESSION_OPEN;
-
         // Remove Open Secure Session response and create a new SeResponse
         poApduResponses.remove(0);
 
         // update CalypsoPo with the received data
         CalypsoPoUtils.updateCalypsoPo(calypsoPo, poCommands, poApduResponses);
+
+        sessionState = SessionState.SESSION_OPEN;
     }
 
     /**
@@ -388,11 +397,7 @@ public class PoTransaction {
      * 
      * @param poModificationCommands a list of commands that can modify the PO memory content
      * @param poAnticipatedResponses a list of anticipated PO responses to the modification commands
-     * @param transmissionMode the communication mode. If the communication mode is CONTACTLESS, a
-     *        ratification command will be generated and sent to the PO after the Close Session
-     *        command; the ratification will not be requested in the Close Session command. On the
-     *        contrary, if the communication mode is CONTACTS, no ratification command will be sent
-     *        to the PO and ratification will be requested in the Close Session command
+     * @param ratificationMode the ratification mode tells if the session is closed ratified or not
      * @param channelControl indicates if the SE channel of the PO reader must be closed after the
      *        last command
      * @throws CalypsoPoTransactionException if a functional error occurs (including PO and SAM IO
@@ -402,9 +407,10 @@ public class PoTransaction {
      */
     private void processAtomicClosing(
             List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poModificationCommands,
-            List<ApduResponse> poAnticipatedResponses, TransmissionMode transmissionMode,
-            ChannelControl channelControl) throws CalypsoPoTransactionException,
-            CalypsoPoCommandException, CalypsoSamCommandException {
+            List<ApduResponse> poAnticipatedResponses,
+            SessionSetting.RatificationMode ratificationMode, ChannelControl channelControl)
+            throws CalypsoPoTransactionException, CalypsoPoCommandException,
+            CalypsoSamCommandException {
 
         if (sessionState != SessionState.SESSION_OPEN) {
             throw new CalypsoPoTransactionIllegalStateException(
@@ -427,30 +433,12 @@ public class PoTransaction {
         // All SAM digest operations will now run at once.
         // Get Terminal Signature from the latest response
         byte[] sessionTerminalSignature = samCommandProcessor.getTerminalSignature();
-
-        PoCustomCommandBuilder ratificationCommand;
-        boolean ratificationAsked;
-
-        if (transmissionMode == TransmissionMode.CONTACTLESS) {
-            if (calypsoPo.getRevision() == PoRevision.REV2_4) {
-                ratificationCommand = new PoCustomCommandBuilder("Ratification command",
-                        new ApduRequest(RATIFICATION_CMD_APDU_LEGACY, false));
-            } else {
-                ratificationCommand = new PoCustomCommandBuilder("Ratification command",
-                        new ApduRequest(RATIFICATION_CMD_APDU, false));
-            }
-            // Ratification is done by the ratification command above so is not requested in the
-            // Close Session command
-            ratificationAsked = false;
-        } else {
-            // Ratification is requested in the Close Session command in contacts mode
-            ratificationAsked = true;
-            ratificationCommand = null;
-        }
+        boolean ratificationCommandResponseReceived;
 
         // Build the PO Close Session command. The last one for this session
         CloseSessionCmdBuild closeSessionCmdBuild = new CloseSessionCmdBuild(calypsoPo.getPoClass(),
-                ratificationAsked, sessionTerminalSignature);
+                SessionSetting.RatificationMode.CLOSE_RATIFIED.equals(ratificationMode),
+                sessionTerminalSignature);
 
         poApduRequests.add(closeSessionCmdBuild.getApduRequest());
 
@@ -458,8 +446,19 @@ public class PoTransaction {
         int closeCommandIndex = poApduRequests.size() - 1;
 
         // Add the PO Ratification command if any
-        if (ratificationCommand != null) {
-            poApduRequests.add(ratificationCommand.getApduRequest());
+        boolean ratificationCommandAdded;
+        if (SessionSetting.RatificationMode.CLOSE_RATIFIED.equals(ratificationMode)
+                && TransmissionMode.CONTACTLESS.equals(calypsoPo.getTransmissionMode())) {
+            if (calypsoPo.getRevision() == PoRevision.REV2_4) {
+                poApduRequests.add(new PoCustomCommandBuilder("Ratification command",
+                        new ApduRequest(RATIFICATION_CMD_APDU_LEGACY, false)).getApduRequest());
+            } else {
+                poApduRequests.add(new PoCustomCommandBuilder("Ratification command",
+                        new ApduRequest(RATIFICATION_CMD_APDU, false)).getApduRequest());
+            }
+            ratificationCommandAdded = true;
+        } else {
+            ratificationCommandAdded = false;
         }
 
         // Transfer PO commands
@@ -468,6 +467,9 @@ public class PoTransaction {
         SeResponse poSeResponse;
         try {
             poSeResponse = poReader.transmitSeRequest(poSeRequest, channelControl);
+            // if the ratification command was added and no error occured then the response has been
+            // received
+            ratificationCommandResponseReceived = ratificationCommandAdded;
         } catch (KeypleReaderIOException ex) {
             poSeResponse = ex.getSeResponse();
             // The current exception may have been caused by a communication issue with the PO
@@ -477,10 +479,12 @@ public class PoTransaction {
             // check the signature.
             //
             // We should have one response less than requests.
-            if (ratificationAsked || poSeResponse == null
+            if (!ratificationCommandAdded || poSeResponse == null
                     || poSeResponse.getApduResponses().size() != poApduRequests.size() - 1) {
                 throw new CalypsoPoIOException("PO IO Exception while transmitting commands.", ex);
             }
+            // we received all responses except the response to the ratification command
+            ratificationCommandResponseReceived = false;
         }
 
         List<ApduResponse> poApduResponses = poSeResponse.getApduResponses();
@@ -496,10 +500,13 @@ public class PoTransaction {
 
         sessionState = SessionState.SESSION_CLOSED;
 
-        // Remove ratification response if any
-        if (!ratificationAsked) {
+        if (ratificationCommandResponseReceived) { // NOSONAR: boolean change in catch
+                                                   // is not taken into account by
+                                                   // Sonar
+            // Remove the ratification response
             poApduResponses.remove(poApduResponses.size() - 1);
         }
+
         // Remove Close Secure Session response and create a new SeResponse
         poApduResponses.remove(poApduResponses.size() - 1);
 
@@ -511,11 +518,7 @@ public class PoTransaction {
      * determined from previous reading operations.
      *
      * @param poCommands a list of commands that can modify the PO memory content
-     * @param transmissionMode the communication mode. If the communication mode is CONTACTLESS, a
-     *        ratification command will be generated and sent to the PO after the Close Session
-     *        command; the ratification will not be requested in the Close Session command. On the
-     *        contrary, if the communication mode is CONTACTS, no ratification command will be sent
-     *        to the PO and ratification will be requested in the Close Session command
+     * @param ratificationMode the ratification mode tells if the session is closed ratified or not
      * @param channelControl indicates if the SE channel of the PO reader must be closed after the
      *        last command
      * @throws CalypsoPoTransactionException if a functional error occurs (including PO and SAM IO
@@ -525,11 +528,11 @@ public class PoTransaction {
      */
     private void processAtomicClosing(
             List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poCommands,
-            TransmissionMode transmissionMode, ChannelControl channelControl)
+            SessionSetting.RatificationMode ratificationMode, ChannelControl channelControl)
             throws CalypsoPoTransactionException, CalypsoPoCommandException,
             CalypsoSamCommandException {
         List<ApduResponse> poAnticipatedResponses = getAnticipatedResponses(poCommands);
-        processAtomicClosing(poCommands, poAnticipatedResponses, transmissionMode, channelControl);
+        processAtomicClosing(poCommands, poAnticipatedResponses, ratificationMode, channelControl);
     }
 
     public static class SessionSetting {
@@ -733,9 +736,12 @@ public class PoTransaction {
             // is raised.
             if (checkModifyingCommand(commandBuilder, overflow, neededSessionBufferSpace)) {
                 if (overflow.get()) {
+                    // Open the session with the current commands
+                    processAtomicOpening(currentAccessLevel, poAtomicCommands);
                     // Closes the session, resets the modifications buffer counters for the next
                     // round (set the contact mode to avoid the transmission of the ratification)
-                    processAtomicClosing(null, TransmissionMode.CONTACTS, ChannelControl.KEEP_OPEN);
+                    processAtomicClosing(null, SessionSetting.RatificationMode.CLOSE_RATIFIED,
+                            ChannelControl.KEEP_OPEN);
                     resetModificationsBufferCounter();
                     // Clear the list and add the command that did not fit in the PO modifications
                     // buffer. We also update the usage counter without checking the result.
@@ -834,7 +840,8 @@ public class PoTransaction {
                     processAtomicPoCommands(poAtomicBuilders, ChannelControl.KEEP_OPEN);
                     // Close the session and reset the modifications buffer counters for the next
                     // round (set the contact mode to avoid the transmission of the ratification)
-                    processAtomicClosing(null, TransmissionMode.CONTACTS, ChannelControl.KEEP_OPEN);
+                    processAtomicClosing(null, SessionSetting.RatificationMode.CLOSE_RATIFIED,
+                            ChannelControl.KEEP_OPEN);
                     resetModificationsBufferCounter();
                     // We reopen a new session for the remaining commands to be sent
                     processAtomicOpening(currentAccessLevel, null);
@@ -889,6 +896,12 @@ public class PoTransaction {
     public final void processClosing(ChannelControl channelControl)
             throws CalypsoPoTransactionException, CalypsoPoCommandException,
             CalypsoSamCommandException {
+        if (sessionState != SessionState.SESSION_OPEN) {
+            throw new CalypsoPoTransactionIllegalStateException(
+                    "Bad session state. Current: " + sessionState.toString() + ", expected: "
+                            + SessionState.SESSION_OPEN.toString());
+        }
+
         boolean atLeastOneReadCommand = false;
         boolean sessionPreviouslyClosed = false;
 
@@ -915,18 +928,27 @@ public class PoTransaction {
                     // instead of processAtomicClosing to send the list
                     if (atLeastOneReadCommand) {
                         processAtomicPoCommands(poAtomicCommands, ChannelControl.KEEP_OPEN);
+                        // Clear the list of commands sent
+                        poAtomicCommands.clear();
+                        processAtomicClosing(poAtomicCommands,
+                                SessionSetting.RatificationMode.CLOSE_RATIFIED,
+                                ChannelControl.KEEP_OPEN);
+                        resetModificationsBufferCounter();
+                        sessionPreviouslyClosed = true;
                         atLeastOneReadCommand = false;
                     } else {
                         // All commands in the list are 'modifying the PO'
-                        processAtomicClosing(poAtomicCommands, TransmissionMode.CONTACTS,
+                        processAtomicClosing(poAtomicCommands,
+                                SessionSetting.RatificationMode.CLOSE_RATIFIED,
                                 ChannelControl.KEEP_OPEN);
+                        // Clear the list of commands sent
+                        poAtomicCommands.clear();
                         resetModificationsBufferCounter();
                         sessionPreviouslyClosed = true;
                     }
 
-                    // Clear the list and add the command that did not fit in the PO modifications
+                    // Add the command that did not fit in the PO modifications
                     // buffer. We also update the usage counter without checking the result.
-                    poAtomicCommands.clear();
                     poAtomicCommands.add(commandBuilder);
                     // just update modifications buffer usage counter, ignore result (always false)
                     isSessionBufferOverflowed(neededSessionBufferSpace.get());
@@ -947,7 +969,8 @@ public class PoTransaction {
         }
 
         // Finally, close the session as requested
-        processAtomicClosing(poAtomicCommands, calypsoPo.getTransmissionMode(), channelControl);
+        processAtomicClosing(poAtomicCommands, poSecuritySettings.getRatificationMode(),
+                channelControl);
 
         // sets the flag indicating that the commands have been executed
         poCommandManager.notifyCommandsProcessed();
@@ -1040,7 +1063,7 @@ public class PoTransaction {
         if (builder.isSessionBufferUsed()) {
             // This command affects the PO modifications buffer
             neededSessionBufferSpace.set(builder.getApduRequest().getBytes().length
-                    + SESSION_BUFFER_CMD_ADDITIONAL_COST);
+                    + SESSION_BUFFER_CMD_ADDITIONAL_COST - APDU_HEADER_LENGTH);
             if (isSessionBufferOverflowed(neededSessionBufferSpace.get())) {
                 // raise an exception if in atomic mode
                 if (poSecuritySettings
@@ -1072,7 +1095,7 @@ public class PoTransaction {
     private boolean isSessionBufferOverflowed(int sessionBufferSizeConsumed) {
         boolean isSessionBufferFull = false;
         if (calypsoPo.isModificationsCounterInBytes()) {
-            if (modificationsCounter - sessionBufferSizeConsumed > 0) {
+            if (modificationsCounter - sessionBufferSizeConsumed >= 0) {
                 modificationsCounter = modificationsCounter - sessionBufferSizeConsumed;
             } else {
                 if (logger.isDebugEnabled()) {

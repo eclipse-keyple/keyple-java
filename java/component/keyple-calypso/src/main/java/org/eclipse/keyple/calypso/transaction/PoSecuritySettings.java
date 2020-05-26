@@ -15,6 +15,7 @@ import java.util.EnumMap;
 import java.util.List;
 
 
+
 /**
  * A class dedicated to managing the security settings involved in managing secure sessions.
  * <p>
@@ -78,6 +79,9 @@ public class PoSecuritySettings {
          *        Needed in any cases.
          */
         public PoSecuritySettingsBuilder(SamResource samResource) {
+            if (samResource == null) {
+                throw new IllegalStateException("SamResource cannot be null.");
+            }
             this.samResource = samResource;
         }
 
