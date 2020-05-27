@@ -22,8 +22,6 @@ import org.eclipse.keyple.calypso.SelectFileControl;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
-import org.eclipse.keyple.calypso.command.po.PoCustomCommandBuilder;
-import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.AppendRecordCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.DecreaseCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.IncreaseCmdBuild;
@@ -32,14 +30,20 @@ import org.eclipse.keyple.calypso.command.po.builder.UpdateRecordCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.WriteRecordCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.security.AbstractOpenSessionCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.security.CloseSessionCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.security.RatificationCmdBuild;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
 import org.eclipse.keyple.calypso.command.po.parser.security.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.CloseSessionRespPars;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoAtomicTransactionException;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoAuthenticationNotVerifiedException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronizedExchangesException;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoCloseSecureSessionException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoIOException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionIllegalStateException;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoSamIOException;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoSessionAuthenticationException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoUnauthorizedKvcException;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -72,11 +76,6 @@ public class PoTransaction {
      */
     private static final int SESSION_BUFFER_CMD_ADDITIONAL_COST = 6;
     private static final int APDU_HEADER_LENGTH = 5;
-
-    /** Ratification command APDU for rev <= 2.4 */
-    private static final byte[] RATIFICATION_CMD_APDU_LEGACY = ByteArrayUtil.fromHex("94B2010000");
-    /** Ratification command APDU for rev > 2.4 */
-    private static final byte[] RATIFICATION_CMD_APDU = ByteArrayUtil.fromHex("00B2010000");
 
     private static final Logger logger = LoggerFactory.getLogger(PoTransaction.class);
 
@@ -179,9 +178,8 @@ public class PoTransaction {
             throws CalypsoPoTransactionException, CalypsoPoCommandException,
             CalypsoSamCommandException {
 
-        if (sessionState == SessionState.SESSION_OPEN) {
-            throw new CalypsoPoTransactionIllegalStateException("A session is already open");
-        }
+        /** This method should be called only if no session was previously open */
+        checkSessionIsNotOpen();
 
         if (poSecuritySettings == null) {
             throw new CalypsoPoTransactionIllegalStateException("No SAM resource is available");
@@ -412,11 +410,7 @@ public class PoTransaction {
             throws CalypsoPoTransactionException, CalypsoPoCommandException,
             CalypsoSamCommandException {
 
-        if (sessionState != SessionState.SESSION_OPEN) {
-            throw new CalypsoPoTransactionIllegalStateException(
-                    "Bad session state. Current: " + sessionState.toString() + ", expected: "
-                            + SessionState.SESSION_OPEN.toString());
-        }
+        checkSessionIsOpen();
 
         // Get the PO ApduRequest List - for the first PO exchange
         List<ApduRequest> poApduRequests = getApduRequests(poModificationCommands);
@@ -449,13 +443,7 @@ public class PoTransaction {
         boolean ratificationCommandAdded;
         if (SessionSetting.RatificationMode.CLOSE_RATIFIED.equals(ratificationMode)
                 && TransmissionMode.CONTACTLESS.equals(calypsoPo.getTransmissionMode())) {
-            if (calypsoPo.getRevision() == PoRevision.REV2_4) {
-                poApduRequests.add(new PoCustomCommandBuilder("Ratification command",
-                        new ApduRequest(RATIFICATION_CMD_APDU_LEGACY, false)).getApduRequest());
-            } else {
-                poApduRequests.add(new PoCustomCommandBuilder("Ratification command",
-                        new ApduRequest(RATIFICATION_CMD_APDU, false)).getApduRequest());
-            }
+            poApduRequests.add(RatificationCmdBuild.getApduRequest(calypsoPo.getPoClass()));
             ratificationCommandAdded = true;
         } else {
             ratificationCommandAdded = false;
@@ -493,10 +481,21 @@ public class PoTransaction {
         // before last if ratification, otherwise last one
         CloseSessionRespPars poCloseSessionPars =
                 closeSessionCmdBuild.createResponseParser(poApduResponses.get(closeCommandIndex));
+        try {
+            poCloseSessionPars.checkStatus();
+        } catch (CalypsoPoCommandException ex) {
+            throw new CalypsoPoCloseSecureSessionException(
+                    "Close Secure Session failed on PO side.", ex);
+        }
 
-        poCloseSessionPars.checkStatus();
-
-        samCommandProcessor.authenticatePoSignature(poCloseSessionPars.getSignatureLo());
+        try {
+            samCommandProcessor.authenticatePoSignature(poCloseSessionPars.getSignatureLo());
+        } catch (CalypsoSamIOException ex) {
+            throw new CalypsoAuthenticationNotVerifiedException(ex.getMessage());
+        } catch (CalypsoSamCommandException ex) {
+            throw new CalypsoSessionAuthenticationException("PO authentication failed on SAM side.",
+                    ex);
+        }
 
         sessionState = SessionState.SESSION_CLOSED;
 
@@ -784,9 +783,7 @@ public class PoTransaction {
             throws CalypsoPoTransactionException, CalypsoPoCommandException {
 
         /** This method should be called only if no session was previously open */
-        if (sessionState == SessionState.SESSION_OPEN) {
-            throw new CalypsoPoTransactionIllegalStateException("A session is open");
-        }
+        checkSessionIsNotOpen();
 
         // PO commands sent outside a Secure Session. No modifications buffer limitation.
         processAtomicPoCommands(poCommandManager.getPoCommandBuilders(), channelControl);
@@ -815,9 +812,7 @@ public class PoTransaction {
             CalypsoPoCommandException, CalypsoSamCommandException {
 
         /** This method should be called only if a session was previously open */
-        if (sessionState != SessionState.SESSION_OPEN) {
-            throw new CalypsoPoTransactionIllegalStateException("No open session");
-        }
+        checkSessionIsOpen();
 
         // A session is open, we have to care about the PO modifications buffer
         List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poAtomicBuilders =
@@ -896,11 +891,7 @@ public class PoTransaction {
     public final void processClosing(ChannelControl channelControl)
             throws CalypsoPoTransactionException, CalypsoPoCommandException,
             CalypsoSamCommandException {
-        if (sessionState != SessionState.SESSION_OPEN) {
-            throw new CalypsoPoTransactionIllegalStateException(
-                    "Bad session state. Current: " + sessionState.toString() + ", expected: "
-                            + SessionState.SESSION_OPEN.toString());
-        }
+        checkSessionIsOpen();
 
         boolean atLeastOneReadCommand = false;
         boolean sessionPreviouslyClosed = false;
@@ -1026,6 +1017,31 @@ public class PoTransaction {
     }
 
     /**
+     * Checks if a Secure Session is open, raises an exception if not
+     * 
+     * @throws CalypsoPoTransactionIllegalStateException if no session is open
+     */
+    private void checkSessionIsOpen() throws CalypsoPoTransactionIllegalStateException {
+        if (sessionState != SessionState.SESSION_OPEN) {
+            throw new CalypsoPoTransactionIllegalStateException("Bad session state. Current: "
+                    + sessionState + ", expected: " + SessionState.SESSION_OPEN);
+        }
+    }
+
+    /**
+     * Checks if a Secure Session is not open, raises an exception if not
+     *
+     * @throws CalypsoPoTransactionIllegalStateException if a session is open
+     */
+    private void checkSessionIsNotOpen() throws CalypsoPoTransactionIllegalStateException {
+        if (sessionState == SessionState.SESSION_OPEN) {
+            throw new CalypsoPoTransactionIllegalStateException(
+                    "Bad session state. Current: " + sessionState + ", expected: not open");
+        }
+    }
+
+
+    /**
      * Checks if the number of responses matches the number of commands.<br>
      * Throw a {@link CalypsoDesynchronizedExchangesException} if not.
      * 
@@ -1059,7 +1075,7 @@ public class PoTransaction {
     private boolean checkModifyingCommand(
             AbstractPoCommandBuilder<? extends AbstractPoResponseParser> builder,
             AtomicBoolean overflow, AtomicInteger neededSessionBufferSpace)
-            throws CalypsoPoTransactionIllegalStateException {
+            throws CalypsoAtomicTransactionException {
         if (builder.isSessionBufferUsed()) {
             // This command affects the PO modifications buffer
             neededSessionBufferSpace.set(builder.getApduRequest().getBytes().length
@@ -1068,7 +1084,7 @@ public class PoTransaction {
                 // raise an exception if in atomic mode
                 if (poSecuritySettings
                         .getSessionModificationMode() == SessionSetting.ModificationMode.ATOMIC) {
-                    throw new CalypsoPoTransactionIllegalStateException(
+                    throw new CalypsoAtomicTransactionException(
                             "ATOMIC mode error! This command would overflow the PO modifications buffer: "
                                     + builder.getName());
                 }
