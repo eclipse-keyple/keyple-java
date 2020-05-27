@@ -18,10 +18,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.eclipse.keyple.calypso.SelectFileControl;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoAtomicTransactionException;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoAuthenticationNotVerifiedException;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoCloseSecureSessionException;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoIOException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionIllegalStateException;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoSessionAuthenticationException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoUnauthorizedKvcException;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
@@ -80,7 +86,7 @@ public class PoTransactionTest {
     }
 
     /* Standard opening with two records read */
-    @Test
+    @Test(expected = CalypsoPoTransactionIllegalStateException.class)
     public void testProcessOpening_no_sam_resource() throws CalypsoPoTransactionException,
             CalypsoPoCommandException, CalypsoSamCommandException {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
@@ -101,17 +107,12 @@ public class PoTransactionTest {
 
         poTransaction.prepareReadRecordFile((byte) 0x07, 1);
         poTransaction.prepareReadRecordFile((byte) 0x08, 1);
-        try {
-            poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
-        } catch (CalypsoPoTransactionIllegalStateException ex) {
-            // expected exception: no SAM resource available
-            return;
-        }
-        Assert.fail();
+        // should raise an exception
+        poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
     }
 
     /* Standard opening with two records read */
-    @Test
+    @Test(expected = CalypsoPoTransactionIllegalStateException.class)
     public void testProcessOpening_read_reopen() throws CalypsoPoTransactionException,
             CalypsoPoCommandException, CalypsoSamCommandException {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
@@ -146,13 +147,8 @@ public class PoTransactionTest {
                 ByteArrayUtil.fromHex("CCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100"),
                 calypsoPoRev31.getFileBySfi((byte) 0x08).getData().getContent());
         Assert.assertTrue(calypsoPoRev31.isDfRatified());
-        try {
-            poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
-        } catch (CalypsoPoTransactionIllegalStateException ex) {
-            // expected exception: session is already open
-            return;
-        }
-        Assert.fail();
+        // expected exception: session is already open
+        poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
     }
 
     /* Standard opening, DF not previously ratified */
@@ -228,7 +224,7 @@ public class PoTransactionTest {
     }
 
     /* Standard opening but KVC is not present authorized list */
-    @Test
+    @Test(expected = CalypsoUnauthorizedKvcException.class)
     public void testProcessOpening_kvc_not_authorized() throws CalypsoPoCommandException,
             CalypsoSamCommandException, CalypsoPoTransactionException {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
@@ -255,13 +251,8 @@ public class PoTransactionTest {
                 "030490980030781D71111111111111111111111111111111111111111111111111111111119000");
 
         poTransaction.prepareReadRecordFile((byte) 0x07, 1);
-        try {
-            poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
-        } catch (CalypsoUnauthorizedKvcException ex) {
-            // expected exception
-            return;
-        }
-        Assert.fail();
+        // an exception is expected
+        poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
     }
 
     /*
@@ -322,7 +313,7 @@ public class PoTransactionTest {
      * Buffer overflowed in atomic mode (counter in bytes): session buffer size = 430 b, consumed
      * size 431 b
      */
-    @Test
+    @Test(expected = CalypsoAtomicTransactionException.class)
     public void testProcessOpening_session_buffer_overflow_bytes_counter()
             throws CalypsoPoCommandException, CalypsoSamCommandException,
             CalypsoPoTransactionException {
@@ -359,14 +350,9 @@ public class PoTransactionTest {
         // 5 additional bytes (11 b consumed)
         poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1,
                 ByteArrayUtil.fromHex("4433221100"));
-        // ATOMIC transaction should be ko (430 / 431 bytes consumed)
-        try {
-            poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
-        } catch (CalypsoPoTransactionIllegalStateException ex) {
-            // expected exception: session buffer overflow
-            return;
-        }
-        Assert.fail();
+
+        // expected exception: session buffer overflow
+        poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
     }
 
     /*
@@ -415,7 +401,7 @@ public class PoTransactionTest {
      * Buffer overflow limit in atomic mode (counter in operations): session buffer size = 6 op,
      * consumed 7 op
      */
-    @Test
+    @Test(expected = CalypsoAtomicTransactionException.class)
     public void testProcessOpening_session_buffer_overflow_operations_counter()
             throws CalypsoPoCommandException, CalypsoSamCommandException,
             CalypsoPoTransactionException {
@@ -448,13 +434,8 @@ public class PoTransactionTest {
                     .fromHex("8111111111111111111111111111111111111111111111111111111111"));
         }
         // ATOMIC transaction should be ko (7 / 6 operations consumed)
-        try {
-            poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
-        } catch (CalypsoPoTransactionIllegalStateException ex) {
-            // expected exception: session buffer overflow
-            return;
-        }
-        Assert.fail();
+        // expected exception: session buffer overflow
+        poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
     }
 
     /*
@@ -562,7 +543,7 @@ public class PoTransactionTest {
     }
 
     /* standard process Po commands: session open before */
-    @Test
+    @Test(expected = CalypsoPoTransactionIllegalStateException.class)
     public void testProcessPoCommands_session_open() throws CalypsoPoCommandException,
             CalypsoPoTransactionException, CalypsoSamCommandException {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
@@ -594,17 +575,12 @@ public class PoTransactionTest {
 
         poTransaction.prepareReadRecordFile((byte) 0x08, 1);
         // PoTransaction while a session is open
-        try {
-            poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
-        } catch (CalypsoPoTransactionIllegalStateException ex) {
-            // expected exception: a session is open
-            return;
-        }
-        Assert.fail();
+        // expected exception: a session is open
+        poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
     }
 
     /* No session open */
-    @Test
+    @Test(expected = CalypsoPoTransactionIllegalStateException.class)
     public void testProcessPoCommandsInSession_no_session_open()
             throws CalypsoPoTransactionException, CalypsoPoCommandException,
             CalypsoSamCommandException {
@@ -615,13 +591,8 @@ public class PoTransactionTest {
         poCommandsTestSet.put("00B2014400",
                 "81111111111111111111111111111111111111111111111111111111119000");
         poTransaction.prepareReadRecordFile((byte) 0x08, 1);
-        try {
-            poTransaction.processPoCommandsInSession();
-        } catch (CalypsoPoTransactionIllegalStateException ex) {
-            // expected exception: no session is open
-            return;
-        }
-        Assert.fail();
+        // expected exception: no session is open
+        poTransaction.processPoCommandsInSession();
     }
 
     /* Standard processPoCommandsInSession */
@@ -665,7 +636,7 @@ public class PoTransactionTest {
     }
 
     /* processClosing no session open */
-    @Test
+    @Test(expected = CalypsoPoTransactionIllegalStateException.class)
     public void testProcessClosing_no_session_open() throws CalypsoPoTransactionException,
             CalypsoPoCommandException, CalypsoSamCommandException {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
@@ -675,13 +646,8 @@ public class PoTransactionTest {
         poCommandsTestSet.put("00B2014400",
                 "81111111111111111111111111111111111111111111111111111111119000");
         poTransaction.prepareReadRecordFile((byte) 0x08, 1);
-        try {
-            poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
-        } catch (CalypsoPoTransactionIllegalStateException ex) {
-            // expected exception: no session is open
-            return;
-        }
-        Assert.fail();
+        // expected exception: no session is open
+        poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
     }
 
     /* Standard processClosing - default ratification */
@@ -769,6 +735,8 @@ public class PoTransactionTest {
         poCommandsTestSet.put("00E20048048899AABB", "9000");
         // Close Session
         poCommandsTestSet.put("008E8000041122334400", "556677889000");
+        // Ratification command
+        poCommandsTestSet.put("00B2000000", "6B00");
 
         poTransaction.prepareReadRecordFile((byte) 0x07, 1);
         poTransaction.prepareReadRecordFile((byte) 0x10, 1);
@@ -793,6 +761,149 @@ public class PoTransactionTest {
                 calypsoPoRev31.getFileBySfi((byte) 0x08).getData().getContent(1));
         Assert.assertArrayEquals(ByteArrayUtil.fromHex("8899AABB"),
                 calypsoPoRev31.getFileBySfi((byte) 0x09).getData().getContent(1));
+    }
+
+    /* processClosing - PO fail on closing */
+    @Test(expected = CalypsoPoCloseSecureSessionException.class)
+    public void testProcessClosing_po_close_fail() throws CalypsoPoTransactionException,
+            CalypsoPoCommandException, CalypsoSamCommandException {
+        CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
+        PoSecuritySettings poSecuritySettings =
+                new PoSecuritySettings.PoSecuritySettingsBuilder(samResource) //
+                        .sessionDefaultKif(AccessLevel.SESSION_LVL_DEBIT, DEFAULT_KIF_DEBIT) //
+                        .sessionDefaultKeyRecordNumber(AccessLevel.SESSION_LVL_DEBIT,
+                                DEFAULT_KEY_RECORD_NUMBER_DEBIT)
+                        .build();
+
+        poTransaction =
+                new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
+
+        // Select Diversifier
+        samCommandsTestSet.put("80140000080000000011223344", "9000");
+        // Get Challenge
+        samCommandsTestSet.put("8084000004", "C1C2C3C49000");
+        // Digest init
+        samCommandsTestSet.put("808A00FF0A30790304909800307900", "9000");
+        // Digest update
+        samCommandsTestSet.put("808C00000500B2013C00", "9000");
+        // Digest update
+        samCommandsTestSet.put("808C0000029000", "9000");
+        // Digest Close
+        samCommandsTestSet.put("808E000004", "112233449000");
+        // Digest Authenticate
+        samCommandsTestSet.put("808200000455667788", "9000");
+
+        // Open Secure Session V3.1 + read sfi 7 / rec 1
+        poCommandsTestSet.put("008A030104C1C2C3C400", "03049098003079009000");
+        // Read record SFI 7 rec 1
+        poCommandsTestSet.put("00B2013C00",
+                "71111111111111111111111111111111111111111111111111111111119000");
+        // Close Session - status error
+        poCommandsTestSet.put("008E8000041122334400", "6988");
+
+        poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
+
+        poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+
+        // PoTransaction after a session is open
+        // should raise a CalypsoPoCloseSecureSessionException
+        poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
+    }
+
+    /* processClosing - SAM authentication fail on closing */
+    @Test(expected = CalypsoSessionAuthenticationException.class)
+    public void testProcessClosing_sam_authenticate_fail() throws CalypsoPoTransactionException,
+            CalypsoPoCommandException, CalypsoSamCommandException {
+        CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
+        PoSecuritySettings poSecuritySettings =
+                new PoSecuritySettings.PoSecuritySettingsBuilder(samResource) //
+                        .sessionDefaultKif(AccessLevel.SESSION_LVL_DEBIT, DEFAULT_KIF_DEBIT) //
+                        .sessionDefaultKeyRecordNumber(AccessLevel.SESSION_LVL_DEBIT,
+                                DEFAULT_KEY_RECORD_NUMBER_DEBIT)
+                        .build();
+
+        poTransaction =
+                new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
+
+        // Select Diversifier
+        samCommandsTestSet.put("80140000080000000011223344", "9000");
+        // Get Challenge
+        samCommandsTestSet.put("8084000004", "C1C2C3C49000");
+        // Digest init
+        samCommandsTestSet.put("808A00FF0A30790304909800307900", "9000");
+        // Digest update
+        samCommandsTestSet.put("808C00000500B2013C00", "9000");
+        // Digest update
+        samCommandsTestSet.put("808C0000029000", "9000");
+        // Digest Close
+        samCommandsTestSet.put("808E000004", "112233449000");
+        // Digest Authenticate
+        samCommandsTestSet.put("808200000455667788", "6988");
+
+        // Open Secure Session V3.1 + read sfi 7 / rec 1
+        poCommandsTestSet.put("008A030104C1C2C3C400", "03049098003079009000");
+        // Read record SFI 7 rec 1
+        poCommandsTestSet.put("00B2013C00",
+                "71111111111111111111111111111111111111111111111111111111119000");
+        // Close Session
+        poCommandsTestSet.put("008E8000041122334400", "556677889000");
+
+        poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
+
+        poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+
+        // PoTransaction after a session is open
+        // should raise a CalypsoSessionAuthenticationException
+        poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
+    }
+
+
+    /* processClosing - SAM IO error while authenticating */
+    @Test(expected = CalypsoAuthenticationNotVerifiedException.class)
+    public void testProcessClosing_sam_io_error_authenticating()
+            throws CalypsoPoTransactionException, CalypsoPoCommandException,
+            CalypsoSamCommandException {
+        CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
+        PoSecuritySettings poSecuritySettings =
+                new PoSecuritySettings.PoSecuritySettingsBuilder(samResource) //
+                        .sessionDefaultKif(AccessLevel.SESSION_LVL_DEBIT, DEFAULT_KIF_DEBIT) //
+                        .sessionDefaultKeyRecordNumber(AccessLevel.SESSION_LVL_DEBIT,
+                                DEFAULT_KEY_RECORD_NUMBER_DEBIT)
+                        .build();
+
+        poTransaction =
+                new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
+
+        // Select Diversifier
+        samCommandsTestSet.put("80140000080000000011223344", "9000");
+        // Get Challenge
+        samCommandsTestSet.put("8084000004", "C1C2C3C49000");
+        // Digest init
+        samCommandsTestSet.put("808A00FF0A30790304909800307900", "9000");
+        // Digest update
+        samCommandsTestSet.put("808C00000500B2013C00", "9000");
+        // Digest update
+        samCommandsTestSet.put("808C0000029000", "9000");
+        // Digest Close
+        samCommandsTestSet.put("808E000004", "112233449000");
+        // Digest Authenticate
+        // EMPTY
+
+        // Open Secure Session V3.1 + read sfi 7 / rec 1
+        poCommandsTestSet.put("008A030104C1C2C3C400", "03049098003079009000");
+        // Read record SFI 7 rec 1
+        poCommandsTestSet.put("00B2013C00",
+                "71111111111111111111111111111111111111111111111111111111119000");
+        // Close Session
+        poCommandsTestSet.put("008E8000041122334400", "556677889000");
+
+        poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
+
+        poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+
+        // PoTransaction after a session is open
+        // should raise a CalypsoAuthenticationNotVerifiedException
+        poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
     }
 
     /*
@@ -953,7 +1064,7 @@ public class PoTransactionTest {
         try {
             // PoTransaction after a session is open
             poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
-        } catch (CalypsoPoTransactionIllegalStateException ex) {
+        } catch (CalypsoAtomicTransactionException ex) {
             // expected exception: session buffer overflow
             return;
         }
@@ -1044,6 +1155,8 @@ public class PoTransactionTest {
 
         // PoTransaction after a session is open
         poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
+
+        Assert.assertTrue(true);
     }
 
     /* Standard processClosing - close not ratified */
@@ -1086,13 +1199,13 @@ public class PoTransactionTest {
                 "030490980030791D71111111111111111111111111111111111111111111111111111111119000");
         // Close Session not ratified
         poCommandsTestSet.put("008E0000041122334400", "556677889000");
-        // Ratification command
-        poCommandsTestSet.put("00B2010000", "6B00");
 
         poTransaction.prepareReadRecordFile((byte) 0x07, 1);
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
 
         poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
+
+        Assert.assertTrue(true);
     }
 
     /* Session buffer overflow in atomic mode: the overflow happens at closing */
@@ -1186,7 +1299,7 @@ public class PoTransactionTest {
         try {
             // PoTransaction after a session is open
             poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
-        } catch (CalypsoPoTransactionIllegalStateException ex) {
+        } catch (CalypsoAtomicTransactionException ex) {
             // expected exception: buffer overflow
             return;
         }
@@ -1287,6 +1400,8 @@ public class PoTransactionTest {
 
         // PoTransaction after a session is open
         poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
+
+        Assert.assertTrue(true);
     }
 
     /* open, cancel and reopen */
@@ -1334,34 +1449,164 @@ public class PoTransactionTest {
     }
 
     @Test
-    public void testPrepareSelectFile() {}
+    public void testPrepareSelectFile_select_control()
+            throws CalypsoPoCommandException, CalypsoPoTransactionException {
+        CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
+        poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
+
+        poCommandsTestSet.put("00A4090002000000",
+                "85170001000000101000000103010100777879616770003F009000");
+        poCommandsTestSet.put("00A4020002000000",
+                "85170204021D011F00000001010101003F02000000000000029000");
+        poCommandsTestSet.put("00A4020202000000",
+                "85170304021D010110000001020101003F03000000000000039000");
+
+        poTransaction.prepareSelectFile(SelectFileControl.CURRENT_DF);
+        poTransaction.prepareSelectFile(SelectFileControl.FIRST_EF);
+        poTransaction.prepareSelectFile(SelectFileControl.NEXT_EF);
+        poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
+        DirectoryHeader directoryHeader = calypsoPoRev31.getDirectoryHeader();
+        FileHeader fileHeader1 = calypsoPoRev31.getFileByLid((short) 0x02).getHeader();
+        FileHeader fileHeader2 = calypsoPoRev31.getFileByLid((short) 0x03).getHeader();
+        System.out.println(directoryHeader);
+        System.out.println(fileHeader1);
+        System.out.println(fileHeader2);
+
+        Assert.assertEquals((short) 0x3F00, directoryHeader.getLid());
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex("10100000"),
+                directoryHeader.getAccessConditions());
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex("01030101"),
+                directoryHeader.getKeyIndexes());
+        Assert.assertEquals((short) 0x00, directoryHeader.getDfStatus());
+        Assert.assertEquals((byte) 0x61, directoryHeader.getKif(AccessLevel.SESSION_LVL_PERSO));
+        Assert.assertEquals((byte) 0x67, directoryHeader.getKif(AccessLevel.SESSION_LVL_LOAD));
+        Assert.assertEquals((byte) 0x70, directoryHeader.getKif(AccessLevel.SESSION_LVL_DEBIT));
+        Assert.assertEquals((byte) 0x77, directoryHeader.getKvc(AccessLevel.SESSION_LVL_PERSO));
+        Assert.assertEquals((byte) 0x78, directoryHeader.getKvc(AccessLevel.SESSION_LVL_LOAD));
+        Assert.assertEquals((byte) 0x79, directoryHeader.getKvc(AccessLevel.SESSION_LVL_DEBIT));
+
+        Assert.assertEquals((short) 0x0002, fileHeader1.getLid());
+        Assert.assertEquals(1, fileHeader1.getRecordsNumber());
+        Assert.assertEquals(29, fileHeader1.getRecordSize());
+        Assert.assertEquals(FileHeader.FileType.LINEAR, fileHeader1.getType());
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex("1F000000"),
+                fileHeader1.getAccessConditions());
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex("01010101"), fileHeader1.getKeyIndexes());
+        Assert.assertEquals((short) 0x00, fileHeader1.getDfStatus());
+        Assert.assertEquals(Short.valueOf((short) 0x3F02), fileHeader1.getSharedReference());
+
+        Assert.assertEquals((short) 0x0003, fileHeader2.getLid());
+        Assert.assertEquals(1, fileHeader2.getRecordsNumber());
+        Assert.assertEquals(29, fileHeader2.getRecordSize());
+        Assert.assertEquals(FileHeader.FileType.LINEAR, fileHeader2.getType());
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex("01100000"),
+                fileHeader2.getAccessConditions());
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex("01020101"), fileHeader2.getKeyIndexes());
+        Assert.assertEquals((short) 0x00, fileHeader2.getDfStatus());
+        Assert.assertEquals(Short.valueOf((short) 0x3F03), fileHeader2.getSharedReference());
+    }
 
     @Test
-    public void testTestPrepareSelectFile() {}
+    public void testPrepareSelectFile_lid()
+            throws CalypsoPoCommandException, CalypsoPoTransactionException {
+        CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
+        poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
+
+        poCommandsTestSet.put("00A40900023F0000",
+                "85170001000000101000000103010100777879616770003F009000");
+        poCommandsTestSet.put("00A4090002000200",
+                "85170204021D011F00000001010101003F02000000000000029000");
+        poCommandsTestSet.put("00A4090002000300",
+                "85170304021D010110000001020101003F03000000000000039000");
+
+        poTransaction.prepareSelectFile(ByteArrayUtil.fromHex("3F00"));
+        poTransaction.prepareSelectFile(ByteArrayUtil.fromHex("0002"));
+        poTransaction.prepareSelectFile(ByteArrayUtil.fromHex("0003"));
+        poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
+
+        DirectoryHeader directoryHeader = calypsoPoRev31.getDirectoryHeader();
+        ElementaryFile file1 = calypsoPoRev31.getFileByLid((short) 0x02);
+        ElementaryFile file2 = calypsoPoRev31.getFileByLid((short) 0x03);
+        byte sfi1 = file1.getSfi();
+        byte sfi2 = file2.getSfi();
+        System.out.println(directoryHeader);
+        System.out.println(file1);
+        System.out.println(file2);
+
+        Assert.assertEquals(file1, calypsoPoRev31.getFileBySfi(sfi1));
+        Assert.assertEquals(file2, calypsoPoRev31.getFileBySfi(sfi2));
+
+        Assert.assertEquals((short) 0x3F00, directoryHeader.getLid());
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex("10100000"),
+                directoryHeader.getAccessConditions());
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex("01030101"),
+                directoryHeader.getKeyIndexes());
+        Assert.assertEquals((short) 0x00, directoryHeader.getDfStatus());
+        Assert.assertEquals((byte) 0x61, directoryHeader.getKif(AccessLevel.SESSION_LVL_PERSO));
+        Assert.assertEquals((byte) 0x67, directoryHeader.getKif(AccessLevel.SESSION_LVL_LOAD));
+        Assert.assertEquals((byte) 0x70, directoryHeader.getKif(AccessLevel.SESSION_LVL_DEBIT));
+        Assert.assertEquals((byte) 0x77, directoryHeader.getKvc(AccessLevel.SESSION_LVL_PERSO));
+        Assert.assertEquals((byte) 0x78, directoryHeader.getKvc(AccessLevel.SESSION_LVL_LOAD));
+        Assert.assertEquals((byte) 0x79, directoryHeader.getKvc(AccessLevel.SESSION_LVL_DEBIT));
+
+        FileHeader fileHeader1 = file1.getHeader();
+        Assert.assertEquals((short) 0x0002, fileHeader1.getLid());
+        Assert.assertEquals(1, fileHeader1.getRecordsNumber());
+        Assert.assertEquals(29, fileHeader1.getRecordSize());
+        Assert.assertEquals(FileHeader.FileType.LINEAR, fileHeader1.getType());
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex("1F000000"),
+                fileHeader1.getAccessConditions());
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex("01010101"), fileHeader1.getKeyIndexes());
+        Assert.assertEquals((short) 0x00, fileHeader1.getDfStatus());
+        Assert.assertEquals(Short.valueOf((short) 0x3F02), fileHeader1.getSharedReference());
+
+        FileHeader fileHeader2 = file2.getHeader();
+        Assert.assertEquals((short) 0x0003, fileHeader2.getLid());
+        Assert.assertEquals(1, fileHeader2.getRecordsNumber());
+        Assert.assertEquals(29, fileHeader2.getRecordSize());
+        Assert.assertEquals(FileHeader.FileType.LINEAR, fileHeader2.getType());
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex("01100000"),
+                fileHeader2.getAccessConditions());
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex("01020101"), fileHeader2.getKeyIndexes());
+        Assert.assertEquals((short) 0x00, fileHeader2.getDfStatus());
+        Assert.assertEquals(Short.valueOf((short) 0x3F03), fileHeader2.getSharedReference());
+    }
 
     @Test
-    public void testPrepareReadRecordFile() {}
+    public void testPrepareReadCounterFile()
+            throws CalypsoPoCommandException, CalypsoPoTransactionException {
+        CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
+        poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
+
+        poCommandsTestSet.put("00B2013C06", "A55AA5 5AA55A 9000");
+
+        // read counter 2 but counter 1 will be read too
+        poTransaction.prepareReadCounterFile((byte) 0x07, 2);
+        poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
+        Assert.assertEquals(0xA55AA5,
+                calypsoPoRev31.getFileBySfi((byte) 0x07).getData().getContentAsCounterValue(1));
+        Assert.assertEquals(0x5AA55A,
+                calypsoPoRev31.getFileBySfi((byte) 0x07).getData().getContentAsCounterValue(2));
+    }
+
+    @Test(expected = CalypsoPoIOException.class)
+    public void testPoIoException()
+            throws CalypsoPoCommandException, CalypsoPoTransactionException {
+        CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
+        poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
+        poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+        poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
+    }
 
     @Test
-    public void testTestPrepareReadRecordFile() {}
-
-    @Test
-    public void testPrepareReadCounterFile() {}
-
-    @Test
-    public void testPrepareAppendRecord() {}
-
-    @Test
-    public void testPrepareUpdateRecord() {}
-
-    @Test
-    public void testPrepareWriteRecord() {}
-
-    @Test
-    public void testPrepareIncrease() {}
-
-    @Test
-    public void testPrepareDecrease() {}
+    public void testAccessLevel() {
+        Assert.assertEquals("perso", AccessLevel.SESSION_LVL_PERSO.getName());
+        Assert.assertEquals("load", AccessLevel.SESSION_LVL_LOAD.getName());
+        Assert.assertEquals("debit", AccessLevel.SESSION_LVL_DEBIT.getName());
+        Assert.assertEquals((byte) 0x01, AccessLevel.SESSION_LVL_PERSO.getSessionKey());
+        Assert.assertEquals((byte) 0x02, AccessLevel.SESSION_LVL_LOAD.getSessionKey());
+        Assert.assertEquals((byte) 0x03, AccessLevel.SESSION_LVL_DEBIT.getSessionKey());
+    }
 
     private CalypsoPo createCalypsoPo(String FCI) {
         SeResponse selectionData = new SeResponse(true, false,
