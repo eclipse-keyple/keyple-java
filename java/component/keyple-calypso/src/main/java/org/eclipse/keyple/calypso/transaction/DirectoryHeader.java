@@ -272,9 +272,8 @@ public class DirectoryHeader implements Serializable {
         sb.append("lid=0x").append(Integer.toHexString(lid & 0xFFFF));
         sb.append(", accessConditions=").append("0x").append(ByteArrayUtil.toHex(accessConditions));
         sb.append(", keyIndexes=").append("0x").append(ByteArrayUtil.toHex(keyIndexes));
-        sb.append(", dfStatus=0x").append(Integer.toHexString(dfStatus & 0xFF));
+        sb.append(", dfStatus=0x").append(dfStatus);
         sb.append(", kif=").append(kif);
-        sb.append(", kvc=").append(kvc);
         sb.append(", kvc=").append(kvc);
         sb.append('}');
         return sb.toString();
