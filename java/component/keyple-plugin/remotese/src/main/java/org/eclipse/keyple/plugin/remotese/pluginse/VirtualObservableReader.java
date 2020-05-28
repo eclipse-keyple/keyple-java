@@ -11,12 +11,12 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
-import org.eclipse.keyple.core.seproxy.plugin.ObservableReaderNotifier;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 
 /**
  * Define a Virtual Observable Reader
  */
-public interface VirtualObservableReader extends VirtualReader, ObservableReaderNotifier {
+public interface VirtualObservableReader extends VirtualReader, ObservableReader {
 
 
 }
