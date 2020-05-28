@@ -94,8 +94,9 @@ public abstract class AbstractObservablePlugin extends AbstractPlugin
 
     /**
      * Remove all observers at once
+     * @deprecated will change in a later version
      */
-    @Deprecated // will change in a later version
+    @Deprecated
     public void clearObservers() {
         if (observers != null) {
             this.observers.clear();
