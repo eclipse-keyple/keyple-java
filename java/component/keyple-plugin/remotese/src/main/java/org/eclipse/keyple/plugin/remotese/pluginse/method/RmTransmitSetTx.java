@@ -81,7 +81,7 @@ public class RmTransmitSetTx extends AbstractRemoteMethodTx<List<SeResponse>> {
 
         if (KeypleDtoHelper.containsException(keypleDto)) {
             logger.trace("KeypleDto contains an exception: {}", keypleDto);
-            KeypleReaderIOException ex = JsonParser.getGson().fromJson(keypleDto.getBody(),
+            KeypleReaderIOException ex = JsonParser.getGson().fromJson(keypleDto.getError(),
                     KeypleReaderIOException.class);
             throw new KeypleRemoteException(
                     "An exception occurs while calling the remote method transmitSeRequests", ex);

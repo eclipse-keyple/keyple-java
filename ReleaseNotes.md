@@ -2,9 +2,10 @@
 
 Releases:
  - Alpha [Keyple Java 20/next](#keyple-java-20next)
- - Master [Keyple Java 20/05](#keyple-java-2005)
- - [Keyple Java 20/01](#keyple-java-2001)
- - Master [Keyple Java 19/07](#keyple-java-1907)
+ - [Patch - Keyple Java 20/05](#patch---keyple-java-2005)
+ - [Master - Keyple Java 20/01](#master---keyple-java-2001)
+ - [Master - Keyple Java 19/07](#master---keyple-java-1907)
+
 
 ## Keyple Java 20/next
  - [keyple-java-core 0.9a](#keyple-java-core-09a)
@@ -37,7 +38,7 @@ Releases:
 * Various improvements of OMAPI's example application
 
 
-## Keyple Java 20/05
+## Patch - Keyple Java 20/05
 
 Release train components:
  - [keyple-java-core 0.8.1](#keyple-java-core-081)
@@ -49,35 +50,37 @@ Release train components:
  - [keyple-android-plugin-omapi 0.8.1](#keyple-android-plugin-omapi-081)
 
 ### keyple-java-core 0.8.1
-* KEYP-187 : ReaderPoolPlugin#allocate throw a KeypleAllocationReaderException if allocation fails for technical issue
-* KEYP-187 : ReaderPoolPlugin#allocate throw a KeypleAllocationNoReaderAvailableException if no reader is available
+* KEYP-187 : ReaderPoolPlugin#allocate throw a KeypleAllocationReaderException if allocation fails for technical issue, ReaderPoolPlugin#allocate throw a KeypleAllocationNoReaderAvailableException if no reader is available
 * KEYP-192 : Reorganize plugin and reader abstract classes
 * KEYP-195 : Ensure readers list is thread safe 
 
 ### keyple-java-calypso 0.8.1
-* KEYP-187 SamResourceManager throw a CalypsoNoSamResourceAvailableException if unable to allocate a Sam Resource
+* KEYP-187 : SamResourceManager throw a CalypsoNoSamResourceAvailableException if unable to allocate a Sam Resource
+* KEYP-189 : SamResourceManager : retry mechanism is now parametrized - new constructor added
 
 ### keyple-java-plugin-pcsc 0.8.1
 * none
 
 ### keyple-java-plugin-stub 0.8.1
-* none
+* KEYP-207 : add KeypleAllocationReaderException to stub plugin
 
 ### keyple-java-plugin-remotese 0.8.1
-* KEYP-190 : fix Null Pointer Exception on RemoteMethodTxEngine when remoteMethodTx is null
-* KEYP-203 : fix Concurrent Modification Exception while disconnecting/connecting readers
-* KEYP-208 : fix Class cast exception in VirtualReaderImpl
-* KEYP-212 : allow users to define their own ExecutorService for async task
+* KEYP-190 : fix NullPointerException on RemoteMethodTxEngine when remoteMethodTx is null
+* KEYP-203 : fix ConcurrentModificationException while disconnecting/connecting readers
+* KEYP-204 : add 'error' field in Keyple Dto, reject dto response if id does not match with request
+* KEYP-208 : fix ClassCastException in VirtualReaderImpl
+* KEYP-212 : allow users to define their own ExecutorService for async task - new constructor for MasterAPI and SlaveAPI 
 * KEYP-212 : add a createdDate in virtual reader session
+* KEYP-219 : ensure load balancing works properly : fix sessionId in RmPoolReleaseTx, RmPoolAllocateExecutor use node Id
 
 ### keyple-android-plugin-nfc 0.8.1
 * none
 
 ### keyple-android-plugin-omapi 0.8.1
-* none
+* KEYP-195 : update init readers method to use ConcurrentSkipListSet
 
 
-## Keyple Java 20/01
+## Master - Keyple Java 20/01
 
 Release train components:
  - [keyple-java-core 0.8](#keyple-java-core-08)
@@ -158,7 +161,7 @@ Release train components:
 
 ___
 
-## Keyple Java 19/07
+## Master - Keyple Java 19/07
 
 Release train components:
  - [keyple-java-core 0.7](#keyple-java-core-07)

@@ -24,35 +24,38 @@ public class KeypleDto {
      * API call
      */
 
-    // API method to be called
+    // API method to be called (required)
     private final String action;
 
-    // Arguments of the API (json)
+    // Params of the API (optional)
     private final String body;
 
-    // Is a request or a response
+    // Is a request or a response (required)
     private final Boolean isRequest;
 
-    // Id of the request
+    // Id of the request (optional)
     private final String id;
+
+    // Error (optional)
+    private final String error;
 
     /*
      * Metadata
      */
 
-    // Requester Node Id (can be slave or master)
+    // Requester Node Id, either slave or master (required)
     private final String requesterNodeId;
 
-    // Requester Node Id (can be slave or master)
+    // Target Node Id, either slave or master (required)
     private final String targetNodeId;
 
-    // Master reader session
+    // Master reader session (optional)
     private final String sessionId;
 
-    // Slave reader name
+    // Slave reader name (required)
     private final String nativeReaderName;
 
-    // Master reader name
+    // Master reader name (optional)
     private final String virtualReaderName;
 
 
@@ -60,19 +63,20 @@ public class KeypleDto {
     /**
      * Constructor of a KeypleDto
      * 
-     * @param action : API method to be called
-     * @param body : Arguments of the API (json)
-     * @param isRequest : Is a request or a response
-     * @param sessionId : Session Id of current Virtual Reader Session Id
-     * @param nativeReaderName : readerName of the native reader
-     * @param virtualReaderName : readerName of the virtual reader
-     * @param requesterNodeId : node the request is sent from
-     * @param targetNodeId : node the request is sent to
-     * @param id : unique id of this request (null in case of notification)
+     * @param action : API method to be called (required)
+     * @param body : Arguments of the API - json (optional)
+     * @param isRequest : Is a request or a response (required)
+     * @param sessionId : Session Id of current Virtual Reader Session Id (optional)
+     * @param nativeReaderName : readerName of the native reader (required)
+     * @param virtualReaderName : readerName of the virtual reader (optional)
+     * @param requesterNodeId : node the request is sent from (required)
+     * @param targetNodeId : node the request is sent to (required)
+     * @param id : unique id of this request (optional)
+     * @param error : error - java exception (optional)
      */
     public KeypleDto(String action, String body, Boolean isRequest, String sessionId,
             String nativeReaderName, String virtualReaderName, String requesterNodeId,
-            String targetNodeId, String id) {
+            String targetNodeId, String id, String error) {
 
         this.sessionId = sessionId;
         this.action = action;
@@ -83,6 +87,8 @@ public class KeypleDto {
         this.requesterNodeId = requesterNodeId;
         this.targetNodeId = targetNodeId;
         this.id = id;
+        this.error = error;
+
     }
 
     /*
@@ -123,6 +129,10 @@ public class KeypleDto {
 
     public String getId() {
         return id;
+    }
+
+    public String getError() {
+        return error;
     }
 
     @Override

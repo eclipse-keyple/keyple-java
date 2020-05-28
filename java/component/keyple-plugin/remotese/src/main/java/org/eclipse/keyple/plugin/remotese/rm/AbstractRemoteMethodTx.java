@@ -112,7 +112,7 @@ public abstract class AbstractRemoteMethodTx<T> {
      *
      * @param rmTxEngine : local RemoteMethodTxEngine to execute the command into
      * @return T : result of the command
-     * @throws KeypleRemoteException : if an
+     * @throws KeypleRemoteException : if any error occurs during the dto exchange
      */
     final public T execute(IRemoteMethodTxEngine rmTxEngine) throws KeypleRemoteException {
 
@@ -170,7 +170,9 @@ public abstract class AbstractRemoteMethodTx<T> {
 
         } catch (InterruptedException e) {
             throw new IllegalStateException(
-                    "Thread locking has encounterd an exception with " + this.toString(), e);
+                    "Thread locking has been interrupted while waiting for answer for "
+                            + this.toString(),
+                    e);
         }
     }
 
@@ -213,6 +215,10 @@ public abstract class AbstractRemoteMethodTx<T> {
      */
     protected abstract KeypleDto dto();
 
+
+    public String getId() {
+        return id;
+    }
 
     @Override
     public String toString() {

@@ -19,10 +19,12 @@ import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 public interface DtoHandler {
 
     /**
-     * Process synchronously a message and returns a response message
+     * Process synchronously a message and returns a response message. If an exception is thrown
+     * during the onDto processing, a exception dto should be returned.
      * 
      * @param message to be processed
-     * @return response can be a NO_RESPONSE DTO, can not be null
+     * @return response message, can be any of keyple dto types : request, response, notification,
+     *         exception, no response.
      */
     TransportDto onDTO(TransportDto message);
 
