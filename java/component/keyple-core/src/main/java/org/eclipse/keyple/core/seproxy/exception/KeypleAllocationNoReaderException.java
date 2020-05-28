@@ -15,7 +15,7 @@ package org.eclipse.keyple.core.seproxy.exception;
  * The exception {@code KeypleAllocationNoReaderException} indicates that no reader were available
  * during allocation invocation.
  */
-public class KeypleAllocationNoReaderException extends KeypleBaseException {
+public class KeypleAllocationNoReaderException extends KeypleException {
 
     public KeypleAllocationNoReaderException(String message) {
         super(message);
