@@ -15,6 +15,7 @@ package org.eclipse.keyple.core.selection;
 import java.util.*;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
+import org.eclipse.keyple.core.command.SeCommand;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeSelector;
@@ -27,7 +28,6 @@ import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -44,7 +44,6 @@ public class SeSelectionTest extends CoreBaseTest {
         logger.info("------------------------------");
     }
 
-    @Ignore // TODO Restore this test
     @Test
     public void prepareSelection() {
         SeSelection seSelection = createSeSelection();
@@ -57,13 +56,11 @@ public class SeSelectionTest extends CoreBaseTest {
 
         // check common flags
         Assert.assertEquals(MultiSeRequestProcessing.FIRST_MATCH,
-                ((DefaultSelectionsRequest) selectionOperation).getMultiSeRequestProcessing());
-        Assert.assertEquals(ChannelControl.KEEP_OPEN,
-                ((DefaultSelectionsRequest) selectionOperation).getChannelControl());
+                selectionOperation.getMultiSeRequestProcessing());
+        Assert.assertEquals(ChannelControl.KEEP_OPEN, selectionOperation.getChannelControl());
 
         // get the serequest set
-        List<SeRequest> selectionSeRequests =
-                ((DefaultSelectionsRequest) selectionOperation).getSelectionSeRequests();
+        List<SeRequest> selectionSeRequests = selectionOperation.getSelectionSeRequests();
         Assert.assertEquals(2, selectionSeRequests.size());
 
         // get the two se requests
@@ -258,15 +255,15 @@ public class SeSelectionTest extends CoreBaseTest {
         SeSelector seSelector1 =
                 new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null, aidSelector);
 
-        // TODO add an implementation of AbstractApduCommandBuilder/Parser
-        // // APDU requests
-        // List<ApduRequest> apduRequests= new ArrayList<ApduRequest>();
-        // apduRequestList.add(
-        // new ApduRequest("Apdu 001122334455", ByteArrayUtil.fromHex("001122334455"), false));
-        // apduRequestList.add(
-        // new ApduRequest("Apdu 66778899AABB", ByteArrayUtil.fromHex("66778899AABB"), true));
-        //
-        // seSelection.prepareSelection(new SeSelectionRequest(seSelector1, apduRequestList));
+        // APDU requests
+        List<AbstractApduCommandBuilder> commandBuilders =
+                new ArrayList<AbstractApduCommandBuilder>();
+        commandBuilders.add(new CommandBuilder(SeCommandTest.COMMAND_1, new ApduRequest(
+                "Apdu 001122334455", ByteArrayUtil.fromHex("001122334455"), false)));
+        commandBuilders.add(new CommandBuilder(SeCommandTest.COMMAND_1,
+                new ApduRequest("Apdu 66778899AABB", ByteArrayUtil.fromHex("66778899AABB"), true)));
+
+        seSelection.prepareSelection(new SeSelectionRequest(seSelector1, commandBuilders));
 
         aidSelector = new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid("1122334455"),
                 SeSelector.AidSelector.FileOccurrence.NEXT,
@@ -309,6 +306,35 @@ public class SeSelectionTest extends CoreBaseTest {
     private final class MatchingSe extends AbstractMatchingSe {
         MatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode) {
             super(selectionResponse, transmissionMode);
+        }
+    }
+
+    private final class CommandBuilder extends AbstractApduCommandBuilder {
+
+        public CommandBuilder(SeCommand commandRef, ApduRequest request) {
+            super(commandRef, request);
+        }
+    }
+
+    public enum SeCommandTest implements SeCommand {
+        COMMAND_1("COMMAND_1", (byte) 0xC1), COMMAND_2("COMMAND_2", (byte) 0xC2);
+
+        private final String name;
+        private final byte instructionByte;
+
+        SeCommandTest(String name, byte instructionByte) {
+            this.name = name;
+            this.instructionByte = instructionByte;
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public byte getInstructionByte() {
+            return instructionByte;
         }
     }
 }

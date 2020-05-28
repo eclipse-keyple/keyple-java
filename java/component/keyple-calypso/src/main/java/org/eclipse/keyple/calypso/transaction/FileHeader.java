@@ -342,7 +342,7 @@ public class FileHeader implements Serializable, Cloneable {
         sb.append(", type=").append(type);
         sb.append(", accessConditions=").append("0x").append(ByteArrayUtil.toHex(accessConditions));
         sb.append(", keyIndexes=").append("0x").append(ByteArrayUtil.toHex(keyIndexes));
-        sb.append(", dfStatus=0x").append(Integer.toHexString(dfStatus & 0xFF));
+        sb.append(", dfStatus=0x").append(dfStatus);
         sb.append(", sharedReference=0x").append(Integer.toHexString(sharedReference));
         sb.append('}');
         return sb.toString();

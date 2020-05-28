@@ -431,7 +431,8 @@ class SamCommandProcessor {
         try {
             samSeResponse = samReader.transmitSeRequest(samSeRequest, ChannelControl.KEEP_OPEN);
         } catch (KeypleReaderIOException e) {
-            throw new CalypsoSamIOException("SAM IO Exception while transmitting digest data.", e);
+            throw new CalypsoSamIOException(
+                    "SAM IO Exception while transmitting digest authentication data.", e);
         }
 
         // Get transaction result parsing the response
