@@ -94,6 +94,7 @@ public abstract class AbstractObservablePlugin extends AbstractPlugin
 
     /**
      * Remove all observers at once
+     * 
      * @deprecated will change in a later version
      */
     @Deprecated
