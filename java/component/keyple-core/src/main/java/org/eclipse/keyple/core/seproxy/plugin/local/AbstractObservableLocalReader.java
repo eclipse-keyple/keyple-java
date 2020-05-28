@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information regarding copyright
  * ownership.
@@ -22,9 +22,9 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.plugin.ObservableReaderNotifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 /**
  * This abstract class is used to manage the matter of observing SE events in the case of a local
@@ -33,8 +33,10 @@ import org.slf4j.LoggerFactory;
  * <p>
  * It provides the means to configure the plugin's behavior when a SE is detected.
  *
+ * <p>
  * The event management implements a ObservableReaderStateService state machine that is composed of
  * four states.
+ *
  * <ol>
  * <li>WAIT_FOR_START_DETECTION
  * <p>
@@ -51,7 +53,6 @@ import org.slf4j.LoggerFactory;
  * <ul>
  * <li>A default selection is defined: in this case it is played and its result leads to an event
  * notification SE_INSERTED or SE_MATCHED or no event (see setDefaultSelectionRequest)
- *
  * <li>There is no default selection: a SE_INSERTED event is then notified.
  * <p>
  * In the case where an event has been notified to the application, the state machine changes to the
@@ -82,11 +83,10 @@ import org.slf4j.LoggerFactory;
  * </ol>
  */
 public abstract class AbstractObservableLocalReader extends AbstractLocalReader
-        implements ObservableReader {
+        implements ObservableReaderNotifier {
     /** logger */
     private static final Logger logger =
             LoggerFactory.getLogger(AbstractObservableLocalReader.class);
-
 
     /** The default DefaultSelectionsRequest to be executed upon SE insertion */
     private DefaultSelectionsRequest defaultSelectionsRequest;
@@ -124,13 +124,14 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
     /* Service that handles Internal Events and their impact on the current state of the reader */
     protected ObservableReaderStateService stateService;
 
-
     /**
      * Initialize the ObservableReaderStateService with the possible states and their
      * implementation. ObservableReaderStateService define the initial state.
+     *
      * <p>
      * Make sure to initialize the stateService in your reader constructor with stateService =
      * initStateService()
+     *
      * <p>
      *
      * @return initialized state stateService with possible states and the init state
@@ -139,8 +140,10 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
 
     /**
      * Reader constructor
+     *
      * <p>
      * Force the definition of a name through the use of super method.
+     *
      * <p>
      *
      * @param pluginName the name of the plugin that instantiated the reader
@@ -152,6 +155,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
 
     /**
      * Add a {@link ObservableReader.ReaderObserver}.
+     *
      * <p>
      * The observer will receive all the events produced by this reader (se insertion, removal,
      * etc.)
@@ -179,6 +183,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
 
     /**
      * Remove a {@link ObservableReader.ReaderObserver}.
+     *
      * <p>
      * The observer will do not receive any of the events produced by this reader.
      *
@@ -228,17 +233,13 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
         }
     }
 
-    /**
-     * @return the number of observers
-     */
+    /** @return the number of observers */
     @Override
     public final int countObservers() {
         return observers == null ? 0 : observers.size();
     }
 
-    /**
-     * Remove all observers at once
-     */
+    /** Remove all observers at once */
     @Override
     public final void clearObservers() {
         if (observers != null) {
@@ -249,12 +250,13 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
     /**
      * Allows the application to signal the end of processing and thus proceed with the removal
      * sequence, followed by a restart of the card search.
+     *
      * <p>
      * Do nothing if the closing of the physical channel has already been requested.
+     *
      * <p>
      * Send a request without APDU just to close the physical channel if it has not already been
      * closed.
-     *
      */
     public final void notifySeProcessed() {
         if (forceClosing) {
@@ -277,8 +279,10 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
 
     /**
      * Check the presence of a SE
+     *
      * <p>
      * This method is recommended for non-observable readers.
+     *
      * <p>
      * When the SE is not present the logical and physical channels status may be refreshed through
      * a call to the processSeRemoved method.
@@ -302,13 +306,14 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
         }
     }
 
-
     /**
      * Starts the SE detection. Once activated, the application can be notified of the arrival of an
      * SE.
+     *
      * <p>
      * This method must be overloaded by readers depending on the particularity of their management
      * of the start of SE detection.
+     *
      * <p>
      * Note: they must call the super method with the argument PollingMode.
      *
@@ -326,6 +331,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
 
     /**
      * Stops the SE detection.
+     *
      * <p>
      * This method must be overloaded by readers depending on the particularity of their management
      * of the start of SE detection.
@@ -341,11 +347,14 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      * If defined, the prepared DefaultSelectionRequest will be processed as soon as a SE is
      * inserted. The result of this request set will be added to the reader event notified to the
      * application.
+     *
      * <p>
      * If it is not defined (set to null), a simple SE detection will be notified in the end.
+     *
      * <p>
      * Depending on the notification mode, the observer will be notified whenever an SE is inserted,
      * regardless of the selection status, or only if the current SE matches the selection criteria.
+     *
      * <p>
      *
      * @param defaultSelectionsRequest the {@link AbstractDefaultSelectionsRequest} to be executed
@@ -380,10 +389,9 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
         startSeDetection(pollingMode);
     }
 
-
-
     /**
      * This method initiates the SE removal sequence.
+     *
      * <p>
      * The reader will remain in the WAIT_FOR_SE_REMOVAL state as long as the SE is present. It will
      * change to the WAIT_FOR_START_DETECTION or WAIT_FOR_SE_INSERTION state depending on what was
@@ -397,14 +405,16 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
         this.stateService.onEvent(InternalEvent.SE_PROCESSED);
     }
 
-
     /**
      * This method is invoked when a SE is inserted in the case of an observable reader.
+     *
      * <p>
      * e.g. from the monitoring thread in the case of a Pcsc plugin or from the NfcAdapter callback
      * method onTagDiscovered in the case of a Android NFC plugin.
+     *
      * <p>
      * It will return a ReaderEvent in the following cases:
+     *
      * <ul>
      * <li>SE_INSERTED: if no default selection request was defined
      * <li>SE_MATCHED: if a default selection request was defined in any mode and a SE matched the
@@ -412,6 +422,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      * <li>SE_INSERTED: if a default selection request was defined in ALWAYS mode but no SE matched
      * the selection (the DefaultSelectionsResponse is however transmitted)
      * </ul>
+     *
      * <p>
      * It returns null if a default selection is defined in MATCHED_ONLY mode but no SE matched the
      * selection.
@@ -516,8 +527,10 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      * Sends a neutral APDU to the SE to check its presence. The status of the response is not
      * verified as long as the mere fact that the SE responds is sufficient to indicate whether or
      * not it is present.
+     *
      * <p>
      * This method has to be called regularly until the SE no longer respond.
+     *
      * <p>
      * Having this method not final allows a reader plugin to implement its own method.
      *
@@ -543,16 +556,16 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
         return true;
     }
 
-
     /**
      * This method is invoked when a SE is removed in the case of an observable reader.
+     *
      * <p>
      * It will also be invoked if isSePresent is called and at least one of the physical or logical
      * channels is still open (case of a non-observable reader)
+     *
      * <p>
      * The SE will be notified removed only if it has been previously notified present (observable
      * reader only)
-     *
      */
     @Deprecated // will change in a later version
     public final void processSeRemoved() {
@@ -563,14 +576,13 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
 
     /**
      * Get polling mode
-     * 
+     *
      * @return the current polling mode
      */
     @Deprecated // will change in a later version
     public ObservableReader.PollingMode getPollingMode() {
         return currentPollingMode;
     }
-
 
     /**
      * Changes the state of the state machine
@@ -584,7 +596,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
 
     /**
      * Get the current monitoring state
-     * 
+     *
      * @return current getMonitoringState
      */
     @Deprecated // will change in a later version
@@ -602,6 +614,4 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
     public void onEvent(InternalEvent event) {
         this.stateService.onEvent(event);
     }
-
-
 }
