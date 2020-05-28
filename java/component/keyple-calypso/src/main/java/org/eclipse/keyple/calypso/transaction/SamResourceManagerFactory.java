@@ -21,6 +21,9 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
  */
 public abstract class SamResourceManagerFactory {
 
+    private final static int MAX_BLOCKING_TIME = 1000; // 1 sec
+    private final static int DEFAULT_SLEEP_TIME = 10; // 10 ms
+
     /**
      * Instantiate a new SamResourceManager.
      * <p>
@@ -32,13 +35,21 @@ public abstract class SamResourceManagerFactory {
      * @param samReaderFilter the regular expression defining how to identify SAM readers among
      *        others.
      * @param maxBlockingTime the maximum duration for which the allocateSamResource method will
-     *        attempt to allocate a new reader by retrying (in milliseconds)
+     *        attempt to allocate a new reader by retrying (in milliseconds).
+     * @param sleepTime the duration to wait between two retries
      * @throws KeypleReaderException throw if an error occurs while getting the readers list.
      * @return SamResourceManager working with a default plugin
      */
     static public SamResourceManager instantiate(ReaderPlugin readerPlugin, String samReaderFilter,
-            int maxBlockingTime) throws KeypleReaderException {
-        return new SamResourceManagerDefault(readerPlugin, samReaderFilter, maxBlockingTime);
+            int maxBlockingTime, int sleepTime) throws KeypleReaderException {
+        return new SamResourceManagerDefault(readerPlugin, samReaderFilter, maxBlockingTime,
+                sleepTime);
+    }
+
+    static public SamResourceManager instantiate(ReaderPlugin readerPlugin, String samReaderFilter)
+            throws KeypleReaderException {
+        return new SamResourceManagerDefault(readerPlugin, samReaderFilter, MAX_BLOCKING_TIME,
+                DEFAULT_SLEEP_TIME);
     }
 
     /**
@@ -49,10 +60,19 @@ public abstract class SamResourceManagerFactory {
      * Setup a plugin observer if the reader plugin is observable.
      *
      * @param samReaderPoolPlugin the plugin through which SAM readers are accessible
+     * @param maxBlockingTime the maximum duration for which the allocateSamResource method will
+     *        attempt to allocate a new reader by retrying (in milliseconds).
+     * @param sleepTime the duration to wait between two retries
      * @return SamResourceManager working with a pool plugin
      */
+    static public SamResourceManager instantiate(ReaderPoolPlugin samReaderPoolPlugin,
+            int maxBlockingTime, int sleepTime) {
+        return new SamResourceManagerPool(samReaderPoolPlugin, maxBlockingTime, sleepTime);
+    }
+
     static public SamResourceManager instantiate(ReaderPoolPlugin samReaderPoolPlugin) {
-        return new SamResourceManagerPool(samReaderPoolPlugin);
+        return new SamResourceManagerPool(samReaderPoolPlugin, MAX_BLOCKING_TIME,
+                DEFAULT_SLEEP_TIME);
     }
 
 }
