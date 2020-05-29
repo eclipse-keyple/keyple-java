@@ -21,10 +21,10 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 public abstract class KeypleSeCommandException extends KeypleException {
 
     /** The command */
-    private SeCommand command;
+    private final SeCommand command;
 
     /** The status code (optional) */
-    private Integer statusCode;
+    private final Integer statusCode;
 
     /**
      * @param message the message to identify the exception context

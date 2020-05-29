@@ -220,7 +220,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
                     clearMap.invoke(fieldTerminals.get(terminals));
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Unexpected exception.", e);
             }
         }
 

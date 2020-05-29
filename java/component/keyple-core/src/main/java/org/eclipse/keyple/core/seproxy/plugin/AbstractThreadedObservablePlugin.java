@@ -107,8 +107,10 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
      * Remove all observers at once
      * <p>
      * Overrides the method defined in {@link AbstractObservablePlugin}, the thread is ended.
+     * 
+     * @deprecated will change in a later version
      */
-    @Deprecated // will change in a later version
+    @Deprecated
     @Override
     public final void clearObservers() {
         super.clearObservers();
@@ -124,8 +126,9 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
      * Check weither the background job is monitoring for new readers
      * 
      * @return true, if the background job is monitoring, false in all other cases.
+     * @deprecated will change in a later version
      */
-    @Deprecated // will change in a later version
+    @Deprecated
     protected Boolean isMonitoring() {
         return thread != null && thread.isAlive() && thread.isMonitoring();
     }
@@ -265,13 +268,13 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                     Thread.sleep(threadWaitTimeout);
                 }
             } catch (InterruptedException e) {
-                logger.warn("[{}] An exception occurred while monitoring plugin: {}, cause {}",
-                        this.pluginName, e.getMessage(), e.getCause());
+                logger.warn("[{}] An exception occurred while monitoring plugin: {}",
+                        this.pluginName, e.getMessage(), e);
                 // Restore interrupted state...      
                 Thread.currentThread().interrupt();
             } catch (KeypleReaderException e) {
-                logger.warn("[{}] An exception occurred while monitoring plugin: {}, cause {}",
-                        this.pluginName, e.getMessage(), e.getCause());
+                logger.warn("[{}] An exception occurred while monitoring plugin: {}",
+                        this.pluginName, e.getMessage(), e);
             }
         }
     }
@@ -280,7 +283,9 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
      * Called when the class is unloaded. Attempt to do a clean exit.
      *
      * @throws Throwable a generic exception
+     * @deprecated will change in a later version
      */
+    @Deprecated
     @Override
     protected void finalize() throws Throwable {
         thread.end();

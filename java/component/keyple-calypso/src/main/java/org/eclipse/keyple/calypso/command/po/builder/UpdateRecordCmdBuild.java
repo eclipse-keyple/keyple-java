@@ -42,8 +42,8 @@ public final class UpdateRecordCmdBuild extends AbstractPoCommandBuilder<UpdateR
      * @throws IllegalArgumentException - if record number is &lt; 1
      * @throws IllegalArgumentException - if the request is inconsistent
      */
-    public UpdateRecordCmdBuild(PoClass poClass, byte sfi, byte recordNumber, byte[] newRecordData)
-            throws IllegalArgumentException {
+    public UpdateRecordCmdBuild(PoClass poClass, byte sfi, byte recordNumber,
+            byte[] newRecordData) {
         super(command, null);
         if (recordNumber < 1) {
             throw new IllegalArgumentException("Bad record number (< 1)");

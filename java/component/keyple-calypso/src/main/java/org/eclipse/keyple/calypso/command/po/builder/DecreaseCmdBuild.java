@@ -45,8 +45,7 @@ public final class DecreaseCmdBuild extends AbstractPoCommandBuilder<DecreaseRes
      * @throws IllegalArgumentException - if the command is inconsistent
      */
 
-    public DecreaseCmdBuild(PoClass poClass, byte sfi, byte counterNumber, int decValue)
-            throws IllegalArgumentException {
+    public DecreaseCmdBuild(PoClass poClass, byte sfi, byte counterNumber, int decValue) {
         super(command, null);
 
         // only counter number >= 1 are allowed

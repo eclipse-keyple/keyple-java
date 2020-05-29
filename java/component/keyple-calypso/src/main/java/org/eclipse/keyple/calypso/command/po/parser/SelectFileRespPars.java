@@ -55,7 +55,7 @@ public final class SelectFileRespPars extends AbstractPoResponseParser {
     }
 
     /* Proprietary Information: context-specific class, primitive, tag number 5h => tag field 85h */
-    private static final Tag TAG_PROPRIETARY_INFORMATION = new Tag(0x05, Tag.CONTEXT, PRIMITIVE);
+    private static final Tag TAG_PROPRIETARY_INFORMATION = new Tag(0x05, Tag.CONTEXT, PRIMITIVE, 1);
 
     /**
      * Instantiates a new SelectFileRespPars.

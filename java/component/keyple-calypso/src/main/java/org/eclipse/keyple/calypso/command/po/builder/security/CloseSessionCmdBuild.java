@@ -38,7 +38,7 @@ public final class CloseSessionCmdBuild extends AbstractPoCommandBuilder<CloseSe
      * @throws IllegalArgumentException - if the command is inconsistent
      */
     public CloseSessionCmdBuild(PoClass poClass, boolean ratificationAsked,
-            byte[] terminalSessionSignature) throws IllegalArgumentException {
+            byte[] terminalSessionSignature) {
         super(command, null);
         // The optional parameter terminalSessionSignature could contain 4 or 8
         // bytes.

@@ -25,7 +25,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class CloseSessionCmdBuildTest {
 
     @Test
-    public void closeSessionCmdBuild() throws IllegalArgumentException {
+    public void closeSessionCmdBuild() {
         byte[] request2_4 = new byte[] {(byte) 0x94, (byte) 0x8E, 0x00, 0x00, (byte) 0x04,
                 (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, 0x00};
         byte[] request3_1 = new byte[] {(byte) 0x00, (byte) 0x8E, (byte) 0x80, 0x00, (byte) 0x04,

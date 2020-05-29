@@ -33,7 +33,7 @@ public class ReadRecordsCmdBuildTest {
     private ApduRequest apduRequest;
 
     @Test
-    public void readRecords_rev2_4() throws IllegalArgumentException {
+    public void readRecords_rev2_4() {
 
         byte cla = (byte) 0x94;
         byte cmd = (byte) 0xB2;
@@ -51,7 +51,7 @@ public class ReadRecordsCmdBuildTest {
     }
 
     @Test
-    public void readRecords_rev2_4_2() throws IllegalArgumentException {
+    public void readRecords_rev2_4_2() {
 
         byte cla = (byte) 0x94;
         byte cmd = (byte) 0xB2;
@@ -69,7 +69,7 @@ public class ReadRecordsCmdBuildTest {
     }
 
     @Test
-    public void readRecords_rev3_1() throws IllegalArgumentException {
+    public void readRecords_rev3_1() {
 
         byte cla = (byte) 0x00;
         byte cmd = (byte) 0xB2;
@@ -85,7 +85,7 @@ public class ReadRecordsCmdBuildTest {
     }
 
     @Test
-    public void readRecords_rev3_2() throws IllegalArgumentException {
+    public void readRecords_rev3_2() {
         byte cla = (byte) 0x00;
         byte cmd = (byte) 0xB2;
         byte sfi = (byte) 0x08;

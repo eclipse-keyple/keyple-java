@@ -25,7 +25,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class DigestAuthenticateCmdBuildTest {
 
     @Test
-    public void digestAuthenticate() throws IllegalArgumentException {
+    public void digestAuthenticate() {
 
         byte[] signaturePO = new byte[] {0x00, 0x01, 0x02, 0x03};
         byte[] request =

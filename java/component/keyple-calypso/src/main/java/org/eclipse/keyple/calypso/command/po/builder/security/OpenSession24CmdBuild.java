@@ -36,8 +36,7 @@ public final class OpenSession24CmdBuild
      * @throws IllegalArgumentException - if key index is 0 (rev 2.4)
      * @throws IllegalArgumentException - if the request is inconsistent
      */
-    public OpenSession24CmdBuild(byte keyIndex, byte[] samChallenge, int sfi, int recordNumber)
-            throws IllegalArgumentException {
+    public OpenSession24CmdBuild(byte keyIndex, byte[] samChallenge, int sfi, int recordNumber) {
         super(PoRevision.REV2_4);
 
         if (keyIndex == 0x00) {

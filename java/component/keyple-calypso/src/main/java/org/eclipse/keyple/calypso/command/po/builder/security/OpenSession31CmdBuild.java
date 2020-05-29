@@ -35,8 +35,7 @@ public final class OpenSession31CmdBuild
      * @param recordNumber the record number to read
      * @throws IllegalArgumentException - if the request is inconsistent
      */
-    public OpenSession31CmdBuild(byte keyIndex, byte[] samChallenge, int sfi, int recordNumber)
-            throws IllegalArgumentException {
+    public OpenSession31CmdBuild(byte keyIndex, byte[] samChallenge, int sfi, int recordNumber) {
         super(PoRevision.REV3_1);
 
         this.sfi = sfi;

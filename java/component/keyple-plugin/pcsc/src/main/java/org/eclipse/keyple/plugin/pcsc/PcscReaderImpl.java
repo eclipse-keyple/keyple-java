@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.pcsc;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -58,14 +59,14 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     // waitForCardPresent and waitForCardPresent blocking functions will execute.
     // This will correspond to the capacity to react to the interrupt signal of
     // the thread (see cancel method of the Future object)
-    private final long insertLatency = 500;
-    private final long removalLatency = 500;
+    private static final long INSERT_LATENCY = 500;
+    private static final long REMOVAL_LATENCY = 500;
 
-    private final long insertWaitTimeout = 200;
+    private static final long INSERT_WAIT_TIMEOUT = 200;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-    final private AtomicBoolean loopWaitSe = new AtomicBoolean();
-    final private AtomicBoolean loopWaitSeRemoval = new AtomicBoolean();
+    private final AtomicBoolean loopWaitSe = new AtomicBoolean();
+    private final AtomicBoolean loopWaitSeRemoval = new AtomicBoolean();
 
     private final boolean usePingPresence;
 
@@ -84,9 +85,9 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         this.channel = null;
 
 
-        String OS = System.getProperty("os.name").toLowerCase();
-        usePingPresence = OS.indexOf("mac") >= 0;
-        logger.info("System detected : {}, is macOs checkPresence ping activated {}", OS,
+        String os = System.getProperty("os.name").toLowerCase();
+        usePingPresence = os.contains("mac");
+        logger.info("System detected : {}, is macOs checkPresence ping activated {}", os,
                 usePingPresence);
 
         this.stateService = initStateService();
@@ -109,7 +110,8 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     public ObservableReaderStateService initStateService() {
 
         Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
-                new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
+                new EnumMap<AbstractObservableState.MonitoringState, AbstractObservableState>(
+                        AbstractObservableState.MonitoringState.class);
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
                 new WaitForStartDetect(this));
 
@@ -124,7 +126,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
             // https://github.com/eclipse/keyple-java/issues/153
             states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
                     new WaitForSeInsertion(this,
-                            new CardPresentMonitoringJob(this, insertWaitTimeout, true),
+                            new CardPresentMonitoringJob(this, INSERT_WAIT_TIMEOUT, true),
                             executorService));
         }
 
@@ -175,7 +177,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     @Override
     public boolean waitForCardPresent() throws KeypleReaderIOException {
         logger.debug("[{}] waitForCardPresent => loop with latency of {} ms.", this.getName(),
-                insertLatency);
+                INSERT_LATENCY);
 
         // activate loop
         loopWaitSe.set(true);
@@ -185,7 +187,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                 if (logger.isTraceEnabled()) {
                     logger.trace("[{}] waitForCardPresent => looping", this.getName());
                 }
-                if (terminal.waitForCardPresent(insertLatency)) {
+                if (terminal.waitForCardPresent(INSERT_LATENCY)) {
                     // card inserted
                     return true;
                 } else {
@@ -205,8 +207,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                             + "Message: " + e.getMessage());
         } catch (Throwable t) {
             // can or can not happen depending on terminal.waitForCardPresent
-            logger.debug("[{}] waitForCardPresent => Throwable catched {}", this.getName(),
-                    t.getCause());
+            logger.debug("[{}] waitForCardPresent => Throwable caught.", this.getName(), t);
             return false;
         }
 
@@ -229,7 +230,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     @Override
     public boolean waitForCardAbsentNative() throws KeypleReaderIOException {
         logger.debug("[{}] waitForCardAbsentNative => loop with latency of {} ms.", this.getName(),
-                removalLatency);
+                REMOVAL_LATENCY);
 
         loopWaitSeRemoval.set(true);
 
@@ -238,7 +239,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                 if (logger.isTraceEnabled()) {
                     logger.trace("[{}] waitForCardAbsentNative => looping", this.getName());
                 }
-                if (terminal.waitForCardAbsent(removalLatency)) {
+                if (terminal.waitForCardAbsent(REMOVAL_LATENCY)) {
                     // card removed
                     return true;
                 } else {
@@ -257,8 +258,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                             + "Message: " + e.getMessage());
         } catch (Throwable t) {
             // can or can not happen depending on terminal.waitForCardAbsent
-            logger.debug("[{}] waitForCardAbsentNative => Throwable catched {}", this.getName(),
-                    t.getCause());
+            logger.debug("[{}] waitForCardAbsentNative => Throwable caught.", this.getName(), t);
             return false;
         }
     }

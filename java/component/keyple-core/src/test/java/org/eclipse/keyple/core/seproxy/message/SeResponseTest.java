@@ -22,7 +22,7 @@ public class SeResponseTest {
 
 
     @Test
-    public void constructorSuccessfullResponseMatch() throws IllegalArgumentException {
+    public void constructorSuccessfullResponseMatch() {
 
         SeResponse response = new SeResponse(true, true,
                 new SelectionStatus(ApduResponseTest.getAAtr(), ApduResponseTest.getAFCI(), true),
@@ -37,7 +37,7 @@ public class SeResponseTest {
     }
 
     @Test
-    public void constructorSuccessfullResponseNoMatch() throws IllegalArgumentException {
+    public void constructorSuccessfullResponseNoMatch() {
 
         SeResponse response = new SeResponse(true, true,
                 new SelectionStatus(ApduResponseTest.getAAtr(), ApduResponseTest.getAFCI(), false),
@@ -52,7 +52,7 @@ public class SeResponseTest {
     }
 
     @Test
-    public void constructorATRNull() throws IllegalArgumentException {
+    public void constructorATRNull() {
         SeResponse response = new SeResponse(true, true,
                 new SelectionStatus(null, ApduResponseTest.getAFCI(), true),
                 ApduResponseTest.getAListOfAPDUs());
@@ -60,7 +60,7 @@ public class SeResponseTest {
     }
 
     @Test
-    public void constructorFCINull() throws IllegalArgumentException {
+    public void constructorFCINull() {
         SeResponse response = new SeResponse(true, true,
                 new SelectionStatus(ApduResponseTest.getAAtr(), null, true),
                 ApduResponseTest.getAListOfAPDUs());
@@ -68,7 +68,7 @@ public class SeResponseTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void constructorFCIAndATRNull() throws IllegalArgumentException {
+    public void constructorFCIAndATRNull() {
         SeResponse response = new SeResponse(true, true, new SelectionStatus(null, null, true),
                 ApduResponseTest.getAListOfAPDUs());
         Assert.assertNull(response);
@@ -126,7 +126,7 @@ public class SeResponseTest {
      * HELPERS
      */
 
-    public static SeResponse getASeResponse() throws IllegalArgumentException {
+    public static SeResponse getASeResponse() {
         return new SeResponse(true, true,
                 new SelectionStatus(ApduResponseTest.getAAtr(), ApduResponseTest.getAFCI(), true),
                 ApduResponseTest.getAListOfAPDUs());

@@ -47,7 +47,7 @@ public final class ReadRecordsCmdBuild extends AbstractPoCommandBuilder<ReadReco
      * @throws IllegalArgumentException - if the request is inconsistent
      */
     public ReadRecordsCmdBuild(PoClass poClass, int sfi, int firstRecordNumber, ReadMode readMode,
-            int expectedLength) throws IllegalArgumentException {
+            int expectedLength) {
         super(command, null);
 
         this.sfi = sfi;

@@ -38,8 +38,8 @@ public final class SeSelection {
      */
     private final List<AbstractSeSelectionRequest> seSelectionRequests =
             new ArrayList<AbstractSeSelectionRequest>();
-    private MultiSeRequestProcessing multiSeRequestProcessing;
-    private ChannelControl channelControl;
+    private final MultiSeRequestProcessing multiSeRequestProcessing;
+    private final ChannelControl channelControl;
 
     /**
      * Constructor.
