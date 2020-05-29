@@ -190,4 +190,50 @@ public class GetDataFciRespParsTest {
         /* invalid Calypso FCI */
         Assert.assertFalse(parser.isValidCalypsoFCI());
     }
+
+    private void check_CLR_1(String dfName, String appSerialNumber, String startupInformation) {
+
+        String dfNameLength = String.format("%02X", dfName.length() / 2);
+        String snLength = String.format("%02X", appSerialNumber.length() / 2);
+        String siLength = String.format("%02X", startupInformation.length() / 2);
+        String totalLength = String.format("%02X", 12
+                + (dfName.length() + appSerialNumber.length() + startupInformation.length()) / 2);
+        ApduResponse apduResponse = new ApduResponse(ByteArrayUtil.fromHex("6F " + totalLength
+                + " 84" + dfNameLength + dfName + " A5 16 BF0C 13 C7 " + snLength + appSerialNumber
+                + " 53" + siLength + startupInformation + "9000"), null);
+
+        GetDataFciRespPars parser = new GetDataFciRespPars(apduResponse, null);
+
+        /* DF not invalidated */
+        Assert.assertFalse(parser.isDfInvalidated());
+        /* expected dfName */
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex(dfName), parser.getDfName());
+        /* expected Application Serial Number */
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex(appSerialNumber),
+                parser.getApplicationSerialNumber());
+        /* expected StartupInfo */
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex(startupInformation),
+                parser.getDiscretionaryData());
+    }
+
+    /**
+     * CL-SEL-TLVSTRUC.1<br>
+     * Calypso Layer shall allow the answer to the Select Application command to be variable in
+     * length and shall analyse the TLV structure to retrieve its data.
+     */
+    @Test
+    public void test_CRL_1() {
+        /* DF Name 5 bytes - SN 8 bytes - SI 7 bytes */
+        check_CLR_1("0011223344", "AABBCCDDEEFF0011", "0B55AA55AA55AA");
+
+        /* DF Name 16 bytes - SN 8 bytes - SI 7 bytes */
+        check_CLR_1("00112233445566778899AABBCCDDEEFF", "AABBCCDDEEFF0011", "0B55AA55AA55AA");
+
+        /* DF Name 16 bytes - SN 8 bytes - SI 9 bytes */
+        check_CLR_1("00112233445566778899AABBCCDDEEFF", "AABBCCDDEEFF0011", "0B55AA55AA55AABBCC");
+
+        /* DF Name 16 bytes - SN 10 bytes - SI 9 bytes */
+        check_CLR_1("00112233445566778899AABBCCDDEEFF", "AABBCCDDEEFF00112233",
+                "0B55AA55AA55AABBCC");
+    }
 }

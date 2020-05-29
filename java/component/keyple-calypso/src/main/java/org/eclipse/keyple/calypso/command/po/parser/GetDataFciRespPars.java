@@ -61,23 +61,25 @@ public final class GetDataFciRespPars extends AbstractPoResponseParser {
 
     /* BER-TLV tags definitions */
     /* FCI Template: application class, constructed, tag number Fh => tag field 6Fh */
-    private static final Tag TAG_FCI_TEMPLATE = new Tag(0x0F, Tag.APPLICATION, CONSTRUCTED);
+    private static final Tag TAG_FCI_TEMPLATE = new Tag(0x0F, Tag.APPLICATION, CONSTRUCTED, 1);
     /* DF Name: context-specific class, primitive, tag number 4h => tag field 84h */
-    private static final Tag TAG_DF_NAME = new Tag(0x04, Tag.CONTEXT, PRIMITIVE);
+    private static final Tag TAG_DF_NAME = new Tag(0x04, Tag.CONTEXT, PRIMITIVE, 1);
     /*
      * FCI Proprietary Template: context-specific class, constructed, tag number 5h => tag field A5h
      */
-    private static final Tag TAG_FCI_PROPRIETARY_TEMPLATE = new Tag(0x05, Tag.CONTEXT, CONSTRUCTED);
+    private static final Tag TAG_FCI_PROPRIETARY_TEMPLATE =
+            new Tag(0x05, Tag.CONTEXT, CONSTRUCTED, 1);
     /*
      * FCI Issuer Discretionary Data: context-specific class, constructed, tag number Ch => tag
      * field BF0Ch
      */
     private static final Tag TAG_FCI_ISSUER_DISCRETIONARY_DATA =
-            new Tag(0x0C, Tag.CONTEXT, CONSTRUCTED);
+            new Tag(0x0C, Tag.CONTEXT, CONSTRUCTED, 2);
     /* Application Serial Number: private class, primitive, tag number 7h => tag field C7h */
-    private static final Tag TAG_APPLICATION_SERIAL_NUMBER = new Tag(0x07, Tag.PRIVATE, PRIMITIVE);
+    private static final Tag TAG_APPLICATION_SERIAL_NUMBER =
+            new Tag(0x07, Tag.PRIVATE, PRIMITIVE, 1);
     /* Discretionary Data: application class, primitive, tag number 13h => tag field 53h */
-    private static final Tag TAG_DISCRETIONARY_DATA = new Tag(0x13, Tag.APPLICATION, PRIMITIVE);
+    private static final Tag TAG_DISCRETIONARY_DATA = new Tag(0x13, Tag.APPLICATION, PRIMITIVE, 1);
 
     /** attributes result of th FCI parsing */
     private boolean isDfInvalidated = false;
