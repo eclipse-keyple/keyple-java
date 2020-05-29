@@ -12,7 +12,6 @@
 package org.eclipse.keyple.core.selection;
 
 import java.util.*;
-
 import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
@@ -70,7 +69,8 @@ public final class SeSelection {
      * @param seSelectionRequest the selector to prepare
      * @return the selection index giving the current selection position in the selection request.
      */
-    public int prepareSelection(AbstractSeSelectionRequest<? extends AbstractApduCommandBuilder> seSelectionRequest) {
+    public int prepareSelection(
+            AbstractSeSelectionRequest<? extends AbstractApduCommandBuilder> seSelectionRequest) {
         if (logger.isTraceEnabled()) {
             logger.trace("SELECTORREQUEST = {}", seSelectionRequest.getSelectionRequest());
         }
