@@ -1081,7 +1081,7 @@ public class StubReaderTest extends BaseStubTest {
      */
 
 
-    static public List<SeRequest> getRequestIsoDepSetSample() {
+    public static List<SeRequest> getRequestIsoDepSetSample() {
         String poAid = "A000000291A000000191";
         ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoClass.ISO, 0x14, 1,
                 ReadRecordsCmdBuild.ReadMode.ONE_RECORD, 32);
@@ -1102,7 +1102,7 @@ public class StubReaderTest extends BaseStubTest {
      *
      * An Exception will be thrown.
      */
-    static public List<SeRequest> getNoResponseRequest() {
+    public static List<SeRequest> getNoResponseRequest() {
 
         IncreaseCmdBuild poIncreaseCmdBuild =
                 new IncreaseCmdBuild(PoClass.ISO, (byte) 0x14, (byte) 0x01, 0);
@@ -1123,7 +1123,7 @@ public class StubReaderTest extends BaseStubTest {
      *
      * An Exception will be thrown.
      */
-    static public List<SeRequest> getPartialRequestList(int scenario) {
+    public static List<SeRequest> getPartialRequestList(int scenario) {
         String poAid = "A000000291A000000191";
         ReadRecordsCmdBuild poReadRecord1CmdBuild = new ReadRecordsCmdBuild(PoClass.ISO, 0x14, 1,
                 ReadRecordsCmdBuild.ReadMode.ONE_RECORD, 0);
@@ -1197,7 +1197,7 @@ public class StubReaderTest extends BaseStubTest {
      *
      * An Exception will be thrown.
      */
-    static public SeRequest getPartialRequest(int scenario) {
+    public static SeRequest getPartialRequest(int scenario) {
         String poAid = "A000000291A000000191";
 
         ReadRecordsCmdBuild poReadRecord1CmdBuild = new ReadRecordsCmdBuild(PoClass.ISO, 0x14, 1,
@@ -1241,7 +1241,7 @@ public class StubReaderTest extends BaseStubTest {
         return new SeRequest(poApduRequests);
     }
 
-    static public StubSecureElement hoplinkSE() {
+    public static StubSecureElement hoplinkSE() {
 
 
         return new StubSecureElement() {
@@ -1275,7 +1275,7 @@ public class StubReaderTest extends BaseStubTest {
 
     }
 
-    static public StubSecureElement revision1SE() {
+    public static StubSecureElement revision1SE() {
         return new StubSecureElement() {
             @Override
             public byte[] processApdu(byte[] apduIn) throws KeypleReaderIOException {
@@ -1304,7 +1304,7 @@ public class StubReaderTest extends BaseStubTest {
         };
     }
 
-    static public StubSecureElement noApduResponseSE() {
+    public static StubSecureElement noApduResponseSE() {
         return new StubSecureElement() {
 
             @Override
@@ -1329,7 +1329,7 @@ public class StubReaderTest extends BaseStubTest {
         };
     }
 
-    static public StubSecureElement partialSE() {
+    public static StubSecureElement partialSE() {
         return new StubSecureElement() {
             @Override
             public byte[] processApdu(byte[] apduIn) throws KeypleReaderIOException {
@@ -1358,7 +1358,7 @@ public class StubReaderTest extends BaseStubTest {
 
     }
 
-    static public StubSecureElement getSENoconnection() {
+    public static StubSecureElement getSENoconnection() {
         return new StubSecureElement() {
             @Override
             public byte[] getATR() {
@@ -1394,11 +1394,11 @@ public class StubReaderTest extends BaseStubTest {
 
     }
 
-    static public ApduRequest getApduSample() {
+    public static ApduRequest getApduSample() {
         return new ApduRequest(ByteArrayUtil.fromHex("FEDCBA98 9005h"), false);
     }
 
-    static public void genericSelectSe(SeReader reader) throws KeypleReaderIOException {
+    public static void genericSelectSe(SeReader reader) throws KeypleReaderIOException {
         /**
          * Create a new local class extending AbstractSeSelectionRequest
          */

@@ -206,7 +206,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
      * HELPERS
      */
 
-    static public ObservablePlugin.PluginObserver onReaderConnected(final PcscPlugin plugin,
+    public static ObservablePlugin.PluginObserver onReaderConnected(final PcscPlugin plugin,
             final CountDownLatch connectedLock, final CountDownLatch insertedlock,
             final CountDownLatch removedlock) {
         return new ObservablePlugin.PluginObserver() {
@@ -229,7 +229,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
         };
     }
 
-    static public ObservablePlugin.PluginObserver onReaderDisconnected(final CountDownLatch lock) {
+    public static ObservablePlugin.PluginObserver onReaderDisconnected(final CountDownLatch lock) {
         return new ObservablePlugin.PluginObserver() {
             @Override
             public void update(PluginEvent event) {
@@ -244,7 +244,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
         };
     }
 
-    static public ObservableReader.ReaderObserver onRemovedCountDown(final CountDownLatch lock) {
+    public static ObservableReader.ReaderObserver onRemovedCountDown(final CountDownLatch lock) {
         return new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
@@ -259,7 +259,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
         };
     }
 
-    static public ObservableReader.ReaderObserver onInsertedCountDown(final CountDownLatch lock) {
+    public static ObservableReader.ReaderObserver onInsertedCountDown(final CountDownLatch lock) {
         return new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
@@ -273,7 +273,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
         };
     }
 
-    static public ObservableReader.ReaderObserver onMatchedCountDown(final CountDownLatch lock) {
+    public static ObservableReader.ReaderObserver onMatchedCountDown(final CountDownLatch lock) {
         return new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {

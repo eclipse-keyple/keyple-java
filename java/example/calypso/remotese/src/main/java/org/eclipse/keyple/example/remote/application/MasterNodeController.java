@@ -60,11 +60,11 @@ public class MasterNodeController {
 
     private static final int MAX_BLOCKING_TIME = 1000; // 1 second
 
-    static public long RPC_TIMEOUT = 20000;
+    public static long RPC_TIMEOUT = 20000;
 
-    static public String STUB_MASTER = "stubMaster";
+    public static String STUB_MASTER = "stubMaster";
 
-    static public String REMOTESE_PLUGIN_NAME = "RemoteSePlugin";
+    public static String REMOTESE_PLUGIN_NAME = "RemoteSePlugin";
 
 
     /**

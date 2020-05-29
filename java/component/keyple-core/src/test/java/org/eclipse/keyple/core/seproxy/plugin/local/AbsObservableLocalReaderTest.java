@@ -255,7 +255,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
      */
 
 
-    static public ObservableReader.ReaderObserver onEventCountDown(final CountDownLatch lock) {
+    public static ObservableReader.ReaderObserver onEventCountDown(final CountDownLatch lock) {
         return new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
@@ -264,7 +264,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         };
     }
 
-    static public ObservableReader.ReaderObserver onRemovedCountDown(final CountDownLatch lock) {
+    public static ObservableReader.ReaderObserver onRemovedCountDown(final CountDownLatch lock) {
         return new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
@@ -276,7 +276,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         };
     }
 
-    static public ObservableReader.ReaderObserver onInsertedCountDown(final CountDownLatch lock) {
+    public static ObservableReader.ReaderObserver onInsertedCountDown(final CountDownLatch lock) {
         return new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
@@ -288,7 +288,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         };
     }
 
-    static public ObservableReader.ReaderObserver onMatchedCountDown(final CountDownLatch lock) {
+    public static ObservableReader.ReaderObserver onMatchedCountDown(final CountDownLatch lock) {
         return new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
@@ -300,14 +300,14 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         };
     }
 
-    static public AbstractObservableLocalReader getBlank(String pluginName, String readerName) {
+    public static AbstractObservableLocalReader getBlank(String pluginName, String readerName) {
         AbstractObservableLocalReader r = new BlankObservableLocalReader(pluginName, readerName);
         return r;
     }
 
 
 
-    static public AbstractObservableLocalReader getSpy(String pluginName, String readerName)
+    public static AbstractObservableLocalReader getSpy(String pluginName, String readerName)
             throws KeypleReaderException {
         AbstractObservableLocalReader r =
                 Mockito.spy(new BlankObservableLocalReader(pluginName, readerName));
@@ -319,7 +319,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     }
 
 
-    static public List<SeResponse> getMatchingResponses() {
+    public static List<SeResponse> getMatchingResponses() {
         SelectionStatus selectionStatus =
                 new SelectionStatus(null, new ApduResponse(AbsLocalReaderTransmitTest.RESP_SUCCESS,
                         AbsLocalReaderSelectionTest.STATUS_CODE_LIST), true);
@@ -327,7 +327,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         return Arrays.asList(seResponse);
     }
 
-    static public List<SeResponse> getNotMatchingResponses() {
+    public static List<SeResponse> getNotMatchingResponses() {
         SelectionStatus selectionStatus =
                 new SelectionStatus(null, new ApduResponse(AbsLocalReaderTransmitTest.RESP_FAIL,
                         AbsLocalReaderSelectionTest.STATUS_CODE_LIST), false);
@@ -335,14 +335,14 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         return Arrays.asList(seResponse);
     }
 
-    static public ObservableReader.ReaderObserver getReaderObserver() {
+    public static ObservableReader.ReaderObserver getReaderObserver() {
         return new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent readerEvent) {}
         };
     }
 
-    static public List<SeResponse> getSeResponses() {
+    public static List<SeResponse> getSeResponses() {
         List<SeResponse> responses = new ArrayList<SeResponse>();
         responses.add(SeResponseTest.getASeResponse());
         return responses;

@@ -290,35 +290,35 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
      * Helpers
      */
 
-    static public BlankSmartInsertionTheadedReader getSmartSpy(String pluginName, String readerName,
+    public static BlankSmartInsertionTheadedReader getSmartSpy(String pluginName, String readerName,
             Integer mockDetect) {
         BlankSmartInsertionTheadedReader r = Mockito
                 .spy(new BlankSmartInsertionTheadedReader(pluginName, readerName, mockDetect));
         return r;
     }
 
-    static public BlankSmartInsertionTheadedReader getBlank(String pluginName, String readerName,
+    public static BlankSmartInsertionTheadedReader getBlank(String pluginName, String readerName,
             Integer mockDetect) {
         BlankSmartInsertionTheadedReader r =
                 new BlankSmartInsertionTheadedReader(pluginName, readerName, mockDetect);
         return r;
     }
 
-    static public BlankSmartInsertionTheadedReader getMock(String readerName) {
+    public static BlankSmartInsertionTheadedReader getMock(String readerName) {
         BlankSmartInsertionTheadedReader r = Mockito.mock(BlankSmartInsertionTheadedReader.class);
         doReturn(readerName).when(r).getName();
         return r;
     }
 
 
-    static public ObservableReader.ReaderObserver getObs() {
+    public static ObservableReader.ReaderObserver getObs() {
         return new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {}
         };
     }
 
-    static public ObservableReader.ReaderObserver countDownOnTimeout(final CountDownLatch lock) {
+    public static ObservableReader.ReaderObserver countDownOnTimeout(final CountDownLatch lock) {
         return new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {

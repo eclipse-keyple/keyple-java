@@ -357,7 +357,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
     /*
      * Helper
      */
-    static private boolean containsReader(List<SamResource> samResources, String readerName) {
+    private static boolean containsReader(List<SamResource> samResources, String readerName) {
         for (SamResource resource : samResources) {
             if (readerName.equals(resource.getSeReader().getName())) {
                 return true;

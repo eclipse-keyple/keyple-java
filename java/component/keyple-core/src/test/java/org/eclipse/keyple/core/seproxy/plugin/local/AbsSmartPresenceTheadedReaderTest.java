@@ -144,14 +144,14 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
      * Helpers
      */
 
-    static public BlankSmartPresenceTheadedReader getSmartSpy(String pluginName,
+    public static BlankSmartPresenceTheadedReader getSmartSpy(String pluginName,
             String readerName) {
         BlankSmartPresenceTheadedReader r =
                 Mockito.spy(new BlankSmartPresenceTheadedReader(pluginName, readerName, 1));
         return r;
     }
 
-    static public BlankSmartPresenceTheadedReader getSmartPresenceMock(String pluginName,
+    public static BlankSmartPresenceTheadedReader getSmartPresenceMock(String pluginName,
             String readerName) {
         BlankSmartPresenceTheadedReader r = Mockito.mock(BlankSmartPresenceTheadedReader.class);
         doReturn("test").when(r).getName();
@@ -159,14 +159,14 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
     }
 
 
-    static public ObservableReader.ReaderObserver getObs() {
+    public static ObservableReader.ReaderObserver getObs() {
         return new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {}
         };
     }
 
-    static public ObservableReader.ReaderObserver countDownOnTimeout(final CountDownLatch lock) {
+    public static ObservableReader.ReaderObserver countDownOnTimeout(final CountDownLatch lock) {
         return new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {

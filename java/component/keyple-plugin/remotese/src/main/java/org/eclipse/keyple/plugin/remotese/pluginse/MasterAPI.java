@@ -44,8 +44,8 @@ public class MasterAPI implements DtoHandler {
     private final DtoNode dtoTransportNode;
     private final RemoteSePluginImpl plugin;
 
-    static public int PLUGIN_TYPE_DEFAULT = 0;
-    static public int PLUGIN_TYPE_POOL = 1;
+    public static int PLUGIN_TYPE_DEFAULT = 0;
+    public static int PLUGIN_TYPE_POOL = 1;
 
     private final int pluginType;
 

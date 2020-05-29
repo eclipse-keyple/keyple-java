@@ -221,7 +221,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
      *
      * An Exception will be thrown.
      */
-    static public List<SeRequest> getPartialRequestList(AbstractLocalReader r, int scenario)
+    public static List<SeRequest> getPartialRequestList(AbstractLocalReader r, int scenario)
             throws KeypleReaderException {
 
         SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter(ATR);
@@ -298,7 +298,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     }
 
 
-    static public SeRequest getPartialRequest(AbstractLocalReader r, int scenario)
+    public static SeRequest getPartialRequest(AbstractLocalReader r, int scenario)
             throws KeypleReaderException {
 
         /*
@@ -356,7 +356,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
      * @return basic spy reader
      * @throws KeypleReaderException
      */
-    static public AbstractLocalReader getSpy(String pluginName, String readerName)
+    public static AbstractLocalReader getSpy(String pluginName, String readerName)
             throws KeypleReaderException {
         AbstractLocalReader r = Mockito.spy(new BlankAbstractLocalReader(pluginName, readerName));
 
@@ -366,7 +366,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     }
 
 
-    static public void configure(AbstractLocalReader r) throws KeypleReaderException {
+    public static void configure(AbstractLocalReader r) throws KeypleReaderException {
 
         // accept PROTOCOL_ISO14443_4
         when(r.protocolFlagMatches(SeCommonProtocols.PROTOCOL_ISO14443_4)).thenReturn(true);

@@ -22,9 +22,9 @@ import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;
 public class Demo_Webservice_MasterServer_Server {
 
 
-    static public final Integer port = 8888;
-    static public final String hostname = "0.0.0.0";
-    static public final String protocol = "http://";
+    public static final Integer port = 8888;
+    public static final String hostname = "0.0.0.0";
+    public static final String protocol = "http://";
 
 
     public static void main(String[] args) throws Exception {
