@@ -157,7 +157,7 @@ public class StubPoolPluginTest extends BaseStubTest {
     /**
      * Stub Secure Element
      */
-    final static private StubSecureElement stubSe = new StubSecureElement() {
+    static final private StubSecureElement stubSe = new StubSecureElement() {
         @Override
         public byte[] getATR() {
             return new byte[0];

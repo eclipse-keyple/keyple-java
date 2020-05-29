@@ -27,8 +27,8 @@ public class SamResourceManagerPool extends SamResourceManager {
     private static final Logger logger = LoggerFactory.getLogger(SamResourceManagerPool.class);
 
     protected final ReaderPlugin samReaderPlugin;
-    protected final static int MAX_BLOCKING_TIME = 10000; // 10 sec
-    protected final static int POLLING_TIME = 10; // 10 ms
+    protected static final int MAX_BLOCKING_TIME = 10000; // 10 sec
+    protected static final int POLLING_TIME = 10; // 10 ms
 
     /**
      * Protected constructor, use the {@link SamResourceManagerFactory}

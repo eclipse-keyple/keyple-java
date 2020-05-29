@@ -32,8 +32,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CalypsoPoTest {
-    public final static String ATR_VALUE = "3B8F8001805A08030400020011223344829000F3";
-    public final static String ATR_VALUE_2 = "3B8F8001805A08030400020011223344829000";
+    public static final String ATR_VALUE = "3B8F8001805A08030400020011223344829000F3";
+    public static final String ATR_VALUE_2 = "3B8F8001805A08030400020011223344829000";
     /*
     // @formatter:off
     Rev 3.1 FCI sample data
@@ -63,17 +63,17 @@ public class CalypsoPoTest {
           01 Software version (LSB)
      // @formatter:on
      */
-    private final static String FCI_REV31 =
+    private static final String FCI_REV31 =
             "6F238409315449432E49434131A516BF0C13C708000000001122334453070A3C2F051410019000";
-    private final static String FCI_REV31_FLAGS_FALSE =
+    private static final String FCI_REV31_FLAGS_FALSE =
             "6F238409315449432E49434131A516BF0C13C708000000001122334453070A3C20051410019000";
-    private final static String FCI_REV31_INVALIDATED =
+    private static final String FCI_REV31_INVALIDATED =
             "6F238409315449432E49434131A516BF0C13C708000000001122334453070A3C2F051410016283";
-    private final static String FCI_REV31_HCE =
+    private static final String FCI_REV31_HCE =
             "6F238409315449432E49434131A516BF0C13C708998811223344556653070A3C2F051410019000";
 
-    private final static String DF_NAME = "315449432E494341";
-    private final static String SERIAL_NUMBER = "0000000011223344";
+    private static final String DF_NAME = "315449432E494341";
+    private static final String SERIAL_NUMBER = "0000000011223344";
     private CalypsoPo po;
 
     /**

@@ -20,7 +20,7 @@ import org.eclipse.keyple.plugin.stub.StubSecureElement;
  */
 public class StubMemoryST25 extends StubSecureElement {
 
-    final static String seProtocol = "PROTOCOL_MEMORY_ST25";
+    static final String seProtocol = "PROTOCOL_MEMORY_ST25";
     final String ATR_HEX = "3B8F8001804F0CA000000306070007D0020C00B6";
 
     public StubMemoryST25() {

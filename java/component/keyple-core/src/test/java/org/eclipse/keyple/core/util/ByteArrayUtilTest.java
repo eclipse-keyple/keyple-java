@@ -15,15 +15,15 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class ByteArrayUtilTest {
-    private final static String HEXSTRING_ODD = "0102030";
-    private final static String HEXSTRING_BAD = "010203ABGH80";
-    private final static String HEXSTRING_GOOD = "1234567890ABCDEFFEDCBA0987654321";
-    private final static byte[] BYTEARRAY_GOOD =
+    private static final String HEXSTRING_ODD = "0102030";
+    private static final String HEXSTRING_BAD = "010203ABGH80";
+    private static final String HEXSTRING_GOOD = "1234567890ABCDEFFEDCBA0987654321";
+    private static final byte[] BYTEARRAY_GOOD =
             new byte[] {(byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0x90,
                     (byte) 0xAB, (byte) 0xCD, (byte) 0xEF, (byte) 0xFE, (byte) 0xDC, (byte) 0xBA,
                     (byte) 0x09, (byte) 0x87, (byte) 0x65, (byte) 0x43, (byte) 0x21};
-    private final static byte[] BYTEARRAY_LEN_2 = new byte[] {(byte) 0x12, (byte) 0x34};
-    private final static byte[] BYTEARRAY_LEN_3 =
+    private static final byte[] BYTEARRAY_LEN_2 = new byte[] {(byte) 0x12, (byte) 0x34};
+    private static final byte[] BYTEARRAY_LEN_3 =
             new byte[] {(byte) 0x12, (byte) 0x34, (byte) 0x56};
 
     @Test(expected = NullPointerException.class)

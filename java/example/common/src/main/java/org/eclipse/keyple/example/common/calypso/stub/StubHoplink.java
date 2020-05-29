@@ -21,7 +21,7 @@ import org.eclipse.keyple.plugin.stub.StubSecureElement;
  */
 public class StubHoplink extends StubSecureElement {
 
-    final static String seProtocol = "PROTOCOL_ISO14443_4";
+    static final String seProtocol = "PROTOCOL_ISO14443_4";
     final String ATR_HEX = "3B8E800180318066409089120802830190000B";
 
     public StubHoplink() {

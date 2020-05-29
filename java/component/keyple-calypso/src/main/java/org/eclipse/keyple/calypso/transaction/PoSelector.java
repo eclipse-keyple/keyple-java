@@ -19,7 +19,7 @@ import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
  * the additional successful status codes list (in response to a select application command)
  */
 public final class PoSelector extends SeSelector {
-    private final static int SW_PO_INVALIDATED = 0x6283;
+    private static final int SW_PO_INVALIDATED = 0x6283;
 
     /**
      * Indicates if an invalidated PO should be selected or not.

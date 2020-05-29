@@ -38,9 +38,9 @@ public class SamResourceManagerDefault extends SamResourceManager {
                                                                   // readers
     protected final ReaderPlugin samReaderPlugin;
     /* the default maximum time (in milliseconds) during which the BLOCKING mode will wait */
-    private final static int MAX_BLOCKING_TIME = 1000; // 1 sec
+    private static final int MAX_BLOCKING_TIME = 1000; // 1 sec
     private final int maxBlockingTime;
-    protected final static int POLLING_TIME = 10; // 10 ms
+    protected static final int POLLING_TIME = 10; // 10 ms
 
     /**
      * Protected constructor, use the {@link SamResourceManagerFactory}

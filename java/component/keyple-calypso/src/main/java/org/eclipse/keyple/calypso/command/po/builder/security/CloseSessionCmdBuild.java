@@ -26,7 +26,7 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
 public final class CloseSessionCmdBuild extends AbstractPoCommandBuilder<CloseSessionRespPars> {
 
     /** The command. */
-    private final static CalypsoPoCommand command = CalypsoPoCommand.CLOSE_SESSION;
+    private static final CalypsoPoCommand command = CalypsoPoCommand.CLOSE_SESSION;
 
     /**
      * Instantiates a new CloseSessionCmdBuild depending of the revision of the PO.

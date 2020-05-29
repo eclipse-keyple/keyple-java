@@ -25,14 +25,14 @@ import org.junit.Test;
 
 
 public class PoSelectionRequestTest {
-    private final static String ATR_VALUE = "3B8F8001805A08030400020011223344829000F3";
-    private final static String FCI =
+    private static final String ATR_VALUE = "3B8F8001805A08030400020011223344829000F3";
+    private static final String FCI =
             "6F238409315449432E49434131A516BF0C13C708000000001122334453070A3C2F051410019000";
-    private final static String RECORD_CONTENT1 = "00112233445566778899";
-    private final static String RECORD_CONTENT2 = "99887766554433221100";
-    private final static String EF_SELECT_DATA =
+    private static final String RECORD_CONTENT1 = "00112233445566778899";
+    private static final String RECORD_CONTENT2 = "99887766554433221100";
+    private static final String EF_SELECT_DATA =
             "85170804041D031F1010100003030300000000000000002010";
-    private final static String DF_SELECT_DATA =
+    private static final String DF_SELECT_DATA =
             "85170001000000101000000103000000797979616770003F00";
 
     private final ApduResponse SELECT_APPLICATION_RESPONSE =

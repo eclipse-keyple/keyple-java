@@ -20,7 +20,7 @@ import org.eclipse.keyple.plugin.stub.StubSecureElement;
  */
 public class StubMifareUL extends StubSecureElement {
 
-    final static String seProtocol = "PROTOCOL_MIFARE_UL";
+    static final String seProtocol = "PROTOCOL_MIFARE_UL";
     final String ATR_HEX = "3B8F8001804F0CA0000003060300030000000068";
 
     public StubMifareUL() {
