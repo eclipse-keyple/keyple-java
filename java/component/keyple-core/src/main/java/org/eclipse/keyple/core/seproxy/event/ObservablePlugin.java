@@ -46,13 +46,6 @@ public interface ObservablePlugin extends ReaderPlugin {
     void removeObserver(final PluginObserver observer);
 
     /**
-     * Push a PluginEvent of the {@link ObservablePlugin} to its registered observers.
-     *
-     * @param event the event (see {@link PluginEvent})
-     */
-    void notifyObservers(final PluginEvent event);
-
-    /**
      * Remove all observers at once
      */
     void clearObservers();

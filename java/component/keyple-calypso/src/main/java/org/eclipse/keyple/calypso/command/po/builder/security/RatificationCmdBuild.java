@@ -23,7 +23,10 @@ import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 public final class RatificationCmdBuild {
     private RatificationCmdBuild() {}
 
-    /** @return the ApduRequest ratification command according to the PO class provided */
+    /**
+     * @param poClass the PO class
+     * @return the ApduRequest ratification command according to the PO class provided
+     */
     public static ApduRequest getApduRequest(PoClass poClass) {
         byte[] ratificationApdu =
                 new byte[] {poClass.getValue(), (byte) 0xB2, (byte) 0x00, (byte) 0x00, (byte) 0x00};

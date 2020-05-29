@@ -17,6 +17,7 @@ import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.plugin.ObservableReaderNotifier;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.pluginse.method.RmSetDefaultSelectionRequestTx;
@@ -30,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * add Observable methods to VirtualReaderImpl
  */
 final class VirtualObservableReaderImpl extends VirtualReaderImpl
-        implements VirtualObservableReader {
+        implements VirtualObservableReader, ObservableReaderNotifier {
 
     private static final Logger logger = LoggerFactory.getLogger(VirtualObservableReaderImpl.class);
 

@@ -67,7 +67,7 @@ public class PoSecuritySettings {
         private final EnumMap<AccessLevel, Byte> defaultKeyRecordNumber =
                 new EnumMap<AccessLevel, Byte>(AccessLevel.class);
 
-        ModificationMode sessionModificationMode = defaultSessionModificationMode;;
+        ModificationMode sessionModificationMode = defaultSessionModificationMode;
         RatificationMode ratificationMode = defaultRatificationMode;
 
         /**
