@@ -22,8 +22,8 @@ public class TLVTest {
 
     @Test
     public void parse() {
-        Tag tag1 = new Tag(0x04, Tag.CONTEXT, PRIMITIVE);
-        Tag tag2 = new Tag(0x04, Tag.CONTEXT, CONSTRUCTED);
+        Tag tag1 = new Tag(0x04, Tag.CONTEXT, PRIMITIVE, 1);
+        Tag tag2 = new Tag(0x04, Tag.CONTEXT, CONSTRUCTED, 1);
         TLV tlv = new TLV(ByteArrayUtil.fromHex("84050011223344"));
         // 1st parsing
         Assert.assertTrue(tlv.parse(tag1, 0));
@@ -41,14 +41,14 @@ public class TLVTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void parse_too_large_index() {
-        Tag tag = new Tag(0x04, Tag.CONTEXT, PRIMITIVE);
+        Tag tag = new Tag(0x04, Tag.CONTEXT, PRIMITIVE, 1);
         TLV tlv = new TLV(ByteArrayUtil.fromHex("84050011223344"));
         Assert.assertTrue(tlv.parse(null, 20));
     }
 
     @Test
     public void getValue() {
-        Tag tag1 = new Tag(0x04, Tag.CONTEXT, PRIMITIVE);
+        Tag tag1 = new Tag(0x04, Tag.CONTEXT, PRIMITIVE, 1);
         TLV tlv = new TLV(ByteArrayUtil.fromHex("84050011223344"));
         Assert.assertTrue(tlv.parse(tag1, 0));
         Assert.assertArrayEquals(ByteArrayUtil.fromHex("0011223344"), tlv.getValue());
@@ -61,7 +61,7 @@ public class TLVTest {
 
     @Test
     public void getPosition() {
-        Tag tag1 = new Tag(0x04, Tag.CONTEXT, PRIMITIVE);
+        Tag tag1 = new Tag(0x04, Tag.CONTEXT, PRIMITIVE, 1);
         // two TLV
         TLV tlv = new TLV(ByteArrayUtil.fromHex("8405001122334484055566778899"));
         Assert.assertTrue(tlv.parse(tag1, 0));

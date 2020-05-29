@@ -12,15 +12,15 @@
 package org.eclipse.keyple.core.util.bertlv;
 
 /**
- * This class represent a TAG as defined by the Basic Encoding Rules for ASN.1
- * <p>
+ * This class represent a TAG as defined by the Basic Encoding Rules for ASN.1 <br>
+ * This implementation limits the tag size to 2.<br>
  * (ITU-T X.690 / ISO 8825)
  */
 public class Tag {
     private final int tagNumber;
     private final byte tagClass;
     private final TagType tagType;
-    private final int size;
+    private final int tagSize;
 
     /* the tag class */
     public static final byte UNIVERSAL = (byte) 0x00;
@@ -40,8 +40,9 @@ public class Tag {
      * @param tagNumber the tag value.
      * @param tagClass the tag class.
      * @param tagType constructed or primitive
+     * @param tagSize the tag size (1 or 2)
      */
-    public Tag(int tagNumber, byte tagClass, TagType tagType) {
+    public Tag(int tagNumber, byte tagClass, TagType tagType, int tagSize) {
         if (tagType == null) {
             throw new IllegalArgumentException("TLV Tag: type is null.");
         }
@@ -51,17 +52,7 @@ public class Tag {
         this.tagNumber = tagNumber;
         this.tagClass = tagClass;
         this.tagType = tagType;
-        if (tagNumber < 0x1F) {
-            size = 1;
-        } else if (tagNumber < 0x80) {
-            size = 2;
-        } else if (tagNumber < 0x4000) {
-            size = 3;
-        } else if (tagNumber < 0x200000) {
-            size = 4;
-        } else {
-            size = 5;
-        }
+        this.tagSize = tagSize;
     }
 
     /**
@@ -71,8 +62,9 @@ public class Tag {
      * @param binary the byte array containing the TLV data
      * @param offset the start offset in the byte array
      * @throws IndexOutOfBoundsException if the offset is too large
+     *
      */
-    public Tag(byte[] binary, int offset) throws IndexOutOfBoundsException {
+    public Tag(byte[] binary, int offset) {
         /* the 2 first bits (b7b6) of the first byte defines the class */
         tagClass = (byte) ((binary[offset] & 0xC0) >>> 6);
 
@@ -83,23 +75,17 @@ public class Tag {
             tagType = TagType.PRIMITIVE;
         }
 
-        /* the tag number is defined in the following bits (b4-b0) and possibly following octets */
-        int index = offset;
-        int number = 0;
-        if ((binary[index] & (byte) 0x1F) == (byte) 0x1F) {
-            /* all bits of tag number are set: multi-octet tag */
-            do {
-                index++;
-                number <<= 7;
-                number += binary[index] & 0x7F;
-                /* loop while the "more bit" (b7) is set */
-            } while ((binary[index] & 0x80) == 0x80);
+        /* */
+        int number = binary[offset] & (byte) 0x1F;
+        if (number == (byte) 0x1F) {
+            /* two-byte tag */
+            number = binary[offset + 1];
+            tagSize = 2;
         } else {
-            /* single octet tag */
-            number = binary[index] & (byte) 0x1F;
+            /* one-byte tag */
+            tagSize = 1;
         }
         tagNumber = number;
-        size = index + 1 - offset;
     }
 
     public int getTagNumber() {
@@ -114,20 +100,35 @@ public class Tag {
         return tagType;
     }
 
-    public int getSize() {
-        return size;
+    public int getTagSize() {
+        return tagSize;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == this) {
+    public boolean equals(Object o) {
+        if (this == o)
             return true;
-        }
-        if (!(obj instanceof Tag)) {
+        if (o == null || getClass() != o.getClass())
             return false;
-        }
-        return ((this.tagNumber == ((Tag) obj).tagNumber) && (this.tagClass == ((Tag) obj).tagClass)
-                && (this.tagType == ((Tag) obj).tagType));
+
+        Tag tag = (Tag) o;
+
+        if (tagNumber != tag.tagNumber)
+            return false;
+        if (tagClass != tag.tagClass)
+            return false;
+        if (tagSize != tag.tagSize)
+            return false;
+        return tagType == tag.tagType;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = tagNumber;
+        result = 31 * result + (int) tagClass;
+        result = 31 * result + (tagType != null ? tagType.hashCode() : 0);
+        result = 31 * result + tagSize;
+        return result;
     }
 
     @Override
@@ -150,7 +151,7 @@ public class Tag {
                 tagClassString = "UNKWOWN";
                 break;
         }
-        return String.format("TAG: size=%d Class=%s, Type=%s, Number=%X", size, tagClassString,
+        return String.format("TAG: size=%d Class=%s, Type=%s, Number=%X", tagSize, tagClassString,
                 tagType, tagNumber);
     }
 }

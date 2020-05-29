@@ -31,9 +31,10 @@ public class TLV {
      * @param binary the byte array containing the TLV structure
      */
     public TLV(byte[] binary) {
-        tag = new Tag(0, (byte) 0, Tag.TagType.PRIMITIVE); // This is a primitive TLV
+        tag = new Tag(0, (byte) 0, Tag.TagType.PRIMITIVE, 1); // This is a primitive TLV
         this.binary = binary;
         length = 0;
+        position = 0;
     }
 
     /**
@@ -58,11 +59,11 @@ public class TLV {
         }
         length = 0;
         if (tag.equals(this.tag)) {
-            offset += this.tag.getSize();
-            position += this.tag.getSize();
+            offset += this.tag.getTagSize();
+            position += this.tag.getTagSize();
             if ((binary[offset] & (byte) 0x80) == (byte) 0x00) {
                 /* short form: single octet length */
-                length += (int) binary[offset];
+                length += binary[offset];
                 position++;
             } else {
                 /* long form: first octet (b6-b0)) gives the number of following length octets */
