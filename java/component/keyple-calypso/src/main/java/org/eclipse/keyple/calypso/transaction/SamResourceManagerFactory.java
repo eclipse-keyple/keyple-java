@@ -21,8 +21,8 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
  */
 public abstract class SamResourceManagerFactory {
 
-    private final static int MAX_BLOCKING_TIME = 1000; // 1 sec
-    private final static int DEFAULT_SLEEP_TIME = 10; // 10 ms
+    final static int MAX_BLOCKING_TIME = 1000; // 1 sec
+    final static int DEFAULT_SLEEP_TIME = 10; // 10 ms
 
     /**
      * Instantiate a new SamResourceManager.
