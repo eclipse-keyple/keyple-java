@@ -12,6 +12,8 @@
 package org.eclipse.keyple.core.selection;
 
 import java.util.*;
+
+import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -36,8 +38,8 @@ public final class SeSelection {
      * list of selection requests used to build the AbstractMatchingSe list in return of
      * processSelection methods
      */
-    private final List<AbstractSeSelectionRequest> seSelectionRequests =
-            new ArrayList<AbstractSeSelectionRequest>();
+    private final List<AbstractSeSelectionRequest<? extends AbstractApduCommandBuilder>> seSelectionRequests =
+            new ArrayList<AbstractSeSelectionRequest<? extends AbstractApduCommandBuilder>>();
     private final MultiSeRequestProcessing multiSeRequestProcessing;
     private final ChannelControl channelControl;
 
@@ -68,7 +70,7 @@ public final class SeSelection {
      * @param seSelectionRequest the selector to prepare
      * @return the selection index giving the current selection position in the selection request.
      */
-    public int prepareSelection(AbstractSeSelectionRequest seSelectionRequest) {
+    public int prepareSelection(AbstractSeSelectionRequest<? extends AbstractApduCommandBuilder> seSelectionRequest) {
         if (logger.isTraceEnabled()) {
             logger.trace("SELECTORREQUEST = {}", seSelectionRequest.getSelectionRequest());
         }
@@ -175,7 +177,7 @@ public final class SeSelection {
      */
     public SelectionsResult processExplicitSelection(SeReader seReader) throws KeypleException {
         List<SeRequest> selectionRequests = new ArrayList<SeRequest>();
-        for (AbstractSeSelectionRequest seSelectionRequest : seSelectionRequests) {
+        for (AbstractSeSelectionRequest<? extends AbstractApduCommandBuilder> seSelectionRequest : seSelectionRequests) {
             selectionRequests.add(seSelectionRequest.getSelectionRequest());
         }
         if (logger.isTraceEnabled()) {
@@ -199,7 +201,7 @@ public final class SeSelection {
      */
     public AbstractDefaultSelectionsRequest getSelectionOperation() {
         List<SeRequest> selectionRequests = new ArrayList<SeRequest>();
-        for (AbstractSeSelectionRequest seSelectionRequest : seSelectionRequests) {
+        for (AbstractSeSelectionRequest<? extends AbstractApduCommandBuilder> seSelectionRequest : seSelectionRequests) {
             selectionRequests.add(seSelectionRequest.getSelectionRequest());
         }
         return new DefaultSelectionsRequest(selectionRequests, multiSeRequestProcessing,
