@@ -33,7 +33,7 @@ public class CalypsoSamAnomalyException extends CalypsoPoTransactionException {
      * @return the unexpected cause {@link CalypsoSamCommandException}
      */
     @Override
-    public CalypsoSamCommandException getCause() {
+    public synchronized CalypsoSamCommandException getCause() {
         return (CalypsoSamCommandException) super.getCause();
     }
 }
