@@ -9,18 +9,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy;
+package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.Map;
+import org.eclipse.keyple.core.seproxy.ProxyElement;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-import org.eclipse.keyple.core.util.Configurable;
-import org.eclipse.keyple.core.util.Nameable;
 
 /**
  * This abstract class mutualizes the management of the name and part of the configuration of
  * SeProxy components (plugins and readers)
  */
-public abstract class AbstractSeProxyComponent implements Nameable, Configurable {
+abstract class AbstractSeProxyComponent implements ProxyElement {
 
     private final String name;
 

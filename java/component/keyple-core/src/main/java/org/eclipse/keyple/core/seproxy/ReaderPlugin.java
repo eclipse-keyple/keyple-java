@@ -13,15 +13,13 @@ package org.eclipse.keyple.core.seproxy;
 
 import java.util.SortedSet;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.util.Configurable;
-import org.eclipse.keyple.core.util.Nameable;
 
 
 
 /**
  * Card readers plugin interface.
  */
-public interface ReaderPlugin extends Nameable, Configurable, Comparable<ReaderPlugin> {
+public interface ReaderPlugin extends ProxyElement, Comparable<ReaderPlugin> {
 
     /**
      * Gets the list of names of all readers

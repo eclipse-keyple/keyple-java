@@ -12,7 +12,6 @@
 package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.AbstractSeProxyComponent;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
