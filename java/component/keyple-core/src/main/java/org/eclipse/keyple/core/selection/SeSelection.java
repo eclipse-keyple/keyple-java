@@ -76,8 +76,8 @@ public final class SeSelection {
         }
         /* keep the selection request */
         seSelectionRequests.add(seSelectionRequest);
-        /* return the selection index */
-        return seSelectionRequests.size();
+        /* return the selection index (starting at 0) */
+        return seSelectionRequests.size() - 1;
     }
 
     /**
