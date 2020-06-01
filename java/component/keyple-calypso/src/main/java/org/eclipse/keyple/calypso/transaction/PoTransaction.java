@@ -634,8 +634,8 @@ public class PoTransaction {
     private ApduResponse createIncreaseDecreaseResponse(int newCounterValue) {
         // response = NNNNNN9000
         byte[] response = new byte[5];
-        response[0] = (byte) (newCounterValue & 0x00FF0000 >> 16);
-        response[1] = (byte) (newCounterValue & 0x0000FF00 >> 8);
+        response[0] = (byte) ((newCounterValue & 0x00FF0000) >> 16);
+        response[1] = (byte) ((newCounterValue & 0x0000FF00) >> 8);
         response[2] = (byte) (newCounterValue & 0x000000FF);
         response[3] = (byte) 0x90;
         response[4] = (byte) 0x00;
@@ -667,7 +667,7 @@ public class PoTransaction {
                     int sfi = ((IncreaseCmdBuild) commandBuilder).getSfi();
                     int counter = ((IncreaseCmdBuild) commandBuilder).getCounterNumber();
                     int newCounterValue = getCounterValue(sfi, counter)
-                            - ((IncreaseCmdBuild) commandBuilder).getIncValue();
+                            + ((IncreaseCmdBuild) commandBuilder).getIncValue();
                     apduResponses.add(createIncreaseDecreaseResponse(newCounterValue));
                 } else { // Append/Update/Write Record: response = 9000
                     apduResponses
