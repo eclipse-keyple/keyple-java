@@ -108,7 +108,7 @@ public class SeSelector {
 
         /**
          * Builder of {@link AidSelector}
-         * 
+         *
          * @since 0.9
          */
         public static class AidSelectorBuilder {
@@ -121,7 +121,7 @@ public class SeSelector {
 
             /**
              * Sets the AID
-             * 
+             *
              * @param aid the AID as an array of bytes
              * @return the builder instance
              */
@@ -138,7 +138,7 @@ public class SeSelector {
 
             /**
              * Sets the AID
-             * 
+             *
              * @param aid the AID as an hex string
              * @return the builder instance
              */
@@ -148,7 +148,7 @@ public class SeSelector {
 
             /**
              * Sets the file occurence mode (see ISO7816-4)
-             * 
+             *
              * @param fileOccurrence the {@link FileOccurrence}
              * @return the builder instance
              */
@@ -160,7 +160,7 @@ public class SeSelector {
 
             /**
              * Sets the file control mode (see ISO7816-4)
-             * 
+             *
              * @param fileControlInformation the {@link FileControlInformation}
              * @return the builder instance
              */
@@ -317,7 +317,7 @@ public class SeSelector {
 
     /**
      * Private constructor
-     * 
+     *
      * @param builder the SeSelector builder
      */
     protected SeSelector(SeSelectorBuilder builder) {
@@ -334,7 +334,7 @@ public class SeSelector {
 
     /**
      * Create a SeSelector to perform the SE selection<br>
-     * 
+     *
      * @since 0.9
      */
     public static class SeSelectorBuilder {
@@ -348,7 +348,7 @@ public class SeSelector {
 
         /**
          * Sets the SE protocol
-         * 
+         *
          * @param seProtocol the {@link SeProtocol} of the targeted SE
          * @return the builder instance
          */
@@ -359,7 +359,7 @@ public class SeSelector {
 
         /**
          * Sets the SE ATR Filter
-         * 
+         *
          * @param atrFilter the {@link AtrFilter} of the targeted SE
          * @return the builder instance
          */
@@ -370,7 +370,7 @@ public class SeSelector {
 
         /**
          * Sets the SE AID Selector
-         * 
+         *
          * @param aidSelector the {@link AidSelector} of the targeted SE
          * @return the builder instance
          */

@@ -41,7 +41,7 @@ public final class PoSelector extends SeSelector {
 
     /**
      * Builder of PoSelector
-     * 
+     *
      * @since 0.9
      */
     public static class PoSelectorBuilder extends SeSelector.SeSelectorBuilder {
@@ -53,7 +53,7 @@ public final class PoSelector extends SeSelector {
 
         /**
          * Sets the desired behaviour in case of invalidated POs
-         * 
+         *
          * @param invalidatedPo the {@link InvalidatedPo} wanted behaviour
          * @return the builder instance
          */
