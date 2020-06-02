@@ -16,8 +16,6 @@ import java.util.List;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -32,9 +30,6 @@ import org.slf4j.LoggerFactory;
  * AbstractPoCommandBuilder is added or when a attempt
  */
 class PoCommandManager {
-    /* logger */
-    private static final Logger logger = LoggerFactory.getLogger(PoCommandManager.class);
-
     /** The list to contain the prepared commands and their parsers */
     private final List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poCommands =
             new ArrayList<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>>();
@@ -52,11 +47,12 @@ class PoCommandManager {
      *
      * @param commandBuilder the command builder
      */
-    void addRegularCommand(AbstractPoCommandBuilder commandBuilder) {
-        /**
+    void addRegularCommand(
+            AbstractPoCommandBuilder<? extends AbstractPoResponseParser> commandBuilder) {
+        /*
          * Reset the list if the preparation of the command is done after a previous processing
          * notified by notifyCommandsProcessed.
-         * <p>
+         *
          * However, the parsers have remained available until now.
          */
         if (preparedCommandsProcessed) {

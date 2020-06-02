@@ -50,7 +50,8 @@ public final class CalypsoSam extends AbstractMatchingSe {
         }
         /* extract the historical bytes from T3 to T12 */
         String extractRegex = "3B(.{6}|.{10})805A(.{20})829000";
-        Pattern pattern = Pattern.compile(extractRegex);
+        Pattern pattern = Pattern.compile(extractRegex); // NOSONAR: hex strings here, regex is safe
+                                                         // to use
         Matcher matcher = pattern.matcher(atrString);
         if (matcher.find(0)) {
             byte[] atrSubElements = ByteArrayUtil.fromHex(matcher.group(2));

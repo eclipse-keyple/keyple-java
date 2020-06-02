@@ -25,7 +25,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class DigestCloseCmdBuildTest {
 
     @Test
-    public void digestCloseCmdBuild() throws IllegalArgumentException {
+    public void digestCloseCmdBuild() {
 
         byte[] request = new byte[] {(byte) 0x94, (byte) 0x8E, 0x00, 0x00, (byte) 0x04};
         AbstractApduCommandBuilder apduCommandBuilder =

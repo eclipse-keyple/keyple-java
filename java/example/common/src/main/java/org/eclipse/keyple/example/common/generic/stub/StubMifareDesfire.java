@@ -20,7 +20,7 @@ import org.eclipse.keyple.plugin.stub.StubSecureElement;
  */
 public class StubMifareDesfire extends StubSecureElement {
 
-    final static String seProtocol = "PROTOCOL_MIFARE_DESFIRE";
+    static final String seProtocol = "PROTOCOL_MIFARE_DESFIRE";
     final String ATR_HEX = "3B8180018080";
 
     public StubMifareDesfire() {

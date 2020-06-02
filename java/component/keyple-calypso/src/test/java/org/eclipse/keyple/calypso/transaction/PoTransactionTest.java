@@ -692,11 +692,11 @@ public class PoTransactionTest {
         // Digest update
         samCommandsTestSet.put("808C0000080030018003000064", "9000");
         // Digest update
-        samCommandsTestSet.put("808C000005BEBEBE9000", "9000");
+        samCommandsTestSet.put("808C0000050010BE9000", "9000");
         // Digest update
         samCommandsTestSet.put("808C0000080032018803000064", "9000");
         // Digest update
-        samCommandsTestSet.put("808C000005ADADAD9000", "9000");
+        samCommandsTestSet.put("808C0000050022759000", "9000");
         // Digest update
         samCommandsTestSet.put("808C00000900DC013C0400112233", "9000");
         // Digest update

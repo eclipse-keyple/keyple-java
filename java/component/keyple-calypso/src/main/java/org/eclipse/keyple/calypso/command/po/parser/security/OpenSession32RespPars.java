@@ -42,9 +42,9 @@ public final class OpenSession32RespPars extends AbstractOpenSessionRespPars {
 
         byte flag = apduResponse[8];
         // ratification: if the bit 0 of flag is set then the previous session has been ratified
-        boolean previousSessionRatified = (flag & (1 << 0)) == (byte) 0x00;
+        boolean previousSessionRatified = (flag & 0x01) == (byte) 0x00;
         // secure session: if the bit 1 of flag is set then the secure session is authorized
-        boolean manageSecureSessionAuthorized = (flag & (1 << 1)) == (byte) 0x02;
+        boolean manageSecureSessionAuthorized = (flag & 0x02) == (byte) 0x02;
 
         byte kif = apduResponse[9];
         byte kvc = apduResponse[10];

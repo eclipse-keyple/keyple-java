@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class StubPoolPluginTest extends BaseStubTest {
 
-    static public final String POOL_PLUGIN_NAME = "pool1";
+    public static final String POOL_PLUGIN_NAME = "pool1";
 
     Logger logger = LoggerFactory.getLogger(StubPoolPluginTest.class);
 
@@ -157,7 +157,7 @@ public class StubPoolPluginTest extends BaseStubTest {
     /**
      * Stub Secure Element
      */
-    final static private StubSecureElement stubSe = new StubSecureElement() {
+    static final private StubSecureElement stubSe = new StubSecureElement() {
         @Override
         public byte[] getATR() {
             return new byte[0];

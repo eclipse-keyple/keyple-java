@@ -25,7 +25,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class DigestUpdateCmdBuildTest {
 
     @Test
-    public void digestUpdateCmdBuild() throws IllegalArgumentException {
+    public void digestUpdateCmdBuild() {
         byte[] digestDAta = new byte[] {(byte) 0x94, (byte) 0xAE, 0x01, 0x02};
         byte[] request = new byte[] {(byte) 0x94, (byte) 0x8C, 0x00, (byte) 0x80,
                 (byte) digestDAta.length, (byte) 0x94, (byte) 0xAE, 0x01, 0x02};

@@ -294,18 +294,18 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
      * @return basic spy reader
      * @throws KeypleReaderException
      */
-    static public AbstractLocalReader getSpy(String pluginName, String readerName) {
+    public static AbstractLocalReader getSpy(String pluginName, String readerName) {
         AbstractLocalReader r = Mockito.spy(new BlankAbstractLocalReader(pluginName, readerName));
         return r;
     }
 
-    static public BlankSmartSelectionReader getSmartSpy(String pluginName, String readerName) {
+    public static BlankSmartSelectionReader getSmartSpy(String pluginName, String readerName) {
         BlankSmartSelectionReader r =
                 Mockito.spy(new BlankSmartSelectionReader(pluginName, readerName));
         return r;
     }
 
-    static public SeSelector getAidSelector() {
+    public static SeSelector getAidSelector() {
         SeSelector.AidSelector aidSelector =
                 new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(AID));
         aidSelector.addSuccessfulStatusCode(STATUS_CODE_1);
@@ -314,7 +314,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
         return new SeSelector(null, null, aidSelector);
     }
 
-    static public SeSelector getAtrSelector() {
+    public static SeSelector getAtrSelector() {
 
         SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter(ATR);
 

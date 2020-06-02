@@ -96,11 +96,11 @@ public class AbstractApduResponseParserTest extends CoreBaseTest {
      * @param response ApduResponse to build ApduResponseParser
      * @return ApduResponseParser
      */
-    static public ApduResponseParser getApduResponseParser(ApduResponse response) {
+    public static ApduResponseParser getApduResponseParser(ApduResponse response) {
         return new ApduResponseParser(response);
     }
 
-    static public final class ApduResponseParser extends AbstractApduResponseParser {
+    public static final class ApduResponseParser extends AbstractApduResponseParser {
         public ApduResponseParser(ApduResponse response) {
             super(response, null);
             // additional status words

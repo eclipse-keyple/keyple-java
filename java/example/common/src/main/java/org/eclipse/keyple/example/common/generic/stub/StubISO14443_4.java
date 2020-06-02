@@ -20,7 +20,7 @@ import org.eclipse.keyple.plugin.stub.StubSecureElement;
  */
 public class StubISO14443_4 extends StubSecureElement {
 
-    final static String seProtocol = "PROTOCOL_ISO14443_4";
+    static final String seProtocol = "PROTOCOL_ISO14443_4";
     final String ATR_HEX = "3B8880010000000000718100F9";
 
     public StubISO14443_4() {

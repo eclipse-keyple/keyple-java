@@ -20,7 +20,7 @@ import org.eclipse.keyple.plugin.stub.StubSecureElement;
  */
 public class StubSamHoplink extends StubSecureElement {
 
-    final static String seProtocol = "PROTOCOL_ISO7816_3";
+    static final String seProtocol = "PROTOCOL_ISO7816_3";
     final String ATR_HEX = "3B3F9600805A0080C120000012345678829000";// serial number : 12345678
 
     public StubSamHoplink() {

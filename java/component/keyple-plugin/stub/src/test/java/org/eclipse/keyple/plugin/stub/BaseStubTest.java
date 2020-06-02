@@ -26,7 +26,7 @@ public class BaseStubTest {
 
     private static final Logger logger = LoggerFactory.getLogger(BaseStubTest.class);
 
-    static public String PLUGIN_NAME = "stub1";
+    public static String PLUGIN_NAME = "stub1";
 
     @Rule
     public TestName name = new TestName();

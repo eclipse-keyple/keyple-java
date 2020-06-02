@@ -11,7 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.message;
 
-import java.util.Arrays;
 
 public class SelectionStatus {
     private final AnswerToReset atr;
@@ -41,26 +40,25 @@ public class SelectionStatus {
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) {
+        if (this == o)
             return true;
-        }
-        if (!(o instanceof SelectionStatus)) {
+        if (o == null || getClass() != o.getClass())
             return false;
-        }
-        SelectionStatus selectionStatus = (SelectionStatus) o;
-        return selectionStatus.getAtr() == null ? this.atr == null
-                : selectionStatus.getAtr().equals(this.atr) && selectionStatus.getFci() == null
-                        ? this.fci == null
-                        : selectionStatus.getFci().equals(this.fci)
-                                && selectionStatus.hasMatched() == isMatching;
+
+        SelectionStatus that = (SelectionStatus) o;
+
+        if (isMatching != that.isMatching)
+            return false;
+        if (atr != null ? !atr.equals(that.atr) : that.atr != null)
+            return false;
+        return fci != null ? fci.equals(that.fci) : that.fci == null;
     }
 
     @Override
     public int hashCode() {
-        int hash = 17;
-        hash = 19 * hash + (isMatching ? 0 : 1);
-        hash = 31 * hash + (atr == null ? 0 : Arrays.hashCode(atr.getBytes()));
-        hash = 7 * hash + (fci == null ? 0 : Arrays.hashCode(fci.getBytes()));
-        return hash;
+        int result = atr != null ? atr.hashCode() : 0;
+        result = 31 * result + (fci != null ? fci.hashCode() : 0);
+        result = 31 * result + (isMatching ? 1 : 0);
+        return result;
     }
 }

@@ -25,7 +25,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class SamGetChallengeCmdBuildTest {
 
     @Test
-    public void getChallengeCmdBuild() throws IllegalArgumentException {
+    public void getChallengeCmdBuild() {
         byte[] request = new byte[] {(byte) 0x94, (byte) 0x84, 0x00, 0x00, 0x04};
 
         AbstractApduCommandBuilder apduCommandBuilder =

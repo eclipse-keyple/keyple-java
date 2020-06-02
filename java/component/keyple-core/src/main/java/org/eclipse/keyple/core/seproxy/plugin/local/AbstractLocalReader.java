@@ -102,12 +102,14 @@ public abstract class AbstractLocalReader extends AbstractReader {
     protected abstract boolean checkSePresence() throws KeypleReaderIOException;
 
 
-    /** ==== Physical and logical channels management ====================== */
+    /* ==== Physical and logical channels management ====================== */
 
     /**
      * Close both logical and physical channels
+     * 
+     * @deprecated will change in a later version
      */
-    @Deprecated // will change in a later version
+    @Deprecated
     protected void closeLogicalAndPhysicalChannels() {
         closeLogicalChannel();
         try {
@@ -128,7 +130,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      */
     protected abstract byte[] getATR();
 
-    /** ==== Physical and logical channels management ====================== */
+    /* ==== Physical and logical channels management ====================== */
     /* Selection management */
 
     /**
@@ -207,18 +209,18 @@ public abstract class AbstractLocalReader extends AbstractReader {
         return fciResponse;
     }
 
-    /**
+    /*
      * This abstract method must be implemented by the derived class in order to provide a selection
-     * and ATR filtering mechanism.
-     * <p>
-     * The Selector provided in argument holds all the needed data to handle the Application
-     * Selection and ATR matching process and build the resulting SelectionStatus.
-     *
+     * and ATR filtering mechanism. <p> The Selector provided in argument holds all the needed data
+     * to handle the Application Selection and ATR matching process and build the resulting
+     * SelectionStatus.
+     * 
      * @param seSelector the SE selector
+     * 
      * @return the SelectionStatus
      */
 
-    /** ==== ATR filtering and application selection by AID ================ */
+    /* ==== ATR filtering and application selection by AID ================ */
 
     /**
      * Build a select application command, transmit it to the SE and deduct the SelectionStatus.
@@ -227,15 +229,16 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * @return the SelectionStatus containing the actual selection result (ATR and/or FCI and the
      *         matching status flag).
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+     * @deprecated will change in a later version
      */
-    @Deprecated // will change in a later version
+    @Deprecated
     protected SelectionStatus openLogicalChannel(SeSelector seSelector)
             throws KeypleReaderIOException {
         byte[] atr = getATR();
         boolean selectionHasMatched = true;
         SelectionStatus selectionStatus;
 
-        /** Perform ATR filtering if requested */
+        /* Perform ATR filtering if requested */
         if (seSelector.getAtrFilter() != null) {
             if (atr == null) {
                 throw new KeypleReaderIOException("Didn't get an ATR from the SE.");
@@ -255,7 +258,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
             }
         }
 
-        /**
+        /*
          * Perform application selection if requested and if ATR filtering matched or was not
          * requested
          */
@@ -270,10 +273,10 @@ public abstract class AbstractLocalReader extends AbstractReader {
             }
 
             if (fciResponse.isSuccessful() && fciResponse.getDataOut().length == 0) {
-                /**
+                /*
                  * The selection didn't provide data (e.g. OMAPI), we get the FCI using a Get Data
                  * command.
-                 * <p>
+                 *
                  * The AID selector is provided to handle successful status word in the Get Data
                  * command.
                  */
@@ -314,8 +317,9 @@ public abstract class AbstractLocalReader extends AbstractReader {
      *         the selection process result. When ATR or FCI are not available, they are set to null
      *         but they can't be both null at the same time.
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+     * @deprecated will change in a later version
      */
-    @Deprecated // will change in a later version
+    @Deprecated
     protected final SelectionStatus openLogicalChannelAndSelect(SeSelector seSelector)
             throws KeypleReaderIOException {
 
@@ -372,16 +376,19 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * Tells if a logical channel is open
      *
      * @return true if the logical channel is open
+     * @deprecated will change in a later version
      */
-    @Deprecated // will change in a later version
+    @Deprecated
     final boolean isLogicalChannelOpen() {
         return logicalChannelIsOpen;
     }
 
     /**
      * Close the logical channel.
+     * 
+     * @deprecated will change in a later version
      */
-    @Deprecated // will change in a later version
+    @Deprecated
     private void closeLogicalChannel() {
         logger.trace("[{}] closeLogicalChannel => Closing of the logical channel.", this.getName());
         logicalChannelIsOpen = false;
@@ -389,7 +396,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
         currentSelectionStatus = null;
     }
 
-    /** ==== Protocol management =========================================== */
+    /* ==== Protocol management =========================================== */
 
     /**
      * PO selection map associating seProtocols and selection strings.
@@ -439,7 +446,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
     protected abstract boolean protocolFlagMatches(SeProtocol protocolFlag)
             throws KeypleReaderIOException;
 
-    /** ==== SeRequestSe and SeRequest transmission management ============= */
+    /* ==== SeRequestSe and SeRequest transmission management ============= */
 
     /**
      * Do the transmission of all requests according to the protocol flag selection logic.<br>
@@ -747,7 +754,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
         return new SeResponse(logicalChannelIsOpen, previouslyOpen, selectionStatus, apduResponses);
     }
 
-    /** ==== APDU transmission management ================================== */
+    /* ==== APDU transmission management ================================== */
 
     /**
      * Transmits an ApduRequest and receives the ApduResponse
@@ -764,10 +771,10 @@ public abstract class AbstractLocalReader extends AbstractReader {
         ApduResponse apduResponse;
         if (logger.isDebugEnabled()) {
             long timeStamp = System.nanoTime();
-            double elapsedMs = (double) ((timeStamp - before) / 100000) / 10;
+            long elapsed10ms = (timeStamp - before) / 100000;
             this.before = timeStamp;
             logger.debug("[{}] processApduRequest => {}, elapsed {} ms.", this.getName(),
-                    apduRequest, elapsedMs);
+                    apduRequest, elapsed10ms / 10.0);
         }
 
         byte[] buffer = apduRequest.getBytes();
@@ -782,10 +789,10 @@ public abstract class AbstractLocalReader extends AbstractReader {
 
         if (logger.isDebugEnabled()) {
             long timeStamp = System.nanoTime();
-            double elapsedMs = (double) ((timeStamp - before) / 100000) / 10;
+            long elapsed10ms = (timeStamp - before) / 100000;
             this.before = timeStamp;
             logger.debug("[{}] processApduRequest => {}, elapsed {} ms.", this.getName(),
-                    apduResponse, elapsedMs);
+                    apduResponse, elapsed10ms / 10.0);
         }
         return apduResponse;
     }
@@ -807,11 +814,12 @@ public abstract class AbstractLocalReader extends AbstractReader {
          */
         if (logger.isDebugEnabled()) {
             long timeStamp = System.nanoTime();
-            double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
+            long elapsed10ms = (timeStamp - before) / 100000;
             this.before = timeStamp;
             logger.debug(
                     "[{}] case4HackGetResponse => ApduRequest: NAME = \"Internal Get Response\", RAWDATA = {}, elapsed = {}",
-                    this.getName(), ByteArrayUtil.toHex(getResponseHackRequestBytes), elapsedMs);
+                    this.getName(), ByteArrayUtil.toHex(getResponseHackRequestBytes),
+                    elapsed10ms / 10.0);
         }
 
         byte[] getResponseHackResponseBytes = transmitApdu(getResponseHackRequestBytes);
@@ -821,10 +829,10 @@ public abstract class AbstractLocalReader extends AbstractReader {
 
         if (logger.isDebugEnabled()) {
             long timeStamp = System.nanoTime();
-            double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
+            long elapsed10ms = (timeStamp - before) / 100000;
             this.before = timeStamp;
             logger.debug("[{}] case4HackGetResponse => Internal {}, elapsed {} ms.", this.getName(),
-                    getResponseHackResponseBytes, elapsedMs);
+                    getResponseHackResponseBytes, elapsed10ms / 10.0);
         }
 
         if (getResponseHackResponse.isSuccessful()) {

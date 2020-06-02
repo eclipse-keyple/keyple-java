@@ -25,13 +25,14 @@ public abstract class AbstractPoResponseParser extends AbstractApduResponseParse
      * @param response response to parse
      * @param builder the reference of the builder that created the parser
      */
-    public AbstractPoResponseParser(ApduResponse response, AbstractPoCommandBuilder builder) {
+    public AbstractPoResponseParser(ApduResponse response,
+            AbstractPoCommandBuilder<? extends AbstractPoResponseParser> builder) {
         super(response, builder);
     }
 
     @Override
-    public final AbstractPoCommandBuilder getBuilder() {
-        return (AbstractPoCommandBuilder) super.getBuilder();
+    public final AbstractPoCommandBuilder<AbstractPoResponseParser> getBuilder() {
+        return (AbstractPoCommandBuilder<AbstractPoResponseParser>) super.getBuilder();
     }
 
     @Override

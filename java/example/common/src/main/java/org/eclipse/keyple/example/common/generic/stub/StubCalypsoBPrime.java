@@ -20,7 +20,7 @@ import org.eclipse.keyple.plugin.stub.StubSecureElement;
  */
 public class StubCalypsoBPrime extends StubSecureElement {
 
-    final static String seProtocol = "PROTOCOL_B_PRIME";
+    static final String seProtocol = "PROTOCOL_B_PRIME";
     final String ATR_HEX = "3B8F8001805A0A01032003111122334482900082";
 
     public StubCalypsoBPrime() {
