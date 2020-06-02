@@ -31,9 +31,18 @@ public class SeSelector {
     private final AtrFilter atrFilter;
 
     /**
-     * Static nested class to hold the data elements used to perform an AID based selection
+     * - AID’s bytes of the SE application to select. In case the SE application is currently not
+     * selected, a logical channel is established and the corresponding SE application is selected
+     * by the SE reader, otherwise keep the current channel. - optional {@link FileOccurrence} and
+     * {@link FileControlInformation} defines selections modes according to ISO7816-4 - optional
+     * successfulSelectionStatusCodes define a list of accepted SW1SW2 codes (in addition to 9000).
+     * Allows, for example, to manage the selection of the invalidated cards. - AidSelector could be
+     * missing in SeSelector when operating SE which don’t support the Select Application command
+     * (as it is the case for SAM).
      */
     public static final class AidSelector {
+        public static final int AID_MIN_LENGTH = 5;
+        public static final int AID_MAX_LENGTH = 16;
 
         /**
          * FileOccurrence indicates how to carry out the file occurrence in accordance with
@@ -58,7 +67,8 @@ public class SeSelector {
         }
 
         /**
-         * FileOccurrence indicates how to which template is expected in accordance with ISO7816-4
+         * FileControlInformation indicates how to which template is expected in accordance with
+         * ISO7816-4
          * <p>
          * The getIsoBitMask method provides the bit mask to be used to set P2 in the select command
          * (ISO/IEC 7816-4.2)
@@ -77,86 +87,10 @@ public class SeSelector {
             }
         }
 
-        public static class IsoAid {
-            public static final int AID_MIN_LENGTH = 5;
-            public static final int AID_MAX_LENGTH = 16;
-            private final byte[] value;
+        private final FileOccurrence fileOccurrence;
+        private final FileControlInformation fileControlInformation;
 
-            /**
-             * Build an IsoAid and check length from a byte array
-             * 
-             * @param aid byte array containing the AID value
-             * @throws IllegalArgumentException if the byte length array is not within the allowed
-             *         range.
-             */
-            public IsoAid(byte[] aid) {
-                if (aid.length < AID_MIN_LENGTH || aid.length > AID_MAX_LENGTH) {
-                    value = null;
-                    throw new IllegalArgumentException("Bad AID length: " + aid.length
-                            + ". The AID length should be " + "between 5 and 15.");
-                } else {
-                    value = aid;
-                }
-            }
-
-
-            /**
-             * Build an IsoAid and check length from an hex string
-             *
-             * @param aid hex string containing the AID value
-             * @throws IllegalArgumentException if the byte length array is not within the allowed
-             *         range.
-             */
-            public IsoAid(String aid) {
-                this(ByteArrayUtil.fromHex(aid));
-            }
-
-            /**
-             * @return the AID value as a byte array
-             */
-            public byte[] getValue() {
-                return value;
-            }
-
-            /**
-             * Compares two IsoAid objects.
-             * <p>
-             * Tells if the current AID starts with the value contained in the provided AID
-             * 
-             * @param aid an other AID
-             * @return true or false
-             */
-            public boolean startsWith(IsoAid aid) {
-                if (this.value.length > aid.getValue().length) {
-                    return false;
-                }
-
-                for (int i = 0; i < aid.getValue().length; i++) {
-                    if (this.value[i] != aid.getValue()[i]) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-
-            @Override
-            public String toString() {
-                return "IsoAid{" + "value=" + ByteArrayUtil.toHex(value) + '}';
-            }
-        }
-
-        private FileOccurrence fileOccurrence = FileOccurrence.FIRST;
-        private FileControlInformation fileControlInformation = FileControlInformation.FCI;
-
-        /**
-         * - AID’s bytes of the SE application to select. In case the SE application is currently
-         * not selected, a logical channel is established and the corresponding SE application is
-         * selected by the SE reader, otherwise keep the current channel.
-         *
-         * - Could be missing when operating SE which don’t support the Select Application command
-         * (as it is the case for SAM).
-         */
-        private IsoAid aidToSelect;
+        private final byte[] aidToSelect;
 
         /**
          * List of status codes in response to the select application command that should be
@@ -164,8 +98,18 @@ public class SeSelector {
          */
         private Set<Integer> successfulSelectionStatusCodes;
 
+        /** Private constructor */
+        private AidSelector(AidSelectorBuilder builder) {
+            this.aidToSelect = builder.aidToSelect;
+            this.fileOccurrence = builder.fileOccurrence;
+            this.fileControlInformation = builder.fileControlInformation;
+            this.successfulSelectionStatusCodes = null;
+        }
+
         /**
-         * AidSelector with additional file occurrence and file control information.
+         * (package-private)<br>
+         * Builder class to create a AidSelector with additional file occurrence and file control
+         * information.
          * <p>
          * The fileOccurrence parameter defines the selection options P2 of the SELECT command
          * message
@@ -174,29 +118,55 @@ public class SeSelector {
          * <p>
          * Refer to ISO7816-4.2 for detailed information about these parameters
          *
-         * @param aidToSelect IsoAid
-         * @param fileOccurrence the occurrence parameter (see ISO7816-4 definition)
-         * @param fileControlInformation the file control information (see ISO7816-4 definition)
+         * @since 0.9
          */
-        public AidSelector(IsoAid aidToSelect, FileOccurrence fileOccurrence,
-                FileControlInformation fileControlInformation) {
-            this.aidToSelect = aidToSelect;
-            this.successfulSelectionStatusCodes = null;
-            this.fileOccurrence = fileOccurrence;
-            this.fileControlInformation = fileControlInformation;
+        public static class AidSelectorBuilder {
+            private byte[] aidToSelect;
+            private FileOccurrence fileOccurrence = FileOccurrence.FIRST;
+            private FileControlInformation fileControlInformation = FileControlInformation.FCI;
+
+            /** Private constructor */
+            private AidSelectorBuilder() {}
+
+            public AidSelectorBuilder aidToSelect(byte[] aid) {
+                if (aid.length < AID_MIN_LENGTH || aid.length > AID_MAX_LENGTH) {
+                    aidToSelect = null;
+                    throw new IllegalArgumentException("Bad AID length: " + aid.length
+                            + ". The AID length should be " + "between 5 and 15.");
+                } else {
+                    aidToSelect = aid;
+                }
+                return this;
+            }
+
+            public AidSelectorBuilder aidToSelect(String aid) {
+                return this.aidToSelect(ByteArrayUtil.fromHex(aid));
+            }
+
+            public AidSelectorBuilder fileOccurrence(
+                    SeSelector.AidSelector.FileOccurrence fileOccurrence) {
+                this.fileOccurrence = fileOccurrence;
+                return this;
+            }
+
+            public AidSelectorBuilder fileControlInformation(
+                    SeSelector.AidSelector.FileControlInformation fileControlInformation) {
+                this.fileControlInformation = fileControlInformation;
+                return this;
+            }
+
+            public SeSelector.AidSelector build() {
+                return new SeSelector.AidSelector(this);
+            }
         }
 
         /**
-         * AidSelector
-         * <p>
-         * The fileOccurrence field is set by default to FIRST
-         * <p>
-         * The fileControlInformation field is set by default to FCI
-         *
-         * @param aidToSelect IsoAid application response
+         * Gets a new builder.
          */
-        public AidSelector(IsoAid aidToSelect) {
-            this(aidToSelect, FileOccurrence.FIRST, FileControlInformation.FCI);
+        public static class Builder extends AidSelectorBuilder {
+            protected Builder self() {
+                return this;
+            }
         }
 
         /**
@@ -204,7 +174,7 @@ public class SeSelector {
          *
          * @return byte array containing the AID
          */
-        public IsoAid getAidToSelect() {
+        public byte[] getAidToSelect() {
             return aidToSelect;
         }
 
@@ -251,9 +221,10 @@ public class SeSelector {
          */
         @Override
         public String toString() {
-            return "AidSelector{" + "fileOccurrence=" + fileOccurrence + ", fileControlInformation="
-                    + fileControlInformation + ", aidToSelect=" + aidToSelect
-                    + ", successfulSelectionStatusCodes=" + successfulSelectionStatusCodes + '}';
+            return "AidSelector{" + "aidToSelect=" + ByteArrayUtil.toHex(aidToSelect)
+                    + ", fileOccurrence=" + fileOccurrence + ", fileControlInformation="
+                    + fileControlInformation + ", successfulSelectionStatusCodes="
+                    + successfulSelectionStatusCodes + '}';
         }
     }
 
@@ -325,7 +296,25 @@ public class SeSelector {
     }
 
     /**
-     * Create a SeSelector to perform the SE selection
+     * Private constructor
+     * 
+     * @param builder the SeSelector builder
+     */
+    protected SeSelector(SeSelectorBuilder builder) {
+        this.seProtocol = builder.seProtocol;
+        this.aidSelector = builder.aidSelector;
+        this.atrFilter = builder.atrFilter;
+        if (logger.isTraceEnabled()) {
+            logger.trace("Selection data: AID = {}, ATRREGEX = {}",
+                    (this.aidSelector == null || this.aidSelector.getAidToSelect() == null) ? "null"
+                            : ByteArrayUtil.toHex(this.aidSelector.getAidToSelect()),
+                    this.atrFilter == null ? "null" : this.atrFilter.getAtrRegex());
+        }
+    }
+
+    /**
+     * Create a SeSelector to perform the SE selection<br>
+     * Builder pattern with inheritance inspired from https://stackoverflow.com/a/52294689
      * <p>
      * if seProtocol is null, all protocols will match and the selection process will continue
      *
@@ -346,19 +335,45 @@ public class SeSelector {
      * if atrFilter is not null, the ATR of the SE is compared with the regular expression provided
      * in the {@link AtrFilter} in order to determine if the SE match or not the expected ATR.
      *
-     * @param seProtocol the SE communication protocol
-     * @param atrFilter the ATR filter
-     * @param aidSelector the AID selection data
+     * @since 0.9
      */
-    public SeSelector(SeProtocol seProtocol, AtrFilter atrFilter, AidSelector aidSelector) {
-        this.seProtocol = seProtocol;
-        this.aidSelector = aidSelector;
-        this.atrFilter = atrFilter;
-        if (logger.isTraceEnabled()) {
-            logger.trace("Selection data: AID = {}, ATRREGEX = {}",
-                    (this.aidSelector == null || this.aidSelector.getAidToSelect() == null) ? "null"
-                            : ByteArrayUtil.toHex(this.aidSelector.getAidToSelect().getValue()),
-                    this.atrFilter == null ? "null" : this.atrFilter.getAtrRegex());
+    public abstract static class SeSelectorBuilder<T extends SeSelectorBuilder<T>> {
+        private SeProtocol seProtocol;
+        private SeSelector.AtrFilter atrFilter;
+        private SeSelector.AidSelector aidSelector;
+
+        protected abstract T self();
+
+        /** Private constructor */
+        protected SeSelectorBuilder() {}
+
+        public T seProtocol(SeProtocol seProtocol) {
+            this.seProtocol = seProtocol;
+            return self();
+        }
+
+        public T atrFilter(SeSelector.AtrFilter atrFilter) {
+            this.atrFilter = atrFilter;
+            return self();
+        }
+
+        public T aidSelector(SeSelector.AidSelector aidSelector) {
+            this.aidSelector = aidSelector;
+            return self();
+        }
+
+        public SeSelector build() {
+            return new SeSelector(this);
+        }
+    }
+
+    /**
+     * Gets a new builder.
+     */
+    public static class Builder extends SeSelectorBuilder<Builder> {
+        @Override
+        protected Builder self() {
+            return this;
         }
     }
 

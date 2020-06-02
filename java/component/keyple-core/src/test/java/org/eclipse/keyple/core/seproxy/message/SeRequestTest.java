@@ -18,7 +18,6 @@ import java.util.Set;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -171,14 +170,15 @@ public class SeRequestTest {
          * We can use a fake AID here because it is not fully interpreted, the purpose of this unit
          * test is to verify the proper format of the request.
          */
-        SeSelector.AidSelector aidSelector = new SeSelector.AidSelector(
-                new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex("AABBCCDDEEFF")));
+        SeSelector.AidSelector aidSelector =
+                new SeSelector.AidSelector.Builder().aidToSelect("AABBCCDDEEFF").build();
         if (selectionStatusCode != null) {
             for (int statusCode : selectionStatusCode) {
                 aidSelector.addSuccessfulStatusCode(statusCode);
             }
         }
-        SeSelector seSelector = new SeSelector(getASeProtocol(), null, aidSelector);
+        SeSelector seSelector = new SeSelector.Builder().seProtocol(getASeProtocol())
+                .aidSelector(aidSelector).build();
         return seSelector;
     }
 

@@ -246,8 +246,10 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         SeSelection seSelection = new SeSelection();
 
         GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
-                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid))));
+                new SeSelector.Builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                        .aidSelector(
+                                new SeSelector.AidSelector.Builder().aidToSelect(poAid).build())
+                        .build());
 
         seSelection.prepareSelection(genericSeSelectionRequest);
 
@@ -296,8 +298,10 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         SeSelection seSelection = new SeSelection();
 
         GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
-                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid))));
+                new SeSelector.Builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                        .aidSelector(
+                                new SeSelector.AidSelector.Builder().aidToSelect(poAid).build())
+                        .build());
 
         seSelection.prepareSelection(genericSeSelectionRequest);
 
@@ -357,8 +361,10 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         SeSelection seSelection = new SeSelection();
 
         GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
-                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid))));
+                new SeSelector.Builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                        .aidSelector(
+                                new SeSelector.AidSelector.Builder().aidToSelect(poAid).build())
+                        .build());
 
         seSelection.prepareSelection(genericSeSelectionRequest);
 
@@ -392,9 +398,9 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         logger.info("Prepare SE Selection");
         SeSelection seSelection =
                 new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
-        GenericSeSelectionRequest genericSeSelectionRequest =
-                new GenericSeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                        new SeSelector.AtrFilter("3B.*"), null));
+        GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
+                new SeSelector.Builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                        .atrFilter(new SeSelector.AtrFilter("3B.*")).build());
 
         /* Prepare selector, ignore AbstractMatchingSe here */
         seSelection.prepareSelection(genericSeSelectionRequest);
@@ -433,8 +439,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                 SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
                         ChannelControl.KEEP_OPEN);
                 GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
-                        new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                                new SeSelector.AtrFilter("3B.*"), null));
+                        new SeSelector.Builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                                .atrFilter(new SeSelector.AtrFilter("3B.*")).build());
 
                 /* Prepare selector, ignore AbstractMatchingSe here */
                 seSelection.prepareSelection(genericSeSelectionRequest);

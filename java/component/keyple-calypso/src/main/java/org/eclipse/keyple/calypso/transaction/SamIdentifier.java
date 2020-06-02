@@ -29,17 +29,55 @@ public class SamIdentifier {
     String serialNumber;
     String groupReference;
 
+    /** Private constructor */
+    private SamIdentifier(SamIdentifierBuilder builder) {
+        this.samRevision = builder.samRevision;
+        this.serialNumber = builder.serialNumber;
+        this.groupReference = builder.groupReference;
+    }
+
     /**
-     * Constructor for a SamIdentifier
-     * 
-     * @param samRevision the SAM revision
-     * @param serialNumber the SAM serial number as an hex string or a regular expression
-     * @param groupReference the group reference string
+     * Builder for a SamIdentifier
+     *
+     * Three optional paramters
+     * <ul>
+     * <li>samRevision the SAM revision</li>
+     * <li>serialNumber the SAM serial number as an hex string or a regular expression</li>
+     * <li>groupReference the group reference string</li>
+     * </ul>
      */
-    public SamIdentifier(SamRevision samRevision, String serialNumber, String groupReference) {
-        this.samRevision = samRevision;
-        this.serialNumber = serialNumber;
-        this.groupReference = groupReference;
+    public static class SamIdentifierBuilder {
+        private SamRevision samRevision;
+        private String serialNumber = "";
+        private String groupReference = "";
+
+        public SamIdentifierBuilder samRevision(SamRevision samRevision) {
+            this.samRevision = samRevision;
+            return this;
+        }
+
+        public SamIdentifierBuilder serialNumber(String serialNumber) {
+            this.serialNumber = serialNumber;
+            return this;
+        }
+
+        public SamIdentifierBuilder groupReference(String groupReference) {
+            this.groupReference = groupReference;
+            return this;
+        }
+
+        public SamIdentifier build() {
+            return new SamIdentifier(this);
+        }
+    }
+
+    /**
+     * Gets a new builder.
+     */
+    public static class Builder extends SamIdentifierBuilder {
+        protected SamIdentifierBuilder self() {
+            return this;
+        }
     }
 
     /**

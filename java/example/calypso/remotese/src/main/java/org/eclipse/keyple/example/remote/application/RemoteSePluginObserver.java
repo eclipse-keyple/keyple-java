@@ -85,11 +85,12 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
                      * Calypso selection: configures a PoSelectionRequest with all the desired
                      * attributes to make the selection and read additional information afterwards
                      */
-                    PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
-                            SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                            new PoSelector.AidSelector(
-                                    new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID)),
-                            PoSelector.InvalidatedPo.ACCEPT));
+                    PoSelectionRequest poSelectionRequest =
+                            new PoSelectionRequest(new PoSelector.Builder()
+                                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                                    .aidSelector(new SeSelector.AidSelector.Builder()
+                                            .aidToSelect(CalypsoClassicInfo.AID).build())
+                                    .invalidatedPo(PoSelector.InvalidatedPo.ACCEPT).build());
 
                     logger.info("{} Create a PoSelectionRequest", nodeId);
 

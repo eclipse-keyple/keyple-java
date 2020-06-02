@@ -12,7 +12,6 @@
 package org.eclipse.keyple.calypso.transaction;
 
 import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 
 /**
  * The {@link PoSelector} class extends {@link SeSelector} to handle specific PO features such as
@@ -31,19 +30,51 @@ public final class PoSelector extends SeSelector {
         REJECT, ACCEPT
     }
 
+    public PoSelector(PoSelectorBuilder<?> builder) {
+        super(builder);
+        if (builder.invalidatedPo == InvalidatedPo.ACCEPT) {
+            this.getAidSelector().addSuccessfulStatusCode(SW_PO_INVALIDATED);
+        }
+    }
+
     /**
-     * Create a PoSelector to perform the PO selection. See {@link SeSelector}
-     *
-     * @param seProtocol the SE communication protocol
-     * @param atrFilter the ATR filter
-     * @param aidSelector the AID selection data
-     * @param authorization enum to allow invalidated POs to be accepted
+     * Create a PoSelector to perform the PO selection. See {@link SeSelector}<br>
+     * All fields are optional
+     * <ul>
+     * <li>aid the AID selection data</li>
+     * <li>seProtocol the SE communication protocol</li>
+     * <li>atrFilter the ATR filter</li>
+     * <li>authorization enum to allow invalidated POs to be accepted</li>
+     * </ul>
+     * 
+     * @since 0.9
      */
-    public PoSelector(SeProtocol seProtocol, AtrFilter atrFilter, AidSelector aidSelector,
-            InvalidatedPo authorization) {
-        super(seProtocol, atrFilter, aidSelector);
-        if (authorization == InvalidatedPo.ACCEPT) {
-            aidSelector.addSuccessfulStatusCode(SW_PO_INVALIDATED);
+    protected abstract static class PoSelectorBuilder<T extends PoSelectorBuilder<T>>
+            extends SeSelector.SeSelectorBuilder<T> {
+        private InvalidatedPo invalidatedPo;
+
+        protected PoSelectorBuilder() {
+            super();
+        }
+
+        public T invalidatedPo(InvalidatedPo invalidatedPo) {
+            this.invalidatedPo = invalidatedPo;
+            return self();
+        }
+
+        @Override
+        public PoSelector build() {
+            return new PoSelector(this);
+        }
+    }
+
+    /**
+     * Gets a new builder.
+     */
+    public static class Builder extends PoSelectorBuilder<PoSelector.Builder> {
+        @Override
+        protected Builder self() {
+            return this;
         }
     }
 }

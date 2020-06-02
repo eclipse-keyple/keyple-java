@@ -99,11 +99,11 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
 
         // Calypso selection: configures a PoSelectionRequest with all the desired attributes to
         // make the selection and read additional information afterwards
-        PoSelectionRequest poSelectionRequest =
-                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new PoSelector.AidSelector(
-                                new PoSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID)),
-                        PoSelector.InvalidatedPo.REJECT));
+        PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
+                new PoSelector.Builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                        .aidSelector(new PoSelector.AidSelector.Builder()
+                                .aidToSelect(CalypsoClassicInfo.AID).build())
+                        .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build());
 
         // Prepare the reading.
         poSelectionRequest.prepareReadRecordFile(CalypsoClassicInfo.SFI_EnvironmentAndHolder,

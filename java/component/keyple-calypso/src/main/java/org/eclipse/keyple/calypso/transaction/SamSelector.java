@@ -13,44 +13,36 @@ package org.eclipse.keyple.calypso.transaction;
 
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 
 /**
  * The {@link SamSelector} class extends {@link SeSelector} to handle specific Calypso SAM needs
  * such as model identification.
  */
 public class SamSelector extends SeSelector {
-    /**
-     * Create a SeSelector to perform the SAM selection
-     * <p>
-     * Three optional parameters
-     *
-     * @param samRevision the expected SAM revision (subtype)
-     * @param serialNumber the expected serial number as an hex string (padded with 0 on the left).
-     *        Can be a sub regex (e.g. "AEC0....") or null to allow any serial number.
-     */
-    public SamSelector(SamRevision samRevision, String serialNumber) {
-        super(SeCommonProtocols.PROTOCOL_ISO7816_3, new AtrFilter(null), null);
+
+    /** Private constructor */
+    private SamSelector(SamSelectorBuilder builder) {
+        super(builder);
         String atrRegex;
         String snRegex;
         /* check if serialNumber is defined */
-        if (serialNumber == null || serialNumber.isEmpty()) {
+        if (builder.serialNumber == null || builder.serialNumber.isEmpty()) {
             /* match all serial numbers */
             snRegex = ".{8}";
         } else {
             /* match the provided serial number (could be a regex substring) */
-            snRegex = serialNumber;
+            snRegex = builder.serialNumber;
         }
         /*
          * build the final Atr regex according to the SAM subtype and serial number if any.
          *
          * The header is starting with 3B, its total length is 4 or 6 bytes (8 or 10 hex digits)
          */
-        switch (samRevision) {
+        switch (builder.samRevision) {
             case C1:
             case S1D:
             case S1E:
-                atrRegex = "3B(.{6}|.{10})805A..80" + samRevision.getApplicationTypeMask()
+                atrRegex = "3B(.{6}|.{10})805A..80" + builder.samRevision.getApplicationTypeMask()
                         + "20.{4}" + snRegex + "829000";
                 break;
             case AUTO:
@@ -64,15 +56,57 @@ public class SamSelector extends SeSelector {
     }
 
     /**
-     * Create a SeSelector to perform the SAM selection
-     * <p>
-     * Two optional parameters.
-     *
-     * @param samIdentifier the expected SAM identification: revision (subtype), serial number as an
-     *        hex string (padded with 0 on the left; can be a sub regex e.g. "AEC0....") and
-     *        groupReference (not needed here).
+     * Create a SeSelector to perform the SAM selection with<br>
+     * either
+     * <ul>
+     * <li>samRevision the {@link SamRevision} of the targeted SAM</li>
+     * <li>serialNumber the serial number of the targeted SAM as an hex string</li>
+     * </ul>
+     * or
+     * <ul>
+     * <li>samIdentifier the {@link SamIdentifier} object embedding the {@link SamRevision}, the
+     * serial number and group reference</li>
+     * </ul>
      */
-    public SamSelector(SamIdentifier samIdentifier) {
-        this(samIdentifier.getSamRevision(), samIdentifier.getSerialNumber());
+    protected abstract static class SamSelectorBuilder<T extends SamSelector.SamSelectorBuilder<T>>
+            extends SeSelector.SeSelectorBuilder<T> {
+        private SamRevision samRevision;
+        private String serialNumber;
+
+        public SamSelectorBuilder() {
+            super();
+            this.atrFilter(new AtrFilter(""));
+        }
+
+        public T samRevision(SamRevision samRevision) {
+            this.samRevision = samRevision;
+            return self();
+        }
+
+        public T serialNumber(String serialNumber) {
+            this.serialNumber = serialNumber;
+            return self();
+        }
+
+        public T samIdentifier(SamIdentifier samIdentifier) {
+            samRevision = samIdentifier.getSamRevision();
+            serialNumber = samIdentifier.getSerialNumber();
+            return self();
+        }
+
+        @Override
+        public SamSelector build() {
+            return new SamSelector(this);
+        }
+    }
+
+    /**
+     * Gets a new builder.
+     */
+    public static class Builder extends SamSelector.SamSelectorBuilder<SamSelector.Builder> {
+        @Override
+        protected Builder self() {
+            return this;
+        }
     }
 }

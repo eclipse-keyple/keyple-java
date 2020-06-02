@@ -281,21 +281,21 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
         /*
          * Add selection case 1: Fake AID1, protocol ISO, target rev 3
          */
-        seSelection.prepareSelection(
-                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new PoSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poFakeAid1)),
-                        PoSelector.InvalidatedPo.REJECT)));
+        seSelection.prepareSelection(new PoSelectionRequest(new PoSelector.Builder()
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .aidSelector(new SeSelector.AidSelector.Builder().aidToSelect(poFakeAid1).build())
+                .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build()));
 
         /*
          * Add selection case 2: Calypso application, protocol ISO, target rev 2 or 3
          *
          * addition of read commands to execute following the selection
          */
-        PoSelectionRequest poSelectionRequestCalypsoAid =
-                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new PoSelector.AidSelector(
-                                new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID)),
-                        PoSelector.InvalidatedPo.ACCEPT));
+        PoSelectionRequest poSelectionRequestCalypsoAid = new PoSelectionRequest(
+                new PoSelector.Builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                        .aidSelector(new SeSelector.AidSelector.Builder()
+                                .aidToSelect(CalypsoClassicInfo.AID).build())
+                        .invalidatedPo(PoSelector.InvalidatedPo.ACCEPT).build());
 
         poSelectionRequestCalypsoAid.prepareSelectFile(CalypsoClassicInfo.LID_DF_RT);
 
@@ -309,18 +309,18 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
         /*
          * Add selection case 3: Fake AID2, unspecified protocol, target rev 2 or 3
          */
-        seSelection.prepareSelection(
-                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_B_PRIME, null,
-                        new PoSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poFakeAid2)),
-                        PoSelector.InvalidatedPo.REJECT)));
+        seSelection.prepareSelection(new PoSelectionRequest(new PoSelector.Builder()
+                .seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME)
+                .aidSelector(new SeSelector.AidSelector.Builder().aidToSelect(poFakeAid2).build())
+                .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build()));
 
         /*
          * Add selection case 4: ATR selection, rev 1 atrregex
          */
-        seSelection.prepareSelection(
-                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_B_PRIME,
-                        new PoSelector.AtrFilter(CalypsoClassicInfo.ATR_REV1_REGEX), null,
-                        PoSelector.InvalidatedPo.REJECT)));
+        seSelection.prepareSelection(new PoSelectionRequest(
+                new PoSelector.Builder().seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME)
+                        .atrFilter(new PoSelector.AtrFilter(CalypsoClassicInfo.ATR_REV1_REGEX))
+                        .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build()));
 
         return seSelection.getSelectionOperation();
     }

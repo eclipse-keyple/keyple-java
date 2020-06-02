@@ -112,10 +112,11 @@ public class MultipleSession_Pcsc {
             // Calypso selection: configures a PoSelectionRequest with all the desired attributes
             // to
             // make the selection and read additional information afterwards
-            PoSelectionRequest poSelectionRequest =
-                    new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                            null, new AidSelector(new AidSelector.IsoAid(CalypsoClassicInfo.AID)),
-                            PoSelector.InvalidatedPo.REJECT));
+            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector.Builder()
+                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                    .aidSelector(
+                            new AidSelector.Builder().aidToSelect(CalypsoClassicInfo.AID).build())
+                    .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build());
 
             // Add the selection case to the current selection (we could have added other cases
             // here)

@@ -69,10 +69,10 @@ public class SeSelectionTest extends CoreBaseTest {
         SeRequest seRequest2 = iterator.next();
 
         // check selectors
-        Assert.assertEquals("AABBCCDDEE", ByteArrayUtil
-                .toHex(seRequest1.getSeSelector().getAidSelector().getAidToSelect().getValue()));
-        Assert.assertEquals("1122334455", ByteArrayUtil
-                .toHex(seRequest2.getSeSelector().getAidSelector().getAidToSelect().getValue()));
+        Assert.assertEquals("AABBCCDDEE",
+                ByteArrayUtil.toHex(seRequest1.getSeSelector().getAidSelector().getAidToSelect()));
+        Assert.assertEquals("1122334455",
+                ByteArrayUtil.toHex(seRequest2.getSeSelector().getAidSelector().getAidToSelect()));
 
         Assert.assertEquals(SeSelector.AidSelector.FileOccurrence.FIRST,
                 seRequest1.getSeSelector().getAidSelector().getFileOccurrence());
@@ -105,8 +105,8 @@ public class SeSelectionTest extends CoreBaseTest {
         Assert.assertArrayEquals(apduRequests.get(1).getBytes(),
                 ByteArrayUtil.fromHex("66778899AABB"));
 
-        Assert.assertEquals(apduRequests.get(0).isCase4(), false);
-        Assert.assertEquals(apduRequests.get(1).isCase4(), true);
+        Assert.assertFalse(apduRequests.get(0).isCase4());
+        Assert.assertTrue(apduRequests.get(1).isCase4());
 
         // that's all!
     }
@@ -248,12 +248,12 @@ public class SeSelectionTest extends CoreBaseTest {
         SeSelection seSelection = new SeSelection();
 
         // create and add two selection cases
-        SeSelector.AidSelector aidSelector =
-                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid("AABBCCDDEE"),
-                        SeSelector.AidSelector.FileOccurrence.FIRST,
-                        SeSelector.AidSelector.FileControlInformation.FCI);
-        SeSelector seSelector1 =
-                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null, aidSelector);
+        SeSelector.AidSelector aidSelector = new SeSelector.AidSelector.Builder()
+                .aidToSelect("AABBCCDDEE")
+                .fileOccurrence(SeSelector.AidSelector.FileOccurrence.FIRST)
+                .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build();
+        SeSelector seSelector1 = new SeSelector.Builder()
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4).aidSelector(aidSelector).build();
 
         // APDU requests
         List<AbstractApduCommandBuilder> commandBuilders =
@@ -265,13 +265,14 @@ public class SeSelectionTest extends CoreBaseTest {
 
         seSelection.prepareSelection(new SeSelectionRequest(seSelector1, commandBuilders));
 
-        aidSelector = new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid("1122334455"),
-                SeSelector.AidSelector.FileOccurrence.NEXT,
-                SeSelector.AidSelector.FileControlInformation.FCP);
+        aidSelector = new SeSelector.AidSelector.Builder().aidToSelect("1122334455")
+                .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
+                .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCP).build();
         aidSelector.addSuccessfulStatusCode(0x6283);
 
-        SeSelector seSelector2 = new SeSelector(SeCommonProtocols.PROTOCOL_B_PRIME,
-                new SeSelector.AtrFilter(".*"), aidSelector);
+        SeSelector seSelector2 =
+                new SeSelector.Builder().seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME)
+                        .atrFilter(new SeSelector.AtrFilter(".*")).aidSelector(aidSelector).build();
 
         seSelection.prepareSelection(new SeSelectionRequest(seSelector2, null));
 

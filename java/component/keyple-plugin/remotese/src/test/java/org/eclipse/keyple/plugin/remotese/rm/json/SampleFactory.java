@@ -50,8 +50,14 @@ public class SampleFactory {
         List<ApduRequest> poApduRequests;
         poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
-        SeSelector seSelector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid)));
+        SeSelector.AidSelector aidSelector = new SeSelector.AidSelector.builder()//
+                .aidToSelect(poAid)//
+                .build();
+
+        SeSelector seSelector = new SeSelector.builder() //
+                .aidSelector(aidSelector) //
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)//
+                .build();
 
         SeRequest seRequest = new SeRequest(seSelector, poApduRequests);
 
@@ -86,8 +92,14 @@ public class SampleFactory {
         List<ApduRequest> poApduRequests;
         poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
-        SeSelector seSelector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid)));
+        SeSelector.AidSelector aidSelector = new SeSelector.AidSelector.builder()//
+                .aidToSelect(poAid)//
+                .build();
+
+        SeSelector seSelector = new SeSelector.builder() //
+                .aidSelector(aidSelector) //
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)//
+                .build();
 
         SeRequest seRequest = new SeRequest(seSelector, poApduRequests);
         return seRequest;
@@ -112,15 +124,25 @@ public class SampleFactory {
 
         poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
-        SeSelector aidSelector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid)));
+        SeSelector.AidSelector aidSelector = new SeSelector.AidSelector.builder()//
+                .aidToSelect(poAid)//
+                .build();
 
-        SeSelector atrSelector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3,
-                new SeSelector.AtrFilter("/regex/"), null);
+        SeSelector aidSeSelector = new SeSelector.builder() //
+                .aidSelector(aidSelector) //
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)//
+                .build();
 
-        SeRequest seRequest = new SeRequest(aidSelector, poApduRequests);
+        SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter("/regex/");
 
-        SeRequest seRequest2 = new SeRequest(atrSelector, poApduRequests);
+        SeSelector seAtrSelector = new SeSelector.builder() //
+                .atrFilter(atrFilter) //
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)//
+                .build();
+
+        SeRequest seRequest = new SeRequest(aidSeSelector, poApduRequests);
+
+        SeRequest seRequest2 = new SeRequest(seAtrSelector, poApduRequests);
 
         List<SeRequest> seRequests = new ArrayList<SeRequest>();
         seRequests.add(seRequest);

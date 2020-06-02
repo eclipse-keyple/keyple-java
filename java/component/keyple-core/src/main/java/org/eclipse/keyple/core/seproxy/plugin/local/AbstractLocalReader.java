@@ -42,7 +42,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
     private boolean logicalChannelIsOpen = false;
 
     /** current AID if any */
-    private SeSelector.AidSelector.IsoAid aidCurrentlySelected;
+    private byte[] aidCurrentlySelected;
 
     /** current selection status */
     private SelectionStatus currentSelectionStatus;
@@ -171,7 +171,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
     private ApduResponse processExplicitAidSelection(SeSelector.AidSelector aidSelector)
             throws KeypleReaderIOException {
         ApduResponse fciResponse;
-        final byte[] aid = aidSelector.getAidToSelect().getValue();
+        final byte[] aid = aidSelector.getAidToSelect();
         if (aid == null) {
             throw new IllegalArgumentException("AID must not be null for an AidSelector.");
         }
@@ -623,6 +623,27 @@ public abstract class AbstractLocalReader extends AbstractReader {
     }
 
     /**
+     * Indicates whether this array of bytes starts with this other one
+     *
+     * @param source the byte array to examine
+     * @param match the byte array to compare in <code>source</code>
+     * @return true if the starting bytes of <code>source</code> equal <code>match</code>
+     */
+    private static boolean startsWith(byte[] source, byte[] match) {
+
+        if (match.length > source.length) {
+            return false;
+        }
+
+        for (int i = 0; i < match.length; i++) {
+            if (source[i] != match[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Implements the logical processSeRequest.
      * <p>
      * This method is called by processSeRequests and processSeRequest.
@@ -675,14 +696,13 @@ public abstract class AbstractLocalReader extends AbstractReader {
                     }
                     /* close the channel (will reset the current selection status) */
                     closeLogicalChannel();
-                } else if (!aidCurrentlySelected
-                        .startsWith(seRequest.getSeSelector().getAidSelector().getAidToSelect())) {
+                } else if (!startsWith(aidCurrentlySelected,
+                        seRequest.getSeSelector().getAidSelector().getAidToSelect())) {
                     // the AID changed (longer or different), close the logical channel
                     if (logger.isDebugEnabled()) {
                         logger.debug(
                                 "[{}] processSeRequest => The AID changed, close the logical channel. AID = {}, EXPECTEDAID = {}",
-                                this.getName(),
-                                ByteArrayUtil.toHex(aidCurrentlySelected.getValue()),
+                                this.getName(), ByteArrayUtil.toHex(aidCurrentlySelected),
                                 seRequest.getSeSelector());
                     }
                     /* close the channel (will reset the current selection status) */

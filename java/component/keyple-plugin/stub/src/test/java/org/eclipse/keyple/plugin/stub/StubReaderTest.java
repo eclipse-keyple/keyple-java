@@ -466,10 +466,10 @@ public class StubReaderTest extends BaseStubTest {
 
         SeSelection seSelection = new SeSelection();
 
-        PoSelectionRequest poSelectionRequest =
-                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new PoSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid)),
-                        PoSelector.InvalidatedPo.REJECT));
+        PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector.Builder()
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .aidSelector(new SeSelector.AidSelector.Builder().aidToSelect(poAid).build())
+                .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build());
 
         seSelection.prepareSelection(poSelectionRequest);
 
@@ -517,10 +517,10 @@ public class StubReaderTest extends BaseStubTest {
 
         SeSelection seSelection = new SeSelection();
 
-        PoSelectionRequest poSelectionRequest =
-                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new PoSelector.AidSelector(new PoSelector.AidSelector.IsoAid(poAid)),
-                        PoSelector.InvalidatedPo.REJECT));
+        PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector.Builder()
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .aidSelector(new SeSelector.AidSelector.Builder().aidToSelect(poAid).build())
+                .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build());
 
         seSelection.prepareSelection(poSelectionRequest);
 
@@ -580,10 +580,10 @@ public class StubReaderTest extends BaseStubTest {
 
         SeSelection seSelection = new SeSelection();
 
-        PoSelectionRequest poSelectionRequest =
-                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new PoSelector.AidSelector(new PoSelector.AidSelector.IsoAid(poAid)),
-                        PoSelector.InvalidatedPo.REJECT));
+        PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector.Builder()
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .aidSelector(new SeSelector.AidSelector.Builder().aidToSelect(poAid).build())
+                .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build());
 
         seSelection.prepareSelection(poSelectionRequest);
 
@@ -621,10 +621,10 @@ public class StubReaderTest extends BaseStubTest {
                 SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
                         ChannelControl.KEEP_OPEN);
 
-                PoSelectionRequest poSelectionRequest =
-                        new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_B_PRIME,
-                                new PoSelector.AtrFilter("3B.*"), null,
-                                PoSelector.InvalidatedPo.REJECT));
+                PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
+                        new PoSelector.Builder().seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME)
+                                .atrFilter(new PoSelector.AtrFilter("3B.*"))
+                                .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build());
 
                 /* Prepare selector, ignore AbstractMatchingSe here */
                 seSelection.prepareSelection(poSelectionRequest);
@@ -697,10 +697,10 @@ public class StubReaderTest extends BaseStubTest {
 
         SeSelection seSelection = new SeSelection();
 
-        PoSelectionRequest poSelectionRequest =
-                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new PoSelector.AidSelector(new PoSelector.AidSelector.IsoAid(poAid)),
-                        PoSelector.InvalidatedPo.REJECT));
+        PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector.Builder()
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .aidSelector(new SeSelector.AidSelector.Builder().aidToSelect(poAid).build())
+                .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build());
 
         seSelection.prepareSelection(poSelectionRequest);
 
@@ -1234,10 +1234,6 @@ public class StubReaderTest extends BaseStubTest {
                 break;
         }
 
-        SeSelector selector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                new SeSelector.AidSelector(
-                        new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(poAid))));
-
         return new SeRequest(poApduRequests);
     }
 
@@ -1425,9 +1421,9 @@ public class StubReaderTest extends BaseStubTest {
         SeSelection seSelection = new SeSelection();
         // SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.PROCESS_ALL,
         // ChannelControl.CLOSE_AFTER);
-        GenericSeSelectionRequest genericSeSelectionRequest =
-                new GenericSeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                        new SeSelector.AtrFilter("3B.*"), null));
+        GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
+                new SeSelector.Builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                        .atrFilter(new SeSelector.AtrFilter("3B.*")).build());
 
         /* Prepare selector, ignore AbstractMatchingSe here */
         seSelection.prepareSelection(genericSeSelectionRequest);
