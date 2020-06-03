@@ -44,8 +44,7 @@ public final class IncreaseCmdBuild extends AbstractPoCommandBuilder<IncreaseRes
      * @throws IllegalArgumentException - if the decrement value is out of range
      * @throws IllegalArgumentException - if the command is inconsistent
      */
-    public IncreaseCmdBuild(PoClass poClass, byte sfi, byte counterNumber, int incValue)
-            throws IllegalArgumentException {
+    public IncreaseCmdBuild(PoClass poClass, byte sfi, byte counterNumber, int incValue) {
         super(command, null);
 
         // only counter number >= 1 are allowed

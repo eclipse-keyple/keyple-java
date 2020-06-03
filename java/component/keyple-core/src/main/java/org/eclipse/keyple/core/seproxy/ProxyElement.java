@@ -9,10 +9,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.util;
+package org.eclipse.keyple.core.seproxy;
 
 import java.util.Map;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
@@ -20,7 +19,11 @@ import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 /**
  * Allow {@link ProxyReader}s and {@link ReaderPlugin}s to receive configuration parameters.
  */
-public interface Configurable {
+public interface ProxyElement {
+    /**
+     * @return the unique name of the item
+     */
+    String getName();
 
     /**
      * Gets the parameters
@@ -48,6 +51,5 @@ public interface Configurable {
      * @throws IllegalArgumentException if the parameters or the values is not supported
      * @throws KeypleException if the parameter fails to be set up
      */
-    void setParameters(Map<String, String> parameters)
-            throws IllegalArgumentException, KeypleException;
+    void setParameters(Map<String, String> parameters) throws KeypleException;
 }

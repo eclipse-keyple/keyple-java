@@ -187,40 +187,42 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
         if (scardNoServiceHackNeeded) {
             /*
              * This hack avoids the problem of stopping the Windows Smart Card service when removing
-             * the last PC/SC reader
+             * the last PC/SC reader.
+             *
+             * Some SONAR warnings have been disabled.
              */
             try {
                 Class pcscterminal;
                 pcscterminal = Class.forName("sun.security.smartcardio.PCSCTerminals");
                 Field contextId = pcscterminal.getDeclaredField("contextId");
-                contextId.setAccessible(true);
+                contextId.setAccessible(true); // NOSONAR
 
                 if (contextId.getLong(pcscterminal) != 0L) {
                     Class pcsc = Class.forName("sun.security.smartcardio.PCSC");
                     Method SCardEstablishContext = pcsc.getDeclaredMethod("SCardEstablishContext",
                             new Class[] {Integer.TYPE});
-                    SCardEstablishContext.setAccessible(true);
+                    SCardEstablishContext.setAccessible(true); // NOSONAR
 
                     Field SCARD_SCOPE_USER = pcsc.getDeclaredField("SCARD_SCOPE_USER");
-                    SCARD_SCOPE_USER.setAccessible(true);
+                    SCARD_SCOPE_USER.setAccessible(true); // NOSONAR
 
                     long newId = ((Long) SCardEstablishContext.invoke(pcsc,
                             new Object[] {Integer.valueOf(SCARD_SCOPE_USER.getInt(pcsc))}))
                                     .longValue();
-                    contextId.setLong(pcscterminal, newId);
+                    contextId.setLong(pcscterminal, newId); // NOSONAR
 
                     // clear the terminals in cache
                     TerminalFactory factory = TerminalFactory.getDefault();
                     CardTerminals terminals = factory.terminals();
                     Field fieldTerminals = pcscterminal.getDeclaredField("terminals");
-                    fieldTerminals.setAccessible(true);
+                    fieldTerminals.setAccessible(true); // NOSONAR
                     Class classMap = Class.forName("java.util.Map");
                     Method clearMap = classMap.getDeclaredMethod("clear");
 
                     clearMap.invoke(fieldTerminals.get(terminals));
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Unexpected exception.", e);
             }
         }
 

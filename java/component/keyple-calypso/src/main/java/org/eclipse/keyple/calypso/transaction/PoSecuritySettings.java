@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
+import static org.eclipse.keyple.calypso.transaction.PoTransaction.SessionSetting.*;
 import java.util.EnumMap;
 import java.util.List;
 
@@ -29,12 +30,15 @@ public class PoSecuritySettings {
     private final List<Byte> authorizedKvcList;
 
     /** EnumMap associating session levels and corresponding KIFs */
-    private final EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte> defaultKif;
-    private final EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte> defaultKvc;
-    private final EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte> defaultKeyRecordNumber;
+    private final EnumMap<AccessLevel, Byte> defaultKif;
+    private final EnumMap<AccessLevel, Byte> defaultKvc;
+    private final EnumMap<AccessLevel, Byte> defaultKeyRecordNumber;
 
-    private final PoTransaction.SessionSetting.ModificationMode sessionModificationMode;
-    private final PoTransaction.SessionSetting.RatificationMode ratificationMode;
+    private final ModificationMode sessionModificationMode;
+    private final RatificationMode ratificationMode;
+
+    public static final ModificationMode defaultSessionModificationMode = ModificationMode.ATOMIC;
+    public static final RatificationMode defaultRatificationMode = RatificationMode.CLOSE_RATIFIED;
 
     /** Private constructor */
     private PoSecuritySettings(PoSecuritySettingsBuilder builder) {
@@ -56,20 +60,15 @@ public class PoSecuritySettings {
         private List<Byte> authorizedKvcList;
 
         /** EnumMap associating session levels and corresponding KIFs */
-        private final EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte> defaultKif =
-                new EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte>(
-                        PoTransaction.SessionSetting.AccessLevel.class);
-        private final EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte> defaultKvc =
-                new EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte>(
-                        PoTransaction.SessionSetting.AccessLevel.class);
-        private final EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte> defaultKeyRecordNumber =
-                new EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte>(
-                        PoTransaction.SessionSetting.AccessLevel.class);
+        private final EnumMap<AccessLevel, Byte> defaultKif =
+                new EnumMap<AccessLevel, Byte>(AccessLevel.class);
+        private final EnumMap<AccessLevel, Byte> defaultKvc =
+                new EnumMap<AccessLevel, Byte>(AccessLevel.class);
+        private final EnumMap<AccessLevel, Byte> defaultKeyRecordNumber =
+                new EnumMap<AccessLevel, Byte>(AccessLevel.class);
 
-        PoTransaction.SessionSetting.ModificationMode sessionModificationMode =
-                PoTransaction.SessionSetting.ModificationMode.ATOMIC;
-        PoTransaction.SessionSetting.RatificationMode ratificationMode =
-                PoTransaction.SessionSetting.RatificationMode.CLOSE_RATIFIED;
+        ModificationMode sessionModificationMode = defaultSessionModificationMode;
+        RatificationMode ratificationMode = defaultRatificationMode;
 
         /**
          * Constructor
@@ -78,6 +77,9 @@ public class PoSecuritySettings {
          *        Needed in any cases.
          */
         public PoSecuritySettingsBuilder(SamResource samResource) {
+            if (samResource == null) {
+                throw new IllegalStateException("SamResource cannot be null.");
+            }
             this.samResource = samResource;
         }
 
@@ -90,7 +92,7 @@ public class PoSecuritySettings {
          * @since 0.9
          */
         public PoSecuritySettingsBuilder sessionModificationMode(
-                PoTransaction.SessionSetting.ModificationMode sessionModificationMode) {
+                ModificationMode sessionModificationMode) {
             this.sessionModificationMode = sessionModificationMode;
             return this;
         }
@@ -103,8 +105,7 @@ public class PoSecuritySettings {
          * @return the builder instance
          * @since 0.9
          */
-        public PoSecuritySettingsBuilder ratificationMode(
-                PoTransaction.SessionSetting.RatificationMode ratificationMode) {
+        public PoSecuritySettingsBuilder ratificationMode(RatificationMode ratificationMode) {
             this.ratificationMode = ratificationMode;
             return this;
         }
@@ -117,8 +118,8 @@ public class PoSecuritySettings {
          * @return the builder instance
          * @since 0.9
          */
-        public PoSecuritySettingsBuilder sessionDefaultKif(
-                PoTransaction.SessionSetting.AccessLevel sessionAccessLevel, byte kif) {
+        public PoSecuritySettingsBuilder sessionDefaultKif(AccessLevel sessionAccessLevel,
+                byte kif) {
             defaultKif.put(sessionAccessLevel, kif);
             return this;
         }
@@ -131,8 +132,8 @@ public class PoSecuritySettings {
          * @return the builder instance
          * @since 0.9
          */
-        public PoSecuritySettingsBuilder sessionDefaultKvc(
-                PoTransaction.SessionSetting.AccessLevel sessionAccessLevel, byte kvc) {
+        public PoSecuritySettingsBuilder sessionDefaultKvc(AccessLevel sessionAccessLevel,
+                byte kvc) {
             defaultKvc.put(sessionAccessLevel, kvc);
             return this;
         }
@@ -146,7 +147,7 @@ public class PoSecuritySettings {
          * @since 0.9
          */
         public PoSecuritySettingsBuilder sessionDefaultKeyRecordNumber(
-                PoTransaction.SessionSetting.AccessLevel sessionAccessLevel, byte keyRecordNumber) {
+                AccessLevel sessionAccessLevel, byte keyRecordNumber) {
             defaultKeyRecordNumber.put(sessionAccessLevel, keyRecordNumber);
             return this;
         }
@@ -190,7 +191,7 @@ public class PoSecuritySettings {
      * @return the Session Modification Mode
      * @since 0.9
      */
-    PoTransaction.SessionSetting.ModificationMode getSessionModificationMode() {
+    ModificationMode getSessionModificationMode() {
         return sessionModificationMode;
     }
 
@@ -200,7 +201,7 @@ public class PoSecuritySettings {
      * @return the Ratification Mode
      * @since 0.9
      */
-    PoTransaction.SessionSetting.RatificationMode getRatificationMode() {
+    RatificationMode getRatificationMode() {
         return ratificationMode;
     }
 
@@ -210,7 +211,7 @@ public class PoSecuritySettings {
      * @return the default session KIF
      * @since 0.9
      */
-    Byte getSessionDefaultKif(PoTransaction.SessionSetting.AccessLevel sessionAccessLevel) {
+    Byte getSessionDefaultKif(AccessLevel sessionAccessLevel) {
         return defaultKif.get(sessionAccessLevel);
     }
 
@@ -220,7 +221,7 @@ public class PoSecuritySettings {
      * @return the default session KVC
      * @since 0.9
      */
-    Byte getSessionDefaultKvc(PoTransaction.SessionSetting.AccessLevel sessionAccessLevel) {
+    Byte getSessionDefaultKvc(AccessLevel sessionAccessLevel) {
         return defaultKvc.get(sessionAccessLevel);
     }
 
@@ -230,8 +231,7 @@ public class PoSecuritySettings {
      * @return the default session key record number
      * @since 0.9
      */
-    Byte getSessionDefaultKeyRecordNumber(
-            PoTransaction.SessionSetting.AccessLevel sessionAccessLevel) {
+    Byte getSessionDefaultKeyRecordNumber(AccessLevel sessionAccessLevel) {
         return defaultKeyRecordNumber.get(sessionAccessLevel);
     }
 

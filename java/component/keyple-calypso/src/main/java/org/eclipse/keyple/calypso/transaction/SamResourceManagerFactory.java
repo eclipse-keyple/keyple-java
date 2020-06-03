@@ -40,7 +40,7 @@ public abstract class SamResourceManagerFactory {
      * @throws KeypleReaderException throw if an error occurs while getting the readers list.
      * @return SamResourceManager working with a default plugin
      */
-    static public SamResourceManager instantiate(ReaderPlugin readerPlugin, String samReaderFilter,
+    public static SamResourceManager instantiate(ReaderPlugin readerPlugin, String samReaderFilter,
             int maxBlockingTime, int sleepTime) throws KeypleReaderException {
         return new SamResourceManagerDefault(readerPlugin, samReaderFilter, maxBlockingTime,
                 sleepTime);
@@ -65,12 +65,12 @@ public abstract class SamResourceManagerFactory {
      * @param sleepTime the duration to wait between two retries
      * @return SamResourceManager working with a pool plugin
      */
-    static public SamResourceManager instantiate(ReaderPoolPlugin samReaderPoolPlugin,
+    public static SamResourceManager instantiate(ReaderPoolPlugin samReaderPoolPlugin,
             int maxBlockingTime, int sleepTime) {
         return new SamResourceManagerPool(samReaderPoolPlugin, maxBlockingTime, sleepTime);
     }
 
-    static public SamResourceManager instantiate(ReaderPoolPlugin samReaderPoolPlugin) {
+    public static SamResourceManager instantiate(ReaderPoolPlugin samReaderPoolPlugin) {
         return new SamResourceManagerPool(samReaderPoolPlugin, MAX_BLOCKING_TIME,
                 DEFAULT_SLEEP_TIME);
     }

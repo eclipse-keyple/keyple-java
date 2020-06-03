@@ -26,7 +26,7 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
 public final class CloseSessionCmdBuild extends AbstractPoCommandBuilder<CloseSessionRespPars> {
 
     /** The command. */
-    private final static CalypsoPoCommand command = CalypsoPoCommand.CLOSE_SESSION;
+    private static final CalypsoPoCommand command = CalypsoPoCommand.CLOSE_SESSION;
 
     /**
      * Instantiates a new CloseSessionCmdBuild depending of the revision of the PO.
@@ -38,7 +38,7 @@ public final class CloseSessionCmdBuild extends AbstractPoCommandBuilder<CloseSe
      * @throws IllegalArgumentException - if the command is inconsistent
      */
     public CloseSessionCmdBuild(PoClass poClass, boolean ratificationAsked,
-            byte[] terminalSessionSignature) throws IllegalArgumentException {
+            byte[] terminalSessionSignature) {
         super(command, null);
         // The optional parameter terminalSessionSignature could contain 4 or 8
         // bytes.

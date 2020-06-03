@@ -49,8 +49,7 @@ public final class ApduResponse implements Serializable {
      * @param buffer apdu response data buffer (including sw1sw2)
      * @param successfulStatusCodes optional list of successful status codes other than 0x9000
      */
-    public ApduResponse(byte[] buffer, Set<Integer> successfulStatusCodes)
-            throws IllegalArgumentException {
+    public ApduResponse(byte[] buffer, Set<Integer> successfulStatusCodes) {
 
         this.bytes = buffer;
         if (buffer == null) {

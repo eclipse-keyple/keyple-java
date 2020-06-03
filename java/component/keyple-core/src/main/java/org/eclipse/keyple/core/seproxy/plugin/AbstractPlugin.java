@@ -13,7 +13,6 @@ package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-import org.eclipse.keyple.core.seproxy.AbstractSeProxyComponent;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.*;

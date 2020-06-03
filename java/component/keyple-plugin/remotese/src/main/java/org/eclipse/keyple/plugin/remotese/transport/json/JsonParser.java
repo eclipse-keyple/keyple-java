@@ -22,7 +22,7 @@ import com.google.gson.GsonBuilder;
  */
 public class JsonParser {
 
-    static public Gson getGson() {
+    public static Gson getGson() {
         final GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(SeProtocol.class, new GsonSeProtocolTypeAdapter());
         gsonBuilder.registerTypeAdapter(byte[].class, new HexTypeAdapter());

@@ -52,6 +52,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
      *        others.
      * @param maxBlockingTime the maximum duration for which the allocateSamResource method will
      *        attempt to allocate a new reader by retrying (in milliseconds)
+     * @param sleepTime the duration to wait between two retries
      * @throws KeypleReaderException thrown if an error occurs while getting the readers list.
      */
     protected SamResourceManagerDefault(ReaderPlugin readerPlugin, String samReaderFilter,
@@ -367,7 +368,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
     /*
      * Helper
      */
-    static private boolean containsReader(List<SamResource> samResources, String readerName) {
+    private static boolean containsReader(List<SamResource> samResources, String readerName) {
         for (SamResource resource : samResources) {
             if (readerName.equals(resource.getSeReader().getName())) {
                 return true;

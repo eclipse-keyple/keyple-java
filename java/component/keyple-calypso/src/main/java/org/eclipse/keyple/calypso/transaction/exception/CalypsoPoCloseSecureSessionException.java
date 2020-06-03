@@ -37,7 +37,7 @@ public class CalypsoPoCloseSecureSessionException extends CalypsoPoTransactionEx
      * @return the cause {@link CalypsoPoCommandException}
      */
     @Override
-    public CalypsoPoCommandException getCause() {
+    public synchronized CalypsoPoCommandException getCause() {
         return (CalypsoPoCommandException) super.getCause();
     }
 }

@@ -12,7 +12,6 @@
 package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.AbstractSeProxyComponent;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -132,30 +131,30 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
 
         if (logger.isDebugEnabled()) {
             long timeStamp = System.nanoTime();
-            double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
+            long elapsed10ms = (timeStamp - before) / 100000;
             this.before = timeStamp;
             logger.debug("[{}] transmit => SEREQUESTLIST = {}, elapsed {} ms.", this.getName(),
-                    seRequests, elapsedMs);
+                    seRequests, elapsed10ms / 10.0);
         }
 
         try {
             seResponses = processSeRequests(seRequests, multiSeRequestProcessing, channelControl);
         } catch (KeypleReaderIOException ex) {
             long timeStamp = System.nanoTime();
-            double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
+            long elapsed10ms = (timeStamp - before) / 100000;
             this.before = timeStamp;
             logger.debug("[{}] transmit => SEREQUESTLIST IO failure. elapsed {}", this.getName(),
-                    elapsedMs);
+                    elapsed10ms / 10.0);
             /* Throw an exception with the responses collected so far. */
             throw ex;
         }
 
         if (logger.isDebugEnabled()) {
             long timeStamp = System.nanoTime();
-            double elapsedMs = (double) ((timeStamp - before) / 100000) / 10;
+            long elapsed10ms = (timeStamp - before) / 100000;
             this.before = timeStamp;
             logger.debug("[{}] transmit => SERESPONSELIST = {}, elapsed {} ms.", this.getName(),
-                    seResponses, elapsedMs);
+                    seResponses, elapsed10ms / 10.0);
         }
 
         return seResponses;
@@ -203,30 +202,30 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
 
         if (logger.isDebugEnabled()) {
             long timeStamp = System.nanoTime();
-            double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
+            long elapsed10ms = (timeStamp - before) / 100000;
             this.before = timeStamp;
             logger.debug("[{}] transmit => SEREQUEST = {}, elapsed {} ms.", this.getName(),
-                    seRequest, elapsedMs);
+                    seRequest, elapsed10ms / 10.0);
         }
 
         try {
             seResponse = processSeRequest(seRequest, channelControl);
         } catch (KeypleReaderIOException ex) {
             long timeStamp = System.nanoTime();
-            double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
+            long elapsed10ms = (timeStamp - before) / 100000;
             this.before = timeStamp;
             logger.debug("[{}] transmit => SEREQUEST IO failure. elapsed {}", this.getName(),
-                    elapsedMs);
+                    elapsed10ms / 10.0);
             /* Throw an exception with the responses collected so far (ex.getSeResponse()). */
             throw ex;
         }
 
         if (logger.isDebugEnabled()) {
             long timeStamp = System.nanoTime();
-            double elapsedMs = (double) ((timeStamp - before) / 100000) / 10;
+            long elapsed10ms = (timeStamp - before) / 100000;
             this.before = timeStamp;
             logger.debug("[{}] transmit => SERESPONSE = {}, elapsed {} ms.", this.getName(),
-                    seResponse, elapsedMs);
+                    seResponse, elapsed10ms / 10.0);
         }
 
         return seResponse;

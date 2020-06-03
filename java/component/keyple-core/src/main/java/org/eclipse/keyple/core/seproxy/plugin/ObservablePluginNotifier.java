@@ -9,29 +9,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.example.common.generic.stub;
+package org.eclipse.keyple.core.seproxy.plugin;
 
-
-import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.plugin.stub.StubSecureElement;
+import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
+import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 
 /**
- * Simple contactless stub SE (no command)
+ * The {@link ObservablePluginNotifier} interface provides the API to notify the observers of an
+ * {@link ObservablePlugin}
  */
-public class StubSe2 extends StubSecureElement {
-
-    static final String seProtocol = "PROTOCOL_ISO14443_4";
-    final String ATR_HEX = "3B8E800180318066409089120802830190000B";
-
-    public StubSe2() {}
-
-    @Override
-    public byte[] getATR() {
-        return ByteArrayUtil.fromHex(ATR_HEX);
-    }
-
-    @Override
-    public String getSeProcotol() {
-        return seProtocol;
-    }
+public interface ObservablePluginNotifier extends ObservablePlugin {
+    /**
+     * Push a PluginEvent of the {@link ObservablePluginNotifier} to its registered observers.
+     *
+     * @param event the event (see {@link PluginEvent})
+     */
+    void notifyObservers(final PluginEvent event);
 }

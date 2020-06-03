@@ -56,9 +56,9 @@ public class SlaveNodeController {
 
     private String nativeReaderName;
 
-    static public String STUB_SLAVE = "stubSlave";
+    public static String STUB_SLAVE = "stubSlave";
 
-    static public long RPC_TIMEOUT = 20000;
+    public static long RPC_TIMEOUT = 20000;
 
     /**
      * Create a new SlaveNodeController

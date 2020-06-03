@@ -33,7 +33,7 @@ public class OpenSessionCmdBuildTest {
 
 
     @Test(expected = IllegalArgumentException.class)
-    public void openSessionCmdBuild_rev_2_4_exception() throws IllegalArgumentException {
+    public void openSessionCmdBuild_rev_2_4_exception() {
         byte keyIndex = (byte) 0x00;
         byte recordNumberToRead = (byte) 0x01;
         byte sfiToSelect = (byte) 0x08;
@@ -44,7 +44,7 @@ public class OpenSessionCmdBuildTest {
     }
 
     @Test
-    public void openSessionCmdBuild_rev_2_4() throws IllegalArgumentException {
+    public void openSessionCmdBuild_rev_2_4() {
         byte keyIndex = (byte) 0x03;
         byte recordNumberToRead = (byte) 0x01;
         byte sfiToSelect = (byte) 0x08;
@@ -65,7 +65,7 @@ public class OpenSessionCmdBuildTest {
     }
 
     @Test
-    public void openSessionCmdBuild_rev_3_1() throws IllegalArgumentException {
+    public void openSessionCmdBuild_rev_3_1() {
         byte keyIndex = (byte) 0x03;
         byte recordNumberToRead = (byte) 0x01;
         byte sfiToSelect = (byte) 0x08;
@@ -86,7 +86,7 @@ public class OpenSessionCmdBuildTest {
     }
 
     @Test
-    public void openSessionCmdBuild_rev_3_2() throws IllegalArgumentException {
+    public void openSessionCmdBuild_rev_3_2() {
         byte keyIndex = (byte) 0x03;
         byte recordNumberToRead = (byte) 0x01;
         byte sfiToSelect = (byte) 0x08;

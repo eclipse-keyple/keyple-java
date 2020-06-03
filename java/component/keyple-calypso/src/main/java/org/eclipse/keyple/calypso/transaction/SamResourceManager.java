@@ -52,7 +52,7 @@ public abstract class SamResourceManager {
      * @throws KeypleReaderException if a reader error occurs
      * @throws KeypleAllocationReaderException if reader allocation fails
      */
-    abstract public SamResource allocateSamResource(AllocationMode allocationMode,
+    public abstract SamResource allocateSamResource(AllocationMode allocationMode,
             SamIdentifier samIdentifier) throws KeypleReaderException,
             CalypsoNoSamResourceAvailableException, KeypleAllocationReaderException;
 
@@ -61,7 +61,7 @@ public abstract class SamResourceManager {
      *
      * @param samResource the SAM resource reference to free
      */
-    abstract public void freeSamResource(SamResource samResource);
+    public abstract void freeSamResource(SamResource samResource);
 
     /**
      * Create a SAM resource from the provided SAM reader.

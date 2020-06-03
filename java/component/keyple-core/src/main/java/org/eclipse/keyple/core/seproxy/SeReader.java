@@ -16,8 +16,6 @@ import java.util.Map;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
-import org.eclipse.keyple.core.util.Configurable;
-import org.eclipse.keyple.core.util.Nameable;
 
 
 /**
@@ -29,7 +27,7 @@ import org.eclipse.keyple.core.util.Nameable;
  * </ul>
  * Interface used by applications processing SE.
  */
-public interface SeReader extends Nameable, Configurable, Comparable<SeReader> {
+public interface SeReader extends ProxyElement, Comparable<SeReader> {
 
     /**
      * Checks if is SE present.

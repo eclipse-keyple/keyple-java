@@ -9,18 +9,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.util;
+package org.eclipse.keyple.core.seproxy.plugin;
 
 
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.message.ProxyReader;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 
 /**
- * Allow {@link ProxyReader}s and {@link ReaderPlugin}s to be named.
+ * The {@link ObservableReaderNotifier} interface provides the API to notify the observers of a
+ * {@link ObservableReader}
  */
-public interface Nameable {
+public interface ObservableReaderNotifier extends ObservableReader {
     /**
-     * @return the unique name of the item
+     * Push a ReaderEvent of the {@link ObservableReaderNotifier} to its registered observers.
+     *
+     * @param event the event (see {@link ReaderEvent})
      */
-    String getName();
+    void notifyObservers(final ReaderEvent event);
 }

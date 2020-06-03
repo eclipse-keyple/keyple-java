@@ -23,7 +23,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class DigestInitCmdBuildTest {
 
     @Test(expected = IllegalArgumentException.class)
-    public void digestInitCmd_inconsistent() throws IllegalArgumentException {
+    public void digestInitCmd_inconsistent() {
 
         byte[] digestData = new byte[] {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
 
@@ -40,7 +40,7 @@ public class DigestInitCmdBuildTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void digestInitCmd_inconsistent_digestNull() throws IllegalArgumentException {
+    public void digestInitCmd_inconsistent_digestNull() {
 
         byte[] digestData = null;
 
@@ -57,7 +57,7 @@ public class DigestInitCmdBuildTest {
     }
 
     @Test
-    public void digestInitCmd() throws IllegalArgumentException {
+    public void digestInitCmd() {
 
         byte[] digestData = new byte[] {(byte) 0x80, (byte) 0x8A, 0x00};
         byte cla = (byte) 0x94;

@@ -35,6 +35,9 @@ public class SamResourceManagerPool extends SamResourceManager {
      * Protected constructor, use the {@link SamResourceManagerFactory}
      * 
      * @param samReaderPoolPlugin the reader pool plugin
+     * @param maxBlockingTime the maximum duration for which the allocateSamResource method will
+     *        attempt to allocate a new reader by retrying (in milliseconds).
+     * @param sleepTime the duration to wait between two retries
      */
     protected SamResourceManagerPool(ReaderPoolPlugin samReaderPoolPlugin, int maxBlockingTime,
             int sleepTime) {

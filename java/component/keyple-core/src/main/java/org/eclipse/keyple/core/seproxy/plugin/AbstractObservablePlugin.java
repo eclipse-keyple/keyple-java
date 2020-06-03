@@ -22,7 +22,8 @@ import org.slf4j.LoggerFactory;
  * The {@link AbstractObservablePlugin} class provides the means to observe a plugin
  * (insertion/removal of readers).
  */
-public abstract class AbstractObservablePlugin extends AbstractPlugin implements ObservablePlugin {
+public abstract class AbstractObservablePlugin extends AbstractPlugin
+        implements ObservablePluginNotifier {
     private static final Logger logger = LoggerFactory.getLogger(AbstractObservablePlugin.class);
 
     /* The observers of this object */
@@ -93,8 +94,10 @@ public abstract class AbstractObservablePlugin extends AbstractPlugin implements
 
     /**
      * Remove all observers at once
+     * 
+     * @deprecated will change in a later version
      */
-    @Deprecated // will change in a later version
+    @Deprecated
     public void clearObservers() {
         if (observers != null) {
             this.observers.clear();
