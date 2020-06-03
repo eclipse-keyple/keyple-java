@@ -11,7 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
-import static org.eclipse.keyple.calypso.transaction.SamResourceManagerPool.MAX_BLOCKING_TIME;
+import static org.eclipse.keyple.calypso.transaction.SamResourceManagerFactory.DEFAULT_SLEEP_TIME;
+import static org.eclipse.keyple.calypso.transaction.SamResourceManagerFactory.MAX_BLOCKING_TIME;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import org.eclipse.keyple.calypso.CalypsoBaseTest;
@@ -96,13 +97,15 @@ public class SamResourceManagerPoolTest extends CalypsoBaseTest {
      */
     // get a srm spy with a custom mock reader
     SamResourceManagerPool srmSpy(ReaderPoolPlugin poolPlugin) throws KeypleReaderException {
-        return Mockito.spy(new SamResourceManagerPool(poolPlugin));
+        return Mockito
+                .spy(new SamResourceManagerPool(poolPlugin, MAX_BLOCKING_TIME, DEFAULT_SLEEP_TIME));
     }
 
     // get a srm spy with a default mock reader
     SamResourceManagerPool srmSpy() {
         ReaderPoolPlugin poolPlugin = Mockito.mock(ReaderPoolPlugin.class);
-        return Mockito.spy(new SamResourceManagerPool(poolPlugin));
+        return Mockito
+                .spy(new SamResourceManagerPool(poolPlugin, MAX_BLOCKING_TIME, DEFAULT_SLEEP_TIME));
     }
 
     SamResource samResourceMock() {

@@ -37,10 +37,12 @@ public class SamResourceManagerDefault extends SamResourceManager {
     final SamResourceManagerDefault.ReaderObserver readerObserver;// only used with observable
                                                                   // readers
     protected final ReaderPlugin samReaderPlugin;
-    /* the default maximum time (in milliseconds) during which the BLOCKING mode will wait */
-    private static final int MAX_BLOCKING_TIME = 1000; // 1 sec
+    /* the maximum time (in milliseconds) during which the BLOCKING mode will wait */
     private final int maxBlockingTime;
-    protected static final int POLLING_TIME = 10; // 10 ms
+    /*
+     * the sleep time between two tries (in milliseconds) during which the BLOCKING mode will wait
+     */
+    private final int sleepTime;
 
     /**
      * Protected constructor, use the {@link SamResourceManagerFactory}
@@ -50,11 +52,22 @@ public class SamResourceManagerDefault extends SamResourceManager {
      *        others.
      * @param maxBlockingTime the maximum duration for which the allocateSamResource method will
      *        attempt to allocate a new reader by retrying (in milliseconds)
+     * @param sleepTime the duration to wait between two retries
      * @throws KeypleReaderException thrown if an error occurs while getting the readers list.
      */
     protected SamResourceManagerDefault(ReaderPlugin readerPlugin, String samReaderFilter,
-            int maxBlockingTime) throws KeypleReaderException {
-
+            int maxBlockingTime, int sleepTime) throws KeypleReaderException {
+        /*
+         * Assign parameters
+         */
+        if (sleepTime < 1) {
+            throw new IllegalArgumentException("Sleep time must be greater than 0");
+        }
+        if (maxBlockingTime < 1) {
+            throw new IllegalArgumentException("Max Blocking Time must be greater than 0");
+        }
+        this.sleepTime = sleepTime;
+        this.maxBlockingTime = maxBlockingTime;
         this.samReaderPlugin = readerPlugin;
 
         readerObserver = new SamResourceManagerDefault.ReaderObserver();
@@ -87,7 +100,6 @@ public class SamResourceManagerDefault extends SamResourceManager {
             logger.trace("Add observer PLUGINNAME = {}", samReaderPlugin.getName());
             ((ObservablePlugin) samReaderPlugin).addObserver(pluginObserver);
         }
-        this.maxBlockingTime = maxBlockingTime;
     }
 
     /**
@@ -114,8 +126,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
 
     @Override
     public SamResource allocateSamResource(AllocationMode allocationMode,
-            SamIdentifier samIdentifier)
-            throws KeypleReaderException, CalypsoNoSamResourceAvailableException {
+            SamIdentifier samIdentifier) throws CalypsoNoSamResourceAvailableException {
         long maxBlockingDate = System.currentTimeMillis() + maxBlockingTime;
         boolean noSamResourceLogged = false;
         logger.trace("Allocating SAM reader channel...");
@@ -145,7 +156,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
                     noSamResourceLogged = true;
                 }
                 try {
-                    Thread.sleep(POLLING_TIME);
+                    Thread.sleep(sleepTime);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt(); // set interrupt flag
                     logger.error("Interrupt exception in Thread.sleep.");

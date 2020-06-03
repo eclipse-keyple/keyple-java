@@ -27,7 +27,6 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
  */
 public abstract class SamResourceManager {
 
-    /* the maximum time (in milliseconds) during which the BLOCKING mode will wait */
 
     public enum AllocationMode {
         BLOCKING, NON_BLOCKING

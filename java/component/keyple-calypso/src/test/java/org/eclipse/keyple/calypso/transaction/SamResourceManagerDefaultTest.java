@@ -11,7 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
-import static org.eclipse.keyple.calypso.transaction.SamResourceManagerPool.MAX_BLOCKING_TIME;
+import static org.eclipse.keyple.calypso.transaction.SamResourceManagerFactory.DEFAULT_SLEEP_TIME;
+import static org.eclipse.keyple.calypso.transaction.SamResourceManagerFactory.MAX_BLOCKING_TIME;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
@@ -134,7 +135,8 @@ public class SamResourceManagerDefaultTest extends CalypsoBaseTest {
         ReaderPlugin plugin = Mockito.mock(ReaderPlugin.class);
         when(plugin.getReaders()).thenReturn(readers);
 
-        return Mockito.spy(new SamResourceManagerDefault(plugin, samFilter, MAX_BLOCKING_TIME));
+        return Mockito.spy(new SamResourceManagerDefault(plugin, samFilter, MAX_BLOCKING_TIME,
+                DEFAULT_SLEEP_TIME));
     }
 
     SamResource samResourceMock() {

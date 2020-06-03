@@ -14,7 +14,6 @@ package org.eclipse.keyple.plugin.remotese.rm;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
-import org.eclipse.keyple.plugin.remotese.transport.DtoHandler;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
@@ -27,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * Manages the transaction (request/response) for remote method invocation It holds
  * the @{@link AbstractRemoteMethodTx} untils the answer is received
  */
-public class RemoteMethodTxPoolEngine implements DtoHandler, IRemoteMethodTxEngine {
+public class RemoteMethodTxPoolEngine implements IRemoteMethodTxEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteMethodTxPoolEngine.class);
 
@@ -61,11 +60,10 @@ public class RemoteMethodTxPoolEngine implements DtoHandler, IRemoteMethodTxEngi
      * Set Response to a RemoteMethod Invocation
      * 
      * @param message to be processed
-     * @return TransportDto : response of the processing of the transportDto, can be an empty
-     *         TransportDto
+     * @return TransportDto : response of the message processing, should be a NoResponse
      */
     @Override
-    public TransportDto onDTO(TransportDto message) {
+    public TransportDto onResponseDto(TransportDto message) {
         KeypleDto keypleDto = message.getKeypleDTO();
 
         if (keypleDto.isRequest()) {

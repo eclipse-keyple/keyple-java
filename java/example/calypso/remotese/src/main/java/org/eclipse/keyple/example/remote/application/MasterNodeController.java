@@ -143,8 +143,7 @@ public class MasterNodeController {
             /*
              * Configure a Sam Resource Manager
              */
-            samResourceManager =
-                    SamResourceManagerFactory.instantiate(samStubPlugin, ".*", MAX_BLOCKING_TIME);
+            samResourceManager = SamResourceManagerFactory.instantiate(samStubPlugin, ".*");
 
 
             /*
