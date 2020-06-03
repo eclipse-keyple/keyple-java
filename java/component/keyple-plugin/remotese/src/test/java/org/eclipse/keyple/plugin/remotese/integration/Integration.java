@@ -110,11 +110,8 @@ public class Integration {
             SeProxyService seProxyService = SeProxyService.getInstance();
 
             // register plugin
-            seProxyService.registerPlugin(new StubPluginFactory(SLAVE_STUB));
-
-
-            // get plugin
-            StubPlugin stubPlugin = (StubPlugin) seProxyService.getPlugin(SLAVE_STUB);
+            StubPlugin stubPlugin =
+                    (StubPlugin) seProxyService.registerPlugin(new StubPluginFactory(SLAVE_STUB));
 
             return stubPlugin;
         } catch (KeyplePluginInstantiationException e) {
@@ -139,15 +136,11 @@ public class Integration {
         StubPoolPluginFactory stubPoolPluginFactory = new StubPoolPluginFactory(SLAVE_POOL_STUB);
 
         try {
-            seProxyService.registerPlugin(stubPoolPluginFactory);
-
-
-            StubPoolPlugin poolPlugin = (StubPoolPlugin) seProxyService.getPlugin(SLAVE_POOL_STUB);
+            StubPoolPlugin poolPlugin =
+                    (StubPoolPlugin) seProxyService.registerPlugin(stubPoolPluginFactory);
 
             return poolPlugin;
         } catch (KeyplePluginInstantiationException e) {
-            e.printStackTrace();
-        } catch (KeyplePluginNotFoundException e) {
             e.printStackTrace();
         }
         return null;

@@ -77,8 +77,8 @@ public class PoAuthentication_Stub {
         final String STUB_PLUGIN_NAME = "stub1";
 
         // Register Stub plugin in the platform
-        seProxyService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
-        ReaderPlugin stubPlugin = seProxyService.getPlugin(STUB_PLUGIN_NAME);
+        ReaderPlugin stubPlugin =
+                seProxyService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
 
         // Plug PO and SAM stub reader.
         ((StubPlugin) stubPlugin).plugStubReader("poReader", true);

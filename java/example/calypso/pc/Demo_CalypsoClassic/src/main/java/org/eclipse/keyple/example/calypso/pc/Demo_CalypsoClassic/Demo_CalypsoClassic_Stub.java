@@ -49,8 +49,8 @@ public class Demo_CalypsoClassic_Stub {
         final String STUB_PLUGIN_NAME = "stub1";
 
         /* Register Stub plugin in the platform */
-        seProxyService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
-        ReaderPlugin stubPlugin = seProxyService.getPlugin(STUB_PLUGIN_NAME);
+        ReaderPlugin stubPlugin =
+                seProxyService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
 
         /* Setting up the transaction engine (implements Observer) */
         CalypsoClassicTransactionEngine transactionEngine = new CalypsoClassicTransactionEngine();
