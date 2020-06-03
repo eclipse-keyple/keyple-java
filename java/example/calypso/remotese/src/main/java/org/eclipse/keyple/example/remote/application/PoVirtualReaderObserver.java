@@ -101,7 +101,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
                      * Get a SamResource to perform authentication
                      */
                     samResource = samResourceManager.allocateSamResource(
-                            SamResourceManager.AllocationMode.BLOCKING, new SamIdentifier.Builder()
+                            SamResourceManager.AllocationMode.BLOCKING, SamIdentifier.builder()
                                     .samRevision(SamRevision.AUTO).serialNumber(".*").build());
 
                     if (samResource == null) {

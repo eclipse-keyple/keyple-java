@@ -19,6 +19,7 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 
 /**
  * Management of SAM resources:
@@ -87,9 +88,8 @@ public abstract class SamResourceManager {
         samSelection.prepareSelection(
 
                 new SamSelectionRequest(SamSelector.builder()
-                        .samIdentifier(
-                                new SamIdentifier.SamIdentifierBuilder().samRevision(AUTO).build())
-                        .build()));
+                        .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
+                        .samIdentifier(SamIdentifier.builder().samRevision(AUTO).build()).build()));
 
         SelectionsResult selectionsResult = null;
 

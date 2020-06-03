@@ -107,17 +107,8 @@ public class SeSelector {
         }
 
         /**
-         * (package-private)<br>
-         * Builder class to create a AidSelector with additional file occurrence and file control
-         * information.
-         * <p>
-         * The fileOccurrence parameter defines the selection options P2 of the SELECT command
-         * message
-         * <p>
-         * The fileControlInformation parameter defines the expected command output template.
-         * <p>
-         * Refer to ISO7816-4.2 for detailed information about these parameters
-         *
+         * Builder of {@link AidSelector}
+         * 
          * @since 0.9
          */
         public static class AidSelectorBuilder {
@@ -128,6 +119,12 @@ public class SeSelector {
             /** Private constructor */
             private AidSelectorBuilder() {}
 
+            /**
+             * Sets the AID
+             * 
+             * @param aid the AID as an array of bytes
+             * @return the builder instance
+             */
             public AidSelectorBuilder aidToSelect(byte[] aid) {
                 if (aid.length < AID_MIN_LENGTH || aid.length > AID_MAX_LENGTH) {
                     aidToSelect = null;
@@ -139,22 +136,45 @@ public class SeSelector {
                 return this;
             }
 
+            /**
+             * Sets the AID
+             * 
+             * @param aid the AID as an hex string
+             * @return the builder instance
+             */
             public AidSelectorBuilder aidToSelect(String aid) {
                 return this.aidToSelect(ByteArrayUtil.fromHex(aid));
             }
 
+            /**
+             * Sets the file occurence mode (see ISO7816-4)
+             * 
+             * @param fileOccurrence the {@link FileOccurrence}
+             * @return the builder instance
+             */
             public AidSelectorBuilder fileOccurrence(
                     SeSelector.AidSelector.FileOccurrence fileOccurrence) {
                 this.fileOccurrence = fileOccurrence;
                 return this;
             }
 
+            /**
+             * Sets the file control mode (see ISO7816-4)
+             * 
+             * @param fileControlInformation the {@link FileControlInformation}
+             * @return the builder instance
+             */
             public AidSelectorBuilder fileControlInformation(
                     SeSelector.AidSelector.FileControlInformation fileControlInformation) {
                 this.fileControlInformation = fileControlInformation;
                 return this;
             }
 
+            /**
+             * Build a new {@code AidSelector}.
+             *
+             * @return a new instance
+             */
             public SeSelector.AidSelector build() {
                 return new SeSelector.AidSelector(this);
             }
@@ -314,27 +334,7 @@ public class SeSelector {
 
     /**
      * Create a SeSelector to perform the SE selection<br>
-     * Builder pattern with inheritance inspired from https://stackoverflow.com/a/52294689
-     * <p>
-     * if seProtocol is null, all protocols will match and the selection process will continue
-     *
-     * <p>
-     * if seProtocol is not null, the current SE protocol will checked and the selection process
-     * will continue only if the protocol matches.
-     *
-     * <p>
-     * if aidSelector is null, no 'select application' command is generated. In this case the SE
-     * must have a default application selected. (e.g. SAM or Rev1 Calypso cards)
-     * <p>
-     * if aidSelector is not null, a 'select application' command is generated and performed.
-     * Furthermore, the status code is checked against the list of successful status codes in the
-     * {@link AidSelector} to determine if the SE matched or not the selection data.
-     * <p>
-     * if atrFilter is null, no check of the ATR is performed. All SE will match.
-     * <p>
-     * if atrFilter is not null, the ATR of the SE is compared with the regular expression provided
-     * in the {@link AtrFilter} in order to determine if the SE match or not the expected ATR.
-     *
+     * 
      * @since 0.9
      */
     public static class SeSelectorBuilder {
@@ -346,26 +346,54 @@ public class SeSelector {
         /** Private constructor */
         protected SeSelectorBuilder() {}
 
+        /**
+         * Sets the SE protocol
+         * 
+         * @param seProtocol the {@link SeProtocol} of the targeted SE
+         * @return the builder instance
+         */
         public SeSelectorBuilder seProtocol(SeProtocol seProtocol) {
             this.seProtocol = seProtocol;
             return this;
         }
 
+        /**
+         * Sets the SE ATR Filter
+         * 
+         * @param atrFilter the {@link AtrFilter} of the targeted SE
+         * @return the builder instance
+         */
         public SeSelectorBuilder atrFilter(SeSelector.AtrFilter atrFilter) {
             this.atrFilter = atrFilter;
             return this;
         }
 
+        /**
+         * Sets the SE AID Selector
+         * 
+         * @param aidSelector the {@link AidSelector} of the targeted SE
+         * @return the builder instance
+         */
         public SeSelectorBuilder aidSelector(SeSelector.AidSelector aidSelector) {
             this.aidSelector = aidSelector;
             return this;
         }
 
+        /**
+         * Build a new {@code SeSelector}.
+         *
+         * @return a new instance
+         */
         public SeSelector build() {
             return new SeSelector(this);
         }
     }
 
+    /**
+     * Gets a new builder.
+     *
+     * @return a new builder instance
+     */
     public static SeSelectorBuilder builder() {
         return new SeSelectorBuilder();
     }

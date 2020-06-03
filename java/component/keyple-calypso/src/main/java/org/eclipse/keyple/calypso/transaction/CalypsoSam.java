@@ -25,14 +25,14 @@ import org.slf4j.LoggerFactory;
 public final class CalypsoSam extends AbstractMatchingSe {
     private static final Logger logger = LoggerFactory.getLogger(CalypsoSam.class);
 
-    private SamRevision samRevision;
-    private byte[] serialNumber = new byte[4];
-    private byte platform;
-    private byte applicationType;
-    private byte applicationSubType;
-    private byte softwareIssuer;
-    private byte softwareVersion;
-    private byte softwareRevision;
+    private final SamRevision samRevision;
+    private final byte[] serialNumber = new byte[4];
+    private final byte platform;
+    private final byte applicationType;
+    private final byte applicationSubType;
+    private final byte softwareIssuer;
+    private final byte softwareVersion;
+    private final byte softwareRevision;
 
     /**
      * Constructor.

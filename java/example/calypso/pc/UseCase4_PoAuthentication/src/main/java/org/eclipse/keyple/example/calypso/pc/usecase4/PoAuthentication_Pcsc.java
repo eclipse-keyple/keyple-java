@@ -101,8 +101,7 @@ public class PoAuthentication_Pcsc {
             // make the selection and read additional information afterwards
             PoSelectionRequest poSelectionRequest = new PoSelectionRequest(PoSelector.builder()
                     .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
-                    .aidSelector(
-                            new AidSelector.Builder().aidToSelect(CalypsoClassicInfo.AID).build())
+                    .aidSelector(AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
                     .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build());
 
             // Prepare the reading of the Environment and Holder file.

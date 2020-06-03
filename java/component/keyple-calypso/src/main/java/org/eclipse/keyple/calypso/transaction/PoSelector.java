@@ -31,7 +31,8 @@ public final class PoSelector extends SeSelector {
         REJECT, ACCEPT
     }
 
-    public PoSelector(PoSelectorBuilder builder) {
+    /** Private constructor */
+    private PoSelector(PoSelectorBuilder builder) {
         super(builder);
         if (builder.invalidatedPo == InvalidatedPo.ACCEPT) {
             this.getAidSelector().addSuccessfulStatusCode(SW_PO_INVALIDATED);
@@ -39,14 +40,7 @@ public final class PoSelector extends SeSelector {
     }
 
     /**
-     * Create a PoSelector to perform the PO selection. See {@link SeSelector}<br>
-     * All fields are optional
-     * <ul>
-     * <li>aid the AID selection data</li>
-     * <li>seProtocol the SE communication protocol</li>
-     * <li>atrFilter the ATR filter</li>
-     * <li>authorization enum to allow invalidated POs to be accepted</li>
-     * </ul>
+     * Builder of PoSelector
      * 
      * @since 0.9
      */
@@ -57,33 +51,57 @@ public final class PoSelector extends SeSelector {
             super();
         }
 
+        /**
+         * Sets the desired behaviour in case of invalidated POs
+         * 
+         * @param invalidatedPo the {@link InvalidatedPo} wanted behaviour
+         * @return the builder instance
+         */
         public PoSelectorBuilder invalidatedPo(InvalidatedPo invalidatedPo) {
             this.invalidatedPo = invalidatedPo;
             return this;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public PoSelectorBuilder seProtocol(SeProtocol seProtocol) {
             return (PoSelectorBuilder) super.seProtocol(seProtocol);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public PoSelectorBuilder atrFilter(AtrFilter atrFilter) {
             return (PoSelectorBuilder) super.atrFilter(atrFilter);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public PoSelectorBuilder aidSelector(AidSelector aidSelector) {
             return (PoSelectorBuilder) super.aidSelector(aidSelector);
         }
 
+        /**
+         * Build a new {@code PoSelector}.
+         *
+         * @return a new instance
+         */
         @Override
         public PoSelector build() {
             return new PoSelector(this);
         }
     }
 
-
+    /**
+     * Gets a new builder.
+     *
+     * @return a new builder instance
+     */
     public static PoSelectorBuilder builder() {
         return new PoSelectorBuilder();
     }

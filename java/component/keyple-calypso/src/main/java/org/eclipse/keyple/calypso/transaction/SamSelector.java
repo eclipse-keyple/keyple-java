@@ -57,17 +57,9 @@ public class SamSelector extends SeSelector {
     }
 
     /**
-     * Create a SeSelector to perform the SAM selection with<br>
-     * either
-     * <ul>
-     * <li>samRevision the {@link SamRevision} of the targeted SAM</li>
-     * <li>serialNumber the serial number of the targeted SAM as an hex string</li>
-     * </ul>
-     * or
-     * <ul>
-     * <li>samIdentifier the {@link SamIdentifier} object embedding the {@link SamRevision}, the
-     * serial number and group reference</li>
-     * </ul>
+     * Builder of {@link SamSelector}
+     * 
+     * @since 0.9
      */
     public static class SamSelectorBuilder extends SeSelector.SeSelectorBuilder {
         private SamRevision samRevision;
@@ -78,43 +70,80 @@ public class SamSelector extends SeSelector {
             this.atrFilter(new AtrFilter(""));
         }
 
+        /**
+         * Sets the SAM revision
+         * 
+         * @param samRevision the {@link SamRevision} of the targeted SAM
+         * @return the builder instance
+         */
         public SamSelectorBuilder samRevision(SamRevision samRevision) {
             this.samRevision = samRevision;
             return this;
         }
 
+        /**
+         * Sets the SAM serial number regex
+         * 
+         * @param serialNumber the serial number of the targeted SAM as regex
+         * @return the builder instance
+         */
         public SamSelectorBuilder serialNumber(String serialNumber) {
             this.serialNumber = serialNumber;
             return this;
         }
 
+        /**
+         * Sets the SAM identifier
+         * 
+         * @param samIdentifier the {@link SamIdentifier} of the targeted SAM
+         * @return the builder instance
+         */
         public SamSelectorBuilder samIdentifier(SamIdentifier samIdentifier) {
             samRevision = samIdentifier.getSamRevision();
             serialNumber = samIdentifier.getSerialNumber();
             return this;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public SamSelectorBuilder seProtocol(SeProtocol seProtocol) {
             return (SamSelectorBuilder) super.seProtocol(seProtocol);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public SamSelectorBuilder atrFilter(AtrFilter atrFilter) {
             return (SamSelectorBuilder) super.atrFilter(atrFilter);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public SamSelectorBuilder aidSelector(AidSelector aidSelector) {
             return (SamSelectorBuilder) super.aidSelector(aidSelector);
         }
 
+        /**
+         * Build a new {@code SamSelector}.
+         *
+         * @return a new instance
+         */
         @Override
         public SamSelector build() {
             return new SamSelector(this);
         }
     }
 
+    /**
+     * Gets a new builder.
+     *
+     * @return a new builder instance
+     */
     public static SamSelectorBuilder builder() {
         return new SamSelectorBuilder();
     }

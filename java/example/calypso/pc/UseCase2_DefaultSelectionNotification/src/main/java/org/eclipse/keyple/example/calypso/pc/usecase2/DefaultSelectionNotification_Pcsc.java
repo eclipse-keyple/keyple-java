@@ -101,7 +101,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
         // make the selection and read additional information afterwards
         PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
                 PoSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
-                        .aidSelector(new PoSelector.AidSelector.Builder()
+                        .aidSelector(PoSelector.AidSelector.builder()
                                 .aidToSelect(CalypsoClassicInfo.AID).build())
                         .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build());
 
