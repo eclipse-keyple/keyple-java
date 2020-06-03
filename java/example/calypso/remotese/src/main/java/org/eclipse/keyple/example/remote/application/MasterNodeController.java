@@ -134,8 +134,7 @@ public class MasterNodeController {
                             .get(SeCommonProtocols.PROTOCOL_ISO7816_3));
 
             /* Create 'virtual' and insert a Calypso SAM */
-            StubSecureElement calypsoSamStubSe = new
-                    StubSamCalypsoClassic();
+            StubSecureElement calypsoSamStubSe = new StubSamCalypsoClassic();
 
             ((StubReader) samReader).insertSe(calypsoSamStubSe);
             logger.info("Stub SAM inserted");
@@ -143,8 +142,7 @@ public class MasterNodeController {
             /*
              * Configure a Sam Resource Manager
              */
-            samResourceManager =
-                    SamResourceManagerFactory.instantiate(samStubPlugin, ".*");
+            samResourceManager = SamResourceManagerFactory.instantiate(samStubPlugin, ".*");
 
 
             /*
