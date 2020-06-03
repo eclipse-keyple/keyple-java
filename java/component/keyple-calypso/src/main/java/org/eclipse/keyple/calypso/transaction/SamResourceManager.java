@@ -86,7 +86,7 @@ public abstract class SamResourceManager {
         /* Prepare selector */
         samSelection.prepareSelection(
 
-                new SamSelectionRequest(new SamSelector.Builder()
+                new SamSelectionRequest(SamSelector.builder()
                         .samIdentifier(
                                 new SamIdentifier.SamIdentifierBuilder().samRevision(AUTO).build())
                         .build()));

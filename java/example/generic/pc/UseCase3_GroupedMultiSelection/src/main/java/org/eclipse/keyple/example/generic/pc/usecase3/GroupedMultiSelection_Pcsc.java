@@ -63,9 +63,9 @@ public class GroupedMultiSelection_Pcsc {
             String seAidPrefix = "A000000404012509";
 
             // AID based selection (1st selection, later indexed 0)
-            seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector.Builder()
+            seSelection.prepareSelection(new GenericSeSelectionRequest(SeSelector.builder()
                     .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
-                    .aidSelector(new SeSelector.AidSelector.Builder().aidToSelect(seAidPrefix)
+                    .aidSelector(SeSelector.AidSelector.builder().aidToSelect(seAidPrefix)
                             .fileOccurrence(SeSelector.AidSelector.FileOccurrence.FIRST)
                             .fileControlInformation(
                                     SeSelector.AidSelector.FileControlInformation.FCI)
@@ -73,9 +73,9 @@ public class GroupedMultiSelection_Pcsc {
                     .build()));
 
             // next selection (2nd selection, later indexed 1)
-            seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector.Builder()
+            seSelection.prepareSelection(new GenericSeSelectionRequest(SeSelector.builder()
                     .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
-                    .aidSelector(new SeSelector.AidSelector.Builder().aidToSelect(seAidPrefix)
+                    .aidSelector(SeSelector.AidSelector.builder().aidToSelect(seAidPrefix)
                             .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
                             .fileControlInformation(
                                     SeSelector.AidSelector.FileControlInformation.FCI)
@@ -83,9 +83,9 @@ public class GroupedMultiSelection_Pcsc {
                     .build()));
 
             // next selection (3rd selection, later indexed 2)
-            seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector.Builder()
+            seSelection.prepareSelection(new GenericSeSelectionRequest(SeSelector.builder()
                     .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
-                    .aidSelector(new SeSelector.AidSelector.Builder().aidToSelect(seAidPrefix)
+                    .aidSelector(SeSelector.AidSelector.builder().aidToSelect(seAidPrefix)
                             .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
                             .fileControlInformation(
                                     SeSelector.AidSelector.FileControlInformation.FCI)

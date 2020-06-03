@@ -86,7 +86,7 @@ public class SamResourceManagerDefaultTest extends CalypsoBaseTest {
 
         // test
         SamResource out = srmSpy.allocateSamResource(SamResourceManager.AllocationMode.BLOCKING,
-                new SamIdentifier.Builder().samRevision(SamRevision.AUTO).serialNumber("any")
+                SamIdentifier.builder().samRevision(SamRevision.AUTO).serialNumber("any")
                         .groupReference("any").build());
 
         long stop = System.currentTimeMillis();

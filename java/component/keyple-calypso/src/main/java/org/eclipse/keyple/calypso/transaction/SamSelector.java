@@ -13,6 +13,7 @@ package org.eclipse.keyple.calypso.transaction;
 
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 
 /**
  * The {@link SamSelector} class extends {@link SeSelector} to handle specific Calypso SAM needs
@@ -68,8 +69,7 @@ public class SamSelector extends SeSelector {
      * serial number and group reference</li>
      * </ul>
      */
-    protected abstract static class SamSelectorBuilder<T extends SamSelector.SamSelectorBuilder<T>>
-            extends SeSelector.SeSelectorBuilder<T> {
+    public static class SamSelectorBuilder extends SeSelector.SeSelectorBuilder {
         private SamRevision samRevision;
         private String serialNumber;
 
@@ -78,20 +78,35 @@ public class SamSelector extends SeSelector {
             this.atrFilter(new AtrFilter(""));
         }
 
-        public T samRevision(SamRevision samRevision) {
+        public SamSelectorBuilder samRevision(SamRevision samRevision) {
             this.samRevision = samRevision;
-            return self();
+            return this;
         }
 
-        public T serialNumber(String serialNumber) {
+        public SamSelectorBuilder serialNumber(String serialNumber) {
             this.serialNumber = serialNumber;
-            return self();
+            return this;
         }
 
-        public T samIdentifier(SamIdentifier samIdentifier) {
+        public SamSelectorBuilder samIdentifier(SamIdentifier samIdentifier) {
             samRevision = samIdentifier.getSamRevision();
             serialNumber = samIdentifier.getSerialNumber();
-            return self();
+            return this;
+        }
+
+        @Override
+        public SamSelectorBuilder seProtocol(SeProtocol seProtocol) {
+            return (SamSelectorBuilder) super.seProtocol(seProtocol);
+        }
+
+        @Override
+        public SamSelectorBuilder atrFilter(AtrFilter atrFilter) {
+            return (SamSelectorBuilder) super.atrFilter(atrFilter);
+        }
+
+        @Override
+        public SamSelectorBuilder aidSelector(AidSelector aidSelector) {
+            return (SamSelectorBuilder) super.aidSelector(aidSelector);
         }
 
         @Override
@@ -100,13 +115,7 @@ public class SamSelector extends SeSelector {
         }
     }
 
-    /**
-     * Gets a new builder.
-     */
-    public static class Builder extends SamSelector.SamSelectorBuilder<SamSelector.Builder> {
-        @Override
-        protected Builder self() {
-            return this;
-        }
+    public static SamSelectorBuilder builder() {
+        return new SamSelectorBuilder();
     }
 }

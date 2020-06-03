@@ -50,7 +50,7 @@ public class PoSelectionRequestTest {
     @Before
     public void setUp() throws Exception {
         poSelectionRequest = new PoSelectionRequest(
-                new PoSelector.Builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                PoSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
                         .atrFilter(new PoSelector.AtrFilter(".*"))
                         .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build());
     }

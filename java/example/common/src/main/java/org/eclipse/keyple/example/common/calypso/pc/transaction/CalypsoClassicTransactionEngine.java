@@ -281,9 +281,9 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
         /*
          * Add selection case 1: Fake AID1, protocol ISO, target rev 3
          */
-        seSelection.prepareSelection(new PoSelectionRequest(new PoSelector.Builder()
+        seSelection.prepareSelection(new PoSelectionRequest(PoSelector.builder()
                 .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
-                .aidSelector(new SeSelector.AidSelector.Builder().aidToSelect(poFakeAid1).build())
+                .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poFakeAid1).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build()));
 
         /*
@@ -292,8 +292,8 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
          * addition of read commands to execute following the selection
          */
         PoSelectionRequest poSelectionRequestCalypsoAid = new PoSelectionRequest(
-                new PoSelector.Builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
-                        .aidSelector(new SeSelector.AidSelector.Builder()
+                PoSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                        .aidSelector(SeSelector.AidSelector.builder()
                                 .aidToSelect(CalypsoClassicInfo.AID).build())
                         .invalidatedPo(PoSelector.InvalidatedPo.ACCEPT).build());
 
@@ -309,16 +309,16 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
         /*
          * Add selection case 3: Fake AID2, unspecified protocol, target rev 2 or 3
          */
-        seSelection.prepareSelection(new PoSelectionRequest(new PoSelector.Builder()
+        seSelection.prepareSelection(new PoSelectionRequest(PoSelector.builder()
                 .seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME)
-                .aidSelector(new SeSelector.AidSelector.Builder().aidToSelect(poFakeAid2).build())
+                .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poFakeAid2).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build()));
 
         /*
          * Add selection case 4: ATR selection, rev 1 atrregex
          */
         seSelection.prepareSelection(new PoSelectionRequest(
-                new PoSelector.Builder().seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME)
+                PoSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME)
                         .atrFilter(new PoSelector.AtrFilter(CalypsoClassicInfo.ATR_REV1_REGEX))
                         .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build()));
 

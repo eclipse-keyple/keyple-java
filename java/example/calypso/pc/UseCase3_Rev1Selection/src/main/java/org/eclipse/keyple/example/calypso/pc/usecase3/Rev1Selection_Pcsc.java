@@ -94,7 +94,7 @@ public class Rev1Selection_Pcsc {
             // Calypso selection: configures a PoSelectionRequest with all the desired attributes to
             // make the selection and read additional information afterwards
             PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
-                    new PoSelector.Builder().seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME)
+                    PoSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME)
                             .atrFilter(new PoSelector.AtrFilter(PO_ATR_REGEX))
                             .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build());
 

@@ -93,11 +93,9 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
 
         // Generic selection: configures a SeSelector with all the desired attributes to make the
         // selection
-        GenericSeSelectionRequest seSelector = new GenericSeSelectionRequest(
-                new SeSelector.Builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
-                        .aidSelector(
-                                new SeSelector.AidSelector.Builder().aidToSelect(seAid).build())
-                        .build());
+        GenericSeSelectionRequest seSelector = new GenericSeSelectionRequest(SeSelector.builder()
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .aidSelector(SeSelector.AidSelector.builder().aidToSelect(seAid).build()).build());
 
         // Add the selection case to the current selection (we could have added other cases here)
         seSelection.prepareSelection(seSelector);

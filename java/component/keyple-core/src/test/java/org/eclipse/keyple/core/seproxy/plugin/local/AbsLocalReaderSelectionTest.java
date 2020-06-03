@@ -191,13 +191,13 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
         SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter(ATR);
         SeSelector.AidSelector aidSelector =
-                new SeSelector.AidSelector.Builder().aidToSelect(AID).build();
+                SeSelector.AidSelector.builder().aidToSelect(AID).build();
         aidSelector.addSuccessfulStatusCode(STATUS_CODE_1);
         aidSelector.addSuccessfulStatusCode(STATUS_CODE_2);
 
         // select both
         SeSelector seSelector =
-                new SeSelector.Builder().atrFilter(atrFilter).aidSelector(aidSelector).build();
+                SeSelector.builder().atrFilter(atrFilter).aidSelector(aidSelector).build();
 
         SelectionStatus status = r.openLogicalChannel(seSelector);
         Assert.assertEquals(true, status.hasMatched());
@@ -212,7 +212,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     public void select_no_param() throws Exception {
         AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
 
-        SeSelector seSelector = new SeSelector.Builder().build();
+        SeSelector seSelector = SeSelector.builder().build();
 
         SelectionStatus status = r.openLogicalChannel(seSelector);
         Assert.assertEquals(true, status.hasMatched());
@@ -308,18 +308,18 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     public static SeSelector getAidSelector() {
         SeSelector.AidSelector aidSelector =
-                new SeSelector.AidSelector.Builder().aidToSelect(AID).build();
+                SeSelector.AidSelector.builder().aidToSelect(AID).build();
         aidSelector.addSuccessfulStatusCode(STATUS_CODE_1);
         aidSelector.addSuccessfulStatusCode(STATUS_CODE_2);
 
-        return new SeSelector.Builder().aidSelector(aidSelector).build();
+        return SeSelector.builder().aidSelector(aidSelector).build();
     }
 
     public static SeSelector getAtrSelector() {
 
         SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter(ATR);
 
-        return new SeSelector.Builder().atrFilter(atrFilter).build();
+        return SeSelector.builder().atrFilter(atrFilter).build();
     }
 
 

@@ -19,7 +19,7 @@ public class SamSelectorTest {
 
     @Test
     public void test_AidSelectorNull() {
-        SamSelector samSelector = new SamSelector.Builder().samIdentifier(
+        SamSelector samSelector = SamSelector.builder().samIdentifier(
                 new SamIdentifier.SamIdentifierBuilder().samRevision(SamRevision.S1D).build())
                 .build();
         assertNull(samSelector.getAidSelector());
@@ -27,7 +27,7 @@ public class SamSelectorTest {
 
     @Test
     public void test_SamRevision_S1D() {
-        SamSelector samSelector = new SamSelector.Builder().samIdentifier(
+        SamSelector samSelector = SamSelector.builder().samIdentifier(
                 new SamIdentifier.SamIdentifierBuilder().samRevision(SamRevision.S1D).build())
                 .build();
         assertEquals("3B(.{6}|.{10})805A..80D?20.{4}.{8}829000",
@@ -36,7 +36,7 @@ public class SamSelectorTest {
 
     @Test
     public void test_SamRevision_S1E() {
-        SamSelector samSelector = new SamSelector.Builder().samIdentifier(
+        SamSelector samSelector = SamSelector.builder().samIdentifier(
                 new SamIdentifier.SamIdentifierBuilder().samRevision(SamRevision.S1E).build())
                 .build();
         assertEquals("3B(.{6}|.{10})805A..80E120.{4}.{8}829000",
@@ -45,7 +45,7 @@ public class SamSelectorTest {
 
     @Test
     public void test_SamRevision_C1() {
-        SamSelector samSelector = new SamSelector.Builder().samIdentifier(
+        SamSelector samSelector = SamSelector.builder().samIdentifier(
                 new SamIdentifier.SamIdentifierBuilder().samRevision(SamRevision.C1).build())
                 .build();
         assertEquals("3B(.{6}|.{10})805A..80C120.{4}.{8}829000",
@@ -54,8 +54,8 @@ public class SamSelectorTest {
 
     @Test
     public void test_SamRevision_ANY() {
-        SamSelector samSelector = new SamSelector.Builder().samIdentifier(
-                new SamIdentifier.SamIdentifierBuilder().samRevision(SamRevision.S1D).build())
+        SamSelector samSelector = SamSelector.builder().samIdentifier(
+                new SamIdentifier.SamIdentifierBuilder().samRevision(SamRevision.AUTO).build())
                 .build();
         assertEquals(".*", samSelector.getAtrFilter().getAtrRegex());
     }
@@ -63,7 +63,7 @@ public class SamSelectorTest {
     @Test
     public void test_SamSerialNumber() {
         SamSelector samSelector =
-                new SamSelector.Builder()
+                SamSelector.builder()
                         .samIdentifier(new SamIdentifier.SamIdentifierBuilder()
                                 .samRevision(SamRevision.C1).serialNumber("11223344").build())
                         .build();

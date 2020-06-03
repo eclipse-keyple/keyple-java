@@ -248,11 +248,11 @@ public class SeSelectionTest extends CoreBaseTest {
         SeSelection seSelection = new SeSelection();
 
         // create and add two selection cases
-        SeSelector.AidSelector aidSelector = new SeSelector.AidSelector.Builder()
+        SeSelector.AidSelector aidSelector = SeSelector.AidSelector.builder()
                 .aidToSelect("AABBCCDDEE")
                 .fileOccurrence(SeSelector.AidSelector.FileOccurrence.FIRST)
                 .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build();
-        SeSelector seSelector1 = new SeSelector.Builder()
+        SeSelector seSelector1 = SeSelector.builder()
                 .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4).aidSelector(aidSelector).build();
 
         // APDU requests
@@ -265,14 +265,13 @@ public class SeSelectionTest extends CoreBaseTest {
 
         seSelection.prepareSelection(new SeSelectionRequest(seSelector1, commandBuilders));
 
-        aidSelector = new SeSelector.AidSelector.Builder().aidToSelect("1122334455")
+        aidSelector = SeSelector.AidSelector.builder().aidToSelect("1122334455")
                 .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
                 .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCP).build();
         aidSelector.addSuccessfulStatusCode(0x6283);
 
-        SeSelector seSelector2 =
-                new SeSelector.Builder().seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME)
-                        .atrFilter(new SeSelector.AtrFilter(".*")).aidSelector(aidSelector).build();
+        SeSelector seSelector2 = SeSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME)
+                .atrFilter(new SeSelector.AtrFilter(".*")).aidSelector(aidSelector).build();
 
         seSelection.prepareSelection(new SeSelectionRequest(seSelector2, null));
 

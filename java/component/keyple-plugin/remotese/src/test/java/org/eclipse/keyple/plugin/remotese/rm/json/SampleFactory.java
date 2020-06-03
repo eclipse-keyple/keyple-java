@@ -50,11 +50,11 @@ public class SampleFactory {
         List<ApduRequest> poApduRequests;
         poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
-        SeSelector.AidSelector aidSelector = new SeSelector.AidSelector.builder()//
+        SeSelector.AidSelector aidSelector = SeSelector.AidSelector.builder()//
                 .aidToSelect(poAid)//
                 .build();
 
-        SeSelector seSelector = new SeSelector.builder() //
+        SeSelector seSelector = SeSelector.builder() //
                 .aidSelector(aidSelector) //
                 .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)//
                 .build();
@@ -92,11 +92,11 @@ public class SampleFactory {
         List<ApduRequest> poApduRequests;
         poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
-        SeSelector.AidSelector aidSelector = new SeSelector.AidSelector.builder()//
+        SeSelector.AidSelector aidSelector = SeSelector.AidSelector.builder()//
                 .aidToSelect(poAid)//
                 .build();
 
-        SeSelector seSelector = new SeSelector.builder() //
+        SeSelector seSelector = SeSelector.builder() //
                 .aidSelector(aidSelector) //
                 .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)//
                 .build();
@@ -124,18 +124,18 @@ public class SampleFactory {
 
         poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
-        SeSelector.AidSelector aidSelector = new SeSelector.AidSelector.builder()//
+        SeSelector.AidSelector aidSelector = SeSelector.AidSelector.builder()//
                 .aidToSelect(poAid)//
                 .build();
 
-        SeSelector aidSeSelector = new SeSelector.builder() //
+        SeSelector aidSeSelector = SeSelector.builder() //
                 .aidSelector(aidSelector) //
                 .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)//
                 .build();
 
         SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter("/regex/");
 
-        SeSelector seAtrSelector = new SeSelector.builder() //
+        SeSelector seAtrSelector = SeSelector.builder() //
                 .atrFilter(atrFilter) //
                 .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)//
                 .build();

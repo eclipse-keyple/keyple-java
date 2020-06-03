@@ -162,11 +162,11 @@ public class SeSelector {
 
         /**
          * Gets a new builder.
+         *
+         * @return a new builder instance
          */
-        public static class Builder extends AidSelectorBuilder {
-            protected Builder self() {
-                return this;
-            }
+        public static AidSelectorBuilder builder() {
+            return new AidSelectorBuilder();
         }
 
         /**
@@ -337,29 +337,28 @@ public class SeSelector {
      *
      * @since 0.9
      */
-    public abstract static class SeSelectorBuilder<T extends SeSelectorBuilder<T>> {
-        private SeProtocol seProtocol;
-        private SeSelector.AtrFilter atrFilter;
-        private SeSelector.AidSelector aidSelector;
+    public static class SeSelectorBuilder {
+        SeProtocol seProtocol;
+        SeSelector.AtrFilter atrFilter;
+        SeSelector.AidSelector aidSelector;
 
-        protected abstract T self();
 
         /** Private constructor */
         protected SeSelectorBuilder() {}
 
-        public T seProtocol(SeProtocol seProtocol) {
+        public SeSelectorBuilder seProtocol(SeProtocol seProtocol) {
             this.seProtocol = seProtocol;
-            return self();
+            return this;
         }
 
-        public T atrFilter(SeSelector.AtrFilter atrFilter) {
+        public SeSelectorBuilder atrFilter(SeSelector.AtrFilter atrFilter) {
             this.atrFilter = atrFilter;
-            return self();
+            return this;
         }
 
-        public T aidSelector(SeSelector.AidSelector aidSelector) {
+        public SeSelectorBuilder aidSelector(SeSelector.AidSelector aidSelector) {
             this.aidSelector = aidSelector;
-            return self();
+            return this;
         }
 
         public SeSelector build() {
@@ -367,14 +366,8 @@ public class SeSelector {
         }
     }
 
-    /**
-     * Gets a new builder.
-     */
-    public static class Builder extends SeSelectorBuilder<Builder> {
-        @Override
-        protected Builder self() {
-            return this;
-        }
+    public static SeSelectorBuilder builder() {
+        return new SeSelectorBuilder();
     }
 
     /**

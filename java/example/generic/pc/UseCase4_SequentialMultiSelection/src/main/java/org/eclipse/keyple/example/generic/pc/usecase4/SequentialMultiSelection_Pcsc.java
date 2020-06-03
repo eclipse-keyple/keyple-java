@@ -86,9 +86,9 @@ public class SequentialMultiSelection_Pcsc {
 
             // AID based selection: get the first application occurrence matching the AID, keep the
             // physical channel open
-            seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector.Builder()
+            seSelection.prepareSelection(new GenericSeSelectionRequest(SeSelector.builder()
                     .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
-                    .aidSelector(new SeSelector.AidSelector.Builder().aidToSelect(seAidPrefix)
+                    .aidSelector(SeSelector.AidSelector.builder().aidToSelect(seAidPrefix)
                             .fileOccurrence(SeSelector.AidSelector.FileOccurrence.FIRST)
                             .fileControlInformation(
                                     SeSelector.AidSelector.FileControlInformation.FCI)
@@ -103,9 +103,9 @@ public class SequentialMultiSelection_Pcsc {
             seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
                     ChannelControl.CLOSE_AFTER);
 
-            seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector.Builder()
+            seSelection.prepareSelection(new GenericSeSelectionRequest(SeSelector.builder()
                     .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
-                    .aidSelector(new SeSelector.AidSelector.Builder().aidToSelect(seAidPrefix)
+                    .aidSelector(SeSelector.AidSelector.builder().aidToSelect(seAidPrefix)
                             .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
                             .fileControlInformation(
                                     SeSelector.AidSelector.FileControlInformation.FCI)
@@ -116,6 +116,7 @@ public class SequentialMultiSelection_Pcsc {
             doAndAnalyseSelection(seReader, seSelection, 2);
 
         } else {
+
             logger.error("No SE were detected.");
         }
         System.exit(0);

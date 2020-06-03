@@ -12,6 +12,7 @@
 package org.eclipse.keyple.calypso.transaction;
 
 import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 
 /**
  * The {@link PoSelector} class extends {@link SeSelector} to handle specific PO features such as
@@ -30,7 +31,7 @@ public final class PoSelector extends SeSelector {
         REJECT, ACCEPT
     }
 
-    public PoSelector(PoSelectorBuilder<?> builder) {
+    public PoSelector(PoSelectorBuilder builder) {
         super(builder);
         if (builder.invalidatedPo == InvalidatedPo.ACCEPT) {
             this.getAidSelector().addSuccessfulStatusCode(SW_PO_INVALIDATED);
@@ -49,17 +50,31 @@ public final class PoSelector extends SeSelector {
      * 
      * @since 0.9
      */
-    protected abstract static class PoSelectorBuilder<T extends PoSelectorBuilder<T>>
-            extends SeSelector.SeSelectorBuilder<T> {
+    public static class PoSelectorBuilder extends SeSelector.SeSelectorBuilder {
         private InvalidatedPo invalidatedPo;
 
-        protected PoSelectorBuilder() {
+        private PoSelectorBuilder() {
             super();
         }
 
-        public T invalidatedPo(InvalidatedPo invalidatedPo) {
+        public PoSelectorBuilder invalidatedPo(InvalidatedPo invalidatedPo) {
             this.invalidatedPo = invalidatedPo;
-            return self();
+            return this;
+        }
+
+        @Override
+        public PoSelectorBuilder seProtocol(SeProtocol seProtocol) {
+            return (PoSelectorBuilder) super.seProtocol(seProtocol);
+        }
+
+        @Override
+        public PoSelectorBuilder atrFilter(AtrFilter atrFilter) {
+            return (PoSelectorBuilder) super.atrFilter(atrFilter);
+        }
+
+        @Override
+        public PoSelectorBuilder aidSelector(AidSelector aidSelector) {
+            return (PoSelectorBuilder) super.aidSelector(aidSelector);
         }
 
         @Override
@@ -68,13 +83,8 @@ public final class PoSelector extends SeSelector {
         }
     }
 
-    /**
-     * Gets a new builder.
-     */
-    public static class Builder extends PoSelectorBuilder<PoSelector.Builder> {
-        @Override
-        protected Builder self() {
-            return this;
-        }
+
+    public static PoSelectorBuilder builder() {
+        return new PoSelectorBuilder();
     }
 }

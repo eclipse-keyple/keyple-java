@@ -48,7 +48,7 @@ public class SamIdentifier {
      */
     public static class SamIdentifierBuilder {
         private SamRevision samRevision;
-        private String serialNumber = "";
+        private String serialNumber = ""; // default: any S/N matches
         private String groupReference = "";
 
         public SamIdentifierBuilder samRevision(SamRevision samRevision) {
@@ -73,11 +73,11 @@ public class SamIdentifier {
 
     /**
      * Gets a new builder.
+     *
+     * @return a new builder instance
      */
-    public static class Builder extends SamIdentifierBuilder {
-        protected SamIdentifierBuilder self() {
-            return this;
-        }
+    public static SamIdentifierBuilder builder() {
+        return new SamIdentifierBuilder();
     }
 
     /**
