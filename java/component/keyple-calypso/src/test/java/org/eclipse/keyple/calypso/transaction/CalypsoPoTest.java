@@ -388,6 +388,17 @@ public class CalypsoPoTest {
     }
 
     @Test
+    public void fillContent_whenSfiIsNotSet_shouldCreateEf() {
+        try {
+            po.getFileBySfi((byte) 1);
+            shouldHaveThrown(NoSuchElementException.class);
+        } catch (NoSuchElementException e) {
+        }
+        po.fillContent((byte) 1, 1, new byte[1]);
+        assertThat(po.getFileBySfi((byte) 1)).isNotNull();
+    }
+
+    @Test
     public void setCounter_whenSfiIsNotSet_shouldCreateEf() {
         try {
             po.getFileBySfi((byte) 1);
