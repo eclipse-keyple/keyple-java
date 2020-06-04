@@ -82,7 +82,7 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
             }
         } else {
             Timber.i("[%s] openLogicalChannel => Select Application with AID = %s",
-                    this.name, ByteArrayUtil.toHex(aidSelector.aidToSelect.value))
+                    this.name, ByteArrayUtil.toHex(aidSelector.aidToSelect))
             try {
                 // openLogicalChannel of SimAlliance OMAPI is only available for version 3.0+ of the library.
                 // By default the library always passes p2=00h
@@ -90,10 +90,10 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
                 val p2 = aidSelector.fileOccurrence.isoBitMask or aidSelector.fileControlInformation.isoBitMask
                 openChannel =
                         if (0 == p2.toInt()) {
-                            session?.openLogicalChannel(aidSelector.aidToSelect.value)
+                            session?.openLogicalChannel(aidSelector.aidToSelect)
                         } else {
                             if (omapiVersion >= P2_SUPPORTED_MIN_VERSION) {
-                                session?.openLogicalChannel(aidSelector.aidToSelect.value, p2)
+                                session?.openLogicalChannel(aidSelector.aidToSelect, p2)
                             } else {
                                 throw KeypleReaderIOException("P2 != 00h while opening logical channel is only supported by OMAPI version >= 3.0. Current is $omapiVersion")
                             }
@@ -104,10 +104,10 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
             } catch (e: NoSuchElementException) {
                 Timber.e(e, "NoSuchElementException")
                 throw java.lang.IllegalArgumentException(
-                        "NoSuchElementException: " + ByteArrayUtil.toHex(aidSelector.aidToSelect.value), e)
+                        "NoSuchElementException: " + ByteArrayUtil.toHex(aidSelector.aidToSelect), e)
             } catch (e: SecurityException) {
                 Timber.e(e, "SecurityException")
-                throw KeypleReaderIOException("SecurityException while opening logical channel, aid :" + ByteArrayUtil.toHex(aidSelector.aidToSelect.value), e.cause)
+                throw KeypleReaderIOException("SecurityException while opening logical channel, aid :" + ByteArrayUtil.toHex(aidSelector.aidToSelect), e.cause)
             }
 
             if (openChannel == null) {

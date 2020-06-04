@@ -96,11 +96,13 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             /* AID based selection (1st selection, later indexed 0) */
             seSelection.prepareSelection(
                     GenericSeSelectionRequest(
-                            SeSelector(
-                                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                    SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix),
-                                            SeSelector.AidSelector.FileOccurrence.FIRST,
-                                            SeSelector.AidSelector.FileControlInformation.FCI))))
+                            SeSelector.builder()
+                                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                                    .aidSelector(SeSelector.AidSelector.builder()
+                                            .aidToSelect(seAidPrefix)
+                                            .fileOccurrence(SeSelector.AidSelector.FileOccurrence.FIRST)
+                                            .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build())
+                                    .build()))
 
             /* Do the selection and display the result */
             addActionEvent("FIRST MATCH Calypso PO selection for prefix: $seAidPrefix")
@@ -115,11 +117,13 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             /* next selection (2nd selection, later indexed 1) */
             seSelection.prepareSelection(
                     GenericSeSelectionRequest(
-                            SeSelector(
-                                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                    SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix),
-                                            SeSelector.AidSelector.FileOccurrence.NEXT,
-                                            SeSelector.AidSelector.FileControlInformation.FCI))))
+                            SeSelector.builder()
+                                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                                    .aidSelector(SeSelector.AidSelector.builder()
+                                            .aidToSelect(seAidPrefix)
+                                            .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
+                                            .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build())
+                                    .build()))
 
             /* Do the selection and display the result */
             addActionEvent("NEXT MATCH Calypso PO selection for prefix: $seAidPrefix")
@@ -163,29 +167,35 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             /* AID based selection (1st selection, later indexed 0) */
             seSelection.prepareSelection(
                     GenericSeSelectionRequest(
-                            SeSelector(
-                                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                    SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix),
-                                            SeSelector.AidSelector.FileOccurrence.FIRST,
-                                            SeSelector.AidSelector.FileControlInformation.FCI))))
+                            SeSelector.builder()
+                                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                                    .aidSelector(SeSelector.AidSelector.builder()
+                                            .aidToSelect(seAidPrefix)
+                                            .fileOccurrence(SeSelector.AidSelector.FileOccurrence.FIRST)
+                                            .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build())
+                                    .build()))
 
             /* next selection (2nd selection, later indexed 1) */
             seSelection.prepareSelection(
                     GenericSeSelectionRequest(
-                            SeSelector(
-                                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                    SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix),
-                                            SeSelector.AidSelector.FileOccurrence.NEXT,
-                                            SeSelector.AidSelector.FileControlInformation.FCI))))
+                            SeSelector.builder()
+                                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                                    .aidSelector(SeSelector.AidSelector.builder()
+                                            .aidToSelect(seAidPrefix)
+                                            .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
+                                            .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build())
+                                    .build()))
 
             /* next selection (3rd selection, later indexed 2) */
             seSelection.prepareSelection(
                     GenericSeSelectionRequest(
-                            SeSelector(
-                                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                    SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix),
-                                            SeSelector.AidSelector.FileOccurrence.NEXT,
-                                            SeSelector.AidSelector.FileControlInformation.FCI))))
+                            SeSelector.builder()
+                                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                                    .aidSelector(SeSelector.AidSelector.builder()
+                                            .aidToSelect(seAidPrefix)
+                                            .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
+                                            .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build())
+                                    .build()))
 
             addActionEvent("Calypso PO selection for prefix: $seAidPrefix")
 
@@ -239,10 +249,11 @@ class CoreExamplesActivity : AbstractExampleActivity() {
          * Generic selection: configures a SeSelector with all the desired attributes to make the
          * selection
          */
-        val seSelector = GenericSeSelectionRequest(SeSelector(
-                SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                SeSelector.AidSelector(
-                        SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(aid)))))
+        val seSelector = GenericSeSelectionRequest(SeSelector.builder()
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .aidSelector(SeSelector.AidSelector.builder()
+                        .aidToSelect(aid).build())
+                .build())
 
         /*
         * Add the selection case to the current selection (we could have added other cases here)
@@ -331,10 +342,8 @@ class CoreExamplesActivity : AbstractExampleActivity() {
              * the selection and read additional information afterwards
              */
             val genericSeSelectionRequest = GenericSeSelectionRequest(
-                    SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                            null,
-                            SeSelector.AidSelector(
-                                    SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(aid)))))
+                    SeSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4).aidSelector(
+                            SeSelector.AidSelector.builder().aidToSelect(aid).build()).build())
 
             /**
              * Prepare Selection

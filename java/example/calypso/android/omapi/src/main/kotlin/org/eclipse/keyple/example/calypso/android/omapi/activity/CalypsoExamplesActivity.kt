@@ -60,10 +60,10 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                      *
                      */
                     val poSelectionRequest = PoSelectionRequest(
-                            PoSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
-                                    SeSelector.AidSelector(
-                                            SeSelector.AidSelector.IsoAid(poAid)),
-                                            PoSelector.InvalidatedPo.REJECT))
+                            PoSelector.builder()
+                                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
+                                    .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
+                                        .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build())
                     seSelection.prepareSelection(poSelectionRequest)
 
                     try {
@@ -118,10 +118,10 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                      */
                     val seSelection = SeSelection()
                     val poSelectionRequest = PoSelectionRequest(
-                            PoSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
-                                    SeSelector.AidSelector(
-                                            SeSelector.AidSelector.IsoAid(poAid)),
-                                            PoSelector.InvalidatedPo.REJECT))
+                            PoSelector.builder()
+                                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
+                                    .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
+                                    .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build())
 
                     /*
                      * Prepare the reading order and keep the associated parser for later use once
@@ -193,10 +193,10 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                      * attributes to make the selection and read additional information afterwards
                      */
                     val poSelectionRequest = PoSelectionRequest(
-                            PoSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
-                                    SeSelector.AidSelector(
-                                            SeSelector.AidSelector.IsoAid(poAid)),
-                                    PoSelector.InvalidatedPo.REJECT))
+                            PoSelector.builder()
+                                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
+                                    .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
+                                    .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build())
 
                     /*
                      * Prepare the reading order and keep the associated parser for later use once
