@@ -241,6 +241,29 @@ public class FileDataTest {
     }
 
     @Test
+    public void fillContent_whenRecordIsNotSet_shouldPutContent() {
+        file.fillContent(1, data1);
+        byte[] content = file.getContent(1);
+        assertThat(content).isEqualTo(data1);
+    }
+
+    @Test
+    public void fillContent_whenLengthGtActualSize_shouldApplyBinaryOperationAndRightPadWithContent() {
+        file.setContent(1, data1);
+        file.fillContent(1, data2);
+        byte[] content = file.getContent(1);
+        assertThat(content).isEqualTo(ByteArrayUtil.fromHex("3322"));
+    }
+
+    @Test
+    public void fillContent_whenLengthLeActualSize_shouldApplyBinaryOperation() {
+        file.setContent(1, data2);
+        file.fillContent(1, data1);
+        byte[] content = file.getContent(1);
+        assertThat(content).isEqualTo(ByteArrayUtil.fromHex("3322"));
+    }
+
+    @Test
     public void addCyclicContent_whenNoContent_shouldSetContentToRecord1() {
         file.addCyclicContent(data1);
         byte[] val = file.getContent(1);

@@ -644,6 +644,23 @@ public final class CalypsoPo extends AbstractMatchingSe {
 
     /**
      * (package-private)<br>
+     * Fill the content of the specified #numRecord of the provided SFI using a binary OR operation
+     * with the provided content.<br>
+     * If EF does not exist, then it is created.<br>
+     * If actual record content is not set or has a size {@code <} content size, then missing data
+     * will be completed by the provided content.
+     *
+     * @param sfi the SFI
+     * @param numRecord the record number (should be {@code >=} 1)
+     * @param content the content (should be not empty)
+     */
+    void fillContent(byte sfi, int numRecord, byte[] content) {
+        ElementaryFile ef = getOrCreateFile(sfi);
+        ef.getData().fillContent(numRecord, content);
+    }
+
+    /**
+     * (package-private)<br>
      * Add cyclic content at record #1 by rolling previously all actual records contents (record #1
      * -> record #2, record #2 -> record #3,...) of the provided SFI.<br>
      * This is useful for cyclic files. Note that records are infinitely shifted.<br>

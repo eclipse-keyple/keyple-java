@@ -217,6 +217,32 @@ public class FileData implements Serializable, Cloneable {
 
     /**
      * (package-private)<br>
+     * Fill the content of the specified #numRecord using a binary OR operation with the provided
+     * content.<br>
+     * If actual record content is not set or has a size {@code <} content size, then missing data
+     * will be completed by the provided content.
+     *
+     * @param numRecord the record number (should be {@code >=} 1)
+     * @param content the content (should be not empty)
+     */
+    void fillContent(int numRecord, byte[] content) {
+        byte[] actualContent = records.get(numRecord);
+        if (actualContent == null) {
+            records.put(numRecord, content);
+        } else if (actualContent.length < content.length) {
+            for (int i = 0; i < actualContent.length; i++) {
+                content[i] |= actualContent[i];
+            }
+            records.put(numRecord, content);
+        } else {
+            for (int i = 0; i < content.length; i++) {
+                actualContent[i] |= content[i];
+            }
+        }
+    }
+
+    /**
+     * (package-private)<br>
      * Add cyclic content at record #1 by rolling previously all actual records contents (record #1
      * -> record #2, record #2 -> record #3,...).<br>
      * This is useful for cyclic files.<br>
