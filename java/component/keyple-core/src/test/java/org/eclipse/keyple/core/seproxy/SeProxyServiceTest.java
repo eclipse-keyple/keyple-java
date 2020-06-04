@@ -97,10 +97,9 @@ public class SeProxyServiceTest {
             throws KeyplePluginNotFoundException, KeyplePluginInstantiationException {
 
         // register plugin1 by its factory
-        proxyService.registerPlugin(factory1);
+        ReaderPlugin testPlugin = proxyService.registerPlugin(factory1);
 
         // results
-        ReaderPlugin testPlugin = proxyService.getPlugin(PLUGIN_NAME_1);
         SortedSet testPlugins = proxyService.getPlugins();
 
         Assert.assertNotNull(testPlugin);

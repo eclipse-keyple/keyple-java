@@ -85,12 +85,12 @@ abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnN
         /**
          * Register AndroidNfc plugin Factory
          */
-        SeProxyService.getInstance().registerPlugin(AndroidNfcPluginFactory())
+        val plugin = SeProxyService.getInstance().registerPlugin(AndroidNfcPluginFactory())
 
         /**
          *  remove the observer if it already exist
          */
-        reader = SeProxyService.getInstance().plugins.first().readers.first() as AndroidNfcReader
+        reader = plugin.readers.first() as AndroidNfcReader
         reader.configFlags(presenceCheckDelay = 100, noPlateformSound = 0, skipNdefCheck = 0)
 
         (reader as ObservableReader).addObserver(this)

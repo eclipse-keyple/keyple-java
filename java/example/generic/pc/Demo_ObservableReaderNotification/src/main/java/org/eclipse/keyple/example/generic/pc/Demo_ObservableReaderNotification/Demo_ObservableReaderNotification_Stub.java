@@ -40,8 +40,8 @@ public class Demo_ObservableReaderNotification_Stub {
         final String READER2_NAME = "Reader2";
 
         // Register Stub plugin in the platform
-        seProxyService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
-        ReaderPlugin stubPlugin = seProxyService.getPlugin(STUB_PLUGIN_NAME);
+        ReaderPlugin stubPlugin =
+                seProxyService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
 
         // Set observers
         logger.info("Set plugin observer.");

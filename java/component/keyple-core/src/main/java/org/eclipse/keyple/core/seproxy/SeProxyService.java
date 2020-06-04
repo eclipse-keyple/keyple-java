@@ -56,22 +56,26 @@ public final class SeProxyService {
      * 
      * @param pluginFactory : plugin factory to instantiate plugin to be added
      * @throws KeyplePluginInstantiationException if instantiation failed
+     * @return ReaderPlugin : registered reader plugin
      */
-    public void registerPlugin(AbstractPluginFactory pluginFactory)
+    public ReaderPlugin registerPlugin(AbstractPluginFactory pluginFactory)
             throws KeyplePluginInstantiationException {
         if (pluginFactory == null) {
             throw new IllegalArgumentException("Factory must not be null");
         }
 
         synchronized (MONITOR) {
-            if (!isRegistered(pluginFactory.getPluginName())) {
+            try {
+                final ReaderPlugin newPlugin = this.getPlugin(pluginFactory.getPluginName());
+                logger.warn("Plugin has already been registered to the platform : {}",
+                        newPlugin.getName());
+                return newPlugin;
+            } catch (KeyplePluginNotFoundException e) {
                 logger.info("Registering a new Plugin to the platform : {}",
                         pluginFactory.getPluginName());
                 ReaderPlugin newPlugin = pluginFactory.getPluginInstance();
                 this.plugins.add(newPlugin);
-            } else {
-                logger.warn("Plugin has already been registered to the platform : {}",
-                        pluginFactory.getPluginName());
+                return newPlugin;
             }
         }
 

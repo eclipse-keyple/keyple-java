@@ -18,7 +18,6 @@ import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
@@ -150,9 +149,8 @@ public class SlaveNodeController {
             SeProxyService seProxyService = SeProxyService.getInstance();
 
             /* Assign PcscPlugin to the SeProxyService */
-            seProxyService.registerPlugin(new StubPluginFactory(STUB_SLAVE));
-
-            ReaderPlugin stubPlugin = seProxyService.getPlugin(STUB_SLAVE);
+            ReaderPlugin stubPlugin =
+                    seProxyService.registerPlugin(new StubPluginFactory(STUB_SLAVE));
 
             ObservablePlugin.PluginObserver observer = new ObservablePlugin.PluginObserver() {
                 @Override
@@ -184,8 +182,6 @@ public class SlaveNodeController {
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (KeypleReaderNotFoundException e) {
-            e.printStackTrace();
-        } catch (KeyplePluginNotFoundException e) {
             e.printStackTrace();
         } catch (KeyplePluginInstantiationException e) {
             e.printStackTrace();

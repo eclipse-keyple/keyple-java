@@ -19,7 +19,6 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
@@ -118,11 +117,8 @@ public class MasterNodeController {
             /*
              * Configure the SAM Resource Manager
              */
-            SeProxyService.getInstance().registerPlugin(new StubPluginFactory(STUB_MASTER));
-
-            /* Get the instance of the Stub plugin */
-            ReaderPlugin samStubPlugin = SeProxyService.getInstance().getPlugin(STUB_MASTER);
-
+            ReaderPlugin samStubPlugin =
+                    SeProxyService.getInstance().registerPlugin(new StubPluginFactory(STUB_MASTER));
 
             /* Plug the SAM stub reader. */
             ((StubPlugin) samStubPlugin).plugStubReader("samReader", true);
@@ -167,8 +163,6 @@ public class MasterNodeController {
 
 
         } catch (KeypleReaderNotFoundException e) {
-            e.printStackTrace();
-        } catch (KeyplePluginNotFoundException e) {
             e.printStackTrace();
         } catch (KeyplePluginInstantiationException e) {
             e.printStackTrace();
