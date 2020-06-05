@@ -116,7 +116,7 @@ public final class PoSelectionRequest extends
         CalypsoPo calypsoPo =
                 new CalypsoPo(seResponse, seSelector.getSeProtocol().getTransmissionMode());
 
-        if (commandBuilders.size() != 0) {
+        if (!commandBuilders.isEmpty()) {
             CalypsoPoUtils.updateCalypsoPo(calypsoPo, commandBuilders, apduResponses);
         }
 
