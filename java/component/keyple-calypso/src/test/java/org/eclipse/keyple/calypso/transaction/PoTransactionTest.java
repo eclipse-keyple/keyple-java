@@ -30,7 +30,6 @@ import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionIlle
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoSessionAuthenticationException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoUnauthorizedKvcException;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
@@ -45,11 +44,9 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-
 
 public class PoTransactionTest {
     // The default KIF values for personalization, loading and debiting
@@ -61,18 +58,135 @@ public class PoTransactionTest {
     final byte DEFAULT_KEY_RECORD_NUMBER_PERSO = (byte) 0x01;
     final byte DEFAULT_KEY_RECORD_NUMBER_LOAD = (byte) 0x02;
     final byte DEFAULT_KEY_RECORD_NUMBER_DEBIT = (byte) 0x03;
+    private ProxyReader mockPoReader;
     private SeReader poReader;
     private PoTransaction poTransaction;
     private SamResource samResource;
 
     private final Map<String, String> poCommandsTestSet = new HashMap<String, String>();
     private final Map<String, String> samCommandsTestSet = new HashMap<String, String>();
-    final String FCI_REV10 =
+    private static final String FCI_REV10 =
             "6F228408315449432E494341A516BF0C13C708   0000000011223344 5307060A01032003119000";
-    final String FCI_REV24 =
+    private static final String FCI_REV24 =
             "6F2A8410A0000004040125090101000000000000A516BF0C13C708 0000000011223344 53070A2E11420001019000";
-    final String FCI_REV31 =
+    private static final String FCI_REV31 =
             "6F238409315449432E49434131A516BF0C13C708 0000000011223344 53070A3C23121410019000";
+
+    private static final byte FILE7 = (byte) 0x07;
+    private static final byte FILE8 = (byte) 0x08;
+    private static final byte FILE9 = (byte) 0x09;
+    private static final byte FILE10 = (byte) 0x10;
+
+    private static final String SW1SW2_OK = "9000";
+    private static final String SAM_CHALLENGE = "C1C2C3C4";
+    private static final String PO_DIVERSIFIER = "0000000011223344";
+    private static final String SAM_SIGNATURE = "12345678";
+    private static final String PO_SIGNATURE = "9ABCDEF0";
+
+    private static final String FILE7_REC1_29B =
+            "7111111111111111111111111111111111111111111111111111111111";
+    private static final String FILE7_REC2_29B =
+            "7222222222222222222222222222222222222222222222222222222222";
+    private static final String FILE7_REC3_29B =
+            "7333333333333333333333333333333333333333333333333333333333";
+    private static final String FILE7_REC4_29B =
+            "7444444444444444444444444444444444444444444444444444444444";
+    private static final String FILE8_REC1_29B =
+            "8111111111111111111111111111111111111111111111111111111111";
+    private static final String FILE8_REC1_5B = "8122334455";
+    private static final String FILE8_REC1_4B = "84332211";
+
+    private static final String FILE10_REC1_COUNTER =
+            "00112200000000000000000000000000000000000000000000000000000000000000";
+    private static final String FILE11_REC1_COUNTER =
+            "00221100000000000000000000000000000000000000000000000000000000000000";
+
+    private static final byte[] FILE7_REC1_29B_BYTES = ByteArrayUtil.fromHex(FILE7_REC1_29B);
+    private static final byte[] FILE7_REC2_29B_BYTES = ByteArrayUtil.fromHex(FILE7_REC2_29B);
+    private static final byte[] FILE7_REC3_29B_BYTES = ByteArrayUtil.fromHex(FILE7_REC3_29B);
+    private static final byte[] FILE7_REC4_29B_BYTES = ByteArrayUtil.fromHex(FILE7_REC4_29B);
+    private static final byte[] FILE8_REC1_29B_BYTES = ByteArrayUtil.fromHex(FILE8_REC1_29B);
+    private static final byte[] FILE8_REC1_5B_BYTES = ByteArrayUtil.fromHex(FILE8_REC1_5B);
+    private static final byte[] FILE8_REC1_4B_BYTES = ByteArrayUtil.fromHex(FILE8_REC1_4B);
+
+    private static final String SW1SW2_OK_RSP = SW1SW2_OK;
+    private static final String PO_OPEN_SECURE_SESSION_SFI7_REC1_CMD =
+            "008A0B3904" + SAM_CHALLENGE + "00";
+    private static final String PO_OPEN_SECURE_SESSION_SFI7_REC1_RSP =
+            "030490980030791D" + FILE7_REC1_29B + SW1SW2_OK;
+    private static final String PO_OPEN_SECURE_SESSION_SFI7_REC1_NOT_RATIFIED_RSP =
+            "030490980130791D" + FILE7_REC1_29B + SW1SW2_OK;
+    private static final String PO_OPEN_SECURE_SESSION_CMD = "008A030104" + SAM_CHALLENGE + "00";
+    private static final String PO_OPEN_SECURE_SESSION_RSP = "0304909800307900" + SW1SW2_OK;
+    private static final String PO_OPEN_SECURE_SESSION_KVC_78_CMD = "0304909800307800" + SW1SW2_OK;
+    private static final String PO_OPEN_SECURE_SESSION_SFI7_REC1_2_4_CMD = "948A8B3804C1C2C3C400";
+    private static final String PO_OPEN_SECURE_SESSION_SFI7_REC1_2_4_RSP =
+            "79030D307124B928480805CBABAE30001240800000000000000000000000000000009000";
+    private static final String PO_CLOSE_SECURE_SESSION_CMD = "008E800004" + SAM_SIGNATURE + "00";
+    private static final String PO_CLOSE_SECURE_SESSION_NOT_RATIFIED_CMD =
+            "008E000004" + SAM_SIGNATURE + "00";
+    private static final String PO_CLOSE_SECURE_SESSION_RSP = PO_SIGNATURE + SW1SW2_OK;
+    private static final String PO_CLOSE_SECURE_SESSION_FAILED_RSP = "6988";
+    private static final String PO_ABORT_SECURE_SESSION_CMD = "008E000000";
+    private static final String PO_RATIFICATION_CMD = "00B2000000";
+    private static final String PO_RATIFICATION_RSP = "6B00";
+
+    private static final String PO_READ_REC_SFI7_REC1_CMD = "00B2013C00";
+    private static final String PO_READ_REC_SFI7_REC1_RSP = FILE7_REC1_29B + SW1SW2_OK;
+    private static final String PO_READ_REC_SFI8_REC1_CMD = "00B2014400";
+    private static final String PO_READ_REC_SFI8_REC1_RSP = FILE8_REC1_29B + SW1SW2_OK;
+    private static final String PO_READ_REC_SFI7_REC3_4_CMD = "00B2033D3E";
+    private static final String PO_READ_REC_SFI7_REC3_4_RSP =
+            "031D" + FILE7_REC3_29B + "041D" + FILE7_REC4_29B + SW1SW2_OK;
+    private static final String PO_READ_REC_SFI10_REC1_CMD = "00B2018400";
+    private static final String PO_READ_REC_SFI10_REC1_RSP = FILE10_REC1_COUNTER + SW1SW2_OK;
+    private static final String PO_READ_REC_SFI11_REC1_CMD = "00B2018C00";
+    private static final String PO_READ_REC_SFI11_REC1_RSP = FILE11_REC1_COUNTER + SW1SW2_OK;
+    private static final String PO_UPDATE_REC_SFI7_REC1_4B_CMD = "00DC013C0400112233";
+    private static final String PO_UPDATE_REC_SFI8_REC1_29B_CMD = "00DC01441D" + FILE8_REC1_29B;
+    private static final String PO_UPDATE_REC_SFI8_REC1_5B_CMD = "00DC014405" + FILE8_REC1_5B;
+    private static final String PO_UPDATE_REC_SFI8_REC1_4B_CMD = "00DC014404" + FILE8_REC1_4B;
+    private static final String PO_UPDATE_REC_SFI8_REC1_29B_2_4_CMD =
+            "94DC01441D8111111111111111111111111111111111111111111111111111111111";
+    private static final String PO_WRITE_REC_SFI8_REC1_4B_CMD = "00D201440444556677";
+    private static final String PO_APPEND_REC_SFI9_REC1_4B_CMD = "00E20048048899AABB";
+    private static final String PO_DECREASE_SFI10_REC1_100U_CMD = "003001800300006400";
+    private static final String PO_DECREASE_SFI10_REC1_100U_RSP = "0010BE9000";
+    private static final String PO_DECREASE_SFI11_REC1_100U_CMD = "003201880300006400";
+    private static final String PO_DECREASE_SFI11_REC1_100U_RSP = "0022759000";
+
+    private static final String SAM_SELECT_DIVERSIFIER_CMD = "8014000008" + PO_DIVERSIFIER;
+    private static final String SAM_GET_CHALLENGE_CMD = "8084000004";
+    private static final String SAM_GET_CHALLENGE_RSP = SAM_CHALLENGE + SW1SW2_OK;
+    private static final String SAM_DIGEST_INIT_OPEN_SECURE_SESSION_SFI7_REC1_CMD =
+            "808A00FF273079030490980030791D" + FILE7_REC1_29B;
+    private static final String SAM_DIGEST_INIT_OPEN_SECURE_SESSION_CMD =
+            "808A00FF0A30790304909800307900";
+    private static final String SAM_DIGEST_UPDATE_READ_REC_SFI7_REC1_CMD = "808C00000500B2013C00";
+    private static final String SAM_DIGEST_UPDATE_READ_REC_SFI7_REC1_RSP_CMD =
+            "808C00001F\" + FILE7_REC1_29B+ \"9000";
+    private static final String SAM_DIGEST_UPDATE_READ_REC_SFI8_REC1_RSP_CMD =
+            "808C00001F" + FILE8_REC1_29B + "9000";
+    private static final String SAM_DIGEST_UPDATE_READ_REC_SFI7_REC1_RSP =
+            "808C00001F" + FILE7_REC1_29B + SW1SW2_OK;
+    private static final String SAM_DIGEST_UPDATE_READ_REC_SFI8_REC1_CMD = "808C00000500B2014400";
+    private static final String SAM_DIGEST_UPDATE_READ_REC_SFI10_REC1_CMD = "808C00000500B2018C00";
+    private static final String SAM_DIGEST_UPDATE_READ_REC_SFI10_REC1_RSP_CMD =
+            "808C000024001122000000000000000000000000000000000000000000000000000000000000009000";
+    private static final String SAM_DIGEST_UPDATE_READ_REC_SFI11_REC1_CMD = "808C00000500B2018C00";
+    private static final String SAM_DIGEST_UPDATE_READ_REC_SFI11_REC1_RSP_CMD =
+            "808C000024002211000000000000000000000000000000000000000000000000000000000000009000";
+    private static final String SAM_DIGEST_UPDATE_RSP_OK_CMD = "808C0000029000";
+    private static final String SAM_DIGEST_UPDATE_UPDATE_REC_SFI8_REC1_29B_CMD =
+            "808C00002200DC01441D" + FILE8_REC1_29B;
+    private static final String SAM_DIGEST_UPDATE_UPDATE_REC_SFI8_REC1_5B_CMD =
+            "808C00000A00DC0144058122334455";
+    private static final String SAM_DIGEST_UPDATE_UPDATE_REC_SFI8_REC1_4B_CMD =
+            "808C00000900DC014404" + FILE8_REC1_4B;
+    private static final String SAM_DIGEST_CLOSE_CMD = "808E000004";
+    private static final String SAM_DIGEST_CLOSE_RSP = SAM_SIGNATURE + SW1SW2_OK;
+    private static final String SAM_DIGEST_AUTHENTICATE = "8082000004" + PO_SIGNATURE;
+    private static final String SAM_DIGEST_AUTHENTICATE_FAILED = "6988";
 
     @Before
     public void setUp() throws Exception {
@@ -93,20 +207,7 @@ public class PoTransactionTest {
 
         // PoTransaction without PoSecuritySettings
         poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
-        // Select Diversifier
-        samCommandsTestSet.put("80140000080000000011223344", "9000");
-        // Get Challenge
-        samCommandsTestSet.put("8084000004", "C1C2C3C49000");
 
-        // Open Secure Session V3.1 + read sfi 7 / rec 1
-        poCommandsTestSet.put("008A0B3904C1C2C3C400",
-                "030490980030791D71111111111111111111111111111111111111111111111111111111119000");
-        // Read Recordsfi 8 / rec 1
-        poCommandsTestSet.put("00B2014400",
-                "CCBBAA99887766554433221100FFEEDDCCBBAA998877665544332211009000");
-
-        poTransaction.prepareReadRecordFile((byte) 0x07, 1);
-        poTransaction.prepareReadRecordFile((byte) 0x08, 1);
         // should raise an exception
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
     }
@@ -114,7 +215,7 @@ public class PoTransactionTest {
     /* Standard opening with two records read */
     @Test(expected = CalypsoPoTransactionIllegalStateException.class)
     public void testProcessOpening_read_reopen() throws CalypsoPoTransactionException,
-            CalypsoPoCommandException, CalypsoSamCommandException {
+            CalypsoPoCommandException, CalypsoSamCommandException, KeypleReaderIOException {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         PoSecuritySettings poSecuritySettings =
                 new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)//
@@ -125,28 +226,22 @@ public class PoTransactionTest {
 
         poTransaction =
                 new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
-        // Select Diversifier
-        samCommandsTestSet.put("80140000080000000011223344", "9000");
-        // Get Challenge
-        samCommandsTestSet.put("8084000004", "C1C2C3C49000");
+        samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
 
-        // Open Secure Session V3.1 + read sfi 7 / rec 1
-        poCommandsTestSet.put("008A0B3904C1C2C3C400",
-                "030490980030791D71111111111111111111111111111111111111111111111111111111119000");
-        // Read Recordsfi 8 / rec 1
-        poCommandsTestSet.put("00B2014400",
-                "CCBBAA99887766554433221100FFEEDDCCBBAA998877665544332211009000");
+        poCommandsTestSet.put(PO_OPEN_SECURE_SESSION_SFI7_REC1_CMD,
+                PO_OPEN_SECURE_SESSION_SFI7_REC1_RSP);
+        poCommandsTestSet.put(PO_READ_REC_SFI8_REC1_CMD, PO_READ_REC_SFI8_REC1_RSP);
 
-        poTransaction.prepareReadRecordFile((byte) 0x07, 1);
-        poTransaction.prepareReadRecordFile((byte) 0x08, 1);
+        poTransaction.prepareReadRecordFile(FILE7, 1);
+        poTransaction.prepareReadRecordFile(FILE8, 1);
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
-        Assert.assertArrayEquals(
-                ByteArrayUtil.fromHex("7111111111111111111111111111111111111111111111111111111111"),
-                calypsoPoRev31.getFileBySfi((byte) 0x07).getData().getContent());
-        Assert.assertArrayEquals(
-                ByteArrayUtil.fromHex("CCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100"),
-                calypsoPoRev31.getFileBySfi((byte) 0x08).getData().getContent());
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex(FILE7_REC1_29B),
+                calypsoPoRev31.getFileBySfi(FILE7).getData().getContent());
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex(FILE8_REC1_29B),
+                calypsoPoRev31.getFileBySfi(FILE8).getData().getContent());
         Assert.assertTrue(calypsoPoRev31.isDfRatified());
+
         // expected exception: session is already open
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
     }
@@ -165,27 +260,23 @@ public class PoTransactionTest {
 
         poTransaction =
                 new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
-        // Select Diversifier
-        samCommandsTestSet.put("80140000080000000011223344", "9000");
-        // Get Challenge
-        samCommandsTestSet.put("8084000004", "C1C2C3C49000");
+        samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
 
-        // Open Secure Session V3.1 + read sfi 7 / rec 1 / DF not ratified (01)
-        poCommandsTestSet.put("008A0B3904C1C2C3C400",
-                "030490980130791D71111111111111111111111111111111111111111111111111111111119000");
-        // Read Recordsfi 8 / rec 1
-        poCommandsTestSet.put("00B2014400",
-                "CCBBAA99887766554433221100FFEEDDCCBBAA998877665544332211009000");
+        // addCommandPo(OPEN_SECURE_SESSION_SFI7_REC1, SAM_CHALLENGE_4, OPEN_SECURE_SESSION_RESP +
+        // String.format("%02X", FILE_7_REC_1.length() / 2) + FILE_7_REC_1, SW1SW2_OK);
+        //
+        poCommandsTestSet.put(PO_OPEN_SECURE_SESSION_SFI7_REC1_CMD,
+                PO_OPEN_SECURE_SESSION_SFI7_REC1_NOT_RATIFIED_RSP);
+        poCommandsTestSet.put(PO_READ_REC_SFI8_REC1_CMD, PO_READ_REC_SFI8_REC1_RSP);
 
-        poTransaction.prepareReadRecordFile((byte) 0x07, 1);
-        poTransaction.prepareReadRecordFile((byte) 0x08, 1);
+        poTransaction.prepareReadRecordFile(FILE7, 1);
+        poTransaction.prepareReadRecordFile(FILE8, 1);
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
-        Assert.assertArrayEquals(
-                ByteArrayUtil.fromHex("7111111111111111111111111111111111111111111111111111111111"),
-                calypsoPoRev31.getFileBySfi((byte) 0x07).getData().getContent());
-        Assert.assertArrayEquals(
-                ByteArrayUtil.fromHex("CCBBAA99887766554433221100FFEEDDCCBBAA99887766554433221100"),
-                calypsoPoRev31.getFileBySfi((byte) 0x08).getData().getContent());
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex(FILE7_REC1_29B),
+                calypsoPoRev31.getFileBySfi(FILE7).getData().getContent());
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex(FILE8_REC1_29B),
+                calypsoPoRev31.getFileBySfi(FILE8).getData().getContent());
         Assert.assertFalse(calypsoPoRev31.isDfRatified());
     }
 
@@ -202,25 +293,17 @@ public class PoTransactionTest {
                         .build();
         poTransaction =
                 new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
-        // Select Diversifier
-        samCommandsTestSet.put("80140000080000000011223344", "9000");
-        // Get Challenge
-        samCommandsTestSet.put("8084000004", "C1C2C3C49000");
+        samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
+        poCommandsTestSet.put(PO_OPEN_SECURE_SESSION_CMD, PO_OPEN_SECURE_SESSION_RSP);
+        poCommandsTestSet.put(PO_READ_REC_SFI7_REC3_4_CMD, PO_READ_REC_SFI7_REC3_4_RSP);
 
-        // Open Secure Session V3.1 + read sfi 7 / rec 1
-        poCommandsTestSet.put("008A030104C1C2C3C400", "03049098003079009000");
-        // Read Recordsfi 7 / rec 3 and 4
-        poCommandsTestSet.put("00B2033D3E",
-                "031D7333333333333333333333333333333333333333333333333333333333041D74444444444444444444444444444444444444444444444444444444449000");
-
-        poTransaction.prepareReadRecordFile((byte) 0x07, 3, 2, 29);
+        poTransaction.prepareReadRecordFile(FILE7, 3, 2, 29);
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
-        Assert.assertArrayEquals(
-                ByteArrayUtil.fromHex("7333333333333333333333333333333333333333333333333333333333"),
-                calypsoPoRev31.getFileBySfi((byte) 0x07).getData().getContent(3));
-        Assert.assertArrayEquals(
-                ByteArrayUtil.fromHex("7444444444444444444444444444444444444444444444444444444444"),
-                calypsoPoRev31.getFileBySfi((byte) 0x07).getData().getContent(4));
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex(FILE7_REC3_29B),
+                calypsoPoRev31.getFileBySfi(FILE7).getData().getContent(3));
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex(FILE7_REC4_29B),
+                calypsoPoRev31.getFileBySfi(FILE7).getData().getContent(4));
     }
 
     /* Standard opening but KVC is not present authorized list */
@@ -241,16 +324,13 @@ public class PoTransactionTest {
 
         poTransaction =
                 new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
-        // Select Diversifier
-        samCommandsTestSet.put("80140000080000000011223344", "9000");
-        // Get Challenge
-        samCommandsTestSet.put("8084000004", "C1C2C3C49000");
+        samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
 
-        // Open Secure Session V3.1 + read sfi 7 / rec 1
-        poCommandsTestSet.put("008A0B3904C1C2C3C400",
-                "030490980030781D71111111111111111111111111111111111111111111111111111111119000");
+        poCommandsTestSet.put(PO_OPEN_SECURE_SESSION_SFI7_REC1_CMD,
+                PO_OPEN_SECURE_SESSION_KVC_78_CMD);
 
-        poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+        poTransaction.prepareReadRecordFile(FILE7, 1);
         // an exception is expected
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
     }
@@ -271,38 +351,29 @@ public class PoTransactionTest {
                         .build();
         poTransaction =
                 new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
-        // Select Diversifier
-        samCommandsTestSet.put("80140000080000000011223344", "9000");
-        // Get Challenge
-        samCommandsTestSet.put("8084000004", "C1C2C3C49000");
+        samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
 
-        // Open Secure Session V3.1 + read sfi 7 / rec 1
-        poCommandsTestSet.put("008A0B3904C1C2C3C400",
-                "030490980030791D71111111111111111111111111111111111111111111111111111111119000");
-        // Update Record SFI 7 rec 1 29 bytes
-        poCommandsTestSet.put(
-                "00DC01441D8111111111111111111111111111111111111111111111111111111111", "9000");
-        // Update Record SFI 8 rec 1 10 bytes
-        poCommandsTestSet.put("00DC01440433221100", "9000");
-        // Reader record SFI 7 1 rec
-        poCommandsTestSet.put("00B2013C00",
-                "71111111111111111111111111111111111111111111111111111111119000");
+        poCommandsTestSet.put(PO_OPEN_SECURE_SESSION_SFI7_REC1_CMD,
+                PO_OPEN_SECURE_SESSION_SFI7_REC1_RSP);
+        poCommandsTestSet.put(PO_UPDATE_REC_SFI8_REC1_29B_CMD, SW1SW2_OK_RSP);
+        poCommandsTestSet.put(PO_UPDATE_REC_SFI8_REC1_4B_CMD, SW1SW2_OK_RSP);
+        poCommandsTestSet.put(PO_READ_REC_SFI7_REC1_CMD, PO_READ_REC_SFI7_REC1_RSP);
 
         // add additional non modifying commands (should not affect the session buffer)
         for (int i = 0; i < 4; i++) {
-            poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+            poTransaction.prepareReadRecordFile(FILE7, 1);
         }
         // 12 x update (29 b) = 12 x (29 + 6) = 420 consumed in the session buffer
         for (int i = 0; i < 12; i++) {
-            poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil
-                    .fromHex("8111111111111111111111111111111111111111111111111111111111"));
+            poTransaction.prepareUpdateRecord(FILE8, (byte) 1, FILE8_REC1_29B_BYTES);
         }
         // insert additional non modifying commands (should not affect the session buffer)
         for (int i = 0; i < 4; i++) {
-            poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+            poTransaction.prepareReadRecordFile(FILE7, 1);
         }
         // 4 additional bytes (10 b consumed)
-        poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil.fromHex("33221100"));
+        poTransaction.prepareUpdateRecord(FILE8, (byte) 1, FILE8_REC1_4B_BYTES);
         // ATOMIC transaction should be ok (430 / 430 bytes consumed)
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
 
@@ -326,30 +397,14 @@ public class PoTransactionTest {
                         .build();
         poTransaction =
                 new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
-        // Select Diversifier
-        samCommandsTestSet.put("80140000080000000011223344", "9000");
-        // Get Challenge
-        samCommandsTestSet.put("8084000004", "C1C2C3C49000");
 
-        // Open Secure Session V3.1 + read sfi 7 / rec 1
-        poCommandsTestSet.put("008A0B3904C1C2C3C400",
-                "030490980030791D71111111111111111111111111111111111111111111111111111111119000");
-        // Update Record SFI 8 rec 1 29 bytes
-        poCommandsTestSet.put(
-                "00DC01441D8111111111111111111111111111111111111111111111111111111111", "9000");
-        // Update Record SFI 8 rec 1 10 bytes
-        poCommandsTestSet.put("00DC0144054433221100", "9000");
-
-
-        poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+        poTransaction.prepareReadRecordFile(FILE7, 1);
         // 12 x update (29 b) = 12 x (29 + 6) = 420 consumed in the session buffer
         for (int i = 0; i < 12; i++) {
-            poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil
-                    .fromHex("8111111111111111111111111111111111111111111111111111111111"));
+            poTransaction.prepareUpdateRecord(FILE8, (byte) 1, FILE8_REC1_29B_BYTES);
         }
         // 5 additional bytes (11 b consumed)
-        poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1,
-                ByteArrayUtil.fromHex("4433221100"));
+        poTransaction.prepareUpdateRecord(FILE8, (byte) 1, FILE8_REC1_5B_BYTES);
 
         // expected exception: session buffer overflow
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
@@ -363,7 +418,6 @@ public class PoTransactionTest {
     public void testProcessOpening_session_buffer_limit_operations_counter()
             throws CalypsoPoCommandException, CalypsoSamCommandException,
             CalypsoPoTransactionException {
-        // Select Diversifier
         CalypsoPo calypsoPoRev24 = createCalypsoPo(FCI_REV24);
         PoSecuritySettings poSecuritySettings =
                 new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)//
@@ -373,23 +427,17 @@ public class PoTransactionTest {
                         .build();
         poTransaction =
                 new PoTransaction(new PoResource(poReader, calypsoPoRev24), poSecuritySettings);
-        // Select Diversifier
-        samCommandsTestSet.put("80140000080000000011223344", "9000");
-        // Get Challenge
-        samCommandsTestSet.put("8084000004", "C1C2C3C49000");
+        samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
 
-        // Open Secure Session V2.4 + read sfi 7 / rec 1
-        poCommandsTestSet.put("948A8B3804C1C2C3C400",
-                "79030D307124B928480805CBABAE30001240800000000000000000000000000000009000");
-        // Update Record SFI 8 rec 1 29 bytes
-        poCommandsTestSet.put(
-                "94DC01441D8111111111111111111111111111111111111111111111111111111111", "9000");
+        poCommandsTestSet.put(PO_OPEN_SECURE_SESSION_SFI7_REC1_2_4_CMD,
+                PO_OPEN_SECURE_SESSION_SFI7_REC1_2_4_RSP);
+        poCommandsTestSet.put(PO_UPDATE_REC_SFI8_REC1_29B_2_4_CMD, SW1SW2_OK_RSP);
 
-        poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+        poTransaction.prepareReadRecordFile(FILE7, 1);
         // 6 x update (29 b) = 6 operations consumed in the session buffer
         for (int i = 0; i < 6; i++) {
-            poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil
-                    .fromHex("8111111111111111111111111111111111111111111111111111111111"));
+            poTransaction.prepareUpdateRecord(FILE8, (byte) 1, FILE8_REC1_29B_BYTES);
         }
         // ATOMIC transaction should be ok (6 / 6 operations consumed)
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
@@ -405,7 +453,6 @@ public class PoTransactionTest {
     public void testProcessOpening_session_buffer_overflow_operations_counter()
             throws CalypsoPoCommandException, CalypsoSamCommandException,
             CalypsoPoTransactionException {
-        // Select Diversifier
         CalypsoPo calypsoPoRev24 = createCalypsoPo(FCI_REV24);
         PoSecuritySettings poSecuritySettings =
                 new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)//
@@ -415,23 +462,11 @@ public class PoTransactionTest {
                         .build();
         poTransaction =
                 new PoTransaction(new PoResource(poReader, calypsoPoRev24), poSecuritySettings);
-        // Select Diversifier
-        samCommandsTestSet.put("80140000080000000011223344", "9000");
-        // Get Challenge
-        samCommandsTestSet.put("8084000004", "C1C2C3C49000");
 
-        // Open Secure Session V2.4 + read sfi 7 / rec 1
-        poCommandsTestSet.put("948A8B3804C1C2C3C400",
-                "79030D307124B928480805CBABAE30001240800000000000000000000000000000009000");
-        // Update Record SFI 8 rec 1 29 bytes
-        poCommandsTestSet.put(
-                "94DC01441D8111111111111111111111111111111111111111111111111111111111", "9000");
-
-        poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+        poTransaction.prepareReadRecordFile(FILE7, 1);
         // 7 x update (29 b) = 7 operations consumed in the session buffer
         for (int i = 0; i < 7; i++) {
-            poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil
-                    .fromHex("8111111111111111111111111111111111111111111111111111111111"));
+            poTransaction.prepareUpdateRecord(FILE8, (byte) 1, FILE8_REC1_29B_BYTES);
         }
         // ATOMIC transaction should be ko (7 / 6 operations consumed)
         // expected exception: session buffer overflow
@@ -458,48 +493,28 @@ public class PoTransactionTest {
 
         poTransaction =
                 new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
-        // Select Diversifier
-        samCommandsTestSet.put("80140000080000000011223344", "9000");
-        // Get Challenge
-        samCommandsTestSet.put("8084000004", "C1C2C3C49000");
-        // Digest Init
-        samCommandsTestSet.put(
-                "808A00FF273079030490980030791D7111111111111111111111111111111111111111111111111111111111",
-                "9000");
-        // Digest Update
-        samCommandsTestSet.put(
-                "808C00002200DC01441D8111111111111111111111111111111111111111111111111111111111",
-                "9000");
-        // Digest Update
-        samCommandsTestSet.put("808C0000029000", "9000");
-        // Digest Close
-        samCommandsTestSet.put("808E000004", "112233449000");
-        // Digest Authenticate
-        samCommandsTestSet.put("808200000455667788", "9000");
+        samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_INIT_OPEN_SECURE_SESSION_SFI7_REC1_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_UPDATE_REC_SFI8_REC1_29B_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_RSP_OK_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_CLOSE_CMD, SAM_DIGEST_CLOSE_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_AUTHENTICATE, SW1SW2_OK_RSP);
 
-        // Open Secure Session V3.1 + read sfi 7 / rec 1
-        poCommandsTestSet.put("008A0B3904C1C2C3C400",
-                "030490980030791D71111111111111111111111111111111111111111111111111111111119000");
-        // Open Secure Session V3.1
-        poCommandsTestSet.put("008A030104C1C2C3C400", "03049098003079009000");
-        // Update Record SFI 8 rec 1 29 bytes
-        poCommandsTestSet.put(
-                "00DC01441D8111111111111111111111111111111111111111111111111111111111", "9000");
-        // Update Record SFI 8 rec 1 10 bytes
-        poCommandsTestSet.put("00DC0144054433221100", "9000");
-        // Close Secure Session
-        poCommandsTestSet.put("008E8000041122334400", "556677889000");
+        poCommandsTestSet.put(PO_OPEN_SECURE_SESSION_SFI7_REC1_CMD,
+                PO_OPEN_SECURE_SESSION_SFI7_REC1_RSP);
+        poCommandsTestSet.put(PO_OPEN_SECURE_SESSION_CMD, PO_OPEN_SECURE_SESSION_RSP);
+        poCommandsTestSet.put(PO_UPDATE_REC_SFI8_REC1_29B_CMD, SW1SW2_OK_RSP);
+        poCommandsTestSet.put(PO_UPDATE_REC_SFI8_REC1_5B_CMD, SW1SW2_OK_RSP);
+        poCommandsTestSet.put(PO_CLOSE_SECURE_SESSION_CMD, PO_CLOSE_SECURE_SESSION_RSP);
 
-
-        poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+        poTransaction.prepareReadRecordFile(FILE7, 1);
         // 12 x update (29 b) = 12 x (29 + 6) = 420 consumed in the session buffer
         for (int i = 0; i < 12; i++) {
-            poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil
-                    .fromHex("8111111111111111111111111111111111111111111111111111111111"));
+            poTransaction.prepareUpdateRecord(FILE8, (byte) 1, FILE8_REC1_29B_BYTES);
         }
         // 5 additional bytes (11 b consumed)
-        poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1,
-                ByteArrayUtil.fromHex("4433221100"));
+        poTransaction.prepareUpdateRecord(FILE8, (byte) 1, FILE8_REC1_5B_BYTES);
         // ATOMIC transaction should be ok (430 / 431 bytes consumed)
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
 
@@ -513,33 +528,22 @@ public class PoTransactionTest {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
 
-        // Read Recordsfi 8 / rec 1
-        poCommandsTestSet.put("00B2014400",
-                "81111111111111111111111111111111111111111111111111111111119000");
-        // Read Recordsfi 7 / rec 1
-        poCommandsTestSet.put("00B2013C00",
-                "71111111111111111111111111111111111111111111111111111111119000");
-        // Read Recordsfi 7 / rec 3 and 4
-        poCommandsTestSet.put("00B202453E",
-                "031D" + "7333333333333333333333333333333333333333333333333333333333" + "041D"
-                        + "7444444444444444444444444444444444444444444444444444444444" + "9000");
+        poCommandsTestSet.put(PO_READ_REC_SFI7_REC1_CMD, PO_READ_REC_SFI7_REC1_RSP);
+        poCommandsTestSet.put(PO_READ_REC_SFI8_REC1_CMD, PO_READ_REC_SFI8_REC1_RSP);
+        poCommandsTestSet.put(PO_READ_REC_SFI7_REC3_4_CMD, PO_READ_REC_SFI7_REC3_4_RSP);
 
-        poTransaction.prepareReadRecordFile((byte) 0x07, 1);
-        poTransaction.prepareReadRecordFile((byte) 0x08, 1);
-        poTransaction.prepareReadRecordFile((byte) 0x08, 2, 2, 29);
+        poTransaction.prepareReadRecordFile(FILE7, 1);
+        poTransaction.prepareReadRecordFile(FILE8, 1);
+        poTransaction.prepareReadRecordFile(FILE7, 3, 2, 29);
         poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
-        Assert.assertArrayEquals(
-                ByteArrayUtil.fromHex("8111111111111111111111111111111111111111111111111111111111"),
-                calypsoPoRev31.getFileBySfi((byte) 0x08).getData().getContent(1));
-        Assert.assertArrayEquals(
-                ByteArrayUtil.fromHex("7111111111111111111111111111111111111111111111111111111111"),
-                calypsoPoRev31.getFileBySfi((byte) 0x07).getData().getContent(1));
-        Assert.assertArrayEquals(
-                ByteArrayUtil.fromHex("7333333333333333333333333333333333333333333333333333333333"),
-                calypsoPoRev31.getFileBySfi((byte) 0x08).getData().getContent(3));
-        Assert.assertArrayEquals(
-                ByteArrayUtil.fromHex("7444444444444444444444444444444444444444444444444444444444"),
-                calypsoPoRev31.getFileBySfi((byte) 0x08).getData().getContent(4));
+        Assert.assertArrayEquals(FILE8_REC1_29B_BYTES,
+                calypsoPoRev31.getFileBySfi(FILE8).getData().getContent(1));
+        Assert.assertArrayEquals(FILE7_REC1_29B_BYTES,
+                calypsoPoRev31.getFileBySfi(FILE7).getData().getContent(1));
+        Assert.assertArrayEquals(FILE7_REC3_29B_BYTES,
+                calypsoPoRev31.getFileBySfi(FILE7).getData().getContent(3));
+        Assert.assertArrayEquals(FILE7_REC4_29B_BYTES,
+                calypsoPoRev31.getFileBySfi(FILE7).getData().getContent(4));
     }
 
     /* standard process Po commands: session open before */
@@ -559,21 +563,15 @@ public class PoTransactionTest {
         poTransaction =
                 new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
 
-        // Select Diversifier
-        samCommandsTestSet.put("80140000080000000011223344", "9000");
-        // Get Challenge
-        samCommandsTestSet.put("8084000004", "C1C2C3C49000");
+        samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
 
-        // Open Secure Session V3.1 + read sfi 7 / rec 1
-        poCommandsTestSet.put("008A0B3904C1C2C3C400",
-                "030490980030791D71111111111111111111111111111111111111111111111111111111119000");
-        // Read Recordsfi 8 / rec 1
-        poCommandsTestSet.put("00B2014400",
-                "81111111111111111111111111111111111111111111111111111111119000");
-        poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+        poCommandsTestSet.put(PO_OPEN_SECURE_SESSION_SFI7_REC1_CMD,
+                PO_OPEN_SECURE_SESSION_SFI7_REC1_RSP);
+        poTransaction.prepareReadRecordFile(FILE7, 1);
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
 
-        poTransaction.prepareReadRecordFile((byte) 0x08, 1);
+        poTransaction.prepareReadRecordFile(FILE8, 1);
         // PoTransaction while a session is open
         // expected exception: a session is open
         poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
@@ -587,10 +585,7 @@ public class PoTransactionTest {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
 
-        // Read Recordsfi 8 / rec 1
-        poCommandsTestSet.put("00B2014400",
-                "81111111111111111111111111111111111111111111111111111111119000");
-        poTransaction.prepareReadRecordFile((byte) 0x08, 1);
+        poTransaction.prepareReadRecordFile(FILE8, 1);
         // expected exception: no session is open
         poTransaction.processPoCommandsInSession();
     }
@@ -610,29 +605,22 @@ public class PoTransactionTest {
         poTransaction =
                 new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
 
-        // Select Diversifier
-        samCommandsTestSet.put("80140000080000000011223344", "9000");
-        // Get Challenge
-        samCommandsTestSet.put("8084000004", "C1C2C3C49000");
+        samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
 
-        // Open Secure Session V3.1 + read sfi 7 / rec 1
-        poCommandsTestSet.put("008A0B3904C1C2C3C400",
-                "030490980030791D71111111111111111111111111111111111111111111111111111111119000");
-        // Read Recordsfi 8 / rec 1
-        poCommandsTestSet.put("00B2014400",
-                "81111111111111111111111111111111111111111111111111111111119000");
-        poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+        poCommandsTestSet.put(PO_OPEN_SECURE_SESSION_SFI7_REC1_CMD,
+                PO_OPEN_SECURE_SESSION_SFI7_REC1_RSP);
+        poCommandsTestSet.put(PO_READ_REC_SFI8_REC1_CMD, PO_READ_REC_SFI8_REC1_RSP);
+        poTransaction.prepareReadRecordFile(FILE7, 1);
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
 
-        poTransaction.prepareReadRecordFile((byte) 0x08, 1);
+        poTransaction.prepareReadRecordFile(FILE8, 1);
         // PoTransaction after a session is open
         poTransaction.processPoCommandsInSession();
-        Assert.assertArrayEquals(
-                ByteArrayUtil.fromHex("7111111111111111111111111111111111111111111111111111111111"),
-                calypsoPoRev31.getFileBySfi((byte) 0x07).getData().getContent(1));
-        Assert.assertArrayEquals(
-                ByteArrayUtil.fromHex("8111111111111111111111111111111111111111111111111111111111"),
-                calypsoPoRev31.getFileBySfi((byte) 0x08).getData().getContent(1));
+        Assert.assertArrayEquals(FILE7_REC1_29B_BYTES,
+                calypsoPoRev31.getFileBySfi(FILE7).getData().getContent(1));
+        Assert.assertArrayEquals(FILE8_REC1_29B_BYTES,
+                calypsoPoRev31.getFileBySfi(FILE8).getData().getContent(1));
     }
 
     /* processClosing no session open */
@@ -642,10 +630,7 @@ public class PoTransactionTest {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
 
-        // Read Recordsfi 8 / rec 1
-        poCommandsTestSet.put("00B2014400",
-                "81111111111111111111111111111111111111111111111111111111119000");
-        poTransaction.prepareReadRecordFile((byte) 0x08, 1);
+        poTransaction.prepareReadRecordFile(FILE8, 1);
         // expected exception: no session is open
         poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
     }
@@ -665,88 +650,48 @@ public class PoTransactionTest {
         poTransaction =
                 new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
 
-        // Select Diversifier
-        samCommandsTestSet.put("80140000080000000011223344", "9000");
-        // Get Challenge
-        samCommandsTestSet.put("8084000004", "C1C2C3C49000");
-        // Digest Init
-        samCommandsTestSet.put(
-                "808A00FF273079030490980030791D7111111111111111111111111111111111111111111111111111111111",
-                "9000");
-        // Digest Update
-        samCommandsTestSet.put("808C00000500B2014400", "9000");
-        // Digest Update
-        samCommandsTestSet.put("808C0000029000", "9000");
-        // Digest update
-        samCommandsTestSet.put("808C00000500B2018400", "9000");
-        // Digest update
-        samCommandsTestSet.put(
-                "808C000024001122000000000000000000000000000000000000000000000000000000000000009000",
-                "9000");
-        // Digest update
-        samCommandsTestSet.put("808C00000500B2018C00", "9000");
-        // Digest update
-        samCommandsTestSet.put(
-                "808C000024002211000000000000000000000000000000000000000000000000000000000000009000",
-                "9000");
-        // Digest update
-        samCommandsTestSet.put("808C0000080030018003000064", "9000");
-        // Digest update
-        samCommandsTestSet.put("808C0000050010BE9000", "9000");
-        // Digest update
-        samCommandsTestSet.put("808C0000080032018803000064", "9000");
-        // Digest update
-        samCommandsTestSet.put("808C0000050022759000", "9000");
-        // Digest update
-        samCommandsTestSet.put("808C00000900DC013C0400112233", "9000");
-        // Digest update
-        samCommandsTestSet.put("808C00000900D201440444556677", "9000");
-        // Digest update
-        samCommandsTestSet.put("808C00000900E20048048899AABB", "9000");
+        samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_INIT_OPEN_SECURE_SESSION_SFI7_REC1_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_READ_REC_SFI8_REC1_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_RSP_OK_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_READ_REC_SFI7_REC1_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_READ_REC_SFI10_REC1_RSP_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_READ_REC_SFI10_REC1_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_READ_REC_SFI11_REC1_RSP_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put("808C0000080030018003000064", SW1SW2_OK_RSP);
+        samCommandsTestSet.put("808C0000050010BE9000", SW1SW2_OK_RSP);
+        samCommandsTestSet.put("808C0000080032018803000064", SW1SW2_OK_RSP);
+        samCommandsTestSet.put("808C0000050022759000", SW1SW2_OK_RSP);
+        samCommandsTestSet.put("808C00000900DC013C0400112233", SW1SW2_OK_RSP);
+        samCommandsTestSet.put("808C00000900D201440444556677", SW1SW2_OK_RSP);
+        samCommandsTestSet.put("808C00000900E20048048899AABB", SW1SW2_OK_RSP);
+        samCommandsTestSet.put("808C00000500B2018400", SW1SW2_OK_RSP);
 
-        // Digest Close
-        samCommandsTestSet.put("808E000004", "112233449000");
-        // Digest Authenticate
-        samCommandsTestSet.put("808200000455667788", "9000");
+        samCommandsTestSet.put(SAM_DIGEST_CLOSE_CMD, SAM_DIGEST_CLOSE_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_AUTHENTICATE, SW1SW2_OK_RSP);
 
-        // Open Secure Session V3.1 + read sfi 7 / rec 1
-        poCommandsTestSet.put("008A0B3904C1C2C3C400",
-                "030490980030791D71111111111111111111111111111111111111111111111111111111119000");
-        // Update Record SFI 8 rec 1 29 bytes
-        poCommandsTestSet.put(
-                "00DC01441D8111111111111111111111111111111111111111111111111111111111", "9000");
-        // Read Record SFI 0x10 counter
-        poCommandsTestSet.put("00B2018400",
-                "001122000000000000000000000000000000000000000000000000000000000000009000");
-        // Read Record SFI 0x11 counter
-        poCommandsTestSet.put("00B2018C00",
-                "002211000000000000000000000000000000000000000000000000000000000000009000");
-        // Update Record SFI 8 rec 1 10 bytes
-        poCommandsTestSet.put("00DC01440433221100", "9000");
-        // Decrease SFI 10
-        poCommandsTestSet.put("003001800300006400", "0010BE9000");
-        // Decrease SFI 11
-        poCommandsTestSet.put("003201880300006400", "0022759000");
-        // Update Record SFI 7
-        poCommandsTestSet.put("00DC013C0400112233", "9000");
-        // Write Record SFI 8
-        poCommandsTestSet.put("00D201440444556677", "9000");
-        // Append Record SFI 9
-        poCommandsTestSet.put("00E20048048899AABB", "9000");
-        // Close Session
-        poCommandsTestSet.put("008E8000041122334400", "556677889000");
-        // Ratification command
-        poCommandsTestSet.put("00B2000000", "6B00");
+        poCommandsTestSet.put(PO_OPEN_SECURE_SESSION_SFI7_REC1_CMD,
+                PO_OPEN_SECURE_SESSION_SFI7_REC1_RSP);
+        poCommandsTestSet.put(PO_READ_REC_SFI10_REC1_CMD, PO_READ_REC_SFI10_REC1_RSP);
+        poCommandsTestSet.put(PO_READ_REC_SFI11_REC1_CMD, PO_READ_REC_SFI11_REC1_RSP);
+        poCommandsTestSet.put(PO_DECREASE_SFI10_REC1_100U_CMD, PO_DECREASE_SFI10_REC1_100U_RSP);
+        poCommandsTestSet.put(PO_DECREASE_SFI11_REC1_100U_CMD, PO_DECREASE_SFI11_REC1_100U_RSP);
+        poCommandsTestSet.put(PO_UPDATE_REC_SFI7_REC1_4B_CMD, SW1SW2_OK_RSP);
+        poCommandsTestSet.put(PO_WRITE_REC_SFI8_REC1_4B_CMD, SW1SW2_OK_RSP);
+        poCommandsTestSet.put(PO_APPEND_REC_SFI9_REC1_4B_CMD, SW1SW2_OK_RSP);
+        poCommandsTestSet.put(PO_CLOSE_SECURE_SESSION_CMD, PO_CLOSE_SECURE_SESSION_RSP);
+        poCommandsTestSet.put(PO_RATIFICATION_CMD, PO_RATIFICATION_RSP);
 
-        poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+        poTransaction.prepareReadRecordFile(FILE7, 1);
         poTransaction.prepareReadRecordFile((byte) 0x10, 1);
         poTransaction.prepareReadRecordFile((byte) 0x11, 1);
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
 
         poTransaction.prepareDecrease((byte) 0x10, (byte) 1, 100);
         poTransaction.prepareIncrease((byte) 0x11, (byte) 1, 100);
-        poTransaction.prepareUpdateRecord((byte) 0x07, (byte) 1, ByteArrayUtil.fromHex("00112233"));
-        poTransaction.prepareWriteRecord((byte) 0x08, (byte) 1, ByteArrayUtil.fromHex("44556677"));
+        poTransaction.prepareUpdateRecord(FILE7, (byte) 1, ByteArrayUtil.fromHex("00112233"));
+        poTransaction.prepareWriteRecord(FILE8, (byte) 1, ByteArrayUtil.fromHex("44556677"));
         poTransaction.prepareAppendRecord((byte) 0x09, ByteArrayUtil.fromHex("8899AABB"));
 
         // PoTransaction after a session is open
@@ -756,9 +701,9 @@ public class PoTransactionTest {
         Assert.assertEquals(0x2211 + 100,
                 calypsoPoRev31.getFileBySfi((byte) 0x11).getData().getContentAsCounterValue(1));
         Assert.assertArrayEquals(ByteArrayUtil.fromHex("00112233"),
-                calypsoPoRev31.getFileBySfi((byte) 0x07).getData().getContent(1));
+                calypsoPoRev31.getFileBySfi(FILE7).getData().getContent(1));
         Assert.assertArrayEquals(ByteArrayUtil.fromHex("44556677"),
-                calypsoPoRev31.getFileBySfi((byte) 0x08).getData().getContent(1));
+                calypsoPoRev31.getFileBySfi(FILE8).getData().getContent(1));
         Assert.assertArrayEquals(ByteArrayUtil.fromHex("8899AABB"),
                 calypsoPoRev31.getFileBySfi((byte) 0x09).getData().getContent(1));
     }
@@ -778,32 +723,21 @@ public class PoTransactionTest {
         poTransaction =
                 new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
 
-        // Select Diversifier
-        samCommandsTestSet.put("80140000080000000011223344", "9000");
-        // Get Challenge
-        samCommandsTestSet.put("8084000004", "C1C2C3C49000");
-        // Digest init
-        samCommandsTestSet.put("808A00FF0A30790304909800307900", "9000");
-        // Digest update
-        samCommandsTestSet.put("808C00000500B2013C00", "9000");
-        // Digest update
-        samCommandsTestSet.put("808C0000029000", "9000");
-        // Digest Close
-        samCommandsTestSet.put("808E000004", "112233449000");
-        // Digest Authenticate
-        samCommandsTestSet.put("808200000455667788", "9000");
+        samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_INIT_OPEN_SECURE_SESSION_CMD, SW1SW2_OK_RSP);
 
-        // Open Secure Session V3.1 + read sfi 7 / rec 1
-        poCommandsTestSet.put("008A030104C1C2C3C400", "03049098003079009000");
-        // Read record SFI 7 rec 1
-        poCommandsTestSet.put("00B2013C00",
-                "71111111111111111111111111111111111111111111111111111111119000");
-        // Close Session - status error
-        poCommandsTestSet.put("008E8000041122334400", "6988");
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_READ_REC_SFI7_REC1_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_RSP_OK_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_CLOSE_CMD, SAM_DIGEST_CLOSE_RSP);
+
+        poCommandsTestSet.put(PO_OPEN_SECURE_SESSION_CMD, PO_OPEN_SECURE_SESSION_RSP);
+        poCommandsTestSet.put(PO_READ_REC_SFI7_REC1_CMD, PO_READ_REC_SFI7_REC1_RSP);
+        poCommandsTestSet.put(PO_CLOSE_SECURE_SESSION_CMD, PO_CLOSE_SECURE_SESSION_FAILED_RSP);
 
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
 
-        poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+        poTransaction.prepareReadRecordFile(FILE7, 1);
 
         // PoTransaction after a session is open
         // should raise a CalypsoPoCloseSecureSessionException
@@ -825,32 +759,21 @@ public class PoTransactionTest {
         poTransaction =
                 new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
 
-        // Select Diversifier
-        samCommandsTestSet.put("80140000080000000011223344", "9000");
-        // Get Challenge
-        samCommandsTestSet.put("8084000004", "C1C2C3C49000");
-        // Digest init
-        samCommandsTestSet.put("808A00FF0A30790304909800307900", "9000");
-        // Digest update
-        samCommandsTestSet.put("808C00000500B2013C00", "9000");
-        // Digest update
-        samCommandsTestSet.put("808C0000029000", "9000");
-        // Digest Close
-        samCommandsTestSet.put("808E000004", "112233449000");
-        // Digest Authenticate
-        samCommandsTestSet.put("808200000455667788", "6988");
+        samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_INIT_OPEN_SECURE_SESSION_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_READ_REC_SFI7_REC1_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_RSP_OK_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_CLOSE_CMD, SAM_DIGEST_CLOSE_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_AUTHENTICATE, SAM_DIGEST_AUTHENTICATE_FAILED);
 
-        // Open Secure Session V3.1 + read sfi 7 / rec 1
-        poCommandsTestSet.put("008A030104C1C2C3C400", "03049098003079009000");
-        // Read record SFI 7 rec 1
-        poCommandsTestSet.put("00B2013C00",
-                "71111111111111111111111111111111111111111111111111111111119000");
-        // Close Session
-        poCommandsTestSet.put("008E8000041122334400", "556677889000");
+        poCommandsTestSet.put(PO_OPEN_SECURE_SESSION_CMD, PO_OPEN_SECURE_SESSION_RSP);
+        poCommandsTestSet.put(PO_READ_REC_SFI7_REC1_CMD, PO_READ_REC_SFI7_REC1_RSP);
+        poCommandsTestSet.put(PO_CLOSE_SECURE_SESSION_CMD, PO_CLOSE_SECURE_SESSION_RSP);
 
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
 
-        poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+        poTransaction.prepareReadRecordFile(FILE7, 1);
 
         // PoTransaction after a session is open
         // should raise a CalypsoSessionAuthenticationException
@@ -874,32 +797,21 @@ public class PoTransactionTest {
         poTransaction =
                 new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
 
-        // Select Diversifier
-        samCommandsTestSet.put("80140000080000000011223344", "9000");
-        // Get Challenge
-        samCommandsTestSet.put("8084000004", "C1C2C3C49000");
-        // Digest init
-        samCommandsTestSet.put("808A00FF0A30790304909800307900", "9000");
-        // Digest update
-        samCommandsTestSet.put("808C00000500B2013C00", "9000");
-        // Digest update
-        samCommandsTestSet.put("808C0000029000", "9000");
-        // Digest Close
-        samCommandsTestSet.put("808E000004", "112233449000");
-        // Digest Authenticate
-        // EMPTY
+        samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_INIT_OPEN_SECURE_SESSION_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_READ_REC_SFI7_REC1_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_RSP_OK_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_CLOSE_CMD, SAM_DIGEST_CLOSE_RSP);
 
-        // Open Secure Session V3.1 + read sfi 7 / rec 1
-        poCommandsTestSet.put("008A030104C1C2C3C400", "03049098003079009000");
-        // Read record SFI 7 rec 1
-        poCommandsTestSet.put("00B2013C00",
-                "71111111111111111111111111111111111111111111111111111111119000");
-        // Close Session
-        poCommandsTestSet.put("008E8000041122334400", "556677889000");
+
+        poCommandsTestSet.put(PO_OPEN_SECURE_SESSION_CMD, PO_OPEN_SECURE_SESSION_RSP);
+        poCommandsTestSet.put(PO_READ_REC_SFI7_REC1_CMD, PO_READ_REC_SFI7_REC1_RSP);
+        poCommandsTestSet.put(PO_CLOSE_SECURE_SESSION_CMD, PO_CLOSE_SECURE_SESSION_RSP);
 
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
 
-        poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+        poTransaction.prepareReadRecordFile(FILE7, 1);
 
         // PoTransaction after a session is open
         // should raise a CalypsoAuthenticationNotVerifiedException
@@ -924,66 +836,44 @@ public class PoTransactionTest {
         poTransaction =
                 new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
 
-        // Select Diversifier
-        samCommandsTestSet.put("80140000080000000011223344", "9000");
-        // Get Challenge
-        samCommandsTestSet.put("8084000004", "C1C2C3C49000");
-        // Digest Init
-        samCommandsTestSet.put("808A00FF0A30790304909800307900", "9000");
-        // Digest Update
-        samCommandsTestSet.put("808C00000500B2014400", "9000");
-        // Digest Update
-        samCommandsTestSet.put("808C0000029000", "9000");
-        // Digest Update
-        samCommandsTestSet.put("808C00000500B2013C00", "9000");
-        // Digest update
-        samCommandsTestSet.put(
-                "808C00002200DC01441D8111111111111111111111111111111111111111111111111111111111",
-                "9000");
-        // Digest Update
-        samCommandsTestSet.put("808C00000900DC013C0433221100", "9000");
+        samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_INIT_OPEN_SECURE_SESSION_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_READ_REC_SFI8_REC1_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_RSP_OK_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_READ_REC_SFI7_REC1_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_UPDATE_REC_SFI8_REC1_29B_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_UPDATE_REC_SFI8_REC1_4B_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_CLOSE_CMD, SAM_DIGEST_CLOSE_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_AUTHENTICATE, SW1SW2_OK_RSP);
 
-
-        // Digest Close
-        samCommandsTestSet.put("808E000004", "112233449000");
-        // Digest Authenticate
-        samCommandsTestSet.put("808200000455667788", "9000");
-
-        // Open Secure Session V3.1
-        poCommandsTestSet.put("008A030104C1C2C3C400", "03049098003079009000");
-        // Reader record SFI 7 1 rec
-        poCommandsTestSet.put("00B2013C00",
-                "71111111111111111111111111111111111111111111111111111111119000");
-        // Update Record SFI 8 rec 1 29 bytes
-        poCommandsTestSet.put(
-                "00DC01441D8111111111111111111111111111111111111111111111111111111111", "9000");
-        // Update Record SFI 7 rec 1 4 bytes
-        poCommandsTestSet.put("00DC013C0433221100", "9000");
-        // Close Session
-        poCommandsTestSet.put("008E8000041122334400", "556677889000");
+        poCommandsTestSet.put(PO_OPEN_SECURE_SESSION_CMD, PO_OPEN_SECURE_SESSION_RSP);
+        poCommandsTestSet.put(PO_READ_REC_SFI7_REC1_CMD, PO_READ_REC_SFI7_REC1_RSP);
+        poCommandsTestSet.put(PO_UPDATE_REC_SFI8_REC1_29B_CMD, SW1SW2_OK_RSP);
+        poCommandsTestSet.put(PO_UPDATE_REC_SFI8_REC1_4B_CMD, SW1SW2_OK_RSP);
+        poCommandsTestSet.put(PO_CLOSE_SECURE_SESSION_CMD, PO_CLOSE_SECURE_SESSION_RSP);
 
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
 
         // add additional non modifying commands (should not affect the session buffer)
         for (int i = 0; i < 4; i++) {
-            poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+            poTransaction.prepareReadRecordFile(FILE7, 1);
         }
         // 12 x update (29 b) = 12 x (29 + 6) = 420 consumed in the session buffer
         for (int i = 0; i < 12; i++) {
-            poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil
-                    .fromHex("8111111111111111111111111111111111111111111111111111111111"));
+            poTransaction.prepareUpdateRecord(FILE8, (byte) 1, FILE8_REC1_29B_BYTES);
         }
         // insert additional non modifying commands (should not affect the session buffer)
         for (int i = 0; i < 4; i++) {
-            poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+            poTransaction.prepareReadRecordFile(FILE7, 1);
         }
         // 4 additional bytes (10 b consumed)
-        poTransaction.prepareUpdateRecord((byte) 0x07, (byte) 1, ByteArrayUtil.fromHex("33221100"));
+        poTransaction.prepareUpdateRecord(FILE8, (byte) 1, FILE8_REC1_4B_BYTES);
 
         // PoTransaction after a session is open
         poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
-        Assert.assertArrayEquals(ByteArrayUtil.fromHex("33221100"),
-                calypsoPoRev31.getFileBySfi((byte) 0x07).getData().getContent(1));
+        Assert.assertArrayEquals(FILE8_REC1_4B_BYTES,
+                calypsoPoRev31.getFileBySfi(FILE8).getData().getContent(1));
     }
 
     /*
@@ -1004,62 +894,28 @@ public class PoTransactionTest {
         poTransaction =
                 new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
 
-        // Select Diversifier
-        samCommandsTestSet.put("80140000080000000011223344", "9000");
-        // Get Challenge
-        samCommandsTestSet.put("8084000004", "C1C2C3C49000");
-        // Digest Init
-        samCommandsTestSet.put("808A00FF0A30790304909800307900", "9000");
-        // Digest Update
-        samCommandsTestSet.put("808C00000500B2014400", "9000");
-        // Digest Update
-        samCommandsTestSet.put("808C0000029000", "9000");
-        // Digest Update
-        samCommandsTestSet.put("808C00000500B2013C00", "9000");
-        // Digest update
-        samCommandsTestSet.put(
-                "808C00002200DC013C1D8111111111111111111111111111111111111111111111111111111111",
-                "9000");
-        // Digest Update
-        samCommandsTestSet.put("808C00000900DC013C0433221100", "9000");
+        samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
 
-
-        // Digest Close
-        samCommandsTestSet.put("808E000004", "112233449000");
-        // Digest Authenticate
-        samCommandsTestSet.put("808200000455667788", "9000");
-
-        // Open Secure Session V3.1
-        poCommandsTestSet.put("008A030104C1C2C3C400", "03049098003079009000");
-        // Reader record SFI 7 1 rec
-        poCommandsTestSet.put("00B2013C00",
-                "71111111111111111111111111111111111111111111111111111111119000");
-        // Update Record SFI 8 rec 1 29 bytes
-        poCommandsTestSet.put(
-                "00DC013C1D8111111111111111111111111111111111111111111111111111111111", "9000");
-        // Update Record SFI 7 rec 1 5 bytes
-        poCommandsTestSet.put("00DC013C054433221100", "9000");
-        // Close Session
-        poCommandsTestSet.put("008E8000041122334400", "556677889000");
+        poCommandsTestSet.put(PO_OPEN_SECURE_SESSION_CMD, PO_OPEN_SECURE_SESSION_RSP);
 
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
 
         // add additional non modifying commands (should not affect the session buffer)
         for (int i = 0; i < 4; i++) {
-            poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+            poTransaction.prepareReadRecordFile(FILE7, 1);
         }
         // 12 x update (29 b) = 12 x (29 + 6) = 420 consumed in the session buffer
         for (int i = 0; i < 12; i++) {
-            poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil
+            poTransaction.prepareUpdateRecord(FILE8, (byte) 1, ByteArrayUtil
                     .fromHex("8111111111111111111111111111111111111111111111111111111111"));
         }
         // insert additional non modifying commands (should not affect the session buffer)
         for (int i = 0; i < 4; i++) {
-            poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+            poTransaction.prepareReadRecordFile(FILE7, 1);
         }
         // 4 additional bytes (10 b consumed)
-        poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1,
-                ByteArrayUtil.fromHex("4433221100"));
+        poTransaction.prepareUpdateRecord(FILE8, (byte) 1, FILE8_REC1_5B_BYTES);
 
         try {
             // PoTransaction after a session is open
@@ -1092,66 +948,46 @@ public class PoTransactionTest {
         poTransaction =
                 new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
 
-        // Select Diversifier
-        samCommandsTestSet.put("80140000080000000011223344", "9000");
-        // Get Challenge
-        samCommandsTestSet.put("8084000004", "C1C2C3C49000");
-        // Digest Init
-        samCommandsTestSet.put("808A00FF0A30790304909800307900", "9000");
-        // Digest Update
-        samCommandsTestSet.put("808C00000500B2014400", "9000");
-        // Digest Update
-        samCommandsTestSet.put("808C0000029000", "9000");
-        // Digest Update
-        samCommandsTestSet.put("808C00000500B2013C00", "9000");
-        // Digest update
+        samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_INIT_OPEN_SECURE_SESSION_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_READ_REC_SFI8_REC1_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_RSP_OK_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_READ_REC_SFI7_REC1_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_UPDATE_REC_SFI8_REC1_29B_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_UPDATE_REC_SFI8_REC1_4B_CMD, SW1SW2_OK_RSP);
         samCommandsTestSet.put(
-                "808C00002200DC01441D8111111111111111111111111111111111111111111111111111111111",
-                "9000");
-        // Digest update
-        samCommandsTestSet.put(
-                "808C00001F71111111111111111111111111111111111111111111111111111111119000", "9000");
-        // Digest Update
-        samCommandsTestSet.put("808C00000900DC013C0433221100", "9000");
-        // Digest Update
-        samCommandsTestSet.put("808C00000A00DC013C054433221100", "9000");
 
-        // Digest Close
-        samCommandsTestSet.put("808E000004", "112233449000");
-        // Digest Authenticate
-        samCommandsTestSet.put("808200000455667788", "9000");
+                "808C00001F71111111111111111111111111111111111111111111111111111111119000",
+                SW1SW2_OK_RSP);
+        samCommandsTestSet.put("808C00000900DC013C0433221100", SW1SW2_OK_RSP);
+        samCommandsTestSet.put("808C00000A00DC013C054433221100", SW1SW2_OK_RSP);
 
-        // Open Secure Session V3.1
-        poCommandsTestSet.put("008A030104C1C2C3C400", "03049098003079009000");
-        // Reader record SFI 7 1 rec
-        poCommandsTestSet.put("00B2013C00",
-                "71111111111111111111111111111111111111111111111111111111119000");
-        // Update Record SFI 8 rec 1 29 bytes
-        poCommandsTestSet.put(
-                "00DC01441D8111111111111111111111111111111111111111111111111111111111", "9000");
-        // Update Record SFI 7 rec 1 5 bytes
-        poCommandsTestSet.put("00DC013C054433221100", "9000");
-        // Close Session
-        poCommandsTestSet.put("008E8000041122334400", "556677889000");
+        samCommandsTestSet.put(SAM_DIGEST_CLOSE_CMD, SAM_DIGEST_CLOSE_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_AUTHENTICATE, SW1SW2_OK_RSP);
+
+        poCommandsTestSet.put(PO_OPEN_SECURE_SESSION_CMD, PO_OPEN_SECURE_SESSION_RSP);
+        poCommandsTestSet.put(PO_READ_REC_SFI7_REC1_CMD, PO_READ_REC_SFI7_REC1_RSP);
+        poCommandsTestSet.put(PO_UPDATE_REC_SFI8_REC1_29B_CMD, SW1SW2_OK_RSP);
+        poCommandsTestSet.put(PO_UPDATE_REC_SFI8_REC1_4B_CMD, SW1SW2_OK_RSP);
+        poCommandsTestSet.put(PO_CLOSE_SECURE_SESSION_CMD, PO_CLOSE_SECURE_SESSION_RSP);
 
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
 
         // add additional non modifying commands (should not affect the session buffer)
         for (int i = 0; i < 4; i++) {
-            poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+            poTransaction.prepareReadRecordFile(FILE7, 1);
         }
         // 12 x update (29 b) = 12 x (29 + 6) = 420 consumed in the session buffer
         for (int i = 0; i < 12; i++) {
-            poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil
-                    .fromHex("8111111111111111111111111111111111111111111111111111111111"));
+            poTransaction.prepareUpdateRecord(FILE8, (byte) 1, FILE8_REC1_29B_BYTES);
         }
         // insert additional non modifying commands (should not affect the session buffer)
         for (int i = 0; i < 4; i++) {
-            poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+            poTransaction.prepareReadRecordFile(FILE7, 1);
         }
         // 4 additional bytes (10 b consumed)
-        poTransaction.prepareUpdateRecord((byte) 0x07, (byte) 1,
-                ByteArrayUtil.fromHex("4433221100"));
+        poTransaction.prepareUpdateRecord(FILE8, (byte) 1, FILE8_REC1_4B_BYTES);
 
         // PoTransaction after a session is open
         poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
@@ -1177,30 +1013,18 @@ public class PoTransactionTest {
         poTransaction =
                 new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
 
-        // Select Diversifier
-        samCommandsTestSet.put("80140000080000000011223344", "9000");
-        // Get Challenge
-        samCommandsTestSet.put("8084000004", "C1C2C3C49000");
-        // Digest Init
-        samCommandsTestSet.put(
-                "808A00FF273079030490980030791D7111111111111111111111111111111111111111111111111111111111",
-                "9000");
-        // Digest Update
-        samCommandsTestSet.put("808C00000500B2014400", "9000");
-        // Digest Update
-        samCommandsTestSet.put("808C0000029000", "9000");
-        // Digest Close
-        samCommandsTestSet.put("808E000004", "112233449000");
-        // Digest Authenticate
-        samCommandsTestSet.put("808200000455667788", "9000");
+        samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_INIT_OPEN_SECURE_SESSION_SFI7_REC1_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_CLOSE_CMD, SAM_DIGEST_CLOSE_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_AUTHENTICATE, SW1SW2_OK_RSP);
 
-        // Open Secure Session V3.1 + read sfi 7 / rec 1
-        poCommandsTestSet.put("008A0B3904C1C2C3C400",
-                "030490980030791D71111111111111111111111111111111111111111111111111111111119000");
-        // Close Session not ratified
-        poCommandsTestSet.put("008E0000041122334400", "556677889000");
+        poCommandsTestSet.put(PO_OPEN_SECURE_SESSION_SFI7_REC1_CMD,
+                PO_OPEN_SECURE_SESSION_SFI7_REC1_RSP);
+        poCommandsTestSet.put(PO_CLOSE_SECURE_SESSION_NOT_RATIFIED_CMD,
+                PO_CLOSE_SECURE_SESSION_RSP);
 
-        poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+        poTransaction.prepareReadRecordFile(FILE7, 1);
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
 
         poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
@@ -1223,78 +1047,40 @@ public class PoTransactionTest {
         poTransaction =
                 new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
 
-        // Select Diversifier
-        samCommandsTestSet.put("80140000080000000011223344", "9000");
-        // Get Challenge
-        samCommandsTestSet.put("8084000004", "C1C2C3C49000");
-        // Digest Init
-        samCommandsTestSet.put("808A00FF0A30790304909800307900", "9000");
-        // Digest Update
-        samCommandsTestSet.put("808C00000500B2014400", "9000");
-        // Digest Update
-        samCommandsTestSet.put("808C0000029000", "9000");
-        // Digest Update
-        samCommandsTestSet.put("808C00000500B2013C00", "9000");
-        // Digest update
-        samCommandsTestSet.put(
-                "808C00002200DC013C1D8111111111111111111111111111111111111111111111111111111111",
-                "9000");
-        // Digest update
-        samCommandsTestSet.put(
-                "808C00001F71111111111111111111111111111111111111111111111111111111119000", "9000");
-        // Digest Update
-        samCommandsTestSet.put("808C00000900DC013C0433221100", "9000");
-        // Digest Update
-        samCommandsTestSet.put("808C00000A00DC013C054433221100", "9000");
+        samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
 
-        // Digest Close
-        samCommandsTestSet.put("808E000004", "112233449000");
-        // Digest Authenticate
-        samCommandsTestSet.put("808200000455667788", "9000");
-
-        // Open Secure Session V3.1
-        poCommandsTestSet.put("008A030104C1C2C3C400", "03049098003079009000");
-        // Reader record SFI 7 1 rec
-        poCommandsTestSet.put("00B2013C00",
-                "71111111111111111111111111111111111111111111111111111111119000");
-        // Update Record SFI 8 rec 1 29 bytes
-        poCommandsTestSet.put(
-                "00DC01441D8111111111111111111111111111111111111111111111111111111111", "9000");
-        // Update Record SFI 7 rec 1 5 bytes
-        poCommandsTestSet.put("00DC013C054433221100", "9000");
-        // Close Session
-        poCommandsTestSet.put("008E8000041122334400", "556677889000");
+        poCommandsTestSet.put(PO_OPEN_SECURE_SESSION_CMD, PO_OPEN_SECURE_SESSION_RSP);
+        poCommandsTestSet.put(PO_READ_REC_SFI8_REC1_CMD, PO_READ_REC_SFI8_REC1_RSP);
+        poCommandsTestSet.put(PO_UPDATE_REC_SFI8_REC1_29B_CMD, SW1SW2_OK_RSP);
+        poCommandsTestSet.put(PO_CLOSE_SECURE_SESSION_CMD, PO_CLOSE_SECURE_SESSION_RSP);
 
         // 4 x update (29 b) = 4 x (29 + 6) = 140 consumed in the session buffer
         for (int i = 0; i < 4; i++) {
-            poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil
-                    .fromHex("8111111111111111111111111111111111111111111111111111111111"));
+            poTransaction.prepareUpdateRecord(FILE8, (byte) 1, FILE8_REC1_29B_BYTES);
         }
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
 
         // add additional non modifying commands (should not affect the session buffer)
         for (int i = 0; i < 4; i++) {
-            poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+            poTransaction.prepareReadRecordFile(FILE8, 1);
         }
         // 4 x update (29 b) = 4 x (29 + 6) = 140 consumed in the session buffer
         for (int i = 0; i < 4; i++) {
-            poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil
-                    .fromHex("8111111111111111111111111111111111111111111111111111111111"));
+            poTransaction.prepareUpdateRecord(FILE8, (byte) 1, FILE8_REC1_29B_BYTES);
         }
         // insert additional non modifying commands (should not affect the session buffer)
         for (int i = 0; i < 4; i++) {
-            poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+            poTransaction.prepareReadRecordFile(FILE8, 1);
         }
         poTransaction.processPoCommandsInSession();
 
         // 5 x update (29 b) = 5 x (29 + 6) = 140 consumed in the session buffer
         for (int i = 0; i < 4; i++) {
-            poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil
-                    .fromHex("8111111111111111111111111111111111111111111111111111111111"));
+            poTransaction.prepareUpdateRecord(FILE8, (byte) 1, FILE8_REC1_29B_BYTES);
         }
         // 4 additional bytes (10 b consumed)
-        poTransaction.prepareUpdateRecord((byte) 0x07, (byte) 1,
-                ByteArrayUtil.fromHex("4433221100"));
+        poTransaction.prepareUpdateRecord(FILE8, (byte) 1, FILE8_REC1_5B_BYTES);
 
         try {
             // PoTransaction after a session is open
@@ -1323,80 +1109,53 @@ public class PoTransactionTest {
         poTransaction =
                 new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
 
-        // Select Diversifier
-        samCommandsTestSet.put("80140000080000000011223344", "9000");
-        // Get Challenge
-        samCommandsTestSet.put("8084000004", "C1C2C3C49000");
-        // Digest Init
-        samCommandsTestSet.put("808A00FF0A30790304909800307900", "9000");
-        // Digest Update
-        samCommandsTestSet.put("808C00000500B2014400", "9000");
-        // Digest Update
-        samCommandsTestSet.put("808C0000029000", "9000");
-        // Digest Update
-        samCommandsTestSet.put("808C00000500B2013C00", "9000");
-        // Digest update
-        samCommandsTestSet.put(
-                "808C00002200DC01441D8111111111111111111111111111111111111111111111111111111111",
-                "9000");
-        // Digest update
-        samCommandsTestSet.put(
-                "808C00001F71111111111111111111111111111111111111111111111111111111119000", "9000");
-        // Digest Update
-        samCommandsTestSet.put("808C00000900DC013C0433221100", "9000");
-        // Digest Update
-        samCommandsTestSet.put("808C00000A00DC013C054433221100", "9000");
+        samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_INIT_OPEN_SECURE_SESSION_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_READ_REC_SFI8_REC1_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_RSP_OK_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_UPDATE_REC_SFI8_REC1_29B_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_READ_REC_SFI7_REC1_RSP_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_READ_REC_SFI8_REC1_RSP_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_UPDATE_REC_SFI8_REC1_5B_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_CLOSE_CMD, SAM_DIGEST_CLOSE_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_AUTHENTICATE, SW1SW2_OK_RSP);
 
-        // Digest Close
-        samCommandsTestSet.put("808E000004", "112233449000");
-        // Digest Authenticate
-        samCommandsTestSet.put("808200000455667788", "9000");
-
-        // Open Secure Session V3.1
-        poCommandsTestSet.put("008A030104C1C2C3C400", "03049098003079009000");
-        // Reader record SFI 7 1 rec
-        poCommandsTestSet.put("00B2013C00",
-                "71111111111111111111111111111111111111111111111111111111119000");
-        // Update Record SFI 8 rec 1 29 bytes
-        poCommandsTestSet.put(
-                "00DC01441D8111111111111111111111111111111111111111111111111111111111", "9000");
-        // Update Record SFI 7 rec 1 5 bytes
-        poCommandsTestSet.put("00DC013C054433221100", "9000");
-        // Close Session
-        poCommandsTestSet.put("008E8000041122334400", "556677889000");
+        poCommandsTestSet.put(PO_OPEN_SECURE_SESSION_CMD, PO_OPEN_SECURE_SESSION_RSP);
+        poCommandsTestSet.put(PO_READ_REC_SFI7_REC1_CMD, PO_READ_REC_SFI7_REC1_RSP);
+        poCommandsTestSet.put(PO_READ_REC_SFI8_REC1_CMD, PO_READ_REC_SFI8_REC1_RSP);
+        poCommandsTestSet.put(PO_UPDATE_REC_SFI8_REC1_29B_CMD, SW1SW2_OK_RSP);
+        poCommandsTestSet.put(PO_UPDATE_REC_SFI8_REC1_5B_CMD, SW1SW2_OK_RSP);
+        poCommandsTestSet.put(PO_CLOSE_SECURE_SESSION_CMD, PO_CLOSE_SECURE_SESSION_RSP);
 
         // 4 x update (29 b) = 4 x (29 + 6) = 140 consumed in the session buffer
         for (int i = 0; i < 4; i++) {
-            poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil
-                    .fromHex("8111111111111111111111111111111111111111111111111111111111"));
+            poTransaction.prepareUpdateRecord(FILE8, (byte) 1, FILE8_REC1_29B_BYTES);
         }
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
 
         // add additional non modifying commands (should not affect the session buffer)
         for (int i = 0; i < 4; i++) {
-            poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+            poTransaction.prepareReadRecordFile(FILE8, 1);
         }
         // 24 x update (29 b) = 24 x (29 + 6) = 840 consumed in the session buffer
         // force multiple cycles
         for (int i = 0; i < 24; i++) {
-            poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil
-                    .fromHex("8111111111111111111111111111111111111111111111111111111111"));
+            poTransaction.prepareUpdateRecord(FILE8, (byte) 1, FILE8_REC1_29B_BYTES);
         }
         // insert additional non modifying commands (should not affect the session buffer)
         for (int i = 0; i < 4; i++) {
-            poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+            poTransaction.prepareReadRecordFile(FILE8, 1);
         }
         poTransaction.processPoCommandsInSession();
 
         // 24 x update (29 b) = 24 x (29 + 6) = 840 consumed in the session buffer
         // force multiple cycles
         for (int i = 0; i < 24; i++) {
-            poTransaction.prepareUpdateRecord((byte) 0x08, (byte) 1, ByteArrayUtil
-                    .fromHex("8111111111111111111111111111111111111111111111111111111111"));
+            poTransaction.prepareUpdateRecord(FILE8, (byte) 1, FILE8_REC1_29B_BYTES);
         }
         // 4 additional bytes (10 b consumed)
-        poTransaction.prepareUpdateRecord((byte) 0x07, (byte) 1,
-                ByteArrayUtil.fromHex("4433221100"));
+        poTransaction.prepareUpdateRecord(FILE8, (byte) 1, FILE8_REC1_5B_BYTES);
 
         // PoTransaction after a session is open
         poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
@@ -1418,31 +1177,23 @@ public class PoTransactionTest {
 
         poTransaction =
                 new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
-        // Select Diversifier
-        samCommandsTestSet.put("80140000080000000011223344", "9000");
-        // Get Challenge
-        samCommandsTestSet.put("8084000004", "C1C2C3C49000");
+        samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
 
-        // Open Secure Session V3.1 + read sfi 7 / rec 1
-        poCommandsTestSet.put("008A0B3904C1C2C3C400",
-                "030490980030791D71111111111111111111111111111111111111111111111111111111119000");
-        // Open Secure Session V3.1
-        poCommandsTestSet.put("008A030104C1C2C3C400", "03049098003079009000");
-        // Read Recordsfi 8 / rec 1
-        poCommandsTestSet.put("00B2014400",
-                "81111111111111111111111111111111111111111111111111111111119000");
+        poCommandsTestSet.put(PO_OPEN_SECURE_SESSION_SFI7_REC1_CMD,
+                PO_OPEN_SECURE_SESSION_SFI7_REC1_RSP);
+        poCommandsTestSet.put(PO_OPEN_SECURE_SESSION_CMD, PO_OPEN_SECURE_SESSION_RSP);
+        poCommandsTestSet.put(PO_READ_REC_SFI8_REC1_CMD, PO_READ_REC_SFI8_REC1_RSP);
         // Abort session
-        poCommandsTestSet.put("008E000000", "9000");
+        poCommandsTestSet.put(PO_ABORT_SECURE_SESSION_CMD, SW1SW2_OK_RSP);
 
-        poTransaction.prepareReadRecordFile((byte) 0x07, 1);
-        poTransaction.prepareReadRecordFile((byte) 0x08, 1);
+        poTransaction.prepareReadRecordFile(FILE7, 1);
+        poTransaction.prepareReadRecordFile(FILE8, 1);
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
-        Assert.assertArrayEquals(
-                ByteArrayUtil.fromHex("7111111111111111111111111111111111111111111111111111111111"),
-                calypsoPoRev31.getFileBySfi((byte) 0x07).getData().getContent());
-        Assert.assertArrayEquals(
-                ByteArrayUtil.fromHex("8111111111111111111111111111111111111111111111111111111111"),
-                calypsoPoRev31.getFileBySfi((byte) 0x08).getData().getContent());
+        Assert.assertArrayEquals(FILE7_REC1_29B_BYTES,
+                calypsoPoRev31.getFileBySfi(FILE7).getData().getContent());
+        Assert.assertArrayEquals(FILE8_REC1_29B_BYTES,
+                calypsoPoRev31.getFileBySfi(FILE8).getData().getContent());
         Assert.assertTrue(calypsoPoRev31.isDfRatified());
         poTransaction.processCancel(ChannelControl.KEEP_OPEN);
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
@@ -1580,13 +1331,12 @@ public class PoTransactionTest {
 
         poCommandsTestSet.put("00B2013C06", "A55AA5 5AA55A 9000");
 
-        // read counter 2 but counter 1 will be read too
-        poTransaction.prepareReadCounterFile((byte) 0x07, 2);
+        poTransaction.prepareReadCounterFile(FILE7, 2);
         poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
         Assert.assertEquals(0xA55AA5,
-                calypsoPoRev31.getFileBySfi((byte) 0x07).getData().getContentAsCounterValue(1));
+                calypsoPoRev31.getFileBySfi(FILE7).getData().getContentAsCounterValue(1));
         Assert.assertEquals(0x5AA55A,
-                calypsoPoRev31.getFileBySfi((byte) 0x07).getData().getContentAsCounterValue(2));
+                calypsoPoRev31.getFileBySfi(FILE7).getData().getContentAsCounterValue(2));
     }
 
     @Test(expected = CalypsoPoIOException.class)
@@ -1594,7 +1344,7 @@ public class PoTransactionTest {
             throws CalypsoPoCommandException, CalypsoPoTransactionException {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
-        poTransaction.prepareReadRecordFile((byte) 0x07, 1);
+        poTransaction.prepareReadRecordFile(FILE7, 1);
         poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
     }
 
@@ -1632,19 +1382,6 @@ public class PoTransactionTest {
         doReturn(name).when(mockReader).getName();
         doReturn(transmissionMode).when(mockReader).getTransmissionMode();
 
-        doAnswer(new Answer<List<SeResponse>>() {
-            @Override
-            public List<SeResponse> answer(InvocationOnMock invocation) {
-                Object[] args = invocation.getArguments();
-                List<SeRequest> seRequests = (List<SeRequest>) args[0];
-                for (SeRequest seRequest : seRequests) {
-                    System.out.println("SeRequest " + seRequest.toString());
-                }
-                return null;
-            }
-        }).when(mockReader).transmitSeRequests(ArgumentMatchers.<SeRequest>anyList(),
-                any(MultiSeRequestProcessing.class), any(ChannelControl.class));
-
         doAnswer(new Answer<SeResponse>() {
             @Override
             public SeResponse answer(InvocationOnMock invocation) throws KeypleReaderIOException {
@@ -1669,14 +1406,16 @@ public class PoTransactionTest {
         return mockReader;
     }
 
-    private ApduResponse getResponses(String name, Map<String, String> hexCommands,
+    private ApduResponse getResponses(String name, Map<String, String> cmdRespMap,
             ApduRequest apduRequest) throws KeypleReaderIOException {
-        String hexApdu = ByteArrayUtil.toHex(apduRequest.getBytes());
+        String apdu_c = ByteArrayUtil.toHex(apduRequest.getBytes());
+        String apdu_r = cmdRespMap.get(apdu_c);
         // return matching hexa response if found
-        if (hexCommands.containsKey(hexApdu)) {
-            return new ApduResponse(ByteArrayUtil.fromHex(hexCommands.get(hexApdu)), null);
+        if (apdu_r != null) {
+            return new ApduResponse(ByteArrayUtil.fromHex(apdu_r), null);
         }
-        System.out.println(name + ": no response available for " + hexApdu);
+        System.out.println(name + ": no response available for "
+                + ByteArrayUtil.toHex(apduRequest.getBytes()));
         // throw a KeypleReaderIOException if not found
         throw new KeypleReaderIOException("No response available for this request.");
     }
