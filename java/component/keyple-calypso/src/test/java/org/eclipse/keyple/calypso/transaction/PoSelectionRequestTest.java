@@ -14,6 +14,7 @@ package org.eclipse.keyple.calypso.transaction;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.eclipse.keyple.calypso.SelectFileControl;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronizedExchangesException;
 import org.eclipse.keyple.core.seproxy.message.*;
@@ -84,12 +85,47 @@ public class PoSelectionRequestTest {
     }
 
     @Test
-    public void testPrepareSelectFile()
+    public void testPrepareSelectFile1_lid()
             throws CalypsoDesynchronizedExchangesException, CalypsoPoCommandException {
         short lid1 = 0x2010;
         short lid2 = 0x3F00;
         poSelectionRequest.prepareSelectFile(lid1);
         poSelectionRequest.prepareSelectFile(lid2);
+        List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
+        apduResponses.add(SELECT_EF_APDU_RESPONSE);
+        apduResponses.add(SELECT_DF_APDU_RESPONSE);
+        SelectionStatus selectionStatus =
+                new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR_VALUE)),
+                        SELECT_APPLICATION_RESPONSE, true);
+        SeResponse seResponse = new SeResponse(true, true, selectionStatus, apduResponses);
+        CalypsoPo calypsoPo = poSelectionRequest.parse(seResponse);
+
+        ElementaryFile ef = calypsoPo.getFileByLid(lid1);
+        FileHeader efHeader = ef.getHeader();
+        Assert.assertEquals(lid1, efHeader.getLid());
+        Assert.assertEquals(29, efHeader.getRecordSize());
+        Assert.assertEquals(3, efHeader.getRecordsNumber());
+        Assert.assertEquals(FileHeader.FileType.CYCLIC, efHeader.getType());
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex("1F101010"), efHeader.getAccessConditions());
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex("00030303"), efHeader.getKeyIndexes());
+        Assert.assertEquals(0, efHeader.getDfStatus());
+        Short sharedReference = 0;
+        Assert.assertEquals(sharedReference, efHeader.getSharedReference());
+
+        DirectoryHeader dfHeader = calypsoPo.getDirectoryHeader();
+        Assert.assertEquals(lid2, dfHeader.getLid());
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex("10100000"), dfHeader.getAccessConditions());
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex("01030000"), dfHeader.getKeyIndexes());
+        Assert.assertEquals(0, dfHeader.getDfStatus());
+    }
+
+    @Test
+    public void testPrepareSelectFile_control()
+            throws CalypsoDesynchronizedExchangesException, CalypsoPoCommandException {
+        short lid1 = 0x2010;
+        short lid2 = 0x3F00;
+        poSelectionRequest.prepareSelectFile(SelectFileControl.CURRENT_DF);
+        poSelectionRequest.prepareSelectFile(SelectFileControl.FIRST_EF);
         List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
         apduResponses.add(SELECT_EF_APDU_RESPONSE);
         apduResponses.add(SELECT_DF_APDU_RESPONSE);
