@@ -1,0 +1,454 @@
+@startuml
+title
+    Keyple Plugin Remote SE
+    Public API (29/05/2020)
+end title
+
+' == THEME ==
+
+'Couleurs issues de : https://htmlcolorcodes.com/fr/tableau-de-couleur/tableau-de-couleur-design-plat/
+!define C_GREY1 F8F9F9
+!define C_GREY2 F2F3F4
+!define C_GREY3 E5E7E9
+!define C_GREY4 D7DBDD
+!define C_GREY5 CACFD2
+!define C_GREY6 BDC3C7
+!define C_LINK 3498DB
+!define C_USE 27AE60
+
+skinparam Shadowing false
+skinparam ClassFontStyle italic
+skinparam ClassBorderColor #D4AC0D
+skinparam stereotypeABorderColor #A9DCDF
+skinparam stereotypeIBorderColor #B4A7E5
+skinparam stereotypeCBorderColor #ADD1B2
+skinparam stereotypeEBorderColor #EB93DF
+' Red
+skinparam ClassBackgroundColor<<red>> #FDEDEC
+skinparam ClassBorderColor<<red>> #E74C3C
+hide <<red>> stereotype
+' Purple
+skinparam ClassBackgroundColor<<purple>> #F4ECF7
+skinparam ClassBorderColor<<purple>> #8E44AD
+hide <<purple>> stereotype
+' blue
+skinparam ClassBackgroundColor<<blue>> #EBF5FB
+skinparam ClassBorderColor<<blue>> #3498DB
+hide <<blue>> stereotype
+' Green
+skinparam ClassBackgroundColor<<green>> #E9F7EF
+skinparam ClassBorderColor<<green>> #27AE60
+hide <<green>> stereotype
+' Grey
+skinparam ClassBackgroundColor<<grey>> #EAECEE
+skinparam ClassBorderColor<<grey>> #2C3E50
+hide <<grey>> stereotype
+
+' == CONTENT ==
+
+package org.eclipse.keyple.core.seproxy {
+
+    +abstract AbstractPluginFactory {
+        ...
+    }
+    +interface ReaderPlugin {
+        ...
+    }
+    +interface ReaderPoolPlugin extends ReaderPlugin {
+        ...
+    }
+    +interface SeReader {
+        ...
+    }
+
+    package event {
+        +interface ObservablePlugin extends ReaderPlugin {
+            ...
+        }
+        +interface ObservableReader extends SeReader {
+                ...
+        }
+    }
+}
+
+package org.eclipse.keyple.plugin.remotese {
+
+    package virtualse {
+
+        ' Remote Handlers
+            +interface "<< <back:#82E0AA>ObservablePlugin</back> >>\nRemoteSeServerPlugin" as RemoteSeServerPlugin {
+                +RemoteSeServerReader getReader (String name)
+                +Map<String, RemoteSeServerReader> getReaders ()
+                +void terminateService (\n    String virtualReaderName, Object userOutputData)
+            }
+            ' Remote Readers
+            +interface "<< <back:#D0ECE7>SeReader</back> >>\nRemoteSeServerReader" as RemoteSeServerReader {
+                +String getServiceId ()
+                +<T> T getUserInputData (\n    Class<T> userInputDataClass)
+                +MatchingSe getInitialSeContent ()
+            }
+            +interface "<< <back:#FDEBD0>ObservableReader</back> >>\nRemoteSeServerObservableReader" as RemoteSeServerObservableReader extends RemoteSeServerReader {
+            }
+            +interface "<< <back:#D2B4DE>ReaderPlugin</back> >>\nRemoteSeClientPlugin" as RemoteSeClientPlugin {
+            }
+            +interface "<< <back:#82E0AA>ObservablePlugin</back> >>\nRemoteSeClientObservablePlugin" as RemoteSeClientObservablePlugin extends RemoteSeClientPlugin {
+            }
+            +interface "<< <back:#AED6F1>ReaderPoolPlugin</back> >>\nRemoteSePoolClientPlugin" as RemoteSePoolClientPlugin {
+            }
+
+        package impl as virtualSeImpl {
+
+            ' Factories
+            +class "<< <back:#F5B7B1>AbstractPluginFactory</back> >>\nRemoteSeServerPluginFactory" as RemoteSeServerPluginFactory {
+                + {static} NodeStep builder ()
+            }
+            +interface "NodeStep" as RemoteSeServerPluginFactoryNodeStep {
+                + PluginObservationStep withAsyncNode (\n    KeypleAsyncMessageSender sender)
+                + PluginObservationStep withSyncNode ()
+            }
+            +interface "PluginObserverStep" as RemoteSeServerPluginFactoryPluginObserverStep {
+                + BuilderStep withPluginObserver (\n    ObservablePlugin.PluginObserver observer)
+            }
+            +interface "BuilderStep" as RemoteSeServerPluginFactoryBuilderStep {
+                + RemoteSeServerPluginFactory build ()
+            }
+            +class "<< <back:#F5B7B1>AbstractPluginFactory</back> >>\nRemoteSeClientPluginFactory" as RemoteSeClientPluginFactory {
+                + {static} NodeStep builder ()
+            }
+            +interface "NodeStep" as RemoteSeClientPluginFactoryNodeStep {
+                + AsyncNodePluginStep withAsyncNode (\n    KeypleAsyncMessageSender sender)
+                + SyncNodePluginStep withSyncNode (\n    KeypleSyncMessageSender sender)
+            }
+            +interface "AsyncNodePluginStep" as RemoteSeClientPluginFactoryAsyncNodePluginStep {
+                + AsyncNodeReaderStep withPluginObservation ()
+                + AsyncNodeReaderStep withoutPluginObservation ()
+            }
+            +interface "AsyncNodeReaderStep" as RemoteSeClientPluginFactoryAsyncNodeReaderStep {
+                + BuilderStep withReaderObservation ()
+                + BuilderStep withoutReaderObservation ()
+            }
+            +interface "SyncNodePluginStep" as RemoteSeClientPluginFactorySyncNodePluginStep {
+                + ServerPushPluginEventStrategyStep withPluginObservation ()
+                + SyncNodeReaderStep withoutPluginObservation ()
+            }
+            +interface "ServerPushPluginEventStrategyStep" as RemoteSeClientPluginFactoryServerPushPluginEventStrategyStep {
+                + SyncNodeReaderStep usingPluginPollingStrategy (\n    int requestFrequencyInSeconds)
+                + SyncNodeReaderStep usingPluginLongPollingStrategy (\n    int requestTimeoutInSeconds)
+            }
+            +interface "SyncNodeReaderStep" as RemoteSeClientPluginFactorySyncNodeReaderStep {
+                + ServerPushReaderEventStrategyStep withReaderObservation ()
+                + BuilderStep withoutReaderObservation ()
+            }
+            +interface "ServerPushReaderEventStrategyStep" as RemoteSeClientPluginFactoryServerPushReaderEventStrategyStep {
+                + BuilderStep usingReaderPollingStrategy (\n    int requestFrequencyInSeconds)
+                + BuilderStep usingReaderLongPollingStrategy (\n    int requestTimeoutInSeconds)
+            }
+            +interface "BuilderStep" as RemoteSeClientPluginFactoryBuilderStep {
+                + RemoteSeClientPluginFactory build ()
+            }
+            +class "<< <back:#F5B7B1>AbstractPluginFactory</back> >>\nRemoteSePoolClientPluginFactory" as RemoteSePoolClientPluginFactory {
+                + {static} NodeStep builder ()
+            }
+            +class "NodeStep" as RemoteSePoolClientPluginFactoryNodeStep {
+                + BuilderStep withAsyncNode (\n    KeypleAsyncMessageSender sender)
+                + BuilderStep withSyncNode (\n    KeypleSyncMessageSender sender)
+            }
+            +interface "BuilderStep" as RemoteSePoolClientPluginFactoryBuilderStep {
+                + RemoteSePoolClientPluginFactory build ()
+            }
+
+            ' Utilitaires Master
+            +class RemoteSeServerUtils {
+                ____
+                + {static} RemoteSeServerPlugin getAsyncPlugin ()
+                + {static} KeypleAsyncNode getAsyncNode ()
+                ....
+                + {static} RemoteSeServerPlugin getSyncPlugin ()
+                + {static} KeypleServerSyncNode getSyncNode ()
+            }
+            +class RemoteSeClientUtils {
+                ____
+                + {static} RemoteSeClientPlugin getAsyncPlugin ()
+                + {static} RemoteSeClientObservablePlugin getAsyncObservablePlugin ()
+                + {static} KeypleAsyncNode getAsyncNode ()
+                ....
+                + {static} RemoteSeClientPlugin getSyncPlugin ()
+                + {static} RemoteSeClientObservablePlugin getSyncObservablePlugin ()
+                + {static} KeypleClientSyncNode getSyncNode ()
+            }
+            +class RemoteSePoolClientUtils {
+                ____
+                + {static} RemoteSePoolClientPlugin getAsyncPlugin ()
+                + {static} KeypleAsyncNode getAsyncNode ()
+                ....
+                + {static} RemoteSePoolClientPlugin getSyncPlugin ()
+                + {static} KeypleClientSyncNode getSyncNode ()
+            }
+
+        }
+
+    }
+
+    package core {
+
+        ' DTO
+        +class KeypleMessageDto {
+            + String id
+            + String action
+            + String clientNodeId
+            + String serverNodeId
+            + String nativeReaderName
+            + String virtualReaderName
+            + String body
+            + String error
+        }
+
+        ' Nodes & Senders
+            +interface KeypleAsyncNode {
+                +void onMessage (\n    KeypleMessageDto msg)
+            }
+            note top of KeypleAsyncNode
+                This kind of node
+                can be binded
+                to all Remote SE
+                plugins and services.
+            end note
+            +interface KeypleAsyncMessageSender {
+                +void sendMessage (\n    KeypleMessageDto msg)
+            }
+            +interface KeypleClientSyncNode {
+            }
+            +interface KeypleSyncMessageSender {
+                +List<KeypleMessageDto> sendRequest (\n    KeypleMessageDto msg)
+            }
+            +interface KeypleServerSyncNode {
+                +List<KeypleMessageDto> onRequest (\n    KeypleMessageDto msg)
+            }
+
+    }
+
+    package nativese {
+
+            +interface NativeSeClientService {
+                +<T> T executeRemoteService (\n    RemoteServiceParameters parameters,\n    Class<T> userOutputDataClass)
+            }
+            +class RemoteServiceParameters {
+                +{static} Builder builder (String serviceId, SeReader localReader)
+            }
+            +class "Builder" as RemoteServiceParametersBuilder {
+                +Builder withUserInputData (Object userInputData)
+                +Builder withInitialSeContent (MatchingSe matchingSe)
+                +RemoteServiceParameters build ()
+            }
+            +interface NativeSeServerService {
+            }
+            +interface NativeSePoolServerService {
+            }
+
+        package impl as nativeSeImpl {
+
+            ' Factories
+            +class NativeSeClientServiceFactory {
+                + {static} NodeStep builder ()
+                + NativeSeClientService getService ()
+            }
+            +interface "NodeStep" as NativeSeClientServiceFactoryNodeStep {
+                + ReaderStep withAsyncNode (KeypleAsyncMessageSender sender)
+                + ReaderStep withSyncNode (KeypleSyncMessageSender sender)
+            }
+            +interface "ReaderStep" as NativeSeClientServiceFactoryReaderStep {
+                + BuilderStep withReaderObservation ()
+                + BuilderStep withoutReaderObservation ()
+            }
+            +interface "BuilderStep" as NativeSeClientServiceFactoryBuilderStep {
+                + NativeSeClientServiceFactory build ()
+            }
+            +class NativeSeServerServiceFactory {
+                + {static} NodeStep builder ()
+                + NativeSeServerService getService ()
+            }
+            +interface "NodeStep" as NativeSeServerServiceFactoryNodeStep {
+                + BuilderStep withAsyncNode (KeypleAsyncMessageSender sender)
+                + BuilderStep withSyncNode ()
+            }
+            +interface "BuilderStep" as NativeSeServerServiceFactoryBuilderStep {
+                + NativeSeServerServiceFactory build ()
+            }
+            +class NativeSePoolServerServiceFactory {
+                + {static} NodeStep builder ()
+                + NativeSePoolServerService getService ()
+            }
+            +interface "NodeStep" as NativeSePoolServerServiceFactoryNodeStep {
+                + BuilderStep withAsyncNode (KeypleAsyncMessageSender sender)
+                + BuilderStep withSyncNode ()
+            }
+            +interface "BuilderStep" as NativeSePoolServerServiceFactoryBuilderStep {
+                + NativeSePoolServerServiceFactory build ()
+            }
+
+            ' Utilitaires Slave
+            +class NativeSeClientUtils {
+                + {static} NativeSeClientService getService ()
+                + {static} KeypleAsyncNode getAsyncNode ()
+                + {static} KeypleClientSyncNode getSyncNode ()
+            }
+            +class NativeSeServerUtils {
+                + {static} NativeSeServerService getService ()
+                + {static} KeypleAsyncNode getAsyncNode ()
+                + {static} KeypleServerSyncNode getSyncNode ()
+            }
+            +class NativeSePoolServerUtils {
+                + {static} NativeSePoolServerService getService ()
+                + {static} KeypleAsyncNode getAsyncNode ()
+                + {static} KeypleServerSyncNode getSyncNode ()
+            }
+
+        }
+
+    }
+
+}
+
+' Associations
+RemoteSeServerPluginFactory ..> RemoteSeServerPluginFactoryNodeStep #C_USE
+RemoteSeServerPluginFactoryNodeStep ..> RemoteSeServerPluginFactoryPluginObserverStep #C_USE
+RemoteSeServerPluginFactoryPluginObserverStep ..> RemoteSeServerPluginFactoryBuilderStep #C_USE
+
+RemoteSeClientPluginFactory ..> RemoteSeClientPluginFactoryNodeStep #C_USE
+RemoteSeClientPluginFactoryNodeStep ..> RemoteSeClientPluginFactoryAsyncNodePluginStep #C_USE
+RemoteSeClientPluginFactoryAsyncNodePluginStep ..> RemoteSeClientPluginFactoryAsyncNodeReaderStep #C_USE
+RemoteSeClientPluginFactoryNodeStep ..> RemoteSeClientPluginFactorySyncNodePluginStep #C_USE
+RemoteSeClientPluginFactorySyncNodePluginStep ..> RemoteSeClientPluginFactoryServerPushPluginEventStrategyStep #C_USE
+RemoteSeClientPluginFactorySyncNodePluginStep ..> RemoteSeClientPluginFactorySyncNodeReaderStep #C_USE
+RemoteSeClientPluginFactoryAsyncNodeReaderStep ..> RemoteSeClientPluginFactoryBuilderStep #C_USE
+RemoteSeClientPluginFactoryServerPushPluginEventStrategyStep ..> RemoteSeClientPluginFactorySyncNodeReaderStep #C_USE
+RemoteSeClientPluginFactorySyncNodeReaderStep ..> RemoteSeClientPluginFactoryBuilderStep #C_USE
+RemoteSeClientPluginFactorySyncNodeReaderStep ..> RemoteSeClientPluginFactoryServerPushReaderEventStrategyStep #C_USE
+RemoteSeClientPluginFactoryServerPushReaderEventStrategyStep ..> RemoteSeClientPluginFactoryBuilderStep #C_USE
+
+RemoteSePoolClientPluginFactory ..> RemoteSePoolClientPluginFactoryNodeStep #C_USE
+RemoteSePoolClientPluginFactoryNodeStep ..> RemoteSePoolClientPluginFactoryBuilderStep #C_USE
+
+RemoteSeServerPlugin *--> "1..N" RemoteSeServerReader #C_LINK : readers
+
+RemoteSeServerPlugin <--> KeypleServerSyncNode #C_LINK
+RemoteSeClientPlugin <--> KeypleClientSyncNode #C_LINK
+RemoteSePoolClientPlugin <--> KeypleClientSyncNode #C_LINK
+
+KeypleClientSyncNode --> "sender" KeypleSyncMessageSender #C_LINK
+KeypleAsyncNode --> "sender" KeypleAsyncMessageSender #C_LINK
+
+KeypleClientSyncNode <--> NativeSeClientService #C_LINK
+KeypleServerSyncNode <--> NativeSeServerService #C_LINK
+KeypleServerSyncNode <--> NativeSePoolServerService #C_LINK
+
+NativeSeClientService ..> RemoteServiceParameters #C_USE : use >
+RemoteServiceParameters +-- RemoteServiceParametersBuilder #C_LINK
+
+NativeSeClientServiceFactory ..> NativeSeClientServiceFactoryNodeStep #C_USE
+NativeSeClientServiceFactoryNodeStep ..> NativeSeClientServiceFactoryReaderStep #C_USE
+NativeSeClientServiceFactoryReaderStep ..> NativeSeClientServiceFactoryBuilderStep #C_USE
+
+NativeSeServerServiceFactory ..> NativeSeServerServiceFactoryNodeStep #C_USE
+NativeSeServerServiceFactoryNodeStep ..> NativeSeServerServiceFactoryBuilderStep #C_USE
+
+NativeSePoolServerServiceFactory ..> NativeSePoolServerServiceFactoryNodeStep #C_USE
+NativeSePoolServerServiceFactoryNodeStep ..> NativeSePoolServerServiceFactoryBuilderStep #C_USE
+
+' == LAYOUT ==
+
+ObservableReader -[hidden]- RemoteSeServerPlugin
+
+RemoteSeServerObservableReader -[hidden]- RemoteSeClientPlugin
+RemoteSeClientObservablePlugin -[hidden]- RemoteSePoolClientPlugin
+
+RemoteSeServerPluginFactoryBuilderStep -[hidden]- RemoteSeServerUtils
+RemoteSeServerUtils -[hidden]- RemoteSeClientUtils
+RemoteSePoolClientPluginFactoryBuilderStep -[hidden]- RemoteSePoolClientUtils
+
+NativeSeClientServiceFactoryBuilderStep -[hidden]- NativeSeClientUtils
+NativeSeServerServiceFactoryBuilderStep -[hidden]- NativeSeServerUtils
+NativeSePoolServerServiceFactoryBuilderStep -[hidden]- NativeSePoolServerUtils
+
+KeypleAsyncMessageSender -[hidden]- KeypleMessageDto
+KeypleMessageDto -[hidden]- KeypleServerSyncNode
+KeypleServerSyncNode -[hidden]- KeypleClientSyncNode
+
+RemoteServiceParametersBuilder -[hidden]- NativeSeServerService
+NativeSeServerService -[hidden]- NativeSePoolServerService
+
+RemoteSePoolClientUtils -[hidden]- NativeSePoolServerServiceFactory
+RemoteSeClientPluginFactoryBuilderStep -[hidden]- NativeSeServerServiceFactory
+RemoteSeClientUtils -[hidden]- NativeSeClientServiceFactory
+
+' == STYLE ==
+
+package org.eclipse.keyple.core.seproxy #C_GREY1 {}
+package event #C_GREY2 {}
+package core #C_GREY1 {}
+package nativese #C_GREY1 {}
+package nativeSeImpl #C_GREY2 {}
+package virtualse #C_GREY1 {}
+package virtualSeImpl #C_GREY2 {}
+
+abstract AbstractPluginFactory <<grey>> #F5B7B1
+interface ReaderPlugin <<grey>> #D2B4DE
+interface ReaderPoolPlugin <<grey>> #AED6F1
+interface SeReader <<grey>> #D0ECE7
+interface ObservablePlugin <<grey>> #82E0AA
+interface ObservableReader <<grey>> #FDEBD0
+
+class RemoteSeServerUtils <<green>>
+interface RemoteSeServerPlugin <<green>>
+interface RemoteSeServerReader <<green>>
+interface RemoteSeServerObservableReader <<green>>
+class RemoteSeServerPluginFactory <<green>>
+interface RemoteSeServerPluginFactoryNodeStep <<green>>
+interface RemoteSeServerPluginFactoryPluginObserverStep <<green>>
+interface RemoteSeServerPluginFactoryBuilderStep <<green>>
+interface NativeSeClientService <<green>>
+class NativeSeClientServiceFactory <<green>>
+interface NativeSeClientServiceFactoryNodeStep <<green>>
+interface NativeSeClientServiceFactoryReaderStep <<green>>
+interface NativeSeClientServiceFactoryBuilderStep <<green>>
+class RemoteServiceParameters <<green>>
+class RemoteServiceParametersBuilder <<green>>
+class NativeSeClientUtils <<green>>
+
+class RemoteSeClientUtils <<purple>>
+interface RemoteSeClientPlugin <<purple>>
+class RemoteSeClientPluginFactory <<purple>>
+interface RemoteSeClientPluginFactoryNodeStep <<purple>>
+interface RemoteSeClientPluginFactoryAsyncNodePluginStep <<purple>>
+interface RemoteSeClientPluginFactoryAsyncNodeReaderStep <<purple>>
+interface RemoteSeClientPluginFactorySyncNodePluginStep <<purple>>
+interface RemoteSeClientPluginFactoryServerPushPluginEventStrategyStep <<purple>>
+interface RemoteSeClientPluginFactorySyncNodeReaderStep <<purple>>
+interface RemoteSeClientPluginFactoryServerPushReaderEventStrategyStep <<purple>>
+interface RemoteSeClientPluginFactoryBuilderStep <<purple>>
+interface NativeSeServerService <<purple>>
+class NativeSeServerServiceFactory <<purple>>
+interface NativeSeServerServiceFactoryNodeStep <<purple>>
+interface NativeSeServerServiceFactoryBuilderStep <<purple>>
+class NativeSeServerUtils <<purple>>
+
+interface RemoteSeClientObservablePlugin <<purple>>
+
+class RemoteSePoolClientUtils <<blue>>
+interface RemoteSePoolClientPlugin <<blue>>
+class RemoteSePoolClientPluginFactory <<blue>>
+interface RemoteSePoolClientPluginFactoryNodeStep <<blue>>
+interface RemoteSePoolClientPluginFactoryBuilderStep <<blue>>
+interface NativeSePoolServerService <<blue>>
+class NativeSePoolServerServiceFactory <<blue>>
+interface NativeSePoolServerServiceFactoryNodeStep <<blue>>
+interface NativeSePoolServerServiceFactoryBuilderStep <<blue>>
+class NativeSePoolServerUtils <<blue>>
+
+KeypleClientSyncNode <<red>>
+KeypleServerSyncNode <<red>>
+KeypleAsyncNode <<red>>
+
+KeypleMessageDto <<grey>>
+
+@enduml

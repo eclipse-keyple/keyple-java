@@ -1,0 +1,43 @@
+@startuml
+
+title
+    Keyple Plugin Remote SE
+    Sync Node API (22/05/2020)
+end title
+
+' == THEME ==
+
+skinparam Shadowing false
+skinparam RoundCorner 10
+
+' == CONTENT ==
+
+participant "clientNode:\n**KeypleClientSyncNode**" as clientNode #LightBlue
+actor "userClientSender:\n**<back:LightBlue>KeypleSyncMessageSender**" as userClientSender
+
+actor "userServerController" as userServerController
+participant "serverNode:\n**KeypleServerSyncNode**" as serverNode #LightBlue
+
+activate clientNode #LightBlue
+clientNode -> userClientSender : sendRequest (<color:red>dtoA</color>)
+activate userClientSender #Pink
+userClientSender -> userServerController : send synchronous request (<color:red>dtoA</color>)
+
+activate userServerController #Pink
+userServerController -> userServerController : [...]ServerUtils.getSyncNode ()
+note right
+    To access the node it is necessary
+    to use the utility class corresponding
+    to the server configuration :
+    * **RemoteSe**ServerUtils
+    * **NativeSe**ServerUtils
+    * **NativeSePool**ServerUtils
+end note
+userServerController -> serverNode : onRequest (<color:red>dtoA</color>)
+activate serverNode #LightBlue
+return <color:blue>dtoB</color>
+return <color:blue>dtoB</color>
+return <color:blue>dtoB</color>
+
+
+@enduml

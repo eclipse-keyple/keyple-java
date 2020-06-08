@@ -27,3 +27,12 @@ project(':java:component:keyple-plugin:stub').name = "keyple-plugin-stub"
 include ':java:component:keyple-plugin:remotese'
 project(':java:component:keyple-plugin:remotese').name = "keyple-plugin-remotese"
 
+include ':java:component:keyple-plugin:remote-se:core'
+project(':java:component:keyple-plugin:remote-se:core').name = "keyple-plugin-remotese-core"
+
+include ':java:component:keyple-plugin:remote-se:nativese'
+project(':java:component:keyple-plugin:remote-se:nativese').name = "keyple-plugin-remotese-nativese"
+
+include ':java:component:keyple-plugin:remote-se:virtualse'
+project(':java:component:keyple-plugin:remote-se:virtualse').name = "keyple-plugin-remotese-virtualse"
+

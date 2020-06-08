@@ -95,6 +95,9 @@ task setVersion {
     dependsOn ':java:component:keyple-calypso:setVersion'
     dependsOn ':java:component:keyple-plugin:keyple-plugin-pcsc:setVersion'
     dependsOn ':java:component:keyple-plugin:keyple-plugin-remotese:setVersion'
+    dependsOn ':java:component:keyple-plugin:remote-se:keyple-plugin-remotese-core:setVersion'
+    dependsOn ':java:component:keyple-plugin:remote-se:keyple-plugin-remotese-nativese:setVersion'
+    dependsOn ':java:component:keyple-plugin:remote-se:keyple-plugin-remotese-virtualse:setVersion'
     dependsOn ':java:component:keyple-plugin:keyple-plugin-stub:setVersion'
 }
 
@@ -126,6 +129,27 @@ task installRemotesePlugin{
     dependsOn ':java:component:keyple-plugin:keyple-plugin-remotese:installPlugin'
 }
 
+task installRemotesePluginCore{
+    group 'keyple'
+    description 'Builds and installs the keyple remotese plugin (Core) into maven local repository'
+    dependsOn installCore
+    dependsOn ':java:component:keyple-plugin:remote-se:keyple-plugin-remotese-core:installPlugin'
+}
+
+task installRemotesePluginNativese{
+    group 'keyple'
+    description 'Builds and installs the keyple remotese plugin (Native SE) into maven local repository'
+    dependsOn installRemotesePluginCore
+    dependsOn ':java:component:keyple-plugin:remote-se:keyple-plugin-remotese-nativese:installPlugin'
+}
+
+task installRemotesePluginVirtualse{
+    group 'keyple'
+    description 'Builds and installs the keyple remotese plugin (Virtual SE) into maven local repository'
+    dependsOn installRemotesePluginCore
+    dependsOn ':java:component:keyple-plugin:remote-se:keyple-plugin-remotese-virtualse:installPlugin'
+}
+
 task installStubPlugin{
     group 'keyple'
     description 'Builds and installs  the keyple stub plugin into maven local repository'
@@ -139,6 +163,7 @@ task installAll {
     dependsOn installCore
     dependsOn installCalypsoExtension
     dependsOn installRemotesePlugin
+    dependsOn installRemotesePluginCore
     dependsOn installStubPlugin
     dependsOn installPcscPlugin
 
@@ -166,6 +191,12 @@ task codeQuality {
     dependsOn ':java:component:keyple-calypso:sonarqube'
     dependsOn installRemotesePlugin
     dependsOn ':java:component:keyple-plugin:keyple-plugin-remotese:sonarqube'
+    dependsOn installRemotesePluginCore
+    dependsOn ':java:component:keyple-plugin:remote-se:keyple-plugin-remotese-core:sonarqube'
+    dependsOn installRemotesePluginNativese
+    dependsOn ':java:component:keyple-plugin:remote-se:keyple-plugin-remotese-nativese:sonarqube'
+    dependsOn installRemotesePluginVirtualse
+    dependsOn ':java:component:keyple-plugin:remote-se:keyple-plugin-remotese-virtualse:sonarqube'
     dependsOn installStubPlugin
     dependsOn ':java:component:keyple-plugin:keyple-plugin-stub:sonarqube'
     dependsOn installPcscPlugin
