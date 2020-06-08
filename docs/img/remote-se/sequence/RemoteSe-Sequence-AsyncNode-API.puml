@@ -1,0 +1,70 @@
+@startuml
+
+title
+    Keyple Plugin Remote SE
+    Async Node API (22/05/2020)
+end title
+
+' == THEME ==
+
+skinparam Shadowing false
+skinparam RoundCorner 10
+
+' == CONTENT ==
+
+participant "clientNode:\n**KeypleAsyncNode**" as clientNode #LightBlue
+actor "userClientSender:\n**<back:LightBlue>KeypleAsyncMessageSender**" as userClientSender
+
+actor "userServerSender:\n**<back:LightBlue>KeypleAsyncMessageSender**" as userServerSender
+participant "serverNode:\n**KeypleAsyncNode**" as serverNode #LightBlue
+
+activate clientNode #LightBlue
+clientNode -> userClientSender : sendMessage (<color:red>dtoA</color>)
+activate userClientSender #Pink
+userClientSender ->> userServerSender : send asynchronous message (<color:red>dtoA</color>)
+return
+deactivate clientNode
+
+activate userServerSender #Pink
+userServerSender -> userServerSender : registerClient (<color:red>dtoA</color>)
+note over userServerSender
+    It is necessary to identify the client
+    via the "requesterNodeId" field in the DTO
+    in order to be able to reply a new message
+    at a later date.
+end note
+userServerSender -> userServerSender : [...]ServerUtils.getAsyncNode ()
+note over userServerSender
+    To access the node it is necessary
+    to use the utility class corresponding
+    to the server configuration :
+    * **RemoteSe**ServerUtils
+    * **NativeSe**ServerUtils
+    * **NativeSePool**ServerUtils
+end note
+userServerSender -> serverNode : onMessage (<color:red>dtoA</color>)
+activate serverNode #LightBlue
+serverNode -> userServerSender : sendMessage (<color:blue>dtoB</color>)
+activate userServerSender #LightYellow
+userServerSender -> userServerSender : findClient (<color:blue>dtoB</color>)
+userServerSender ->> userClientSender : send asynchronous message (<color:blue>dtoB</color>)
+return
+return
+deactivate userServerSender
+
+activate userClientSender #Pink
+userClientSender -> userClientSender : [...]ClientUtils.getAsyncNode ()
+note over userClientSender
+    To retrieve the node it is necessary
+    to use the utility class corresponding
+    to the client configuration :
+    * **NativeSe**ClientUtils
+    * **RemoteSe**ClientUtils
+    * **RemoteSePool**ClientUtils
+end note
+userClientSender -> clientNode : onMessage (<color:blue>dtoB</color>)
+activate clientNode #LightBlue
+return
+deactivate userClientSender
+
+@enduml

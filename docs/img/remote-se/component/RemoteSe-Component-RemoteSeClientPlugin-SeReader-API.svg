@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="1705px" preserveAspectRatio="none" style="width:2357px;height:1705px;" version="1.1" viewBox="0 0 2357 1705" width="2357.5px" zoomAndPan="magnify"><defs/><g><text fill="#000000" font-family="sans-serif" font-size="45" lengthAdjust="spacingAndGlyphs" textLength="450" x="962.5" y="46.7139">RemoteSeClientPlugin</text><text fill="#000000" font-family="sans-serif" font-size="45" lengthAdjust="spacingAndGlyphs" textLength="202.5" x="1086.25" y="103.3154">SeReader</text><text fill="#000000" font-family="sans-serif" font-size="30" lengthAdjust="spacingAndGlyphs" textLength="1392.5" x="491.25" y="144.3457">(for an SeReader or for an ObservableReader if withReaderObservation() is not requested by the user)</text><!--MD5=[2541b6780e9a74f04347f5467a346812]
+cluster App Virtual SE--><polygon fill="#FFFFFF" points="55,470.9375,315,470.9375,332.5,529.9609,1087.5,529.9609,1087.5,1675.9375,55,1675.9375,55,470.9375" style="stroke: #000000; stroke-width: 3.75;"/><line style="stroke: #000000; stroke-width: 3.75;" x1="55" x2="332.5" y1="529.9609" y2="529.9609"/><text fill="#000000" font-family="sans-serif" font-size="35" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="245" x="65" y="512.2705">App Virtual SE</text><!--MD5=[24dc29b071615c4dcac39c996c469546]
+cluster virtualKeyple--><polygon fill="#FFFFFF" points="115,715.9375,250,715.9375,267.5,774.9609,1027.5,774.9609,1027.5,1185.9375,115,1185.9375,115,715.9375" style="stroke: #000000; stroke-width: 3.75;"/><line style="stroke: #000000; stroke-width: 3.75;" x1="115" x2="267.5" y1="774.9609" y2="774.9609"/><text fill="#000000" font-family="sans-serif" font-size="35" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="120" x="125" y="757.2705">Keyple</text><!--MD5=[658751589876bf934989b8e5f275d806]
+cluster App Native SE--><polygon fill="#FFFFFF" points="1147.5,360.9375,1407.5,360.9375,1425,419.9609,2195,419.9609,2195,1675.9375,1147.5,1675.9375,1147.5,360.9375" style="stroke: #000000; stroke-width: 3.75;"/><line style="stroke: #000000; stroke-width: 3.75;" x1="1147.5" x2="1425" y1="419.9609" y2="419.9609"/><text fill="#000000" font-family="sans-serif" font-size="35" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="245" x="1157.5" y="402.2705">App Native SE</text><!--MD5=[06de4c2a8c4b5af4edb191b660abc35d]
+cluster nativeKeyple--><polygon fill="#FFFFFF" points="1207.5,470.9375,1342.5,470.9375,1360,529.9609,2135,529.9609,2135,1185.9375,1207.5,1185.9375,1207.5,470.9375" style="stroke: #000000; stroke-width: 3.75;"/><line style="stroke: #000000; stroke-width: 3.75;" x1="1207.5" x2="1360" y1="529.9609" y2="529.9609"/><text fill="#000000" font-family="sans-serif" font-size="35" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="120" x="1217.5" y="512.2705">Keyple</text><!--MD5=[e6001af16d4774e0fdad2715570119d9]
+entity master--><rect fill="#FEFECE" height="94.0234" style="stroke: #D4AC0D; stroke-width: 3.75;" width="310" x="415" y="560.9375"/><rect fill="#FEFECE" height="12.5" style="stroke: #D4AC0D; stroke-width: 3.75;" width="25" x="402.5" y="573.4375"/><rect fill="#FEFECE" height="12.5" style="stroke: #D4AC0D; stroke-width: 3.75;" width="25" x="402.5" y="629.9609"/><text fill="#000000" font-family="sans-serif" font-size="35" lengthAdjust="spacingAndGlyphs" textLength="260" x="440" y="622.2705">TicketingService</text><!--MD5=[639e4e67627f52eedf72e9e8df2b4440]
+entity KeypleSyncMessageSender--><rect fill="#FDEDEC" height="94.0234" style="stroke: #E74C3C; stroke-width: 3.75;" width="492.5" x="541.25" y="1295.9375"/><rect fill="#FDEDEC" height="12.5" style="stroke: #E74C3C; stroke-width: 3.75;" width="25" x="528.75" y="1308.4375"/><rect fill="#FDEDEC" height="12.5" style="stroke: #E74C3C; stroke-width: 3.75;" width="25" x="528.75" y="1364.9609"/><text fill="#000000" font-family="sans-serif" font-size="35" lengthAdjust="spacingAndGlyphs" textLength="442.5" x="566.25" y="1357.2705">KeypleSyncMessageSender</text><!--MD5=[da9b93ab37bfb61beeac4463b30bed89]
+entity virtualAsyncSender--><rect fill="#F4ECF7" height="94.0234" style="stroke: #8E44AD; stroke-width: 3.75;" width="510" x="532.5" y="1540.9375"/><rect fill="#F4ECF7" height="12.5" style="stroke: #8E44AD; stroke-width: 3.75;" width="25" x="520" y="1553.4375"/><rect fill="#F4ECF7" height="12.5" style="stroke: #8E44AD; stroke-width: 3.75;" width="25" x="520" y="1609.9609"/><text fill="#000000" font-family="sans-serif" font-size="35" lengthAdjust="spacingAndGlyphs" textLength="460" x="557.5" y="1602.2705">KeypleAsyncMessageSender</text><!--MD5=[46c0e94453be0e63c5c0acba14348135]
+entity virtualReader--><rect fill="#EBF5FB" height="94.0234" style="stroke: #3498DB; stroke-width: 3.75;" width="210" x="662.5" y="805.9375"/><rect fill="#EBF5FB" height="12.5" style="stroke: #3498DB; stroke-width: 3.75;" width="25" x="650" y="818.4375"/><rect fill="#EBF5FB" height="12.5" style="stroke: #3498DB; stroke-width: 3.75;" width="25" x="650" y="874.9609"/><text fill="#000000" font-family="sans-serif" font-size="35" lengthAdjust="spacingAndGlyphs" textLength="160" x="687.5" y="867.2705">SeReader</text><!--MD5=[49b6b045effa2ffe845d7dc60cfab39e]
+entity RemoteSeClientPlugin--><rect fill="#E9F7EF" height="94.0234" style="stroke: #27AE60; stroke-width: 3.75;" width="402.5" x="171.25" y="805.9375"/><rect fill="#E9F7EF" height="12.5" style="stroke: #27AE60; stroke-width: 3.75;" width="25" x="158.75" y="818.4375"/><rect fill="#E9F7EF" height="12.5" style="stroke: #27AE60; stroke-width: 3.75;" width="25" x="158.75" y="874.9609"/><text fill="#000000" font-family="sans-serif" font-size="35" lengthAdjust="spacingAndGlyphs" textLength="352.5" x="196.25" y="867.2705">RemoteSeClientPlugin</text><!--MD5=[52f427f438eb6b18c5052dcce76dfa68]
+entity KeypleClientSyncNode--><rect fill="#FDEDEC" height="94.0234" style="stroke: #E74C3C; stroke-width: 3.75;" width="407.5" x="578.75" y="1050.9375"/><rect fill="#FDEDEC" height="12.5" style="stroke: #E74C3C; stroke-width: 3.75;" width="25" x="566.25" y="1063.4375"/><rect fill="#FDEDEC" height="12.5" style="stroke: #E74C3C; stroke-width: 3.75;" width="25" x="566.25" y="1119.9609"/><text fill="#000000" font-family="sans-serif" font-size="35" lengthAdjust="spacingAndGlyphs" textLength="357.5" x="603.75" y="1112.2705">KeypleClientSyncNode</text><!--MD5=[7f27c41e0cecafa778a81ee1e8c5f65c]
+entity virtualAsyncNode--><rect fill="#F4ECF7" height="94.0234" style="stroke: #8E44AD; stroke-width: 3.75;" width="335" x="155" y="1050.9375"/><rect fill="#F4ECF7" height="12.5" style="stroke: #8E44AD; stroke-width: 3.75;" width="25" x="142.5" y="1063.4375"/><rect fill="#F4ECF7" height="12.5" style="stroke: #8E44AD; stroke-width: 3.75;" width="25" x="142.5" y="1119.9609"/><text fill="#000000" font-family="sans-serif" font-size="35" lengthAdjust="spacingAndGlyphs" textLength="285" x="180" y="1112.2705">KeypleAsyncNode</text><!--MD5=[f855680bc6c989572ebb25245d27968d]
+entity Controller--><rect fill="#FDEDEC" height="94.0234" style="stroke: #E74C3C; stroke-width: 3.75;" width="205" x="1347.5" y="1295.9375"/><rect fill="#FDEDEC" height="12.5" style="stroke: #E74C3C; stroke-width: 3.75;" width="25" x="1335" y="1308.4375"/><rect fill="#FDEDEC" height="12.5" style="stroke: #E74C3C; stroke-width: 3.75;" width="25" x="1335" y="1364.9609"/><text fill="#000000" font-family="sans-serif" font-size="35" lengthAdjust="spacingAndGlyphs" textLength="155" x="1372.5" y="1357.2705">Controller</text><!--MD5=[951fa848d2e21b1429d3e6d02fcf9427]
+entity nativeAsyncSender--><rect fill="#F4ECF7" height="94.0234" style="stroke: #8E44AD; stroke-width: 3.75;" width="510" x="1195" y="1540.9375"/><rect fill="#F4ECF7" height="12.5" style="stroke: #8E44AD; stroke-width: 3.75;" width="25" x="1182.5" y="1553.4375"/><rect fill="#F4ECF7" height="12.5" style="stroke: #8E44AD; stroke-width: 3.75;" width="25" x="1182.5" y="1609.9609"/><text fill="#000000" font-family="sans-serif" font-size="35" lengthAdjust="spacingAndGlyphs" textLength="460" x="1220" y="1602.2705">KeypleAsyncMessageSender</text><!--MD5=[2db0a362b33505ba32821d1f8f5f522c]
+entity nativeReader--><rect fill="#EBF5FB" height="94.0234" style="stroke: #3498DB; stroke-width: 3.75;" width="210" x="1885" y="805.9375"/><rect fill="#EBF5FB" height="12.5" style="stroke: #3498DB; stroke-width: 3.75;" width="25" x="1872.5" y="818.4375"/><rect fill="#EBF5FB" height="12.5" style="stroke: #3498DB; stroke-width: 3.75;" width="25" x="1872.5" y="874.9609"/><text fill="#000000" font-family="sans-serif" font-size="35" lengthAdjust="spacingAndGlyphs" textLength="160" x="1910" y="867.2705">SeReader</text><!--MD5=[92757473467fb1382dc129291d99d9b4]
+entity ReaderPlugin--><rect fill="#E9F7EF" height="94.0234" style="stroke: #27AE60; stroke-width: 3.75;" width="265" x="1642.5" y="560.9375"/><rect fill="#E9F7EF" height="12.5" style="stroke: #27AE60; stroke-width: 3.75;" width="25" x="1630" y="573.4375"/><rect fill="#E9F7EF" height="12.5" style="stroke: #27AE60; stroke-width: 3.75;" width="25" x="1630" y="629.9609"/><text fill="#000000" font-family="sans-serif" font-size="35" lengthAdjust="spacingAndGlyphs" textLength="215" x="1667.5" y="622.2705">ReaderPlugin</text><!--MD5=[4997335c410708a93d2ed027cdf507fb]
+entity NativeSeServerService--><rect fill="#E9F7EF" height="94.0234" style="stroke: #27AE60; stroke-width: 3.75;" width="412.5" x="1383.75" y="805.9375"/><rect fill="#E9F7EF" height="12.5" style="stroke: #27AE60; stroke-width: 3.75;" width="25" x="1371.25" y="818.4375"/><rect fill="#E9F7EF" height="12.5" style="stroke: #27AE60; stroke-width: 3.75;" width="25" x="1371.25" y="874.9609"/><text fill="#000000" font-family="sans-serif" font-size="35" lengthAdjust="spacingAndGlyphs" textLength="362.5" x="1408.75" y="867.2705">NativeSeServerService</text><!--MD5=[82c05fc9f5b7fc34d37dea3c47938e84]
+entity KeypleServerSyncNode--><rect fill="#FDEDEC" height="94.0234" style="stroke: #E74C3C; stroke-width: 3.75;" width="422.5" x="1248.75" y="1050.9375"/><rect fill="#FDEDEC" height="12.5" style="stroke: #E74C3C; stroke-width: 3.75;" width="25" x="1236.25" y="1063.4375"/><rect fill="#FDEDEC" height="12.5" style="stroke: #E74C3C; stroke-width: 3.75;" width="25" x="1236.25" y="1119.9609"/><text fill="#000000" font-family="sans-serif" font-size="35" lengthAdjust="spacingAndGlyphs" textLength="372.5" x="1273.75" y="1112.2705">KeypleServerSyncNode</text><!--MD5=[4224fb5fc9421d02b069d9655e0fb7cd]
+entity nativeAsyncNode--><rect fill="#F4ECF7" height="94.0234" style="stroke: #8E44AD; stroke-width: 3.75;" width="335" x="1760" y="1050.9375"/><rect fill="#F4ECF7" height="12.5" style="stroke: #8E44AD; stroke-width: 3.75;" width="25" x="1747.5" y="1063.4375"/><rect fill="#F4ECF7" height="12.5" style="stroke: #8E44AD; stroke-width: 3.75;" width="25" x="1747.5" y="1119.9609"/><text fill="#000000" font-family="sans-serif" font-size="35" lengthAdjust="spacingAndGlyphs" textLength="285" x="1785" y="1112.2705">KeypleAsyncNode</text><!--MD5=[0f187cbaedd9fd489a126ebaacd58bd2]
+entity SE--><rect fill="#FEFECE" height="94.0234" style="stroke: #D4AC0D; stroke-width: 3.75;" width="95" x="2235" y="805.9375"/><rect fill="#FEFECE" height="12.5" style="stroke: #D4AC0D; stroke-width: 3.75;" width="25" x="2222.5" y="818.4375"/><rect fill="#FEFECE" height="12.5" style="stroke: #D4AC0D; stroke-width: 3.75;" width="25" x="2222.5" y="874.9609"/><text fill="#000000" font-family="sans-serif" font-size="35" lengthAdjust="spacingAndGlyphs" textLength="45" x="2260" y="867.2705">SE</text><!--MD5=[c88a36799ca4d6dff2d7449eacfc25f7]
+entity start--><ellipse cx="570" cy="245.9375" fill="#FEFECE" rx="20" ry="20" style="stroke: #A80036; stroke-width: 5.0;"/><text fill="#000000" font-family="sans-serif" font-size="35" lengthAdjust="spacingAndGlyphs" textLength="70" x="535" y="324.7705">start</text><!--MD5=[b0b76e5f08d084e3b42e05b3086adf1d]
+link start to master--><path d="M570,268.6825 C570,321.68 570,466.0275 570,547.66 " fill="none" id="start-&gt;master" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="570,560.2,580,537.7,570,547.7,560,537.7,570,560.2" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[e41ad7885d08fa08fcd73e44afacc481]
+link master to virtualReader--><path d="M607.1475,656.08 C639.4925,695.385 686.52,752.5325 721.2875,794.78 " fill="none" id="master-&gt;virtualReader" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="729.8475,805.1825,723.2739,781.4541,721.9054,795.5299,707.8296,794.1614,729.8475,805.1825" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[2a786b84293f80d266fe68ce4f82fcad]
+link master to RemoteSeClientPlugin--><path d="M532.8525,656.08 C500.5075,695.385 453.48,752.5325 418.7125,794.78 " fill="none" id="master-&gt;RemoteSeClientPlugin" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="410.1525,805.1825,432.1704,794.1614,418.0946,795.5299,416.7261,781.4541,410.1525,805.1825" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[e94a35247ed5be30f4384e29d0a17720]
+link RemoteSeClientPlugin to virtualReader--><path d="M573.8575,853.4375 C598.9775,853.4375 624.1,853.4375 649.2225,853.4375 " fill="none" id="RemoteSeClientPlugin-&gt;virtualReader" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="662.3575,853.4375,639.8575,843.4375,649.8575,853.4375,639.8575,863.4375,662.3575,853.4375" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[e3142dd67a1e7c283dda97bfef891f2e]
+link RemoteSeClientPlugin to KeypleClientSyncNode--><path d="M461.02,907.7525 C529.9925,948.1275 625.2925,1003.9125 694.2075,1044.2525 " fill="none" id="RemoteSeClientPlugin-KeypleClientSyncNode" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="705.0325,1050.59,690.6674,1030.5926,694.2451,1044.2747,680.563,1047.8524,705.0325,1050.59" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="449.6175,901.08,463.9826,921.0774,460.4049,907.3953,474.087,903.8176,449.6175,901.08" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[d5b16883929c6bf1a83c96f3c41422b3]
+link RemoteSeClientPlugin to virtualAsyncNode--><path d="M360.49,913.59 C352.6525,951.21 342.455,1000.1525 334.6,1037.8575 " fill="none" id="RemoteSeClientPlugin-virtualAsyncNode" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="332.0325,1050.1825,346.4127,1030.196,334.5828,1037.9454,326.8333,1026.1155,332.0325,1050.1825" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="363.095,901.08,348.716,921.0673,360.5454,913.3172,368.2956,925.1467,363.095,901.08" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[dcaf03c538603d6b229d82d4a45512e1]
+link virtualReader to KeypleClientSyncNode--><path d="M771.1025,913.59 C773.435,950.885 776.46,999.3025 778.8075,1036.8725 " fill="none" id="virtualReader-KeypleClientSyncNode" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="779.64,1050.1825,788.2125,1027.1009,778.8578,1037.707,768.2517,1028.3523,779.64,1050.1825" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="770.3225,901.08,761.7434,924.1592,771.1011,913.5557,781.7046,922.9134,770.3225,901.08" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[efa81e99aec94499d73336459fa3e74d]
+link virtualReader to virtualAsyncNode--><path d="M672.395,907.23 C597.4775,947.635 493.4975,1003.7125 418.38,1044.2275 " fill="none" id="virtualReader-virtualAsyncNode" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="406.58,1050.59,431.1302,1048.7089,417.5814,1044.6554,421.6349,1031.1067,406.58,1050.59" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="683.8,901.08,659.2498,902.9611,672.7986,907.0146,668.7451,920.5633,683.8,901.08" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[c7b94a61d1d24aff01eacc889e375bc9]
+link KeypleClientSyncNode to KeypleSyncMessageSender--><path d="M783.44,1146.08 C784.245,1184.72 785.41,1240.6 786.285,1282.62 " fill="none" id="KeypleClientSyncNode-&gt;KeypleSyncMessageSender" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="786.5475,1295.1825,796.076,1272.4788,786.2868,1282.6852,776.0804,1272.896,786.5475,1295.1825" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[7bdafe176764accd8e4b426f59bfb19b]
+link virtualAsyncNode to virtualAsyncSender--><path d="M347.755,1158.18 C377.235,1220.5075 430.595,1320.6675 497.5,1390.9375 C553.0325,1449.2625 628.945,1499.5288 689.17,1534.4135 " fill="none" id="virtualAsyncNode-virtualAsyncSender" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="700.225,1540.7468,685.6734,1520.8847,689.379,1534.5327,675.731,1538.2383,700.225,1540.7468" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="342.18,1146.24,342.6407,1170.8578,347.4696,1157.5656,360.7618,1162.3945,342.18,1146.24" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[f3bd09ba0083822b626f9f4af61db5cc]
+link ReaderPlugin to nativeReader--><path d="M1815.44,656.08 C1850.95,695.7175 1902.7125,753.5 1940.6525,795.8525 " fill="none" id="ReaderPlugin-&gt;nativeReader" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="1949.01,805.1825,1941.4474,781.7505,1940.6703,795.8713,1926.5495,795.0941,1949.01,805.1825" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[50689a7d941750e1cf2001a6f46f5272]
+link nativeReader to SE--><path d="M2095.1175,853.4375 C2137.35,853.4375 2179.5825,853.4375 2221.815,853.4375 " fill="none" id="nativeReader-&gt;SE" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="2234.9225,853.4375,2212.4225,843.4375,2222.4225,853.4375,2212.4225,863.4375,2234.9225,853.4375" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[dc25b54acb28170749630723bf6687fb]
+reverse link ReaderPlugin to NativeSeServerService--><path d="M1732.22,666.4375 C1699.7725,708.5325 1655.71,765.6925 1625.27,805.1825 " fill="none" id="ReaderPlugin&lt;-NativeSeServerService" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="1740.2025,656.08,1718.548,667.7988,1732.5728,665.9814,1734.3902,680.0063,1740.2025,656.08" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[ebe3116dee9f45fc052829b058f7febc]
+link NativeSeServerService to nativeReader--><path d="M1797.0325,853.4375 C1821.85,853.4375 1846.67,853.4375 1871.49,853.4375 " fill="none" id="NativeSeServerService-&gt;nativeReader" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="1884.47,853.4375,1861.97,843.4375,1871.97,853.4375,1861.97,863.4375,1884.47,853.4375" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[a9ae5f473954e3a945bc80fcdfcff0a7]
+link NativeSeServerService to KeypleServerSyncNode--><path d="M1559.3575,912.51 C1538.745,950.5625 1511.665,1000.555 1490.9825,1038.7375 " fill="none" id="NativeSeServerService-KeypleServerSyncNode" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="1484.785,1050.1825,1504.2933,1035.16,1490.7378,1039.191,1486.7069,1025.6355,1484.785,1050.1825" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="1565.5475,901.08,1546.0371,916.0998,1559.5932,912.0707,1563.6222,925.6268,1565.5475,901.08" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[fcce547e93c80815fe16004a4f2a6acd]
+link NativeSeServerService to nativeAsyncNode--><path d="M1664.3125,908.7825 C1720.3375,948.6225 1796.8425,1003.0275 1852.93,1042.91 " fill="none" id="NativeSeServerService-nativeAsyncNode" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="1863.155,1050.1825,1850.6182,1028.991,1852.9696,1042.9363,1839.0243,1045.2876,1863.155,1050.1825" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="1653.48,901.08,1666.0252,922.2665,1663.6683,908.3221,1677.6126,905.9652,1653.48,901.08" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[9ba12d1a8f07137b76b024f63143968d]
+reverse link KeypleServerSyncNode to Controller--><path d="M1457.5975,1158.59 C1455.8525,1200.465 1453.525,1256.36 1451.9075,1295.1825 " fill="none" id="KeypleServerSyncNode&lt;-Controller" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="1458.12,1146.08,1447.1964,1168.1464,1457.6021,1158.5693,1467.1793,1168.975,1458.12,1146.08" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[ec9301c984ba7c2c73bd8668988a2d8b]
+link nativeAsyncNode to nativeAsyncSender--><path d="M1873.695,1155.5875 C1781.9175,1248.8075 1596.1275,1437.515 1504.1275,1530.9588 " fill="none" id="nativeAsyncNode-nativeAsyncSender" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="1494.455,1540.7845,1517.3665,1531.7672,1503.2248,1531.8772,1503.1148,1517.7355,1494.455,1540.7845" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="1882.5775,1146.565,1859.6651,1155.58,1873.8068,1155.4714,1873.9153,1169.6131,1882.5775,1146.565" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[7bdbd4e2f6fab767a71d1b397b0107f5]
+link KeypleSyncMessageSender to Controller--><path d="M1033.9975,1343.4375 C1133.7875,1343.4375 1233.58,1343.4375 1333.37,1343.4375 " fill="none" id="KeypleSyncMessageSender-&gt;Controller" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="1346.8125,1343.4375,1324.3125,1333.4375,1334.3125,1343.4375,1324.3125,1353.4375,1346.8125,1343.4375" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[efaa9fd433698e11c763ab979013e2b5]
+link virtualAsyncSender to nativeAsyncSender--><path d="M1056.1,1588.4375 C1098.0175,1588.4375 1139.9375,1588.4375 1181.855,1588.4375 " fill="none" id="virtualAsyncSender-nativeAsyncSender" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="1194.865,1588.4375,1172.365,1578.4375,1182.365,1588.4375,1172.365,1598.4375,1194.865,1588.4375" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="#A80036" points="1043.055,1588.4375,1065.555,1598.4375,1055.555,1588.4375,1065.555,1578.4375,1043.055,1588.4375" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[5e314e130293e129368dec754009821d]
+link KeypleSyncMessageSender to virtualAsyncSender--><!--MD5=[c0dfa857a9aa5634cc626fedeb939076]
+link Controller to nativeAsyncSender--><!--MD5=[891180062fd194ce471eaa9c59ba57d5]
+link virtualAsyncNode to KeypleClientSyncNode--><!--MD5=[b8a238addb82a4484f0ceb4bb62c6957]
+link KeypleServerSyncNode to nativeAsyncNode--><!--MD5=[8efac598f1a89b8a1aaface195f7d8dd]
+@startuml
+title
+    RemoteSeClientPlugin
+    SeReader
+    <font size=12>(for an SeReader or for an ObservableReader if withReaderObservation() is not requested by the user)
+end title
+
+
+skinparam Shadowing false
+skinparam component {
+    BorderColor #D4AC0D
+    BackgroundColor<<red>> #FDEDEC
+    BorderColor<<red>> #E74C3C
+    BackgroundColor<<purple>> #F4ECF7
+    BorderColor<<purple>> #8E44AD
+    BackgroundColor<<blue>> #EBF5FB
+    BorderColor<<blue>> #3498DB
+    BackgroundColor<<green>> #E9F7EF
+    BorderColor<<green>> #27AE60
+    BackgroundColor<<grey>> #EAECEE
+    BorderColor<<grey>> #2C3E50
+}
+hide <<red>> stereotype
+hide <<purple>> stereotype
+hide <<blue>> stereotype
+hide <<green>> stereotype
+hide <<grey>> stereotype
+
+
+package "App Virtual SE" {
+    [TicketingService] as master
+    package "Keyple" as virtualKeyple {
+        [SeReader] as virtualReader <<blue>>
+        [RemoteSeClientPlugin] <<green>>
+        [KeypleClientSyncNode] <<red>>
+        [KeypleAsyncNode] as virtualAsyncNode <<purple>>
+    }
+    [KeypleSyncMessageSender] <<red>>
+    [KeypleAsyncMessageSender] as virtualAsyncSender <<purple>>
+}
+[SE]
+package "App Native SE" {
+    package "Keyple" as nativeKeyple {
+        [SeReader] as nativeReader <<blue>>
+        [ReaderPlugin] <<green>>
+        [NativeSeServerService] <<green>>
+        [KeypleServerSyncNode] <<red>>
+        [KeypleAsyncNode] as nativeAsyncNode <<purple>>
+    }
+    [Controller] <<red>>
+    [KeypleAsyncMessageSender] as nativeAsyncSender <<purple>>
+}
+
+master <-up- start
+master - -> virtualReader
+master - -> [RemoteSeClientPlugin]
+[RemoteSeClientPlugin] -> virtualReader
+[RemoteSeClientPlugin] <- -> [KeypleClientSyncNode]
+[RemoteSeClientPlugin] <- -> virtualAsyncNode
+virtualReader <- -> [KeypleClientSyncNode]
+virtualReader <- -> virtualAsyncNode
+[KeypleClientSyncNode] - -> [KeypleSyncMessageSender]
+virtualAsyncNode <- -> virtualAsyncSender
+
+[ReaderPlugin] - -> nativeReader
+nativeReader -right-> [SE]
+[NativeSeServerService] -up-> [ReaderPlugin]
+[NativeSeServerService] -right-> nativeReader
+[NativeSeServerService] <- -> [KeypleServerSyncNode]
+[NativeSeServerService] <- -> nativeAsyncNode
+[Controller] -up-> [KeypleServerSyncNode]
+nativeAsyncSender <-up-> nativeAsyncNode
+
+[KeypleSyncMessageSender] -> [Controller]
+virtualAsyncSender <-> nativeAsyncSender
+
+[KeypleSyncMessageSender] -[hidden]- virtualAsyncSender
+[Controller] -[hidden]- nativeAsyncSender
+virtualAsyncNode -[hidden]right- [KeypleClientSyncNode]
+[KeypleServerSyncNode] -[hidden]right- nativeAsyncNode
+
+@enduml
+
+PlantUML version 1.2020.09(Sun May 10 12:51:06 CEST 2020)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Java Version: 11.0.7+10-b765.53
+Operating System: Windows 10
+Default Encoding: Cp1252
+Language: fr
+Country: FR
+--></g></svg>

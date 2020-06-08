@@ -1,0 +1,120 @@
+@startuml
+title
+    Keyple Plugin Remote SE
+    RemoteSeServerPlugin API (22/05/2020)
+    (with an ObservableReader)
+end title
+
+' == THEME ==
+
+skinparam Shadowing false
+skinparam RoundCorner 10
+
+'Couleurs issues de : https://htmlcolorcodes.com/fr/tableau-de-couleur/tableau-de-couleur-design-plat/
+!define C_LIGHT_YELLOW FEF9E7
+!define C_LIGHT_ORANGE FDF2E9
+
+' == CONTENT ==
+
+participant "SE" as se
+
+box "Native SE" #C_LIGHT_YELLOW
+participant "**ObservableReader**" as reader #LightBlue
+participant "**ReaderPlugin**" as plugin #LightBlue
+actor "**Native SE App**" as client
+participant "**NativeSeClientService**" as nativeSeService #LightBlue
+end box
+
+box "Virtual SE" #C_LIGHT_ORANGE
+participant "**RemoteSeServerPlugin**" as remoteSePlugin #LightBlue
+participant "**RemoteSeServerObservableReader**" as virtualReader #LightBlue
+actor "**Virtual SE App**:\n**<back:LightBlue>ObservablePlugin.PluginObserver**" as server
+end box
+
+== Virtual SE Initialization ==
+
+activate server #Pink
+server -> remoteSePlugin ** : seProxyService.registerPlugin\n (RemoteSeServerPluginFactory...\n    .withPluginObserver (this)...)
+server -> server : Awaiting receipt of\n a Plugin Event...
+
+== Native SE Initialization ==
+
+activate client #Pink
+client -> nativeSeService ** : NativeSeClientServiceFactory...
+client -> plugin ** : seProxyService.registerPlugin\n (new XXXFactory())
+activate plugin #LightBlue
+plugin -> reader ** : create
+return
+
+== Native SE SeSelection ==
+
+client -> client : Start Ticketing Service
+client -> plugin : getReader (name)
+activate plugin #LightBlue
+return reader
+client -> client : prepareSeSelection (reader)
+client -> reader : setSeSelectionRequest
+activate reader #LightBlue
+
+activate se #LightYellow
+se ->> reader : SE_MATCHED Event
+reader -> se : C-APDU
+se --> reader : R-APDU
+return <color:red>**matchingSe**</color>
+
+== Execute Remote Service for a specific Observable Native Reader ==
+
+client -> client : prepareUserInputData ()
+
+client -> client : NativeSeClientUtils.getService ()
+client -> nativeSeService : executeRemoteService (\n RemoteServiceParameters\n   .builder(<color:blue>**serviceId**</color>, reader)\n   .withInitialSeContent(<color:red>**matchingSe**</color>)\n   .withUserInputData(<color:green>**userInputData**</color>).build(),\n UserOutputData.class)
+activate nativeSeService #LightBlue
+
+nativeSeService -> remoteSePlugin
+activate remoteSePlugin #LightBlue
+remoteSePlugin -> virtualReader ** : create
+remoteSePlugin ->> server : notify (READER_CONNECTED, virtualReaderName)
+deactivate remoteSePlugin
+
+server -> remoteSePlugin : getReader (virtualReaderName)
+activate remoteSePlugin #LightBlue
+return virtualReader
+server -> virtualReader : getServiceId ()
+activate virtualReader #LightBlue
+return <color:blue>**serviceId**</color>
+server -> server : Find ticketing service\nto start using <color:blue>**serviceId**</color>
+
+== Remote Ticketing Service ==
+
+server -> server : Start Ticketing Service
+server -> virtualReader : getInitialSeContent ()
+activate virtualReader #LightBlue
+return <color:red>**matchingSe**</color>
+server -> virtualReader : getUserInputData\n (UserInputData.class)
+activate virtualReader #LightBlue
+return <color:green>**userInputData**</color>
+server -> virtualReader : addObserver (this)
+activate virtualReader #LightBlue
+return
+server -> server : continue...
+
+loop #C_LIGHT_ORANGE SE exchanges
+    server -> server : prepareSeRequest\n (virtualReader)
+    server -> virtualReader : processSeRequest ()
+    activate virtualReader #LightBlue
+    virtualReader -> se : C-APDU
+    se --> virtualReader : R-APDU
+    return response
+end loop
+
+server -> server : prepareUserOutputData ()
+server -> remoteSePlugin : terminateService (virtualReaderName, <color:purple>**userOutputData**</color>)
+activate remoteSePlugin #LightBlue
+remoteSePlugin -x virtualReader : remove virtual reader
+
+remoteSePlugin --> nativeSeService
+deactivate remoteSePlugin
+nativeSeService --> client : <color:purple>**userOutputData**</color>
+deactivate nativeSeService
+
+@enduml

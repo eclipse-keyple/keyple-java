@@ -1,0 +1,98 @@
+@startuml
+title
+    RemoteSeClientObservablePlugin
+    ObservableReader
+    <font size=12>(for an ObservableReader if withReaderObservation() is requested by the user)
+end title
+
+' == THEME ==
+
+'Couleurs issues de : https://htmlcolorcodes.com/fr/tableau-de-couleur/tableau-de-couleur-design-plat/
+skinparam Shadowing false
+skinparam component {
+    BorderColor #D4AC0D
+    ' Red
+    BackgroundColor<<red>> #FDEDEC
+    BorderColor<<red>> #E74C3C
+    ' Purple
+    BackgroundColor<<purple>> #F4ECF7
+    BorderColor<<purple>> #8E44AD
+    ' blue
+    BackgroundColor<<blue>> #EBF5FB
+    BorderColor<<blue>> #3498DB
+    ' Green
+    BackgroundColor<<green>> #E9F7EF
+    BorderColor<<green>> #27AE60
+    ' Grey
+    BackgroundColor<<grey>> #EAECEE
+    BorderColor<<grey>> #2C3E50
+}
+hide <<red>> stereotype
+hide <<purple>> stereotype
+hide <<blue>> stereotype
+hide <<green>> stereotype
+hide <<grey>> stereotype
+
+' == CONTENT ==
+
+package "App Virtual SE" {
+    [TicketingService] as master
+    package "Keyple" as virtualKeyple {
+        [ObservableReader] as virtualReader <<blue>>
+        [RemoteSeClientObservablePlugin] <<green>>
+        [KeypleClientSyncNode] <<red>>
+        [KeypleAsyncNode] as virtualAsyncNode <<purple>>
+    }
+    [KeypleSyncMessageSender] <<red>>
+    [KeypleAsyncMessageSender] as virtualAsyncSender <<purple>>
+}
+[SE]
+package "App Native SE" {
+    package "Keyple" as nativeKeyple {
+        [ObservableReader] as nativeReader <<blue>>
+        [ObservablePlugin] <<green>>
+        [NativeSeServerService] <<green>>
+        [KeypleServerSyncNode] <<red>>
+        [KeypleAsyncNode] as nativeAsyncNode <<purple>>
+    }
+    [Controller] <<red>>
+    [KeypleAsyncMessageSender] as nativeAsyncSender <<purple>>
+}
+
+'utilisation
+master <-up- start
+master --> virtualReader
+master --> [RemoteSeClientObservablePlugin]
+[RemoteSeClientObservablePlugin] .up.> master #Green : <color:green>Reader\n<color:green>Connected\n<color:green>Event
+[RemoteSeClientObservablePlugin] -> virtualReader
+[RemoteSeClientObservablePlugin] <--> [KeypleClientSyncNode]
+[RemoteSeClientObservablePlugin] <--> virtualAsyncNode
+virtualReader <--> [KeypleClientSyncNode]
+virtualReader <--> virtualAsyncNode
+[KeypleClientSyncNode] --> [KeypleSyncMessageSender]
+virtualAsyncNode <--> virtualAsyncSender
+virtualReader .up.> master #Blue : <color:blue>SE Event
+
+[ObservablePlugin] --> nativeReader
+nativeReader -right-> [SE]
+[NativeSeServerService] -up-> [ObservablePlugin]
+[NativeSeServerService] -right-> nativeReader
+[NativeSeServerService] <--> [KeypleServerSyncNode]
+[NativeSeServerService] <--> nativeAsyncNode
+[Controller] -up-> [KeypleServerSyncNode]
+nativeAsyncSender <-up-> nativeAsyncNode
+[SE] .left.> nativeReader #Blue : <color:blue>SE Event
+nativeReader .left.> NativeSeServerService #Blue : <color:blue>SE Event
+[ObservablePlugin] ..> [NativeSeServerService] #Green : <color:green>Reader\n<color:green>Connected\n<color:green>Event
+
+[KeypleSyncMessageSender] -> [Controller]
+virtualAsyncSender <-> nativeAsyncSender
+
+' == LAYOUT ==
+[KeypleSyncMessageSender] -[hidden]- virtualAsyncSender
+[Controller] -[hidden]- nativeAsyncSender
+virtualAsyncNode -[hidden]right- [KeypleClientSyncNode]
+[KeypleServerSyncNode] -[hidden]right- nativeAsyncNode
+'nativeAsyncNode -[hidden]right- [KeypleClientSyncNode]
+
+@enduml
