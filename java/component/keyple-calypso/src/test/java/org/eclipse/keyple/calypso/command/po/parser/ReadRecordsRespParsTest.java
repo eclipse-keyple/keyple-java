@@ -12,25 +12,31 @@
 package org.eclipse.keyple.calypso.command.po.parser;
 
 
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ReadRecordsRespParsTest {
 
     @Test
-    public void readRecordRespPars_one_record() {}
-
-    @Test
-    public void readRecordRespPars_records() {}
-
-    @Test
-    public void sampleMultipleRecordsParsing() {}
-
-    @Test
-    public void readRecordRespPars_one_record_sfi() {}
-
-    @Test
-    public void readRecordRespPars_records_sfi() {}
+    public void readRecordRespPars_bad_status() {
+//        List<ApduResponse> responses = new ArrayList<ApduResponse>();
+//        ApduResponse apduResponse = new ApduResponse(ByteArrayUtil.fromHex("9000"), null);
+//        responses.add(apduResponse);
+//        SeResponse seResponse =
+//                new SeResponse(true, true,
+//                        new SelectionStatus(null,
+//                                new ApduResponse(ByteArrayUtil.fromHex("9000"), null), true),
+//                        responses);
+//
+//        ReadRecordsRespPars
+    }
 }

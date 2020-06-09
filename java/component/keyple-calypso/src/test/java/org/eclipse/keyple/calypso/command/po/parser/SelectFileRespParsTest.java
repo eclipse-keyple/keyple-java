@@ -11,10 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.command.po.parser;
 
-import org.junit.Ignore;
-import junit.framework.TestCase;
 
-@Ignore // TODO add tests
-public class SelectFileRespParsTest extends TestCase {
+public class SelectFileRespParsTest {
 
 }

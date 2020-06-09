@@ -28,7 +28,7 @@ public class AppendRecordRespParsTest {
     @Test
     public void appendRecordRespPars() {
         List<ApduResponse> responses = new ArrayList<ApduResponse>();
-        ApduResponse apduResponse = new ApduResponse(new byte[] {90, 0}, null);
+        ApduResponse apduResponse = new ApduResponse(ByteArrayUtil.fromHex("9000"), null);
         responses.add(apduResponse);
         SeResponse seResponse =
                 new SeResponse(true, true,
@@ -38,7 +38,7 @@ public class AppendRecordRespParsTest {
 
         AppendRecordRespPars apduResponseParser =
                 new AppendRecordRespPars(seResponse.getApduResponses().get(0), null);
-        Assert.assertArrayEquals(new byte[] {90, 0},
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex("9000"),
                 apduResponseParser.getApduResponse().getBytes());
     }
 }
