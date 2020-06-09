@@ -12,6 +12,7 @@
 package org.eclipse.keyple.example.common.generic;
 
 
+import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalArgumentException;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
@@ -64,11 +65,10 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
                     byte SFI_T2Usage = (byte) 0x1A;
                     byte SFI_T2Environment = (byte) 0x14;
 
-                    PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
-                            PoSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
-                                    .aidSelector(SeSelector.AidSelector.builder()
-                                            .aidToSelect(HoplinkAID).build())
-                                    .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build());
+                    PoSelectionRequest poSelectionRequest = new PoSelectionRequest(PoSelector
+                            .builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                            .aidSelector(AidSelector.builder().aidToSelect(HoplinkAID).build())
+                            .invalidatedPo(InvalidatedPo.REJECT).build());
 
                     poSelectionRequest.prepareReadRecordFile(SFI_T2Environment, 1);
 

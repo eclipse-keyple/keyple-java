@@ -13,6 +13,7 @@ package org.eclipse.keyple.example.calypso.pc.usecase1;
 
 
 
+import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.ElementaryFile;
 import org.eclipse.keyple.calypso.transaction.PoResource;
@@ -23,7 +24,6 @@ import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -112,11 +112,10 @@ public class ExplicitSelectionAid_Stub {
 
             // Calypso selection: configures a PoSelectionRequest with all the desired attributes to
             // make the selection and read additional information afterwards
-            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
-                    PoSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
-                            .aidSelector(SeSelector.AidSelector.builder()
-                                    .aidToSelect(CalypsoClassicInfo.AID).build())
-                            .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build());
+            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(PoSelector.builder()
+                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                    .aidSelector(AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
+                    .invalidatedPo(InvalidatedPo.REJECT).build());
 
             // Prepare the reading order.
             poSelectionRequest.prepareReadRecordFile(CalypsoClassicInfo.SFI_EnvironmentAndHolder,

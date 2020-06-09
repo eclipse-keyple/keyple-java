@@ -17,11 +17,12 @@ import kotlinx.android.synthetic.main.activity_calypso_example.toolbar
 import org.eclipse.keyple.calypso.transaction.CalypsoPo
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest
 import org.eclipse.keyple.calypso.transaction.PoSelector
+import org.eclipse.keyple.calypso.transaction.PoSelector.InvalidatedPo
 import org.eclipse.keyple.core.selection.SeSelection
 import org.eclipse.keyple.core.seproxy.ChannelControl
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
 import org.eclipse.keyple.core.seproxy.SeReader
-import org.eclipse.keyple.core.seproxy.SeSelector
+import org.eclipse.keyple.core.seproxy.SeSelector.AidSelector
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.example.calypso.android.omapi.R
@@ -62,8 +63,8 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                     val poSelectionRequest = PoSelectionRequest(
                             PoSelector.builder()
                                     .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
-                                    .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
-                                        .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build())
+                                    .aidSelector(AidSelector.builder().aidToSelect(poAid).build())
+                                        .invalidatedPo(InvalidatedPo.REJECT).build())
                     seSelection.prepareSelection(poSelectionRequest)
 
                     try {
@@ -120,8 +121,8 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                     val poSelectionRequest = PoSelectionRequest(
                             PoSelector.builder()
                                     .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
-                                    .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
-                                    .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build())
+                                    .aidSelector(AidSelector.builder().aidToSelect(poAid).build())
+                                    .invalidatedPo(InvalidatedPo.REJECT).build())
 
                     /*
                      * Prepare the reading order and keep the associated parser for later use once
@@ -195,8 +196,8 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                     val poSelectionRequest = PoSelectionRequest(
                             PoSelector.builder()
                                     .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
-                                    .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
-                                    .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build())
+                                    .aidSelector(AidSelector.builder().aidToSelect(poAid).build())
+                                    .invalidatedPo(InvalidatedPo.REJECT).build())
 
                     /*
                      * Prepare the reading order and keep the associated parser for later use once

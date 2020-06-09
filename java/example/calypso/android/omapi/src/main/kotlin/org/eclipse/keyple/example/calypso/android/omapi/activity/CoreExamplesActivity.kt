@@ -19,6 +19,7 @@ import org.eclipse.keyple.core.seproxy.ChannelControl
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.SeSelector
+import org.eclipse.keyple.core.seproxy.SeSelector.AidSelector
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.message.ProxyReader
 import org.eclipse.keyple.core.seproxy.message.SeRequest
@@ -73,7 +74,7 @@ class CoreExamplesActivity : ExamplesActivity() {
 
                     val seSelector = SeSelector.builder()
                             .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
-                            .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
+                            .aidSelector(AidSelector.builder().aidToSelect(poAid).build())
                             .build()
                     val seRequest = SeRequest(seSelector, null)
 
@@ -113,30 +114,30 @@ class CoreExamplesActivity : ExamplesActivity() {
         seSelection.prepareSelection(GenericSeSelectionRequest(
                 SeSelector.builder()
                         .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
-                        .aidSelector(SeSelector.AidSelector.builder()
+                        .aidSelector(AidSelector.builder()
                                 .aidToSelect(seAidPrefix)
-                                .fileOccurrence(SeSelector.AidSelector.FileOccurrence.FIRST)
-                                .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build())
+                                .fileOccurrence(AidSelector.FileOccurrence.FIRST)
+                                .fileControlInformation(AidSelector.FileControlInformation.FCI).build())
                         .build()))
 
         /* next selection (2nd selection, later indexed 1) */
         seSelection.prepareSelection(GenericSeSelectionRequest(
                 SeSelector.builder()
                 .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
-                .aidSelector(SeSelector.AidSelector.builder()
+                .aidSelector(AidSelector.builder()
                         .aidToSelect(seAidPrefix)
-                        .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
-                        .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build())
+                        .fileOccurrence(AidSelector.FileOccurrence.NEXT)
+                        .fileControlInformation(AidSelector.FileControlInformation.FCI).build())
                 .build()))
 
         /* next selection (3rd selection, later indexed 2) */
         seSelection.prepareSelection(GenericSeSelectionRequest(
                 SeSelector.builder()
                         .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
-                        .aidSelector(SeSelector.AidSelector.builder()
+                        .aidSelector(AidSelector.builder()
                                 .aidToSelect(seAidPrefix)
-                                .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
-                                .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build())
+                                .fileOccurrence(AidSelector.FileOccurrence.NEXT)
+                                .fileControlInformation(AidSelector.FileControlInformation.FCI).build())
                         .build()))
 
         /*
@@ -197,10 +198,10 @@ class CoreExamplesActivity : ExamplesActivity() {
                     seSelection.prepareSelection(GenericSeSelectionRequest(
                             SeSelector.builder()
                                     .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
-                                    .aidSelector(SeSelector.AidSelector.builder()
+                                    .aidSelector(AidSelector.builder()
                                             .aidToSelect(seAidPrefix)
-                                            .fileOccurrence(SeSelector.AidSelector.FileOccurrence.FIRST)
-                                            .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build())
+                                            .fileOccurrence(AidSelector.FileOccurrence.FIRST)
+                                            .fileControlInformation(AidSelector.FileControlInformation.FCI).build())
                                     .build()))
                     /* Do the selection and display the result */
                     doAndAnalyseSelection(seReader, seSelection, 1, seAidPrefix)
@@ -215,10 +216,10 @@ class CoreExamplesActivity : ExamplesActivity() {
                     seSelection.prepareSelection(GenericSeSelectionRequest(
                             SeSelector.builder()
                                     .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
-                                    .aidSelector(SeSelector.AidSelector.builder()
+                                    .aidSelector(AidSelector.builder()
                                             .aidToSelect(seAidPrefix)
-                                            .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
-                                            .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build())
+                                            .fileOccurrence(AidSelector.FileOccurrence.NEXT)
+                                            .fileControlInformation(AidSelector.FileControlInformation.FCI).build())
                                     .build()))
 
                     /* Do the selection and display the result */

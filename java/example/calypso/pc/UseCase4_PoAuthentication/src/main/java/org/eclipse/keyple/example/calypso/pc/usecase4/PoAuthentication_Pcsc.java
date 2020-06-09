@@ -12,6 +12,7 @@
 package org.eclipse.keyple.example.calypso.pc.usecase4;
 
 
+import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.ElementaryFile;
 import org.eclipse.keyple.calypso.transaction.PoResource;
@@ -23,7 +24,6 @@ import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.SeSelector.AidSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -102,7 +102,7 @@ public class PoAuthentication_Pcsc {
             PoSelectionRequest poSelectionRequest = new PoSelectionRequest(PoSelector.builder()
                     .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
                     .aidSelector(AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
-                    .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build());
+                    .invalidatedPo(InvalidatedPo.REJECT).build());
 
             // Prepare the reading of the Environment and Holder file.
             poSelectionRequest.prepareReadRecordFile(CalypsoClassicInfo.SFI_EnvironmentAndHolder,

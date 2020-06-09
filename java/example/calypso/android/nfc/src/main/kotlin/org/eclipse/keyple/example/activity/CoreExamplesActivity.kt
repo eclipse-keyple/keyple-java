@@ -28,6 +28,7 @@ import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
 import org.eclipse.keyple.core.seproxy.SeProxyService
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.SeSelector
+import org.eclipse.keyple.core.seproxy.SeSelector.AidSelector
 import org.eclipse.keyple.core.seproxy.event.ObservableReader
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException
@@ -98,7 +99,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                     GenericSeSelectionRequest(
                             SeSelector.builder()
                                     .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
-                                    .aidSelector(SeSelector.AidSelector.builder()
+                                    .aidSelector(AidSelector.builder()
                                             .aidToSelect(seAidPrefix)
                                             .fileOccurrence(SeSelector.AidSelector.FileOccurrence.FIRST)
                                             .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build())
@@ -251,7 +252,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
          */
         val seSelector = GenericSeSelectionRequest(SeSelector.builder()
                 .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
-                .aidSelector(SeSelector.AidSelector.builder()
+                .aidSelector(AidSelector.builder()
                         .aidToSelect(aid).build())
                 .build())
 
@@ -343,7 +344,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
              */
             val genericSeSelectionRequest = GenericSeSelectionRequest(
                     SeSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4).aidSelector(
-                            SeSelector.AidSelector.builder().aidToSelect(aid).build()).build())
+                            AidSelector.builder().aidToSelect(aid).build()).build())
 
             /**
              * Prepare Selection

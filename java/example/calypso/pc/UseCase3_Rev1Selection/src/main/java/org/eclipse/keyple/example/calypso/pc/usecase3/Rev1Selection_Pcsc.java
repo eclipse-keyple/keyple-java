@@ -12,6 +12,7 @@
 package org.eclipse.keyple.example.calypso.pc.usecase3;
 
 
+import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.ElementaryFile;
 import org.eclipse.keyple.calypso.transaction.PoResource;
@@ -95,8 +96,8 @@ public class Rev1Selection_Pcsc {
             // make the selection and read additional information afterwards
             PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
                     PoSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME)
-                            .atrFilter(new PoSelector.AtrFilter(PO_ATR_REGEX))
-                            .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build());
+                            .atrFilter(new AtrFilter(PO_ATR_REGEX))
+                            .invalidatedPo(InvalidatedPo.REJECT).build());
 
             // Prepare the selection of the DF RT.
             poSelectionRequest.prepareSelectFile(ByteArrayUtil.fromHex(PO_DF_RT_PATH));

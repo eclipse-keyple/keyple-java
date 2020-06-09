@@ -25,13 +25,14 @@ import org.eclipse.keyple.calypso.transaction.CalypsoPo
 import org.eclipse.keyple.calypso.transaction.PoResource
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest
 import org.eclipse.keyple.calypso.transaction.PoSelector
+import org.eclipse.keyple.calypso.transaction.PoSelector.InvalidatedPo
 import org.eclipse.keyple.calypso.transaction.PoTransaction
 import org.eclipse.keyple.core.selection.SeSelection
 import org.eclipse.keyple.core.seproxy.ChannelControl
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
 import org.eclipse.keyple.core.seproxy.SeProxyService
 import org.eclipse.keyple.core.seproxy.SeReader
-import org.eclipse.keyple.core.seproxy.SeSelector
+import org.eclipse.keyple.core.seproxy.SeSelector.AidSelector
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse
 import org.eclipse.keyple.core.seproxy.event.ObservableReader
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent
@@ -167,10 +168,10 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
 
             /* AID based selection (1st selection, later indexed 0) */
             val selectionRequest1st = PoSelectionRequest(PoSelector.builder().seProtocol(
-                    SeCommonProtocols.PROTOCOL_ISO14443_4).aidSelector(SeSelector.AidSelector.builder().aidToSelect(
+                    SeCommonProtocols.PROTOCOL_ISO14443_4).aidSelector(AidSelector.builder().aidToSelect(
                     seAidPrefix).fileOccurrence(
-                    SeSelector.AidSelector.FileOccurrence.FIRST).fileControlInformation(
-                    SeSelector.AidSelector.FileControlInformation.FCI).build()).invalidatedPo(PoSelector.InvalidatedPo.REJECT).build())
+                    AidSelector.FileOccurrence.FIRST).fileControlInformation(
+                    AidSelector.FileControlInformation.FCI).build()).invalidatedPo(InvalidatedPo.REJECT).build())
 
             seSelection.prepareSelection(selectionRequest1st)
 
@@ -185,9 +186,9 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
             seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER)
 
             val selectionRequest2nd = PoSelectionRequest(PoSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4).aidSelector(
-                    SeSelector.AidSelector.builder().aidToSelect(seAidPrefix).fileOccurrence(
-                    SeSelector.AidSelector.FileOccurrence.NEXT).fileControlInformation(
-                    SeSelector.AidSelector.FileControlInformation.FCI).build()).invalidatedPo(PoSelector.InvalidatedPo.REJECT).build())
+                    AidSelector.builder().aidToSelect(seAidPrefix).fileOccurrence(
+                    AidSelector.FileOccurrence.NEXT).fileControlInformation(
+                    AidSelector.FileControlInformation.FCI).build()).invalidatedPo(InvalidatedPo.REJECT).build())
 
             seSelection.prepareSelection(selectionRequest2nd)
 
@@ -233,27 +234,27 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
             /* AID based selection (1st selection, later indexed 0) */
             val selectionRequest1st = PoSelectionRequest(PoSelector.builder().seProtocol(
                     SeCommonProtocols.PROTOCOL_ISO14443_4).aidSelector(
-                    SeSelector.AidSelector.builder().aidToSelect(seAidPrefix).fileOccurrence(
-                    SeSelector.AidSelector.FileOccurrence.FIRST).fileControlInformation(
-                    SeSelector.AidSelector.FileControlInformation.FCI).build()).invalidatedPo(PoSelector.InvalidatedPo.REJECT).build())
+                    AidSelector.builder().aidToSelect(seAidPrefix).fileOccurrence(
+                    AidSelector.FileOccurrence.FIRST).fileControlInformation(
+                    AidSelector.FileControlInformation.FCI).build()).invalidatedPo(InvalidatedPo.REJECT).build())
 
             seSelection.prepareSelection(selectionRequest1st)
 
             /* next selection (2nd selection, later indexed 1) */
             val selectionRequest2nd = PoSelectionRequest(PoSelector.builder().seProtocol(
                     SeCommonProtocols.PROTOCOL_ISO14443_4).aidSelector(
-                    SeSelector.AidSelector.builder().aidToSelect(seAidPrefix).fileOccurrence(
-                            SeSelector.AidSelector.FileOccurrence.NEXT).fileControlInformation(
-                            SeSelector.AidSelector.FileControlInformation.FCI).build()).invalidatedPo(PoSelector.InvalidatedPo.REJECT).build())
+                    AidSelector.builder().aidToSelect(seAidPrefix).fileOccurrence(
+                            AidSelector.FileOccurrence.NEXT).fileControlInformation(
+                            AidSelector.FileControlInformation.FCI).build()).invalidatedPo(InvalidatedPo.REJECT).build())
 
             seSelection.prepareSelection(selectionRequest2nd)
 
             /* next selection (3rd selection, later indexed 2) */
             val selectionRequest3rd = PoSelectionRequest(PoSelector.builder().seProtocol(
                     SeCommonProtocols.PROTOCOL_ISO14443_4).aidSelector(
-                    SeSelector.AidSelector.builder().aidToSelect(seAidPrefix).fileOccurrence(
-                            SeSelector.AidSelector.FileOccurrence.NEXT).fileControlInformation(
-                            SeSelector.AidSelector.FileControlInformation.FCI).build()).invalidatedPo(PoSelector.InvalidatedPo.REJECT).build())
+                    AidSelector.builder().aidToSelect(seAidPrefix).fileOccurrence(
+                            AidSelector.FileOccurrence.NEXT).fileControlInformation(
+                            AidSelector.FileControlInformation.FCI).build()).invalidatedPo(InvalidatedPo.REJECT).build())
 
             seSelection.prepareSelection(selectionRequest3rd)
 
@@ -312,7 +313,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
          */
         val selectionRequest = PoSelectionRequest(PoSelector.builder().seProtocol(
                 SeCommonProtocols.PROTOCOL_ISO14443_4).aidSelector(
-                        SeSelector.AidSelector.builder().aidToSelect(aid).build()).invalidatedPo(PoSelector.InvalidatedPo.REJECT).build())
+                        AidSelector.builder().aidToSelect(aid).build()).invalidatedPo(InvalidatedPo.REJECT).build())
 
         /*
         * Add the selection case to the current selection (we could have added other cases here)
@@ -394,7 +395,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
              */
             val selectionRequest = PoSelectionRequest(PoSelector.builder().seProtocol(
                     SeCommonProtocols.PROTOCOL_ISO14443_4).aidSelector(
-                            SeSelector.AidSelector.builder().aidToSelect(aid).build()).invalidatedPo(PoSelector.InvalidatedPo.REJECT).build())
+                            AidSelector.builder().aidToSelect(aid).build()).invalidatedPo(InvalidatedPo.REJECT).build())
 
             /**
              * Prepare Selection
@@ -455,8 +456,8 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
              */
         val poSelectionRequest = PoSelectionRequest(PoSelector.builder().seProtocol(
                 SeCommonProtocols.PROTOCOL_ISO14443_4).aidSelector(
-                SeSelector.AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build()).invalidatedPo(
-                PoSelector.InvalidatedPo.REJECT).build())
+                AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build()).invalidatedPo(
+                InvalidatedPo.REJECT).build())
 
         /*
              * Prepare the reading order and keep the associated parser for later use once the

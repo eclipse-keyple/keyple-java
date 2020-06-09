@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.remote.application;
 
+import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.SamResourceManager;
@@ -20,7 +21,6 @@ import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
@@ -40,9 +40,9 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteSePluginObserver.class);
 
-    final private String nodeId;
-    final private MasterAPI masterAPI;
-    final private SamResourceManager samResourceManager;
+    private final String nodeId;
+    private final MasterAPI masterAPI;
+    private final SamResourceManager samResourceManager;
 
     RemoteSePluginObserver(MasterAPI masterAPI, SamResourceManager samResourceManager,
             String nodeId) {
@@ -87,9 +87,9 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
                      */
                     PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
                             PoSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
-                                    .aidSelector(SeSelector.AidSelector.builder()
+                                    .aidSelector(AidSelector.builder()
                                             .aidToSelect(CalypsoClassicInfo.AID).build())
-                                    .invalidatedPo(PoSelector.InvalidatedPo.ACCEPT).build());
+                                    .invalidatedPo(InvalidatedPo.ACCEPT).build());
 
                     logger.info("{} Create a PoSelectionRequest", nodeId);
 
