@@ -13,7 +13,7 @@ package org.eclipse.keyple.core.seproxy;
 
 import org.eclipse.keyple.core.seproxy.plugin.mock.MockAbstractThreadedPlugin;
 
-public class MockObservablePluginFactory extends AbstractPluginFactory {
+public class MockObservablePluginFactory implements AbstractPluginFactory {
 
     private final String pluginName;
 
@@ -27,7 +27,7 @@ public class MockObservablePluginFactory extends AbstractPluginFactory {
     }
 
     @Override
-    protected ReaderPlugin getPluginInstance() {
+    public ReaderPlugin getPluginInstance() {
         return new MockAbstractThreadedPlugin(pluginName);
     }
 }

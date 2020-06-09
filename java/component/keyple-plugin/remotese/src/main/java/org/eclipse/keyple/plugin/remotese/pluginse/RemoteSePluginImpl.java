@@ -49,7 +49,8 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
      * by @SeProxyService. Use MasterAPI
      */
     RemoteSePluginImpl(VirtualReaderSessionFactory sessionManager, DtoSender dtoSender,
-            long rpcTimeout, String pluginName, ExecutorService executorService) {
+            long rpcTimeout, String pluginName, ExecutorService executorService)
+            throws KeypleReaderException {
         super(pluginName);
         this.sessionManager = sessionManager;
         logger.info("Init RemoteSePlugin");

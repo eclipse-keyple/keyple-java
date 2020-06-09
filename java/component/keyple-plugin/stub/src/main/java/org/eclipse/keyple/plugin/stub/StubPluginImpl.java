@@ -47,7 +47,7 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
      * 
      * @param pluginName : custom name for the plugin
      */
-    StubPluginImpl(String pluginName) {
+    StubPluginImpl(String pluginName) throws KeypleReaderException {
         super(pluginName);
 
         /*

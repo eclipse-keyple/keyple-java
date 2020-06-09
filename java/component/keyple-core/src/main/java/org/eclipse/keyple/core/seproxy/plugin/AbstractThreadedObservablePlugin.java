@@ -35,8 +35,9 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
      * Instantiates a threaded observable plugin.
      *
      * @param name name of the plugin
+     * @throws KeypleReaderException when an issue is raised with reader
      */
-    protected AbstractThreadedObservablePlugin(String name) {
+    protected AbstractThreadedObservablePlugin(String name) throws KeypleReaderException {
         super(name);
     }
 

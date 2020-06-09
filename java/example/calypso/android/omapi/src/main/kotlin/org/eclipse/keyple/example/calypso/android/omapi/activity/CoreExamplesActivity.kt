@@ -77,7 +77,7 @@ class CoreExamplesActivity : ExamplesActivity() {
 
                     addActionEvent("Sending SeRequest to select: $poAid")
                     try {
-                        val seResponse = (it as ProxyReader).transmit(seRequest)
+                        val seResponse = (it as ProxyReader).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN)
 
                         if (seResponse?.selectionStatus?.hasMatched() == true) {
                             addResultEvent("The selection of the PO has succeeded.")

@@ -14,12 +14,11 @@ package org.eclipse.keyple.plugin.pcsc;
 import org.eclipse.keyple.core.seproxy.AbstractPluginFactory;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleRuntimeException;
 
 /**
  * Builds a {@link PcscPlugin}
  */
-public class PcscPluginFactory extends AbstractPluginFactory {
+public class PcscPluginFactory implements AbstractPluginFactory {
 
     @Override
     public String getPluginName() {
@@ -33,12 +32,12 @@ public class PcscPluginFactory extends AbstractPluginFactory {
      * @throws KeyplePluginInstantiationException if Smartcard.io library is not ready
      */
     @Override
-    protected ReaderPlugin getPluginInstance() throws KeyplePluginInstantiationException {
+    public ReaderPlugin getPluginInstance() throws KeyplePluginInstantiationException {
         try {
             return PcscPluginImpl.getInstance();
-        } catch (KeypleRuntimeException e) {
+        } catch (Exception e) {
             throw new KeyplePluginInstantiationException(
-                    "Can not access Smartcard.io readers, check initNativeReaders trace", e);
+                    "Can not access Smartcard.io readers, check createVirtualReader trace", e);
         }
     }
 }

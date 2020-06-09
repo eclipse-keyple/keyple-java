@@ -14,12 +14,13 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 import java.util.concurrent.ExecutorService;
 import org.eclipse.keyple.core.seproxy.AbstractPluginFactory;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
 
 /**
  * Used internally by MasterAPI to create the {@link RemoteSePlugin}
  */
-class RemoteSePluginFactory extends AbstractPluginFactory {
+class RemoteSePluginFactory implements AbstractPluginFactory {
 
     VirtualReaderSessionFactory sessionManager;
     DtoSender dtoSender;
@@ -42,8 +43,12 @@ class RemoteSePluginFactory extends AbstractPluginFactory {
     }
 
     @Override
-    protected ReaderPlugin getPluginInstance() {
-        return new RemoteSePluginImpl(sessionManager, dtoSender, rpc_timeout, pluginName,
-                executorService);
+    public ReaderPlugin getPluginInstance() throws KeyplePluginInstantiationException {
+        try {
+            return new RemoteSePluginImpl(sessionManager, dtoSender, rpc_timeout, pluginName,
+                    executorService);
+        } catch (Exception e) {
+            throw new KeyplePluginInstantiationException("Can not access RemoteSe readers", e);
+        }
     }
 }

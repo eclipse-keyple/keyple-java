@@ -16,6 +16,7 @@ import java.util.concurrent.ExecutorService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationNoReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTxPoolEngine;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
@@ -40,7 +41,8 @@ class RemoteSePoolPluginImpl extends RemoteSePluginImpl implements RemoteSePoolP
      * Only {@link MasterAPI} can instantiate a RemoteSePlugin
      */
     RemoteSePoolPluginImpl(VirtualReaderSessionFactory sessionManager, DtoSender sender,
-            long rpcTimeout, String pluginName, ExecutorService executorService) {
+            long rpcTimeout, String pluginName, ExecutorService executorService)
+            throws KeypleReaderException {
         super(sessionManager, sender, rpcTimeout, pluginName, executorService);
 
         // allocate a rmTxPoolEngine

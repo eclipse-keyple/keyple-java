@@ -23,7 +23,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationExcept
  * Build asynchronously the Android OMAPI plugin.
  * Platform incompabilities are not managed
  */
-class AndroidOmapiPluginFactory(private val context: Context) : AbstractPluginFactory() {
+class AndroidOmapiPluginFactory(private val context: Context) : AbstractPluginFactory {
 
     private var sdkVersion: Int = Build.VERSION.SDK_INT
 

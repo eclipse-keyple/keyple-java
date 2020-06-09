@@ -32,19 +32,14 @@ public abstract class AbstractPlugin extends AbstractSeProxyComponent implements
      *
      * Initialize the list of readers calling the abstract method initNativeReaders
      *
-     * When readers initialisation failed, a KeypleRuntimeException is thrown
+     * When readers initialisation failed, a KeypleReaderException is thrown
      *
      * @param name name of the plugin
+     * @throws KeypleReaderException when an issue is raised with reader
      */
-    protected AbstractPlugin(String name) {
+    protected AbstractPlugin(String name) throws KeypleReaderException {
         super(name);
-
-        try {
-            readers.addAll(initNativeReaders());
-        } catch (KeypleReaderException e) {
-            throw new KeypleRuntimeException("Could not instantiate readers in plugin constructor",
-                    e);
-        }
+        readers.addAll(initNativeReaders());
     }
 
     /**

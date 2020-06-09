@@ -41,9 +41,19 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
     /**
      * singleton instance of SeProxyService
      */
-    private static final PcscPluginImpl uniqueInstance = new PcscPluginImpl();
+    private static final PcscPluginImpl uniqueInstance;
 
-    private PcscPluginImpl() {
+    static {
+        PcscPluginImpl instance;
+        try {
+            instance = new PcscPluginImpl();
+        } catch (KeypleReaderException e) {
+            instance = null;
+        }
+        uniqueInstance = instance;
+    }
+
+    private PcscPluginImpl() throws KeypleReaderException {
         super(PLUGIN_NAME);
     }
 
