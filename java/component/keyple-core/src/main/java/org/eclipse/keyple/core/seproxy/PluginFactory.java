@@ -13,7 +13,7 @@ package org.eclipse.keyple.core.seproxy;
 
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 
-public interface AbstractPluginFactory {
+public interface PluginFactory {
 
     /**
      * Retrieve the name of the plugin that will be instantiated by this factory (can be static or

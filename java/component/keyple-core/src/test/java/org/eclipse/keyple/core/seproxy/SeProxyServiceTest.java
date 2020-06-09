@@ -48,10 +48,10 @@ public class SeProxyServiceTest {
     AbstractPlugin plugin2 = new MockAbstractThreadedPlugin(PLUGIN_NAME_2);;
 
     @Mock
-    AbstractPluginFactory factory1;
+    PluginFactory factory1;
 
     @Mock
-    AbstractPluginFactory factory2;
+    PluginFactory factory2;
 
 
     static String PLUGIN_NAME_1 = "plugin1";

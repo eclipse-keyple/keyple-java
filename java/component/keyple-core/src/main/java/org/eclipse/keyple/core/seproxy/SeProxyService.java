@@ -58,7 +58,7 @@ public final class SeProxyService {
      * @throws KeyplePluginInstantiationException if instantiation failed
      * @return ReaderPlugin : registered reader plugin
      */
-    public ReaderPlugin registerPlugin(AbstractPluginFactory pluginFactory)
+    public ReaderPlugin registerPlugin(PluginFactory pluginFactory)
             throws KeyplePluginInstantiationException {
         if (pluginFactory == null) {
             throw new IllegalArgumentException("Factory must not be null");

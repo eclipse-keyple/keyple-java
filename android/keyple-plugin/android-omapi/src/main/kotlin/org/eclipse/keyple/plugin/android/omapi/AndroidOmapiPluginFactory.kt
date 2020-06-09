@@ -15,7 +15,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.annotation.VisibleForTesting
-import org.eclipse.keyple.core.seproxy.AbstractPluginFactory
+import org.eclipse.keyple.core.seproxy.PluginFactory
 import org.eclipse.keyple.core.seproxy.ReaderPlugin
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException
 
@@ -23,7 +23,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationExcept
  * Build asynchronously the Android OMAPI plugin.
  * Platform incompabilities are not managed
  */
-class AndroidOmapiPluginFactory(private val context: Context) : AbstractPluginFactory {
+class AndroidOmapiPluginFactory(private val context: Context) : PluginFactory {
 
     private var sdkVersion: Int = Build.VERSION.SDK_INT
 
