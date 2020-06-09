@@ -12,9 +12,9 @@
 package org.eclipse.keyple.calypso.command.po.builder;
 
 
+import static org.assertj.core.api.Assertions.assertThat;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -45,9 +45,9 @@ public class ReadRecordsCmdBuildTest {
         readRecordsCmdBuilder = new ReadRecordsCmdBuild(PoClass.LEGACY, sfi, record_number,
                 ReadRecordsCmdBuild.ReadMode.ONE_RECORD, expectedLength);
         apduRequest = readRecordsCmdBuilder.getApduRequest();
-        Assert.assertArrayEquals(request2_4, apduRequest.getBytes());
-        Assert.assertEquals(ReadRecordsCmdBuild.ReadMode.ONE_RECORD,
-                readRecordsCmdBuilder.getReadMode());
+        assertThat(apduRequest.getBytes()).isEqualTo(request2_4);
+        assertThat(readRecordsCmdBuilder.getReadMode())
+                .isEqualTo(ReadRecordsCmdBuild.ReadMode.ONE_RECORD);
     }
 
     @Test
@@ -63,9 +63,9 @@ public class ReadRecordsCmdBuildTest {
         readRecordsCmdBuilder = new ReadRecordsCmdBuild(PoClass.LEGACY, sfi, record_number,
                 ReadRecordsCmdBuild.ReadMode.MULTIPLE_RECORD, expectedLength);
         apduRequest = readRecordsCmdBuilder.getApduRequest();
-        Assert.assertArrayEquals(request2_4, apduRequest.getBytes());
-        Assert.assertEquals(ReadRecordsCmdBuild.ReadMode.MULTIPLE_RECORD,
-                readRecordsCmdBuilder.getReadMode());
+        assertThat(apduRequest.getBytes()).isEqualTo(request2_4);
+        assertThat(readRecordsCmdBuilder.getReadMode())
+                .isEqualTo(ReadRecordsCmdBuild.ReadMode.MULTIPLE_RECORD);
     }
 
     @Test
@@ -81,7 +81,9 @@ public class ReadRecordsCmdBuildTest {
         readRecordsCmdBuilder = new ReadRecordsCmdBuild(PoClass.ISO, sfi, record_number,
                 ReadRecordsCmdBuild.ReadMode.MULTIPLE_RECORD, expectedLength);
         apduRequest = readRecordsCmdBuilder.getApduRequest();
-        Assert.assertArrayEquals(request3_1, apduRequest.getBytes());
+        assertThat(apduRequest.getBytes()).isEqualTo(request3_1);
+        assertThat(readRecordsCmdBuilder.getReadMode())
+                .isEqualTo(ReadRecordsCmdBuild.ReadMode.MULTIPLE_RECORD);
     }
 
     @Test
@@ -96,7 +98,8 @@ public class ReadRecordsCmdBuildTest {
         readRecordsCmdBuilder = new ReadRecordsCmdBuild(PoClass.ISO, sfi, record_number,
                 ReadRecordsCmdBuild.ReadMode.MULTIPLE_RECORD, expectedLength);
         apduRequest = readRecordsCmdBuilder.getApduRequest();
-        Assert.assertArrayEquals(request3_2, apduRequest.getBytes());
+        assertThat(apduRequest.getBytes()).isEqualTo(request3_2);
+        assertThat(readRecordsCmdBuilder.getReadMode())
+                .isEqualTo(ReadRecordsCmdBuild.ReadMode.MULTIPLE_RECORD);
     }
-
 }

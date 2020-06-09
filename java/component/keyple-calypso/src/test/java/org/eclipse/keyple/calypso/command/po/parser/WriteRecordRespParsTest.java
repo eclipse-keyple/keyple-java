@@ -20,22 +20,22 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UpdateRecordRespParsTest {
+public class WriteRecordRespParsTest {
     private static final String SW1SW2_KO = "6A82";
     private static final String SW1SW2_OK = "9000";
 
     @Test(expected = CalypsoPoCommandException.class)
-    public void updateRecordRespPars_badStatus() throws CalypsoPoCommandException {
-        UpdateRecordRespPars updateRecordRespPars = new UpdateRecordRespPars(
+    public void writeRecordRespPars_badStatus() throws CalypsoPoCommandException {
+        WriteRecordRespPars writeRecordRespPars = new WriteRecordRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null), null);
-        updateRecordRespPars.checkStatus();
+        writeRecordRespPars.checkStatus();
         shouldHaveThrown(CalypsoPoCommandException.class);
     }
 
     @Test
-    public void updateRecordRespPars_goodStatus() throws CalypsoPoCommandException {
-        UpdateRecordRespPars updateRecordRespPars = new UpdateRecordRespPars(
+    public void writeRecordRespPars_goodStatus() throws CalypsoPoCommandException {
+        WriteRecordRespPars writeRecordRespPars = new WriteRecordRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_OK), null), null);
-        updateRecordRespPars.checkStatus();
+        writeRecordRespPars.checkStatus();
     }
 }
