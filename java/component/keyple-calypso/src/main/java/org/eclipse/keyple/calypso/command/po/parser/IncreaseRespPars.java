@@ -18,6 +18,7 @@ import org.eclipse.keyple.calypso.command.po.builder.IncreaseCmdBuild;
 import org.eclipse.keyple.calypso.command.po.exception.*;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /**
  * Increase (0032) response parser. See specs: Calypso / page 85 / 9.4.4 Increase
@@ -78,7 +79,7 @@ public final class IncreaseRespPars extends AbstractPoResponseParser {
     public int getNewValue() {
         byte[] newValueBuffer = getApduResponse().getDataOut();
         if (newValueBuffer.length == 3) {
-            return (newValueBuffer[0] << 16) + (newValueBuffer[1] << 8) + newValueBuffer[2];
+            return ByteArrayUtil.threeBytesToInt(newValueBuffer, 0);
         } else {
             throw new IllegalStateException(
                     "No counter value available in response to the Increase command.");
