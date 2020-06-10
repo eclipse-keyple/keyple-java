@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -49,8 +50,7 @@ public class StubPluginTest extends BaseStubTest {
 
 
     @Test
-    public void instantiatePlugin()
-            throws InterruptedException, KeypleReaderException, KeyplePluginNotFoundException {
+    public void instantiatePlugin() throws KeyplePluginInstantiationException {
         final String PLUGIN_NAME = "test1";
 
 

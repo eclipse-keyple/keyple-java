@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
 import org.eclipse.keyple.core.seproxy.plugin.mock.MockAbstractThreadedPlugin;
 import org.junit.Assert;
@@ -56,6 +57,8 @@ public class SeProxyServiceTest {
 
     static String PLUGIN_NAME_1 = "plugin1";
     static String PLUGIN_NAME_2 = "plugin2";
+
+    public SeProxyServiceTest() throws KeypleReaderException {}
 
     @Before
     public void setupBeforeEach() throws KeyplePluginInstantiationException {

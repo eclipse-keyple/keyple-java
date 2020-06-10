@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.mock.BlankAbstractPlugin;
 import org.eclipse.keyple.core.seproxy.plugin.mock.BlankAbstractReader;
 import org.junit.Assert;
@@ -55,7 +56,7 @@ public class AbstractPluginTest extends CoreBaseTest {
      * @throws Throwable
      */
     @Test
-    public void addRemoveReadersMultiThreaded() throws InterruptedException {
+    public void addRemoveReadersMultiThreaded() throws InterruptedException, KeypleReaderException {
         ReaderPlugin plugin = new BlankAbstractPlugin("addRemoveReadersMultiThreaded");
         SortedSet<SeReader> readers = plugin.getReaders();
         final CountDownLatch lock = new CountDownLatch(10);

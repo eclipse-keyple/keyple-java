@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
 
@@ -23,7 +24,7 @@ import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
  */
 public class BlankAbstractPlugin extends AbstractPlugin {
 
-    public BlankAbstractPlugin(String name) {
+    public BlankAbstractPlugin(String name) throws KeypleReaderException {
         super(name);
     }
 
