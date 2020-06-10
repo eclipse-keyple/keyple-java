@@ -11,76 +11,115 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.command.sam.builder;
 
-import static org.junit.Assert.assertArrayEquals;
+
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.shouldHaveThrown;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.builder.security.DigestInitCmdBuild;
-import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
+import org.eclipse.keyple.calypso.command.sam.parser.security.DigestInitRespPars;
+import org.eclipse.keyple.core.seproxy.message.ApduRequest;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DigestInitCmdBuildTest {
+    private static final String SW1SW2_OK = "9000";
+    private static final byte KIF_OK = (byte) 0x12;
+    private static final byte KVC_OK = (byte) 0x34;
+    private static final byte KEY_REC_NBR_OK = (byte) 0x56;
+    private static final byte KIF_ZERO = (byte) 0x00;
+    private static final byte KVC_ZERO = (byte) 0x00;
+    private static final byte KEY_REC_NBR_ZERO = (byte) 0x00;
+    private static final byte KIF_FF = (byte) 0xFF;
+    private static final boolean VERIFICATION_MODE_TRUE = true;
+    private static final boolean VERIFICATION_MODE_FALSE = false;
+    private static final boolean CONFIDENTIAL_SESSION_MODE_TRUE = true;
+    private static final boolean CONFIDENTIAL_SESSION_MODE_FALSE = false;
+    private static final String DIGEST_DATA = "112233445566778899AA";
+    private static final String APDU_CLA_80_KIF_OK =
+            "808A00FF0C" + String.format("%02X%02X", KIF_OK, KVC_OK) + DIGEST_DATA;
+    private static final String APDU_CLA_80_VERIF_MODE =
+            "808A01FF0C" + String.format("%02X%02X", KIF_OK, KVC_OK) + DIGEST_DATA;
+    private static final String APDU_CLA_80_CONFIDENTIAL_SESSION_MODE =
+            "808A02FF0C" + String.format("%02X%02X", KIF_OK, KVC_OK) + DIGEST_DATA;
+    private static final String APDU_CLA_80_KIF_FF =
+            "808A00" + String.format("%02X", KEY_REC_NBR_OK) + "0A" + DIGEST_DATA;
+    private static final String APDU_CLA_94_KIF_OK =
+            "948A00FF0C" + String.format("%02X%02X", KIF_OK, KVC_OK) + DIGEST_DATA;
 
-    @Test(expected = IllegalArgumentException.class)
-    public void digestInitCmd_inconsistent() {
-
-        byte[] digestData = new byte[] {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
-
-        boolean verificationMode = false;
-        boolean rev3_2Mode = false;
-        byte workKeyRecordNumber = (byte) 0x00;
-        byte workKeyKif = (byte) 0x00;
-        byte workKeyKVC = (byte) 0x7E;
-        SamRevision revision = SamRevision.S1D;
-
-        AbstractApduCommandBuilder apduCommandBuilder =
-                new DigestInitCmdBuild(revision, verificationMode, rev3_2Mode, workKeyRecordNumber,
-                        workKeyKif, workKeyKVC, digestData);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void digestInitCmd_inconsistent_digestNull() {
-
-        byte[] digestData = null;
-
-        boolean verificationMode = false;
-        boolean rev3_2Mode = false;
-        byte workKeyRecordNumber = (byte) 0x10;
-        byte workKeyKif = (byte) 0x30;
-        byte workKeyKVC = (byte) 0x7E;
-        SamRevision revision = SamRevision.S1D;
-
-        AbstractApduCommandBuilder apduCommandBuilder =
-                new DigestInitCmdBuild(revision, verificationMode, rev3_2Mode, workKeyRecordNumber,
-                        workKeyKif, workKeyKVC, digestData);
+    @Test
+    public void digestInitCmdBuild_defaultRevision_nominal_createParser() {
+        DigestInitCmdBuild digestInitCmdBuild = new DigestInitCmdBuild(null,
+                VERIFICATION_MODE_FALSE, CONFIDENTIAL_SESSION_MODE_FALSE, KEY_REC_NBR_OK, KIF_OK,
+                KVC_OK, ByteArrayUtil.fromHex(DIGEST_DATA));
+        assertThat(digestInitCmdBuild.getApduRequest().getBytes())
+                .isEqualTo(ByteArrayUtil.fromHex(APDU_CLA_80_KIF_OK));
+        DigestInitRespPars digestInitRespPars = digestInitCmdBuild
+                .createResponseParser(new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_OK), null));
+        assertThat(digestInitRespPars.getClass()).isEqualTo(DigestInitRespPars.class);
     }
 
     @Test
-    public void digestInitCmd() {
+    public void digestInitCmdBuild_kifFF() {
+        DigestInitCmdBuild digestInitCmdBuild = new DigestInitCmdBuild(SamRevision.C1,
+                VERIFICATION_MODE_FALSE, CONFIDENTIAL_SESSION_MODE_FALSE, KEY_REC_NBR_OK, KIF_FF,
+                KVC_OK, ByteArrayUtil.fromHex(DIGEST_DATA));
+        assertThat(digestInitCmdBuild.getApduRequest().getBytes())
+                .isEqualTo(ByteArrayUtil.fromHex(APDU_CLA_80_KIF_FF));
+    }
 
-        byte[] digestData = new byte[] {(byte) 0x80, (byte) 0x8A, 0x00};
-        byte cla = (byte) 0x94;
-        byte zero = (byte) 0x00;
-        byte p1 = (byte) (zero + 1);
-        byte p1_2 = (byte) (p1 + 2);
-        byte p2 = (byte) 0xFF;
+    @Test(expected = IllegalArgumentException.class)
+    public void digestInitCmdBuild_keyRec00_kif00() {
+        new DigestInitCmdBuild(SamRevision.C1, VERIFICATION_MODE_FALSE,
+                CONFIDENTIAL_SESSION_MODE_FALSE, KEY_REC_NBR_ZERO, KIF_ZERO, KVC_OK,
+                ByteArrayUtil.fromHex(DIGEST_DATA));
+        shouldHaveThrown(IllegalArgumentException.class);
+    }
 
-        boolean verificationMode = true;
-        boolean rev3_2Mode = true;
-        byte workKeyRecordNumber = (byte) 0xFF;
-        byte workKeyKif = (byte) 0x30;
-        byte workKeyKVC = (byte) 0x7E;
-        SamRevision revision = SamRevision.S1D;
+    @Test(expected = IllegalArgumentException.class)
+    public void digestInitCmdBuild_keyRec00_kvc00() {
+        new DigestInitCmdBuild(SamRevision.C1, VERIFICATION_MODE_FALSE,
+                CONFIDENTIAL_SESSION_MODE_FALSE, KEY_REC_NBR_ZERO, KIF_OK, KVC_ZERO,
+                ByteArrayUtil.fromHex(DIGEST_DATA));
+        shouldHaveThrown(IllegalArgumentException.class);
+    }
 
-        int size = digestData.length + 2;
-        byte[] request = new byte[] {cla, (byte) 0x8A, p1_2, p2, (byte) size, workKeyKif,
-                workKeyKVC, (byte) 0x80, (byte) 0x8A, 0x00};
+    @Test(expected = IllegalArgumentException.class)
+    public void digestInitCmdBuild_digestDataNull() {
+        new DigestInitCmdBuild(SamRevision.C1, VERIFICATION_MODE_FALSE,
+                CONFIDENTIAL_SESSION_MODE_FALSE, KEY_REC_NBR_OK, KIF_OK, KVC_OK, null);
+        shouldHaveThrown(IllegalArgumentException.class);
+    }
 
-        AbstractApduCommandBuilder apduCommandBuilder =
-                new DigestInitCmdBuild(revision, verificationMode, rev3_2Mode, workKeyRecordNumber,
-                        workKeyKif, workKeyKVC, digestData);
+    @Test
+    public void digestInitCmdBuild_cla94() {
+        DigestInitCmdBuild digestInitCmdBuild = new DigestInitCmdBuild(SamRevision.S1D,
+                VERIFICATION_MODE_FALSE, CONFIDENTIAL_SESSION_MODE_FALSE, KEY_REC_NBR_OK, KIF_OK,
+                KVC_OK, ByteArrayUtil.fromHex(DIGEST_DATA));
+        assertThat(digestInitCmdBuild.getApduRequest().getBytes())
+                .isEqualTo(ByteArrayUtil.fromHex(APDU_CLA_94_KIF_OK));
+    }
 
-        assertArrayEquals(request, apduCommandBuilder.getApduRequest().getBytes());
+    @Test
+    public void digestInitCmdBuild_verificationMode() {
+        DigestInitCmdBuild digestInitCmdBuild = new DigestInitCmdBuild(SamRevision.C1,
+                VERIFICATION_MODE_TRUE, CONFIDENTIAL_SESSION_MODE_FALSE, KEY_REC_NBR_OK, KIF_OK,
+                KVC_OK, ByteArrayUtil.fromHex(DIGEST_DATA));
+        ApduRequest ApduRequest = digestInitCmdBuild.getApduRequest();
+        assertThat(digestInitCmdBuild.getApduRequest().getBytes())
+                .isEqualTo(ByteArrayUtil.fromHex(APDU_CLA_80_VERIF_MODE));
+    }
+
+    @Test
+    public void digestInitCmdBuild_confidentialSessionMode() {
+        DigestInitCmdBuild digestInitCmdBuild = new DigestInitCmdBuild(SamRevision.C1,
+                VERIFICATION_MODE_FALSE, CONFIDENTIAL_SESSION_MODE_TRUE, KEY_REC_NBR_OK, KIF_OK,
+                KVC_OK, ByteArrayUtil.fromHex(DIGEST_DATA));
+        ApduRequest ApduRequest = digestInitCmdBuild.getApduRequest();
+        assertThat(digestInitCmdBuild.getApduRequest().getBytes())
+                .isEqualTo(ByteArrayUtil.fromHex(APDU_CLA_80_CONFIDENTIAL_SESSION_MODE));
     }
 }

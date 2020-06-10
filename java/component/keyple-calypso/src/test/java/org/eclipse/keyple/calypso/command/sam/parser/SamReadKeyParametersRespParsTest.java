@@ -14,7 +14,7 @@ package org.eclipse.keyple.calypso.command.sam.parser;
 import static org.assertj.core.api.Assertions.shouldHaveThrown;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException;
-import org.eclipse.keyple.calypso.command.sam.parser.security.SamGetChallengeRespPars;
+import org.eclipse.keyple.calypso.command.sam.parser.security.SamReadKeyParametersRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
@@ -22,27 +22,29 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SamGetChallengeRespParsTest {
-    private static final String SW1SW2_KO = "6700";
+public class SamReadKeyParametersRespParsTest {
+    private static final String SW1SW2_KO = "6A00";
     private static final String SW1SW2_OK = "9000";
-    private static final String SAM_CHALLENGE = "12345678";
-    private static final String APDU_GET_CHALLENGE = SAM_CHALLENGE + SW1SW2_OK;
+    private static final String KEY_PARAMETERS = "11223344";
+    private static final String APDU_READ_KEY_PARAMS = KEY_PARAMETERS + SW1SW2_OK;
 
     @Test(expected = CalypsoSamCommandException.class)
-    public void samGetChallengeRespPars_badStatus() throws CalypsoSamCommandException {
-        SamGetChallengeRespPars samGetChallengeRespPars = new SamGetChallengeRespPars(
-                new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null), null);
-        samGetChallengeRespPars.checkStatus();
+    public void samReadKeyParametersRespPars_badStatus() throws CalypsoSamCommandException {
+        SamReadKeyParametersRespPars samReadKeyParametersRespPars =
+                new SamReadKeyParametersRespPars(
+                        new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null), null);
+        samReadKeyParametersRespPars.checkStatus();
         shouldHaveThrown(CalypsoSamCommandException.class);
     }
 
     @Test
-    public void samGetChallengeRespPars_goodStatus_getSignature()
+    public void samReadKeyParametersRespPars_goodStatus_getSignature()
             throws CalypsoSamCommandException {
-        SamGetChallengeRespPars samGetChallengeRespPars = new SamGetChallengeRespPars(
-                new ApduResponse(ByteArrayUtil.fromHex(APDU_GET_CHALLENGE), null), null);
-        samGetChallengeRespPars.checkStatus();
-        assertThat(samGetChallengeRespPars.getChallenge())
-                .isEqualTo(ByteArrayUtil.fromHex(SAM_CHALLENGE));
+        SamReadKeyParametersRespPars samReadKeyParametersRespPars =
+                new SamReadKeyParametersRespPars(
+                        new ApduResponse(ByteArrayUtil.fromHex(APDU_READ_KEY_PARAMS), null), null);
+        samReadKeyParametersRespPars.checkStatus();
+        assertThat(samReadKeyParametersRespPars.getKeyParameters())
+                .isEqualTo(ByteArrayUtil.fromHex(KEY_PARAMETERS));
     }
 }

@@ -13,7 +13,7 @@ package org.eclipse.keyple.calypso.command.sam.parser;
 
 import static org.assertj.core.api.Assertions.shouldHaveThrown;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException;
-import org.eclipse.keyple.calypso.command.sam.parser.security.SelectDiversifierRespPars;
+import org.eclipse.keyple.calypso.command.sam.parser.security.SamWriteKeyRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
@@ -21,22 +21,22 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SelectDiversifierRespParsTest {
-    private static final String SW1SW2_KO = "6985";
+public class SamWriteKeyRespParsTest {
+    private static final String SW1SW2_KO = "6988";
     private static final String SW1SW2_OK = "9000";
 
     @Test(expected = CalypsoSamCommandException.class)
-    public void selectDiversifierRespPars_badStatus() throws CalypsoSamCommandException {
-        SelectDiversifierRespPars selectDiversifierRespPars = new SelectDiversifierRespPars(
+    public void samWriteKeyRespPars_badStatus() throws CalypsoSamCommandException {
+        SamWriteKeyRespPars samWriteKeyRespPars = new SamWriteKeyRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null), null);
-        selectDiversifierRespPars.checkStatus();
+        samWriteKeyRespPars.checkStatus();
         shouldHaveThrown(CalypsoSamCommandException.class);
     }
 
     @Test
-    public void selectDiversifierRespPars_goodStatus() throws CalypsoSamCommandException {
-        SelectDiversifierRespPars selectDiversifierRespPars = new SelectDiversifierRespPars(
+    public void samWriteKeyRespPars_goodStatus() throws CalypsoSamCommandException {
+        SamWriteKeyRespPars samWriteKeyRespPars = new SamWriteKeyRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_OK), null), null);
-        selectDiversifierRespPars.checkStatus();
+        samWriteKeyRespPars.checkStatus();
     }
 }

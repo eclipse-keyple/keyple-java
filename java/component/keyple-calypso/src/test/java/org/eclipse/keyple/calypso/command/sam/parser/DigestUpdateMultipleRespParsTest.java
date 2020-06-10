@@ -13,7 +13,7 @@ package org.eclipse.keyple.calypso.command.sam.parser;
 
 import static org.assertj.core.api.Assertions.shouldHaveThrown;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException;
-import org.eclipse.keyple.calypso.command.sam.parser.security.SelectDiversifierRespPars;
+import org.eclipse.keyple.calypso.command.sam.parser.security.DigestUpdateMultipleRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
@@ -21,22 +21,24 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SelectDiversifierRespParsTest {
-    private static final String SW1SW2_KO = "6985";
+public class DigestUpdateMultipleRespParsTest {
+    private static final String SW1SW2_KO = "6A83";
     private static final String SW1SW2_OK = "9000";
 
     @Test(expected = CalypsoSamCommandException.class)
-    public void selectDiversifierRespPars_badStatus() throws CalypsoSamCommandException {
-        SelectDiversifierRespPars selectDiversifierRespPars = new SelectDiversifierRespPars(
-                new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null), null);
-        selectDiversifierRespPars.checkStatus();
+    public void digestUpdateMultipleRespPars_badStatus() throws CalypsoSamCommandException {
+        DigestUpdateMultipleRespPars digestUpdateMultipleRespPars =
+                new DigestUpdateMultipleRespPars(
+                        new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null), null);
+        digestUpdateMultipleRespPars.checkStatus();
         shouldHaveThrown(CalypsoSamCommandException.class);
     }
 
     @Test
-    public void selectDiversifierRespPars_goodStatus() throws CalypsoSamCommandException {
-        SelectDiversifierRespPars selectDiversifierRespPars = new SelectDiversifierRespPars(
-                new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_OK), null), null);
-        selectDiversifierRespPars.checkStatus();
+    public void digestUpdateMultipleRespPars_goodStatus() throws CalypsoSamCommandException {
+        DigestUpdateMultipleRespPars digestUpdateMultipleRespPars =
+                new DigestUpdateMultipleRespPars(
+                        new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_OK), null), null);
+        digestUpdateMultipleRespPars.checkStatus();
     }
 }

@@ -12,8 +12,9 @@
 package org.eclipse.keyple.calypso.command.sam.parser;
 
 import static org.assertj.core.api.Assertions.shouldHaveThrown;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException;
-import org.eclipse.keyple.calypso.command.sam.parser.security.SelectDiversifierRespPars;
+import org.eclipse.keyple.calypso.command.sam.parser.security.SamReadCeilingsRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
@@ -21,22 +22,27 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SelectDiversifierRespParsTest {
-    private static final String SW1SW2_KO = "6985";
+public class SamReadCeilingsRespParsTest {
+    private static final String SW1SW2_KO = "6988";
     private static final String SW1SW2_OK = "9000";
+    private static final String CEILING_DATA = "11223344";
+    private static final String APDU_READ_CEILINGS = CEILING_DATA + SW1SW2_OK;
 
     @Test(expected = CalypsoSamCommandException.class)
-    public void selectDiversifierRespPars_badStatus() throws CalypsoSamCommandException {
-        SelectDiversifierRespPars selectDiversifierRespPars = new SelectDiversifierRespPars(
+    public void samReadCeilingsRespPars_badStatus() throws CalypsoSamCommandException {
+        SamReadCeilingsRespPars samReadCeilingsRespPars = new SamReadCeilingsRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null), null);
-        selectDiversifierRespPars.checkStatus();
+        samReadCeilingsRespPars.checkStatus();
         shouldHaveThrown(CalypsoSamCommandException.class);
     }
 
     @Test
-    public void selectDiversifierRespPars_goodStatus() throws CalypsoSamCommandException {
-        SelectDiversifierRespPars selectDiversifierRespPars = new SelectDiversifierRespPars(
-                new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_OK), null), null);
-        selectDiversifierRespPars.checkStatus();
+    public void samReadCeilingsRespPars_goodStatus_getSignature()
+            throws CalypsoSamCommandException {
+        SamReadCeilingsRespPars samReadCeilingsRespPars = new SamReadCeilingsRespPars(
+                new ApduResponse(ByteArrayUtil.fromHex(APDU_READ_CEILINGS), null), null);
+        samReadCeilingsRespPars.checkStatus();
+        assertThat(samReadCeilingsRespPars.getCeilingsData())
+                .isEqualTo(ByteArrayUtil.fromHex(CEILING_DATA));
     }
 }

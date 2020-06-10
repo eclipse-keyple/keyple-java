@@ -15,8 +15,8 @@ package org.eclipse.keyple.calypso.command.sam.builder;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Java6Assertions.shouldHaveThrown;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
-import org.eclipse.keyple.calypso.command.sam.builder.security.DigestUpdateCmdBuild;
-import org.eclipse.keyple.calypso.command.sam.parser.security.DigestUpdateRespPars;
+import org.eclipse.keyple.calypso.command.sam.builder.security.DigestUpdateMultipleCmdBuild;
+import org.eclipse.keyple.calypso.command.sam.parser.security.DigestUpdateMultipleRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
@@ -24,7 +24,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DigestUpdateCmdBuildTest {
+public class DigestUpdateMultipleCmdBuildTest {
     private static final boolean ENCRYPTED_SESSION_TRUE = true;
     private static final boolean ENCRYPTED_SESSION_FALSE = false;
     private static final String DIGEST_DATA = "112233445566778899AA";
@@ -35,58 +35,64 @@ public class DigestUpdateCmdBuildTest {
     private static final String APDU_CLA_94 = "948C00000A" + DIGEST_DATA;
 
     @Test
-    public void digestUpdateCmdBuild_defaultRevision_createParser() {
+    public void digestUpdateMultipleCmdBuild_defaultRevision_createParser() {
 
-        DigestUpdateCmdBuild digestUpdateCmdBuild = new DigestUpdateCmdBuild(null,
-                ENCRYPTED_SESSION_FALSE, ByteArrayUtil.fromHex(DIGEST_DATA));
-        assertThat(digestUpdateCmdBuild.getApduRequest().getBytes())
+        DigestUpdateMultipleCmdBuild digestUpdateMultipleCmdBuild =
+                new DigestUpdateMultipleCmdBuild(null, ENCRYPTED_SESSION_FALSE,
+                        ByteArrayUtil.fromHex(DIGEST_DATA));
+        assertThat(digestUpdateMultipleCmdBuild.getApduRequest().getBytes())
                 .isEqualTo(ByteArrayUtil.fromHex(APDU_CLA_80));
-        DigestUpdateRespPars digestUpdateRespPars = digestUpdateCmdBuild
+        DigestUpdateMultipleRespPars digestUpdateMultipleRespPars = digestUpdateMultipleCmdBuild
                 .createResponseParser(new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_OK), null));
-        assertThat(digestUpdateRespPars.getClass()).isEqualTo(DigestUpdateRespPars.class);
+        assertThat(digestUpdateMultipleRespPars.getClass())
+                .isEqualTo(DigestUpdateMultipleRespPars.class);
     }
 
     @Test
-    public void digestUpdateCmdBuild_cla94() {
+    public void digestUpdateMultipleCmdBuild_cla94() {
 
-        DigestUpdateCmdBuild digestUpdateCmdBuild = new DigestUpdateCmdBuild(SamRevision.S1D,
-                ENCRYPTED_SESSION_FALSE, ByteArrayUtil.fromHex(DIGEST_DATA));
-        assertThat(digestUpdateCmdBuild.getApduRequest().getBytes())
+        DigestUpdateMultipleCmdBuild digestUpdateMultipleCmdBuild =
+                new DigestUpdateMultipleCmdBuild(SamRevision.S1D, ENCRYPTED_SESSION_FALSE,
+                        ByteArrayUtil.fromHex(DIGEST_DATA));
+        assertThat(digestUpdateMultipleCmdBuild.getApduRequest().getBytes())
                 .isEqualTo(ByteArrayUtil.fromHex(APDU_CLA_94));
     }
 
     @Test
-    public void digestUpdateCmdBuild_cla80() {
+    public void digestUpdateMultipleCmdBuild_cla80() {
 
-        DigestUpdateCmdBuild digestUpdateCmdBuild = new DigestUpdateCmdBuild(SamRevision.C1,
-                ENCRYPTED_SESSION_FALSE, ByteArrayUtil.fromHex(DIGEST_DATA));
-        assertThat(digestUpdateCmdBuild.getApduRequest().getBytes())
+        DigestUpdateMultipleCmdBuild digestUpdateMultipleCmdBuild =
+                new DigestUpdateMultipleCmdBuild(SamRevision.C1, ENCRYPTED_SESSION_FALSE,
+                        ByteArrayUtil.fromHex(DIGEST_DATA));
+        assertThat(digestUpdateMultipleCmdBuild.getApduRequest().getBytes())
                 .isEqualTo(ByteArrayUtil.fromHex(APDU_CLA_80));
     }
 
     @Test
-    public void digestUpdateCmdBuild_cla80_encryptedSession() {
+    public void digestUpdateMultipleCmdBuild_cla80_encryptedSession() {
 
-        DigestUpdateCmdBuild digestUpdateCmdBuild = new DigestUpdateCmdBuild(SamRevision.C1,
-                ENCRYPTED_SESSION_TRUE, ByteArrayUtil.fromHex(DIGEST_DATA));
-        assertThat(digestUpdateCmdBuild.getApduRequest().getBytes())
+        DigestUpdateMultipleCmdBuild digestUpdateMultipleCmdBuild =
+                new DigestUpdateMultipleCmdBuild(SamRevision.C1, ENCRYPTED_SESSION_TRUE,
+                        ByteArrayUtil.fromHex(DIGEST_DATA));
+        assertThat(digestUpdateMultipleCmdBuild.getApduRequest().getBytes())
                 .isEqualTo(ByteArrayUtil.fromHex(APDU_CLA_80_ENCRYPTED_SESSION));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void digestUpdateCmdBuild_digestDataNull() {
-        new DigestUpdateCmdBuild(null, ENCRYPTED_SESSION_FALSE, null);
+    public void digestUpdateMultipleCmdBuild_digestDataNull() {
+        new DigestUpdateMultipleCmdBuild(null, ENCRYPTED_SESSION_FALSE, null);
         shouldHaveThrown(IllegalArgumentException.class);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void digestUpdateCmdBuild_badDigestDataLength() {
+    public void digestUpdateMultipleCmdBuild_badDigestDataLength() {
         // create digest data > 255 bytes
         String digestData = "";
         while (digestData.length() < (255 * 2)) {
             digestData = digestData + DIGEST_DATA;
         }
-        new DigestUpdateCmdBuild(null, ENCRYPTED_SESSION_FALSE, ByteArrayUtil.fromHex(digestData));
+        new DigestUpdateMultipleCmdBuild(null, ENCRYPTED_SESSION_FALSE,
+                ByteArrayUtil.fromHex(digestData));
         shouldHaveThrown(IllegalArgumentException.class);
     }
 }
