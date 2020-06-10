@@ -32,16 +32,22 @@ public class DigestUpdateMultipleCmdBuild
      * Instantiates a new DigestUpdateMultipleCmdBuild.
      *
      * @param revision the revision
+     * @param encryptedSession the encrypted session flag, true if encrypted
      * @param digestData the digest data
      */
-    public DigestUpdateMultipleCmdBuild(SamRevision revision, byte[] digestData) {
+    public DigestUpdateMultipleCmdBuild(SamRevision revision, boolean encryptedSession,
+            byte[] digestData) {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
         }
         byte cla = this.defaultRevision.getClassByte();
-        byte p1 = (byte) 0x80;
-        byte p2 = (byte) 0x00;
+        byte p1 = (byte) 0x00;
+        byte p2 = encryptedSession ? (byte) 0x80 : (byte) 0x00;
+
+        if (digestData == null || digestData.length > 255) {
+            throw new IllegalArgumentException("Digest data null or too long!");
+        }
 
         request = setApduRequest(cla, command, p1, p2, digestData, null);
     }

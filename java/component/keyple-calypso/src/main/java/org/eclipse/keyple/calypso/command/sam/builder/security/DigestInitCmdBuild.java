@@ -33,7 +33,7 @@ public class DigestInitCmdBuild extends AbstractSamCommandBuilder<DigestInitResp
      *
      * @param revision of the SAM
      * @param verificationMode the verification mode
-     * @param rev3_2Mode the rev 3 2 mode
+     * @param confidentialSessionMode the confidential session mode (rev 3.2)
      * @param workKeyRecordNumber the work key record number
      * @param workKeyKif from the AbstractOpenSessionCmdBuild response
      * @param workKeyKVC from the AbstractOpenSessionCmdBuild response
@@ -42,8 +42,9 @@ public class DigestInitCmdBuild extends AbstractSamCommandBuilder<DigestInitResp
      * @throws IllegalArgumentException - if the digest data is null
      * @throws IllegalArgumentException - if the request is inconsistent
      */
-    public DigestInitCmdBuild(SamRevision revision, boolean verificationMode, boolean rev3_2Mode,
-            byte workKeyRecordNumber, byte workKeyKif, byte workKeyKVC, byte[] digestData) {
+    public DigestInitCmdBuild(SamRevision revision, boolean verificationMode,
+            boolean confidentialSessionMode, byte workKeyRecordNumber, byte workKeyKif,
+            byte workKeyKVC, byte[] digestData) {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
@@ -60,7 +61,7 @@ public class DigestInitCmdBuild extends AbstractSamCommandBuilder<DigestInitResp
         if (verificationMode) {
             p1 = (byte) (p1 + 1);
         }
-        if (rev3_2Mode) {
+        if (confidentialSessionMode) {
             p1 = (byte) (p1 + 2);
         }
 
@@ -77,12 +78,10 @@ public class DigestInitCmdBuild extends AbstractSamCommandBuilder<DigestInitResp
             dataIn[1] = workKeyKVC;
             System.arraycopy(digestData, 0, dataIn, 2, digestData.length);
         } else {
-            dataIn = null;
+            dataIn = digestData;
         }
-        // CalypsoRequest calypsoRequest = new CalypsoRequest(cla, CalypsoCommands.SAM_DIGEST_INIT,
-        // p1, p2, dataIn);
-        request = setApduRequest(cla, CalypsoSamCommand.DIGEST_INIT, p1, p2, dataIn, null);
 
+        request = setApduRequest(cla, CalypsoSamCommand.DIGEST_INIT, p1, p2, dataIn, null);
     }
 
     @Override

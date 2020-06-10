@@ -45,7 +45,6 @@ public class SamGetChallengeCmdBuild extends AbstractSamCommandBuilder<SamGetCha
         byte p1 = 0x00;
         byte p2 = 0x00;
 
-        // CalypsoRequest calypsoRequest = new CalypsoRequest();
         request = setApduRequest(cla, command, p1, p2, null, expectedResponseLength);
     }
 
