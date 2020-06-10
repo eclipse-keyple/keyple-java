@@ -45,11 +45,7 @@ public final class WriteRecordCmdBuild extends AbstractPoCommandBuilder<WriteRec
      */
     public WriteRecordCmdBuild(PoClass poClass, byte sfi, byte recordNumber, byte[] newRecordData) {
         super(command, null);
-        if (recordNumber < 1) {
-            throw new IllegalArgumentException("Bad record number (< 1)");
-        }
 
-        // TODO complete argument checking
         byte cla = poClass.getValue();
         this.sfi = sfi;
         this.recordNumber = recordNumber;

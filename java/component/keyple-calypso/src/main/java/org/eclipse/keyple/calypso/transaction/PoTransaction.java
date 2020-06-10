@@ -477,7 +477,6 @@ public class PoTransaction {
 
         List<ApduResponse> poApduResponses = poSeResponse.getApduResponses();
 
-        // TODO add support of poRevision parameter to CloseSessionRespPars for REV2.4 PO CLass byte
         // before last if ratification, otherwise last one
         CloseSessionRespPars poCloseSessionPars =
                 closeSessionCmdBuild.createResponseParser(poApduResponses.get(closeCommandIndex));

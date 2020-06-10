@@ -45,11 +45,7 @@ public final class UpdateRecordCmdBuild extends AbstractPoCommandBuilder<UpdateR
     public UpdateRecordCmdBuild(PoClass poClass, byte sfi, byte recordNumber,
             byte[] newRecordData) {
         super(command, null);
-        if (recordNumber < 1) {
-            throw new IllegalArgumentException("Bad record number (< 1)");
-        }
 
-        // TODO complete argument checking
         byte cla = poClass.getValue();
         this.sfi = sfi;
         this.recordNumber = recordNumber;

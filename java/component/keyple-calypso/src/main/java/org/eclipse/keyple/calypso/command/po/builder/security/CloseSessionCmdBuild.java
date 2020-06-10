@@ -19,7 +19,6 @@ import org.eclipse.keyple.calypso.command.po.parser.security.CloseSessionRespPar
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class provides the dedicated constructor to build the Close Secure Session APDU command.
  */
