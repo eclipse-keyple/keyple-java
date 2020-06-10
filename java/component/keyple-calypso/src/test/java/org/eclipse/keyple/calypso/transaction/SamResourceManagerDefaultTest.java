@@ -60,7 +60,8 @@ public class SamResourceManagerDefaultTest extends CalypsoBaseTest {
         SamResource out = null;
         try {
             out = srmSpy.allocateSamResource(SamResourceManager.AllocationMode.BLOCKING,
-                    new SamIdentifier(SamRevision.AUTO, "any", "any"));
+                    SamIdentifier.builder().samRevision(SamRevision.AUTO).serialNumber("any")
+                            .groupReference("any").build());
 
         } catch (CalypsoNoSamResourceAvailableException e) {
             exceptionThrown = true;
@@ -85,7 +86,7 @@ public class SamResourceManagerDefaultTest extends CalypsoBaseTest {
 
         // test
         SamResource out = srmSpy.allocateSamResource(SamResourceManager.AllocationMode.BLOCKING,
-                new SamIdentifier(SamRevision.AUTO, "any", "any"));
+                SamIdentifier.builder().samRevision(SamRevision.AUTO).build());
 
         long stop = System.currentTimeMillis();
 

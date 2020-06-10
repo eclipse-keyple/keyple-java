@@ -19,6 +19,7 @@ import org.eclipse.keyple.core.seproxy.ChannelControl
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.SeSelector
+import org.eclipse.keyple.core.seproxy.SeSelector.AidSelector
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.message.ProxyReader
 import org.eclipse.keyple.core.seproxy.message.SeRequest
@@ -71,13 +72,15 @@ class CoreExamplesActivity : ExamplesActivity() {
                 readers.forEach {
                     addHeaderEvent("Starting explicitAidSelection with $poAid on Reader ${it.name}")
 
-                    val seSelector = SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
-                            SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(poAid)))
+                    val seSelector = SeSelector.builder()
+                            .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
+                            .aidSelector(AidSelector.builder().aidToSelect(poAid).build())
+                            .build()
                     val seRequest = SeRequest(seSelector, null)
 
                     addActionEvent("Sending SeRequest to select: $poAid")
                     try {
-                        val seResponse = (it as ProxyReader).transmit(seRequest)
+                        val seResponse = (it as ProxyReader).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN)
 
                         if (seResponse?.selectionStatus?.hasMatched() == true) {
                             addResultEvent("The selection of the PO has succeeded.")
@@ -108,25 +111,34 @@ class CoreExamplesActivity : ExamplesActivity() {
         val seAidPrefix = "A000000404012509"
 
         /* AID based selection (1st selection, later indexed 0) */
-        seSelection.prepareSelection(GenericSeSelectionRequest(SeSelector(
-                SeCommonProtocols.PROTOCOL_ISO7816_3, null,
-                SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix),
-                        SeSelector.AidSelector.FileOccurrence.FIRST,
-                        SeSelector.AidSelector.FileControlInformation.FCI))))
+        seSelection.prepareSelection(GenericSeSelectionRequest(
+                SeSelector.builder()
+                        .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
+                        .aidSelector(AidSelector.builder()
+                                .aidToSelect(seAidPrefix)
+                                .fileOccurrence(AidSelector.FileOccurrence.FIRST)
+                                .fileControlInformation(AidSelector.FileControlInformation.FCI).build())
+                        .build()))
 
         /* next selection (2nd selection, later indexed 1) */
-        seSelection.prepareSelection(GenericSeSelectionRequest(SeSelector(
-                SeCommonProtocols.PROTOCOL_ISO7816_3, null,
-                SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix),
-                        SeSelector.AidSelector.FileOccurrence.NEXT,
-                        SeSelector.AidSelector.FileControlInformation.FCI))))
+        seSelection.prepareSelection(GenericSeSelectionRequest(
+                SeSelector.builder()
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
+                .aidSelector(AidSelector.builder()
+                        .aidToSelect(seAidPrefix)
+                        .fileOccurrence(AidSelector.FileOccurrence.NEXT)
+                        .fileControlInformation(AidSelector.FileControlInformation.FCI).build())
+                .build()))
 
         /* next selection (3rd selection, later indexed 2) */
-        seSelection.prepareSelection(GenericSeSelectionRequest(SeSelector(
-                SeCommonProtocols.PROTOCOL_ISO7816_3, null,
-                SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(seAidPrefix),
-                        SeSelector.AidSelector.FileOccurrence.NEXT,
-                        SeSelector.AidSelector.FileControlInformation.FCI))))
+        seSelection.prepareSelection(GenericSeSelectionRequest(
+                SeSelector.builder()
+                        .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
+                        .aidSelector(AidSelector.builder()
+                                .aidToSelect(seAidPrefix)
+                                .fileOccurrence(AidSelector.FileOccurrence.NEXT)
+                                .fileControlInformation(AidSelector.FileControlInformation.FCI).build())
+                        .build()))
 
         /*
          * Actual SE communication: operate through a single request the SE selection
@@ -183,12 +195,14 @@ class CoreExamplesActivity : ExamplesActivity() {
                      * AID based selection: get the first application occurrence matching the AID, keep the
                      * physical channel open
                      */
-                    seSelection.prepareSelection(GenericSeSelectionRequest(SeSelector(
-                            SeCommonProtocols.PROTOCOL_ISO14443_4,
-                            null,
-                            SeSelector.AidSelector(
-                                    SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAidPrefix)), SeSelector.AidSelector.FileOccurrence.FIRST,
-                                    SeSelector.AidSelector.FileControlInformation.FCI))))
+                    seSelection.prepareSelection(GenericSeSelectionRequest(
+                            SeSelector.builder()
+                                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                                    .aidSelector(AidSelector.builder()
+                                            .aidToSelect(seAidPrefix)
+                                            .fileOccurrence(AidSelector.FileOccurrence.FIRST)
+                                            .fileControlInformation(AidSelector.FileControlInformation.FCI).build())
+                                    .build()))
                     /* Do the selection and display the result */
                     doAndAnalyseSelection(seReader, seSelection, 1, seAidPrefix)
 
@@ -199,12 +213,14 @@ class CoreExamplesActivity : ExamplesActivity() {
                     seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
                             ChannelControl.CLOSE_AFTER)
 
-                    seSelection.prepareSelection(GenericSeSelectionRequest(SeSelector(
-                            SeCommonProtocols.PROTOCOL_ISO14443_4,
-                            null,
-                            SeSelector.AidSelector(
-                                    SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAidPrefix)), SeSelector.AidSelector.FileOccurrence.NEXT,
-                                    SeSelector.AidSelector.FileControlInformation.FCI))))
+                    seSelection.prepareSelection(GenericSeSelectionRequest(
+                            SeSelector.builder()
+                                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                                    .aidSelector(AidSelector.builder()
+                                            .aidToSelect(seAidPrefix)
+                                            .fileOccurrence(AidSelector.FileOccurrence.NEXT)
+                                            .fileControlInformation(AidSelector.FileControlInformation.FCI).build())
+                                    .build()))
 
                     /* Do the selection and display the result */
                     doAndAnalyseSelection(seReader, seSelection, 2, seAidPrefix)

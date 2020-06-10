@@ -24,7 +24,6 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.generic.GenericSeSelectionRequest;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
@@ -94,10 +93,9 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
 
         // Generic selection: configures a SeSelector with all the desired attributes to make the
         // selection
-        GenericSeSelectionRequest seSelector =
-                new GenericSeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                        null, new SeSelector.AidSelector(
-                                new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAid)))));
+        GenericSeSelectionRequest seSelector = new GenericSeSelectionRequest(SeSelector.builder()
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .aidSelector(SeSelector.AidSelector.builder().aidToSelect(seAid).build()).build());
 
         // Add the selection case to the current selection (we could have added other cases here)
         seSelection.prepareSelection(seSelector);

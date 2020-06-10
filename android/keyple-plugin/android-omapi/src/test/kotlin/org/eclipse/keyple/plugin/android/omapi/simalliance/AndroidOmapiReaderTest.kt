@@ -50,10 +50,12 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
 
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
-        val seRequest = SeRequest(SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
-                SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(PO_AID),
-                        SeSelector.AidSelector.FileOccurrence.NEXT,
-                        SeSelector.AidSelector.FileControlInformation.FCI)),
+        val seRequest = SeRequest(SeSelector.builder()
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
+                .aidSelector(SeSelector.AidSelector.builder().aidToSelect(PO_AID)
+                        .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
+                        .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build())
+                .build(),
                 poApduRequestList)
 
         reader.transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN)
@@ -66,10 +68,12 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
 
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
-        val seRequest = SeRequest(SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
-                SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(PO_AID),
-                        SeSelector.AidSelector.FileOccurrence.NEXT,
-                        SeSelector.AidSelector.FileControlInformation.FCI)),
+        val seRequest = SeRequest(SeSelector.builder()
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
+                .aidSelector(SeSelector.AidSelector.builder().aidToSelect(PO_AID)
+                        .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
+                        .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build())
+                .build(),
                 poApduRequestList)
 
         val seRequests = ArrayList<SeRequest>()

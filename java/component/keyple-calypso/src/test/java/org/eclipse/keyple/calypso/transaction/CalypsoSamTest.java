@@ -36,7 +36,7 @@ public class CalypsoSamTest {
     /** basic CalypsoSam test: nominal ATR parsing */
     @Test
     public void test_CalypsoSam_1() {
-        SamSelector samSelector = new SamSelector(AUTO, null);
+        SamSelector samSelector = SamSelector.builder().samRevision(AUTO).build();
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
         SelectionStatus selectionStatus =
                 new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR1)), null, true);
@@ -55,7 +55,7 @@ public class CalypsoSamTest {
     /* S1D D1 */
     @Test
     public void test_CalypsoSam_2() {
-        SamSelector samSelector = new SamSelector(AUTO, null);
+        SamSelector samSelector = SamSelector.builder().samRevision(AUTO).build();
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
         SelectionStatus selectionStatus =
                 new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR2)), null, true);
@@ -68,7 +68,7 @@ public class CalypsoSamTest {
     /* S1D D2 */
     @Test
     public void test_CalypsoSam_3() {
-        SamSelector samSelector = new SamSelector(AUTO, null);
+        SamSelector samSelector = SamSelector.builder().samRevision(AUTO).build();
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
         SelectionStatus selectionStatus =
                 new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR3)), null, true);
@@ -81,7 +81,7 @@ public class CalypsoSamTest {
     /* C1 */
     @Test
     public void test_CalypsoSam_4() {
-        SamSelector samSelector = new SamSelector(AUTO, null);
+        SamSelector samSelector = SamSelector.builder().samRevision(AUTO).build();
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
         SelectionStatus selectionStatus =
                 new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR4)), null, true);
@@ -94,7 +94,7 @@ public class CalypsoSamTest {
     /* E1 */
     @Test
     public void test_CalypsoSam_5() {
-        SamSelector samSelector = new SamSelector(AUTO, null);
+        SamSelector samSelector = SamSelector.builder().samRevision(AUTO).build();
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
         SelectionStatus selectionStatus =
                 new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR5)), null, true);
@@ -107,7 +107,7 @@ public class CalypsoSamTest {
     /* Unrecognized E2 */
     @Test(expected = IllegalStateException.class)
     public void test_CalypsoSam_6() {
-        SamSelector samSelector = new SamSelector(AUTO, null);
+        SamSelector samSelector = SamSelector.builder().samRevision(AUTO).build();
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
         SelectionStatus selectionStatus =
                 new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR6)), null, true);
@@ -118,7 +118,7 @@ public class CalypsoSamTest {
     /* Bad Calypso SAM ATR (0000 instead of 9000) */
     @Test(expected = IllegalStateException.class)
     public void test_CalypsoSam_7() {
-        SamSelector samSelector = new SamSelector(AUTO, null);
+        SamSelector samSelector = SamSelector.builder().samRevision(AUTO).build();
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
         SelectionStatus selectionStatus =
                 new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR7)), null, true);
@@ -129,7 +129,7 @@ public class CalypsoSamTest {
     /* Bad Calypso SAM ATR (empty array) */
     @Test(expected = IllegalStateException.class)
     public void test_CalypsoSam_8() {
-        SamSelector samSelector = new SamSelector(AUTO, null);
+        SamSelector samSelector = SamSelector.builder().samRevision(AUTO).build();
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
         SelectionStatus selectionStatus =
                 new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex("")), null, true);

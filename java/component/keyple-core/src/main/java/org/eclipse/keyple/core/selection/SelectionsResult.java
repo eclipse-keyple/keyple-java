@@ -96,14 +96,14 @@ public final class SelectionsResult {
      * @param selectionIndex the selection index
      * @return true if the selection has matched
      */
-    boolean hasSelectionMatched(int selectionIndex) {
+    public boolean hasSelectionMatched(int selectionIndex) {
         return matchingSeMap.containsKey(selectionIndex);
     }
 
     /**
      * @return the index of the active selection
      */
-    int getActiveSelectionIndex() {
+    public int getActiveSelectionIndex() {
         if (hasActiveSelection()) {
             return activeSelectionIndex;
         }

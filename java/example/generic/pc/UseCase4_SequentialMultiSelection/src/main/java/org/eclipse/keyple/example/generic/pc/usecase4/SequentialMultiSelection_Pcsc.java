@@ -86,12 +86,14 @@ public class SequentialMultiSelection_Pcsc {
 
             // AID based selection: get the first application occurrence matching the AID, keep the
             // physical channel open
-            seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector(
-                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                    new SeSelector.AidSelector(
-                            new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAidPrefix)),
-                            SeSelector.AidSelector.FileOccurrence.FIRST,
-                            SeSelector.AidSelector.FileControlInformation.FCI))));
+            seSelection.prepareSelection(new GenericSeSelectionRequest(SeSelector.builder()
+                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                    .aidSelector(SeSelector.AidSelector.builder().aidToSelect(seAidPrefix)
+                            .fileOccurrence(SeSelector.AidSelector.FileOccurrence.FIRST)
+                            .fileControlInformation(
+                                    SeSelector.AidSelector.FileControlInformation.FCI)
+                            .build())
+                    .build()));
 
             // Do the selection and display the result
             doAndAnalyseSelection(seReader, seSelection, 1);
@@ -101,17 +103,20 @@ public class SequentialMultiSelection_Pcsc {
             seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
                     ChannelControl.CLOSE_AFTER);
 
-            seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector(
-                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                    new SeSelector.AidSelector(
-                            new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAidPrefix)),
-                            SeSelector.AidSelector.FileOccurrence.NEXT,
-                            SeSelector.AidSelector.FileControlInformation.FCI))));
+            seSelection.prepareSelection(new GenericSeSelectionRequest(SeSelector.builder()
+                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                    .aidSelector(SeSelector.AidSelector.builder().aidToSelect(seAidPrefix)
+                            .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
+                            .fileControlInformation(
+                                    SeSelector.AidSelector.FileControlInformation.FCI)
+                            .build())
+                    .build()));
 
             // Do the selection and display the result
             doAndAnalyseSelection(seReader, seSelection, 2);
 
         } else {
+
             logger.error("No SE were detected.");
         }
         System.exit(0);

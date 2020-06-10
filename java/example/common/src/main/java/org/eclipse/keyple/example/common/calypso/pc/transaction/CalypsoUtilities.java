@@ -134,7 +134,7 @@ public final class CalypsoUtilities {
          */
         SeSelection samSelection = new SeSelection();
 
-        SamSelector samSelector = new SamSelector(C1, ".*");
+        SamSelector samSelector = SamSelector.builder().samRevision(C1).serialNumber(".*").build();
 
         /* Prepare selector, ignore AbstractMatchingSe here */
         samSelection.prepareSelection(new SamSelectionRequest(samSelector));

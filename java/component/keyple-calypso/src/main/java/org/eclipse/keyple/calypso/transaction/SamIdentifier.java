@@ -29,17 +29,73 @@ public class SamIdentifier {
     String serialNumber;
     String groupReference;
 
+    /** Private constructor */
+    private SamIdentifier(SamIdentifierBuilder builder) {
+        this.samRevision = builder.samRevision;
+        this.serialNumber = builder.serialNumber;
+        this.groupReference = builder.groupReference;
+    }
+
     /**
-     * Constructor for a SamIdentifier
+     * Builder for a {@link SamIdentifier}
      * 
-     * @param samRevision the SAM revision
-     * @param serialNumber the SAM serial number as an hex string or a regular expression
-     * @param groupReference the group reference string
+     * @since 0.9
      */
-    public SamIdentifier(SamRevision samRevision, String serialNumber, String groupReference) {
-        this.samRevision = samRevision;
-        this.serialNumber = serialNumber;
-        this.groupReference = groupReference;
+    public static class SamIdentifierBuilder {
+        private SamRevision samRevision;
+        private String serialNumber = ""; // default: any S/N matches
+        private String groupReference = "";
+
+        /**
+         * Sets the targeted SAM revision
+         * 
+         * @param samRevision the {@link SamRevision} of the targeted SAM
+         * @return the builder instance
+         */
+        public SamIdentifierBuilder samRevision(SamRevision samRevision) {
+            this.samRevision = samRevision;
+            return this;
+        }
+
+        /**
+         * Sets the targeted SAM serial number
+         * 
+         * @param serialNumber the serial number of the targeted SAM as regex
+         * @return the builder instance
+         */
+        public SamIdentifierBuilder serialNumber(String serialNumber) {
+            this.serialNumber = serialNumber;
+            return this;
+        }
+
+        /**
+         * Sets the targeted SAM group reference
+         * 
+         * @param groupReference the group reference of the targeted SAM as a string
+         * @return the builder instance
+         */
+        public SamIdentifierBuilder groupReference(String groupReference) {
+            this.groupReference = groupReference;
+            return this;
+        }
+
+        /**
+         * Build a new {@code SamIdentifier}.
+         *
+         * @return a new instance
+         */
+        public SamIdentifier build() {
+            return new SamIdentifier(this);
+        }
+    }
+
+    /**
+     * Gets a new builder.
+     *
+     * @return a new builder instance
+     */
+    public static SamIdentifierBuilder builder() {
+        return new SamIdentifierBuilder();
     }
 
     /**

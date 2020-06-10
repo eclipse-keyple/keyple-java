@@ -49,9 +49,10 @@ public class PoSelectionRequestTest {
 
     @Before
     public void setUp() throws Exception {
-        poSelectionRequest =
-                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                        new PoSelector.AtrFilter(".*"), null, PoSelector.InvalidatedPo.REJECT));
+        poSelectionRequest = new PoSelectionRequest(
+                PoSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                        .atrFilter(new PoSelector.AtrFilter(".*"))
+                        .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build());
     }
 
     @Test

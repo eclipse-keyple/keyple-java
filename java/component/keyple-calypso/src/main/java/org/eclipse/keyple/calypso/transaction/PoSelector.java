@@ -31,19 +31,78 @@ public final class PoSelector extends SeSelector {
         REJECT, ACCEPT
     }
 
-    /**
-     * Create a PoSelector to perform the PO selection. See {@link SeSelector}
-     *
-     * @param seProtocol the SE communication protocol
-     * @param atrFilter the ATR filter
-     * @param aidSelector the AID selection data
-     * @param authorization enum to allow invalidated POs to be accepted
-     */
-    public PoSelector(SeProtocol seProtocol, AtrFilter atrFilter, AidSelector aidSelector,
-            InvalidatedPo authorization) {
-        super(seProtocol, atrFilter, aidSelector);
-        if (authorization == InvalidatedPo.ACCEPT) {
-            aidSelector.addSuccessfulStatusCode(SW_PO_INVALIDATED);
+    /** Private constructor */
+    private PoSelector(PoSelectorBuilder builder) {
+        super(builder);
+        if (builder.invalidatedPo == InvalidatedPo.ACCEPT) {
+            this.getAidSelector().addSuccessfulStatusCode(SW_PO_INVALIDATED);
         }
+    }
+
+    /**
+     * Builder of PoSelector
+     *
+     * @since 0.9
+     */
+    public static class PoSelectorBuilder extends SeSelector.SeSelectorBuilder {
+        private InvalidatedPo invalidatedPo;
+
+        private PoSelectorBuilder() {
+            super();
+        }
+
+        /**
+         * Sets the desired behaviour in case of invalidated POs
+         *
+         * @param invalidatedPo the {@link InvalidatedPo} wanted behaviour
+         * @return the builder instance
+         */
+        public PoSelectorBuilder invalidatedPo(InvalidatedPo invalidatedPo) {
+            this.invalidatedPo = invalidatedPo;
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public PoSelectorBuilder seProtocol(SeProtocol seProtocol) {
+            return (PoSelectorBuilder) super.seProtocol(seProtocol);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public PoSelectorBuilder atrFilter(AtrFilter atrFilter) {
+            return (PoSelectorBuilder) super.atrFilter(atrFilter);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public PoSelectorBuilder aidSelector(AidSelector aidSelector) {
+            return (PoSelectorBuilder) super.aidSelector(aidSelector);
+        }
+
+        /**
+         * Build a new {@code PoSelector}.
+         *
+         * @return a new instance
+         */
+        @Override
+        public PoSelector build() {
+            return new PoSelector(this);
+        }
+    }
+
+    /**
+     * Gets a new builder.
+     *
+     * @return a new builder instance
+     */
+    public static PoSelectorBuilder builder() {
+        return new PoSelectorBuilder();
     }
 }

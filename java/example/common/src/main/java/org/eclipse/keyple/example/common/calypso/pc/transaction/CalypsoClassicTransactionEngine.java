@@ -12,6 +12,7 @@
 package org.eclipse.keyple.example.common.calypso.pc.transaction;
 
 
+import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
 import java.util.Map;
 import java.util.SortedMap;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
@@ -28,7 +29,6 @@ import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionExce
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
@@ -281,21 +281,20 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
         /*
          * Add selection case 1: Fake AID1, protocol ISO, target rev 3
          */
-        seSelection.prepareSelection(
-                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new PoSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poFakeAid1)),
-                        PoSelector.InvalidatedPo.REJECT)));
+        seSelection.prepareSelection(new PoSelectionRequest(
+                PoSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                        .aidSelector(AidSelector.builder().aidToSelect(poFakeAid1).build())
+                        .invalidatedPo(InvalidatedPo.REJECT).build()));
 
         /*
          * Add selection case 2: Calypso application, protocol ISO, target rev 2 or 3
          *
          * addition of read commands to execute following the selection
          */
-        PoSelectionRequest poSelectionRequestCalypsoAid =
-                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new PoSelector.AidSelector(
-                                new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID)),
-                        PoSelector.InvalidatedPo.ACCEPT));
+        PoSelectionRequest poSelectionRequestCalypsoAid = new PoSelectionRequest(PoSelector
+                .builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .aidSelector(AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
+                .invalidatedPo(InvalidatedPo.ACCEPT).build());
 
         poSelectionRequestCalypsoAid.prepareSelectFile(CalypsoClassicInfo.LID_DF_RT);
 
@@ -309,18 +308,18 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
         /*
          * Add selection case 3: Fake AID2, unspecified protocol, target rev 2 or 3
          */
-        seSelection.prepareSelection(
-                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_B_PRIME, null,
-                        new PoSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poFakeAid2)),
-                        PoSelector.InvalidatedPo.REJECT)));
+        seSelection.prepareSelection(new PoSelectionRequest(
+                PoSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME)
+                        .aidSelector(AidSelector.builder().aidToSelect(poFakeAid2).build())
+                        .invalidatedPo(InvalidatedPo.REJECT).build()));
 
         /*
          * Add selection case 4: ATR selection, rev 1 atrregex
          */
-        seSelection.prepareSelection(
-                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_B_PRIME,
-                        new PoSelector.AtrFilter(CalypsoClassicInfo.ATR_REV1_REGEX), null,
-                        PoSelector.InvalidatedPo.REJECT)));
+        seSelection.prepareSelection(new PoSelectionRequest(
+                PoSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME)
+                        .atrFilter(new PoSelector.AtrFilter(CalypsoClassicInfo.ATR_REV1_REGEX))
+                        .invalidatedPo(InvalidatedPo.REJECT).build()));
 
         return seSelection.getSelectionOperation();
     }

@@ -19,9 +19,11 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 
 /**
  * Management of SAM resources:
+ *
  * <p>
  * Provides methods fot the allocation/deallocation of SAM resources
  */
@@ -34,13 +36,16 @@ public abstract class SamResourceManager {
 
     /**
      * Allocate a SAM resource from the specified SAM group.
+     *
      * <p>
      * In the case where the allocation mode is BLOCKING, this method will wait until a SAM resource
      * becomes free and then return the reference to the allocated resource. However, the BLOCKING
      * mode will wait a maximum time defined in milliseconds by MAX_BLOCKING_TIME.
+     *
      * <p>
      * In the case where the allocation mode is NON_BLOCKING and no SAM resource is available, this
      * method will return an exception.
+     *
      * <p>
      * If the samGroup argument is null, the first available SAM resource will be selected and
      * returned regardless of its group.
@@ -65,6 +70,7 @@ public abstract class SamResourceManager {
 
     /**
      * Create a SAM resource from the provided SAM reader.
+     *
      * <p>
      * Proceed with the SAM selection and combine the SAM reader and the Calypso SAM resulting from
      * the selection.
@@ -80,7 +86,10 @@ public abstract class SamResourceManager {
 
         /* Prepare selector */
         samSelection.prepareSelection(
-                new SamSelectionRequest(new SamSelector(new SamIdentifier(AUTO, null, null))));
+
+                new SamSelectionRequest(SamSelector.builder()
+                        .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
+                        .samIdentifier(SamIdentifier.builder().samRevision(AUTO).build()).build()));
 
         SelectionsResult selectionsResult = null;
 

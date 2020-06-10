@@ -225,11 +225,11 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
             throws KeypleReaderException {
 
         SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter(ATR);
-        SeSelector selector =
-                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, atrFilter, null);
+        SeSelector selector = SeSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .atrFilter(atrFilter).build();
 
-        SeSelector failSelector =
-                new SeSelector(SeCommonProtocols.PROTOCOL_MIFARE_UL, atrFilter, null);
+        SeSelector failSelector = SeSelector.builder()
+                .seProtocol(SeCommonProtocols.PROTOCOL_MIFARE_UL).atrFilter(atrFilter).build();
 
         ApduRequest apduOK = new ApduRequest(APDU_SUCCESS, false);
         ApduRequest apduKO = new ApduRequest(APDU_IOEXC, false);

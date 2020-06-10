@@ -79,10 +79,10 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
             }
         } else {
             Timber.i("[%s] openLogicalChannel => Select Application with AID = %s",
-                    this.name, ByteArrayUtil.toHex(aidSelector.aidToSelect.value))
+                    this.name, ByteArrayUtil.toHex(aidSelector.aidToSelect))
             try {
                 openChannel =
-                        session?.openLogicalChannel(aidSelector.aidToSelect.value,
+                        session?.openLogicalChannel(aidSelector.aidToSelect,
                         aidSelector.fileOccurrence.isoBitMask or aidSelector.fileControlInformation.isoBitMask)
             } catch (e: IOException) {
                 Timber.e(e, "IOException")
@@ -90,10 +90,10 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
             } catch (e: NoSuchElementException) {
                 Timber.e(e, "NoSuchElementException")
                 throw java.lang.IllegalArgumentException(
-                        "NoSuchElementException: " + ByteArrayUtil.toHex(aidSelector.getAidToSelect().value), e)
+                        "NoSuchElementException: " + ByteArrayUtil.toHex(aidSelector.aidToSelect), e)
             } catch (e: SecurityException) {
                 Timber.e(e, "SecurityException")
-                throw KeypleReaderIOException("SecurityException while opening logical channel, aid :" + ByteArrayUtil.toHex(aidSelector.getAidToSelect().value), e.cause)
+                throw KeypleReaderIOException("SecurityException while opening logical channel, aid :" + ByteArrayUtil.toHex(aidSelector.aidToSelect), e.cause)
             }
 
             if (openChannel == null) {
