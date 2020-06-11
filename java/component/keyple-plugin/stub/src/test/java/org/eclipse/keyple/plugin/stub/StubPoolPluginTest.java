@@ -62,7 +62,7 @@ public class StubPoolPluginTest extends BaseStubTest {
      * Unplug a pool reader
      */
     @Test
-    public void unplugStubPoolReader_success() throws KeyplePluginInstantiationException {
+    public void unplugStubPoolReader_success() throws Exception {
         StubPoolPluginImpl stubPoolPlugin =
                 (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)
                         .getPluginInstance();
@@ -83,8 +83,7 @@ public class StubPoolPluginTest extends BaseStubTest {
      * Allocate one reader
      */
     @Test
-    public void allocate_success() throws KeypleAllocationReaderException,
-            KeypleAllocationNoReaderException, KeyplePluginInstantiationException {
+    public void allocate_success() throws Exception {
         // init stubPoolPlugin
         StubPoolPluginImpl stubPoolPlugin =
                 (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)
@@ -110,9 +109,7 @@ public class StubPoolPluginTest extends BaseStubTest {
      * Allocate twice the same reader
      */
     @Test(expected = KeypleAllocationNoReaderException.class)
-    public void allocate_twice()
-            throws InterruptedException, KeypleReaderException, KeypleAllocationReaderException,
-            KeypleAllocationNoReaderException, KeyplePluginInstantiationException {
+    public void allocate_twice() throws Exception {
         // init stubPoolPlugin
         StubPoolPluginImpl stubPoolPlugin =
                 (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)
@@ -132,8 +129,7 @@ public class StubPoolPluginTest extends BaseStubTest {
      * Release one reader
      */
     @Test
-    public void release_success() throws KeypleAllocationReaderException,
-            KeypleAllocationNoReaderException, KeyplePluginInstantiationException {
+    public void release_success() throws Exception {
         // init stubPoolPlugin
         StubPoolPluginImpl stubPoolPlugin =
                 (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)

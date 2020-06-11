@@ -33,14 +33,16 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
 
     private static final Logger logger = LoggerFactory.getLogger(PcscPluginImpl.class);
 
-    private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 1000;
-
     private boolean scardNoServiceHackNeeded;
 
     /**
-     * singleton instance of SeProxyService
+     * Singleton instance of SeProxyService 'volatile' qualifier ensures that read access to the
+     * object will only be allowed once the object has been fully initialized.
+     *
+     * This qualifier is required for “lazy-singleton” pattern with double-check method, to be
+     * thread-safe.
      */
-    private static volatile PcscPluginImpl instance;
+    private static volatile PcscPluginImpl instance; //NOSONAR: We implemented lazy-singleton pattern.
 
     private PcscPluginImpl() throws KeypleReaderException {
         super(PLUGIN_NAME);
@@ -68,9 +70,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
     }
 
     @Override
-    public void setParameter(String key, String value) throws KeypleReaderIOException {
-
-    }
+    public void setParameter(String key, String value) {}
 
     /**
      * Fetch the list of connected native reader (from smartcardio) and returns their names

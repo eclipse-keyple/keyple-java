@@ -68,7 +68,7 @@ public class StubPluginTest extends BaseStubTest {
      * Plug one reader synchronously Check: Count if created
      */
     @Test
-    public void plugOneReaderSync_success() throws InterruptedException, KeypleReaderException {
+    public void plugOneReaderSync_success() {
         final String READER_NAME = "plugOneReaderSync_sucess";
 
         // connect reader
@@ -116,7 +116,7 @@ public class StubPluginTest extends BaseStubTest {
      * Unplug one reader synchronously Check: Count if removed
      */
     @Test
-    public void unplugOneReader_success() throws InterruptedException, KeypleReaderException {
+    public void unplugOneReader_success() throws Exception {
         final String READER_NAME = "unplugOneReader_success";
         // connect reader
         stubPlugin.plugStubReader(READER_NAME, true);
