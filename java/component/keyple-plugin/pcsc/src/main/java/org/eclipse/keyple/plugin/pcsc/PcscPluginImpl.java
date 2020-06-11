@@ -42,7 +42,8 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
      * This qualifier is required for “lazy-singleton” pattern with double-check method, to be
      * thread-safe.
      */
-    private static volatile PcscPluginImpl instance; //NOSONAR: We implemented lazy-singleton pattern.
+    private static volatile PcscPluginImpl instance; // NOSONAR: We implemented lazy-singleton
+                                                     // pattern.
 
     private PcscPluginImpl() throws KeypleReaderException {
         super(PLUGIN_NAME);
