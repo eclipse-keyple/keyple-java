@@ -82,17 +82,4 @@ public class CardGenerateKeyCmdBuildTest {
         new CardGenerateKeyCmdBuild(SamRevision.C1, KEY_REFERENCE_CIPH_KEY, null);
         shouldHaveThrown(IllegalArgumentException.class);
     }
-
-    //
-    // @Test(expected = IllegalArgumentException.class)
-    // public void cardGenerateKeyCmdBuild_nullSignature() {
-    // new CardGenerateKeyCmdBuild(null, null);
-    // shouldHaveThrown(IllegalArgumentException.class);
-    // }
-    //
-    // @Test(expected = IllegalArgumentException.class)
-    // public void cardGenerateKeyCmdBuild_badSignatureLength() {
-    // new CardGenerateKeyCmdBuild(null, ByteArrayUtil.fromHex(SIGNATURE_PO_BAD_LENGTH));
-    // shouldHaveThrown(IllegalArgumentException.class);
-    // }
 }
