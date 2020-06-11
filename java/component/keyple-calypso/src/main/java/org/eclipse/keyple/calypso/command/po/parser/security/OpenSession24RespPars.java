@@ -58,11 +58,12 @@ public final class OpenSession24RespPars extends AbstractOpenSessionRespPars {
          * </ul>
          */
 
-        byte[] data = null;
+        byte[] data;
 
         switch (apduResponseData.length) {
             case 5:
                 previousSessionRatified = true;
+                data = new byte[0];
                 break;
             case 34:
                 previousSessionRatified = true;
@@ -70,6 +71,7 @@ public final class OpenSession24RespPars extends AbstractOpenSessionRespPars {
                 break;
             case 7:
                 previousSessionRatified = false;
+                data = new byte[0];
                 break;
             case 36:
                 previousSessionRatified = false;
