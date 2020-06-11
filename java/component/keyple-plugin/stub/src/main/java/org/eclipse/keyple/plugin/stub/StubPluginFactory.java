@@ -11,13 +11,14 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.stub;
 
-import org.eclipse.keyple.core.seproxy.AbstractPluginFactory;
+import org.eclipse.keyple.core.seproxy.PluginFactory;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 
 /**
  * Instantiate a {@link StubPlugin} with a custom plugin name
  */
-public class StubPluginFactory extends AbstractPluginFactory {
+public class StubPluginFactory implements PluginFactory {
 
     private String pluginName;
 
@@ -36,7 +37,11 @@ public class StubPluginFactory extends AbstractPluginFactory {
     }
 
     @Override
-    protected ReaderPlugin getPluginInstance() {
-        return new StubPluginImpl(pluginName);
+    public ReaderPlugin getPluginInstance() throws KeyplePluginInstantiationException {
+        try {
+            return new StubPluginImpl(pluginName);
+        } catch (Exception e) {
+            throw new KeyplePluginInstantiationException("Can not access StubPlugin", e);
+        }
     }
 }

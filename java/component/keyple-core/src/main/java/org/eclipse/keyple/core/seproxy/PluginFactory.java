@@ -13,7 +13,7 @@ package org.eclipse.keyple.core.seproxy;
 
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 
-public abstract class AbstractPluginFactory {
+public interface PluginFactory {
 
     /**
      * Retrieve the name of the plugin that will be instantiated by this factory (can be static or
@@ -21,7 +21,7 @@ public abstract class AbstractPluginFactory {
      * 
      * @return pluginName
      */
-    public abstract String getPluginName();
+    String getPluginName();
 
 
     /**
@@ -31,7 +31,7 @@ public abstract class AbstractPluginFactory {
      * @throws KeyplePluginInstantiationException if instantiation failed, mostly when the third
      *         party library which manages the Se Reader interface is not ready
      */
-    protected abstract ReaderPlugin getPluginInstance() throws KeyplePluginInstantiationException;
+    ReaderPlugin getPluginInstance() throws KeyplePluginInstantiationException;
 
 
 }

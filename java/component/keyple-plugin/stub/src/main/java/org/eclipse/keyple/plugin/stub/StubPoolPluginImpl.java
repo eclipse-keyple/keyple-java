@@ -32,7 +32,7 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
     Map<String, String> allocatedReader;// readerName,groupReference
 
 
-    public StubPoolPluginImpl(String pluginName) {
+    public StubPoolPluginImpl(String pluginName) throws KeyplePluginInstantiationException {
         // create an embedded stubplugin to manage reader
         this.stubPlugin = (StubPluginImpl) new StubPluginFactory(pluginName).getPluginInstance();
         this.readerPool = new HashMap<String, StubReaderImpl>();

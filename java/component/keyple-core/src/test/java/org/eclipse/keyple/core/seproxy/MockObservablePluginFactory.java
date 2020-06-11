@@ -11,9 +11,10 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy;
 
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.seproxy.plugin.mock.MockAbstractThreadedPlugin;
 
-public class MockObservablePluginFactory extends AbstractPluginFactory {
+public class MockObservablePluginFactory implements PluginFactory {
 
     private final String pluginName;
 
@@ -27,7 +28,11 @@ public class MockObservablePluginFactory extends AbstractPluginFactory {
     }
 
     @Override
-    protected ReaderPlugin getPluginInstance() {
-        return new MockAbstractThreadedPlugin(pluginName);
+    public ReaderPlugin getPluginInstance() throws KeyplePluginInstantiationException {
+        try {
+            return new MockAbstractThreadedPlugin(pluginName);
+        } catch (Exception e) {
+            throw new KeyplePluginInstantiationException("Could not connect readers ", e);
+        }
     }
 }

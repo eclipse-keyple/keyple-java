@@ -12,10 +12,7 @@
 package org.eclipse.keyple.plugin.stub;
 
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationNoReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.*;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -48,7 +45,8 @@ public class StubPoolPluginTest extends BaseStubTest {
      * Plug a pool reader
      */
     @Test
-    public void plugStubPoolReader_success() throws InterruptedException, KeypleReaderException {
+    public void plugStubPoolReader_success()
+            throws KeypleReaderException, KeyplePluginInstantiationException {
         StubPoolPluginImpl stubPoolPlugin =
                 (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)
                         .getPluginInstance();
@@ -64,7 +62,7 @@ public class StubPoolPluginTest extends BaseStubTest {
      * Unplug a pool reader
      */
     @Test
-    public void unplugStubPoolReader_success() throws InterruptedException, KeypleReaderException {
+    public void unplugStubPoolReader_success() throws Exception {
         StubPoolPluginImpl stubPoolPlugin =
                 (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)
                         .getPluginInstance();
@@ -85,8 +83,7 @@ public class StubPoolPluginTest extends BaseStubTest {
      * Allocate one reader
      */
     @Test
-    public void allocate_success()
-            throws KeypleAllocationReaderException, KeypleAllocationNoReaderException {
+    public void allocate_success() throws Exception {
         // init stubPoolPlugin
         StubPoolPluginImpl stubPoolPlugin =
                 (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)
@@ -112,8 +109,7 @@ public class StubPoolPluginTest extends BaseStubTest {
      * Allocate twice the same reader
      */
     @Test(expected = KeypleAllocationNoReaderException.class)
-    public void allocate_twice() throws InterruptedException, KeypleReaderException,
-            KeypleAllocationReaderException, KeypleAllocationNoReaderException {
+    public void allocate_twice() throws Exception {
         // init stubPoolPlugin
         StubPoolPluginImpl stubPoolPlugin =
                 (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)
@@ -133,8 +129,7 @@ public class StubPoolPluginTest extends BaseStubTest {
      * Release one reader
      */
     @Test
-    public void release_success()
-            throws KeypleAllocationReaderException, KeypleAllocationNoReaderException {
+    public void release_success() throws Exception {
         // init stubPoolPlugin
         StubPoolPluginImpl stubPoolPlugin =
                 (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)

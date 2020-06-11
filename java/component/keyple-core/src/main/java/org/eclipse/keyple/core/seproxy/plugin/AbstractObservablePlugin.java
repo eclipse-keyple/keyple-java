@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,8 +39,9 @@ public abstract class AbstractObservablePlugin extends AbstractPlugin
      * Instantiates a observable plugin.
      *
      * @param name name of the plugin
+     * @throws KeypleReaderException when an issue is raised with reader
      */
-    protected AbstractObservablePlugin(String name) {
+    protected AbstractObservablePlugin(String name) throws KeypleReaderException {
         super(name);
     }
 

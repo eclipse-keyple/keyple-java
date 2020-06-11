@@ -55,7 +55,7 @@ public class AbstractPluginTest extends CoreBaseTest {
      * @throws Throwable
      */
     @Test
-    public void addRemoveReadersMultiThreaded() throws InterruptedException {
+    public void addRemoveReadersMultiThreaded() throws Exception {
         ReaderPlugin plugin = new BlankAbstractPlugin("addRemoveReadersMultiThreaded");
         SortedSet<SeReader> readers = plugin.getReaders();
         final CountDownLatch lock = new CountDownLatch(10);

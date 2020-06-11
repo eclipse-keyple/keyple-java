@@ -5,14 +5,14 @@ package org.eclipse.keyple.core.seproxy #FFFFFF {
 +class "<b>final</b> SeProxyService" as SeProxyService << Singleton >> {
 	+{static}SeProxyService getInstance()
 	+String getVersion()
-	+registerPlugin(AbstractPluginFactory pluginFactory)
+	+registerPlugin(PluginFactory pluginFactory)
 	+boolean isRegistered(String pluginName)
 	+boolean unregisterPlugin(String pluginName)
 	+ReaderPlugin getPlugin(String name)
 	+SortedSet<ReaderPlugin> getPlugins()
 }
 
-+abstract AbstractPluginFactory {
++abstract PluginFactory {
 	{abstract} #String getPluginName()
 	{abstract} #ReaderPlugin getPluginInstance()
 }
@@ -31,9 +31,9 @@ package org.eclipse.keyple.core.seproxy #FFFFFF {
 }
 
 SeProxyService "1" *-down-> "*" ReaderPlugin : plugins
-SeProxyService "1" *--> "*" AbstractPluginFactory : registers
+SeProxyService "1" *--> "*" PluginFactory : registers
 ReaderPlugin "1" *-right-> "*" SeReader : readers
-AbstractPluginFactory "1" -right-> "1" ReaderPlugin : creates
+PluginFactory "1" -right-> "1" ReaderPlugin : creates
 }
 
 package plugin.specific #FFCCFF {
@@ -63,7 +63,7 @@ package plugin.specific #FFCCFF {
 }
 }
 
-AbstractPluginFactory <|-- SpecificPluginFactory : extends
+PluginFactory <|-- SpecificPluginFactory : extends
 ReaderPlugin <|-- SpecificPlugin : extends
 SeReader <|-- SpecificReader : extends
 

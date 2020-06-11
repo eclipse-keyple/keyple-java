@@ -11,10 +11,10 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
-import org.eclipse.keyple.core.seproxy.AbstractPluginFactory
+import org.eclipse.keyple.core.seproxy.PluginFactory
 import org.eclipse.keyple.core.seproxy.ReaderPlugin
 
-class AndroidNfcPluginFactory : AbstractPluginFactory() {
+class AndroidNfcPluginFactory : PluginFactory {
 
     override fun getPluginName(): String {
         return AndroidNfcPlugin.PLUGIN_NAME

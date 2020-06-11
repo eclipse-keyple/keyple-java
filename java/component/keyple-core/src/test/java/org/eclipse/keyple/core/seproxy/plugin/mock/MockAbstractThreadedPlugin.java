@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractReader;
@@ -23,7 +24,7 @@ import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
 public class MockAbstractThreadedPlugin extends AbstractThreadedObservablePlugin {
 
 
-    public MockAbstractThreadedPlugin(String name) {
+    public MockAbstractThreadedPlugin(String name) throws KeypleReaderException {
         super(name);
     }
 

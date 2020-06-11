@@ -14,6 +14,7 @@ package org.eclipse.keyple.core.seproxy.plugin.mock;
 import java.util.Map;
 import java.util.SortedSet;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
@@ -23,7 +24,7 @@ import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
  */
 public class BlankFailingPlugin extends AbstractThreadedObservablePlugin {
 
-    public BlankFailingPlugin(String name) {
+    public BlankFailingPlugin(String name) throws KeypleReaderException {
         super(name);
     }
 

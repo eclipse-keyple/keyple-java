@@ -24,7 +24,6 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleRuntimeException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
 import org.slf4j.Logger;
@@ -34,16 +33,19 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
 
     private static final Logger logger = LoggerFactory.getLogger(PcscPluginImpl.class);
 
-    private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 1000;
-
     private boolean scardNoServiceHackNeeded;
 
     /**
-     * singleton instance of SeProxyService
+     * Singleton instance of SeProxyService 'volatile' qualifier ensures that read access to the
+     * object will only be allowed once the object has been fully initialized.
+     *
+     * This qualifier is required for “lazy-singleton” pattern with double-check method, to be
+     * thread-safe.
      */
-    private static final PcscPluginImpl uniqueInstance = new PcscPluginImpl();
+    private static volatile PcscPluginImpl instance; // NOSONAR: We implemented lazy-singleton
+                                                     // pattern.
 
-    private PcscPluginImpl() {
+    private PcscPluginImpl() throws KeypleReaderException {
         super(PLUGIN_NAME);
     }
 
@@ -52,11 +54,15 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
      *
      * @return single instance of PcscPlugin
      */
-    public static PcscPluginImpl getInstance() {
-        if (uniqueInstance.readers == null) {
-            throw new KeypleRuntimeException("Reader list is not accessible");
+    public static PcscPluginImpl getInstance() throws KeypleReaderException {
+        if (instance == null) {
+            synchronized (PcscPluginImpl.class) {
+                if (instance == null) {
+                    instance = new PcscPluginImpl();
+                }
+            }
         }
-        return uniqueInstance;
+        return instance;
     }
 
     @Override
@@ -65,9 +71,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
     }
 
     @Override
-    public void setParameter(String key, String value) throws KeypleReaderIOException {
-
-    }
+    public void setParameter(String key, String value) {}
 
     /**
      * Fetch the list of connected native reader (from smartcardio) and returns their names
