@@ -27,6 +27,16 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OpenSessionRespParsTest {
+    private static final String SW1SW2_OK = "9000";
+    private static final String PO_CHALLENGE_4 = "11223344";
+    private static final String RATIFIED = "00";
+    private static final String NOT_RATIFIED = "01";
+    private static final String KIF = "12";
+    private static final String KVC = "34";
+    private static final String DATA_LENGTH = "0A";
+    private static final String DATA = "00112233445566778899";
+    private static final String OPEN_SECURE_SESSION_RESP_31_RATIFIED = PO_CHALLENGE_4 + RATIFIED + KIF + KVC + DATA_LENGTH + DATA + SW1SW2_OK;
+
     byte keyIndex = (byte) 0x01;
     byte[] terminalChallenge = ByteArrayUtil.fromHex("11223344");
 
