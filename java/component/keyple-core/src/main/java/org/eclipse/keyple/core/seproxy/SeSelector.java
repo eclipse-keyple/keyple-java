@@ -338,9 +338,9 @@ public class SeSelector {
      * @since 0.9
      */
     public static class SeSelectorBuilder {
-        SeProtocol seProtocol;
-        SeSelector.AtrFilter atrFilter;
-        SeSelector.AidSelector aidSelector;
+        private SeProtocol seProtocol;
+        private SeSelector.AtrFilter atrFilter;
+        private SeSelector.AidSelector aidSelector;
 
 
         /** Private constructor */

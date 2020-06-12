@@ -24,7 +24,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 public abstract class AbstractSamCommandBuilder<T extends AbstractSamResponseParser>
         extends AbstractIso7816CommandBuilder {
 
-    protected SamRevision defaultRevision = SamRevision.S1D;// 94
+    protected SamRevision defaultRevision = SamRevision.C1;
 
     public AbstractSamCommandBuilder(CalypsoSamCommand reference, ApduRequest request) {
         super(reference, request);

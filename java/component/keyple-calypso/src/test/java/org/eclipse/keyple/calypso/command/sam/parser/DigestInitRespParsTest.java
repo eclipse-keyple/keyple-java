@@ -11,36 +11,32 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.command.sam.parser;
 
-import java.util.ArrayList;
-import java.util.List;
+import static org.assertj.core.api.Assertions.shouldHaveThrown;
+import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException;
 import org.eclipse.keyple.calypso.command.sam.parser.security.DigestInitRespPars;
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DigestInitRespParsTest {
+    private static final String SW1SW2_KO = "6A83";
+    private static final String SW1SW2_OK = "9000";
+
+    @Test(expected = CalypsoSamCommandException.class)
+    public void digestInitRespPars_badStatus() throws CalypsoSamCommandException {
+        DigestInitRespPars digestInitRespPars = new DigestInitRespPars(
+                new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null), null);
+        digestInitRespPars.checkStatus();
+        shouldHaveThrown(CalypsoSamCommandException.class);
+    }
 
     @Test
-    public void digestInitRespPars() {
-        List<ApduResponse> responses = new ArrayList<ApduResponse>();
-        ApduResponse apduResponse = new ApduResponse(new byte[] {(byte) 0x90, 0x00}, null);
-        responses.add(apduResponse);
-        SeResponse seResponse =
-                new SeResponse(true, true,
-                        new SelectionStatus(null,
-                                new ApduResponse(ByteArrayUtil.fromHex("9000"), null), true),
-                        responses);
-
-        AbstractApduResponseParser apduResponseParser =
-                new DigestInitRespPars(seResponse.getApduResponses().get(0), null);
-        Assert.assertArrayEquals(new byte[] {(byte) 0x90, 0x00},
-                apduResponseParser.getApduResponse().getBytes());
+    public void digestInitRespPars_goodStatus() throws CalypsoSamCommandException {
+        DigestInitRespPars digestInitRespPars = new DigestInitRespPars(
+                new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_OK), null), null);
+        digestInitRespPars.checkStatus();
     }
 }

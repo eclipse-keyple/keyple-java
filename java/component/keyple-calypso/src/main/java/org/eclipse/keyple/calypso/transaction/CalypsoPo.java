@@ -38,7 +38,7 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
  * <li>The invalidation status
  * </ul>
  */
-public final class CalypsoPo extends AbstractMatchingSe {
+public class CalypsoPo extends AbstractMatchingSe {
     private final boolean isConfidentialSessionModeSupported;
     private final boolean isDeselectRatificationSupported;
     private final boolean isSvFeatureAvailable;
@@ -214,7 +214,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * 
      * @return an enum giving the identified PO revision
      */
-    public PoRevision getRevision() {
+    public final PoRevision getRevision() {
         return revision;
     }
 
@@ -229,14 +229,14 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * 
      * @return a byte array containing the DF Name bytes (5 to 16 bytes)
      */
-    public byte[] getDfNameBytes() {
+    public final byte[] getDfNameBytes() {
         return dfName;
     }
 
     /**
      * @return the DF name as an HEX string (see getDfNameBytes)
      */
-    public String getDfName() {
+    public final String getDfName() {
         return ByteArrayUtil.toHex(getDfNameBytes());
     }
 
@@ -246,7 +246,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * 
      * @return a byte array containing the Calypso Serial Number (8 bytes)
      */
-    protected byte[] getCalypsoSerialNumber() {
+    protected final byte[] getCalypsoSerialNumber() {
         return calypsoSerialNumber;
     }
 
@@ -255,7 +255,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      *
      * @return a byte array containing the Application Serial Number (8 bytes)
      */
-    public byte[] getApplicationSerialNumber() {
+    public final byte[] getApplicationSerialNumber() {
         byte[] applicationSerialNumber = calypsoSerialNumber.clone();
         applicationSerialNumber[0] = 0;
         applicationSerialNumber[1] = 0;
@@ -266,15 +266,15 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * @return the startup info field from the FCI as an HEX string
      * @since 0.9
      */
-    public String getStartupInfo() {
+    public final String getStartupInfo() {
         return ByteArrayUtil.toHex(startupInfo);
     }
 
-    protected boolean isSerialNumberExpiring() {
+    protected final boolean isSerialNumberExpiring() {
         throw new IllegalStateException("Not yet implemented");
     }
 
-    protected byte[] getSerialNumberExpirationBytes() {
+    protected final byte[] getSerialNumberExpirationBytes() {
         throw new IllegalStateException("Not yet implemented");
     }
 
@@ -293,7 +293,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * @throws IllegalStateException if the ATR is not available (see {@code hasAtr()} method)
      * @since 0.9
      */
-    public String getAtr() {
+    public final String getAtr() {
         return ByteArrayUtil.toHex(getAtrBytes());
     }
 
@@ -301,7 +301,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * @return the maximum length of data that an APDU in this PO can carry
      * @since 0.9
      */
-    public int getPayloadCapacity() {
+    public final int getPayloadCapacity() {
         // TODO make this value dependent on the type of PO identified
         return 250;
     }
@@ -314,7 +314,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * 
      * @return true if the counter is number of bytes
      */
-    protected boolean isModificationsCounterInBytes() {
+    protected final boolean isModificationsCounterInBytes() {
         return modificationCounterIsInBytes;
     }
 
@@ -326,7 +326,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * 
      * @return the maximum number of modifications allowed
      */
-    protected int getModificationsCounter() {
+    protected final int getModificationsCounter() {
         return modificationsCounterMax;
     }
 
@@ -335,7 +335,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * 
      * @return the platform identification byte
      */
-    public byte getPlatform() {
+    public final byte getPlatform() {
         return startupInfo[SI_PLATFORM];
     }
 
@@ -344,7 +344,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * 
      * @return the Application Type byte
      */
-    public byte getApplicationType() {
+    public final byte getApplicationType() {
         return startupInfo[SI_APPLICATION_TYPE];
     }
 
@@ -355,7 +355,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * 
      * @return true if the Confidential Session Mode is supported
      */
-    public boolean isConfidentialSessionModeSupported() {
+    public final boolean isConfidentialSessionModeSupported() {
         return isConfidentialSessionModeSupported;
     }
 
@@ -366,7 +366,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * 
      * @return true if the ratification command is required
      */
-    public boolean isDeselectRatificationSupported() {
+    public final boolean isDeselectRatificationSupported() {
         return isDeselectRatificationSupported;
     }
 
@@ -377,7 +377,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * 
      * @return true if the PO has the Stored Value feature
      */
-    public boolean isSvFeatureAvailable() {
+    public final boolean isSvFeatureAvailable() {
         return isSvFeatureAvailable;
     }
 
@@ -388,7 +388,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * 
      * @return true if the PO has the PIN feature
      */
-    public boolean isPinFeatureAvailable() {
+    public final boolean isPinFeatureAvailable() {
         return isPinFeatureAvailable;
     }
 
@@ -399,7 +399,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      *
      * @return true if the Public Authentication is supported
      */
-    public boolean isPublicAuthenticationSupported() {
+    public final boolean isPublicAuthenticationSupported() {
         return isPublicAuthenticationSupported;
     }
 
@@ -409,7 +409,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * 
      * @return the Application Subtype byte
      */
-    public byte getApplicationSubtype() {
+    public final byte getApplicationSubtype() {
         return startupInfo[SI_APPLICATION_SUBTYPE];
     }
 
@@ -419,7 +419,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * 
      * @return the Software Issuer byte
      */
-    public byte getSoftwareIssuer() {
+    public final byte getSoftwareIssuer() {
         return startupInfo[SI_SOFTWARE_ISSUER];
     }
 
@@ -429,7 +429,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * 
      * @return the Software Version byte
      */
-    public byte getSoftwareVersion() {
+    public final byte getSoftwareVersion() {
         return startupInfo[SI_SOFTWARE_VERSION];
     }
 
@@ -439,7 +439,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * 
      * @return the Software Revision byte
      */
-    public byte getSoftwareRevision() {
+    public final byte getSoftwareRevision() {
         return startupInfo[SI_SOFTWARE_REVISION];
     }
 
@@ -450,7 +450,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * 
      * @return true if the PO has been invalidated.
      */
-    public boolean isDfInvalidated() {
+    public final boolean isDfInvalidated() {
         return isDfInvalidated;
     }
 
@@ -461,7 +461,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * @return true if the PO has been ratified.
      * @throws IllegalStateException if these methods is call when no session has been opened
      */
-    public boolean isDfRatified() {
+    public final boolean isDfRatified() {
         if (isDfRatified != null) {
             return isDfRatified;
         }
@@ -476,7 +476,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * @param dfRatified true if the session was ratified
      * @since 0.9
      */
-    void setDfRatified(boolean dfRatified) {
+    final void setDfRatified(boolean dfRatified) {
         isDfRatified = dfRatified;
     }
 
@@ -489,7 +489,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * 
      * @return the PO class determined from the PO revision
      */
-    protected PoClass getPoClass() {
+    protected final PoClass getPoClass() {
         return poClass;
     }
 
@@ -499,7 +499,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * @return null if is not set.
      * @since 0.9
      */
-    public DirectoryHeader getDirectoryHeader() {
+    public final DirectoryHeader getDirectoryHeader() {
         return directoryHeader;
     }
 
@@ -510,7 +510,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * @param directoryHeader the DF metadata (should be not null)
      * @return the current instance.
      */
-    CalypsoPo setDirectoryHeader(DirectoryHeader directoryHeader) {
+    final CalypsoPo setDirectoryHeader(DirectoryHeader directoryHeader) {
         this.directoryHeader = directoryHeader;
         return this;
     }
@@ -525,7 +525,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * @throws NoSuchElementException if requested EF is not found.
      * @since 0.9
      */
-    public ElementaryFile getFileBySfi(byte sfi) {
+    public final ElementaryFile getFileBySfi(byte sfi) {
         ElementaryFile ef = efBySfi.get(sfi);
         if (ef == null) {
             throw new NoSuchElementException(
@@ -544,7 +544,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * @throws NoSuchElementException if requested EF is not found.
      * @since 0.9
      */
-    public ElementaryFile getFileByLid(short lid) {
+    public final ElementaryFile getFileByLid(short lid) {
         Byte sfi = sfiByLid.get(lid);
         if (sfi == null) {
             throw new NoSuchElementException(
@@ -561,7 +561,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * @return a not null reference (may be empty if no one EF is set).
      * @since 0.9
      */
-    public Map<Byte, ElementaryFile> getAllFiles() {
+    public final Map<Byte, ElementaryFile> getAllFiles() {
         return efBySfi;
     }
 
@@ -589,7 +589,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * @param sfi the SFI
      * @param header the file header (should be not null)
      */
-    void setFileHeader(byte sfi, FileHeader header) {
+    final void setFileHeader(byte sfi, FileHeader header) {
         ElementaryFile ef = getOrCreateFile(sfi);
         ef.setHeader(header);
         sfiByLid.put(header.getLid(), sfi);
@@ -605,7 +605,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * @param numRecord the record number (should be {@code >=} 1)
      * @param content the content (should be not empty)
      */
-    void setContent(byte sfi, int numRecord, byte[] content) {
+    final void setContent(byte sfi, int numRecord, byte[] content) {
         ElementaryFile ef = getOrCreateFile(sfi);
         ef.getData().setContent(numRecord, content);
     }
@@ -619,7 +619,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * @param numCounter the counter number (should be {@code >=} 1)
      * @param content the counter value (should be not null and 3 bytes length)
      */
-    void setCounter(byte sfi, int numCounter, byte[] content) {
+    final void setCounter(byte sfi, int numCounter, byte[] content) {
         ElementaryFile ef = getOrCreateFile(sfi);
         ef.getData().setCounter(numCounter, content);
     }
@@ -637,7 +637,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * @param content the content (should be not empty)
      * @param offset the offset (should be {@code >=} 0)
      */
-    void setContent(byte sfi, int numRecord, byte[] content, int offset) {
+    final void setContent(byte sfi, int numRecord, byte[] content, int offset) {
         ElementaryFile ef = getOrCreateFile(sfi);
         ef.getData().setContent(numRecord, content, offset);
     }
@@ -654,7 +654,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * @param numRecord the record number (should be {@code >=} 1)
      * @param content the content (should be not empty)
      */
-    void fillContent(byte sfi, int numRecord, byte[] content) {
+    final void fillContent(byte sfi, int numRecord, byte[] content) {
         ElementaryFile ef = getOrCreateFile(sfi);
         ef.getData().fillContent(numRecord, content);
     }
@@ -670,7 +670,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * @param sfi the SFI
      * @param content the content (should be not empty)
      */
-    void addCyclicContent(byte sfi, byte[] content) {
+    final void addCyclicContent(byte sfi, byte[] content) {
         ElementaryFile ef = getOrCreateFile(sfi);
         ef.getData().addCyclicContent(content);
     }
@@ -680,7 +680,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * Make a backup of the Elementary Files.<br>
      * This method should be used before starting a PO secure session.
      */
-    void backupFiles() {
+    final void backupFiles() {
         copyMapFiles(efBySfi, efBySfiBackup);
         copyMapSfi(sfiByLid, sfiByLidBackup);
     }
@@ -691,7 +691,7 @@ public final class CalypsoPo extends AbstractMatchingSe {
      * This method should be used when SW of the PO close secure session command is unsuccessful or
      * if secure session is aborted.
      */
-    void restoreFiles() {
+    final void restoreFiles() {
         copyMapFiles(efBySfiBackup, efBySfi);
         copyMapSfi(sfiByLidBackup, sfiByLid);
     }

@@ -42,7 +42,7 @@ public class GiveRandomCmdBuild extends AbstractSamCommandBuilder<GiveRandomResp
         byte p1 = (byte) 0x00;
         byte p2 = (byte) 0x00;
 
-        if (random != null && random.length != 8) {
+        if (random == null || random.length != 8) {
             throw new IllegalArgumentException("Random value should be an 8 bytes long");
         }
 

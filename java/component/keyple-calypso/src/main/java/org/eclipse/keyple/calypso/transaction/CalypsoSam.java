@@ -22,7 +22,7 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class CalypsoSam extends AbstractMatchingSe {
+public class CalypsoSam extends AbstractMatchingSe {
     private static final Logger logger = LoggerFactory.getLogger(CalypsoSam.class);
 
     private final SamRevision samRevision;
@@ -95,35 +95,35 @@ public final class CalypsoSam extends AbstractMatchingSe {
         }
     }
 
-    public SamRevision getSamRevision() {
+    public final SamRevision getSamRevision() {
         return samRevision;
     }
 
-    public byte[] getSerialNumber() {
+    public final byte[] getSerialNumber() {
         return serialNumber;
     }
 
-    public byte getPlatform() {
+    public final byte getPlatform() {
         return platform;
     }
 
-    public byte getApplicationType() {
+    public final byte getApplicationType() {
         return applicationType;
     }
 
-    public byte getApplicationSubType() {
+    public final byte getApplicationSubType() {
         return applicationSubType;
     }
 
-    public byte getSoftwareIssuer() {
+    public final byte getSoftwareIssuer() {
         return softwareIssuer;
     }
 
-    public byte getSoftwareVersion() {
+    public final byte getSoftwareVersion() {
         return softwareVersion;
     }
 
-    public byte getSoftwareRevision() {
+    public final byte getSoftwareRevision() {
         return softwareRevision;
     }
 }

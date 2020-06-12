@@ -27,6 +27,7 @@ import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -134,7 +135,9 @@ public final class CalypsoUtilities {
          */
         SeSelection samSelection = new SeSelection();
 
-        SamSelector samSelector = SamSelector.builder().samRevision(C1).serialNumber(".*").build();
+        SamSelector samSelector =
+                SamSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
+                        .samRevision(C1).serialNumber(".*").build();
 
         /* Prepare selector, ignore AbstractMatchingSe here */
         samSelection.prepareSelection(new SamSelectionRequest(samSelector));

@@ -11,7 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.command.po.parser.security;
 
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
@@ -20,6 +19,7 @@ import org.eclipse.keyple.calypso.command.po.builder.security.*;
 import org.eclipse.keyple.calypso.command.po.exception.*;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /**
  * Open session response parser. See specs: Calypso / page 100 / 9.5.1 - Open secure session
@@ -79,10 +79,13 @@ public abstract class AbstractOpenSessionRespPars extends AbstractPoResponsePars
      * @param builder the reference to the builder that created this parser
      * @param revision the revision of the PO
      */
-    AbstractOpenSessionRespPars(ApduResponse response, AbstractOpenSessionCmdBuild builder,
-            PoRevision revision) {
+    AbstractOpenSessionRespPars(ApduResponse response,
+            AbstractOpenSessionCmdBuild<AbstractOpenSessionRespPars> builder, PoRevision revision) {
         super(response, builder);
-        this.secureSession = toSecureSession(response.getDataOut());
+        byte[] dataOut = response.getDataOut();
+        if (dataOut.length > 0) {
+            this.secureSession = toSecureSession(dataOut);
+        }
     }
 
     public AbstractOpenSessionRespPars create(ApduResponse response, PoRevision revision) {
@@ -107,10 +110,8 @@ public abstract class AbstractOpenSessionRespPars extends AbstractPoResponsePars
         return secureSession.getChallengeRandomNumber();
     }
 
-
     public int getTransactionCounterValue() {
-        return ByteBuffer.wrap(secureSession.getChallengeTransactionCounter())
-                .order(java.nio.ByteOrder.LITTLE_ENDIAN).getInt();
+        return ByteArrayUtil.threeBytesToInt(secureSession.getChallengeTransactionCounter(), 0);
     }
 
     public boolean wasRatified() {
@@ -210,7 +211,7 @@ public abstract class AbstractOpenSessionRespPars extends AbstractPoResponsePars
             this.previousSessionRatified = previousSessionRatified;
             this.manageSecureSessionAuthorized = manageSecureSessionAuthorized;
             this.kif = (byte) 0xFF;
-            this.kvc = kvc;
+            this.kvc = kvc != null ? kvc : (byte) 0xFF;
             this.originalData = originalData;
             this.secureSessionData = secureSessionData;
         }

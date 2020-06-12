@@ -17,7 +17,6 @@ import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,7 +94,6 @@ public class AbstractIso7816CommandBuilderTest extends CoreBaseTest {
                         (byte) 0xB2, ByteArrayUtil.fromHex("11223344"), (byte) 1);
     }
 
-    @Ignore // TODO This test fails. Correct the code.
     @Test
     public void testSetApduRequestCase1() {
         // case 1: dataIn = null, le = null
@@ -104,8 +102,7 @@ public class AbstractIso7816CommandBuilderTest extends CoreBaseTest {
         ApduRequest apduRequest = iso7816CommandBuilder.setApduRequest((byte) 0xCC,
                 CommandRef.COMMAND_1, (byte) 0xB1, (byte) 0xB2, null, null);
         logger.info("APDU case1: {}", ByteArrayUtil.toHex(apduRequest.getBytes()));
-        Assert.assertArrayEquals(ByteArrayUtil.fromHex("CC 11 B1 B2 04 11223344 00"),
-                apduRequest.getBytes());
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex("CC 11 B1 B2 00"), apduRequest.getBytes());
         Assert.assertFalse(apduRequest.isCase4());
     }
 

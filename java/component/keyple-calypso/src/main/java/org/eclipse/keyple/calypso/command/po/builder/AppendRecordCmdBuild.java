@@ -17,11 +17,9 @@ import org.eclipse.keyple.calypso.command.po.*;
 import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class AppendRecordCmdBuild. This class provides the dedicated constructor to build the Update
  * Record APDU command.
- *
  */
 public final class AppendRecordCmdBuild extends AbstractPoCommandBuilder<AppendRecordRespPars> {
 
@@ -43,8 +41,6 @@ public final class AppendRecordCmdBuild extends AbstractPoCommandBuilder<AppendR
     public AppendRecordCmdBuild(PoClass poClass, byte sfi, byte[] newRecordData) {
         super(command, null);
         byte cla = poClass.getValue();
-
-        // TODO add argument checking
 
         this.sfi = sfi;
         this.data = newRecordData;

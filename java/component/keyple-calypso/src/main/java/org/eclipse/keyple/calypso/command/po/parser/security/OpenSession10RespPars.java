@@ -34,7 +34,7 @@ public final class OpenSession10RespPars extends AbstractOpenSessionRespPars {
     }
 
     public static SecureSession createSecureSession(byte[] apduResponseData) {
-        boolean previousSessionRatified = true;
+        boolean previousSessionRatified;
 
         /**
          * In rev 1.0 mode, the response to the Open Secure Session command is as follows:
@@ -55,14 +55,24 @@ public final class OpenSession10RespPars extends AbstractOpenSessionRespPars {
          * <li>35 not ratified (2 ratification bytes), 4-byte challenge, 29 bytes of data</li>
          * </ul>
          */
+        byte[] data;
+
         switch (apduResponseData.length) {
             case 4:
+                previousSessionRatified = true;
+                data = new byte[0];
+                break;
             case 33:
                 previousSessionRatified = true;
+                data = Arrays.copyOfRange(apduResponseData, 4, 33);
                 break;
             case 6:
+                previousSessionRatified = false;
+                data = new byte[0];
+                break;
             case 35:
                 previousSessionRatified = false;
+                data = Arrays.copyOfRange(apduResponseData, 6, 35);
                 break;
             default:
                 throw new IllegalStateException(
@@ -70,8 +80,8 @@ public final class OpenSession10RespPars extends AbstractOpenSessionRespPars {
         }
 
         /* KVC doesn't exist and is set to null for this type of PO */
-        return new SecureSession(Arrays.copyOfRange(apduResponseData, 1, 4),
-                Arrays.copyOfRange(apduResponseData, 4, 5), previousSessionRatified, false, null,
-                null, apduResponseData);
+        return new SecureSession(Arrays.copyOfRange(apduResponseData, 0, 3),
+                Arrays.copyOfRange(apduResponseData, 3, 4), previousSessionRatified, false, null,
+                data, apduResponseData);
     }
 }

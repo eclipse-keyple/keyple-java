@@ -47,17 +47,6 @@ public final class IncreaseCmdBuild extends AbstractPoCommandBuilder<IncreaseRes
     public IncreaseCmdBuild(PoClass poClass, byte sfi, byte counterNumber, int incValue) {
         super(command, null);
 
-        // only counter number >= 1 are allowed
-        if (counterNumber < 1) {
-            throw new IllegalArgumentException("Counter number out of range!");
-        }
-
-        // check if the incValue is in the allowed interval
-        if (incValue < 0 || incValue > 0xFFFFFF) {
-            throw new IllegalArgumentException("Increment value out of range!");
-        }
-
-        // TODO complete argument checking
         byte cla = poClass.getValue();
         this.sfi = sfi;
         this.counterNumber = counterNumber;

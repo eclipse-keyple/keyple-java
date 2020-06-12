@@ -11,39 +11,37 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.command.sam.parser;
 
-import java.util.ArrayList;
-import java.util.List;
+import static org.assertj.core.api.Assertions.shouldHaveThrown;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException;
 import org.eclipse.keyple.calypso.command.sam.parser.security.DigestCloseRespPars;
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DigestCloseRespParsTest {
+    private static final String SW1SW2_KO = "6988";
+    private static final String SW1SW2_OK = "9000";
+    private static final String SAM_SIGNATURE = "11223344";
+    private static final String APDU_DIGEST_CLOSE = SAM_SIGNATURE + SW1SW2_OK;
+
+    @Test(expected = CalypsoSamCommandException.class)
+    public void digestCloseRespPars_badStatus() throws CalypsoSamCommandException {
+        DigestCloseRespPars digestCloseRespPars = new DigestCloseRespPars(
+                new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null), null);
+        digestCloseRespPars.checkStatus();
+        shouldHaveThrown(CalypsoSamCommandException.class);
+    }
 
     @Test
-    public void digestCloseRespPars() {
-        List<ApduResponse> responses = new ArrayList<ApduResponse>();
-        ApduResponse apduResponse = new ApduResponse(
-                new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, (byte) 0x90, 0x00}, null);
-        responses.add(apduResponse);
-        SeResponse seResponse =
-                new SeResponse(true, true,
-                        new SelectionStatus(null,
-                                new ApduResponse(ByteArrayUtil.fromHex("9000"), null), true),
-                        responses);
-
-        AbstractApduResponseParser apduResponseParser =
-                new DigestCloseRespPars(seResponse.getApduResponses().get(0), null);
-        byte[] responseActual = apduResponseParser.getApduResponse().getBytes();
-        Assert.assertArrayEquals(
-                new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, (byte) 0x90, 0x00},
-                responseActual);
+    public void digestCloseRespPars_goodStatus_getSignature() throws CalypsoSamCommandException {
+        DigestCloseRespPars digestCloseRespPars = new DigestCloseRespPars(
+                new ApduResponse(ByteArrayUtil.fromHex(APDU_DIGEST_CLOSE), null), null);
+        digestCloseRespPars.checkStatus();
+        assertThat(digestCloseRespPars.getSignature())
+                .isEqualTo(ByteArrayUtil.fromHex(SAM_SIGNATURE));
     }
 }

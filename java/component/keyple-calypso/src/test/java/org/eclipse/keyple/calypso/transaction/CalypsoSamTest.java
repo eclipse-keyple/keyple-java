@@ -11,8 +11,9 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.shouldHaveThrown;
 import static org.eclipse.keyple.calypso.command.sam.SamRevision.*;
-import static org.junit.Assert.*;
 import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
@@ -32,7 +33,6 @@ public class CalypsoSamTest {
     public static String ATR6 = "3B001122805A0180E202030411223344829000";
     public static String ATR7 = "3B001122805A0180E202030411223344820000";
 
-
     /** basic CalypsoSam test: nominal ATR parsing */
     @Test
     public void test_CalypsoSam_1() {
@@ -42,14 +42,14 @@ public class CalypsoSamTest {
                 new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR1)), null, true);
         CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null),
                 TransmissionMode.CONTACTS);
-        assertEquals(S1D, calypsoSam.getSamRevision());
-        assertEquals((byte) 0x80, calypsoSam.getApplicationType());
-        assertEquals((byte) 0xD0, calypsoSam.getApplicationSubType());
-        assertEquals((byte) 0x01, calypsoSam.getPlatform());
-        assertEquals((byte) 0x02, calypsoSam.getSoftwareIssuer());
-        assertEquals((byte) 0x03, calypsoSam.getSoftwareVersion());
-        assertEquals((byte) 0x04, calypsoSam.getSoftwareRevision());
-        assertEquals("11223344", ByteArrayUtil.toHex(calypsoSam.getSerialNumber()));
+        assertThat(S1D).isEqualTo(calypsoSam.getSamRevision());
+        assertThat((byte) 0x80).isEqualTo(calypsoSam.getApplicationType());
+        assertThat((byte) 0xD0).isEqualTo(calypsoSam.getApplicationSubType());
+        assertThat((byte) 0x01).isEqualTo(calypsoSam.getPlatform());
+        assertThat((byte) 0x02).isEqualTo(calypsoSam.getSoftwareIssuer());
+        assertThat((byte) 0x03).isEqualTo(calypsoSam.getSoftwareVersion());
+        assertThat((byte) 0x04).isEqualTo(calypsoSam.getSoftwareRevision());
+        assertThat("11223344").isEqualTo(ByteArrayUtil.toHex(calypsoSam.getSerialNumber()));
     }
 
     /* S1D D1 */
@@ -61,8 +61,8 @@ public class CalypsoSamTest {
                 new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR2)), null, true);
         CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null),
                 TransmissionMode.CONTACTS);
-        assertEquals(S1D, calypsoSam.getSamRevision());
-        assertEquals((byte) 0xD1, calypsoSam.getApplicationSubType());
+        assertThat(S1D).isEqualTo(calypsoSam.getSamRevision());
+        assertThat((byte) 0xD1).isEqualTo(calypsoSam.getApplicationSubType());
     }
 
     /* S1D D2 */
@@ -74,8 +74,8 @@ public class CalypsoSamTest {
                 new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR3)), null, true);
         CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null),
                 TransmissionMode.CONTACTS);
-        assertEquals(S1D, calypsoSam.getSamRevision());
-        assertEquals((byte) 0xD2, calypsoSam.getApplicationSubType());
+        assertThat(S1D).isEqualTo(calypsoSam.getSamRevision());
+        assertThat((byte) 0xD2).isEqualTo(calypsoSam.getApplicationSubType());
     }
 
     /* C1 */
@@ -87,8 +87,8 @@ public class CalypsoSamTest {
                 new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR4)), null, true);
         CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null),
                 TransmissionMode.CONTACTS);
-        assertEquals(C1, calypsoSam.getSamRevision());
-        assertEquals((byte) 0xC1, calypsoSam.getApplicationSubType());
+        assertThat(C1).isEqualTo(calypsoSam.getSamRevision());
+        assertThat((byte) 0xC1).isEqualTo(calypsoSam.getApplicationSubType());
     }
 
     /* E1 */
@@ -100,8 +100,8 @@ public class CalypsoSamTest {
                 new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR5)), null, true);
         CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null),
                 TransmissionMode.CONTACTS);
-        assertEquals(S1E, calypsoSam.getSamRevision());
-        assertEquals((byte) 0xE1, calypsoSam.getApplicationSubType());
+        assertThat(S1E).isEqualTo(calypsoSam.getSamRevision());
+        assertThat((byte) 0xE1).isEqualTo(calypsoSam.getApplicationSubType());
     }
 
     /* Unrecognized E2 */
@@ -113,6 +113,7 @@ public class CalypsoSamTest {
                 new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR6)), null, true);
         CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null),
                 TransmissionMode.CONTACTS);
+        shouldHaveThrown(IllegalArgumentException.class);
     }
 
     /* Bad Calypso SAM ATR (0000 instead of 9000) */
@@ -124,6 +125,7 @@ public class CalypsoSamTest {
                 new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR7)), null, true);
         CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null),
                 TransmissionMode.CONTACTS);
+        shouldHaveThrown(IllegalArgumentException.class);
     }
 
     /* Bad Calypso SAM ATR (empty array) */
@@ -135,5 +137,6 @@ public class CalypsoSamTest {
                 new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex("")), null, true);
         CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null),
                 TransmissionMode.CONTACTS);
+        shouldHaveThrown(IllegalArgumentException.class);
     }
 }

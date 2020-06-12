@@ -48,17 +48,6 @@ public final class DecreaseCmdBuild extends AbstractPoCommandBuilder<DecreaseRes
     public DecreaseCmdBuild(PoClass poClass, byte sfi, byte counterNumber, int decValue) {
         super(command, null);
 
-        // only counter number >= 1 are allowed
-        if (counterNumber < 1) {
-            throw new IllegalArgumentException("Counter number out of range!");
-        }
-
-        // check if the incValue is in the allowed interval
-        if (decValue < 0 || decValue > 0xFFFFFF) {
-            throw new IllegalArgumentException("Decrement value out of range!");
-        }
-
-        // TODO complete argument checking
         byte cla = poClass.getValue();
         this.sfi = sfi;
         this.counterNumber = counterNumber;

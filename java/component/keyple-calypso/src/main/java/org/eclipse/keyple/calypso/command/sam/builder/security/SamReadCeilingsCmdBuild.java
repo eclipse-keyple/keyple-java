@@ -49,34 +49,25 @@ public class SamReadCeilingsCmdBuild extends AbstractSamCommandBuilder<SamReadCe
 
         byte cla = this.defaultRevision.getClassByte();
 
-        byte p1 = (byte) 0x00;
+        byte p1;
         byte p2;
 
-        switch (operationType) {
-            case CEILING_RECORD:
+        if (operationType == CeilingsOperationType.CEILING_RECORD) {
+            if (index < 0 || index > MAX_CEILING_REC_NUMB) {
+                throw new IllegalArgumentException(
+                        "Record Number must be between 1 and " + MAX_CEILING_REC_NUMB + ".");
+            }
+            p1 = (byte) 0x00;
+            p2 = (byte) (0xB0 + index);
+        } else {
+            // SINGLE_CEILING:
 
-                if (index < 1 || index > MAX_CEILING_REC_NUMB) {
-                    throw new IllegalArgumentException(
-                            "Record Number must be between 1 and " + MAX_CEILING_REC_NUMB + ".");
-                }
-
-                p2 = (byte) (0xB0 + index);
-                break;
-
-            case SINGLE_CEILING:
-
-                if (index < 0 || index > MAX_CEILING_NUMB) {
-                    throw new IllegalArgumentException(
-                            "Counter Number must be between 0 and " + MAX_CEILING_NUMB + ".");
-                }
-
-                p1 = (byte) index;
-                p2 = (byte) (0xB8);
-                break;
-
-            default:
-                throw new IllegalStateException(
-                        "Unsupported OperationType parameter " + operationType.toString());
+            if (index < 0 || index > MAX_CEILING_NUMB) {
+                throw new IllegalArgumentException(
+                        "Counter Number must be between 0 and " + MAX_CEILING_NUMB + ".");
+            }
+            p1 = (byte) index;
+            p2 = (byte) (0xB8);
         }
 
         request = setApduRequest(cla, command, p1, p2, null, (byte) 0x00);

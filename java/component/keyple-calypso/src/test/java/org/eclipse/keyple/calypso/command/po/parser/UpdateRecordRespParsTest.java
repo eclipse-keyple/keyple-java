@@ -11,35 +11,31 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.command.po.parser;
 
-import java.util.ArrayList;
-import java.util.List;
+import static org.assertj.core.api.Assertions.shouldHaveThrown;
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-
 @RunWith(MockitoJUnitRunner.class)
 public class UpdateRecordRespParsTest {
+    private static final String SW1SW2_KO = "6A82";
+    private static final String SW1SW2_OK = "9000";
+
+    @Test(expected = CalypsoPoCommandException.class)
+    public void updateRecordRespPars_badStatus() throws CalypsoPoCommandException {
+        UpdateRecordRespPars updateRecordRespPars = new UpdateRecordRespPars(
+                new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null), null);
+        updateRecordRespPars.checkStatus();
+        shouldHaveThrown(CalypsoPoCommandException.class);
+    }
 
     @Test
-    public void updateRecordRespPars() {
-        List<ApduResponse> responses = new ArrayList<ApduResponse>();
-        ApduResponse apduResponse = new ApduResponse(new byte[] {90, 00}, null);
-        responses.add(apduResponse);
-        SeResponse seResponse =
-                new SeResponse(true, true,
-                        new SelectionStatus(null,
-                                new ApduResponse(ByteArrayUtil.fromHex("9000"), null), true),
-                        responses);
-
-        UpdateRecordRespPars apduResponseParser =
-                new UpdateRecordRespPars(seResponse.getApduResponses().get(0), null);
-        Assert.assertArrayEquals(new byte[] {90, 0},
-                apduResponseParser.getApduResponse().getBytes());
+    public void updateRecordRespPars_goodStatus() throws CalypsoPoCommandException {
+        UpdateRecordRespPars updateRecordRespPars = new UpdateRecordRespPars(
+                new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_OK), null), null);
+        updateRecordRespPars.checkStatus();
     }
 }

@@ -12,32 +12,52 @@
 package org.eclipse.keyple.calypso.command.sam.builder;
 
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.shouldHaveThrown;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.builder.security.DigestCloseCmdBuild;
-import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
-import org.eclipse.keyple.core.seproxy.message.ApduRequest;
-import org.junit.Assert;
+import org.eclipse.keyple.calypso.command.sam.parser.security.DigestCloseRespPars;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DigestCloseCmdBuildTest {
+    private static final String SW1SW2_OK = "9000";
+    private static final byte LENGTH_4 = (byte) 0x04;
+    private static final String APDU_CLA_80 = "808E000004";
+    private static final String APDU_CLA_94 = "948E000004";
 
     @Test
-    public void digestCloseCmdBuild() {
+    public void digestCloseCmdBuild_defaultRevision_createParser() {
+        DigestCloseCmdBuild digestCloseCmdBuild = new DigestCloseCmdBuild(null, LENGTH_4);
+        assertThat(digestCloseCmdBuild.getApduRequest().getBytes())
+                .isEqualTo(ByteArrayUtil.fromHex(APDU_CLA_80));
+        DigestCloseRespPars digestCloseRespPars = digestCloseCmdBuild
+                .createResponseParser(new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_OK), null));
+        assertThat(digestCloseRespPars.getClass()).isEqualTo(DigestCloseRespPars.class);
+    }
 
-        byte[] request = new byte[] {(byte) 0x94, (byte) 0x8E, 0x00, 0x00, (byte) 0x04};
-        AbstractApduCommandBuilder apduCommandBuilder =
-                new DigestCloseCmdBuild(SamRevision.S1D, (byte) 0x04);// 94
-        ApduRequest apduReq = apduCommandBuilder.getApduRequest();
+    @Test
+    public void digestCloseCmdBuild_cla94() {
+        DigestCloseCmdBuild digestCloseCmdBuild =
+                new DigestCloseCmdBuild(SamRevision.S1D, LENGTH_4);
+        assertThat(digestCloseCmdBuild.getApduRequest().getBytes())
+                .isEqualTo(ByteArrayUtil.fromHex(APDU_CLA_94));
+    }
 
-        Assert.assertArrayEquals(request, apduReq.getBytes());
+    @Test
+    public void digestCloseCmdBuild_cla80() {
+        DigestCloseCmdBuild digestCloseCmdBuild = new DigestCloseCmdBuild(SamRevision.C1, LENGTH_4);
+        assertThat(digestCloseCmdBuild.getApduRequest().getBytes())
+                .isEqualTo(ByteArrayUtil.fromHex(APDU_CLA_80));
+    }
 
-        byte[] request1 = new byte[] {(byte) 0x80, (byte) 0x8E, 0x00, 0x00, (byte) 0x04};
-        apduCommandBuilder = new DigestCloseCmdBuild(SamRevision.C1, (byte) 0x04);// 94
-        apduReq = apduCommandBuilder.getApduRequest();
-
-        Assert.assertArrayEquals(request1, apduReq.getBytes());
+    @Test(expected = IllegalArgumentException.class)
+    public void digestCloseCmdBuild_badExpectedLength() {
+        new DigestCloseCmdBuild(null, (byte) (LENGTH_4 + 1));
+        shouldHaveThrown(IllegalArgumentException.class);
     }
 }
