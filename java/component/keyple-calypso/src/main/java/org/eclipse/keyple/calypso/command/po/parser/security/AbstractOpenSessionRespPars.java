@@ -79,10 +79,13 @@ public abstract class AbstractOpenSessionRespPars extends AbstractPoResponsePars
      * @param builder the reference to the builder that created this parser
      * @param revision the revision of the PO
      */
-    AbstractOpenSessionRespPars(ApduResponse response, AbstractOpenSessionCmdBuild builder,
-            PoRevision revision) {
+    AbstractOpenSessionRespPars(ApduResponse response,
+            AbstractOpenSessionCmdBuild<AbstractOpenSessionRespPars> builder, PoRevision revision) {
         super(response, builder);
-        this.secureSession = toSecureSession(response.getDataOut());
+        byte[] dataOut = response.getDataOut();
+        if (dataOut.length > 0) {
+            this.secureSession = toSecureSession(dataOut);
+        }
     }
 
     public AbstractOpenSessionRespPars create(ApduResponse response, PoRevision revision) {
@@ -208,7 +211,7 @@ public abstract class AbstractOpenSessionRespPars extends AbstractPoResponsePars
             this.previousSessionRatified = previousSessionRatified;
             this.manageSecureSessionAuthorized = manageSecureSessionAuthorized;
             this.kif = (byte) 0xFF;
-            this.kvc = kvc;
+            this.kvc = kvc != null ? kvc : (byte) 0xFF;
             this.originalData = originalData;
             this.secureSessionData = secureSessionData;
         }
