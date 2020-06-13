@@ -83,7 +83,6 @@ task javadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
-    javadoc.options.encoding = 'UTF-8'
     from dokka.outputDirectory
 }
 
