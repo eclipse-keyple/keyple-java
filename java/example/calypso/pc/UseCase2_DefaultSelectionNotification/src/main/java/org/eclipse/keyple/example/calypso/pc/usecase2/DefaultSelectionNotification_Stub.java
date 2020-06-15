@@ -71,7 +71,7 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
             LoggerFactory.getLogger(DefaultSelectionNotification_Stub.class);
     private final SeSelection seSelection;
 
-    public DefaultSelectionNotification_Stub() throws KeypleException, InterruptedException {
+    public DefaultSelectionNotification_Stub() throws InterruptedException {
 
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
@@ -273,7 +273,7 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
     /**
      * main program entry
      */
-    public static void main(String[] args) throws InterruptedException, KeypleException {
+    public static void main(String[] args) throws InterruptedException {
         // Create the observable object to handle the PO processing
         new DefaultSelectionNotification_Stub();
     }

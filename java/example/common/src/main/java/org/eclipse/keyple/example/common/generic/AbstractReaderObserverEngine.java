@@ -32,7 +32,7 @@ public abstract class AbstractReaderObserverEngine implements ObservableReader.R
 
 
     protected abstract void processSeMatch(
-            AbstractDefaultSelectionsResponse defaultSelectionsResponse) throws KeypleException;
+            AbstractDefaultSelectionsResponse defaultSelectionsResponse);
 
     protected abstract void processSeInserted(); // alternative AID selection
 

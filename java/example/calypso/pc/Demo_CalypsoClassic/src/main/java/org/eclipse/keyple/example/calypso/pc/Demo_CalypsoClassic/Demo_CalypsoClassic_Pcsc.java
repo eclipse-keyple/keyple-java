@@ -42,7 +42,7 @@ public class Demo_CalypsoClassic_Pcsc {
      * @throws KeypleException setParameter exception
      * @throws InterruptedException thread exception
      */
-    public static void main(String[] args) throws KeypleException, InterruptedException {
+    public static void main(String[] args) throws InterruptedException {
         Logger logger = LoggerFactory.getLogger(Demo_CalypsoClassic_Pcsc.class);
 
         /* Get the instance of the SeProxyService (Singleton pattern) */

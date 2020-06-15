@@ -37,10 +37,11 @@ public class Demo_CalypsoClassic_Stub {
      *
      * @param args the program arguments
      * @throws InterruptedException thread exception
+     * @throws KeyplePluginNotFoundException if the Stub plugin is not found
+     * @throws KeyplePluginInstantiationException if the instantiation of the Stub plugin fails
+     * @throws CalypsoPoIllegalArgumentException if an command argument is wrong
      */
-    public static void main(String[] args)
-            throws InterruptedException, KeyplePluginNotFoundException,
-            KeyplePluginInstantiationException, CalypsoPoIllegalArgumentException {
+    public static void main(String[] args) throws InterruptedException {
         final Logger logger = LoggerFactory.getLogger(Demo_CalypsoClassic_Stub.class);
 
         /* Get the instance of the SeProxyService (Singleton pattern) */
@@ -61,7 +62,8 @@ public class Demo_CalypsoClassic_Stub {
         ((StubPlugin) stubPlugin).plugStubReader("poReader", true);
         ((StubPlugin) stubPlugin).plugStubReader("samReader", true);
 
-        StubReader poReader = null, samReader = null;
+        StubReader poReader = null;
+        StubReader samReader = null;
         try {
             poReader = (StubReader) (stubPlugin.getReader("poReader"));
             samReader = (StubReader) (stubPlugin.getReader("samReader"));
@@ -98,13 +100,12 @@ public class Demo_CalypsoClassic_Stub {
         samReader.insertSe(samSE);
 
         /* Set the default selection operation */
-        ((ObservableReader) poReader).setDefaultSelectionRequest(
-                transactionEngine.preparePoSelection(),
+        poReader.setDefaultSelectionRequest(transactionEngine.preparePoSelection(),
                 ObservableReader.NotificationMode.MATCHED_ONLY,
                 ObservableReader.PollingMode.REPEATING);
 
         /* Set the transactionEngine as Observer of the PO reader */
-        ((ObservableReader) poReader).addObserver(transactionEngine);
+        poReader.addObserver(transactionEngine);
 
         logger.info("Insert stub PO SE.");
         poReader.insertSe(calypsoStubSe);

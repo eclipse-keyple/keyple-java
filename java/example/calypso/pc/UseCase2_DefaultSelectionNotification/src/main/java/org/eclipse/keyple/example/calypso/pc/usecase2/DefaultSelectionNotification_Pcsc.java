@@ -70,7 +70,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
     // here).
     private static final Object waitForEnd = new Object();
 
-    public DefaultSelectionNotification_Pcsc() throws KeypleException, InterruptedException {
+    public DefaultSelectionNotification_Pcsc() throws InterruptedException {
         // Get the instance of the SeProxyService (Singleton pattern)
         SeProxyService seProxyService = SeProxyService.getInstance();
 
@@ -146,7 +146,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
                             .getActiveMatchingSe();
 
                     poReader = SeProxyService.getInstance().getPlugin(event.getPluginName())
-                            .getReader(event.getReaderName());;
+                            .getReader(event.getReaderName());
                 } catch (KeypleReaderNotFoundException e) {
                     logger.error("Reader not found! {}", e.getMessage());
                 } catch (KeyplePluginNotFoundException e) {
@@ -188,7 +188,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
                     // process
                     ElementaryFile efEventLog =
                             calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
-                    byte eventLog[] = efEventLog.getData().getContent();
+                    byte[] eventLog = efEventLog.getData().getContent();
 
                     // Log the result
                     logger.info("EventLog file data: {}", ByteArrayUtil.toHex(eventLog));
@@ -234,7 +234,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
     /**
      * main program entry
      */
-    public static void main(String[] args) throws InterruptedException, KeypleException {
+    public static void main(String[] args) throws InterruptedException {
         // Create the observable object to handle the PO processing
         new DefaultSelectionNotification_Pcsc();
     }

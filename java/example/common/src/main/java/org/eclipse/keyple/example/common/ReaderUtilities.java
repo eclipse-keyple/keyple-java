@@ -51,7 +51,7 @@ public final class ReaderUtilities {
      * @throws KeypleException in case of an error while retrieving the reader or setting its
      *         parameters
      */
-    public static SeReader getDefaultContactLessSeReader() throws KeypleException {
+    public static SeReader getDefaultContactLessSeReader() {
         SeReader seReader =
                 ReaderUtilities.getReaderByName(PcscReadersSettings.PO_READER_NAME_REGEX);
 
@@ -66,7 +66,7 @@ public final class ReaderUtilities {
      * @param reader the reader to configure
      * @throws KeypleException in case of an error while settings the parameters
      */
-    public static void setContactlessSettings(SeReader reader) throws KeypleException {
+    public static void setContactlessSettings(SeReader reader) {
         /* Contactless SE works with T1 protocol */
         reader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T1);
 
@@ -96,7 +96,7 @@ public final class ReaderUtilities {
      * @param reader the reader to configure
      * @throws KeypleException in case of an error while settings the parameters
      */
-    public static void setContactsSettings(SeReader reader) throws KeypleException {
+    public static void setContactsSettings(SeReader reader) {
         /* Contactless SE works with T0 protocol */
         reader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
 

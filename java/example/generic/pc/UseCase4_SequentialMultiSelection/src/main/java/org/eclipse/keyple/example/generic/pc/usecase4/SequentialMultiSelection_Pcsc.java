@@ -20,7 +20,6 @@ import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
@@ -37,8 +36,8 @@ public class SequentialMultiSelection_Pcsc {
     private static final Logger logger =
             LoggerFactory.getLogger(SequentialMultiSelection_Pcsc.class);
 
-    private static void doAndAnalyseSelection(SeReader seReader, SeSelection seSelection, int index)
-            throws KeypleException {
+    private static void doAndAnalyseSelection(SeReader seReader, SeSelection seSelection,
+            int index) {
         SelectionsResult selectionsResult = seSelection.processExplicitSelection(seReader);
         if (selectionsResult.hasActiveSelection()) {
             AbstractMatchingSe matchingSe = selectionsResult.getActiveMatchingSe();
@@ -54,7 +53,7 @@ public class SequentialMultiSelection_Pcsc {
         }
     }
 
-    public static void main(String[] args) throws KeypleException {
+    public static void main(String[] args) {
 
         // Get the instance of the SeProxyService (Singleton pattern)
         SeProxyService seProxyService = SeProxyService.getInstance();
