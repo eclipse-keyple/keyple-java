@@ -15,7 +15,7 @@ package org.eclipse.keyple.core.seproxy.exception;
  * The exception {@code KeypleException} is the parent abstract class of all Keyple checked
  * exceptions.
  */
-public abstract class KeypleException extends Exception {
+public abstract class KeypleException extends RuntimeException {
 
     /**
      * @param message the message to identify the exception context
