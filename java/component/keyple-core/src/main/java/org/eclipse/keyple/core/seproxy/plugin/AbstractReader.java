@@ -118,8 +118,7 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
      */
     @Override
     public final List<SeResponse> transmitSeRequests(List<SeRequest> seRequests,
-            MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
-            throws KeypleReaderIOException {
+            MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl) {
         if (seRequests == null) {
             throw new IllegalArgumentException("The SeRequest list must not be null");
         }
@@ -189,8 +188,7 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
-    public final SeResponse transmitSeRequest(SeRequest seRequest, ChannelControl channelControl)
-            throws KeypleReaderIOException {
+    public final SeResponse transmitSeRequest(SeRequest seRequest, ChannelControl channelControl) {
         if (seRequest == null) {
             throw new IllegalArgumentException("seRequest must not be null");
         }

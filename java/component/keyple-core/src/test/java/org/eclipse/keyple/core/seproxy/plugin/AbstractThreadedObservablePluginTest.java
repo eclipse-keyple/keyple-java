@@ -42,7 +42,7 @@ public class AbstractThreadedObservablePluginTest extends CoreBaseTest {
      * @throws Throwable
      */
     @Test(expected = KeypleReaderException.class)
-    public void instantiatePlugin() throws KeypleReaderException {
+    public void instantiatePlugin() {
         new BlankFailingPlugin("addObserverTest");
     }
 

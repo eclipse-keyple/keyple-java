@@ -14,9 +14,7 @@ package org.eclipse.keyple.core.seproxy.plugin.mock;
 import java.util.Map;
 import java.util.SortedSet;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
 
 /**
@@ -24,23 +22,22 @@ import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
  */
 public class BlankFailingPlugin extends AbstractThreadedObservablePlugin {
 
-    public BlankFailingPlugin(String name) throws KeypleReaderException {
+    public BlankFailingPlugin(String name) {
         super(name);
     }
 
     @Override
-    protected SortedSet<String> fetchNativeReadersNames() throws KeypleReaderIOException {
+    protected SortedSet<String> fetchNativeReadersNames() {
         return null;
     }
 
     @Override
-    protected SeReader fetchNativeReader(String name)
-            throws KeypleReaderNotFoundException, KeypleReaderIOException {
+    protected SeReader fetchNativeReader(String name) {
         return null;
     }
 
     @Override
-    protected SortedSet<SeReader> initNativeReaders() throws KeypleReaderIOException {
+    protected SortedSet<SeReader> initNativeReaders() {
         throw new KeypleReaderIOException("");
     }
 
@@ -50,7 +47,7 @@ public class BlankFailingPlugin extends AbstractThreadedObservablePlugin {
     }
 
     @Override
-    public void setParameter(String key, String value) throws KeypleReaderIOException {
+    public void setParameter(String key, String value) {
 
     }
 }

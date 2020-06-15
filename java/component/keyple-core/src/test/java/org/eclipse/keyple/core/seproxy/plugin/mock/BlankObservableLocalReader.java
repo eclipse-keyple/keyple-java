@@ -83,12 +83,12 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
     }
 
     @Override
-    public boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderIOException {
+    public boolean protocolFlagMatches(SeProtocol protocolFlag) {
         return false;
     }
 
     @Override
-    public byte[] transmitApdu(byte[] apduIn) throws KeypleReaderIOException {
+    public byte[] transmitApdu(byte[] apduIn) {
         return new byte[0];
     }
 
@@ -103,7 +103,7 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
     }
 
     @Override
-    public void setParameter(String key, String value) throws KeypleReaderIOException {
+    public void setParameter(String key, String value) {
 
     }
 }

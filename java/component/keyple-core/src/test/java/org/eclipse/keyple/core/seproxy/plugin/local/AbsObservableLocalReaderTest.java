@@ -21,7 +21,6 @@ import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.plugin.mock.BlankObservableLocalReader;
 import org.junit.Assert;
@@ -307,8 +306,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
 
 
 
-    public static AbstractObservableLocalReader getSpy(String pluginName, String readerName)
-            throws KeypleReaderException {
+    public static AbstractObservableLocalReader getSpy(String pluginName, String readerName) {
         AbstractObservableLocalReader r =
                 Mockito.spy(new BlankObservableLocalReader(pluginName, readerName));
         doReturn(SeResponseTest.getASeResponse()).when(r).processSeRequest(any(SeRequest.class),

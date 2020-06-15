@@ -110,7 +110,7 @@ public abstract class AbstractApduResponseParser {
      *
      * @throws KeypleSeCommandException if status is not successful.
      */
-    public void checkStatus() throws KeypleSeCommandException {
+    public void checkStatus() {
 
         StatusProperties props = getStatusCodeProperties();
         if (props != null && props.isSuccessful()) {

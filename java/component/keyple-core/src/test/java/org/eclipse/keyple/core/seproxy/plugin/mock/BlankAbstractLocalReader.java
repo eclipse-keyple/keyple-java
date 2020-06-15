@@ -35,7 +35,7 @@ public class BlankAbstractLocalReader extends AbstractLocalReader {
     }
 
     @Override
-    public void openPhysicalChannel() throws KeypleReaderIOException {
+    public void openPhysicalChannel() {
 
     }
 
@@ -50,12 +50,12 @@ public class BlankAbstractLocalReader extends AbstractLocalReader {
     }
 
     @Override
-    public boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderIOException {
+    public boolean protocolFlagMatches(SeProtocol protocolFlag) {
         return false;
     }
 
     @Override
-    public byte[] transmitApdu(byte[] apduIn) throws KeypleReaderIOException {
+    public byte[] transmitApdu(byte[] apduIn) {
         return new byte[0];
     }
 
@@ -70,7 +70,7 @@ public class BlankAbstractLocalReader extends AbstractLocalReader {
     }
 
     @Override
-    public void setParameter(String key, String value) throws KeypleReaderIOException {
+    public void setParameter(String key, String value) {
 
     }
 }
