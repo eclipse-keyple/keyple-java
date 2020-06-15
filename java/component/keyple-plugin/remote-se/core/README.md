@@ -23,6 +23,7 @@ In a Calypso context, it is useful when your SAM reader and/or your PO reader ar
     * [Remote SE Client Plugin API (class diagram)](#remote-se-client-plugin-api-class-diagram)
     * [Remote SE Pool Client Plugin API (class diagram)](#remote-se-pool-client-plugin-api-class-diagram)
     * [Remote SE Server Plugin (sequence diagram)](#remote-se-server-plugin-sequence-diagram)
+    * [Internal Class Diagram](#internal-class-diagram)
 
 ## Overview
 
@@ -49,27 +50,27 @@ The **Core** library contains all the common components used by **Native SE** an
 
 ### Remote SE Server Plugin
 
-![RemoteSe-Component-RemoteSeServerPlugin-SeReader-API](../../../../../docs/img/remote-se/component/RemoteSe-Component-RemoteSeServerPlugin-SeReader-API.svg)
+![RemoteSe_Component_RemoteSeServerPlugin_SeReader_API](../../../../../docs/img/remote-se/component/RemoteSe_Component_RemoteSeServerPlugin_SeReader_API.svg)
 
-![RemoteSe-Component-RemoteSeServerPlugin-ObservableReader-API](../../../../../docs/img/remote-se/component/RemoteSe-Component-RemoteSeServerPlugin-ObservableReader-API.svg)
+![RemoteSe_Component_RemoteSeServerPlugin_ObservableReader_API](../../../../../docs/img/remote-se/component/RemoteSe_Component_RemoteSeServerPlugin_ObservableReader_API.svg)
 
 ### Remote SE Client Plugin
 
-![RemoteSe-Component-RemoteSeClientPlugin-SeReader-API](../../../../../docs/img/remote-se/component/RemoteSe-Component-RemoteSeClientPlugin-SeReader-API.svg)
+![RemoteSe_Component_RemoteSeClientPlugin_SeReader_API](../../../../../docs/img/remote-se/component/RemoteSe_Component_RemoteSeClientPlugin_SeReader_API.svg)
 
-![RemoteSe-Component-RemoteSeClientPlugin-ObservableReader-API](../../../../../docs/img/remote-se/component/RemoteSe-Component-RemoteSeClientPlugin-ObservableReader-API.svg)
+![RemoteSe_Component_RemoteSeClientPlugin_ObservableReader_API](../../../../../docs/img/remote-se/component/RemoteSe_Component_RemoteSeClientPlugin_ObservableReader_API.svg)
 
-![RemoteSe-Component-RemoteSeClientObservablePlugin-SeReader-API](../../../../../docs/img/remote-se/component/RemoteSe-Component-RemoteSeClientObservablePlugin-SeReader-API.svg)
+![RemoteSe_Component_RemoteSeClientObservablePlugin_SeReader_API](../../../../../docs/img/remote-se/component/RemoteSe_Component_RemoteSeClientObservablePlugin_SeReader_API.svg)
 
-![RemoteSe-Component-RemoteSeClientObservablePlugin-ObservableReader-API](../../../../../docs/img/remote-se/component/RemoteSe-Component-RemoteSeClientObservablePlugin-ObservableReader-API.svg)
+![RemoteSe_Component_RemoteSeClientObservablePlugin_ObservableReader_API](../../../../../docs/img/remote-se/component/RemoteSe_Component_RemoteSeClientObservablePlugin_ObservableReader_API.svg)
 
 ### Remote SE Pool Client Plugin
 
-![RemoteSe-Component-RemoteSePoolClientPlugin-SeReader-API](../../../../../docs/img/remote-se/component/RemoteSe-Component-RemoteSePoolClientPlugin-SeReader-API.svg)
+![RemoteSe_Component_RemoteSePoolClientPlugin_SeReader_API](../../../../../docs/img/remote-se/component/RemoteSe_Component_RemoteSePoolClientPlugin_SeReader_API.svg)
 
 ## Public Global API
 
-![RemoteSe-Class-API](../../../../../docs/img/remote-se/class/RemoteSe-Class-API.svg)
+![RemoteSe_Class_API](../../../../../docs/img/remote-se/class/RemoteSe_Class_API.svg)
 
 ## Network configuration
 
@@ -79,32 +80,36 @@ Usually distributed architecture will rely on a TCP/IP network to communicate. I
 
 If you want to implement a Full-Duplex communication protocol, such as Web Sockets for example, then you should use the `KeypleAsyncNode` node and should provide two implementations of the `KeypleAsyncMessageSender` interface, one client side, and another one server side.
 
-![RemoteSe-Sequence-AsyncNode-API](../../../../../docs/img/remote-se/sequence/RemoteSe-Sequence-AsyncNode-API.svg)
+![RemoteSe_Sequence_AsyncNode_API](../../../../../docs/img/remote-se/sequence/RemoteSe_Sequence_AsyncNode_API.svg)
 
 ### Client-Server Synchronous communication
 
 If you want to implement a Client-Server communication protocol, such as standard HTTP for example, then you should use client side the `KeypleClientSyncNode` node by providing an implementation of the `KeypleSyncMessageSender` interface, and server side the `KeypleServerSyncNode` node.
 
-![RemoteSe-Sequence-SyncNode-API](../../../../../docs/img/remote-se/sequence/RemoteSe-Sequence-SyncNode-API.svg)
+![RemoteSe_Sequence_SyncNode_API](../../../../../docs/img/remote-se/sequence/RemoteSe_Sequence_SyncNode_API.svg)
 
 ## Exchanged data
 
-The object `KeypleMessageDto` contains data exchanged between **Native SE** and **Virtual SE** components. It is built and processed by the plugin and you don't need to modified it.
+The POJO object `KeypleMessageDto` contains data exchanged between **Native SE** and **Virtual SE** components. It is built and processed by the plugin and you don't need to modified it.
 
 ## Annexes
 
 ### Remote SE Server Plugin API (class diagram)
 
-![RemoteSe-Class-RemoteSeServerPlugin-API](../../../../../docs/img/remote-se/class/RemoteSe-Class-RemoteSeServerPlugin-API.svg)
+![RemoteSe_Class_RemoteSeServerPlugin_API](../../../../../docs/img/remote-se/class/RemoteSe_Class_RemoteSeServerPlugin_API.svg)
 
 ### Remote SE Client Plugin API (class diagram)
 
-![RemoteSe-Class-RemoteSeClientPlugin-API](../../../../../docs/img/remote-se/class/RemoteSe-Class-RemoteSeClientPlugin-API.svg)
+![RemoteSe_Class_RemoteSeClientPlugin_API](../../../../../docs/img/remote-se/class/RemoteSe_Class_RemoteSeClientPlugin_API.svg)
 
 ### Remote SE Pool Client Plugin API (class diagram)
 
-![RemoteSe-Class-RemoteSePoolClientPlugin-API](../../../../../docs/img/remote-se/class/RemoteSe-Class-RemoteSePoolClientPlugin-API.svg)
+![RemoteSe_Class_RemoteSePoolClientPlugin_API](../../../../../docs/img/remote-se/class/RemoteSe_Class_RemoteSePoolClientPlugin_API.svg)
 
 ### Remote SE Server Plugin (sequence diagram)
 
-![RemoteSe-Sequence-RemoteSeServerPlugin-API](../../../../../docs/img/remote-se/sequence/RemoteSe-Sequence-RemoteSeServerPlugin-API.svg)
+![RemoteSe_Sequence_RemoteSeServerPlugin_API](../../../../../docs/img/remote-se/sequence/RemoteSe_Sequence_RemoteSeServerPlugin_API.svg)
+
+### Internal Class Diagram
+
+![RemoteSe_Class](../../../../../docs/img/remote-se/class/impl/RemoteSe_Class.svg)

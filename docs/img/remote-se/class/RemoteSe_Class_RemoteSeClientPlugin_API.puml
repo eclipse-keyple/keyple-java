@@ -1,0 +1,13 @@
+@startuml
+
+!include RemoteSe_Class_API.puml
+
+title
+    Keyple Plugin Remote SE
+    RemoteSeClientPlugin API (10/06/2020)
+end title
+
+hide <<blue>>
+hide <<green>>
+
+@enduml

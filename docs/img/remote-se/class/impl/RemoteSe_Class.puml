@@ -1,0 +1,453 @@
+@startuml
+title
+    Keyple Plugin Remote SE (10/06/2020)
+end title
+
+' == THEME ==
+
+'Couleurs issues de : https://htmlcolorcodes.com/fr/tableau-de-couleur/tableau-de-couleur-design-plat/
+!define C_GREY1 F8F9F9
+!define C_GREY2 F2F3F4
+!define C_GREY3 E5E7E9
+!define C_GREY4 D7DBDD
+!define C_GREY5 CACFD2
+!define C_GREY6 BDC3C7
+!define C_LINK 3498DB
+!define C_USE 27AE60
+
+skinparam Shadowing false
+skinparam ClassFontStyle italic
+skinparam ClassBorderColor #D4AC0D
+skinparam stereotypeABorderColor #A9DCDF
+skinparam stereotypeIBorderColor #B4A7E5
+skinparam stereotypeCBorderColor #ADD1B2
+skinparam stereotypeEBorderColor #EB93DF
+' Red
+skinparam ClassBackgroundColor<<red>> #FDEDEC
+skinparam ClassBorderColor<<red>> #E74C3C
+hide <<red>> stereotype
+' Purple
+skinparam ClassBackgroundColor<<purple>> #F4ECF7
+skinparam ClassBorderColor<<purple>> #8E44AD
+hide <<purple>> stereotype
+' blue
+skinparam ClassBackgroundColor<<blue>> #EBF5FB
+skinparam ClassBorderColor<<blue>> #3498DB
+hide <<blue>> stereotype
+' Green
+skinparam ClassBackgroundColor<<green>> #E9F7EF
+skinparam ClassBorderColor<<green>> #27AE60
+hide <<green>> stereotype
+' Grey
+skinparam ClassBackgroundColor<<grey>> #EAECEE
+skinparam ClassBorderColor<<grey>> #2C3E50
+hide <<grey>> stereotype
+
+' == CONTENT ==
+
+package org.eclipse.keyple.core.seproxy {
+
+    +abstract AbstractPluginFactory {
+    }
+    +interface ReaderPlugin {
+    }
+    +interface ReaderPoolPlugin extends ReaderPlugin {
+    }
+    +interface SeReader {
+    }
+
+    package event {
+        +interface ObservablePlugin extends ReaderPlugin {
+        }
+        +interface ObservableReader extends SeReader {
+        }
+        +interface ReaderObserver {
+        }
+    }
+}
+
+package org.eclipse.keyple.plugin.remotese {
+
+    package core {
+
+        together {
+
+            ' Nodes
+            +interface KeypleClientAsyncNode {
+                +void onOpen (\n    String sessionId)
+                +void onMessage (\n    KeypleMessageDto msg)
+                +void onClose (\n    String sessionId)
+                +void onError (\n    String sessionId,\n    Throwable error)
+            }
+            +interface KeypleServerAsyncNode {
+                +void onMessage (\n    KeypleMessageDto msg)
+                +void onError (\n    String sessionId,\n    Throwable error)
+            }
+            +interface KeypleClientSyncNode {
+            }
+            +interface KeypleServerSyncNode {
+                +List<KeypleMessageDto> onRequest (\n    KeypleMessageDto msg)
+            }
+
+            ' Sender
+            +interface KeypleClientAsync {
+                +void openSession (\n    String sessionId)
+                +void sendMessage (\n    KeypleMessageDto msg)
+                +void closeSession (\n    String sessionId)
+            }
+            +interface KeypleServerAsync {
+                +void sendMessage (\n    KeypleMessageDto msg)
+            }
+            +interface KeypleClientSync {
+                +List<KeypleMessageDto> sendRequest (\n    KeypleMessageDto msg)
+            }
+
+            ' DTO
+            +class KeypleMessageDto {
+                + String sessionId
+                + String action
+                + String clientNodeId
+                + String serverNodeId
+                + String nativeReaderName
+                + String virtualReaderName
+                + String body
+                + String errorCode
+                + String errorMessage
+            }
+
+        }
+
+        package impl as coreImpl {
+
+            ' Handler
+            +abstract AbstractKeypleMessageHandler {
+                # boolean isBindToSyncNode
+                # AbstractKeypleMessageHandler ()
+                + void bindClientAsyncNode (KeypleClientAsync endpoint)
+                + void bindServerAsyncNode (KeypleServerAsync endpoint)
+                + void bindClientSyncNode (KeypleClientSync endpoint,\n ServerPushEventStrategy pluginObservationStrategy,\n ServerPushEventStrategy readerObservationStrategy)
+                + void bindServerSyncNode ()
+                # {abstract} **abstract** void onMessage (KeypleMessageDto msg)
+            }
+
+            ' Node
+            +abstract AbstractKeypleNode {
+                # String nodeId
+                ~ AbstractKeypleNode (AbstractKeypleMessageHandler handler)
+                + {abstract} **abstract** KeypleMessageDto sendRequest (KeypleMessageDto msg)
+                + {abstract} **abstract** void sendMessage (KeypleMessageDto msg)
+            }
+            ' Async Node
+            +class "**final** KeypleClientAsyncNodeImpl" as KeypleClientAsyncNodeImpl extends AbstractKeypleNode implements KeypleClientAsyncNode {
+                ~ KeypleClientAsyncNodeImpl (\n KeypleClientAsync endpoint,\n AbstractKeypleMessageHandler handler)
+                + void openSession (String sessionId)
+                + KeypleMessageDto sendRequest (KeypleMessageDto msg)
+                + void sendMessage (KeypleMessageDto msg)
+                + void closeSession (String sessionId)
+            }
+            +class "**final** KeypleServerAsyncNodeImpl" as KeypleServerAsyncNodeImpl extends AbstractKeypleNode implements KeypleServerAsyncNode {
+                ~ KeypleServerAsyncNodeImpl (\n KeypleServerAsync endpoint,\n AbstractKeypleMessageHandler handler)
+                + KeypleMessageDto sendRequest (KeypleMessageDto msg)
+                + void sendMessage (KeypleMessageDto msg)
+            }
+            ' Sync Node
+            +class "**final** KeypleClientSyncNodeImpl" as KeypleClientSyncNodeImpl extends AbstractKeypleNode implements KeypleClientSyncNode {
+                - KeypleMessageDto nextIncomingMessage
+                ~ KeypleClientSyncNodeImpl (\n KeypleClientSync endpoint,\n AbstractKeypleMessageHandler handler,\n ServerPushEventStrategy pluginObservationStrategy,\n ServerPushEventStrategy readerObservationStrategy)
+                + KeypleMessageDto sendRequest (KeypleMessageDto msg)
+                + void sendMessage (KeypleMessageDto msg)
+                + boolean processIncomingMessage ()
+            }
+            +class "**final** KeypleServerSyncNodeImpl" as KeypleServerSyncNodeImpl extends AbstractKeypleNode implements KeypleServerSyncNode {
+                - Map<String, Object> : clientRequesterById
+                - Map<Object, KeypleMessageDto> : clientAdditionalMessageByRequester
+                ~ KeypleServerSyncNodeImpl (\n AbstractKeypleMessageHandler handler)
+                + KeypleMessageDto sendRequest (KeypleMessageDto msg)
+                + void sendMessage (KeypleMessageDto msg)
+                + void setAdditionalOutgoingMessage (KeypleMessageDto msg)
+            }
+
+            ' Server Push Event Strategy
+            +class ServerPushEventStrategy {
+                +ServerPushEventStrategy (StrategyType type)
+                +void setDuration (int duration)
+                ~int getDuration ()
+            }
+            +enum StrategyType {
+                POLLING
+                LONG_POLLING
+            }
+
+        }
+
+    }
+
+    package nativese {
+
+        together {
+
+            +interface NativeSeServerService {
+            }
+            +interface NativeSePoolServerService {
+            }
+            +interface NativeSeClientService {
+                +<T> T executeRemoteService (\n    RemoteServiceParameters parameters,\n    Class<T> userOutputDataClass)
+            }
+            +class RemoteServiceParameters {
+                +{static} Builder builder (String serviceId, SeReader nativeReader)
+            }
+            +class "Builder" as RemoteServiceParametersBuilder {
+                +Builder withUserInputData (\n    Object userInputData)
+                +Builder withInitialSeContent (\n    AbstractMatchingSe matchingSe)
+                +RemoteServiceParameters build ()
+            }
+
+        }
+
+        package impl as nativeSeImpl {
+
+            together {
+
+                ' Factories
+                +class NativeSeClientServiceFactory {
+                    ...
+                }
+                +class NativeSeServerServiceFactory {
+                    ...
+                }
+                +class NativeSePoolServerServiceFactory {
+                    ...
+                }
+
+                ' Utilitaires Slave
+                +class NativeSeClientUtils {
+                    ...
+                }
+                +class NativeSeServerUtils {
+                    ...
+                }
+                +class NativeSePoolServerUtils {
+                    ...
+                }
+
+            }
+
+            together {
+
+                ' Native Handler
+                ~abstract AbstractNativeSeService extends AbstractKeypleMessageHandler {
+                    ~ AbstractNativeSeService ()
+                    ~ void onMessage (KeypleMessageDto msg)
+                    ~ SeReader findLocalReader (String nativeReaderName)
+                }
+                ~class "<< Singleton >>\n<< <back:#E59866>ReaderObserver</back> >>\n**final** NativeSeClientServiceImpl" as NativeSeClientServiceImpl extends AbstractNativeSeService implements NativeSeClientService {
+                    - String currentSessionId
+                    - NativeSeClientServiceImpl ()
+                    ~ {static} NativeSeClientServiceImpl createInstance (boolean withReaderObservation)
+                    ~ {static} NativeSeClientServiceImpl getInstance ()
+                    ~ void onMessage (KeypleMessageDto msg)
+                }
+                ~class "<< Singleton >>\n<< <back:#E59866>ReaderObserver</back> >>\n**final** NativeSeServerServiceImpl" as NativeSeServerServiceImpl extends AbstractNativeSeService implements NativeSeServerService {
+                    - NativeSeServerServiceImpl ()
+                    ~ {static} NativeSeServerServiceImpl getInstance ()
+                    ~ void onMessage (KeypleMessageDto msg)
+                }
+                ~class "<< Singleton >>\n**final** NativeSePoolServerServiceImpl" as NativeSePoolServerServiceImpl extends AbstractNativeSeService implements NativeSePoolServerService {
+                    - NativeSePoolServerServiceImpl ()
+                    ~ {static} NativeSePoolServerServiceImpl getInstance ()
+                    ~ void onMessage (KeypleMessageDto msg)
+                }
+
+            }
+
+        }
+
+    }
+
+    package virtualse {
+
+        together {
+
+            ' Remote Handlers
+            +interface "<< <back:#D2B4DE>ReaderPlugin</back> >>\nRemoteSeClientPlugin" as RemoteSeClientPlugin {
+            }
+            +interface "<< <back:#82E0AA>ObservablePlugin</back> >>\nRemoteSeClientObservablePlugin" as RemoteSeClientObservablePlugin extends RemoteSeClientPlugin {
+            }
+            +interface "<< <back:#AED6F1>ReaderPoolPlugin</back> >>\nRemoteSePoolClientPlugin" as RemoteSePoolClientPlugin {
+            }
+            +interface "<< <back:#82E0AA>ObservablePlugin</back> >>\nRemoteSeServerPlugin" as RemoteSeServerPlugin {
+                +RemoteSeServerReader getReader (String name)
+                +void terminateService (String virtualReaderName,\n Object userOutputData)
+            }
+
+            ' Remote Readers
+            +interface "<< <back:#D0ECE7>SeReader</back> >>\nRemoteSeServerReader" as RemoteSeServerReader {
+                +String getServiceId ()
+                +<T> T getUserInputData (Class<T> userInputDataClass)
+                +AbstractMatchingSe getInitialSeContent ()
+            }
+            +interface "<< <back:#FDEBD0>ObservableReader</back> >>\nRemoteSeServerObservableReader" as RemoteSeServerObservableReader extends RemoteSeServerReader {
+            }
+
+        }
+
+        package impl as virtualSeImpl {
+
+            together {
+                ' Utilitaires Master
+                +class RemoteSeServerUtils {
+                    ...
+                }
+                +class RemoteSeClientUtils {
+                    ...
+                }
+                +class RemoteSePoolClientUtils {
+                    ...
+                }
+
+                ' Factories
+                +class "<< <back:#F5B7B1>AbstractPluginFactory</back> >>\nRemoteSeServerPluginFactory" as RemoteSeServerPluginFactory {
+                    ...
+                }
+                +class "<< <back:#F5B7B1>AbstractPluginFactory</back> >>\nRemoteSeClientPluginFactory" as RemoteSeClientPluginFactory {
+                    -ServerPushEventStrategy pluginObservationStrategy
+                    -ServerPushEventStrategy readerObservationStrategy
+                    ...
+                }
+                +class "<< <back:#F5B7B1>AbstractPluginFactory</back> >>\nRemoteSePoolClientPluginFactory" as RemoteSePoolClientPluginFactory {
+                    ...
+                }
+            }
+
+            ' Remote Handler
+            ~abstract "<< <back:#D2B4DE>ReaderPlugin</back> >>\nAbstractRemoteSePlugin" as AbstractRemoteSePlugin extends AbstractKeypleMessageHandler {
+                ~ AbstractRemoteSePlugin (String name)
+                ~ void onMessage (\n KeypleMessageDto msg)
+            }
+
+
+            ~class "**final** RemoteSeServerPluginImpl" as RemoteSeServerPluginImpl extends AbstractRemoteSePlugin implements RemoteSeServerPlugin {
+                ~ RemoteSeServerPluginImpl (String name)
+                ~ void onMessage (\n KeypleMessageDto msg)
+            }
+            ~class "**final** RemoteSeClientObservablePluginImpl" as RemoteSeClientObservablePluginImpl extends RemoteSeClientPluginImpl implements RemoteSeClientObservablePlugin {
+                ~ RemoteSeClientObservablePluginImpl (String name,\n ServerPushEventStrategy pluginObservationStrategy,\n ServerPushEventStrategy readerObservationStrategy)
+            }
+            ~class "**final** RemoteSePoolClientPluginImpl" as RemoteSePoolClientPluginImpl extends AbstractRemoteSePlugin implements RemoteSePoolClientPlugin {
+                ~ RemoteSePoolClientPluginImpl (String name)
+                ~ void onMessage (\n KeypleMessageDto msg)
+            }
+            ~class "RemoteSeClientPluginImpl" as RemoteSeClientPluginImpl extends AbstractRemoteSePlugin implements RemoteSeClientPlugin {
+                ~ RemoteSeClientPluginImpl (String name,\n ServerPushEventStrategy readerObservationStrategy)
+                ~ void onMessage (KeypleMessageDto msg)
+            }
+            ' Virtual Readers
+            ~abstract "<< <back:#D0ECE7>SeReader</back> >>\nAbstractVirtualReader" as AbstractVirtualReader {
+                ~ AbstractVirtualReader (String name,\n AbstractKeypleNode node)
+                ~ void onMessage (KeypleMessageDto msg)
+            }
+            ~class "**final** VirtualReader" as VirtualReader extends AbstractVirtualReader {
+                ~ VirtualReader (String name,\n AbstractKeypleNode node)
+            }
+            ~class "<< <back:#FDEBD0>ObservableReader</back> >>\n**final** VirtualObservableReader" as VirtualObservableReader extends AbstractVirtualReader {
+                ~ VirtualObservableReader (String name,\n AbstractKeypleNode node)
+            }
+            ' Server Readers
+            ~abstract AbstractServerVirtualReader implements RemoteSeServerReader {
+                ~ AbstractServerVirtualReader (\n AbstractVirtualReader reader,\n String serviceId,\n String clientNodeId,\n AbstractMatchingSe matchingSe,\n Object userInputData)
+            }
+            ~class "**final** ServerVirtualReader" as ServerVirtualReader extends AbstractServerVirtualReader {
+                ~ ServerVirtualReader (\n AbstractVirtualReader reader,\n String serviceId,\n String clientNodeId,\n AbstractMatchingSe matchingSe,\n Object userInputData)
+            }
+            ~class "**final** ServerVirtualObservableReader" as ServerVirtualObservableReader extends AbstractServerVirtualReader implements RemoteSeServerObservableReader {
+                ~ ServerVirtualObservableReader (\n AbstractVirtualReader reader,\n String serviceId,\n String clientNodeId,\n AbstractMatchingSe matchingSe,\n Object userInputData)
+            }
+
+        }
+
+    }
+
+}
+
+' Associations
+ObservableReader +-left- ReaderObserver #C_LINK
+AbstractKeypleMessageHandler "handler" <--> "node" AbstractKeypleNode #C_LINK
+KeypleClientAsyncNodeImpl --> "endpoint" KeypleClientAsync #C_LINK
+KeypleServerAsyncNodeImpl --> "endpoint" KeypleServerAsync #C_LINK
+KeypleClientSyncNodeImpl --> "endpoint" KeypleClientSync #C_LINK
+RemoteSeClientPluginImpl *--> "1..N" AbstractVirtualReader #C_LINK : readers
+RemoteSeServerPluginImpl *--> "1..N" AbstractServerVirtualReader #C_LINK : readers
+AbstractServerVirtualReader o-up-> "1" AbstractVirtualReader #C_LINK : decorates
+RemoteSePoolClientPluginImpl *--> "1..N" VirtualReader #C_LINK : readers
+AbstractVirtualReader -up-> "node" AbstractKeypleNode #C_LINK
+RemoteSeServerPlugin *--> "1..N" RemoteSeServerReader #C_LINK : readers
+NativeSeClientService -right-> RemoteServiceParameters #C_LINK : use >
+RemoteServiceParameters +-right- RemoteServiceParametersBuilder #C_LINK
+KeypleClientSyncNodeImpl +-up- ServerPushEventStrategy #C_LINK
+ServerPushEventStrategy +-left- StrategyType #C_LINK
+ServerPushEventStrategy *-left-> "type" StrategyType #C_LINK
+
+' == LAYOUT ==
+
+ObservableReader -[hidden]- AbstractKeypleMessageHandler
+KeypleServerSyncNodeImpl -[hidden]- KeypleMessageDto
+NativeSeClientService -[hidden]- AbstractNativeSeService
+KeypleMessageDto -[hidden]- NativeSeClientService
+
+NativeSeServerServiceImpl -[hidden]- NativeSeServerServiceFactory
+NativeSeServerServiceFactory -[hidden]- NativeSeServerUtils
+NativeSePoolServerServiceImpl -[hidden]- NativeSePoolServerServiceFactory
+NativeSePoolServerServiceFactory -[hidden]- NativeSePoolServerUtils
+NativeSeClientServiceImpl -[hidden]- NativeSeClientServiceFactory
+NativeSeClientServiceFactory -[hidden]- NativeSeClientUtils
+
+ServerVirtualObservableReader -[hidden]- RemoteSePoolClientPluginFactory
+RemoteSeServerPluginFactory -[hidden]- RemoteSeServerUtils
+RemoteSeClientPluginFactory -[hidden]- RemoteSeClientUtils
+RemoteSePoolClientPluginFactory -[hidden]- RemoteSePoolClientUtils
+
+' == STYLE ==
+
+package org.eclipse.keyple.core.seproxy #C_GREY1 {}
+package event #C_GREY2 {}
+package core #C_GREY1 {}
+package coreImpl #C_GREY2 {}
+package nativese #C_GREY1 {}
+package nativeSeImpl #C_GREY2 {}
+package virtualse #C_GREY1 {}
+package virtualSeImpl #C_GREY2 {}
+
+abstract AbstractPluginFactory <<grey>> #F5B7B1
+interface ReaderPlugin <<grey>> #D2B4DE
+interface ReaderPoolPlugin <<grey>> #AED6F1
+interface SeReader <<grey>> #D0ECE7
+interface ObservablePlugin <<grey>> #82E0AA
+interface ObservableReader <<grey>> #FDEBD0
+interface ReaderObserver <<grey>> #E59866
+
+abstract AbstractKeypleMessageHandler <<blue>>
+abstract AbstractKeypleNode <<blue>>
+class KeypleClientAsyncNodeImpl <<blue>>
+class KeypleServerAsyncNodeImpl <<blue>>
+class KeypleClientSyncNodeImpl <<blue>>
+class KeypleServerSyncNodeImpl <<blue>>
+class ServerPushEventStrategy <<blue>>
+enum StrategyType <<blue>>
+
+abstract AbstractNativeSeService <<red>>
+class NativeSeClientServiceImpl <<red>>
+class NativeSeServerServiceImpl <<red>>
+class NativeSePoolServerServiceImpl <<red>>
+abstract AbstractRemoteSePlugin <<red>>
+class RemoteSeClientPluginImpl <<red>>
+class RemoteSeClientObservablePluginImpl <<red>>
+class RemoteSeServerPluginImpl <<red>>
+class RemoteSePoolClientPluginImpl <<red>>
+abstract AbstractVirtualReader <<red>>
+class VirtualReader <<red>>
+class VirtualObservableReader <<red>>
+abstract AbstractServerVirtualReader <<red>>
+class ServerVirtualReader <<red>>
+class ServerVirtualObservableReader <<red>>
+
+@enduml
