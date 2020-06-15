@@ -1,0 +1,562 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="6592.5px" preserveAspectRatio="none" style="width:4880px;height:6592px;" version="1.1" viewBox="0 0 4880 6592" width="4880px" zoomAndPan="magnify"><defs><filter height="1" id="b1u04cnekzhsrm0" width="1" x="0" y="0"><feFlood flood-color="#AED6F1" result="flood"/><feComposite in="SourceGraphic" in2="flood" operator="over"/></filter><filter height="1" id="b1u04cnekzhsrm1" width="1" x="0" y="0"><feFlood flood-color="#F5B7B1" result="flood"/><feComposite in="SourceGraphic" in2="flood" operator="over"/></filter></defs><g><text fill="#000000" font-family="sans-serif" font-size="45" lengthAdjust="spacingAndGlyphs" textLength="515" x="2197.5" y="46.7139">Keyple Plugin Remote SE</text><text fill="#000000" font-family="sans-serif" font-size="45" lengthAdjust="spacingAndGlyphs" textLength="887.5" x="2011.25" y="103.3154">RemoteSePoolClientPlugin API (10/06/2020)</text><!--MD5=[2bcc54f38766b998c5e88efdbc7d1696]
+cluster org.eclipse.keyple.core.seproxy--><polygon fill="#F8F9F9" points="1002.5,174.4531,1580,174.4531,1597.5,233.4766,2410,233.4766,2410,881.9531,1002.5,881.9531,1002.5,174.4531" style="stroke: #000000; stroke-width: 3.75;"/><line style="stroke: #000000; stroke-width: 3.75;" x1="1002.5" x2="1597.5" y1="233.4766" y2="233.4766"/><text fill="#000000" font-family="sans-serif" font-size="35" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="562.5" x="1012.5" y="215.7861">org.eclipse.keyple.core.seproxy</text><!--MD5=[2e31800f208179cab94650aeb782e4d8]
+cluster event--><polygon fill="#F2F3F4" points="1062.5,536.9531,1180,536.9531,1197.5,595.9766,1962.5,595.9766,1962.5,821.9531,1062.5,821.9531,1062.5,536.9531" style="stroke: #000000; stroke-width: 3.75;"/><line style="stroke: #000000; stroke-width: 3.75;" x1="1062.5" x2="1197.5" y1="595.9766" y2="595.9766"/><text fill="#000000" font-family="sans-serif" font-size="35" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="102.5" x="1072.5" y="578.2861">event</text><!--MD5=[2d9c94655fbc648515adaaef578341a6]
+cluster org.eclipse.keyple.plugin.remotese--><polygon fill="#FFFFFF" points="55,964.4531,690,964.4531,707.5,1023.4766,4825,1023.4766,4825,6563.2031,55,6563.2031,55,964.4531" style="stroke: #000000; stroke-width: 3.75;"/><line style="stroke: #000000; stroke-width: 3.75;" x1="55" x2="707.5" y1="1023.4766" y2="1023.4766"/><text fill="#000000" font-family="sans-serif" font-size="35" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="620" x="65" y="1005.7861">org.eclipse.keyple.plugin.remotese</text><!--MD5=[565c8a62f24904f722935bf13991016b]
+cluster virtualse--><polygon fill="#F8F9F9" points="900,1074.4531,1070,1074.4531,1087.5,1133.4766,4765,1133.4766,4765,4465.7031,900,4465.7031,900,1074.4531" style="stroke: #000000; stroke-width: 3.75;"/><line style="stroke: #000000; stroke-width: 3.75;" x1="900" x2="1087.5" y1="1133.4766" y2="1133.4766"/><text fill="#000000" font-family="sans-serif" font-size="35" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="155" x="910" y="1115.7861">virtualse</text><!--MD5=[68fabab19ee8e96ffaca0338e8e1b1d6]
+cluster virtualSeImpl--><polygon fill="#F2F3F4" points="1680,1184.4531,1767.5,1184.4531,1785,1243.4766,4705,1243.4766,4705,4405.7031,1680,4405.7031,1680,1184.4531" style="stroke: #000000; stroke-width: 3.75;"/><line style="stroke: #000000; stroke-width: 3.75;" x1="1680" x2="1785" y1="1243.4766" y2="1243.4766"/><text fill="#000000" font-family="sans-serif" font-size="35" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="72.5" x="1690" y="1225.7861">impl</text><!--MD5=[01435ace8273dc3cae88e7f376e4d373]
+cluster core--><polygon fill="#F8F9F9" points="115,1143.2031,210,1143.2031,227.5,1202.2266,840,1202.2266,840,4978.2031,115,4978.2031,115,1143.2031" style="stroke: #000000; stroke-width: 3.75;"/><line style="stroke: #000000; stroke-width: 3.75;" x1="115" x2="227.5" y1="1202.2266" y2="1202.2266"/><text fill="#000000" font-family="sans-serif" font-size="35" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="80" x="125" y="1184.5361">core</text><!--MD5=[31de7fcf4ea01d18eb8c9b6d02d9b1d8]
+cluster nativese--><polygon fill="#F8F9F9" points="1205,4548.2031,1372.5,4548.2031,1390,4607.2266,4765,4607.2266,4765,6503.2031,1205,6503.2031,1205,4548.2031" style="stroke: #000000; stroke-width: 3.75;"/><line style="stroke: #000000; stroke-width: 3.75;" x1="1205" x2="1390" y1="4607.2266" y2="4607.2266"/><text fill="#000000" font-family="sans-serif" font-size="35" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="152.5" x="1215" y="4589.5361">nativese</text><!--MD5=[5f24ae99ad870838992819613e4aa794]
+cluster nativeSeImpl--><polygon fill="#F2F3F4" points="2095,4658.2031,2182.5,4658.2031,2200,4717.2266,4705,4717.2266,4705,6443.2031,2095,6443.2031,2095,4658.2031" style="stroke: #000000; stroke-width: 3.75;"/><line style="stroke: #000000; stroke-width: 3.75;" x1="2095" x2="2200" y1="4717.2266" y2="4717.2266"/><text fill="#000000" font-family="sans-serif" font-size="35" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="72.5" x="2105" y="4699.5361">impl</text><!--MD5=[589e28272a74d38b4e0a352c82e7b326]
+class AbstractPluginFactory--><rect fill="#F5B7B1" height="154.5898" id="AbstractPluginFactory" style="stroke: #2C3E50; stroke-width: 3.75;" width="407.5" x="1961.25" y="264.4531"/><ellipse cx="1998.75" cy="304.4531" fill="#A9DCDF" rx="27.5" ry="27.5" style="stroke: #A9DCDF; stroke-width: 2.5;"/><path d="M2003.125,308.2031 L1994.8828,308.2031 L1993.7891,310.7031 L1993.7891,310.7031 L1994.9609,310.7031 L1996.25,312.2656 L1996.25,313.2031 L1996.25,314.1406 L1994.9609,315.7031 L1993.7891,315.7031 L1989.0625,315.7031 L1987.5391,315.7031 L1986.25,314.1406 L1986.25,313.2031 L1986.25,312.2656 L1987.5391,310.7031 L1989.0625,310.7031 L1994.8438,295.7031 L1992.6563,295.7031 L1990.0391,295.7031 L1988.75,294.1406 L1988.75,293.2031 L1988.75,292.2656 L1990.0391,290.7031 L1992.6563,290.7031 L2001.8359,290.7031 L2008.5547,310.7031 L2009.9609,310.7031 L2009.9609,310.7031 L2011.25,312.2656 L2011.25,313.2031 L2011.25,314.1406 L2009.9609,315.7031 L2008.5547,315.7031 L2003.8281,315.7031 L2002.5391,315.7031 L2001.25,314.1406 L2001.25,313.2031 L2001.25,312.2656 L2002.5391,310.7031 L2003.8281,310.7031 L2003.8281,310.7031 L2003.125,308.2031 Z M2001.7578,303.2031 L1998.75,294.2578 L1996.1719,303.2031 L2001.7578,303.2031 Z "/><ellipse cx="2046.25" cy="303.2031" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="300" x="2061.25" y="316.7285">AbstractPluginFactory</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="1963.75" x2="2366.25" y1="344.4531" y2="344.4531"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="22.5" x="1976.25" y="383.0005">...</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="1963.75" x2="2366.25" y1="399.043" y2="399.043"/><!--MD5=[a0e88443257adb8def549c32ec694d43]
+class ReaderPlugin--><rect fill="#D2B4DE" height="154.5898" id="ReaderPlugin" style="stroke: #2C3E50; stroke-width: 3.75;" width="297.5" x="1576.25" y="264.4531"/><ellipse cx="1613.75" cy="304.4531" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M1616.25,296.9531 L1616.25,311.9531 L1621.25,311.9531 L1622.4609,311.9531 L1623.75,313.5156 L1623.75,314.4531 L1623.75,315.3906 L1622.4609,316.9531 L1621.25,316.9531 L1606.25,316.9531 L1605.0391,316.9531 L1603.75,315.3906 L1603.75,314.4531 L1603.75,313.5156 L1605.0391,311.9531 L1606.25,311.9531 L1611.25,311.9531 L1611.25,296.9531 L1606.25,296.9531 L1605.0391,296.9531 L1603.75,295.3906 L1603.75,294.4531 L1603.75,293.5156 L1605.0391,291.9531 L1606.25,291.9531 L1621.25,291.9531 L1622.4609,291.9531 L1623.75,293.5156 L1623.75,294.4531 L1623.75,295.3906 L1622.4609,296.9531 L1621.25,296.9531 L1616.25,296.9531 Z "/><ellipse cx="1661.25" cy="303.2031" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="190" x="1676.25" y="316.7285">ReaderPlugin</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="1578.75" x2="1871.25" y1="344.4531" y2="344.4531"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="22.5" x="1591.25" y="383.0005">...</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="1578.75" x2="1871.25" y1="399.043" y2="399.043"/><!--MD5=[ec495f5f6ae18812fb155b23e8e93f55]
+class ReaderPoolPlugin--><rect fill="#AED6F1" height="154.5898" id="ReaderPoolPlugin" style="stroke: #2C3E50; stroke-width: 3.75;" width="360" x="2010" y="626.9531"/><ellipse cx="2047.5" cy="666.9531" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M2050,659.4531 L2050,674.4531 L2055,674.4531 L2056.2109,674.4531 L2057.5,676.0156 L2057.5,676.9531 L2057.5,677.8906 L2056.2109,679.4531 L2055,679.4531 L2040,679.4531 L2038.7891,679.4531 L2037.5,677.8906 L2037.5,676.9531 L2037.5,676.0156 L2038.7891,674.4531 L2040,674.4531 L2045,674.4531 L2045,659.4531 L2040,659.4531 L2038.7891,659.4531 L2037.5,657.8906 L2037.5,656.9531 L2037.5,656.0156 L2038.7891,654.4531 L2040,654.4531 L2055,654.4531 L2056.2109,654.4531 L2057.5,656.0156 L2057.5,656.9531 L2057.5,657.8906 L2056.2109,659.4531 L2055,659.4531 L2050,659.4531 Z "/><ellipse cx="2095" cy="665.7031" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="252.5" x="2110" y="679.2285">ReaderPoolPlugin</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="2012.5" x2="2367.5" y1="706.9531" y2="706.9531"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="22.5" x="2025" y="745.5005">...</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="2012.5" x2="2367.5" y1="761.543" y2="761.543"/><!--MD5=[dd49942b1f02350b5568646d3da64c49]
+class SeReader--><rect fill="#D0ECE7" height="154.5898" id="SeReader" style="stroke: #2C3E50; stroke-width: 3.75;" width="247.5" x="1166.25" y="264.4531"/><ellipse cx="1203.75" cy="304.4531" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M1206.25,296.9531 L1206.25,311.9531 L1211.25,311.9531 L1212.4609,311.9531 L1213.75,313.5156 L1213.75,314.4531 L1213.75,315.3906 L1212.4609,316.9531 L1211.25,316.9531 L1196.25,316.9531 L1195.0391,316.9531 L1193.75,315.3906 L1193.75,314.4531 L1193.75,313.5156 L1195.0391,311.9531 L1196.25,311.9531 L1201.25,311.9531 L1201.25,296.9531 L1196.25,296.9531 L1195.0391,296.9531 L1193.75,295.3906 L1193.75,294.4531 L1193.75,293.5156 L1195.0391,291.9531 L1196.25,291.9531 L1211.25,291.9531 L1212.4609,291.9531 L1213.75,293.5156 L1213.75,294.4531 L1213.75,295.3906 L1212.4609,296.9531 L1211.25,296.9531 L1206.25,296.9531 Z "/><ellipse cx="1251.25" cy="303.2031" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="140" x="1266.25" y="316.7285">SeReader</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="1168.75" x2="1411.25" y1="344.4531" y2="344.4531"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="22.5" x="1181.25" y="383.0005">...</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="1168.75" x2="1411.25" y1="399.043" y2="399.043"/><!--MD5=[1fa9a61019755e60a0cb03f0bc3590aa]
+class ObservablePlugin--><rect fill="#82E0AA" height="154.5898" id="ObservablePlugin" style="stroke: #2C3E50; stroke-width: 3.75;" width="357.5" x="1563.75" y="626.9531"/><ellipse cx="1601.25" cy="666.9531" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M1603.75,659.4531 L1603.75,674.4531 L1608.75,674.4531 L1609.9609,674.4531 L1611.25,676.0156 L1611.25,676.9531 L1611.25,677.8906 L1609.9609,679.4531 L1608.75,679.4531 L1593.75,679.4531 L1592.5391,679.4531 L1591.25,677.8906 L1591.25,676.9531 L1591.25,676.0156 L1592.5391,674.4531 L1593.75,674.4531 L1598.75,674.4531 L1598.75,659.4531 L1593.75,659.4531 L1592.5391,659.4531 L1591.25,657.8906 L1591.25,656.9531 L1591.25,656.0156 L1592.5391,654.4531 L1593.75,654.4531 L1608.75,654.4531 L1609.9609,654.4531 L1611.25,656.0156 L1611.25,656.9531 L1611.25,657.8906 L1609.9609,659.4531 L1608.75,659.4531 L1603.75,659.4531 Z "/><ellipse cx="1648.75" cy="665.7031" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="250" x="1663.75" y="679.2285">ObservablePlugin</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="1566.25" x2="1918.75" y1="706.9531" y2="706.9531"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="22.5" x="1578.75" y="745.5005">...</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="1566.25" x2="1918.75" y1="761.543" y2="761.543"/><!--MD5=[e2341a3d5316e117132fc49473ae3219]
+class ObservableReader--><rect fill="#FDEBD0" height="154.5898" id="ObservableReader" style="stroke: #2C3E50; stroke-width: 3.75;" width="372.5" x="1103.75" y="626.9531"/><ellipse cx="1141.25" cy="666.9531" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M1143.75,659.4531 L1143.75,674.4531 L1148.75,674.4531 L1149.9609,674.4531 L1151.25,676.0156 L1151.25,676.9531 L1151.25,677.8906 L1149.9609,679.4531 L1148.75,679.4531 L1133.75,679.4531 L1132.5391,679.4531 L1131.25,677.8906 L1131.25,676.9531 L1131.25,676.0156 L1132.5391,674.4531 L1133.75,674.4531 L1138.75,674.4531 L1138.75,659.4531 L1133.75,659.4531 L1132.5391,659.4531 L1131.25,657.8906 L1131.25,656.9531 L1131.25,656.0156 L1132.5391,654.4531 L1133.75,654.4531 L1148.75,654.4531 L1149.9609,654.4531 L1151.25,656.0156 L1151.25,656.9531 L1151.25,657.8906 L1149.9609,659.4531 L1148.75,659.4531 L1143.75,659.4531 Z "/><ellipse cx="1188.75" cy="665.7031" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="265" x="1203.75" y="679.2285">ObservableReader</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="1106.25" x2="1473.75" y1="706.9531" y2="706.9531"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="22.5" x="1118.75" y="745.5005">...</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="1106.25" x2="1473.75" y1="761.543" y2="761.543"/><!--MD5=[fc1599376f380b67cd0206616f586431]
+class RemoteSeServerPlugin--><!--MD5=[9f8d238391d24afb6b862a5be0ed2388]
+class RemoteSeServerReader--><!--MD5=[f0527264728a3eb63cd35cf53068a7f7]
+class RemoteSeServerObservableReader--><!--MD5=[c6dcb157b315917903eb530d7e64fa3f]
+class RemoteSeClientPlugin--><!--MD5=[949b40e7ae1c3006d6356035ccfce3e5]
+class RemoteSeClientObservablePlugin--><!--MD5=[62435410cc9f98e3f7923571d6882070]
+class RemoteSePoolClientPlugin--><rect fill="#EBF5FB" height="140.4688" id="RemoteSePoolClientPlugin" style="stroke: #3498DB; stroke-width: 3.75;" width="485" x="1047.5" y="3771.9531"/><ellipse cx="1085" cy="3822.1875" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M1087.5,3814.6875 L1087.5,3829.6875 L1092.5,3829.6875 L1093.7109,3829.6875 L1095,3831.25 L1095,3832.1875 L1095,3833.125 L1093.7109,3834.6875 L1092.5,3834.6875 L1077.5,3834.6875 L1076.2891,3834.6875 L1075,3833.125 L1075,3832.1875 L1075,3831.25 L1076.2891,3829.6875 L1077.5,3829.6875 L1082.5,3829.6875 L1082.5,3814.6875 L1077.5,3814.6875 L1076.2891,3814.6875 L1075,3813.125 L1075,3812.1875 L1075,3811.25 L1076.2891,3809.6875 L1077.5,3809.6875 L1092.5,3809.6875 L1093.7109,3809.6875 L1095,3811.25 L1095,3812.1875 L1095,3813.125 L1093.7109,3814.6875 L1092.5,3814.6875 L1087.5,3814.6875 Z "/><ellipse cx="1132.5" cy="3820.9375" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="35" x="1167.5" y="3815.5957">&lt;&lt;</text><text fill="#000000" filter="url(#b1u04cnekzhsrm0)" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="252.5" x="1210" y="3815.5957">ReaderPoolPlugin</text><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="35" x="1470" y="3815.5957">&gt;&gt;</text><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="377.5" x="1147.5" y="3853.3301">RemoteSePoolClientPlugin</text><line style="stroke: #3498DB; stroke-width: 3.75;" x1="1050" x2="1530" y1="3872.4219" y2="3872.4219"/><line style="stroke: #3498DB; stroke-width: 3.75;" x1="1050" x2="1530" y1="3892.4219" y2="3892.4219"/><!--MD5=[a49d5828abdfceb134d19e29b5000f1b]
+class RemoteSeServerPluginFactory--><!--MD5=[47e319eb900cd7ac52dc462b002d0a07]
+class RemoteSeServerPluginFactoryNodeStep--><!--MD5=[b37aa195130c6fca9409e0203d2ea187]
+class RemoteSeServerPluginFactoryPluginObserverStep--><!--MD5=[6d87a260ebf3296de8dd8e3711612b6a]
+class RemoteSeServerPluginFactoryBuilderStep--><!--MD5=[220699f01a7cd1c526681bd97ff8c0ef]
+class RemoteSeClientPluginFactory--><!--MD5=[ee86f51d73da34359ac4dad0cfb61db8]
+class RemoteSeClientPluginFactoryNodeStep--><!--MD5=[74bcf84caaf55e11816be0b726927f5d]
+class RemoteSeClientPluginFactoryAsyncNodePluginStep--><!--MD5=[f773dd346a2c70c67e2193f7f962199d]
+class RemoteSeClientPluginFactoryAsyncNodeReaderStep--><!--MD5=[1620a3a559ecef07eec0590e13da3dcc]
+class RemoteSeClientPluginFactorySyncNodePluginStep--><!--MD5=[34307e305897205e62a4f693731759e4]
+class RemoteSeClientPluginFactoryServerPushPluginEventStrategyStep--><!--MD5=[536f5215f8ac56cfa86309be0a78c315]
+class RemoteSeClientPluginFactorySyncNodeReaderStep--><!--MD5=[7a531ce39b785a6e990cf79fc8b14bf9]
+class RemoteSeClientPluginFactoryServerPushReaderEventStrategyStep--><!--MD5=[2e4b0f94ccb69c70fd1b95e187562628]
+class RemoteSeClientPluginFactoryBuilderStep--><!--MD5=[98c0dc2104bf5a7c1882c5be4c47d8a7]
+class RemoteSePoolClientPluginFactory--><rect fill="#EBF5FB" height="175.0586" id="RemoteSePoolClientPluginFactory" style="stroke: #3498DB; stroke-width: 3.75;" width="585" x="4080" y="1274.4531"/><ellipse cx="4117.5" cy="1324.6875" fill="#ADD1B2" rx="27.5" ry="27.5" style="stroke: #ADD1B2; stroke-width: 2.5;"/><path d="M4122.5,1315.9375 Q4123.0078,1314.6875 4123.5938,1314.0625 Q4124.1797,1313.4375 4124.8438,1313.4375 Q4126.0156,1313.4375 4126.7578,1314.1406 Q4127.5,1314.8438 4127.5,1316.4844 L4127.5,1320.3906 Q4127.5,1322.0313 4126.7969,1322.7344 Q4126.0938,1323.4375 4125,1323.4375 Q4124.0234,1323.4375 4123.3984,1323.0078 Q4122.7734,1322.5781 4122.5,1321.4453 Q4122.3828,1320.6641 4121.9531,1320.2344 Q4121.1719,1319.4141 4119.7656,1318.9453 Q4118.3594,1318.4375 4116.9531,1318.4375 Q4115.1953,1318.4375 4113.7109,1319.1406 Q4112.2656,1319.8438 4111.1328,1321.4063 Q4110,1322.9688 4110,1325.1172 L4110,1327.4219 Q4110,1330 4112.1094,1331.7188 Q4114.2188,1333.4375 4117.9688,1333.4375 Q4120.1953,1333.4375 4121.7578,1332.9297 Q4122.6563,1332.6563 4123.6719,1331.7578 Q4124.3359,1331.25 4124.6875,1331.0938 Q4125.0391,1330.9375 4125.4688,1330.9375 Q4126.2891,1330.9375 4126.875,1331.6016 Q4127.5,1332.2266 4127.5,1333.125 Q4127.5,1333.9844 4126.6406,1335 Q4125.3906,1336.4844 4123.3984,1337.3047 Q4120.7813,1338.4375 4117.5781,1338.4375 Q4113.8281,1338.4375 4110.8203,1336.9531 Q4108.3984,1335.7813 4106.6797,1333.2422 Q4105,1330.7031 4105,1327.6953 L4105,1324.9609 Q4105,1321.8359 4106.4844,1319.1016 Q4108.0078,1316.3672 4110.625,1314.9219 Q4113.2813,1313.4375 4116.25,1313.4375 Q4118.0469,1313.4375 4119.6094,1314.0625 Q4121.1719,1314.6875 4122.5,1315.9375 Z "/><ellipse cx="4165" cy="1323.4375" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="35" x="4226.25" y="1318.0957">&lt;&lt;</text><text fill="#000000" filter="url(#b1u04cnekzhsrm1)" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="300" x="4268.75" y="1318.0957">AbstractPluginFactory</text><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="35" x="4576.25" y="1318.0957">&gt;&gt;</text><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="477.5" x="4180" y="1355.8301">RemoteSePoolClientPluginFactory</text><line style="stroke: #3498DB; stroke-width: 3.75;" x1="4082.5" x2="4662.5" y1="1374.9219" y2="1374.9219"/><line style="stroke: #3498DB; stroke-width: 3.75;" x1="4082.5" x2="4662.5" y1="1394.9219" y2="1394.9219"/><ellipse cx="4107.5" cy="1422.4219" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" text-decoration="underline" textLength="232.5" x="4130" y="1433.4692">NodeStep builder ()</text><!--MD5=[c4c65fa4bc1556c0645162d08d2d17f6]
+class RemoteSePoolClientPluginFactoryNodeStep--><rect fill="#EBF5FB" height="258.3594" id="RemoteSePoolClientPluginFactoryNodeStep" style="stroke: #3498DB; stroke-width: 3.75;" width="442.5" x="4161.25" y="1696.9531"/><ellipse cx="4289.375" cy="1736.9531" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M4291.875,1729.4531 L4291.875,1744.4531 L4296.875,1744.4531 L4298.0859,1744.4531 L4299.375,1746.0156 L4299.375,1746.9531 L4299.375,1747.8906 L4298.0859,1749.4531 L4296.875,1749.4531 L4281.875,1749.4531 L4280.6641,1749.4531 L4279.375,1747.8906 L4279.375,1746.9531 L4279.375,1746.0156 L4280.6641,1744.4531 L4281.875,1744.4531 L4286.875,1744.4531 L4286.875,1729.4531 L4281.875,1729.4531 L4280.6641,1729.4531 L4279.375,1727.8906 L4279.375,1726.9531 L4279.375,1726.0156 L4280.6641,1724.4531 L4281.875,1724.4531 L4296.875,1724.4531 L4298.0859,1724.4531 L4299.375,1726.0156 L4299.375,1726.9531 L4299.375,1727.8906 L4298.0859,1729.4531 L4296.875,1729.4531 L4291.875,1729.4531 Z "/><ellipse cx="4353.125" cy="1735.7031" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="137.5" x="4368.125" y="1749.2285">NodeStep</text><line style="stroke: #3498DB; stroke-width: 3.75;" x1="4163.75" x2="4601.25" y1="1776.9531" y2="1776.9531"/><line style="stroke: #3498DB; stroke-width: 3.75;" x1="4163.75" x2="4601.25" y1="1796.9531" y2="1796.9531"/><ellipse cx="4188.75" cy="1824.4531" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="357.5" x="4211.25" y="1835.5005">BuilderStep withAsyncNode (</text><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="347.5" x="4241.25" y="1870.0903">KeypleClientAsync endpoint)</text><ellipse cx="4188.75" cy="1893.6328" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="340" x="4211.25" y="1904.6802">BuilderStep withSyncNode (</text><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="330" x="4241.25" y="1939.27">KeypleClientSync endpoint)</text><!--MD5=[09316bd7d6c416728a0648697cb1fd63]
+class RemoteSePoolClientPluginFactoryBuilderStep--><rect fill="#EBF5FB" height="154.5898" id="RemoteSePoolClientPluginFactoryBuilderStep" style="stroke: #3498DB; stroke-width: 3.75;" width="555" x="4110" y="2135.7031"/><ellipse cx="4283.125" cy="2175.7031" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M4285.625,2168.2031 L4285.625,2183.2031 L4290.625,2183.2031 L4291.8359,2183.2031 L4293.125,2184.7656 L4293.125,2185.7031 L4293.125,2186.6406 L4291.8359,2188.2031 L4290.625,2188.2031 L4275.625,2188.2031 L4274.4141,2188.2031 L4273.125,2186.6406 L4273.125,2185.7031 L4273.125,2184.7656 L4274.4141,2183.2031 L4275.625,2183.2031 L4280.625,2183.2031 L4280.625,2168.2031 L4275.625,2168.2031 L4274.4141,2168.2031 L4273.125,2166.6406 L4273.125,2165.7031 L4273.125,2164.7656 L4274.4141,2163.2031 L4275.625,2163.2031 L4290.625,2163.2031 L4291.8359,2163.2031 L4293.125,2164.7656 L4293.125,2165.7031 L4293.125,2166.6406 L4291.8359,2168.2031 L4290.625,2168.2031 L4285.625,2168.2031 Z "/><ellipse cx="4346.875" cy="2174.4531" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="160" x="4361.875" y="2187.9785">BuilderStep</text><line style="stroke: #3498DB; stroke-width: 3.75;" x1="4112.5" x2="4662.5" y1="2215.7031" y2="2215.7031"/><line style="stroke: #3498DB; stroke-width: 3.75;" x1="4112.5" x2="4662.5" y1="2235.7031" y2="2235.7031"/><ellipse cx="4137.5" cy="2263.2031" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="490" x="4160" y="2274.2505">RemoteSePoolClientPluginFactory build ()</text><!--MD5=[79c7263cddd2b4f95f89735262360d07]
+class RemoteSeServerUtils--><!--MD5=[f9e4fc7a21d6418e9846cb5745c3feb2]
+class RemoteSeClientUtils--><!--MD5=[5eee32d99cf966283ce28d9194946ed5]
+class RemoteSePoolClientUtils--><rect fill="#EBF5FB" height="243.7695" id="RemoteSePoolClientUtils" style="stroke: #3498DB; stroke-width: 3.75;" width="595" x="4037.5" y="2509.4531"/><ellipse cx="4136.875" cy="2549.4531" fill="#ADD1B2" rx="27.5" ry="27.5" style="stroke: #ADD1B2; stroke-width: 2.5;"/><path d="M4141.875,2540.7031 Q4142.3828,2539.4531 4142.9688,2538.8281 Q4143.5547,2538.2031 4144.2188,2538.2031 Q4145.3906,2538.2031 4146.1328,2538.9063 Q4146.875,2539.6094 4146.875,2541.25 L4146.875,2545.1563 Q4146.875,2546.7969 4146.1719,2547.5 Q4145.4688,2548.2031 4144.375,2548.2031 Q4143.3984,2548.2031 4142.7734,2547.7734 Q4142.1484,2547.3438 4141.875,2546.2109 Q4141.7578,2545.4297 4141.3281,2545 Q4140.5469,2544.1797 4139.1406,2543.7109 Q4137.7344,2543.2031 4136.3281,2543.2031 Q4134.5703,2543.2031 4133.0859,2543.9063 Q4131.6406,2544.6094 4130.5078,2546.1719 Q4129.375,2547.7344 4129.375,2549.8828 L4129.375,2552.1875 Q4129.375,2554.7656 4131.4844,2556.4844 Q4133.5938,2558.2031 4137.3438,2558.2031 Q4139.5703,2558.2031 4141.1328,2557.6953 Q4142.0313,2557.4219 4143.0469,2556.5234 Q4143.7109,2556.0156 4144.0625,2555.8594 Q4144.4141,2555.7031 4144.8438,2555.7031 Q4145.6641,2555.7031 4146.25,2556.3672 Q4146.875,2556.9922 4146.875,2557.8906 Q4146.875,2558.75 4146.0156,2559.7656 Q4144.7656,2561.25 4142.7734,2562.0703 Q4140.1563,2563.2031 4136.9531,2563.2031 Q4133.2031,2563.2031 4130.1953,2561.7188 Q4127.7734,2560.5469 4126.0547,2558.0078 Q4124.375,2555.4688 4124.375,2552.4609 L4124.375,2549.7266 Q4124.375,2546.6016 4125.8594,2543.8672 Q4127.3828,2541.1328 4130,2539.6875 Q4132.6563,2538.2031 4135.625,2538.2031 Q4137.4219,2538.2031 4138.9844,2538.8281 Q4140.5469,2539.4531 4141.875,2540.7031 Z "/><ellipse cx="4198.125" cy="2548.2031" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="350" x="4213.125" y="2561.7285">RemoteSePoolClientUtils</text><line style="stroke: #3498DB; stroke-width: 3.75;" x1="4040" x2="4630" y1="2589.4531" y2="2589.4531"/><line style="stroke: #3498DB; stroke-width: 3.75;" x1="4040" x2="4630" y1="2609.4531" y2="2609.4531"/><ellipse cx="4065" cy="2636.9531" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" text-decoration="underline" textLength="530" x="4087.5" y="2648.0005">RemoteSePoolClientPlugin getAsyncPlugin ()</text><ellipse cx="4065" cy="2671.543" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" text-decoration="underline" textLength="505" x="4087.5" y="2682.5903">KeypleClientAsyncNode getAsyncNode ()</text><line style="stroke: #3498DB; stroke-width: 2.5; stroke-dasharray: 1.0,2.0;" x1="4040" x2="4630" y1="2698.6328" y2="2698.6328"/><ellipse cx="4065" cy="2726.1328" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" text-decoration="underline" textLength="512.5" x="4087.5" y="2737.1802">RemoteSePoolClientPlugin getSyncPlugin ()</text><!--MD5=[9672b30420572ff83d1e93a2e1c44221]
+class KeypleMessageDto--><rect fill="#EAECEE" height="431.3086" id="KeypleMessageDto" style="stroke: #2C3E50; stroke-width: 3.75;" width="372.5" x="291.25" y="3100.7031"/><ellipse cx="328.75" cy="3140.7031" fill="#ADD1B2" rx="27.5" ry="27.5" style="stroke: #ADD1B2; stroke-width: 2.5;"/><path d="M333.75,3131.9531 Q334.2578,3130.7031 334.8438,3130.0781 Q335.4297,3129.4531 336.0938,3129.4531 Q337.2656,3129.4531 338.0078,3130.1563 Q338.75,3130.8594 338.75,3132.5 L338.75,3136.4063 Q338.75,3138.0469 338.0469,3138.75 Q337.3438,3139.4531 336.25,3139.4531 Q335.2734,3139.4531 334.6484,3139.0234 Q334.0234,3138.5938 333.75,3137.4609 Q333.6328,3136.6797 333.2031,3136.25 Q332.4219,3135.4297 331.0156,3134.9609 Q329.6094,3134.4531 328.2031,3134.4531 Q326.4453,3134.4531 324.9609,3135.1563 Q323.5156,3135.8594 322.3828,3137.4219 Q321.25,3138.9844 321.25,3141.1328 L321.25,3143.4375 Q321.25,3146.0156 323.3594,3147.7344 Q325.4688,3149.4531 329.2188,3149.4531 Q331.4453,3149.4531 333.0078,3148.9453 Q333.9063,3148.6719 334.9219,3147.7734 Q335.5859,3147.2656 335.9375,3147.1094 Q336.2891,3146.9531 336.7188,3146.9531 Q337.5391,3146.9531 338.125,3147.6172 Q338.75,3148.2422 338.75,3149.1406 Q338.75,3150 337.8906,3151.0156 Q336.6406,3152.5 334.6484,3153.3203 Q332.0313,3154.4531 328.8281,3154.4531 Q325.0781,3154.4531 322.0703,3152.9688 Q319.6484,3151.7969 317.9297,3149.2578 Q316.25,3146.7188 316.25,3143.7109 L316.25,3140.9766 Q316.25,3137.8516 317.7344,3135.1172 Q319.2578,3132.3828 321.875,3130.9375 Q324.5313,3129.4531 327.5,3129.4531 Q329.2969,3129.4531 330.8594,3130.0781 Q332.4219,3130.7031 333.75,3131.9531 Z "/><ellipse cx="376.25" cy="3139.4531" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="265" x="391.25" y="3152.9785">KeypleMessageDto</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="293.75" x2="661.25" y1="3180.7031" y2="3180.7031"/><ellipse cx="318.75" cy="3208.2031" fill="none" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="192.5" x="341.25" y="3219.2505">String sessionId</text><ellipse cx="318.75" cy="3242.793" fill="none" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="150" x="341.25" y="3253.8403">String action</text><ellipse cx="318.75" cy="3277.3828" fill="none" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="222.5" x="341.25" y="3288.4302">String clientNodeId</text><ellipse cx="318.75" cy="3311.9727" fill="none" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="240" x="341.25" y="3323.02">String serverNodeId</text><ellipse cx="318.75" cy="3346.5625" fill="none" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="305" x="341.25" y="3357.6099">String nativeReaderName</text><ellipse cx="318.75" cy="3381.1523" fill="none" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="305" x="341.25" y="3392.1997">String virtualReaderName</text><ellipse cx="318.75" cy="3415.7422" fill="none" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="137.5" x="341.25" y="3426.7896">String body</text><ellipse cx="318.75" cy="3450.332" fill="none" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="200" x="341.25" y="3461.3794">String errorCode</text><ellipse cx="318.75" cy="3484.9219" fill="none" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="247.5" x="341.25" y="3495.9692">String errorMessage</text><line style="stroke: #2C3E50; stroke-width: 3.75;" x1="293.75" x2="661.25" y1="3512.0117" y2="3512.0117"/><!--MD5=[99b70ee2fb35daba5d28467ba1991e01]
+class KeypleClientAsyncNode--><rect fill="#FDEDEC" height="258.3594" id="KeypleClientAsyncNode" style="stroke: #E74C3C; stroke-width: 3.75;" width="645" x="155" y="1233.2031"/><ellipse cx="286.875" cy="1273.2031" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M289.375,1265.7031 L289.375,1280.7031 L294.375,1280.7031 L295.5859,1280.7031 L296.875,1282.2656 L296.875,1283.2031 L296.875,1284.1406 L295.5859,1285.7031 L294.375,1285.7031 L279.375,1285.7031 L278.1641,1285.7031 L276.875,1284.1406 L276.875,1283.2031 L276.875,1282.2656 L278.1641,1280.7031 L279.375,1280.7031 L284.375,1280.7031 L284.375,1265.7031 L279.375,1265.7031 L278.1641,1265.7031 L276.875,1264.1406 L276.875,1263.2031 L276.875,1262.2656 L278.1641,1260.7031 L279.375,1260.7031 L294.375,1260.7031 L295.5859,1260.7031 L296.875,1262.2656 L296.875,1263.2031 L296.875,1264.1406 L295.5859,1265.7031 L294.375,1265.7031 L289.375,1265.7031 Z "/><ellipse cx="350.625" cy="1271.9531" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="332.5" x="365.625" y="1285.4785">KeypleClientAsyncNode</text><line style="stroke: #E74C3C; stroke-width: 3.75;" x1="157.5" x2="797.5" y1="1313.2031" y2="1313.2031"/><line style="stroke: #E74C3C; stroke-width: 3.75;" x1="157.5" x2="797.5" y1="1333.2031" y2="1333.2031"/><ellipse cx="182.5" cy="1360.7031" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="372.5" x="205" y="1371.7505">void onOpen (String sessionId)</text><ellipse cx="182.5" cy="1395.293" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="515" x="205" y="1406.3403">void onMessage (KeypleMessageDto msg)</text><ellipse cx="182.5" cy="1429.8828" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="375" x="205" y="1440.9302">void onClose (String sessionId)</text><ellipse cx="182.5" cy="1464.4727" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="580" x="205" y="1475.52">void onError (String sessionId, Throwable error)</text><!--MD5=[4ddb14ad407e8a0dc5190ffaa8ce3a0d]
+class KeypleClientAsync--><rect fill="#FEFECE" height="223.7695" id="KeypleClientAsync" style="stroke: #D4AC0D; stroke-width: 3.75;" width="610" x="172.5" y="1713.2031"/><ellipse cx="324.375" cy="1753.2031" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M326.875,1745.7031 L326.875,1760.7031 L331.875,1760.7031 L333.0859,1760.7031 L334.375,1762.2656 L334.375,1763.2031 L334.375,1764.1406 L333.0859,1765.7031 L331.875,1765.7031 L316.875,1765.7031 L315.6641,1765.7031 L314.375,1764.1406 L314.375,1763.2031 L314.375,1762.2656 L315.6641,1760.7031 L316.875,1760.7031 L321.875,1760.7031 L321.875,1745.7031 L316.875,1745.7031 L315.6641,1745.7031 L314.375,1744.1406 L314.375,1743.2031 L314.375,1742.2656 L315.6641,1740.7031 L316.875,1740.7031 L331.875,1740.7031 L333.0859,1740.7031 L334.375,1742.2656 L334.375,1743.2031 L334.375,1744.1406 L333.0859,1745.7031 L331.875,1745.7031 L326.875,1745.7031 Z "/><ellipse cx="388.125" cy="1751.9531" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="257.5" x="403.125" y="1765.4785">KeypleClientAsync</text><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="175" x2="780" y1="1793.2031" y2="1793.2031"/><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="175" x2="780" y1="1813.2031" y2="1813.2031"/><ellipse cx="200" cy="1840.7031" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="435" x="222.5" y="1851.7505">void openSession (String sessionId)</text><ellipse cx="200" cy="1875.293" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="545" x="222.5" y="1886.3403">void sendMessage (KeypleMessageDto msg)</text><ellipse cx="200" cy="1909.8828" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="440" x="222.5" y="1920.9302">void closeSession (String sessionId)</text><!--MD5=[67da39e622bcaa74287f20e31ae13742]
+class KeypleServerAsyncNode--><rect fill="#FDEDEC" height="189.1797" id="KeypleServerAsyncNode" style="stroke: #E74C3C; stroke-width: 3.75;" width="645" x="155" y="2536.9531"/><ellipse cx="281.875" cy="2576.9531" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M284.375,2569.4531 L284.375,2584.4531 L289.375,2584.4531 L290.5859,2584.4531 L291.875,2586.0156 L291.875,2586.9531 L291.875,2587.8906 L290.5859,2589.4531 L289.375,2589.4531 L274.375,2589.4531 L273.1641,2589.4531 L271.875,2587.8906 L271.875,2586.9531 L271.875,2586.0156 L273.1641,2584.4531 L274.375,2584.4531 L279.375,2584.4531 L279.375,2569.4531 L274.375,2569.4531 L273.1641,2569.4531 L271.875,2567.8906 L271.875,2566.9531 L271.875,2566.0156 L273.1641,2564.4531 L274.375,2564.4531 L289.375,2564.4531 L290.5859,2564.4531 L291.875,2566.0156 L291.875,2566.9531 L291.875,2567.8906 L290.5859,2569.4531 L289.375,2569.4531 L284.375,2569.4531 Z "/><ellipse cx="345.625" cy="2575.7031" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="342.5" x="360.625" y="2589.2285">KeypleServerAsyncNode</text><line style="stroke: #E74C3C; stroke-width: 3.75;" x1="157.5" x2="797.5" y1="2616.9531" y2="2616.9531"/><line style="stroke: #E74C3C; stroke-width: 3.75;" x1="157.5" x2="797.5" y1="2636.9531" y2="2636.9531"/><ellipse cx="182.5" cy="2664.4531" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="515" x="205" y="2675.5005">void onMessage (KeypleMessageDto msg)</text><ellipse cx="182.5" cy="2699.043" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="580" x="205" y="2710.0903">void onError (String sessionId, Throwable error)</text><!--MD5=[6544ec85e0d9eb9d1723da03e2a788e8]
+class KeypleServerAsync--><rect fill="#FEFECE" height="154.5898" id="KeypleServerAsync" style="stroke: #D4AC0D; stroke-width: 3.75;" width="610" x="172.5" y="2135.7031"/><ellipse cx="319.375" cy="2175.7031" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M321.875,2168.2031 L321.875,2183.2031 L326.875,2183.2031 L328.0859,2183.2031 L329.375,2184.7656 L329.375,2185.7031 L329.375,2186.6406 L328.0859,2188.2031 L326.875,2188.2031 L311.875,2188.2031 L310.6641,2188.2031 L309.375,2186.6406 L309.375,2185.7031 L309.375,2184.7656 L310.6641,2183.2031 L311.875,2183.2031 L316.875,2183.2031 L316.875,2168.2031 L311.875,2168.2031 L310.6641,2168.2031 L309.375,2166.6406 L309.375,2165.7031 L309.375,2164.7656 L310.6641,2163.2031 L311.875,2163.2031 L326.875,2163.2031 L328.0859,2163.2031 L329.375,2164.7656 L329.375,2165.7031 L329.375,2166.6406 L328.0859,2168.2031 L326.875,2168.2031 L321.875,2168.2031 Z "/><ellipse cx="383.125" cy="2174.4531" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="267.5" x="398.125" y="2187.9785">KeypleServerAsync</text><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="175" x2="780" y1="2215.7031" y2="2215.7031"/><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="175" x2="780" y1="2235.7031" y2="2235.7031"/><ellipse cx="200" cy="2263.2031" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="545" x="222.5" y="2274.2505">void sendMessage (KeypleMessageDto msg)</text><!--MD5=[e8a5ac06609340fdd99947db00692199]
+class KeypleClientSyncNode--><rect fill="#FDEDEC" height="120" id="KeypleClientSyncNode" style="stroke: #E74C3C; stroke-width: 3.75;" width="425" x="265" y="3781.9531"/><ellipse cx="302.5" cy="3821.9531" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M305,3814.4531 L305,3829.4531 L310,3829.4531 L311.2109,3829.4531 L312.5,3831.0156 L312.5,3831.9531 L312.5,3832.8906 L311.2109,3834.4531 L310,3834.4531 L295,3834.4531 L293.7891,3834.4531 L292.5,3832.8906 L292.5,3831.9531 L292.5,3831.0156 L293.7891,3829.4531 L295,3829.4531 L300,3829.4531 L300,3814.4531 L295,3814.4531 L293.7891,3814.4531 L292.5,3812.8906 L292.5,3811.9531 L292.5,3811.0156 L293.7891,3809.4531 L295,3809.4531 L310,3809.4531 L311.2109,3809.4531 L312.5,3811.0156 L312.5,3811.9531 L312.5,3812.8906 L311.2109,3814.4531 L310,3814.4531 L305,3814.4531 Z "/><ellipse cx="350" cy="3820.7031" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="317.5" x="365" y="3834.2285">KeypleClientSyncNode</text><line style="stroke: #E74C3C; stroke-width: 3.75;" x1="267.5" x2="687.5" y1="3861.9531" y2="3861.9531"/><line style="stroke: #E74C3C; stroke-width: 3.75;" x1="267.5" x2="687.5" y1="3881.9531" y2="3881.9531"/><!--MD5=[bbf6003dc53a2fbb600a721f02dcdf85]
+class KeypleClientSync--><rect fill="#FEFECE" height="189.1797" id="KeypleClientSync" style="stroke: #D4AC0D; stroke-width: 3.75;" width="555" x="200" y="4193.2031"/><ellipse cx="331.875" cy="4233.2031" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M334.375,4225.7031 L334.375,4240.7031 L339.375,4240.7031 L340.5859,4240.7031 L341.875,4242.2656 L341.875,4243.2031 L341.875,4244.1406 L340.5859,4245.7031 L339.375,4245.7031 L324.375,4245.7031 L323.1641,4245.7031 L321.875,4244.1406 L321.875,4243.2031 L321.875,4242.2656 L323.1641,4240.7031 L324.375,4240.7031 L329.375,4240.7031 L329.375,4225.7031 L324.375,4225.7031 L323.1641,4225.7031 L321.875,4224.1406 L321.875,4223.2031 L321.875,4222.2656 L323.1641,4220.7031 L324.375,4220.7031 L339.375,4220.7031 L340.5859,4220.7031 L341.875,4222.2656 L341.875,4223.2031 L341.875,4224.1406 L340.5859,4225.7031 L339.375,4225.7031 L334.375,4225.7031 Z "/><ellipse cx="395.625" cy="4231.9531" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="242.5" x="410.625" y="4245.4785">KeypleClientSync</text><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="202.5" x2="752.5" y1="4273.2031" y2="4273.2031"/><line style="stroke: #D4AC0D; stroke-width: 3.75;" x1="202.5" x2="752.5" y1="4293.2031" y2="4293.2031"/><ellipse cx="227.5" cy="4320.7031" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="490" x="250" y="4331.7505">List&lt;KeypleMessageDto&gt; sendRequest (</text><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="300" x="280" y="4366.3403">KeypleMessageDto msg)</text><!--MD5=[dd8027f1fe25574d7b3afa90a41fd479]
+class KeypleServerSyncNode--><rect fill="#FDEDEC" height="189.1797" id="KeypleServerSyncNode" style="stroke: #E74C3C; stroke-width: 3.75;" width="525" x="215" y="4748.2031"/><ellipse cx="293" cy="4788.2031" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M295.5,4780.7031 L295.5,4795.7031 L300.5,4795.7031 L301.7109,4795.7031 L303,4797.2656 L303,4798.2031 L303,4799.1406 L301.7109,4800.7031 L300.5,4800.7031 L285.5,4800.7031 L284.2891,4800.7031 L283,4799.1406 L283,4798.2031 L283,4797.2656 L284.2891,4795.7031 L285.5,4795.7031 L290.5,4795.7031 L290.5,4780.7031 L285.5,4780.7031 L284.2891,4780.7031 L283,4779.1406 L283,4778.2031 L283,4777.2656 L284.2891,4775.7031 L285.5,4775.7031 L300.5,4775.7031 L301.7109,4775.7031 L303,4777.2656 L303,4778.2031 L303,4779.1406 L301.7109,4780.7031 L300.5,4780.7031 L295.5,4780.7031 Z "/><ellipse cx="349.5" cy="4786.9531" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="327.5" x="364.5" y="4800.4785">KeypleServerSyncNode</text><line style="stroke: #E74C3C; stroke-width: 3.75;" x1="217.5" x2="737.5" y1="4828.2031" y2="4828.2031"/><line style="stroke: #E74C3C; stroke-width: 3.75;" x1="217.5" x2="737.5" y1="4848.2031" y2="4848.2031"/><ellipse cx="242.5" cy="4875.7031" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="460" x="265" y="4886.7505">List&lt;KeypleMessageDto&gt; onRequest (</text><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="300" x="295" y="4921.3403">KeypleMessageDto msg)</text><!--MD5=[46a7d85d902d63579688909281b6362a]
+class NativeSeClientService--><!--MD5=[d20a95b78d716283a1df9eca070f5ba1]
+class RemoteServiceParameters--><!--MD5=[d456467577ef109bf5015118e808ea7b]
+class RemoteServiceParametersBuilder--><!--MD5=[735c52120f28b91d9d66bbbe5aa5e24c]
+class NativeSeServerService--><!--MD5=[7ba689d2a7be0af7668d4b8aab970396]
+class NativeSePoolServerService--><rect fill="#EBF5FB" height="120" id="NativeSePoolServerService" style="stroke: #3498DB; stroke-width: 3.75;" width="487.5" x="1406.25" y="6248.2031"/><ellipse cx="1443.75" cy="6288.2031" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M1446.25,6280.7031 L1446.25,6295.7031 L1451.25,6295.7031 L1452.4609,6295.7031 L1453.75,6297.2656 L1453.75,6298.2031 L1453.75,6299.1406 L1452.4609,6300.7031 L1451.25,6300.7031 L1436.25,6300.7031 L1435.0391,6300.7031 L1433.75,6299.1406 L1433.75,6298.2031 L1433.75,6297.2656 L1435.0391,6295.7031 L1436.25,6295.7031 L1441.25,6295.7031 L1441.25,6280.7031 L1436.25,6280.7031 L1435.0391,6280.7031 L1433.75,6279.1406 L1433.75,6278.2031 L1433.75,6277.2656 L1435.0391,6275.7031 L1436.25,6275.7031 L1451.25,6275.7031 L1452.4609,6275.7031 L1453.75,6277.2656 L1453.75,6278.2031 L1453.75,6279.1406 L1452.4609,6280.7031 L1451.25,6280.7031 L1446.25,6280.7031 Z "/><ellipse cx="1491.25" cy="6286.9531" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="380" x="1506.25" y="6300.4785">NativeSePoolServerService</text><line style="stroke: #3498DB; stroke-width: 3.75;" x1="1408.75" x2="1891.25" y1="6328.2031" y2="6328.2031"/><line style="stroke: #3498DB; stroke-width: 3.75;" x1="1408.75" x2="1891.25" y1="6348.2031" y2="6348.2031"/><!--MD5=[72d4a0446c01a916ad8dda8239791a81]
+class NativeSeClientServiceFactory--><!--MD5=[046a6efe1bd6cbffd6effdb5a552b2c5]
+class NativeSeClientServiceFactoryNodeStep--><!--MD5=[0c49c6969a4025041aecc190bea9bee6]
+class NativeSeClientServiceFactoryReaderStep--><!--MD5=[bdb11f86bec186c05f84eb23b0f529d5]
+class NativeSeClientServiceFactoryBuilderStep--><!--MD5=[b4bb9dcd5903a7c0a11512d8fa75d45f]
+class NativeSeServerServiceFactory--><!--MD5=[55116e8dc912b812fd1d171a51e58939]
+class NativeSeServerServiceFactoryNodeStep--><!--MD5=[443fed9537f7a68a455de7d7235fc1b0]
+class NativeSeServerServiceFactoryBuilderStep--><!--MD5=[dcffa6256aa6d65ed9ee097d0318f76c]
+class NativeSePoolServerServiceFactory--><rect fill="#EBF5FB" height="189.1797" id="NativeSePoolServerServiceFactory" style="stroke: #3498DB; stroke-width: 3.75;" width="587.5" x="3998.75" y="4748.2031"/><ellipse cx="4036.25" cy="4788.2031" fill="#ADD1B2" rx="27.5" ry="27.5" style="stroke: #ADD1B2; stroke-width: 2.5;"/><path d="M4041.25,4779.4531 Q4041.7578,4778.2031 4042.3438,4777.5781 Q4042.9297,4776.9531 4043.5938,4776.9531 Q4044.7656,4776.9531 4045.5078,4777.6563 Q4046.25,4778.3594 4046.25,4780 L4046.25,4783.9063 Q4046.25,4785.5469 4045.5469,4786.25 Q4044.8438,4786.9531 4043.75,4786.9531 Q4042.7734,4786.9531 4042.1484,4786.5234 Q4041.5234,4786.0938 4041.25,4784.9609 Q4041.1328,4784.1797 4040.7031,4783.75 Q4039.9219,4782.9297 4038.5156,4782.4609 Q4037.1094,4781.9531 4035.7031,4781.9531 Q4033.9453,4781.9531 4032.4609,4782.6563 Q4031.0156,4783.3594 4029.8828,4784.9219 Q4028.75,4786.4844 4028.75,4788.6328 L4028.75,4790.9375 Q4028.75,4793.5156 4030.8594,4795.2344 Q4032.9688,4796.9531 4036.7188,4796.9531 Q4038.9453,4796.9531 4040.5078,4796.4453 Q4041.4063,4796.1719 4042.4219,4795.2734 Q4043.0859,4794.7656 4043.4375,4794.6094 Q4043.7891,4794.4531 4044.2188,4794.4531 Q4045.0391,4794.4531 4045.625,4795.1172 Q4046.25,4795.7422 4046.25,4796.6406 Q4046.25,4797.5 4045.3906,4798.5156 Q4044.1406,4800 4042.1484,4800.8203 Q4039.5313,4801.9531 4036.3281,4801.9531 Q4032.5781,4801.9531 4029.5703,4800.4688 Q4027.1484,4799.2969 4025.4297,4796.7578 Q4023.75,4794.2188 4023.75,4791.2109 L4023.75,4788.4766 Q4023.75,4785.3516 4025.2344,4782.6172 Q4026.7578,4779.8828 4029.375,4778.4375 Q4032.0313,4776.9531 4035,4776.9531 Q4036.7969,4776.9531 4038.3594,4777.5781 Q4039.9219,4778.2031 4041.25,4779.4531 Z "/><ellipse cx="4083.75" cy="4786.9531" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="480" x="4098.75" y="4800.4785">NativeSePoolServerServiceFactory</text><line style="stroke: #3498DB; stroke-width: 3.75;" x1="4001.25" x2="4583.75" y1="4828.2031" y2="4828.2031"/><line style="stroke: #3498DB; stroke-width: 3.75;" x1="4001.25" x2="4583.75" y1="4848.2031" y2="4848.2031"/><ellipse cx="4026.25" cy="4875.7031" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" text-decoration="underline" textLength="232.5" x="4048.75" y="4886.7505">NodeStep builder ()</text><ellipse cx="4026.25" cy="4910.293" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="497.5" x="4048.75" y="4921.3403">NativeSePoolServerService getService ()</text><!--MD5=[82c7eded52183a61faaa6d99a7f1677c]
+class NativeSePoolServerServiceFactoryNodeStep--><rect fill="#EBF5FB" height="189.1797" id="NativeSePoolServerServiceFactoryNodeStep" style="stroke: #3498DB; stroke-width: 3.75;" width="787.5" x="3876.25" y="5150.7031"/><ellipse cx="4176.875" cy="5190.7031" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M4179.375,5183.2031 L4179.375,5198.2031 L4184.375,5198.2031 L4185.5859,5198.2031 L4186.875,5199.7656 L4186.875,5200.7031 L4186.875,5201.6406 L4185.5859,5203.2031 L4184.375,5203.2031 L4169.375,5203.2031 L4168.1641,5203.2031 L4166.875,5201.6406 L4166.875,5200.7031 L4166.875,5199.7656 L4168.1641,5198.2031 L4169.375,5198.2031 L4174.375,5198.2031 L4174.375,5183.2031 L4169.375,5183.2031 L4168.1641,5183.2031 L4166.875,5181.6406 L4166.875,5180.7031 L4166.875,5179.7656 L4168.1641,5178.2031 L4169.375,5178.2031 L4184.375,5178.2031 L4185.5859,5178.2031 L4186.875,5179.7656 L4186.875,5180.7031 L4186.875,5181.6406 L4185.5859,5183.2031 L4184.375,5183.2031 L4179.375,5183.2031 Z "/><ellipse cx="4240.625" cy="5189.4531" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="137.5" x="4255.625" y="5202.9785">NodeStep</text><line style="stroke: #3498DB; stroke-width: 3.75;" x1="3878.75" x2="4661.25" y1="5230.7031" y2="5230.7031"/><line style="stroke: #3498DB; stroke-width: 3.75;" x1="3878.75" x2="4661.25" y1="5250.7031" y2="5250.7031"/><ellipse cx="3903.75" cy="5278.2031" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="722.5" x="3926.25" y="5289.2505">BuilderStep withAsyncNode (KeypleServerAsync endpoint)</text><ellipse cx="3903.75" cy="5312.793" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="350" x="3926.25" y="5323.8403">BuilderStep withSyncNode ()</text><!--MD5=[be15331cd61fd8036f037eebbca6707f]
+class NativeSePoolServerServiceFactoryBuilderStep--><rect fill="#EBF5FB" height="154.5898" id="NativeSePoolServerServiceFactoryBuilderStep" style="stroke: #3498DB; stroke-width: 3.75;" width="580" x="3980" y="5528.2031"/><ellipse cx="4165.625" cy="5568.2031" fill="#B4A7E5" rx="27.5" ry="27.5" style="stroke: #B4A7E5; stroke-width: 2.5;"/><path d="M4168.125,5560.7031 L4168.125,5575.7031 L4173.125,5575.7031 L4174.3359,5575.7031 L4175.625,5577.2656 L4175.625,5578.2031 L4175.625,5579.1406 L4174.3359,5580.7031 L4173.125,5580.7031 L4158.125,5580.7031 L4156.9141,5580.7031 L4155.625,5579.1406 L4155.625,5578.2031 L4155.625,5577.2656 L4156.9141,5575.7031 L4158.125,5575.7031 L4163.125,5575.7031 L4163.125,5560.7031 L4158.125,5560.7031 L4156.9141,5560.7031 L4155.625,5559.1406 L4155.625,5558.2031 L4155.625,5557.2656 L4156.9141,5555.7031 L4158.125,5555.7031 L4173.125,5555.7031 L4174.3359,5555.7031 L4175.625,5557.2656 L4175.625,5558.2031 L4175.625,5559.1406 L4174.3359,5560.7031 L4173.125,5560.7031 L4168.125,5560.7031 Z "/><ellipse cx="4229.375" cy="5566.9531" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="160" x="4244.375" y="5580.4785">BuilderStep</text><line style="stroke: #3498DB; stroke-width: 3.75;" x1="3982.5" x2="4557.5" y1="5608.2031" y2="5608.2031"/><line style="stroke: #3498DB; stroke-width: 3.75;" x1="3982.5" x2="4557.5" y1="5628.2031" y2="5628.2031"/><ellipse cx="4007.5" cy="5655.7031" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" textLength="515" x="4030" y="5666.7505">NativeSePoolServerServiceFactory build ()</text><!--MD5=[7b76780c14b880d6c9f18ef4f218e016]
+class NativeSeClientUtils--><!--MD5=[dc5f18050219815a8251c589d9548bb3]
+class NativeSeServerUtils--><!--MD5=[81ab84374707f9610529d042ef50bdbd]
+class NativeSePoolServerUtils--><rect fill="#EBF5FB" height="189.1797" id="NativeSePoolServerUtils" style="stroke: #3498DB; stroke-width: 3.75;" width="587.5" x="3976.25" y="5870.7031"/><ellipse cx="4077.875" cy="5910.7031" fill="#ADD1B2" rx="27.5" ry="27.5" style="stroke: #ADD1B2; stroke-width: 2.5;"/><path d="M4082.875,5901.9531 Q4083.3828,5900.7031 4083.9688,5900.0781 Q4084.5547,5899.4531 4085.2188,5899.4531 Q4086.3906,5899.4531 4087.1328,5900.1563 Q4087.875,5900.8594 4087.875,5902.5 L4087.875,5906.4063 Q4087.875,5908.0469 4087.1719,5908.75 Q4086.4688,5909.4531 4085.375,5909.4531 Q4084.3984,5909.4531 4083.7734,5909.0234 Q4083.1484,5908.5938 4082.875,5907.4609 Q4082.7578,5906.6797 4082.3281,5906.25 Q4081.5469,5905.4297 4080.1406,5904.9609 Q4078.7344,5904.4531 4077.3281,5904.4531 Q4075.5703,5904.4531 4074.0859,5905.1563 Q4072.6406,5905.8594 4071.5078,5907.4219 Q4070.375,5908.9844 4070.375,5911.1328 L4070.375,5913.4375 Q4070.375,5916.0156 4072.4844,5917.7344 Q4074.5938,5919.4531 4078.3438,5919.4531 Q4080.5703,5919.4531 4082.1328,5918.9453 Q4083.0313,5918.6719 4084.0469,5917.7734 Q4084.7109,5917.2656 4085.0625,5917.1094 Q4085.4141,5916.9531 4085.8438,5916.9531 Q4086.6641,5916.9531 4087.25,5917.6172 Q4087.875,5918.2422 4087.875,5919.1406 Q4087.875,5920 4087.0156,5921.0156 Q4085.7656,5922.5 4083.7734,5923.3203 Q4081.1563,5924.4531 4077.9531,5924.4531 Q4074.2031,5924.4531 4071.1953,5922.9688 Q4068.7734,5921.7969 4067.0547,5919.2578 Q4065.375,5916.7188 4065.375,5913.7109 L4065.375,5910.9766 Q4065.375,5907.8516 4066.8594,5905.1172 Q4068.3828,5902.3828 4071,5900.9375 Q4073.6563,5899.4531 4076.625,5899.4531 Q4078.4219,5899.4531 4079.9844,5900.0781 Q4081.5469,5900.7031 4082.875,5901.9531 Z "/><ellipse cx="4139.625" cy="5909.4531" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="30" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="337.5" x="4154.625" y="5922.9785">NativeSePoolServerUtils</text><line style="stroke: #3498DB; stroke-width: 3.75;" x1="3978.75" x2="4561.25" y1="5950.7031" y2="5950.7031"/><line style="stroke: #3498DB; stroke-width: 3.75;" x1="3978.75" x2="4561.25" y1="5970.7031" y2="5970.7031"/><ellipse cx="4003.75" cy="5998.2031" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" text-decoration="underline" textLength="522.5" x="4026.25" y="6009.2505">KeypleServerAsyncNode getAsyncNode ()</text><ellipse cx="4003.75" cy="6032.793" fill="#84BE84" rx="7.5" ry="7.5" style="stroke: #038048; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="27.5" lengthAdjust="spacingAndGlyphs" text-decoration="underline" textLength="487.5" x="4026.25" y="6043.8403">KeypleServerSyncNode getSyncNode ()</text><!--MD5=[bc25a197e36279471f37427b8b5d69b0]
+reverse link ReaderPlugin to ReaderPoolPlugin--><path d="M1872.425,449.6281 C1902.4525,471.5781 1933.6675,494.7781 1962.5,516.9531 C2008.105,552.0281 2057.775,592.1781 2099.035,626.0781 " fill="none" id="ReaderPlugin&lt;-ReaderPoolPlugin" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="none" points="1861.3275,463.1781,1831.135,419.6531,1881.8825,434.8531,1861.3275,463.1781" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[a087c8f219181ff1dbe7adabc28b3231]
+reverse link ReaderPlugin to ObservablePlugin--><path d="M1731.1625,470.3281 C1733.71,522.3781 1736.58,581.0031 1738.795,626.2531 " fill="none" id="ReaderPlugin&lt;-ObservablePlugin" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="none" points="1713.6775,471.0531,1728.7125,420.2781,1748.635,469.3531,1713.6775,471.0531" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[9bde350185f61a8992bbce085951af21]
+reverse link SeReader to ObservableReader--><path d="M1290,470.3281 C1290,522.3781 1290,581.0031 1290,626.2531 " fill="none" id="SeReader&lt;-ObservableReader" style="stroke: #A80036; stroke-width: 2.5;"/><polygon fill="none" points="1272.5,470.2781,1290,420.2781,1307.5,470.2781,1272.5,470.2781" style="stroke: #A80036; stroke-width: 2.5;"/><!--MD5=[beee69d919d119928c0096b726bb8c4e]
+reverse link RemoteSeServerReader to RemoteSeServerObservableReader--><!--MD5=[33b3782cfe191d74c88800b29ccbfcd6]
+reverse link RemoteSeClientPlugin to RemoteSeClientObservablePlugin--><!--MD5=[2e619bc7e488a0c0f6ed994f8f299dc7]
+link RemoteSeServerPluginFactory to RemoteSeServerPluginFactoryNodeStep--><!--MD5=[21d4e7f4ab18f16aac8d5b2b453cf865]
+link RemoteSeServerPluginFactoryNodeStep to RemoteSeServerPluginFactoryPluginObserverStep--><!--MD5=[674a8a57ead27ebf0c4d185c0cf96349]
+link RemoteSeServerPluginFactoryPluginObserverStep to RemoteSeServerPluginFactoryBuilderStep--><!--MD5=[a9acf83dfdf2da53507421001c504f53]
+link RemoteSeClientPluginFactory to RemoteSeClientPluginFactoryNodeStep--><!--MD5=[de2b12220c68ec63ce704020698b18b1]
+link RemoteSeClientPluginFactoryNodeStep to RemoteSeClientPluginFactoryAsyncNodePluginStep--><!--MD5=[c19eb12a1e01c6171142a7640a8377f4]
+link RemoteSeClientPluginFactoryAsyncNodePluginStep to RemoteSeClientPluginFactoryAsyncNodeReaderStep--><!--MD5=[25055c8d624701d418ba6b429fa4e232]
+link RemoteSeClientPluginFactoryNodeStep to RemoteSeClientPluginFactorySyncNodePluginStep--><!--MD5=[8463103eda64d50fb0cce218b4527b3b]
+link RemoteSeClientPluginFactorySyncNodePluginStep to RemoteSeClientPluginFactoryServerPushPluginEventStrategyStep--><!--MD5=[6674ccaab25bdfd14aa6dd70b97dbd83]
+link RemoteSeClientPluginFactorySyncNodePluginStep to RemoteSeClientPluginFactorySyncNodeReaderStep--><!--MD5=[a9e643679760d88f8a1dfe6d2f780c20]
+link RemoteSeClientPluginFactoryAsyncNodeReaderStep to RemoteSeClientPluginFactoryBuilderStep--><!--MD5=[0f0b976bd553577f586071cfc3b2f641]
+link RemoteSeClientPluginFactoryServerPushPluginEventStrategyStep to RemoteSeClientPluginFactorySyncNodeReaderStep--><!--MD5=[18b9aea8785f2972b07139e7ef7ddfc1]
+link RemoteSeClientPluginFactorySyncNodeReaderStep to RemoteSeClientPluginFactoryBuilderStep--><!--MD5=[98e3abe77dc4757e8e628721a4b5ca26]
+link RemoteSeClientPluginFactorySyncNodeReaderStep to RemoteSeClientPluginFactoryServerPushReaderEventStrategyStep--><!--MD5=[1b4ee45d3a7a259023d89e04e16a05c2]
+link RemoteSeClientPluginFactoryServerPushReaderEventStrategyStep to RemoteSeClientPluginFactoryBuilderStep--><!--MD5=[d66430287cc8a4608bcdadf89633d0fa]
+link RemoteSePoolClientPluginFactory to RemoteSePoolClientPluginFactoryNodeStep--><path d="M4374.35,1449.6531 C4375.8,1515.3031 4377.8,1607.4531 4379.45,1683.7781 " fill="none" id="RemoteSePoolClientPluginFactory-&gt;RemoteSePoolClientPluginFactoryNodeStep" style="stroke: #27AE60; stroke-width: 2.5; stroke-dasharray: 7.0,7.0;"/><polygon fill="#27AE60" points="4379.75,1696.8781,4389.2332,1674.1555,4379.4644,1684.3814,4369.2385,1674.6125,4379.75,1696.8781" style="stroke: #27AE60; stroke-width: 2.5;"/><!--MD5=[7452a14a7ff262878217522ede3e86ff]
+link RemoteSePoolClientPluginFactoryNodeStep to RemoteSePoolClientPluginFactoryBuilderStep--><path d="M4384.15,1954.5031 C4384.875,2009.2531 4385.675,2072.0281 4386.325,2121.7531 " fill="none" id="RemoteSePoolClientPluginFactoryNodeStep-&gt;RemoteSePoolClientPluginFactoryBuilderStep" style="stroke: #27AE60; stroke-width: 2.5; stroke-dasharray: 7.0,7.0;"/><polygon fill="#27AE60" points="4386.5,2134.7531,4396.1776,2112.1126,4386.3214,2122.2544,4376.1796,2112.3983,4386.5,2134.7531" style="stroke: #27AE60; stroke-width: 2.5;"/><!--MD5=[b713964f5d27d0b156a30ab4a41a47e7]
+link RemoteSeServerPlugin to RemoteSeServerReader--><!--MD5=[3339938c1e44c45a745f6c7126070654]
+link KeypleClientSyncNode to KeypleClientSync--><path d="M477.5,3902.1281 C477.5,3972.5031 477.5,4092.8031 477.5,4179.9556 " fill="none" id="KeypleClientSyncNode-&gt;KeypleClientSync" style="stroke: #3498DB; stroke-width: 2.5;"/><polygon fill="#3498DB" points="477.5,4192.5631,487.5,4170.0631,477.5,4180.0631,467.5,4170.0631,477.5,4192.5631" style="stroke: #3498DB; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="32.5" lengthAdjust="spacingAndGlyphs" textLength="52.5" x="480" y="4109.4409">use</text><polygon fill="#000000" points="495,4131.582,502.5,4146.582,510,4131.582,495,4131.582" style="stroke: #000000; stroke-width: 2.5;"/><!--MD5=[a5c2fbd18bb9111121f0405f52c94c57]
+link KeypleClientAsyncNode to KeypleClientAsync--><path d="M477.5,1491.0281 C477.5,1556.1531 477.5,1635.2531 477.5,1699.9281 " fill="none" id="KeypleClientAsyncNode-&gt;KeypleClientAsync" style="stroke: #3498DB; stroke-width: 2.5;"/><polygon fill="#3498DB" points="477.5,1712.6531,487.5,1690.1531,477.5,1700.1531,467.5,1690.1531,477.5,1712.6531" style="stroke: #3498DB; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="32.5" lengthAdjust="spacingAndGlyphs" textLength="52.5" x="480" y="1601.9409">use</text><polygon fill="#000000" points="495,1624.082,502.5,1639.082,510,1624.082,495,1624.082" style="stroke: #000000; stroke-width: 2.5;"/><!--MD5=[fc3c3d62879ab5aad13593c06221d8a3]
+reverse link KeypleServerAsync to KeypleServerAsyncNode--><path d="M477.5,2304.9031 C477.5,2373.3031 477.5,2467.4031 477.5,2536.6531 " fill="none" id="KeypleServerAsync&lt;-KeypleServerAsyncNode" style="stroke: #3498DB; stroke-width: 2.5;"/><polygon fill="#3498DB" points="477.5,2291.6031,467.5,2314.1031,477.5,2304.1031,487.5,2314.1031,477.5,2291.6031" style="stroke: #3498DB; stroke-width: 2.5;"/><polygon fill="#000000" points="495,2410.7031,502.5,2395.7031,510,2410.7031,495,2410.7031" style="stroke: #000000; stroke-width: 2.5;"/><text fill="#000000" font-family="sans-serif" font-size="32.5" lengthAdjust="spacingAndGlyphs" textLength="52.5" x="480" y="2451.9409">use</text><!--MD5=[5cde25ce9ae6dfba9e058c889c804a08]
+link NativeSeClientService to RemoteServiceParameters--><!--MD5=[67388e983a21b7fb718f5f064a2e9e7f]
+reverse link RemoteServiceParameters to RemoteServiceParametersBuilder--><!--MD5=[73ef686f568836261b250405da5e16aa]
+link NativeSeClientServiceFactory to NativeSeClientServiceFactoryNodeStep--><!--MD5=[92dad06648421e18dfd43d9dba6b392f]
+link NativeSeClientServiceFactoryNodeStep to NativeSeClientServiceFactoryReaderStep--><!--MD5=[cc851fff339f5acacaef1828b34c934d]
+link NativeSeClientServiceFactoryReaderStep to NativeSeClientServiceFactoryBuilderStep--><!--MD5=[3ef103b527373435c9d7463182b6320e]
+link NativeSeServerServiceFactory to NativeSeServerServiceFactoryNodeStep--><!--MD5=[2d5ed2a109b740ab136d8e51994c120b]
+link NativeSeServerServiceFactoryNodeStep to NativeSeServerServiceFactoryBuilderStep--><!--MD5=[c84855fd2fe102e6ecc9df81a1a86048]
+link NativeSePoolServerServiceFactory to NativeSePoolServerServiceFactoryNodeStep--><path d="M4287.225,4938.8981 C4283.85,4998.4556 4279.475,5075.8256 4275.975,5137.6481 " fill="none" id="NativeSePoolServerServiceFactory-&gt;NativeSePoolServerServiceFactoryNodeStep" style="stroke: #27AE60; stroke-width: 2.5; stroke-dasharray: 7.0,7.0;"/><polygon fill="#27AE60" points="4275.25,5150.5906,4286.5049,5128.6914,4275.956,5138.1106,4266.5368,5127.5617,4275.25,5150.5906" style="stroke: #27AE60; stroke-width: 2.5;"/><!--MD5=[7d1074d3fee1affff7287943e9d50755]
+link NativeSePoolServerServiceFactoryNodeStep to NativeSePoolServerServiceFactoryBuilderStep--><path d="M4270,5341.4756 C4270,5394.8806 4270,5461.5281 4270,5514.2031 " fill="none" id="NativeSePoolServerServiceFactoryNodeStep-&gt;NativeSePoolServerServiceFactoryBuilderStep" style="stroke: #27AE60; stroke-width: 2.5; stroke-dasharray: 7.0,7.0;"/><polygon fill="#27AE60" points="4270,5527.2781,4280,5504.7781,4270,5514.7781,4260,5504.7781,4270,5527.2781" style="stroke: #27AE60; stroke-width: 2.5;"/><!--MD5=[15547d8862a5df29855750a3bf18617b]
+link ObservableReader to RemoteSeServerPlugin--><!--MD5=[987811c66d7bd6c032bc2151205fe6f5]
+link RemoteSeServerObservableReader to RemoteSeClientPlugin--><!--MD5=[a1b66ef642a082558df4e57adb27fac0]
+link RemoteSeClientObservablePlugin to RemoteSePoolClientPlugin--><!--MD5=[ea0ba98041ffb8a4884555dc83dd17aa]
+link RemoteSeServerPluginFactoryBuilderStep to RemoteSeServerUtils--><!--MD5=[47e3852113250983e17115a5f50ba96f]
+link RemoteSeServerUtils to RemoteSeClientUtils--><!--MD5=[cacbee264c40d57aff7e100acb03d64f]
+link RemoteSePoolClientPluginFactoryBuilderStep to RemoteSePoolClientUtils--><!--MD5=[778c3aab33cf271d23bb0ae27eae98ee]
+link NativeSeClientServiceFactoryBuilderStep to NativeSeClientUtils--><!--MD5=[2ed543261840307149ea05657327f9e4]
+link NativeSeServerServiceFactoryBuilderStep to NativeSeServerUtils--><!--MD5=[c0af6559d89a57aead6ac4f4122d4b62]
+link NativeSePoolServerServiceFactoryBuilderStep to NativeSePoolServerUtils--><!--MD5=[1a8a3a8424928725fe6de3d4ca8734ab]
+link KeypleClientAsync to KeypleServerAsync--><!--MD5=[4d1306e51982d52a514345c069ff326d]
+link KeypleServerAsyncNode to KeypleMessageDto--><!--MD5=[2812fc5916bf7f5302a519678cfaae9e]
+link KeypleMessageDto to KeypleClientSyncNode--><!--MD5=[2fa2cc8626460181cf2d33a8e0323cf1]
+link KeypleClientSync to KeypleServerSyncNode--><!--MD5=[56faedc79dea379b82274c33c6fea57b]
+link RemoteServiceParametersBuilder to NativeSeServerService--><!--MD5=[3a0ced921fd10eef71219f3cca2459ef]
+link NativeSeServerService to NativeSePoolServerService--><!--MD5=[205f426195bc4680258620546c4fb330]
+link RemoteSePoolClientUtils to NativeSePoolServerServiceFactory--><!--MD5=[ec408a9fae43af559ad0c8b87f3a69d9]
+link RemoteSeClientPluginFactoryBuilderStep to NativeSeServerServiceFactory--><!--MD5=[8af47b104eaf8d6b60d505cf4c5e0960]
+link RemoteSeClientUtils to NativeSeClientServiceFactory--><!--MD5=[6d5c6e0d8e30b131af40d02305e01b22]
+@startuml
+
+title
+    Keyple Plugin Remote SE
+    Public API (10/06/2020)
+end title
+
+
+
+skinparam Shadowing false
+skinparam ClassFontStyle italic
+skinparam ClassBorderColor #D4AC0D
+skinparam stereotypeABorderColor #A9DCDF
+skinparam stereotypeIBorderColor #B4A7E5
+skinparam stereotypeCBorderColor #ADD1B2
+skinparam stereotypeEBorderColor #EB93DF
+skinparam ClassBackgroundColor<<red>> #FDEDEC
+skinparam ClassBorderColor<<red>> #E74C3C
+hide <<red>> stereotype
+skinparam ClassBackgroundColor<<purple>> #F4ECF7
+skinparam ClassBorderColor<<purple>> #8E44AD
+hide <<purple>> stereotype
+skinparam ClassBackgroundColor<<blue>> #EBF5FB
+skinparam ClassBorderColor<<blue>> #3498DB
+hide <<blue>> stereotype
+skinparam ClassBackgroundColor<<green>> #E9F7EF
+skinparam ClassBorderColor<<green>> #27AE60
+hide <<green>> stereotype
+skinparam ClassBackgroundColor<<grey>> #EAECEE
+skinparam ClassBorderColor<<grey>> #2C3E50
+hide <<grey>> stereotype
+
+
+package org.eclipse.keyple.core.seproxy {
+
+    +abstract AbstractPluginFactory {
+        ...
+    }
+    +interface ReaderPlugin {
+        ...
+    }
+    +interface ReaderPoolPlugin extends ReaderPlugin {
+        ...
+    }
+    +interface SeReader {
+        ...
+    }
+
+    package event {
+        +interface ObservablePlugin extends ReaderPlugin {
+            ...
+        }
+        +interface ObservableReader extends SeReader {
+                ...
+        }
+    }
+}
+
+package org.eclipse.keyple.plugin.remotese {
+
+    package virtualse {
+
+            +interface "<< <back:#82E0AA>ObservablePlugin</back> >>\nRemoteSeServerPlugin" as RemoteSeServerPlugin {
+                +RemoteSeServerReader getReader (String name)
+                +void terminateService (\n    String virtualReaderName, Object userOutputData)
+            }
+            +interface "<< <back:#D0ECE7>SeReader</back> >>\nRemoteSeServerReader" as RemoteSeServerReader {
+                +String getServiceId ()
+                +<T> T getUserInputData (\n    Class<T> userInputDataClass)
+                +AbstractMatchingSe getInitialSeContent ()
+            }
+            +interface "<< <back:#FDEBD0>ObservableReader</back> >>\nRemoteSeServerObservableReader" as RemoteSeServerObservableReader extends RemoteSeServerReader {
+            }
+            +interface "<< <back:#D2B4DE>ReaderPlugin</back> >>\nRemoteSeClientPlugin" as RemoteSeClientPlugin {
+            }
+            +interface "<< <back:#82E0AA>ObservablePlugin</back> >>\nRemoteSeClientObservablePlugin" as RemoteSeClientObservablePlugin extends RemoteSeClientPlugin {
+            }
+            +interface "<< <back:#AED6F1>ReaderPoolPlugin</back> >>\nRemoteSePoolClientPlugin" as RemoteSePoolClientPlugin {
+            }
+
+        package impl as virtualSeImpl {
+
+            +class "<< <back:#F5B7B1>AbstractPluginFactory</back> >>\nRemoteSeServerPluginFactory" as RemoteSeServerPluginFactory {
+                + {static} NodeStep builder ()
+            }
+            +interface "NodeStep" as RemoteSeServerPluginFactoryNodeStep {
+                + PluginObservationStep withAsyncNode (\n    KeypleServerAsync endpoint)
+                + PluginObservationStep withSyncNode ()
+            }
+            +interface "PluginObserverStep" as RemoteSeServerPluginFactoryPluginObserverStep {
+                + BuilderStep withPluginObserver (\n    ObservablePlugin.PluginObserver observer)
+            }
+            +interface "BuilderStep" as RemoteSeServerPluginFactoryBuilderStep {
+                + RemoteSeServerPluginFactory build ()
+            }
+            +class "<< <back:#F5B7B1>AbstractPluginFactory</back> >>\nRemoteSeClientPluginFactory" as RemoteSeClientPluginFactory {
+                + {static} NodeStep builder ()
+            }
+            +interface "NodeStep" as RemoteSeClientPluginFactoryNodeStep {
+                + AsyncNodePluginStep withAsyncNode (\n    KeypleClientAsync endpoint)
+                + SyncNodePluginStep withSyncNode (\n    KeypleClientSync endpoint)
+            }
+            +interface "AsyncNodePluginStep" as RemoteSeClientPluginFactoryAsyncNodePluginStep {
+                + AsyncNodeReaderStep withPluginObservation ()
+                + AsyncNodeReaderStep withoutPluginObservation ()
+            }
+            +interface "AsyncNodeReaderStep" as RemoteSeClientPluginFactoryAsyncNodeReaderStep {
+                + BuilderStep withReaderObservation ()
+                + BuilderStep withoutReaderObservation ()
+            }
+            +interface "SyncNodePluginStep" as RemoteSeClientPluginFactorySyncNodePluginStep {
+                + ServerPushPluginEventStrategyStep withPluginObservation ()
+                + SyncNodeReaderStep withoutPluginObservation ()
+            }
+            +interface "ServerPushPluginEventStrategyStep" as RemoteSeClientPluginFactoryServerPushPluginEventStrategyStep {
+                + SyncNodeReaderStep usingPluginPollingStrategy (\n    int requestFrequencyInSeconds)
+                + SyncNodeReaderStep usingPluginLongPollingStrategy (\n    int requestTimeoutInSeconds)
+            }
+            +interface "SyncNodeReaderStep" as RemoteSeClientPluginFactorySyncNodeReaderStep {
+                + ServerPushReaderEventStrategyStep withReaderObservation ()
+                + BuilderStep withoutReaderObservation ()
+            }
+            +interface "ServerPushReaderEventStrategyStep" as RemoteSeClientPluginFactoryServerPushReaderEventStrategyStep {
+                + BuilderStep usingReaderPollingStrategy (\n    int requestFrequencyInSeconds)
+                + BuilderStep usingReaderLongPollingStrategy (\n    int requestTimeoutInSeconds)
+            }
+            +interface "BuilderStep" as RemoteSeClientPluginFactoryBuilderStep {
+                + RemoteSeClientPluginFactory build ()
+            }
+            +class "<< <back:#F5B7B1>AbstractPluginFactory</back> >>\nRemoteSePoolClientPluginFactory" as RemoteSePoolClientPluginFactory {
+                + {static} NodeStep builder ()
+            }
+            +class "NodeStep" as RemoteSePoolClientPluginFactoryNodeStep {
+                + BuilderStep withAsyncNode (\n    KeypleClientAsync endpoint)
+                + BuilderStep withSyncNode (\n    KeypleClientSync endpoint)
+            }
+            +interface "BuilderStep" as RemoteSePoolClientPluginFactoryBuilderStep {
+                + RemoteSePoolClientPluginFactory build ()
+            }
+
+            +class RemoteSeServerUtils {
+                ____
+                + {static} RemoteSeServerPlugin getAsyncPlugin ()
+                + {static} KeypleServerAsyncNode getAsyncNode ()
+                ....
+                + {static} RemoteSeServerPlugin getSyncPlugin ()
+                + {static} KeypleServerSyncNode getSyncNode ()
+            }
+            +class RemoteSeClientUtils {
+                ____
+                + {static} RemoteSeClientPlugin getAsyncPlugin ()
+                + {static} RemoteSeClientObservablePlugin getAsyncObservablePlugin ()
+                + {static} KeypleClientAsyncNode getAsyncNode ()
+                ....
+                + {static} RemoteSeClientPlugin getSyncPlugin ()
+                + {static} RemoteSeClientObservablePlugin getSyncObservablePlugin ()
+            }
+            +class RemoteSePoolClientUtils {
+                ____
+                + {static} RemoteSePoolClientPlugin getAsyncPlugin ()
+                + {static} KeypleClientAsyncNode getAsyncNode ()
+                ....
+                + {static} RemoteSePoolClientPlugin getSyncPlugin ()
+            }
+
+        }
+
+    }
+
+    package core {
+
+        +class KeypleMessageDto {
+            + String sessionId
+            + String action
+            + String clientNodeId
+            + String serverNodeId
+            + String nativeReaderName
+            + String virtualReaderName
+            + String body
+            + String errorCode
+            + String errorMessage
+        }
+
+            +interface KeypleClientAsyncNode {
+                +void onOpen (String sessionId)
+                +void onMessage (KeypleMessageDto msg)
+                +void onClose (String sessionId)
+                +void onError (String sessionId, Throwable error)
+            }
+            +interface KeypleClientAsync {
+                +void openSession (String sessionId)
+                +void sendMessage (KeypleMessageDto msg)
+                +void closeSession (String sessionId)
+            }
+            +interface KeypleServerAsyncNode {
+                +void onMessage (KeypleMessageDto msg)
+                +void onError (String sessionId, Throwable error)
+            }
+            +interface KeypleServerAsync {
+                +void sendMessage (KeypleMessageDto msg)
+            }
+            +interface KeypleClientSyncNode {
+            }
+            +interface KeypleClientSync {
+                +List<KeypleMessageDto> sendRequest (\n    KeypleMessageDto msg)
+            }
+            +interface KeypleServerSyncNode {
+                +List<KeypleMessageDto> onRequest (\n    KeypleMessageDto msg)
+            }
+
+    }
+
+    package nativese {
+
+            +interface NativeSeClientService {
+                +<T> T executeRemoteService (\n    RemoteServiceParameters parameters,\n    Class<T> userOutputDataClass)
+            }
+            +class RemoteServiceParameters {
+                +{static} Builder builder (String serviceId, SeReader nativeReader)
+            }
+            +class "Builder" as RemoteServiceParametersBuilder {
+                +Builder withUserInputData (Object userInputData)
+                +Builder withInitialSeContent (AbstractMatchingSe matchingSe)
+                +RemoteServiceParameters build ()
+            }
+            +interface NativeSeServerService {
+            }
+            +interface NativeSePoolServerService {
+            }
+
+        package impl as nativeSeImpl {
+
+            +class NativeSeClientServiceFactory {
+                + {static} NodeStep builder ()
+                + NativeSeClientService getService ()
+            }
+            +interface "NodeStep" as NativeSeClientServiceFactoryNodeStep {
+                + ReaderStep withAsyncNode (KeypleClientAsync endpoint)
+                + ReaderStep withSyncNode (KeypleClientSync endpoint)
+            }
+            +interface "ReaderStep" as NativeSeClientServiceFactoryReaderStep {
+                + BuilderStep withReaderObservation ()
+                + BuilderStep withoutReaderObservation ()
+            }
+            +interface "BuilderStep" as NativeSeClientServiceFactoryBuilderStep {
+                + NativeSeClientServiceFactory build ()
+            }
+            +class NativeSeServerServiceFactory {
+                + {static} NodeStep builder ()
+                + NativeSeServerService getService ()
+            }
+            +interface "NodeStep" as NativeSeServerServiceFactoryNodeStep {
+                + BuilderStep withAsyncNode (KeypleServerAsync endpoint)
+                + BuilderStep withSyncNode ()
+            }
+            +interface "BuilderStep" as NativeSeServerServiceFactoryBuilderStep {
+                + NativeSeServerServiceFactory build ()
+            }
+            +class NativeSePoolServerServiceFactory {
+                + {static} NodeStep builder ()
+                + NativeSePoolServerService getService ()
+            }
+            +interface "NodeStep" as NativeSePoolServerServiceFactoryNodeStep {
+                + BuilderStep withAsyncNode (KeypleServerAsync endpoint)
+                + BuilderStep withSyncNode ()
+            }
+            +interface "BuilderStep" as NativeSePoolServerServiceFactoryBuilderStep {
+                + NativeSePoolServerServiceFactory build ()
+            }
+
+            +class NativeSeClientUtils {
+                + {static} NativeSeClientService getService ()
+                + {static} KeypleClientAsyncNode getAsyncNode ()
+            }
+            +class NativeSeServerUtils {
+                + {static} KeypleServerAsyncNode getAsyncNode ()
+                + {static} KeypleServerSyncNode getSyncNode ()
+            }
+            +class NativeSePoolServerUtils {
+                + {static} KeypleServerAsyncNode getAsyncNode ()
+                + {static} KeypleServerSyncNode getSyncNode ()
+            }
+
+        }
+
+    }
+
+}
+
+RemoteSeServerPluginFactory ..> RemoteSeServerPluginFactoryNodeStep #27AE60
+RemoteSeServerPluginFactoryNodeStep ..> RemoteSeServerPluginFactoryPluginObserverStep #27AE60
+RemoteSeServerPluginFactoryPluginObserverStep ..> RemoteSeServerPluginFactoryBuilderStep #27AE60
+
+RemoteSeClientPluginFactory ..> RemoteSeClientPluginFactoryNodeStep #27AE60
+RemoteSeClientPluginFactoryNodeStep ..> RemoteSeClientPluginFactoryAsyncNodePluginStep #27AE60
+RemoteSeClientPluginFactoryAsyncNodePluginStep ..> RemoteSeClientPluginFactoryAsyncNodeReaderStep #27AE60
+RemoteSeClientPluginFactoryNodeStep ..> RemoteSeClientPluginFactorySyncNodePluginStep #27AE60
+RemoteSeClientPluginFactorySyncNodePluginStep ..> RemoteSeClientPluginFactoryServerPushPluginEventStrategyStep #27AE60
+RemoteSeClientPluginFactorySyncNodePluginStep ..> RemoteSeClientPluginFactorySyncNodeReaderStep #27AE60
+RemoteSeClientPluginFactoryAsyncNodeReaderStep ..> RemoteSeClientPluginFactoryBuilderStep #27AE60
+RemoteSeClientPluginFactoryServerPushPluginEventStrategyStep ..> RemoteSeClientPluginFactorySyncNodeReaderStep #27AE60
+RemoteSeClientPluginFactorySyncNodeReaderStep ..> RemoteSeClientPluginFactoryBuilderStep #27AE60
+RemoteSeClientPluginFactorySyncNodeReaderStep ..> RemoteSeClientPluginFactoryServerPushReaderEventStrategyStep #27AE60
+RemoteSeClientPluginFactoryServerPushReaderEventStrategyStep ..> RemoteSeClientPluginFactoryBuilderStep #27AE60
+
+RemoteSePoolClientPluginFactory ..> RemoteSePoolClientPluginFactoryNodeStep #27AE60
+RemoteSePoolClientPluginFactoryNodeStep ..> RemoteSePoolClientPluginFactoryBuilderStep #27AE60
+
+RemoteSeServerPlugin *- -> "1..N" RemoteSeServerReader #3498DB : readers
+
+KeypleClientSyncNode - -> KeypleClientSync #3498DB : use >
+KeypleClientAsyncNode - -> KeypleClientAsync #3498DB : use >
+KeypleServerAsyncNode -up-> KeypleServerAsync #3498DB : use >
+
+NativeSeClientService ..> RemoteServiceParameters #27AE60 : use >
+RemoteServiceParameters +- - RemoteServiceParametersBuilder #3498DB
+
+NativeSeClientServiceFactory ..> NativeSeClientServiceFactoryNodeStep #27AE60
+NativeSeClientServiceFactoryNodeStep ..> NativeSeClientServiceFactoryReaderStep #27AE60
+NativeSeClientServiceFactoryReaderStep ..> NativeSeClientServiceFactoryBuilderStep #27AE60
+
+NativeSeServerServiceFactory ..> NativeSeServerServiceFactoryNodeStep #27AE60
+NativeSeServerServiceFactoryNodeStep ..> NativeSeServerServiceFactoryBuilderStep #27AE60
+
+NativeSePoolServerServiceFactory ..> NativeSePoolServerServiceFactoryNodeStep #27AE60
+NativeSePoolServerServiceFactoryNodeStep ..> NativeSePoolServerServiceFactoryBuilderStep #27AE60
+
+
+ObservableReader -[hidden]- RemoteSeServerPlugin
+
+RemoteSeServerObservableReader -[hidden]- RemoteSeClientPlugin
+RemoteSeClientObservablePlugin -[hidden]- RemoteSePoolClientPlugin
+
+RemoteSeServerPluginFactoryBuilderStep -[hidden]- RemoteSeServerUtils
+RemoteSeServerUtils -[hidden]- RemoteSeClientUtils
+RemoteSePoolClientPluginFactoryBuilderStep -[hidden]- RemoteSePoolClientUtils
+
+NativeSeClientServiceFactoryBuilderStep -[hidden]- NativeSeClientUtils
+NativeSeServerServiceFactoryBuilderStep -[hidden]- NativeSeServerUtils
+NativeSePoolServerServiceFactoryBuilderStep -[hidden]- NativeSePoolServerUtils
+
+KeypleClientAsync -[hidden]- KeypleServerAsync
+KeypleServerAsyncNode -[hidden]- KeypleMessageDto
+KeypleMessageDto -[hidden]- KeypleClientSyncNode
+KeypleClientSync -[hidden]- KeypleServerSyncNode
+
+RemoteServiceParametersBuilder -[hidden]- NativeSeServerService
+NativeSeServerService -[hidden]- NativeSePoolServerService
+
+RemoteSePoolClientUtils -[hidden]- NativeSePoolServerServiceFactory
+RemoteSeClientPluginFactoryBuilderStep -[hidden]- NativeSeServerServiceFactory
+RemoteSeClientUtils -[hidden]- NativeSeClientServiceFactory
+
+
+package org.eclipse.keyple.core.seproxy #F8F9F9 {}
+package event #F2F3F4 {}
+package core #F8F9F9 {}
+package nativese #F8F9F9 {}
+package nativeSeImpl #F2F3F4 {}
+package virtualse #F8F9F9 {}
+package virtualSeImpl #F2F3F4 {}
+
+abstract AbstractPluginFactory <<grey>> #F5B7B1
+interface ReaderPlugin <<grey>> #D2B4DE
+interface ReaderPoolPlugin <<grey>> #AED6F1
+interface SeReader <<grey>> #D0ECE7
+interface ObservablePlugin <<grey>> #82E0AA
+interface ObservableReader <<grey>> #FDEBD0
+
+class RemoteSeServerUtils <<green>>
+interface RemoteSeServerPlugin <<green>>
+interface RemoteSeServerReader <<green>>
+interface RemoteSeServerObservableReader <<green>>
+class RemoteSeServerPluginFactory <<green>>
+interface RemoteSeServerPluginFactoryNodeStep <<green>>
+interface RemoteSeServerPluginFactoryPluginObserverStep <<green>>
+interface RemoteSeServerPluginFactoryBuilderStep <<green>>
+interface NativeSeClientService <<green>>
+class NativeSeClientServiceFactory <<green>>
+interface NativeSeClientServiceFactoryNodeStep <<green>>
+interface NativeSeClientServiceFactoryReaderStep <<green>>
+interface NativeSeClientServiceFactoryBuilderStep <<green>>
+class RemoteServiceParameters <<green>>
+class RemoteServiceParametersBuilder <<green>>
+class NativeSeClientUtils <<green>>
+
+class RemoteSeClientUtils <<purple>>
+interface RemoteSeClientPlugin <<purple>>
+class RemoteSeClientPluginFactory <<purple>>
+interface RemoteSeClientPluginFactoryNodeStep <<purple>>
+interface RemoteSeClientPluginFactoryAsyncNodePluginStep <<purple>>
+interface RemoteSeClientPluginFactoryAsyncNodeReaderStep <<purple>>
+interface RemoteSeClientPluginFactorySyncNodePluginStep <<purple>>
+interface RemoteSeClientPluginFactoryServerPushPluginEventStrategyStep <<purple>>
+interface RemoteSeClientPluginFactorySyncNodeReaderStep <<purple>>
+interface RemoteSeClientPluginFactoryServerPushReaderEventStrategyStep <<purple>>
+interface RemoteSeClientPluginFactoryBuilderStep <<purple>>
+interface NativeSeServerService <<purple>>
+class NativeSeServerServiceFactory <<purple>>
+interface NativeSeServerServiceFactoryNodeStep <<purple>>
+interface NativeSeServerServiceFactoryBuilderStep <<purple>>
+class NativeSeServerUtils <<purple>>
+
+interface RemoteSeClientObservablePlugin <<purple>>
+
+class RemoteSePoolClientUtils <<blue>>
+interface RemoteSePoolClientPlugin <<blue>>
+class RemoteSePoolClientPluginFactory <<blue>>
+interface RemoteSePoolClientPluginFactoryNodeStep <<blue>>
+interface RemoteSePoolClientPluginFactoryBuilderStep <<blue>>
+interface NativeSePoolServerService <<blue>>
+class NativeSePoolServerServiceFactory <<blue>>
+interface NativeSePoolServerServiceFactoryNodeStep <<blue>>
+interface NativeSePoolServerServiceFactoryBuilderStep <<blue>>
+class NativeSePoolServerUtils <<blue>>
+
+KeypleClientSyncNode <<red>>
+KeypleServerSyncNode <<red>>
+KeypleClientAsyncNode <<red>>
+KeypleServerAsyncNode <<red>>
+
+KeypleMessageDto <<grey>>
+
+
+title
+    Keyple Plugin Remote SE
+    RemoteSePoolClientPlugin API (10/06/2020)
+end title
+
+hide <<purple>>
+hide <<green>>
+
+@enduml
+
+PlantUML version 1.2020.09(Sun May 10 12:51:06 CEST 2020)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Java Version: 11.0.7+10-b765.53
+Operating System: Windows 10
+Default Encoding: Cp1252
+Language: fr
+Country: FR
+--></g></svg>
