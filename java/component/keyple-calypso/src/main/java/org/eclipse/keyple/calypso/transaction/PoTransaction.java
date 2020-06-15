@@ -174,9 +174,7 @@ public class PoTransaction {
      * @throws CalypsoSamCommandException if a response from the SAM was unexpected
      */
     private void processAtomicOpening(PoTransaction.SessionSetting.AccessLevel accessLevel,
-            List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poCommands)
-            throws CalypsoPoTransactionException, CalypsoPoCommandException,
-            CalypsoSamCommandException {
+            List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poCommands) {
 
         /** This method should be called only if no session was previously open */
         checkSessionIsNotOpen();
@@ -405,9 +403,7 @@ public class PoTransaction {
     private void processAtomicClosing(
             List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poModificationCommands,
             List<ApduResponse> poAnticipatedResponses,
-            SessionSetting.RatificationMode ratificationMode, ChannelControl channelControl)
-            throws CalypsoPoTransactionException, CalypsoPoCommandException,
-            CalypsoSamCommandException {
+            SessionSetting.RatificationMode ratificationMode, ChannelControl channelControl) {
 
         checkSessionIsOpen();
 
@@ -525,9 +521,7 @@ public class PoTransaction {
      */
     private void processAtomicClosing(
             List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poCommands,
-            SessionSetting.RatificationMode ratificationMode, ChannelControl channelControl)
-            throws CalypsoPoTransactionException, CalypsoPoCommandException,
-            CalypsoSamCommandException {
+            SessionSetting.RatificationMode ratificationMode, ChannelControl channelControl) {
         List<ApduResponse> poAnticipatedResponses = getAnticipatedResponses(poCommands);
         processAtomicClosing(poCommands, poAnticipatedResponses, ratificationMode, channelControl);
     }
@@ -608,8 +602,7 @@ public class PoTransaction {
      * @param sfi the SFI of the EF containing the counter
      * @param counter the number of the counter
      * @return the value of the counter
-     * @throws CalypsoPoTransactionIllegalStateException if the counter is not available in the
-     *         current {@link CalypsoPo}
+     * @{@link CalypsoPo}
      */
     private int getCounterValue(int sfi, int counter) {
         try {
@@ -711,9 +704,7 @@ public class PoTransaction {
      * @throws CalypsoPoCommandException if a response from the PO was unexpected
      * @throws CalypsoSamCommandException if a response from the SAM was unexpected
      */
-    public final void processOpening(PoTransaction.SessionSetting.AccessLevel accessLevel)
-            throws CalypsoPoTransactionException, CalypsoPoCommandException,
-            CalypsoSamCommandException {
+    public final void processOpening(PoTransaction.SessionSetting.AccessLevel accessLevel) {
         currentAccessLevel = accessLevel;
 
         // create a sublist of AbstractPoCommandBuilder to be sent atomically
@@ -803,8 +794,7 @@ public class PoTransaction {
      * @throws CalypsoPoCommandException if a response from the PO was unexpected
      * @throws CalypsoSamCommandException if a response from the SAM was unexpected
      */
-    public final void processPoCommandsInSession() throws CalypsoPoTransactionException,
-            CalypsoPoCommandException, CalypsoSamCommandException {
+    public final void processPoCommandsInSession() {
 
         /** This method should be called only if a session was previously open */
         checkSessionIsOpen();
@@ -883,9 +873,7 @@ public class PoTransaction {
      * @throws CalypsoPoCommandException if a response from the PO was unexpected
      * @throws CalypsoSamCommandException if a response from the SAM was unexpected
      */
-    public final void processClosing(ChannelControl channelControl)
-            throws CalypsoPoTransactionException, CalypsoPoCommandException,
-            CalypsoSamCommandException {
+    public final void processClosing(ChannelControl channelControl) {
         checkSessionIsOpen();
 
         boolean atLeastOneReadCommand = false;

@@ -17,7 +17,6 @@ import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationNoReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,10 +54,12 @@ public class SamResourceManagerPool extends SamResourceManager {
         // HSM reader plugin type
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SamResource allocateSamResource(AllocationMode allocationMode,
-            SamIdentifier samIdentifier) throws KeypleReaderException,
-            CalypsoNoSamResourceAvailableException, KeypleAllocationReaderException {
+            SamIdentifier samIdentifier) {
         long maxBlockingDate = System.currentTimeMillis() + maxBlockingTime;
         boolean noSamResourceLogged = false;
         logger.debug("Allocating SAM reader channel...");
