@@ -41,7 +41,7 @@ public class RmDisconnectReaderTx extends AbstractRemoteMethodTx<Boolean> {
     }
 
     @Override
-    public Boolean parseResponse(KeypleDto keypleDto) throws KeypleRemoteException {
+    public Boolean parseResponse(KeypleDto keypleDto) {
         // if reader connection thrown an exception
         if (KeypleDtoHelper.containsException(keypleDto)) {
             // logger.trace("KeypleDto contains an exception: {}", keypleDto);

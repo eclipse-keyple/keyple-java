@@ -17,7 +17,6 @@ import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
 import org.eclipse.keyple.plugin.remotese.transport.*;
@@ -59,8 +58,7 @@ public class MasterAPI implements DtoHandler {
      * @param dtoNode : outgoing node to send Dto to Slave
      * @throws KeyplePluginInstantiationException if plugin does not instantiate
      */
-    public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode)
-            throws KeyplePluginInstantiationException {
+    public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode) {
         this(seProxyService, dtoNode, DEFAULT_RPC_TIMEOUT);
     }
 
@@ -73,8 +71,7 @@ public class MasterAPI implements DtoHandler {
      *        an exception
      * @throws KeyplePluginInstantiationException if plugin does not instantiate
      */
-    public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode, long rpcTimeout)
-            throws KeyplePluginInstantiationException {
+    public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode, long rpcTimeout) {
         this(seProxyService, dtoNode, rpcTimeout, PLUGIN_TYPE_DEFAULT,
                 RemoteSePluginImpl.DEFAULT_PLUGIN_NAME);
     }
@@ -94,7 +91,7 @@ public class MasterAPI implements DtoHandler {
      *
      */
     public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode, long rpcTimeout,
-            int pluginType, String pluginName) throws KeyplePluginInstantiationException {
+            int pluginType, String pluginName) {
         this(seProxyService, dtoNode, rpcTimeout, pluginType, pluginName,
                 Executors.newCachedThreadPool());
     }
@@ -115,8 +112,7 @@ public class MasterAPI implements DtoHandler {
      * 
      */
     public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode, long rpcTimeout,
-            int pluginType, String pluginName, ExecutorService executorService)
-            throws KeyplePluginInstantiationException {
+            int pluginType, String pluginName, ExecutorService executorService) {
 
         logger.info("Init MasterAPI with parameters {} {} {} {} {}", seProxyService, dtoNode,
                 rpcTimeout, pluginType, pluginName);
@@ -292,7 +288,7 @@ public class MasterAPI implements DtoHandler {
      * @return VirtualReader matching the sessionId
      * @throws KeypleReaderNotFoundException : if none reader was found
      */
-    private VirtualReaderImpl getReaderBySessionId(String sessionId) throws KeypleReaderException {
+    private VirtualReaderImpl getReaderBySessionId(String sessionId) {
         for (SeReader reader : plugin.getReaders()) {
 
             if (((VirtualReaderImpl) reader).getSession().getSessionId().equals(sessionId)) {

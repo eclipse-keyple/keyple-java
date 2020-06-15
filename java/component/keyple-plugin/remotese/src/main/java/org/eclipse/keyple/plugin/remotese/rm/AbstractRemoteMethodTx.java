@@ -97,7 +97,7 @@ public abstract class AbstractRemoteMethodTx<T> {
      * @param callback get Result from this callback
      * @throws KeypleRemoteException if a problem occurs while sending
      */
-    public void send(IRemoteMethodTxCallback<T> callback) throws KeypleRemoteException {
+    public void send(IRemoteMethodTxCallback<T> callback) {
         if (logger.isTraceEnabled()) {
             logger.trace("Send asynchronously keypleDto for {}", this);
         }
@@ -114,7 +114,7 @@ public abstract class AbstractRemoteMethodTx<T> {
      * @return T : result of the command
      * @throws KeypleRemoteException : if any error occurs during the dto exchange
      */
-    final public T execute(IRemoteMethodTxEngine rmTxEngine) throws KeypleRemoteException {
+    final public T execute(IRemoteMethodTxEngine rmTxEngine) {
 
         if (logger.isDebugEnabled()) {
             logger.debug("execute {}", this.toString());

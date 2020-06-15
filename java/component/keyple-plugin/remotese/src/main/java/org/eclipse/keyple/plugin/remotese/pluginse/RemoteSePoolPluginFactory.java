@@ -44,7 +44,7 @@ class RemoteSePoolPluginFactory implements PluginFactory {
     }
 
     @Override
-    public ReaderPlugin getPluginInstance() throws KeyplePluginInstantiationException {
+    public ReaderPlugin getPluginInstance() {
         try {
             return new RemoteSePoolPluginImpl(sessionManager, dtoSender, rpc_timeout, pluginName,
                     executorService);

@@ -64,7 +64,7 @@ public class RmTransmitTx extends AbstractRemoteMethodTx<SeResponse> {
 
 
     @Override
-    public SeResponse parseResponse(KeypleDto keypleDto) throws KeypleRemoteException {
+    public SeResponse parseResponse(KeypleDto keypleDto) {
 
         logger.trace("KeypleDto : {}", keypleDto);
         if (KeypleDtoHelper.containsException(keypleDto)) {

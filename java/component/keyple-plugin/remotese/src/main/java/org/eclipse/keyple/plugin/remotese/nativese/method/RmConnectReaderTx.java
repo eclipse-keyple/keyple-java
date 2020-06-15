@@ -55,7 +55,7 @@ public class RmConnectReaderTx extends AbstractRemoteMethodTx<String> {
     private static final Logger logger = LoggerFactory.getLogger(RmConnectReaderTx.class);
 
     @Override
-    public String parseResponse(KeypleDto keypleDto) throws KeypleRemoteException {
+    public String parseResponse(KeypleDto keypleDto) {
         String nativeReaderName = keypleDto.getNativeReaderName();
 
         // if reader connection thrown an exception

@@ -16,7 +16,6 @@ import java.util.concurrent.ExecutorService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
@@ -49,8 +48,7 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
      * by @SeProxyService. Use MasterAPI
      */
     RemoteSePluginImpl(VirtualReaderSessionFactory sessionManager, DtoSender dtoSender,
-            long rpcTimeout, String pluginName, ExecutorService executorService)
-            throws KeypleReaderException {
+            long rpcTimeout, String pluginName, ExecutorService executorService) {
         super(pluginName);
         this.sessionManager = sessionManager;
         logger.info("Init RemoteSePlugin");
@@ -61,8 +59,7 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
     }
 
 
-    public VirtualReaderImpl getReaderByRemoteName(String remoteName, String slaveNodeId)
-            throws KeypleReaderNotFoundException {
+    public VirtualReaderImpl getReaderByRemoteName(String remoteName, String slaveNodeId) {
         for (SeReader virtualReader : readers) {
             if (((VirtualReaderImpl) virtualReader).getName()
                     .equals(RemoteSePluginImpl.generateReaderName(remoteName, slaveNodeId))) {
@@ -74,8 +71,7 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
 
 
     @Override
-    public void disconnectVirtualReader(String nativeReaderName, String slaveNodeId)
-            throws KeypleReaderException {
+    public void disconnectVirtualReader(String nativeReaderName, String slaveNodeId) {
         removeVirtualReader(nativeReaderName, slaveNodeId);
     }
 
@@ -85,7 +81,7 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
      */
     ProxyReader createVirtualReader(String slaveNodeId, String nativeReaderName,
             DtoSender dtoSender, TransmissionMode transmissionMode, Boolean isObservable,
-            Map<String, String> options) throws KeypleReaderException {
+            Map<String, String> options) {
 
         // create a new session for the new reader
         VirtualReaderSession session =
@@ -137,8 +133,7 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
      * @throws KeypleReaderNotFoundException if no virtual reader match the native reader name and
      *         slave node Id
      */
-    void removeVirtualReader(String nativeReaderName, String slaveNodeId)
-            throws KeypleReaderNotFoundException {
+    void removeVirtualReader(String nativeReaderName, String slaveNodeId) {
 
         // retrieve virtual reader to delete
         final VirtualReaderImpl virtualReader =
@@ -165,7 +160,7 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
      * @param event : Reader Event to be propagated
      */
 
-    void onReaderEvent(ReaderEvent event) throws KeypleReaderNotFoundException {
+    void onReaderEvent(ReaderEvent event) {
         logger.trace("Dispatch ReaderEvent to the appropriate Reader : {}", event.getReaderName());
         VirtualReader virtualReader = (VirtualReader) getReader(event.getReaderName());
         if (virtualReader instanceof VirtualObservableReader) {
