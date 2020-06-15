@@ -15,15 +15,11 @@ import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.seproxy.SeReader;
 
 /**
- * <p>
  * <b>Remote SE Server Reader</b> API.
- * </p>
  * <p>
  * This reader must be used in the use case of the <b>Remote SE Server Plugin</b>.
- * </p>
  * <p>
  * This reader behaves like an {@link SeReader} but exposes additional services.
- * </p>
  *
  * @since 1.0
  */

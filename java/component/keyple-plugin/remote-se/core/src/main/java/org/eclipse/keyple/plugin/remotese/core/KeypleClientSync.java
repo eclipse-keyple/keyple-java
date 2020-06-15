@@ -14,16 +14,12 @@ package org.eclipse.keyple.plugin.remotese.core;
 import java.util.List;
 
 /**
- * <p>
  * <b>Keyple Client Sync</b> endpoint API to be implemented by the user.
- * </p>
  * <p>
  * This interface must be implemented by a user client endpoint if you want to use a Client-Server
  * communication protocol, such as standard HTTP for example.
- * </p>
  * <p>
  * This endpoint must interact only with a remote controller.
- * </p>
  *
  * @since 1.0
  */

@@ -12,17 +12,13 @@
 package org.eclipse.keyple.plugin.remotese.core;
 
 /**
- * <p>
  * <b>Keyple Client Async</b> endpoint API to be implemented by the user.
- * </p>
  * <p>
  * This interface must be implemented by a user client endpoint if you want to use a full duplex
  * communication protocol, such as Web Sockets for example.
- * </p>
  * <p>
  * This endpoint must interact with a {@link KeypleClientAsyncNode} locally and with a
  * {@link KeypleServerAsync} endpoint remotely.
- * </p>
  *
  * @since 1.0
  */

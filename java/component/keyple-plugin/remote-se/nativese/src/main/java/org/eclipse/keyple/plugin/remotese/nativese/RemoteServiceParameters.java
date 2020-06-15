@@ -16,7 +16,6 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.util.Assert;
 
 /**
- * <p>
  * This POJO class contains parameters of the method
  * {@link NativeSeClientService#executeRemoteService(RemoteServiceParameters, Class)} :
  * <ul>
@@ -31,7 +30,6 @@ import org.eclipse.keyple.core.util.Assert;
  * application, this object will be a <b>CalypsoPo</b> or a <b>CalypsoSam</b>, depending on the
  * context.</li>
  * </ul>
- * </p>
  *
  * @since 1.0
  */

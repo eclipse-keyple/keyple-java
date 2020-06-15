@@ -14,13 +14,10 @@ package org.eclipse.keyple.plugin.remotese.core;
 import java.util.List;
 
 /**
- * <p>
  * <b>Keyple Server Sync Node</b> API.
- * </p>
  * <p>
  * This kind of node must be bind on the server's side if you want to use a Client-Server
  * communication protocol, such as standard HTTP for example.
- * </p>
  * <p>
  * Keyple provides its own implementations of this interface and manages their lifecycle.<br>
  * This kind of node can be bind to a all <b>server</b> Remote SE plugins and services :

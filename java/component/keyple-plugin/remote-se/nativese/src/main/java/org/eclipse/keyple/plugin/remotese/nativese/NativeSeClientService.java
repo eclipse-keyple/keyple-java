@@ -12,12 +12,9 @@
 package org.eclipse.keyple.plugin.remotese.nativese;
 
 /**
- * <p>
  * <b>Native SE Client Service</b> API.
- * </p>
  * <p>
  * This service must be used in the use case of the <b>Remote SE Server Plugin</b>.
- * </p>
  * <p>
  * It must be started by a <b>client</b> application that is installed on a terminal with native
  * access to the SE card reader :
@@ -28,7 +25,6 @@ package org.eclipse.keyple.plugin.remotese.nativese;
  * <li>To <b>stop</b> the service, there is nothing special to do because the service is a standard
  * java singleton instance.</li>
  * </ul>
- * </p>
  *
  * @since 1.0
  */

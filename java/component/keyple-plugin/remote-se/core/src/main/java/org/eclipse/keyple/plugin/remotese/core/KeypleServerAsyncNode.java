@@ -12,17 +12,13 @@
 package org.eclipse.keyple.plugin.remotese.core;
 
 /**
- * <p>
  * <b>Keyple Server Async Node</b> API.
- * </p>
  * <p>
  * This kind of node must be bind on the server's side if you want to use a full duplex
  * communication protocol, such as Web Sockets for example.
- * </p>
  * <p>
  * Then, you must provide an implementation of the {@link KeypleServerAsync} interface in order to
  * interact with this node.
- * </p>
  * <p>
  * Keyple provides its own implementations of this interface and manages their lifecycle.<br>
  * This kind of node can be bind to a all <b>server</b> Remote SE plugins and services :

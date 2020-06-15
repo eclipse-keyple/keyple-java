@@ -14,16 +14,12 @@ package org.eclipse.keyple.plugin.remotese.virtualse;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 
 /**
- * <p>
  * <b>Remote SE Server Observable Reader</b> API.
- * </p>
  * <p>
  * This reader must be used in the use case of the <b>Remote SE Server Plugin</b>.
- * </p>
  * <p>
  * This reader behaves like an {@link ObservableReader} but exposes additional services inherited
  * from {@link RemoteSeServerReader}.
- * </p>
  *
  * @since 1.0
  */

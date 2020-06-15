@@ -11,24 +11,21 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.virtualse;
 
-import org.eclipse.keyple.core.seproxy.AbstractPluginFactory;
+import org.eclipse.keyple.core.seproxy.PluginFactory;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 
 /**
- * <p>
  * <b>Remote SE Client Observable Plugin</b> API.
- * </p>
  * <p>
  * This plugin must be used in the use case of the <b>Remote SE Client Plugin</b> configured <b>with
  * plugin observation</b>.
- * </p>
  * <p>
  * It must be register by a <b>client</b> application installed on the terminal not having local
  * access to the SE card reader and that wishes to control the SE remotely :
  * <ul>
  * <li>To <b>register</b> the plugin, use the Keyple service method
- * {@link SeProxyService#registerPlugin(AbstractPluginFactory)} using the factory
+ * {@link SeProxyService#registerPlugin(PluginFactory)} using the factory
  * {@link RemoteSeClientPluginFactory} and <b>activate the plugin observation</b>.</li>
  * <li>To access the plugin, use one of the following utility methods :
  * <ul>
@@ -41,10 +38,8 @@ import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
  * <li>To <b>unregister</b> the plugin, use the Keyple service method
  * {@link SeProxyService#unregisterPlugin(String)} using the plugin name.</li>
  * </ul>
- * </p>
  * <p>
  * This plugin behaves like an {@link ObservablePlugin}.
- * </p>
  *
  * @since 1.0
  */

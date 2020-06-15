@@ -12,7 +12,7 @@
 package org.eclipse.keyple.plugin.remotese.virtualse;
 
 import java.util.SortedSet;
-import org.eclipse.keyple.core.seproxy.AbstractPluginFactory;
+import org.eclipse.keyple.core.seproxy.PluginFactory;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
@@ -20,18 +20,15 @@ import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 
 /**
- * <p>
  * <b>Remote SE Server Plugin</b> API.
- * </p>
  * <p>
  * This plugin must be used in the use case of the <b>Remote SE Server Plugin</b>.
- * </p>
  * <p>
  * It must be register by a <b>server</b> application installed on the terminal not having local
  * access to the SE card reader and that wishes to control it remotely :
  * <ul>
  * <li>To <b>register</b> the plugin, use the Keyple service method
- * {@link SeProxyService#registerPlugin(AbstractPluginFactory)} using the factory
+ * {@link SeProxyService#registerPlugin(PluginFactory)} using the factory
  * {@link RemoteSeServerPluginFactory} for the plugin creation.</li>
  * <li>To access the plugin, use one of the following utility methods :
  * <ul>
@@ -42,11 +39,9 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
  * <li>To <b>unregister</b> the plugin, use the Keyple service method
  * {@link SeProxyService#unregisterPlugin(String)} using the plugin name.</li>
  * </ul>
- * </p>
  * <p>
  * This plugin behaves like an {@link ObservablePlugin} but exposes additional services and contains
  * only {@link RemoteSeServerReader} and {@link RemoteSeServerObservableReader} readers.
- * </p>
  * <p>
  * <u>How to use it ?</u><br>
  * <ol>
@@ -69,7 +64,6 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
  * {@link RemoteSeServerPlugin#terminateService(String, Object)} by providing the associated reader
  * name and optionally a user output data.</li>
  * </ol>
- * </p>
  *
  * @since 1.0
  */

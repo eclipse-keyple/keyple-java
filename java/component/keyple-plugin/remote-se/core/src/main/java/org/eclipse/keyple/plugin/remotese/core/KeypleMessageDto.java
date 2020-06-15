@@ -12,8 +12,10 @@
 package org.eclipse.keyple.plugin.remotese.core;
 
 /**
- * This POJO object contains data exchanged between **Native SE** and **Virtual SE** components.<br>
- * It is built and processed by the plugin and you don't need to modified it.<br>
+ * This POJO object contains data exchanged between **Native SE** and **Virtual SE** components.
+ * <p>
+ * It is built and processed by the plugin and you don't need to modified it.
+ * <p>
  * You only need to transfer it via the network by serializing and deserializing it on your own.<br>
  * However, you can extend it or encapsulate it in a personal object if you need to transport other
  * technical information related to the network infrastructure for example.

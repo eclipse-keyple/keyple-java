@@ -47,7 +47,7 @@ hide <<grey>> stereotype
 
 package org.eclipse.keyple.core.seproxy {
 
-    +abstract AbstractPluginFactory {
+    +abstract PluginFactory {
     }
     +interface ReaderPlugin {
     }
@@ -306,15 +306,15 @@ package org.eclipse.keyple.plugin.remotese {
                 }
 
                 ' Factories
-                +class "<< <back:#F5B7B1>AbstractPluginFactory</back> >>\nRemoteSeServerPluginFactory" as RemoteSeServerPluginFactory {
+                +class "<< <back:#F5B7B1>PluginFactory</back> >>\nRemoteSeServerPluginFactory" as RemoteSeServerPluginFactory {
                     ...
                 }
-                +class "<< <back:#F5B7B1>AbstractPluginFactory</back> >>\nRemoteSeClientPluginFactory" as RemoteSeClientPluginFactory {
+                +class "<< <back:#F5B7B1>PluginFactory</back> >>\nRemoteSeClientPluginFactory" as RemoteSeClientPluginFactory {
                     -ServerPushEventStrategy pluginObservationStrategy
                     -ServerPushEventStrategy readerObservationStrategy
                     ...
                 }
-                +class "<< <back:#F5B7B1>AbstractPluginFactory</back> >>\nRemoteSePoolClientPluginFactory" as RemoteSePoolClientPluginFactory {
+                +class "<< <back:#F5B7B1>PluginFactory</back> >>\nRemoteSePoolClientPluginFactory" as RemoteSePoolClientPluginFactory {
                     ...
                 }
             }
@@ -417,7 +417,7 @@ package nativeSeImpl #C_GREY2 {}
 package virtualse #C_GREY1 {}
 package virtualSeImpl #C_GREY2 {}
 
-abstract AbstractPluginFactory <<grey>> #F5B7B1
+abstract PluginFactory <<grey>> #F5B7B1
 interface ReaderPlugin <<grey>> #D2B4DE
 interface ReaderPoolPlugin <<grey>> #AED6F1
 interface SeReader <<grey>> #D0ECE7

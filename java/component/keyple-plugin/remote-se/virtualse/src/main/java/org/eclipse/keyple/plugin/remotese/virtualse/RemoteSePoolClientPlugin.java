@@ -11,23 +11,20 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.virtualse;
 
-import org.eclipse.keyple.core.seproxy.AbstractPluginFactory;
+import org.eclipse.keyple.core.seproxy.PluginFactory;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 
 /**
- * <p>
  * <b>Remote SE Pool Client Plugin</b> API.
- * </p>
  * <p>
  * This plugin must be used in the use case of the <b>Remote SE Pool Client Plugin</b>.
- * </p>
  * <p>
  * It must be register by a <b>client</b> application installed on the terminal not having local
  * access to the SE pool cards reader and that wishes to control the SE remotely :
  * <ul>
  * <li>To <b>register</b> the plugin, use the Keyple service method
- * {@link SeProxyService#registerPlugin(AbstractPluginFactory)} using the factory
+ * {@link SeProxyService#registerPlugin(PluginFactory)} using the factory
  * {@link RemoteSePoolClientPluginFactory}.</li>
  * <li>To access the plugin, use one of the following utility methods :
  * <ul>
@@ -38,10 +35,8 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
  * <li>To <b>unregister</b> the plugin, use the Keyple service method
  * {@link SeProxyService#unregisterPlugin(String)} using the plugin name.</li>
  * </ul>
- * </p>
  * <p>
  * This plugin behaves like a {@link ReaderPoolPlugin}.
- * </p>
  *
  * @since 1.0
  */
