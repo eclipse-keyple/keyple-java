@@ -32,7 +32,7 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
     Map<String, String> allocatedReader;// readerName,groupReference
 
 
-    public StubPoolPluginImpl(String pluginName) throws KeyplePluginInstantiationException {
+    public StubPoolPluginImpl(String pluginName) {
         // create an embedded stubplugin to manage reader
         this.stubPlugin = (StubPluginImpl) new StubPluginFactory(pluginName).getPluginInstance();
         this.readerPool = new HashMap<String, StubReaderImpl>();
@@ -99,10 +99,12 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
      * @param groupReference the reference of the group to which the reader belongs (may be null
      *        depending on the implementation made)
      * @return seReader if available, null otherwise
+     * @throws KeypleAllocationReaderException if the allocation failed due to a technical error
+     * @throws KeypleAllocationNoReaderException if the allocation failed due to lack of available
+     *         reader
      */
     @Override
-    public SeReader allocateReader(String groupReference)
-            throws KeypleAllocationReaderException, KeypleAllocationNoReaderException {
+    public SeReader allocateReader(String groupReference) {
 
 
         // find the reader in the readerPool
@@ -175,26 +177,41 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
         return stubPlugin.getReaders();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public SeReader getReader(String name) throws KeypleReaderNotFoundException {
+    public SeReader getReader(String name) {
         return stubPlugin.getReader(name);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int compareTo(ReaderPlugin o) {
         return stubPlugin.compareTo(o);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Map<String, String> getParameters() {
         return stubPlugin.getParameters();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void setParameter(String key, String value) throws KeypleReaderIOException {
+    public void setParameter(String key, String value) {
         stubPlugin.setParameter(key, value);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setParameters(Map<String, String> parameters)
             throws IllegalArgumentException, KeypleException {

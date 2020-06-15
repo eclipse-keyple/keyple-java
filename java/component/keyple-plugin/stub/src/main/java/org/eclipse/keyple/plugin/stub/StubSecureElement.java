@@ -32,11 +32,11 @@ public abstract class StubSecureElement {
         return isPhysicalChannelOpen;
     }
 
-    public void openPhysicalChannel() throws KeypleReaderIOException {
+    public void openPhysicalChannel() {
         isPhysicalChannelOpen = true;
     }
 
-    public void closePhysicalChannel() throws KeypleReaderIOException {
+    public void closePhysicalChannel() {
         isPhysicalChannelOpen = false;
     }
 
@@ -78,7 +78,7 @@ public abstract class StubSecureElement {
      * @return APDU response
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    public byte[] processApdu(byte[] apduIn) throws KeypleReaderIOException {
+    public byte[] processApdu(byte[] apduIn) {
 
         if (apduIn == null) {
             return null;

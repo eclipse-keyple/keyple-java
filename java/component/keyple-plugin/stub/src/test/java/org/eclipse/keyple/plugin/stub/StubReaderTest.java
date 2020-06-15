@@ -66,7 +66,7 @@ public class StubReaderTest extends BaseStubTest {
     }
 
     @After
-    public void tearDown() throws KeypleReaderException {
+    public void tearDown() {
         final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         stubPlugin.clearObservers();
         reader.removeObserver(readerObs);
@@ -754,7 +754,7 @@ public class StubReaderTest extends BaseStubTest {
 
 
     // @Test
-    // public void transmit_null_Selection() throws KeypleReaderException {
+    // public void transmit_null_Selection() {
     // // init SE
     // // no SE
     //
@@ -1243,7 +1243,7 @@ public class StubReaderTest extends BaseStubTest {
         return new StubSecureElement() {
 
             @Override
-            public byte[] processApdu(byte[] apduIn) throws KeypleReaderIOException {
+            public byte[] processApdu(byte[] apduIn) {
                 addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00",
                         "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
 
@@ -1274,7 +1274,7 @@ public class StubReaderTest extends BaseStubTest {
     public static StubSecureElement revision1SE() {
         return new StubSecureElement() {
             @Override
-            public byte[] processApdu(byte[] apduIn) throws KeypleReaderIOException {
+            public byte[] processApdu(byte[] apduIn) {
                 addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00",
                         "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
 
@@ -1304,7 +1304,7 @@ public class StubReaderTest extends BaseStubTest {
         return new StubSecureElement() {
 
             @Override
-            public byte[] processApdu(byte[] apduIn) throws KeypleReaderIOException {
+            public byte[] processApdu(byte[] apduIn) {
 
                 addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00",
                         "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
@@ -1328,7 +1328,7 @@ public class StubReaderTest extends BaseStubTest {
     public static StubSecureElement partialSE() {
         return new StubSecureElement() {
             @Override
-            public byte[] processApdu(byte[] apduIn) throws KeypleReaderIOException {
+            public byte[] processApdu(byte[] apduIn) {
 
                 addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00",
                         "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
@@ -1368,17 +1368,17 @@ public class StubReaderTest extends BaseStubTest {
 
             // override methods to fail open connection
             @Override
-            public void openPhysicalChannel() throws KeypleReaderIOException {
+            public void openPhysicalChannel() {
                 throw new KeypleReaderIOException("Impossible to establish connection");
             }
 
             @Override
-            public void closePhysicalChannel() throws KeypleReaderIOException {
+            public void closePhysicalChannel() {
                 throw new KeypleReaderIOException("Channel is not open");
             }
 
             @Override
-            public byte[] processApdu(byte[] apduIn) throws KeypleReaderIOException {
+            public byte[] processApdu(byte[] apduIn) {
                 throw new KeypleReaderIOException("Error while transmitting apdu");
             }
 
@@ -1394,7 +1394,7 @@ public class StubReaderTest extends BaseStubTest {
         return new ApduRequest(ByteArrayUtil.fromHex("FEDCBA98 9005h"), false);
     }
 
-    public static void genericSelectSe(SeReader reader) throws KeypleReaderIOException {
+    public static void genericSelectSe(SeReader reader) {
         /**
          * Create a new local class extending AbstractSeSelectionRequest
          */

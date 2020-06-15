@@ -14,7 +14,6 @@ package org.eclipse.keyple.plugin.stub;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
@@ -47,7 +46,7 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
      * 
      * @param pluginName : custom name for the plugin
      */
-    StubPluginImpl(String pluginName) throws KeypleReaderException {
+    StubPluginImpl(String pluginName) {
         super(pluginName);
 
         /*
@@ -71,11 +70,17 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
         return parameters;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void setParameter(String key, String value) throws KeypleReaderIOException {
+    public void setParameter(String key, String value) {
         parameters.put(key, value);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void plugStubReader(String readerName, Boolean synchronous) {
         plugStubReader(readerName, TransmissionMode.CONTACTLESS, synchronous);
@@ -138,9 +143,11 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void unplugStubReader(String readerName, Boolean synchronous)
-            throws KeypleReaderException {
+    public void unplugStubReader(String readerName, Boolean synchronous) {
 
         if (!connectedStubNames.contains(readerName)) {
             logger.warn("unplugStubReader() No reader found with name {}", readerName);
@@ -179,12 +186,11 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
 
     /**
      * Fetch the list of connected native reader (from a simulated list) and returns their names (or
-     * id)
-     *
-     * @return connected readers' name list
+     * id)<br>
+     * {@inheritDoc}
      */
     @Override
-    public SortedSet<String> fetchNativeReadersNames() throws KeypleReaderIOException {
+    public SortedSet<String> fetchNativeReadersNames() {
         if (connectedStubNames.isEmpty()) {
             logger.trace("No reader available.");
         }
@@ -195,10 +201,10 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
      * Init native Readers to empty Set
      * 
      * @return the list of SeReader objects.
-     * @throws KeypleReaderException if a reader error occurs
+     * @throws KeypleReaderIOException if a reader error occurs
      */
     @Override
-    protected SortedSet<SeReader> initNativeReaders() throws KeypleReaderIOException {
+    protected SortedSet<SeReader> initNativeReaders() {
         /* init Stub Readers response object */
         SortedSet<SeReader> newNativeReaders = new ConcurrentSkipListSet<SeReader>();
         return newNativeReaders;
@@ -212,10 +218,11 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
      *
      * @param readerName name of the reader
      * @return the reader object
+     * @throws KeypleReaderNotFoundException if the reader was not found by its name
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
-    protected SeReader fetchNativeReader(String readerName)
-            throws KeypleReaderNotFoundException, KeypleReaderIOException {
+    protected SeReader fetchNativeReader(String readerName) {
         for (SeReader reader : readers) {
             if (reader.getName().equals(readerName)) {
                 return reader;

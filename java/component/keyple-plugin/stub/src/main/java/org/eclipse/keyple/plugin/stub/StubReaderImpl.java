@@ -87,35 +87,50 @@ class StubReaderImpl extends AbstractObservableLocalReader
         return se.getATR();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected boolean isPhysicalChannelOpen() {
         return se != null && se.isPhysicalChannelOpen();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    protected void openPhysicalChannel() throws KeypleReaderIOException {
+    protected void openPhysicalChannel() {
         if (se != null) {
             se.openPhysicalChannel();
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void closePhysicalChannel() throws KeypleReaderIOException {
+    public void closePhysicalChannel() {
         if (se != null) {
             se.closePhysicalChannel();
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public byte[] transmitApdu(byte[] apduIn) throws KeypleReaderIOException {
+    public byte[] transmitApdu(byte[] apduIn) {
         if (se == null) {
             throw new KeypleReaderIOException("No SE available.");
         }
         return se.processApdu(apduIn);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    protected boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderIOException {
+    protected boolean protocolFlagMatches(SeProtocol protocolFlag) {
         boolean result;
         if (se == null) {
             throw new KeypleReaderIOException("No SE available.");
@@ -154,11 +169,17 @@ class StubReaderImpl extends AbstractObservableLocalReader
         return se != null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void setParameter(String name, String value) throws KeypleReaderIOException {
+    public void setParameter(String name, String value) {
         parameters.put(name, value);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Map<String, String> getParameters() {
         return parameters;

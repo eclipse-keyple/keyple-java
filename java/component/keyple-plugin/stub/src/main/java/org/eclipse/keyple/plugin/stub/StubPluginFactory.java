@@ -36,8 +36,11 @@ public class StubPluginFactory implements PluginFactory {
         return pluginName;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public ReaderPlugin getPluginInstance() throws KeyplePluginInstantiationException {
+    public ReaderPlugin getPluginInstance() {
         try {
             return new StubPluginImpl(pluginName);
         } catch (Exception e) {
