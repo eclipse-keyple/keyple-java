@@ -27,7 +27,7 @@ public interface DtoSender {
      * @param message to be sent
      * @throws KeypleRemoteException if a problem occurs while sending the message
      */
-    void sendDTO(TransportDto message) throws KeypleRemoteException;
+    void sendDTO(TransportDto message);
 
     /**
      * Send DTO with no common information (usually a new message)
@@ -35,7 +35,7 @@ public interface DtoSender {
      * @param message to be sent
      * @throws KeypleRemoteException if a problem occurs while sending the message
      */
-    void sendDTO(KeypleDto message) throws KeypleRemoteException;
+    void sendDTO(KeypleDto message);
 
     /**
      * Get the nodeId of this DtoSender, must identify the terminal. ie : androidDevice2

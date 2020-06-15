@@ -213,8 +213,7 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
      * {@inheritDoc}
      */
     @Override
-    public void setParameters(Map<String, String> parameters)
-            throws IllegalArgumentException, KeypleException {
+    public void setParameters(Map<String, String> parameters) {
         stubPlugin.setParameters(parameters);
     }
 

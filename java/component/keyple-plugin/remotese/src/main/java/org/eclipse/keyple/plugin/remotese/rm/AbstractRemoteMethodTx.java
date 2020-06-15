@@ -80,8 +80,9 @@ public abstract class AbstractRemoteMethodTx<T> {
      * @param keypleDto incoming message to parse response from
      * @throws KeypleRemoteException if a problem occurs while sending the keypleDto
      * @return response
+     * @throws KeypleRemoteException if a problem occurs while parsing the message
      */
-    protected abstract T parseResponse(KeypleDto keypleDto) throws KeypleRemoteException;
+    protected abstract T parseResponse(KeypleDto keypleDto);
 
     /**
      * Return name of the Remote Method

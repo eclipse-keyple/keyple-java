@@ -82,7 +82,7 @@ public abstract class AbstractPlugin extends AbstractSeProxyComponent implements
      * @return the list of AbstractReader objects.
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    protected abstract SortedSet<SeReader> initNativeReaders() throws KeypleReaderIOException;
+    protected abstract SortedSet<SeReader> initNativeReaders();
 
     /**
      * Compare the name of the current ReaderPlugin to the name of the ReaderPlugin provided in

@@ -28,7 +28,7 @@ public interface INativeReaderService {
      * @return sessionId id of the session of the virtual reader
      * @throws KeypleReaderException if reader is already connected
      */
-    String connectReader(SeReader localReader) throws KeypleReaderException;
+    String connectReader(SeReader localReader);
 
     /**
      * Connect Physical Local Reader to Remote SE Creates a Session to exchange data with this
@@ -40,8 +40,7 @@ public interface INativeReaderService {
      * @return sessionId id of the session of the virtual reader
      * @throws KeypleReaderException if reader is already connected
      */
-    String connectReader(SeReader localReader, Map<String, String> options)
-            throws KeypleReaderException;
+    String connectReader(SeReader localReader, Map<String, String> options);
 
 
     /**
@@ -53,7 +52,7 @@ public interface INativeReaderService {
      *        identify the virtualReader
      * @throws KeypleReaderException if reader is not already connected
      */
-    void disconnectReader(String sessionId, String nativeReaderName) throws KeypleReaderException;
+    void disconnectReader(String sessionId, String nativeReaderName);
 
     /**
      * Find a local reader across plugins
@@ -62,6 +61,6 @@ public interface INativeReaderService {
      * @return SeReader : Se Reader found
      * @throws KeypleReaderNotFoundException : if none reader was found
      */
-    SeReader findLocalReader(String nativeReaderName) throws KeypleReaderNotFoundException;
+    SeReader findLocalReader(String nativeReaderName);
 
 }

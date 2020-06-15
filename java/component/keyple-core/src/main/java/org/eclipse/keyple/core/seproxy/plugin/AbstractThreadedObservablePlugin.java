@@ -48,7 +48,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
      * @return connected readers' name list
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    protected abstract SortedSet<String> fetchNativeReadersNames() throws KeypleReaderIOException;
+    protected abstract SortedSet<String> fetchNativeReadersNames();
 
     /**
      * Fetch connected native reader (from third party library) by its name Returns the current
@@ -60,8 +60,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
      * @throws KeypleReaderNotFoundException if the reader was not found by its name
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    protected abstract SeReader fetchNativeReader(String name)
-            throws KeypleReaderNotFoundException, KeypleReaderIOException;
+    protected abstract SeReader fetchNativeReader(String name);
 
     /**
      * Add a plugin observer.

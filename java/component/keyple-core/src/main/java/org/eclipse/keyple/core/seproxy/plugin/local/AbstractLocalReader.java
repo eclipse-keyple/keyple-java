@@ -100,7 +100,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * @return true if the SE is present
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    protected abstract boolean checkSePresence() throws KeypleReaderIOException;
+    protected abstract boolean checkSePresence();
 
 
     /* ==== Physical and logical channels management ====================== */
@@ -350,7 +350,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      *
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    protected abstract void openPhysicalChannel() throws KeypleReaderIOException;
+    protected abstract void openPhysicalChannel();
 
     /**
      * Closes the current physical channel.
@@ -359,7 +359,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      *
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    protected abstract void closePhysicalChannel() throws KeypleReaderIOException;
+    protected abstract void closePhysicalChannel();
 
     /**
      * Tells if the physical channel is open or not
@@ -441,8 +441,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * @return true if the current protocol matches the provided protocol flag
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    protected abstract boolean protocolFlagMatches(SeProtocol protocolFlag)
-            throws KeypleReaderIOException;
+    protected abstract boolean protocolFlagMatches(SeProtocol protocolFlag);
 
     /* ==== SeRequestSe and SeRequest transmission management ============= */
 
@@ -871,5 +870,5 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * @return apduResponse byte buffer containing the outgoing data.
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    protected abstract byte[] transmitApdu(byte[] apduIn) throws KeypleReaderIOException;
+    protected abstract byte[] transmitApdu(byte[] apduIn);
 }

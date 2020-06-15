@@ -29,6 +29,5 @@ public interface SmartSelectionReader extends SeReader {
      * @return an ApduResponse containing the SE answer to selection
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector)
-            throws KeypleReaderIOException;
+    ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector);
 }

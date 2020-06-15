@@ -42,5 +42,5 @@ public interface ReaderPlugin extends ProxyElement, Comparable<ReaderPlugin> {
      * @return the SeReader object.
      * @throws KeypleReaderNotFoundException if the wanted reader is not found
      */
-    SeReader getReader(String name) throws KeypleReaderNotFoundException;
+    SeReader getReader(String name);
 }
