@@ -26,7 +26,7 @@ public class DecreaseRespParsTest {
     private static final String APDU_DECREASE = String.format("%06X", NEW_VALUE) + SW1SW2_OK;
 
     @Test(expected = CalypsoPoCommandException.class)
-    public void decreaseRespPars_badStatus() throws CalypsoPoCommandException {
+    public void decreaseRespPars_badStatus() {
         DecreaseRespPars decreaseRespPars = new DecreaseRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(APDU_BAD_SW1SW2), null), null);
         decreaseRespPars.checkStatus();
@@ -34,14 +34,14 @@ public class DecreaseRespParsTest {
     }
 
     @Test
-    public void decreaseRespPars_goodStatus() throws CalypsoPoCommandException {
+    public void decreaseRespPars_goodStatus() {
         DecreaseRespPars decreaseRespPars = new DecreaseRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(APDU_DECREASE), null), null);
         decreaseRespPars.checkStatus();
     }
 
     @Test
-    public void decreaseRespPars_getNewValue() throws CalypsoPoCommandException {
+    public void decreaseRespPars_getNewValue() {
         DecreaseRespPars decreaseRespPars = new DecreaseRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(APDU_DECREASE), null), null);
         decreaseRespPars.checkStatus();

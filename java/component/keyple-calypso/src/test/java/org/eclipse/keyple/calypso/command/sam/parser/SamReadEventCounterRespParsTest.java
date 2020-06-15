@@ -29,7 +29,7 @@ public class SamReadEventCounterRespParsTest {
     private static final String APDU_READ_COUNTER_DATA = COUNTER_DATA + SW1SW2_OK;
 
     @Test(expected = CalypsoSamCommandException.class)
-    public void samReadEventCounterRespPars_badStatus() throws CalypsoSamCommandException {
+    public void samReadEventCounterRespPars_badStatus() {
         SamReadEventCounterRespPars samReadEventCounterRespPars = new SamReadEventCounterRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null), null);
         samReadEventCounterRespPars.checkStatus();
@@ -37,8 +37,7 @@ public class SamReadEventCounterRespParsTest {
     }
 
     @Test
-    public void samReadEventCounterRespPars_goodStatus_getSignature()
-            throws CalypsoSamCommandException {
+    public void samReadEventCounterRespPars_goodStatus_getSignature() {
         SamReadEventCounterRespPars samReadEventCounterRespPars = new SamReadEventCounterRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(APDU_READ_COUNTER_DATA), null), null);
         samReadEventCounterRespPars.checkStatus();

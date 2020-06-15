@@ -33,6 +33,9 @@ public abstract class AbstractSamResponseParser extends AbstractApduResponsePars
         STATUS_TABLE = m;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected Map<Integer, StatusProperties> getStatusTable() {
         return STATUS_TABLE;
@@ -48,11 +51,17 @@ public abstract class AbstractSamResponseParser extends AbstractApduResponsePars
         super(response, builder);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final AbstractSamCommandBuilder getBuilder() {
         return (AbstractSamCommandBuilder) super.getBuilder();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected final KeypleSeCommandException buildCommandException(
             Class<? extends KeypleSeCommandException> exceptionClass, String message,
@@ -80,8 +89,11 @@ public abstract class AbstractSamResponseParser extends AbstractApduResponsePars
         return e;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void checkStatus() throws CalypsoSamCommandException {
+    public void checkStatus() {
         try {
             super.checkStatus();
         } catch (KeypleSeCommandException e) {

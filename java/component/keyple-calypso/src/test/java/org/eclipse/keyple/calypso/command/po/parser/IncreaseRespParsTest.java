@@ -26,7 +26,7 @@ public class IncreaseRespParsTest {
     private static final String APDU_INCREASE = String.format("%06X", NEW_VALUE) + SW1SW2_OK;
 
     @Test(expected = CalypsoPoCommandException.class)
-    public void increaseRespPars_badStatus() throws CalypsoPoCommandException {
+    public void increaseRespPars_badStatus() {
         IncreaseRespPars increaseRespPars = new IncreaseRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(APDU_BAD_SW1SW2), null), null);
         increaseRespPars.checkStatus();
@@ -34,14 +34,14 @@ public class IncreaseRespParsTest {
     }
 
     @Test
-    public void increaseRespPars_goodStatus() throws CalypsoPoCommandException {
+    public void increaseRespPars_goodStatus() {
         IncreaseRespPars increaseRespPars = new IncreaseRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(APDU_INCREASE), null), null);
         increaseRespPars.checkStatus();
     }
 
     @Test
-    public void increaseRespPars_getNewValue() throws CalypsoPoCommandException {
+    public void increaseRespPars_getNewValue() {
         IncreaseRespPars increaseRespPars = new IncreaseRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(APDU_INCREASE), null), null);
         increaseRespPars.checkStatus();

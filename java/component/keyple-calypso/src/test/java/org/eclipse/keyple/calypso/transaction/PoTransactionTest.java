@@ -237,7 +237,7 @@ public class PoTransactionTest {
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         poCommandsTestSet.clear();
         samCommandsTestSet.clear();
         poReader = createMockReader("PO", TransmissionMode.CONTACTLESS, poCommandsTestSet);
@@ -572,8 +572,7 @@ public class PoTransactionTest {
 
     /* standard process Po commands */
     @Test
-    public void testProcessPoCommands_nominalCase()
-            throws CalypsoPoCommandException, CalypsoPoTransactionException {
+    public void testProcessPoCommands_nominalCase() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
 
@@ -1247,8 +1246,7 @@ public class PoTransactionTest {
     }
 
     @Test
-    public void testPrepareSelectFile_selectControl()
-            throws CalypsoPoCommandException, CalypsoPoTransactionException {
+    public void testPrepareSelectFile_selectControl() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
 
@@ -1302,8 +1300,7 @@ public class PoTransactionTest {
     }
 
     @Test
-    public void testPrepareSelectFile_lid()
-            throws CalypsoPoCommandException, CalypsoPoTransactionException {
+    public void testPrepareSelectFile_lid() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
 
@@ -1365,8 +1362,7 @@ public class PoTransactionTest {
     }
 
     @Test
-    public void testPrepareReadCounterFile()
-            throws CalypsoPoCommandException, CalypsoPoTransactionException {
+    public void testPrepareReadCounterFile() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
 
@@ -1384,8 +1380,7 @@ public class PoTransactionTest {
     }
 
     @Test(expected = CalypsoPoIOException.class)
-    public void testPoIoException()
-            throws CalypsoPoCommandException, CalypsoPoTransactionException {
+    public void testPoIoException() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
         poTransaction.prepareReadRecordFile(FILE7, 1);
@@ -1418,7 +1413,7 @@ public class PoTransactionTest {
     }
 
     private ProxyReader createMockReader(final String name, TransmissionMode transmissionMode,
-            final Map<String, String> commandTestSet) throws KeypleReaderIOException {
+            final Map<String, String> commandTestSet) {
 
         // configure mock native reader
         ProxyReader mockReader = Mockito.spy(ProxyReader.class);
@@ -1427,7 +1422,7 @@ public class PoTransactionTest {
 
         doAnswer(new Answer<SeResponse>() {
             @Override
-            public SeResponse answer(InvocationOnMock invocation) throws KeypleReaderIOException {
+            public SeResponse answer(InvocationOnMock invocation) {
                 Object[] args = invocation.getArguments();
                 SeRequest seRequest = (SeRequest) args[0];
                 List<ApduRequest> apduRequests = seRequest.getApduRequests();
@@ -1450,7 +1445,7 @@ public class PoTransactionTest {
     }
 
     private ApduResponse getResponses(String name, Map<String, String> cmdRespMap,
-            ApduRequest apduRequest) throws KeypleReaderIOException {
+            ApduRequest apduRequest) {
         String apdu_c = ByteArrayUtil.toHex(apduRequest.getBytes());
         String apdu_r = cmdRespMap.get(apdu_c);
         // return matching hexa response if found

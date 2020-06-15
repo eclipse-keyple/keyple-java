@@ -99,10 +99,10 @@ public class PoSelectionRequest extends
      * @return a {@link CalypsoPo}
      * @throws CalypsoDesynchronizedExchangesException if the number of responses is different from
      *         the number of requests
+     * @throws CalypsoPoCommandException if a response from the PO was unexpected
      */
     @Override
-    protected CalypsoPo parse(SeResponse seResponse)
-            throws CalypsoDesynchronizedExchangesException, CalypsoPoCommandException {
+    protected CalypsoPo parse(SeResponse seResponse) {
 
         List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> commandBuilders =
                 getCommandBuilders();

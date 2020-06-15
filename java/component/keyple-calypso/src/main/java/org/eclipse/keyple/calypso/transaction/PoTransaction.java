@@ -326,8 +326,7 @@ public class PoTransaction {
      */
     private void processAtomicPoCommands(
             List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poCommands,
-            ChannelControl channelControl)
-            throws CalypsoPoTransactionException, CalypsoPoCommandException {
+            ChannelControl channelControl) {
 
         // Get the PO ApduRequest List
         List<ApduRequest> poApduRequests = getApduRequests(poCommands);
@@ -612,8 +611,7 @@ public class PoTransaction {
      * @throws CalypsoPoTransactionIllegalStateException if the counter is not available in the
      *         current {@link CalypsoPo}
      */
-    private int getCounterValue(int sfi, int counter)
-            throws CalypsoPoTransactionIllegalStateException {
+    private int getCounterValue(int sfi, int counter) {
         try {
             ElementaryFile ef = calypsoPo.getFileBySfi((byte) sfi);
             return ef.getData().getContentAsCounterValue(counter);
@@ -651,8 +649,7 @@ public class PoTransaction {
      * @throws CalypsoPoTransactionIllegalStateException if the anticipation process failed
      */
     private List<ApduResponse> getAnticipatedResponses(
-            List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poCommands)
-            throws CalypsoPoTransactionIllegalStateException {
+            List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poCommands) {
         List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
         if (poCommands != null) {
             for (AbstractPoCommandBuilder<? extends AbstractPoResponseParser> commandBuilder : poCommands) {
@@ -778,8 +775,7 @@ public class PoTransaction {
      *         errors)
      * @throws CalypsoPoCommandException if a response from the PO was unexpected
      */
-    public final void processPoCommands(ChannelControl channelControl)
-            throws CalypsoPoTransactionException, CalypsoPoCommandException {
+    public final void processPoCommands(ChannelControl channelControl) {
 
         /** This method should be called only if no session was previously open */
         checkSessionIsNotOpen();
@@ -979,8 +975,7 @@ public class PoTransaction {
      *         errors)
      * @throws CalypsoPoCommandException if a response from the PO was unexpected
      */
-    public final void processCancel(ChannelControl channelControl)
-            throws CalypsoPoTransactionException, CalypsoPoCommandException {
+    public final void processCancel(ChannelControl channelControl) {
         // PO ApduRequest List to hold Close Secure Session command
         List<ApduRequest> poApduRequests = new ArrayList<ApduRequest>();
 
@@ -1006,8 +1001,7 @@ public class PoTransaction {
         sessionState = SessionState.SESSION_CLOSED;
     }
 
-    private SeResponse safePoTransmit(SeRequest poSeRequest, ChannelControl channelControl)
-            throws CalypsoPoIOException {
+    private SeResponse safePoTransmit(SeRequest poSeRequest, ChannelControl channelControl) {
         try {
             return poReader.transmitSeRequest(poSeRequest, channelControl);
         } catch (KeypleReaderIOException e) {
@@ -1020,7 +1014,7 @@ public class PoTransaction {
      * 
      * @throws CalypsoPoTransactionIllegalStateException if no session is open
      */
-    private void checkSessionIsOpen() throws CalypsoPoTransactionIllegalStateException {
+    private void checkSessionIsOpen() {
         if (sessionState != SessionState.SESSION_OPEN) {
             throw new CalypsoPoTransactionIllegalStateException("Bad session state. Current: "
                     + sessionState + ", expected: " + SessionState.SESSION_OPEN);
@@ -1032,7 +1026,7 @@ public class PoTransaction {
      *
      * @throws CalypsoPoTransactionIllegalStateException if a session is open
      */
-    private void checkSessionIsNotOpen() throws CalypsoPoTransactionIllegalStateException {
+    private void checkSessionIsNotOpen() {
         if (sessionState == SessionState.SESSION_OPEN) {
             throw new CalypsoPoTransactionIllegalStateException(
                     "Bad session state. Current: " + sessionState + ", expected: not open");
@@ -1048,8 +1042,7 @@ public class PoTransaction {
      * @param responsesNumber the number of responses
      * @throws CalypsoDesynchronizedExchangesException if the test failed
      */
-    private void checkCommandsResponsesSynchronization(int commandsNumber, int responsesNumber)
-            throws CalypsoDesynchronizedExchangesException {
+    private void checkCommandsResponsesSynchronization(int commandsNumber, int responsesNumber) {
         if (commandsNumber != responsesNumber) {
             throw new CalypsoDesynchronizedExchangesException(
                     "The number of commands/responses does not match: cmd=" + commandsNumber
@@ -1073,8 +1066,7 @@ public class PoTransaction {
      */
     private boolean checkModifyingCommand(
             AbstractPoCommandBuilder<? extends AbstractPoResponseParser> builder,
-            AtomicBoolean overflow, AtomicInteger neededSessionBufferSpace)
-            throws CalypsoAtomicTransactionException {
+            AtomicBoolean overflow, AtomicInteger neededSessionBufferSpace) {
         if (builder.isSessionBufferUsed()) {
             // This command affects the PO modifications buffer
             neededSessionBufferSpace.set(builder.getApduRequest().getBytes().length

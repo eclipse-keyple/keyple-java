@@ -29,7 +29,7 @@ public class SamReadCeilingsRespParsTest {
     private static final String APDU_READ_CEILINGS = CEILING_DATA + SW1SW2_OK;
 
     @Test(expected = CalypsoSamCommandException.class)
-    public void samReadCeilingsRespPars_badStatus() throws CalypsoSamCommandException {
+    public void samReadCeilingsRespPars_badStatus() {
         SamReadCeilingsRespPars samReadCeilingsRespPars = new SamReadCeilingsRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null), null);
         samReadCeilingsRespPars.checkStatus();
@@ -37,8 +37,7 @@ public class SamReadCeilingsRespParsTest {
     }
 
     @Test
-    public void samReadCeilingsRespPars_goodStatus_getSignature()
-            throws CalypsoSamCommandException {
+    public void samReadCeilingsRespPars_goodStatus_getSignature() {
         SamReadCeilingsRespPars samReadCeilingsRespPars = new SamReadCeilingsRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(APDU_READ_CEILINGS), null), null);
         samReadCeilingsRespPars.checkStatus();

@@ -79,8 +79,7 @@ public abstract class SamResourceManager {
      * @return a {@link SamResource}
      * @throws CalypsoNoSamResourceAvailableException if an error occurs while doing the selection
      */
-    protected SamResource createSamResource(SeReader samReader)
-            throws CalypsoNoSamResourceAvailableException {
+    protected SamResource createSamResource(SeReader samReader) {
 
         SeSelection samSelection = new SeSelection();
 

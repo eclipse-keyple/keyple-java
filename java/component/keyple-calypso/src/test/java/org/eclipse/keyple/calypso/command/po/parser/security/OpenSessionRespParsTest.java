@@ -62,7 +62,7 @@ public class OpenSessionRespParsTest {
             PO_TN + PO_RANDOM_5 + NOT_RATIFIED + KIF + KVC;
 
     @Test
-    public void openSessionRespPars_rev1_0_readingData() throws CalypsoPoCommandException {
+    public void openSessionRespPars_rev1_0_readingData() {
         ApduResponse response = new ApduResponse(
                 ByteArrayUtil.fromHex(OPEN_SECURE_SESSION_RESP_10_KVC_RATIFIED + DATA + SW1SW2_OK),
                 null);
@@ -83,7 +83,7 @@ public class OpenSessionRespParsTest {
     }
 
     @Test
-    public void openSessionRespPars_rev1_0_notReadingData() throws CalypsoPoCommandException {
+    public void openSessionRespPars_rev1_0_notReadingData() {
         ApduResponse response = new ApduResponse(
                 ByteArrayUtil.fromHex(OPEN_SECURE_SESSION_RESP_10_KVC_RATIFIED + SW1SW2_OK), null);
         AbstractOpenSessionCmdBuild<AbstractOpenSessionRespPars> openSessionCmdBuild =
@@ -103,8 +103,7 @@ public class OpenSessionRespParsTest {
     }
 
     @Test
-    public void openSessionRespPars_rev1_0_readingData_notRatified()
-            throws CalypsoPoCommandException {
+    public void openSessionRespPars_rev1_0_readingData_notRatified() {
         ApduResponse response = new ApduResponse(ByteArrayUtil
                 .fromHex(OPEN_SECURE_SESSION_RESP_10_KVC_NOT_RATIFIED + DATA + SW1SW2_OK), null);
         AbstractOpenSessionCmdBuild<AbstractOpenSessionRespPars> openSessionCmdBuild =
@@ -124,8 +123,7 @@ public class OpenSessionRespParsTest {
     }
 
     @Test
-    public void openSessionRespPars_rev1_0_notReadingData_notRatified()
-            throws CalypsoPoCommandException {
+    public void openSessionRespPars_rev1_0_notReadingData_notRatified() {
         ApduResponse response = new ApduResponse(
                 ByteArrayUtil.fromHex(OPEN_SECURE_SESSION_RESP_10_KVC_NOT_RATIFIED + SW1SW2_OK),
                 null);
@@ -146,7 +144,7 @@ public class OpenSessionRespParsTest {
     }
 
     @Test(expected = CalypsoPoCommandException.class)
-    public void openSessionRespPars_rev1_0_badStatus() throws CalypsoPoCommandException {
+    public void openSessionRespPars_rev1_0_badStatus() {
         ApduResponse response = new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null);
         AbstractOpenSessionCmdBuild<AbstractOpenSessionRespPars> openSessionCmdBuild =
                 AbstractOpenSessionCmdBuild.create(PoRevision.REV1_0,
@@ -159,7 +157,7 @@ public class OpenSessionRespParsTest {
     }
 
     @Test
-    public void openSessionRespPars_rev2_4_readingData() throws CalypsoPoCommandException {
+    public void openSessionRespPars_rev2_4_readingData() {
         ApduResponse response = new ApduResponse(
                 ByteArrayUtil.fromHex(OPEN_SECURE_SESSION_RESP_24_KVC_RATIFIED + DATA + SW1SW2_OK),
                 null);
@@ -180,7 +178,7 @@ public class OpenSessionRespParsTest {
     }
 
     @Test
-    public void openSessionRespPars_rev2_4_notReadingData() throws CalypsoPoCommandException {
+    public void openSessionRespPars_rev2_4_notReadingData() {
         ApduResponse response = new ApduResponse(
                 ByteArrayUtil.fromHex(OPEN_SECURE_SESSION_RESP_24_KVC_RATIFIED + SW1SW2_OK), null);
         AbstractOpenSessionCmdBuild<AbstractOpenSessionRespPars> openSessionCmdBuild =
@@ -200,8 +198,7 @@ public class OpenSessionRespParsTest {
     }
 
     @Test
-    public void openSessionRespPars_rev2_4_readingData_notRatified()
-            throws CalypsoPoCommandException {
+    public void openSessionRespPars_rev2_4_readingData_notRatified() {
         ApduResponse response = new ApduResponse(ByteArrayUtil
                 .fromHex(OPEN_SECURE_SESSION_RESP_24_KVC_NOT_RATIFIED + DATA + SW1SW2_OK), null);
         AbstractOpenSessionCmdBuild<AbstractOpenSessionRespPars> openSessionCmdBuild =
@@ -221,8 +218,7 @@ public class OpenSessionRespParsTest {
     }
 
     @Test
-    public void openSessionRespPars_rev2_4_notReadingData_notRatified()
-            throws CalypsoPoCommandException {
+    public void openSessionRespPars_rev2_4_notReadingData_notRatified() {
         ApduResponse response = new ApduResponse(
                 ByteArrayUtil.fromHex(OPEN_SECURE_SESSION_RESP_24_KVC_NOT_RATIFIED + SW1SW2_OK),
                 null);
@@ -243,7 +239,7 @@ public class OpenSessionRespParsTest {
     }
 
     @Test(expected = CalypsoPoCommandException.class)
-    public void openSessionRespPars_rev2_4_badStatus() throws CalypsoPoCommandException {
+    public void openSessionRespPars_rev2_4_badStatus() {
         ApduResponse response = new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null);
         AbstractOpenSessionCmdBuild<AbstractOpenSessionRespPars> openSessionCmdBuild =
                 AbstractOpenSessionCmdBuild.create(PoRevision.REV2_4,
@@ -256,7 +252,7 @@ public class OpenSessionRespParsTest {
     }
 
     @Test
-    public void openSessionRespPars_rev3_1_readingData() throws CalypsoPoCommandException {
+    public void openSessionRespPars_rev3_1_readingData() {
         ApduResponse response = new ApduResponse(
                 ByteArrayUtil.fromHex(
                         OPEN_SECURE_SESSION_RESP_31_RATIFIED + DATA_LENGTH + DATA + SW1SW2_OK),
@@ -278,7 +274,7 @@ public class OpenSessionRespParsTest {
     }
 
     @Test
-    public void openSessionRespPars_rev3_1_notReadingData() throws CalypsoPoCommandException {
+    public void openSessionRespPars_rev3_1_notReadingData() {
         ApduResponse response = new ApduResponse(ByteArrayUtil
                 .fromHex(OPEN_SECURE_SESSION_RESP_31_RATIFIED + DATA_LENGTH_0 + SW1SW2_OK), null);
         AbstractOpenSessionCmdBuild<AbstractOpenSessionRespPars> openSessionCmdBuild =
@@ -298,8 +294,7 @@ public class OpenSessionRespParsTest {
     }
 
     @Test
-    public void openSessionRespPars_rev3_1_readingData_notRatified()
-            throws CalypsoPoCommandException {
+    public void openSessionRespPars_rev3_1_readingData_notRatified() {
         ApduResponse response = new ApduResponse(
                 ByteArrayUtil.fromHex(
                         OPEN_SECURE_SESSION_RESP_31_NOT_RATIFIED + DATA_LENGTH + DATA + SW1SW2_OK),
@@ -321,8 +316,7 @@ public class OpenSessionRespParsTest {
     }
 
     @Test
-    public void openSessionRespPars_rev3_1_notReadingData_notRatified()
-            throws CalypsoPoCommandException {
+    public void openSessionRespPars_rev3_1_notReadingData_notRatified() {
         ApduResponse response = new ApduResponse(
                 ByteArrayUtil.fromHex(
                         OPEN_SECURE_SESSION_RESP_31_NOT_RATIFIED + DATA_LENGTH_0 + SW1SW2_OK),
@@ -344,7 +338,7 @@ public class OpenSessionRespParsTest {
     }
 
     @Test(expected = CalypsoPoCommandException.class)
-    public void openSessionRespPars_rev3_1_badStatus() throws CalypsoPoCommandException {
+    public void openSessionRespPars_rev3_1_badStatus() {
         ApduResponse response = new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null);
         AbstractOpenSessionCmdBuild<AbstractOpenSessionRespPars> openSessionCmdBuild =
                 AbstractOpenSessionCmdBuild.create(PoRevision.REV3_1,
@@ -357,7 +351,7 @@ public class OpenSessionRespParsTest {
     }
 
     @Test
-    public void openSessionRespPars_rev3_2_readingData() throws CalypsoPoCommandException {
+    public void openSessionRespPars_rev3_2_readingData() {
         ApduResponse response = new ApduResponse(
                 ByteArrayUtil.fromHex(
                         OPEN_SECURE_SESSION_RESP_32_RATIFIED + DATA_LENGTH + DATA + SW1SW2_OK),
@@ -379,7 +373,7 @@ public class OpenSessionRespParsTest {
     }
 
     @Test
-    public void openSessionRespPars_rev3_2_notReadingData() throws CalypsoPoCommandException {
+    public void openSessionRespPars_rev3_2_notReadingData() {
         ApduResponse response = new ApduResponse(ByteArrayUtil
                 .fromHex(OPEN_SECURE_SESSION_RESP_32_RATIFIED + DATA_LENGTH_0 + SW1SW2_OK), null);
         AbstractOpenSessionCmdBuild<AbstractOpenSessionRespPars> openSessionCmdBuild =
@@ -399,8 +393,7 @@ public class OpenSessionRespParsTest {
     }
 
     @Test
-    public void openSessionRespPars_rev3_2_readingData_notRatified()
-            throws CalypsoPoCommandException {
+    public void openSessionRespPars_rev3_2_readingData_notRatified() {
         ApduResponse response = new ApduResponse(
                 ByteArrayUtil.fromHex(
                         OPEN_SECURE_SESSION_RESP_32_NOT_RATIFIED + DATA_LENGTH + DATA + SW1SW2_OK),
@@ -422,8 +415,7 @@ public class OpenSessionRespParsTest {
     }
 
     @Test
-    public void openSessionRespPars_rev3_2_notReadingData_notRatified()
-            throws CalypsoPoCommandException {
+    public void openSessionRespPars_rev3_2_notReadingData_notRatified() {
         ApduResponse response = new ApduResponse(
                 ByteArrayUtil.fromHex(
                         OPEN_SECURE_SESSION_RESP_32_NOT_RATIFIED + DATA_LENGTH_0 + SW1SW2_OK),
@@ -445,7 +437,7 @@ public class OpenSessionRespParsTest {
     }
 
     @Test(expected = CalypsoPoCommandException.class)
-    public void openSessionRespPars_rev3_2_badStatus() throws CalypsoPoCommandException {
+    public void openSessionRespPars_rev3_2_badStatus() {
         ApduResponse response = new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null);
         AbstractOpenSessionCmdBuild<AbstractOpenSessionRespPars> openSessionCmdBuild =
                 AbstractOpenSessionCmdBuild.create(PoRevision.REV3_2,

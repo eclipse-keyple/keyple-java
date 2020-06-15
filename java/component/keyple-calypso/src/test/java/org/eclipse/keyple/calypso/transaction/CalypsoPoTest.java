@@ -113,7 +113,7 @@ public class CalypsoPoTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         po = getCalypsoPo(ATR_VALUE, FCI_REV31);
     }
 

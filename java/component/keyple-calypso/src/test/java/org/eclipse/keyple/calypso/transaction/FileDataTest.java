@@ -28,7 +28,7 @@ public class FileDataTest {
     private byte[] data4 = ByteArrayUtil.fromHex("44444444");
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         file = new FileData();
     }
 

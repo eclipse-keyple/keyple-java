@@ -21,7 +21,6 @@ import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableExcepti
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +44,7 @@ public class SamResourceManagerPoolTest extends CalypsoBaseTest {
     }
 
     @Test
-    public void waitResources() throws KeypleReaderException {
+    public void waitResources() {
         // init
         SamResourceManagerPool srmSpy = srmSpy();
         long start = System.currentTimeMillis();
@@ -98,7 +97,7 @@ public class SamResourceManagerPoolTest extends CalypsoBaseTest {
      * Helpers
      */
     // get a srm spy with a custom mock reader
-    SamResourceManagerPool srmSpy(ReaderPoolPlugin poolPlugin) throws KeypleReaderException {
+    SamResourceManagerPool srmSpy(ReaderPoolPlugin poolPlugin) {
         return Mockito
                 .spy(new SamResourceManagerPool(poolPlugin, MAX_BLOCKING_TIME, DEFAULT_SLEEP_TIME));
     }

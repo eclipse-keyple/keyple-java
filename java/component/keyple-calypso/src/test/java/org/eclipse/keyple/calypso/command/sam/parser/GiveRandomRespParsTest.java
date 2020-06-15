@@ -26,7 +26,7 @@ public class GiveRandomRespParsTest {
     private static final String SW1SW2_OK = "9000";
 
     @Test(expected = CalypsoSamCommandException.class)
-    public void giveRandomRespPars_badStatus() throws CalypsoSamCommandException {
+    public void giveRandomRespPars_badStatus() {
         GiveRandomRespPars giveRandomRespPars = new GiveRandomRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null), null);
         giveRandomRespPars.checkStatus();
@@ -34,7 +34,7 @@ public class GiveRandomRespParsTest {
     }
 
     @Test
-    public void giveRandomRespPars_goodStatus() throws CalypsoSamCommandException {
+    public void giveRandomRespPars_goodStatus() {
         GiveRandomRespPars giveRandomRespPars = new GiveRandomRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_OK), null), null);
         giveRandomRespPars.checkStatus();

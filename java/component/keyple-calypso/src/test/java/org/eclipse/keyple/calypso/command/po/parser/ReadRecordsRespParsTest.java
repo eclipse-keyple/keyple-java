@@ -40,7 +40,7 @@ public class ReadRecordsRespParsTest {
     private static final int EXPECTED_LENGTH2 = (REC1.length() + REC2.length()) / 2;
 
     @Test(expected = CalypsoPoCommandException.class)
-    public void readRecordRespPars_badStatus() throws CalypsoPoCommandException {
+    public void readRecordRespPars_badStatus() {
         ReadRecordsRespPars readRecordRespPars = new ReadRecordsRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(APDU_BAD_SW1SW2), null), null);
         readRecordRespPars.checkStatus();
@@ -48,14 +48,14 @@ public class ReadRecordsRespParsTest {
     }
 
     @Test
-    public void readRecordRespPars_goodStatus() throws CalypsoPoCommandException {
+    public void readRecordRespPars_goodStatus() {
         ReadRecordsRespPars readRecordRespPars = new ReadRecordsRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(APDU_ONE_RECORD), null), null);
         readRecordRespPars.checkStatus();
     }
 
     @Test
-    public void readRecordRespPars_getRecords_singleRecord() throws CalypsoPoCommandException {
+    public void readRecordRespPars_getRecords_singleRecord() {
         ReadRecordsCmdBuild readRecordsCmdBuild = new ReadRecordsCmdBuild(PoClass.ISO, SFI1,
                 FIRST_REC1, ReadMode.ONE_RECORD, EXPECTED_LENGTH1);
         ReadRecordsRespPars readRecordRespPars = readRecordsCmdBuild.createResponseParser(
@@ -67,7 +67,7 @@ public class ReadRecordsRespParsTest {
     }
 
     @Test
-    public void readRecordRespPars_getRecords_twoRecords() throws CalypsoPoCommandException {
+    public void readRecordRespPars_getRecords_twoRecords() {
         ReadRecordsCmdBuild readRecordsCmdBuild = new ReadRecordsCmdBuild(PoClass.ISO, SFI1,
                 FIRST_REC1, ReadMode.MULTIPLE_RECORD, EXPECTED_LENGTH2);
         ReadRecordsRespPars readRecordRespPars = readRecordsCmdBuild.createResponseParser(
