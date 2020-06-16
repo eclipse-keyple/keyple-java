@@ -1,0 +1,105 @@
+@startuml
+
+title
+    Keyple Plugin Remote SE
+    Async Node API (10/06/2020)
+end title
+
+' == THEME ==
+
+skinparam Shadowing false
+skinparam RoundCorner 10
+
+' == CONTENT ==
+
+participant "clientNode:\n**KeypleAsyncNode**" as clientNode #LightBlue
+actor "userClientEndpoint:\n**<back:LightBlue>KeypleClientAsync**" as userClientEndpoint
+
+actor "userServerEndpoint:\n**<back:LightBlue>KeypleServerAsync**" as userServerEndpoint
+participant "serverNode:\n**KeypleAsyncNode**" as serverNode #LightBlue
+
+activate clientNode #LightBlue
+clientNode -> userClientEndpoint : openSession (<color:green>sessionId</color>)
+activate userClientEndpoint #Pink
+userClientEndpoint ->> userServerEndpoint : send asynchronous handshake
+return
+deactivate clientNode
+
+activate userServerEndpoint #Pink
+userServerEndpoint --> userClientEndpoint : Session
+deactivate userServerEndpoint
+activate userClientEndpoint #Pink
+userClientEndpoint -> userClientEndpoint : registerSession (<color:green>sessionId</color>, Session)
+userClientEndpoint -> userClientEndpoint : [...]ClientUtils.getAsyncNode ()
+userClientEndpoint -> clientNode : onOpen (<color:green>sessionId</color>)
+activate clientNode #LightBlue
+clientNode -> userClientEndpoint : sendMessage (<color:red>dtoA</color>)
+activate userClientEndpoint #LightYellow
+userClientEndpoint -> userClientEndpoint : findSesssion (<color:red>dtoA</color><color:green>.getSessionId()</color>)
+userClientEndpoint ->> userServerEndpoint : send asynchronous message (<color:red>dtoA</color>)
+return
+return
+deactivate userClientEndpoint
+
+activate userServerEndpoint #Pink
+userServerEndpoint -> userServerEndpoint : registerSession (<color:red>dtoA</color><color:green>.getSessionId()</color>)
+note over userServerEndpoint
+    It is necessary to identify the client
+    via the "<color:green>sessionId</color>" field in the DTO
+    in order to be able to reply a new message
+    at a later date.
+end note
+userServerEndpoint -> userServerEndpoint : [...]ServerUtils.getAsyncNode ()
+note over userServerEndpoint
+    To access the node it is necessary
+    to use the utility class corresponding
+    to the server configuration :
+    * **RemoteSe**ServerUtils
+    * **NativeSe**ServerUtils
+    * **NativeSePool**ServerUtils
+end note
+userServerEndpoint -> serverNode : onMessage (<color:red>dtoA</color>)
+activate serverNode #LightBlue
+serverNode -> userServerEndpoint : sendMessage (<color:blue>dtoB</color>)
+activate userServerEndpoint #LightYellow
+userServerEndpoint -> userServerEndpoint : findSession (<color:blue>dtoB</color><color:green>.getSessionId()</color>)
+userServerEndpoint ->> userClientEndpoint : send asynchronous message (<color:blue>dtoB</color>)
+return
+return
+deactivate userServerEndpoint
+
+activate userClientEndpoint #Pink
+userClientEndpoint -> userClientEndpoint : [...]ClientUtils.getAsyncNode ()
+note over userClientEndpoint
+    To retrieve the node it is necessary
+    to use the utility class corresponding
+    to the client configuration :
+    * **NativeSe**ClientUtils
+    * **RemoteSe**ClientUtils
+    * **RemoteSePool**ClientUtils
+end note
+userClientEndpoint -> clientNode : onMessage (<color:blue>dtoB</color>)
+activate clientNode #LightBlue
+return
+deactivate userClientEndpoint
+
+clientNode -> clientNode
+activate clientNode #LightBlue
+
+clientNode -> userClientEndpoint : closeSession (<color:green>sessionId</color>)
+activate userClientEndpoint #Pink
+userClientEndpoint ->> userServerEndpoint : send asynchronous closeSession
+return
+deactivate clientNode
+
+activate userServerEndpoint #Pink
+userServerEndpoint --> userClientEndpoint : ok
+deactivate userServerEndpoint
+activate userClientEndpoint #Pink
+userClientEndpoint -> userClientEndpoint : unregisterSession (Session)
+userClientEndpoint -> userClientEndpoint : [...]ClientUtils.getAsyncNode ()
+userClientEndpoint -> clientNode : onClose (<color:green>sessionId</color>)
+deactivate userClientEndpoint
+activate clientNode #LightBlue
+
+@enduml

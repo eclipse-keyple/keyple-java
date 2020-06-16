@@ -18,7 +18,6 @@ The **Native SE** library must be used by the application installed on the termi
 
 ### NativeSeClientService
 
-#### Use cases
 * [Use cases](../core/README.md#remote-se-server-plugin)
 * [API](../core/README.md#remote-se-server-plugin-api-class-diagram)
 * [Sequence diagram](../core/README.md#remote-se-server-plugin-sequence-diagram)
