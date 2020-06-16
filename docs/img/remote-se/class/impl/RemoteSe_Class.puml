@@ -284,7 +284,7 @@ package org.eclipse.keyple.plugin.remotese {
             }
             +interface "<< <back:#82E0AA>ObservablePlugin</back> >>\nRemoteSeServerPlugin" as RemoteSeServerPlugin {
                 +RemoteSeServerReader getReader (String name)
-                +void terminateService (String virtualReaderName,\n Object userOutputData)
+                +void terminateService (String virtualReaderName,\n KeypleUserData userOutputData)
             }
 
             ' Remote Readers
