@@ -17,6 +17,15 @@ Releases:
  - [keyple-android-plugin-android-omapi 0.9a](#keyple-android-plugin-android-omapi-09a)
 
 ### keyple-java-core 0.9a
+* KEYP-108, 213 : improved plugin lifecycle management (SeProxyService, PluginFactory)
+* KEYP-145 : improved command builders and parsers to manage erroneous status word with dedicated exceptions
+* KEYP-154,295 : improved exceptions management, all exceptions are now runtime exceptions
+* KEYP-243,250,251 : improvement of the classes from the selection package (deep refactoring and simplification)
+* KEYP-245 : improved isolation in the plugin API
+* KEYP-202, 241, 242 : fixed misused Set fields (changed into List), simplified ProxyReader API (less methods)
+* fixed a comparison issue in the Tag class
+* various other refactoring and improvements
+ 
 ### keyple-java-calypso 0.9a
 ### keyple-java-plugin-pcsc 0.9a
 ### keyple-java-plugin-stub 0.9a
