@@ -54,7 +54,7 @@ public class RmPoolReleaseTx extends AbstractRemoteMethodTx<Boolean> {
 
 
     @Override
-    protected Boolean parseResponse(KeypleDto keypleDto) throws KeypleRemoteException {
+    protected Boolean parseResponse(KeypleDto keypleDto) {
         logger.trace("KeypleDto : {}", keypleDto);
         if (KeypleDtoHelper.containsException(keypleDto)) {
             logger.trace("KeypleDto contains an exception: {}", keypleDto);

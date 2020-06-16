@@ -64,8 +64,7 @@ public interface ProxyReader extends SeReader {
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     List<SeResponse> transmitSeRequests(List<SeRequest> seRequests,
-            MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
-            throws KeypleReaderIOException;
+            MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl);
 
     /**
      * Transmits a single {@link SeRequest} (list of {@link ApduRequest}) and get back the
@@ -87,6 +86,5 @@ public interface ProxyReader extends SeReader {
      * @return SeResponse the response to the SeRequest
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    SeResponse transmitSeRequest(SeRequest seRequest, ChannelControl channelControl)
-            throws KeypleReaderIOException;
+    SeResponse transmitSeRequest(SeRequest seRequest, ChannelControl channelControl);
 }

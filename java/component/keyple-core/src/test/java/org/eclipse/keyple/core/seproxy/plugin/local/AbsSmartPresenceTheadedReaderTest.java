@@ -18,7 +18,6 @@ import java.util.concurrent.CountDownLatch;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.mock.BlankSmartPresenceTheadedReader;
 import org.junit.After;
 import org.junit.Assert;
@@ -54,7 +53,7 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
 
 
     @Before
-    public void setUp() throws KeypleReaderException {
+    public void setUp() {
         logger.info("------------------------------");
         logger.info("Test {}", name.getMethodName() + "");
         logger.info("------------------------------");

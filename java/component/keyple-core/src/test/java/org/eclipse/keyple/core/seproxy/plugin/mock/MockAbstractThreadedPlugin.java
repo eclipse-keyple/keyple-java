@@ -15,16 +15,13 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
 
 public class MockAbstractThreadedPlugin extends AbstractThreadedObservablePlugin {
 
 
-    public MockAbstractThreadedPlugin(String name) throws KeypleReaderException {
+    public MockAbstractThreadedPlugin(String name) {
         super(name);
     }
 
@@ -37,18 +34,17 @@ public class MockAbstractThreadedPlugin extends AbstractThreadedObservablePlugin
     }
 
     @Override
-    protected SortedSet<String> fetchNativeReadersNames() throws KeypleReaderIOException {
+    protected SortedSet<String> fetchNativeReadersNames() {
         return new TreeSet<String>();
     }
 
     @Override
-    protected SortedSet<SeReader> initNativeReaders() throws KeypleReaderIOException {
+    protected SortedSet<SeReader> initNativeReaders() {
         return new TreeSet<SeReader>();
     }
 
     @Override
-    protected AbstractReader fetchNativeReader(String name)
-            throws KeypleReaderNotFoundException, KeypleReaderIOException {
+    protected AbstractReader fetchNativeReader(String name) {
         return null;
     }
 
@@ -58,7 +54,7 @@ public class MockAbstractThreadedPlugin extends AbstractThreadedObservablePlugin
     }
 
     @Override
-    public void setParameter(String key, String value) throws KeypleReaderIOException {
+    public void setParameter(String key, String value) {
 
     }
 

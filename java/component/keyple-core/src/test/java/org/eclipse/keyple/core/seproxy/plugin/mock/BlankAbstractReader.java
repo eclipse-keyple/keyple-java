@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractReader;
@@ -33,14 +32,12 @@ public class BlankAbstractReader extends AbstractReader {
 
     @Override
     protected List<SeResponse> processSeRequests(List<SeRequest> seRequests,
-            MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
-            throws KeypleReaderIOException {
+            MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl) {
         return null;
     }
 
     @Override
-    protected SeResponse processSeRequest(SeRequest seRequest, ChannelControl channelControl)
-            throws KeypleReaderIOException {
+    protected SeResponse processSeRequest(SeRequest seRequest, ChannelControl channelControl) {
         return null;
     }
 
@@ -70,7 +67,7 @@ public class BlankAbstractReader extends AbstractReader {
     }
 
     @Override
-    public void setParameter(String key, String value) throws KeypleReaderIOException {
+    public void setParameter(String key, String value) {
 
     }
 }

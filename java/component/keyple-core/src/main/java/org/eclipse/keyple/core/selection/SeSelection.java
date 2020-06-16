@@ -93,9 +93,10 @@ public final class SeSelection {
      * @param defaultSelectionsResponse the selection response
      * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
      *         including {@link AbstractMatchingSe} and {@link SeResponse}.
+     * @throws KeypleException if the selection process failed
      */
     private SelectionsResult processSelection(
-            AbstractDefaultSelectionsResponse defaultSelectionsResponse) throws KeypleException {
+            AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
         SelectionsResult selectionsResult = new SelectionsResult();
 
         int index = 0;
@@ -141,7 +142,7 @@ public final class SeSelection {
      * @throws KeypleException if an error occurs during the selection process
      */
     public SelectionsResult processDefaultSelection(
-            AbstractDefaultSelectionsResponse defaultSelectionsResponse) throws KeypleException {
+            AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
 
         /* null pointer exception protection */
         if (defaultSelectionsResponse == null) {
@@ -174,8 +175,9 @@ public final class SeSelection {
      * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
      *         including {@link AbstractMatchingSe} and {@link SeResponse}.
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+     * @throws KeypleException if an error occurs during the selection process
      */
-    public SelectionsResult processExplicitSelection(SeReader seReader) throws KeypleException {
+    public SelectionsResult processExplicitSelection(SeReader seReader) {
         List<SeRequest> selectionRequests = new ArrayList<SeRequest>();
         for (AbstractSeSelectionRequest<? extends AbstractApduCommandBuilder> seSelectionRequest : seSelectionRequests) {
             selectionRequests.add(seSelectionRequest.getSelectionRequest());

@@ -43,7 +43,7 @@ class RemoteSePluginFactory implements PluginFactory {
     }
 
     @Override
-    public ReaderPlugin getPluginInstance() throws KeyplePluginInstantiationException {
+    public ReaderPlugin getPluginInstance() {
         try {
             return new RemoteSePluginImpl(sessionManager, dtoSender, rpc_timeout, pluginName,
                     executorService);

@@ -29,7 +29,7 @@ public class SamReadKeyParametersRespParsTest {
     private static final String APDU_READ_KEY_PARAMS = KEY_PARAMETERS + SW1SW2_OK;
 
     @Test(expected = CalypsoSamCommandException.class)
-    public void samReadKeyParametersRespPars_badStatus() throws CalypsoSamCommandException {
+    public void samReadKeyParametersRespPars_badStatus() {
         SamReadKeyParametersRespPars samReadKeyParametersRespPars =
                 new SamReadKeyParametersRespPars(
                         new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null), null);
@@ -38,8 +38,7 @@ public class SamReadKeyParametersRespParsTest {
     }
 
     @Test
-    public void samReadKeyParametersRespPars_goodStatus_getSignature()
-            throws CalypsoSamCommandException {
+    public void samReadKeyParametersRespPars_goodStatus_getSignature() {
         SamReadKeyParametersRespPars samReadKeyParametersRespPars =
                 new SamReadKeyParametersRespPars(
                         new ApduResponse(ByteArrayUtil.fromHex(APDU_READ_KEY_PARAMS), null), null);

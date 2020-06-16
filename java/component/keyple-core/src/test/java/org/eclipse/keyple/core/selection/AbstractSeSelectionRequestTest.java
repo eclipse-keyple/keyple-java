@@ -16,7 +16,6 @@ import java.util.List;
 import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.core.command.SeCommand;
 import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
@@ -71,7 +70,7 @@ public class AbstractSeSelectionRequestTest {
         }
 
         @Override
-        protected AbstractMatchingSe parse(SeResponse seResponse) throws KeypleException {
+        protected AbstractMatchingSe parse(SeResponse seResponse) {
             return null;
         }
     }

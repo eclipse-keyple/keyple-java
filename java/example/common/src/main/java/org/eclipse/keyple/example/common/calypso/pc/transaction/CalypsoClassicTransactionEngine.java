@@ -31,7 +31,6 @@ import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
@@ -143,8 +142,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
      * @throws CalypsoSamCommandException if a SAM command failed
      */
     public void doCalypsoReadWriteTransaction(CalypsoPo calypsoPo, PoTransaction poTransaction,
-            boolean closeSeChannel) throws CalypsoPoTransactionException, CalypsoPoCommandException,
-            CalypsoSamCommandException {
+            boolean closeSeChannel) {
 
         /*
          * Read commands to execute during the opening step: EventLog, ContractList
@@ -178,7 +176,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
 
         ElementaryFile efContractList = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_ContractList);
 
-        byte contractList[] = efContractList.getData().getContent(1);
+        byte[] contractList = efContractList.getData().getContent(1);
         logger.info("ContractList file: {}", ByteArrayUtil.toHex(contractList));
 
         if (!calypsoPo.isDfRatified()) {
@@ -328,8 +326,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
      * Do the PO selection and possibly go on with Calypso transactions.
      */
     @Override
-    public void processSeMatch(AbstractDefaultSelectionsResponse defaultSelectionsResponse)
-            throws KeypleException {
+    public void processSeMatch(AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
         CalypsoPo calypsoPo = (CalypsoPo) seSelection
                 .processDefaultSelection(defaultSelectionsResponse).getActiveMatchingSe();
         if (calypsoPo != null) {
@@ -371,7 +368,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
                 doCalypsoReadWriteTransaction(calypsoPo, poTransaction, true);
 
                 profiler.stop();
-                logger.warn(System.getProperty("line.separator") + "{}", profiler);
+                logger.warn("{}{}", System.getProperty("line.separator"), profiler);
             } catch (CalypsoPoCommandException e) {
                 logger.error("PO command {} failed with the status code 0x{}. {}", e.getCommand(),
                         Integer.toHexString(e.getStatusCode() & 0xFFFF).toUpperCase(),

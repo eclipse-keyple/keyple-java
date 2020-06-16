@@ -131,8 +131,7 @@ public class AbsReaderTest extends CoreBaseTest {
      * @return basic spy reader
      * @throws KeypleReaderException
      */
-    public static AbstractReader getSpy(String pluginName, String readerName)
-            throws KeypleReaderException {
+    public static AbstractReader getSpy(String pluginName, String readerName) {
         AbstractReader r = Mockito.spy(new BlankAbstractReader(pluginName, readerName));
         when(r.processSeRequest(any(SeRequest.class), any(ChannelControl.class)))
                 .thenReturn(SeResponseTest.getASeResponse());

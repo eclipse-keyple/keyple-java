@@ -262,7 +262,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
      * @throws KeypleReaderException : if unsuccessful
      */
     @Override
-    public String connectReader(SeReader localReader) throws KeypleReaderException {
+    public String connectReader(SeReader localReader) {
         return connectReader(localReader, new HashMap<String, String>());
     }
 
@@ -274,8 +274,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
      * @param options : options will be set as parameters of virtual reader
      */
     @Override
-    public String connectReader(SeReader localReader, Map<String, String> options)
-            throws KeypleReaderException {
+    public String connectReader(SeReader localReader, Map<String, String> options) {
 
         if (options == null) {
             options = new HashMap<String, String>();
@@ -304,8 +303,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
      * @throws KeypleReaderException if an error occured while sending remote command
      */
     @Override
-    public void disconnectReader(String sessionId, String nativeReaderName)
-            throws KeypleReaderException {
+    public void disconnectReader(String sessionId, String nativeReaderName) {
         logger.trace("{} disconnectReader {} from device {}", dtoNode.getNodeId(), nativeReaderName,
                 dtoNode.getNodeId());
 
@@ -341,7 +339,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
      * @throws KeypleReaderNotFoundException if not reader were found with this name
      */
     @Override
-    public SeReader findLocalReader(String nativeReaderName) throws KeypleReaderNotFoundException {
+    public SeReader findLocalReader(String nativeReaderName) {
         logger.trace("Find local reader by name {} in {} plugin(s)", nativeReaderName,
                 seProxyService.getPlugins().size());
         for (ReaderPlugin plugin : seProxyService.getPlugins()) {

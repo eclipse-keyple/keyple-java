@@ -140,10 +140,10 @@ final class CalypsoPoUtils {
      * @param readRecordsCmdBuild the Read Records command builder
      * @param apduResponse the response received
      * @return the created response parser
+     * @throws CalypsoPoCommandException if a response from the PO was unexpected
      */
     private static ReadRecordsRespPars updateCalypsoPoReadRecords(CalypsoPo calypsoPo,
-            ReadRecordsCmdBuild readRecordsCmdBuild, ApduResponse apduResponse)
-            throws CalypsoPoCommandException {
+            ReadRecordsCmdBuild readRecordsCmdBuild, ApduResponse apduResponse) {
         // create parser
         ReadRecordsRespPars readRecordsRespPars =
                 readRecordsCmdBuild.createResponseParser(apduResponse);
@@ -167,10 +167,10 @@ final class CalypsoPoUtils {
      * @param calypsoPo the {@link CalypsoPo} object to update
      * @param selectFileCmdBuild the Select File command builder
      * @param apduResponse the response received
+     * @throws CalypsoPoCommandException if a response from the PO was unexpected
      */
     private static SelectFileRespPars updateCalypsoPoSelectFile(CalypsoPo calypsoPo,
-            SelectFileCmdBuild selectFileCmdBuild, ApduResponse apduResponse)
-            throws CalypsoPoCommandException {
+            SelectFileCmdBuild selectFileCmdBuild, ApduResponse apduResponse) {
         SelectFileRespPars selectFileRespPars =
                 selectFileCmdBuild.createResponseParser(apduResponse);
 
@@ -204,10 +204,10 @@ final class CalypsoPoUtils {
      * @param calypsoPo the {@link CalypsoPo} object to update
      * @param updateRecordCmdBuild the Update Record command builder
      * @param apduResponse the response received
+     * @throws CalypsoPoCommandException if a response from the PO was unexpected
      */
     private static UpdateRecordRespPars updateCalypsoPoUpdateRecord(CalypsoPo calypsoPo,
-            UpdateRecordCmdBuild updateRecordCmdBuild, ApduResponse apduResponse)
-            throws CalypsoPoCommandException {
+            UpdateRecordCmdBuild updateRecordCmdBuild, ApduResponse apduResponse) {
         UpdateRecordRespPars updateRecordRespPars =
                 updateRecordCmdBuild.createResponseParser(apduResponse);
 
@@ -227,10 +227,10 @@ final class CalypsoPoUtils {
      * @param calypsoPo the {@link CalypsoPo} object to update
      * @param writeRecordCmdBuild the Write Record command builder
      * @param apduResponse the response received
+     * @throws CalypsoPoCommandException if a response from the PO was unexpected
      */
     private static WriteRecordRespPars updateCalypsoPoWriteRecord(CalypsoPo calypsoPo,
-            WriteRecordCmdBuild writeRecordCmdBuild, ApduResponse apduResponse)
-            throws CalypsoPoCommandException {
+            WriteRecordCmdBuild writeRecordCmdBuild, ApduResponse apduResponse) {
         WriteRecordRespPars writeRecordRespPars =
                 writeRecordCmdBuild.createResponseParser(apduResponse);
 
@@ -251,10 +251,10 @@ final class CalypsoPoUtils {
      * @param appendRecordCmdBuild the Append Records command builder
      * @param calypsoPo the {@link CalypsoPo} object to update
      * @param apduResponse the response received
+     * @throws CalypsoPoCommandException if a response from the PO was unexpected
      */
     private static AppendRecordRespPars updateCalypsoPoAppendRecord(CalypsoPo calypsoPo,
-            AppendRecordCmdBuild appendRecordCmdBuild, ApduResponse apduResponse)
-            throws CalypsoPoCommandException {
+            AppendRecordCmdBuild appendRecordCmdBuild, ApduResponse apduResponse) {
         AppendRecordRespPars appendRecordRespPars =
                 appendRecordCmdBuild.createResponseParser(apduResponse);
 
@@ -274,10 +274,10 @@ final class CalypsoPoUtils {
      * @param decreaseCmdBuild the Decrease command builder
      * @param calypsoPo the {@link CalypsoPo} object to update
      * @param apduResponse the response received
+     * @throws CalypsoPoCommandException if a response from the PO was unexpected
      */
     private static DecreaseRespPars updateCalypsoPoDecrease(CalypsoPo calypsoPo,
-            DecreaseCmdBuild decreaseCmdBuild, ApduResponse apduResponse)
-            throws CalypsoPoCommandException {
+            DecreaseCmdBuild decreaseCmdBuild, ApduResponse apduResponse) {
         DecreaseRespPars decreaseRespPars = decreaseCmdBuild.createResponseParser(apduResponse);
 
         decreaseRespPars.checkStatus();
@@ -296,10 +296,10 @@ final class CalypsoPoUtils {
      * @param increaseCmdBuild the Increase command builder
      * @param calypsoPo the {@link CalypsoPo} object to update
      * @param apduResponse the response received
+     * @throws CalypsoPoCommandException if a response from the PO was unexpected
      */
     private static IncreaseRespPars updateCalypsoPoIncrease(CalypsoPo calypsoPo,
-            IncreaseCmdBuild increaseCmdBuild, ApduResponse apduResponse)
-            throws CalypsoPoCommandException {
+            IncreaseCmdBuild increaseCmdBuild, ApduResponse apduResponse) {
         IncreaseRespPars increaseRespPars = increaseCmdBuild.createResponseParser(apduResponse);
 
         increaseRespPars.checkStatus();
@@ -437,10 +437,11 @@ final class CalypsoPoUtils {
      * @param calypsoPo the {@link CalypsoPo} object to fill with the provided response from the PO
      * @param commandBuilder the builder of the command that get the response
      * @param apduResponse the APDU response returned by the PO to the command
+     * @throws CalypsoPoCommandException if a response from the PO was unexpected
      */
     static AbstractPoResponseParser updateCalypsoPo(CalypsoPo calypsoPo,
             AbstractPoCommandBuilder<? extends AbstractPoResponseParser> commandBuilder,
-            ApduResponse apduResponse) throws CalypsoPoCommandException {
+            ApduResponse apduResponse) {
         switch (commandBuilder.getCommandRef()) {
             case READ_RECORDS:
                 return updateCalypsoPoReadRecords(calypsoPo, (ReadRecordsCmdBuild) commandBuilder,
@@ -485,10 +486,11 @@ final class CalypsoPoUtils {
      * @param calypsoPo the {@link CalypsoPo} object to fill with the provided response from the PO
      * @param commandBuilders the list of builders that get the responses
      * @param apduResponses the APDU responses returned by the PO to all commands
+     * @throws CalypsoPoCommandException if a response from the PO was unexpected
      */
     static void updateCalypsoPo(CalypsoPo calypsoPo,
             List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> commandBuilders,
-            List<ApduResponse> apduResponses) throws CalypsoPoCommandException {
+            List<ApduResponse> apduResponses) {
         Iterator<ApduResponse> responseIterator = apduResponses.iterator();
 
         if (commandBuilders != null && !commandBuilders.isEmpty()) {

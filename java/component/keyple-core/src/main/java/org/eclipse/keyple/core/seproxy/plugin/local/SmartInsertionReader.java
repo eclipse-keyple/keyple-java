@@ -27,7 +27,7 @@ public interface SmartInsertionReader extends ObservableReader {
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      *         (disconnection)
      */
-    boolean waitForCardPresent() throws KeypleReaderIOException;
+    boolean waitForCardPresent();
 
 
     /**

@@ -29,7 +29,7 @@ public class SelectFileRespParsTest {
             "8517" + PROPRIETARY_INFORMATION + SW1SW2_OK;
 
     @Test(expected = CalypsoPoCommandException.class)
-    public void selectFileRespParsTest_badStatus() throws CalypsoPoCommandException {
+    public void selectFileRespParsTest_badStatus() {
         SelectFileRespPars selectFileRespPars = new SelectFileRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null), null);
         selectFileRespPars.checkStatus();
@@ -37,7 +37,7 @@ public class SelectFileRespParsTest {
     }
 
     @Test
-    public void selectFileRespParsTest_goodStatus() throws CalypsoPoCommandException {
+    public void selectFileRespParsTest_goodStatus() {
         SelectFileRespPars selectFileRespPars = new SelectFileRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(PO_SELECT_FILE_3F00_RSP), null), null);
         selectFileRespPars.checkStatus();

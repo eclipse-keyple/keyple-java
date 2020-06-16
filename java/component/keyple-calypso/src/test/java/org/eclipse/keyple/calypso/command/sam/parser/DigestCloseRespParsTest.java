@@ -29,7 +29,7 @@ public class DigestCloseRespParsTest {
     private static final String APDU_DIGEST_CLOSE = SAM_SIGNATURE + SW1SW2_OK;
 
     @Test(expected = CalypsoSamCommandException.class)
-    public void digestCloseRespPars_badStatus() throws CalypsoSamCommandException {
+    public void digestCloseRespPars_badStatus() {
         DigestCloseRespPars digestCloseRespPars = new DigestCloseRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null), null);
         digestCloseRespPars.checkStatus();
@@ -37,7 +37,7 @@ public class DigestCloseRespParsTest {
     }
 
     @Test
-    public void digestCloseRespPars_goodStatus_getSignature() throws CalypsoSamCommandException {
+    public void digestCloseRespPars_goodStatus_getSignature() {
         DigestCloseRespPars digestCloseRespPars = new DigestCloseRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(APDU_DIGEST_CLOSE), null), null);
         digestCloseRespPars.checkStatus();

@@ -67,7 +67,7 @@ public final class CalypsoUtilities {
      * @return a SeReader object
      * @throws KeypleException if an error occurred
      */
-    public static SeReader getDefaultPoReader() throws KeypleException {
+    public static SeReader getDefaultPoReader() {
         SeReader poReader =
                 ReaderUtilities.getReaderByName(properties.getProperty("po.reader.regex"));
 
@@ -82,7 +82,7 @@ public final class CalypsoUtilities {
      * @return a {@link SamResource} object
      * @throws KeypleException if an error occurred
      */
-    public static SamResource getDefaultSamResource() throws KeypleException {
+    public static SamResource getDefaultSamResource() {
         SeReader samReader =
                 ReaderUtilities.getReaderByName(properties.getProperty("sam.reader.regex"));
 

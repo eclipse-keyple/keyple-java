@@ -49,7 +49,7 @@ abstract class AbstractSeProxyComponent implements ProxyElement {
      * @throws KeypleException if one of the parameters could not be set up
      */
     @Override
-    public final void setParameters(Map<String, String> parameters) throws KeypleException {
+    public final void setParameters(Map<String, String> parameters) {
         for (Map.Entry<String, String> en : parameters.entrySet()) {
             setParameter(en.getKey(), en.getValue());
         }

@@ -288,10 +288,11 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      * a call to the processSeRemoved method.
      *
      * @return true if the SE is present
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Deprecated // will change in a later version
     @Override
-    public final boolean isSePresent() throws KeypleReaderIOException {
+    public final boolean isSePresent() {
         if (checkSePresence()) {
             return true;
         } else {

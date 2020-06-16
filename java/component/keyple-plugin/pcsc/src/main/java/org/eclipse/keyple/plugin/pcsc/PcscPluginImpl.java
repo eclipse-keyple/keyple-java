@@ -39,13 +39,13 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
      * Singleton instance of SeProxyService 'volatile' qualifier ensures that read access to the
      * object will only be allowed once the object has been fully initialized.
      *
-     * This qualifier is required for “lazy-singleton” pattern with double-check method, to be
+     * This qualifier is required for "lazy-singleton" pattern with double-check method, to be
      * thread-safe.
      */
     private static volatile PcscPluginImpl instance; // NOSONAR: We implemented lazy-singleton
                                                      // pattern.
 
-    private PcscPluginImpl() throws KeypleReaderException {
+    private PcscPluginImpl() {
         super(PLUGIN_NAME);
     }
 
@@ -53,8 +53,9 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
      * Gets the single instance of PcscPlugin.
      *
      * @return single instance of PcscPlugin
+     * @throws KeypleReaderException if a reader error occurs
      */
-    public static PcscPluginImpl getInstance() throws KeypleReaderException {
+    public static PcscPluginImpl getInstance() {
         if (instance == null) {
             synchronized (PcscPluginImpl.class) {
                 if (instance == null) {
@@ -80,7 +81,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
-    public SortedSet<String> fetchNativeReadersNames() throws KeypleReaderIOException {
+    public SortedSet<String> fetchNativeReadersNames() {
         SortedSet<String> nativeReadersNames = new ConcurrentSkipListSet<String>();
         CardTerminals terminals = getCardTerminals();
         try {
@@ -108,7 +109,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
      * @throws KeypleReaderException if a reader error occurs
      */
     @Override
-    protected SortedSet<SeReader> initNativeReaders() throws KeypleReaderIOException {
+    protected SortedSet<SeReader> initNativeReaders() {
         SortedSet<SeReader> nativeReaders = new ConcurrentSkipListSet<SeReader>();
 
         /*
@@ -154,8 +155,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
-    protected SeReader fetchNativeReader(String name)
-            throws KeypleReaderNotFoundException, KeypleReaderIOException {
+    protected SeReader fetchNativeReader(String name) {
         // return the current reader if it is already listed
         for (SeReader reader : readers) {
             if (reader.getName().equals(name)) {

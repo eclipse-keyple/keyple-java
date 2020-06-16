@@ -17,7 +17,6 @@ import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -43,7 +42,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
 
     @Test
     @Ignore
-    public void testInsertRemoveCard() throws KeypleReaderException, InterruptedException {
+    public void testInsertRemoveCard() throws InterruptedException {
         logger.info("** ******************************* **");
         logger.info("** Remove any card before the test **");
         logger.info("** ******************************* **");
@@ -77,7 +76,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
 
     @Test
     @Ignore
-    public void testAlreadyInsertedCard() throws KeypleReaderException, InterruptedException {
+    public void testAlreadyInsertedCard() throws InterruptedException {
         logger.info("** ***************************** **");
         logger.info("** Insert a card before the test **");
         logger.info("** ***************************** **");
@@ -102,7 +101,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
 
     @Test
     @Ignore
-    public void testLoop() throws KeypleReaderException, InterruptedException {
+    public void testLoop() throws InterruptedException {
         logger.info("** ********************************************* **");
         logger.info("** try to present a card 5 times   in 10 seconds **");
         logger.info("** ********************************************* **");
@@ -140,7 +139,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
 
     @Test
     @Ignore
-    public void fullScenario() throws KeypleReaderException, InterruptedException {
+    public void fullScenario() throws InterruptedException {
 
         final CountDownLatch connect1 = new CountDownLatch(1);
         final CountDownLatch disconnect1 = new CountDownLatch(1);

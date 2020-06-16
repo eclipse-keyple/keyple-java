@@ -58,8 +58,7 @@ public final class SeProxyService {
      * @throws KeyplePluginInstantiationException if instantiation failed
      * @return ReaderPlugin : registered reader plugin
      */
-    public ReaderPlugin registerPlugin(PluginFactory pluginFactory)
-            throws KeyplePluginInstantiationException {
+    public ReaderPlugin registerPlugin(PluginFactory pluginFactory) {
         if (pluginFactory == null) {
             throw new IllegalArgumentException("Factory must not be null");
         }
@@ -139,7 +138,7 @@ public final class SeProxyService {
      * @return the plugin
      * @throws KeyplePluginNotFoundException if the wanted plugin is not found
      */
-    public synchronized ReaderPlugin getPlugin(String name) throws KeyplePluginNotFoundException {
+    public synchronized ReaderPlugin getPlugin(String name) {
         synchronized (MONITOR) {
             for (ReaderPlugin plugin : plugins) {
                 if (plugin.getName().equals(name)) {

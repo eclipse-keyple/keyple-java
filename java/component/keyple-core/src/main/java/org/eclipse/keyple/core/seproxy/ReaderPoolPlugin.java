@@ -49,8 +49,7 @@ public interface ReaderPoolPlugin extends ReaderPlugin {
      *         reader
      * 
      */
-    SeReader allocateReader(String groupReference)
-            throws KeypleAllocationReaderException, KeypleAllocationNoReaderException;
+    SeReader allocateReader(String groupReference);
 
     /**
      * Releases a SeReader previously allocated with allocateReader.

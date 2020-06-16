@@ -15,7 +15,6 @@ package org.eclipse.keyple.plugin.remotese.integration;
 
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
@@ -92,7 +91,7 @@ public class VirtualReaderBaseTest {
     }
 
 
-    public void disconnectReader(String readerName) throws KeypleReaderException {
+    public void disconnectReader(String readerName) {
         logger.info("Remove all readers from stub plugin");
         StubPlugin stubPlugin = null;
         try {

@@ -25,7 +25,7 @@ public class WriteRecordRespParsTest {
     private static final String SW1SW2_OK = "9000";
 
     @Test(expected = CalypsoPoCommandException.class)
-    public void writeRecordRespPars_badStatus() throws CalypsoPoCommandException {
+    public void writeRecordRespPars_badStatus() {
         WriteRecordRespPars writeRecordRespPars = new WriteRecordRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null), null);
         writeRecordRespPars.checkStatus();
@@ -33,7 +33,7 @@ public class WriteRecordRespParsTest {
     }
 
     @Test
-    public void writeRecordRespPars_goodStatus() throws CalypsoPoCommandException {
+    public void writeRecordRespPars_goodStatus() {
         WriteRecordRespPars writeRecordRespPars = new WriteRecordRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_OK), null), null);
         writeRecordRespPars.checkStatus();

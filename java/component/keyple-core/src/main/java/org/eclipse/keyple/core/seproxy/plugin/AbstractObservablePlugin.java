@@ -41,7 +41,7 @@ public abstract class AbstractObservablePlugin extends AbstractPlugin
      * @param name name of the plugin
      * @throws KeypleReaderException when an issue is raised with reader
      */
-    protected AbstractObservablePlugin(String name) throws KeypleReaderException {
+    protected AbstractObservablePlugin(String name) {
         super(name);
     }
 

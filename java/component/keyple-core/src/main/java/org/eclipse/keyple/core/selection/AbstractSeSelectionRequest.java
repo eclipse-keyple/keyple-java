@@ -81,5 +81,5 @@ public abstract class AbstractSeSelectionRequest<T extends AbstractApduCommandBu
      * @return a {@link AbstractMatchingSe}
      * @throws KeypleException if an error occurs while parsing the SE response
      */
-    protected abstract AbstractMatchingSe parse(SeResponse seResponse) throws KeypleException;
+    protected abstract AbstractMatchingSe parse(SeResponse seResponse);
 }

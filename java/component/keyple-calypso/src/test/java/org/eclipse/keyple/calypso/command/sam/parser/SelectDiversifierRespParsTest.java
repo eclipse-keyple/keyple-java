@@ -26,7 +26,7 @@ public class SelectDiversifierRespParsTest {
     private static final String SW1SW2_OK = "9000";
 
     @Test(expected = CalypsoSamCommandException.class)
-    public void selectDiversifierRespPars_badStatus() throws CalypsoSamCommandException {
+    public void selectDiversifierRespPars_badStatus() {
         SelectDiversifierRespPars selectDiversifierRespPars = new SelectDiversifierRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null), null);
         selectDiversifierRespPars.checkStatus();
@@ -34,7 +34,7 @@ public class SelectDiversifierRespParsTest {
     }
 
     @Test
-    public void selectDiversifierRespPars_goodStatus() throws CalypsoSamCommandException {
+    public void selectDiversifierRespPars_goodStatus() {
         SelectDiversifierRespPars selectDiversifierRespPars = new SelectDiversifierRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_OK), null), null);
         selectDiversifierRespPars.checkStatus();

@@ -21,13 +21,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.keyple.calypso.SelectFileControl;
-import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
-import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoAtomicTransactionException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoAuthenticationNotVerifiedException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoCloseSecureSessionException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoIOException;
-import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionIllegalStateException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoSessionAuthenticationException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoUnauthorizedKvcException;
@@ -237,7 +234,7 @@ public class PoTransactionTest {
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         poCommandsTestSet.clear();
         samCommandsTestSet.clear();
         poReader = createMockReader("PO", TransmissionMode.CONTACTLESS, poCommandsTestSet);
@@ -249,8 +246,7 @@ public class PoTransactionTest {
 
     /* Standard opening with two records read */
     @Test(expected = CalypsoPoTransactionIllegalStateException.class)
-    public void testProcessOpening_noSamResource() throws CalypsoPoTransactionException,
-            CalypsoPoCommandException, CalypsoSamCommandException {
+    public void testProcessOpening_noSamResource() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
 
         // PoTransaction without PoSecuritySettings
@@ -262,8 +258,7 @@ public class PoTransactionTest {
 
     /* Standard opening with two records read */
     @Test(expected = CalypsoPoTransactionIllegalStateException.class)
-    public void testProcessOpening_readReopen() throws CalypsoPoTransactionException,
-            CalypsoPoCommandException, CalypsoSamCommandException {
+    public void testProcessOpening_readReopen() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         PoSecuritySettings poSecuritySettings =
                 new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)//
@@ -297,8 +292,7 @@ public class PoTransactionTest {
 
     /* Standard opening, DF not previously ratified */
     @Test
-    public void testProcessOpening_dfNotRatified() throws CalypsoPoTransactionException,
-            CalypsoPoCommandException, CalypsoSamCommandException {
+    public void testProcessOpening_dfNotRatified() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         PoSecuritySettings poSecuritySettings =
                 new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)//
@@ -331,8 +325,7 @@ public class PoTransactionTest {
 
     /* Standard opening with 1 multiple records read */
     @Test
-    public void testProcessOpening_readMultipleRecords() throws CalypsoPoTransactionException,
-            CalypsoPoCommandException, CalypsoSamCommandException {
+    public void testProcessOpening_readMultipleRecords() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         PoSecuritySettings poSecuritySettings =
                 new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)//
@@ -357,8 +350,7 @@ public class PoTransactionTest {
 
     /* Standard opening but KVC is not present authorized list */
     @Test(expected = CalypsoUnauthorizedKvcException.class)
-    public void testProcessOpening_kvcNotAuthorized() throws CalypsoPoCommandException,
-            CalypsoSamCommandException, CalypsoPoTransactionException {
+    public void testProcessOpening_kvcNotAuthorized() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
 
         List<Byte> authorizedKvc = new ArrayList<Byte>();
@@ -389,8 +381,7 @@ public class PoTransactionTest {
      * consumed size 430 b
      */
     @Test
-    public void testProcessOpening_sessionBuffer_limit() throws CalypsoPoCommandException,
-            CalypsoSamCommandException, CalypsoPoTransactionException {
+    public void testProcessOpening_sessionBuffer_limit() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         PoSecuritySettings poSecuritySettings =
                 new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)//
@@ -434,9 +425,7 @@ public class PoTransactionTest {
      * size 431 b
      */
     @Test(expected = CalypsoAtomicTransactionException.class)
-    public void testProcessOpening_sessionBuffer_overflowBytesCounter()
-            throws CalypsoPoCommandException, CalypsoSamCommandException,
-            CalypsoPoTransactionException {
+    public void testProcessOpening_sessionBuffer_overflowBytesCounter() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         PoSecuritySettings poSecuritySettings =
                 new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)//
@@ -464,9 +453,7 @@ public class PoTransactionTest {
      * consumed 6 op
      */
     @Test
-    public void testProcessOpening_sessionBuffer_limitOperationsCounter()
-            throws CalypsoPoCommandException, CalypsoSamCommandException,
-            CalypsoPoTransactionException {
+    public void testProcessOpening_sessionBuffer_limitOperationsCounter() {
         CalypsoPo calypsoPoRev24 = createCalypsoPo(FCI_REV24);
         PoSecuritySettings poSecuritySettings =
                 new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)//
@@ -499,9 +486,7 @@ public class PoTransactionTest {
      * consumed 7 op
      */
     @Test(expected = CalypsoAtomicTransactionException.class)
-    public void testProcessOpening_sessionBuffer_overflowOperationsCounter()
-            throws CalypsoPoCommandException, CalypsoSamCommandException,
-            CalypsoPoTransactionException {
+    public void testProcessOpening_sessionBuffer_overflowOperationsCounter() {
         CalypsoPo calypsoPoRev24 = createCalypsoPo(FCI_REV24);
         PoSecuritySettings poSecuritySettings =
                 new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)//
@@ -527,9 +512,7 @@ public class PoTransactionTest {
      * size 431 b
      */
     @Test
-    public void testProcessOpening_sessionBuffer_overflowBytesCounter_MulitpleMode()
-            throws CalypsoPoCommandException, CalypsoSamCommandException,
-            CalypsoPoTransactionException {
+    public void testProcessOpening_sessionBuffer_overflowBytesCounter_MulitpleMode() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         PoSecuritySettings poSecuritySettings =
                 new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)//
@@ -572,8 +555,7 @@ public class PoTransactionTest {
 
     /* standard process Po commands */
     @Test
-    public void testProcessPoCommands_nominalCase()
-            throws CalypsoPoCommandException, CalypsoPoTransactionException {
+    public void testProcessPoCommands_nominalCase() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
 
@@ -597,8 +579,7 @@ public class PoTransactionTest {
 
     /* standard process Po commands: session open before */
     @Test(expected = CalypsoPoTransactionIllegalStateException.class)
-    public void testProcessPoCommands_sessionOpen() throws CalypsoPoCommandException,
-            CalypsoPoTransactionException, CalypsoSamCommandException {
+    public void testProcessPoCommands_sessionOpen() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         PoSecuritySettings poSecuritySettings =
                 new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)//
@@ -628,8 +609,7 @@ public class PoTransactionTest {
 
     /* No session open */
     @Test(expected = CalypsoPoTransactionIllegalStateException.class)
-    public void testProcessPoCommandsInSession_noSessionOpen() throws CalypsoPoTransactionException,
-            CalypsoPoCommandException, CalypsoSamCommandException {
+    public void testProcessPoCommandsInSession_noSessionOpen() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
 
@@ -640,8 +620,7 @@ public class PoTransactionTest {
 
     /* Standard processPoCommandsInSession */
     @Test
-    public void testProcessPoCommandsInSession_nominalCase() throws CalypsoPoTransactionException,
-            CalypsoPoCommandException, CalypsoSamCommandException {
+    public void testProcessPoCommandsInSession_nominalCase() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         PoSecuritySettings poSecuritySettings =
                 new PoSecuritySettings.PoSecuritySettingsBuilder(samResource) //
@@ -673,8 +652,7 @@ public class PoTransactionTest {
 
     /* processClosing no session open */
     @Test(expected = CalypsoPoTransactionIllegalStateException.class)
-    public void testProcessClosing_noSessionOpen() throws CalypsoPoTransactionException,
-            CalypsoPoCommandException, CalypsoSamCommandException {
+    public void testProcessClosing_noSessionOpen() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
 
@@ -685,8 +663,7 @@ public class PoTransactionTest {
 
     /* Standard processClosing - default ratification */
     @Test
-    public void testProcessClosing_nominalCase() throws CalypsoPoTransactionException,
-            CalypsoPoCommandException, CalypsoSamCommandException {
+    public void testProcessClosing_nominalCase() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         PoSecuritySettings poSecuritySettings =
                 new PoSecuritySettings.PoSecuritySettingsBuilder(samResource) //
@@ -761,8 +738,7 @@ public class PoTransactionTest {
 
     /* processClosing - PO fail on closing */
     @Test(expected = CalypsoPoCloseSecureSessionException.class)
-    public void testProcessClosing_poCloseFail() throws CalypsoPoTransactionException,
-            CalypsoPoCommandException, CalypsoSamCommandException {
+    public void testProcessClosing_poCloseFail() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         PoSecuritySettings poSecuritySettings =
                 new PoSecuritySettings.PoSecuritySettingsBuilder(samResource) //
@@ -797,8 +773,7 @@ public class PoTransactionTest {
 
     /* processClosing - SAM authentication fail on closing */
     @Test(expected = CalypsoSessionAuthenticationException.class)
-    public void testProcessClosing_samAuthenticateFail() throws CalypsoPoTransactionException,
-            CalypsoPoCommandException, CalypsoSamCommandException {
+    public void testProcessClosing_samAuthenticateFail() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         PoSecuritySettings poSecuritySettings =
                 new PoSecuritySettings.PoSecuritySettingsBuilder(samResource) //
@@ -834,8 +809,7 @@ public class PoTransactionTest {
 
     /* processClosing - SAM IO error while authenticating */
     @Test(expected = CalypsoAuthenticationNotVerifiedException.class)
-    public void testProcessClosing_samIoErrorAuthenticating() throws CalypsoPoTransactionException,
-            CalypsoPoCommandException, CalypsoSamCommandException {
+    public void testProcessClosing_samIoErrorAuthenticating() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         PoSecuritySettings poSecuritySettings =
                 new PoSecuritySettings.PoSecuritySettingsBuilder(samResource) //
@@ -873,8 +847,7 @@ public class PoTransactionTest {
      * consumed size 430 b
      */
     @Test
-    public void testProcessClosing_sessionBuffer_limit() throws CalypsoPoTransactionException,
-            CalypsoPoCommandException, CalypsoSamCommandException {
+    public void testProcessClosing_sessionBuffer_limit() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         PoSecuritySettings poSecuritySettings =
                 new PoSecuritySettings.PoSecuritySettingsBuilder(samResource) //
@@ -931,8 +904,7 @@ public class PoTransactionTest {
      * size 431 b
      */
     @Test
-    public void testProcessClosing_sessionBuffer_overflowed() throws CalypsoPoTransactionException,
-            CalypsoPoCommandException, CalypsoSamCommandException {
+    public void testProcessClosing_sessionBuffer_overflowed() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         PoSecuritySettings poSecuritySettings =
                 new PoSecuritySettings.PoSecuritySettingsBuilder(samResource) //
@@ -982,9 +954,7 @@ public class PoTransactionTest {
      * size 431 b
      */
     @Test
-    public void testProcessClosing_sessionBuffer_overflowMultipleMode()
-            throws CalypsoPoTransactionException, CalypsoPoCommandException,
-            CalypsoSamCommandException {
+    public void testProcessClosing_sessionBuffer_overflowMultipleMode() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         PoSecuritySettings poSecuritySettings =
                 new PoSecuritySettings.PoSecuritySettingsBuilder(samResource) //
@@ -1043,9 +1013,7 @@ public class PoTransactionTest {
 
     /* Standard processClosing - close not ratified */
     @Test
-    public void testProcessClosing_nominalCase_closeNotRatified()
-            throws CalypsoPoTransactionException, CalypsoPoCommandException,
-            CalypsoSamCommandException {
+    public void testProcessClosing_nominalCase_closeNotRatified() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         PoSecuritySettings poSecuritySettings =
                 new PoSecuritySettings.PoSecuritySettingsBuilder(samResource) //
@@ -1080,8 +1048,7 @@ public class PoTransactionTest {
 
     /* Session buffer overflow in atomic mode: the overflow happens at closing */
     @Test
-    public void testTransaction_sessionBuffer_overflowAtomic() throws CalypsoPoTransactionException,
-            CalypsoPoCommandException, CalypsoSamCommandException {
+    public void testTransaction_sessionBuffer_overflowAtomic() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         PoSecuritySettings poSecuritySettings =
                 new PoSecuritySettings.PoSecuritySettingsBuilder(samResource) //
@@ -1140,9 +1107,7 @@ public class PoTransactionTest {
 
     /* Session buffer overflow in multiple mode: the overflow happens and is handled at closing */
     @Test
-    public void testTransaction_sessionBuffer_overflowMultiple()
-            throws CalypsoPoTransactionException, CalypsoPoCommandException,
-            CalypsoSamCommandException {
+    public void testTransaction_sessionBuffer_overflowMultiple() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         PoSecuritySettings poSecuritySettings =
                 new PoSecuritySettings.PoSecuritySettingsBuilder(samResource) //
@@ -1212,8 +1177,7 @@ public class PoTransactionTest {
 
     /* open, cancel and reopen */
     @Test
-    public void testProcessCancel_open_cancelOpen() throws CalypsoPoTransactionException,
-            CalypsoPoCommandException, CalypsoSamCommandException {
+    public void testProcessCancel_open_cancelOpen() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         PoSecuritySettings poSecuritySettings =
                 new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)//
@@ -1247,8 +1211,7 @@ public class PoTransactionTest {
     }
 
     @Test
-    public void testPrepareSelectFile_selectControl()
-            throws CalypsoPoCommandException, CalypsoPoTransactionException {
+    public void testPrepareSelectFile_selectControl() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
 
@@ -1302,8 +1265,7 @@ public class PoTransactionTest {
     }
 
     @Test
-    public void testPrepareSelectFile_lid()
-            throws CalypsoPoCommandException, CalypsoPoTransactionException {
+    public void testPrepareSelectFile_lid() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
 
@@ -1365,8 +1327,7 @@ public class PoTransactionTest {
     }
 
     @Test
-    public void testPrepareReadCounterFile()
-            throws CalypsoPoCommandException, CalypsoPoTransactionException {
+    public void testPrepareReadCounterFile() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
 
@@ -1384,8 +1345,7 @@ public class PoTransactionTest {
     }
 
     @Test(expected = CalypsoPoIOException.class)
-    public void testPoIoException()
-            throws CalypsoPoCommandException, CalypsoPoTransactionException {
+    public void testPoIoException() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
         poTransaction.prepareReadRecordFile(FILE7, 1);
@@ -1418,7 +1378,7 @@ public class PoTransactionTest {
     }
 
     private ProxyReader createMockReader(final String name, TransmissionMode transmissionMode,
-            final Map<String, String> commandTestSet) throws KeypleReaderIOException {
+            final Map<String, String> commandTestSet) {
 
         // configure mock native reader
         ProxyReader mockReader = Mockito.spy(ProxyReader.class);
@@ -1427,7 +1387,7 @@ public class PoTransactionTest {
 
         doAnswer(new Answer<SeResponse>() {
             @Override
-            public SeResponse answer(InvocationOnMock invocation) throws KeypleReaderIOException {
+            public SeResponse answer(InvocationOnMock invocation) {
                 Object[] args = invocation.getArguments();
                 SeRequest seRequest = (SeRequest) args[0];
                 List<ApduRequest> apduRequests = seRequest.getApduRequests();
@@ -1450,7 +1410,7 @@ public class PoTransactionTest {
     }
 
     private ApduResponse getResponses(String name, Map<String, String> cmdRespMap,
-            ApduRequest apduRequest) throws KeypleReaderIOException {
+            ApduRequest apduRequest) {
         String apdu_c = ByteArrayUtil.toHex(apduRequest.getBytes());
         String apdu_r = cmdRespMap.get(apdu_c);
         // return matching hexa response if found

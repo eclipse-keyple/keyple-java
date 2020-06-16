@@ -30,11 +30,17 @@ public abstract class AbstractPoResponseParser extends AbstractApduResponseParse
         super(response, builder);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final AbstractPoCommandBuilder<AbstractPoResponseParser> getBuilder() {
         return (AbstractPoCommandBuilder<AbstractPoResponseParser>) super.getBuilder();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected final KeypleSeCommandException buildCommandException(
             Class<? extends KeypleSeCommandException> exceptionClass, String message,
@@ -68,8 +74,11 @@ public abstract class AbstractPoResponseParser extends AbstractApduResponseParse
         return e;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void checkStatus() throws CalypsoPoCommandException {
+    public void checkStatus() {
         try {
             super.checkStatus();
         } catch (KeypleSeCommandException e) {
