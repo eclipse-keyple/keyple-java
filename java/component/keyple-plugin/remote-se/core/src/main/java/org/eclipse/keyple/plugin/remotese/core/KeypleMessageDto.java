@@ -43,7 +43,7 @@ public class KeypleMessageDto {
      * @return a not empty string.
      * @since 1.0
      */
-    public String getSessionId() {
+    public final String getSessionId() {
         return sessionId;
     }
 
@@ -54,7 +54,7 @@ public class KeypleMessageDto {
      * @return the object instance.
      * @since 1.0
      */
-    public KeypleMessageDto setSessionId(String sessionId) {
+    public final KeypleMessageDto setSessionId(String sessionId) {
         this.sessionId = sessionId;
         return this;
     }
@@ -66,7 +66,7 @@ public class KeypleMessageDto {
      * @return a not empty string.
      * @since 1.0
      */
-    public String getAction() {
+    public final String getAction() {
         return action;
     }
 
@@ -77,7 +77,7 @@ public class KeypleMessageDto {
      * @return the object instance.
      * @since 1.0
      */
-    public KeypleMessageDto setAction(String action) {
+    public final KeypleMessageDto setAction(String action) {
         this.action = action;
         return this;
     }
@@ -88,7 +88,7 @@ public class KeypleMessageDto {
      * @return a not empty string.
      * @since 1.0
      */
-    public String getClientNodeId() {
+    public final String getClientNodeId() {
         return clientNodeId;
     }
 
@@ -99,7 +99,7 @@ public class KeypleMessageDto {
      * @return the object instance.
      * @since 1.0
      */
-    public KeypleMessageDto setClientNodeId(String clientNodeId) {
+    public final KeypleMessageDto setClientNodeId(String clientNodeId) {
         this.clientNodeId = clientNodeId;
         return this;
     }
@@ -112,7 +112,7 @@ public class KeypleMessageDto {
      * @return a null string in case of the first transaction call.
      * @since 1.0
      */
-    public String getServerNodeId() {
+    public final String getServerNodeId() {
         return serverNodeId;
     }
 
@@ -123,7 +123,7 @@ public class KeypleMessageDto {
      * @return the object instance.
      * @since 1.0
      */
-    public KeypleMessageDto setServerNodeId(String serverNodeId) {
+    public final KeypleMessageDto setServerNodeId(String serverNodeId) {
         this.serverNodeId = serverNodeId;
         return this;
     }
@@ -134,7 +134,7 @@ public class KeypleMessageDto {
      * @return a null string in case of a discovering readers call.
      * @since 1.0
      */
-    public String getNativeReaderName() {
+    public final String getNativeReaderName() {
         return nativeReaderName;
     }
 
@@ -145,7 +145,7 @@ public class KeypleMessageDto {
      * @return the object instance.
      * @since 1.0
      */
-    public KeypleMessageDto setNativeReaderName(String nativeReaderName) {
+    public final KeypleMessageDto setNativeReaderName(String nativeReaderName) {
         this.nativeReaderName = nativeReaderName;
         return this;
     }
@@ -156,7 +156,7 @@ public class KeypleMessageDto {
      * @return a null string in case of a discovering readers call.
      * @since 1.0
      */
-    public String getVirtualReaderName() {
+    public final String getVirtualReaderName() {
         return virtualReaderName;
     }
 
@@ -167,7 +167,7 @@ public class KeypleMessageDto {
      * @return the object instance.
      * @since 1.0
      */
-    public KeypleMessageDto setVirtualReaderName(String virtualReaderName) {
+    public final KeypleMessageDto setVirtualReaderName(String virtualReaderName) {
         this.virtualReaderName = virtualReaderName;
         return this;
     }
@@ -178,7 +178,7 @@ public class KeypleMessageDto {
      * @return a null string in case of an error message.
      * @since 1.0
      */
-    public String getBody() {
+    public final String getBody() {
         return body;
     }
 
@@ -189,7 +189,7 @@ public class KeypleMessageDto {
      * @return the object instance.
      * @since 1.0
      */
-    public KeypleMessageDto setBody(String body) {
+    public final KeypleMessageDto setBody(String body) {
         this.body = body;
         return this;
     }
@@ -200,7 +200,7 @@ public class KeypleMessageDto {
      * @return a null string in case of a success message.
      * @since 1.0
      */
-    public String getErrorCode() {
+    public final String getErrorCode() {
         return errorCode;
     }
 
@@ -211,7 +211,7 @@ public class KeypleMessageDto {
      * @return the object instance.
      * @since 1.0
      */
-    public KeypleMessageDto setErrorCode(String errorCode) {
+    public final KeypleMessageDto setErrorCode(String errorCode) {
         this.errorCode = errorCode;
         return this;
     }
@@ -222,7 +222,7 @@ public class KeypleMessageDto {
      * @return a null string in case of a success message.
      * @since 1.0
      */
-    public String getErrorMessage() {
+    public final String getErrorMessage() {
         return errorMessage;
     }
 
@@ -233,7 +233,7 @@ public class KeypleMessageDto {
      * @return the object instance.
      * @since 1.0
      */
-    public KeypleMessageDto setErrorMessage(String errorMessage) {
+    public final KeypleMessageDto setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
         return this;
     }

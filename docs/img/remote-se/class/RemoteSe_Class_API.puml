@@ -1,7 +1,7 @@
 @startuml
 title
     Keyple Plugin Remote SE
-    Public API (10/06/2020)
+    Public API (16/06/2020)
 end title
 
 ' == THEME ==
@@ -78,12 +78,12 @@ package org.eclipse.keyple.plugin.remotese {
         ' Remote Handlers
             +interface "<< <back:#82E0AA>ObservablePlugin</back> >>\nRemoteSeServerPlugin" as RemoteSeServerPlugin {
                 +RemoteSeServerReader getReader (String name)
-                +void terminateService (\n    String virtualReaderName, Object userOutputData)
+                +void terminateService (\n    String virtualReaderName, KeypleUserData userOutputData)
             }
             ' Remote Readers
             +interface "<< <back:#D0ECE7>SeReader</back> >>\nRemoteSeServerReader" as RemoteSeServerReader {
                 +String getServiceId ()
-                +<T> T getUserInputData (\n    Class<T> userInputDataClass)
+                +<T extends KeypleUserData> T getUserInputData (\n    KeypleUserDataFactory<T> userInputDataFactory)
                 +AbstractMatchingSe getInitialSeContent ()
             }
             +interface "<< <back:#FDEBD0>ObservableReader</back> >>\nRemoteSeServerObservableReader" as RemoteSeServerObservableReader extends RemoteSeServerReader {
@@ -200,6 +200,12 @@ package org.eclipse.keyple.plugin.remotese {
             + String errorCode
             + String errorMessage
         }
+        +interface KeypleUserDataFactory<T extends KeypleUserData> {
+            +T getInstance(Map<String, String> data)
+        }
+        +interface KeypleUserData {
+            +Map<String, String> toMap()
+        }
 
         ' Nodes & Senders
             +interface KeypleClientAsyncNode {
@@ -234,13 +240,13 @@ package org.eclipse.keyple.plugin.remotese {
     package nativese {
 
             +interface NativeSeClientService {
-                +<T> T executeRemoteService (\n    RemoteServiceParameters parameters,\n    Class<T> userOutputDataClass)
+                +<T extends KeypleUserData> T executeRemoteService (\n    RemoteServiceParameters parameters,\n    KeypleUserDataFactory<T> userOutputDataFactory)
             }
             +class RemoteServiceParameters {
                 +{static} Builder builder (String serviceId, SeReader nativeReader)
             }
             +class "Builder" as RemoteServiceParametersBuilder {
-                +Builder withUserInputData (Object userInputData)
+                +Builder withUserInputData (KeypleUserData userInputData)
                 +Builder withInitialSeContent (AbstractMatchingSe matchingSe)
                 +RemoteServiceParameters build ()
             }
@@ -336,6 +342,8 @@ KeypleClientSyncNode --> KeypleClientSync #C_LINK : use >
 KeypleClientAsyncNode --> KeypleClientAsync #C_LINK : use >
 KeypleServerAsyncNode -up-> KeypleServerAsync #C_LINK : use >
 
+KeypleUserDataFactory --> KeypleUserData #C_LINK : create >
+
 NativeSeClientService ..> RemoteServiceParameters #C_USE : use >
 RemoteServiceParameters +-- RemoteServiceParametersBuilder #C_LINK
 
@@ -366,7 +374,8 @@ NativeSePoolServerServiceFactoryBuilderStep -[hidden]- NativeSePoolServerUtils
 
 KeypleClientAsync -[hidden]- KeypleServerAsync
 KeypleServerAsyncNode -[hidden]- KeypleMessageDto
-KeypleMessageDto -[hidden]- KeypleClientSyncNode
+KeypleMessageDto -[hidden]- KeypleUserDataFactory
+KeypleUserData -[hidden]- KeypleClientSyncNode
 KeypleClientSync -[hidden]- KeypleServerSyncNode
 
 RemoteServiceParametersBuilder -[hidden]- NativeSeServerService
@@ -446,5 +455,7 @@ KeypleClientAsyncNode <<red>>
 KeypleServerAsyncNode <<red>>
 
 KeypleMessageDto <<grey>>
+KeypleUserDataFactory <<grey>>
+KeypleUserData <<grey>>
 
 @enduml

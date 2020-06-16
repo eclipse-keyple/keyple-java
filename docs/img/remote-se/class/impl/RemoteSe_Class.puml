@@ -1,6 +1,6 @@
 @startuml
 title
-    Keyple Plugin Remote SE (10/06/2020)
+    Keyple Plugin Remote SE (16/06/2020)
 end title
 
 ' == THEME ==
@@ -114,6 +114,12 @@ package org.eclipse.keyple.plugin.remotese {
                 + String errorCode
                 + String errorMessage
             }
+            +interface KeypleUserDataFactory<T extends KeypleUserData> {
+                +T getInstance(Map<String, String> data)
+            }
+            +interface KeypleUserData {
+                +Map<String, String> toMap()
+            }
 
         }
 
@@ -121,7 +127,7 @@ package org.eclipse.keyple.plugin.remotese {
 
             ' Handler
             +abstract AbstractKeypleMessageHandler {
-                # boolean isBindToSyncNode
+                # boolean isBoundToSyncNode
                 # AbstractKeypleMessageHandler ()
                 + void bindClientAsyncNode (KeypleClientAsync endpoint)
                 + void bindServerAsyncNode (KeypleServerAsync endpoint)
@@ -169,11 +175,12 @@ package org.eclipse.keyple.plugin.remotese {
 
             ' Server Push Event Strategy
             +class ServerPushEventStrategy {
-                +ServerPushEventStrategy (StrategyType type)
-                +void setDuration (int duration)
+                +ServerPushEventStrategy (Type type)
+                +ServerPushEventStrategy setDuration (int durationInSeconds)
+                ~Type getType ()
                 ~int getDuration ()
             }
-            +enum StrategyType {
+            +enum Type {
                 POLLING
                 LONG_POLLING
             }
@@ -191,7 +198,7 @@ package org.eclipse.keyple.plugin.remotese {
             +interface NativeSePoolServerService {
             }
             +interface NativeSeClientService {
-                +<T> T executeRemoteService (\n    RemoteServiceParameters parameters,\n    Class<T> userOutputDataClass)
+                +<T extends KeypleUserData> T executeRemoteService (\n    RemoteServiceParameters parameters,\n    KeypleUserDataFactory<T> userOutputDataFactory)
             }
             +class RemoteServiceParameters {
                 +{static} Builder builder (String serviceId, SeReader nativeReader)
@@ -283,7 +290,7 @@ package org.eclipse.keyple.plugin.remotese {
             ' Remote Readers
             +interface "<< <back:#D0ECE7>SeReader</back> >>\nRemoteSeServerReader" as RemoteSeServerReader {
                 +String getServiceId ()
-                +<T> T getUserInputData (Class<T> userInputDataClass)
+                +<T extends KeypleUserData> T getUserInputData (\n    KeypleUserDataFactory<T> userInputDataFactory)
                 +AbstractMatchingSe getInitialSeContent ()
             }
             +interface "<< <back:#FDEBD0>ObservableReader</back> >>\nRemoteSeServerObservableReader" as RemoteSeServerObservableReader extends RemoteSeServerReader {
@@ -383,16 +390,17 @@ AbstractVirtualReader -up-> "node" AbstractKeypleNode #C_LINK
 RemoteSeServerPlugin *--> "1..N" RemoteSeServerReader #C_LINK : readers
 NativeSeClientService -right-> RemoteServiceParameters #C_LINK : use >
 RemoteServiceParameters +-right- RemoteServiceParametersBuilder #C_LINK
-KeypleClientSyncNodeImpl +-up- ServerPushEventStrategy #C_LINK
-ServerPushEventStrategy +-left- StrategyType #C_LINK
-ServerPushEventStrategy *-left-> "type" StrategyType #C_LINK
+ServerPushEventStrategy +-right- Type #C_LINK
+ServerPushEventStrategy *-right-> "type" Type #C_LINK
+KeypleUserDataFactory -right-> KeypleUserData #C_LINK : create >
 
 ' == LAYOUT ==
 
 ObservableReader -[hidden]- AbstractKeypleMessageHandler
 KeypleServerSyncNodeImpl -[hidden]- KeypleMessageDto
+KeypleMessageDto -[hidden]- KeypleUserData
+KeypleUserData -[hidden]- NativeSeClientService
 NativeSeClientService -[hidden]- AbstractNativeSeService
-KeypleMessageDto -[hidden]- NativeSeClientService
 
 NativeSeServerServiceImpl -[hidden]- NativeSeServerServiceFactory
 NativeSeServerServiceFactory -[hidden]- NativeSeServerUtils
@@ -432,7 +440,7 @@ class KeypleServerAsyncNodeImpl <<blue>>
 class KeypleClientSyncNodeImpl <<blue>>
 class KeypleServerSyncNodeImpl <<blue>>
 class ServerPushEventStrategy <<blue>>
-enum StrategyType <<blue>>
+enum Type <<blue>>
 
 abstract AbstractNativeSeService <<red>>
 class NativeSeClientServiceImpl <<red>>

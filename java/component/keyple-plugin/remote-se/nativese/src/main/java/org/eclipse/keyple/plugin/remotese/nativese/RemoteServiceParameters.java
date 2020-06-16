@@ -14,6 +14,7 @@ package org.eclipse.keyple.plugin.remotese.nativese;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.util.Assert;
+import org.eclipse.keyple.plugin.remotese.core.KeypleUserData;
 
 /**
  * This POJO class contains parameters of the method
@@ -23,8 +24,8 @@ import org.eclipse.keyple.core.util.Assert;
  * ticketing service to execute (Materialization, Validation, Control, ...). This field is free and
  * is for the user's use only.</li>
  * <li><b>nativeReader</b> : The native SE reader to manage by the server.</li>
- * <li><b>userInputData</b> (optional) : A POJO with the user input data if you want to transmit
- * data during the call to the remote ticketing service.</li>
+ * <li><b>userInputData</b> (optional) : A {@link KeypleUserData} object with the user input data if
+ * you want to transmit data during the call to the remote ticketing service.</li>
  * <li><b>initialSeContent</b> (optional) : An initial SE content inside an
  * {@link AbstractMatchingSe} to send to the server ticketing service. For Calypso ticketing
  * application, this object will be a <b>CalypsoPo</b> or a <b>CalypsoSam</b>, depending on the
@@ -37,7 +38,7 @@ public class RemoteServiceParameters {
 
     private final String serviceId;
     private final SeReader nativeReader;
-    private final Object userInputData;
+    private final KeypleUserData userInputData;
     private final AbstractMatchingSe initialSeContent;
 
     private RemoteServiceParameters(Builder builder) {
@@ -73,7 +74,7 @@ public class RemoteServiceParameters {
 
         private String serviceId;
         private SeReader nativeReader;
-        private Object userInputData;
+        private KeypleUserData userInputData;
         private AbstractMatchingSe initialSeContent;
 
         private Builder(String serviceId, SeReader nativeReader) {
@@ -84,11 +85,11 @@ public class RemoteServiceParameters {
         /**
          * Add user input data to send to the server ticketing service.
          *
-         * @param userInputData The user input data.
+         * @param userInputData The {@link KeypleUserData} object containing the user input data.
          * @return the builder instance
          * @since 1.0
          */
-        public Builder withUserInputData(Object userInputData) {
+        public Builder withUserInputData(KeypleUserData userInputData) {
             this.userInputData = userInputData;
             return this;
         }
@@ -145,7 +146,7 @@ public class RemoteServiceParameters {
      * @return a nullable reference.
      * @since 1.0
      */
-    public Object getUserInputData() {
+    public KeypleUserData getUserInputData() {
         return userInputData;
     }
 

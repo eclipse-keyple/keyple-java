@@ -1,7 +1,7 @@
 @startuml
 title
     Keyple Plugin Remote SE
-    RemoteSeServerPlugin API (22/05/2020)
+    RemoteSeServerPlugin API (16/06/2020)
     (with an ObservableReader)
 end title
 
@@ -67,7 +67,7 @@ return <color:red>**matchingSe**</color>
 client -> client : prepareUserInputData ()
 
 client -> client : NativeSeClientUtils.getService ()
-client -> nativeSeService : executeRemoteService (\n RemoteServiceParameters\n   .builder(<color:blue>**serviceId**</color>, reader)\n   .withInitialSeContent(<color:red>**matchingSe**</color>)\n   .withUserInputData(<color:green>**userInputData**</color>).build(),\n UserOutputData.class)
+client -> nativeSeService : executeRemoteService (\n RemoteServiceParameters\n   .builder(<color:blue>**serviceId**</color>, reader)\n   .withInitialSeContent(<color:red>**matchingSe**</color>)\n   .withUserInputData(<color:green>**userInputData**</color>).build(),\n UserOutputDataFactory)
 activate nativeSeService #LightBlue
 
 nativeSeService -> remoteSePlugin
@@ -90,7 +90,7 @@ server -> server : Start Ticketing Service
 server -> virtualReader : getInitialSeContent ()
 activate virtualReader #LightBlue
 return <color:red>**matchingSe**</color>
-server -> virtualReader : getUserInputData\n (UserInputData.class)
+server -> virtualReader : getUserInputData\n (UserInputDataFactory)
 activate virtualReader #LightBlue
 return <color:green>**userInputData**</color>
 server -> virtualReader : addObserver (this)
