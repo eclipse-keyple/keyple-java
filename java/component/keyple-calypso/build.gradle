@@ -158,6 +158,15 @@ jacocoTestReport {
 
 test.finalizedBy jacocoTestReport
 
+sonarqube {
+    properties {
+        property "sonar.projectKey", "eclipse_keyple-calypso"
+        property "sonar.organization", "eclipse"
+        property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.login", System.getenv('SONAR_LOGIN')
+    }
+}
+
 dependencies {
     //keyple-core project
     //api project(path: ':java:component:keyple-core')
