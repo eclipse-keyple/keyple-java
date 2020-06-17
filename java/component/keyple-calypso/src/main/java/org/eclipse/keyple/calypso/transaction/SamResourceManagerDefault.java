@@ -76,17 +76,17 @@ public class SamResourceManagerDefault extends SamResourceManager {
                 samReaderPlugin.getName(), samReaderPlugin.getReaders().size(), samReaderFilter);
 
         Pattern p = Pattern.compile(samReaderFilter);
-        Set<String> seReaderNames = samReaderPlugin.getReaders().keySet();
-        for (String seReaderName : seReaderNames) {
-            if (p.matcher(seReaderName).matches()) {
-                logger.trace("Add reader: {}", seReaderName);
+        Set<String> samReadersNames = samReaderPlugin.getReaders().keySet();
+        for (String samReaderName : samReadersNames) {
+            if (p.matcher(samReaderName).matches()) {
+                logger.trace("Add reader: {}", samReaderName);
                 try {
-                    initSamReader(samReaderPlugin.getReader(seReaderName), readerObserver);
+                    initSamReader(samReaderPlugin.getReader(samReaderName), readerObserver);
                 } catch (KeypleReaderException e) {
-                    logger.error("could not init samReader {}", seReaderName, e);
+                    logger.error("could not init samReader {}", samReaderName, e);
                 }
             } else {
-                logger.trace("Reader not matching: {}", seReaderName);
+                logger.trace("Reader not matching: {}", samReaderName);
             }
         }
         if (readerPlugin instanceof ObservablePlugin) {

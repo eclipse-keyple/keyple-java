@@ -135,6 +135,7 @@ public class SamResourceManagerDefaultTest extends CalypsoBaseTest {
         // create the mock plugin
         ReaderPlugin plugin = Mockito.mock(ReaderPlugin.class);
         when(plugin.getReaders()).thenReturn(readers);
+        when(plugin.getReader(SAM_READER_NAME)).thenReturn(reader);
 
         return Mockito.spy(new SamResourceManagerDefault(plugin, samFilter, MAX_BLOCKING_TIME,
                 DEFAULT_SLEEP_TIME));
