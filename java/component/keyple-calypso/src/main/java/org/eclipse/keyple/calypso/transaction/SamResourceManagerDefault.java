@@ -78,14 +78,14 @@ public class SamResourceManagerDefault extends SamResourceManager {
         Pattern p = Pattern.compile(samReaderFilter);
         Set<String> seReaderNames = samReaderPlugin.getReaders().keySet();
         for (String seReaderName : seReaderNames) {
-            if(p.matcher(seReaderName).matches()){
+            if (p.matcher(seReaderName).matches()) {
                 logger.trace("Add reader: {}", seReaderName);
                 try {
                     initSamReader(samReaderPlugin.getReader(seReaderName), readerObserver);
                 } catch (KeypleReaderException e) {
                     logger.error("could not init samReader {}", seReaderName, e);
                 }
-            }else {
+            } else {
                 logger.trace("Reader not matching: {}", seReaderName);
             }
         }
