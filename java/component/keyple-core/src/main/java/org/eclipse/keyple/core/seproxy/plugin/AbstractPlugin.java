@@ -12,10 +12,8 @@
 package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListMap;
-
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.*;
@@ -28,7 +26,8 @@ public abstract class AbstractPlugin extends AbstractSeProxyComponent implements
     /**
      * The list of readers
      */
-    protected ConcurrentMap<String, SeReader> readers = new ConcurrentSkipListMap<String, SeReader>();
+    protected ConcurrentMap<String, SeReader> readers =
+            new ConcurrentSkipListMap<String, SeReader>();
 
     /**
      * Instantiates a new ReaderPlugin. Retrieve the current readers list.
@@ -104,7 +103,7 @@ public abstract class AbstractPlugin extends AbstractSeProxyComponent implements
      * @throws KeypleReaderNotFoundException if the wanted reader is not found
      */
     @Override
-    public final SeReader getReader(String name){
+    public final SeReader getReader(String name) {
         SeReader seReader = readers.get(name);
         if (seReader == null) {
             throw new KeypleReaderNotFoundException(name);
