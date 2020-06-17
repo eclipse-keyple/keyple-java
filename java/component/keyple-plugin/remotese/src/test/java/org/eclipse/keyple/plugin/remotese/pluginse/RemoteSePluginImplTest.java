@@ -12,9 +12,10 @@
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import static org.mockito.Mockito.doReturn;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.NoSuchElementException;
-import java.util.SortedSet;
+import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -69,7 +70,7 @@ public class RemoteSePluginImplTest extends CoreBaseTest {
         RemoteSePluginImpl plugin = new RemoteSePluginImpl(new VirtualReaderSessionFactory(),
                 dtoSender, 10000, "pluginName", Executors.newCachedThreadPool());
 
-        SortedSet<SeReader> readers = plugin.getReaders();
+        ConcurrentMap<String, SeReader> readers = plugin.getReaders();
 
         final CountDownLatch lock = new CountDownLatch(9);
 
@@ -91,12 +92,13 @@ public class RemoteSePluginImplTest extends CoreBaseTest {
     }
 
 
-    public static void listReaders(final SortedSet<SeReader> readers, final int N,
+    public static void listReaders(final ConcurrentMap<String, SeReader> readers, final int N,
             final CountDownLatch lock) {
         Thread thread = new Thread() {
             public void run() {
                 for (int i = 0; i < N; i++) {
-                    for (SeReader reader : readers) {
+                    Collection<SeReader> seReaders = readers.values();
+                    for (SeReader reader : seReaders) {
                         logger.debug("list, readers: {}, reader {}", readers.size(),
                                 reader.getName());
                     }
@@ -114,15 +116,16 @@ public class RemoteSePluginImplTest extends CoreBaseTest {
     }
 
 
-    public static void removeReaderThread(final SortedSet<SeReader> readers, final int N,
-            final CountDownLatch lock) {
+    public static void removeReaderThread(final ConcurrentMap<String, SeReader> readers,
+            final int N, final CountDownLatch lock) {
         Thread thread = new Thread() {
             public void run() {
                 for (int i = 0; i < N; i++) {
-                    try {
-                        readers.remove(readers.first());
-                    } catch (NoSuchElementException e) {
-                        // list is empty
+                    if (readers.size() > 0) {
+                        Map.Entry<String, SeReader> seReader = readers.entrySet().iterator().next();
+                        logger.debug("Removing reader {}", seReader.getKey());
+                        readers.remove(seReader.getKey());
+                    } else {
                         logger.debug("readers: {}, list is empty", readers.size());
                     }
 
@@ -152,7 +155,7 @@ public class RemoteSePluginImplTest extends CoreBaseTest {
                                 plugin.getReaders().size(), readerName);
                         plugin.createVirtualReader("slaveNodeId", readerName, dtoSender,
                                 TransmissionMode.CONTACTS, true, new HashMap<String, String>());
-                    } catch (KeypleReaderException e) {
+                    } catch (Exception e) {
                         success = false;
                         e.printStackTrace();
                     }
