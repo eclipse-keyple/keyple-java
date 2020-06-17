@@ -15,6 +15,8 @@ import org.eclipse.keyple.plugin.remotese.core.*;
 
 /**
  * Abstract Keyple Message Handler.
+ * <p>
+ * This is an internal class an must not be used by the user.
  * 
  * @since 1.0
  */
@@ -25,6 +27,12 @@ public abstract class AbstractKeypleMessageHandler {
      * Indicates whether the handler is bound to a synchronous node.
      */
     protected boolean isBoundToSyncNode;
+
+    /**
+     * (protected)<br>
+     * The bounded node.
+     */
+    protected AbstractKeypleNode node;
 
     /**
      * (protected)<br>
