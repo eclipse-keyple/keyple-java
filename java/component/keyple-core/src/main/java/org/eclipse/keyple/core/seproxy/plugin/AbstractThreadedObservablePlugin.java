@@ -223,7 +223,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                                          */
                                         ((ObservableReader) reader).stopSeDetection();
                                     }
-                                    readers.remove(reader);
+                                    readers.remove(reader.getName());
                                     if (logger.isTraceEnabled()) {
                                         logger.trace(
                                                 "[{}][{}] Plugin thread => Remove unplugged reader from readers list.",

@@ -12,13 +12,11 @@
 package org.eclipse.keyple.plugin.android.nfc
 
 import java.util.HashMap
-import java.util.SortedSet
-import java.util.TreeSet
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentMap
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin
 import timber.log.Timber
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ConcurrentMap
 
 /**
  * Enables Keyple to communicate with the the Android device by providing access to the
