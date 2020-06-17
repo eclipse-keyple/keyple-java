@@ -18,7 +18,6 @@ import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationExcept
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
-import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
 import org.eclipse.keyple.plugin.remotese.transport.DtoHandler;
@@ -47,8 +46,7 @@ public class Integration {
      * @param node
      * @return
      */
-    public static MasterAPI createSpyMasterAPI(DtoNode node, String pluginName)
-            throws KeyplePluginInstantiationException {
+    public static MasterAPI createSpyMasterAPI(DtoNode node, String pluginName) {
 
         // Create Master services : masterAPI
         return Mockito.spy(new MasterAPI(SeProxyService.getInstance(), node, 10000,
@@ -103,7 +101,7 @@ public class Integration {
     }
 
 
-    public static StubPlugin createStubPlugin() throws KeyplePluginNotFoundException {
+    public static StubPlugin createStubPlugin() {
 
         try {
             // get SeProxyService
@@ -176,12 +174,12 @@ public class Integration {
             }
 
             @Override
-            public void sendDTO(TransportDto message) throws KeypleRemoteException {
+            public void sendDTO(TransportDto message) {
 
             }
 
             @Override
-            public void sendDTO(KeypleDto message) throws KeypleRemoteException {
+            public void sendDTO(KeypleDto message) {
 
             }
 

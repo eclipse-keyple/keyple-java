@@ -41,13 +41,13 @@ public abstract class SamResourceManagerFactory {
      * @return SamResourceManager working with a default plugin
      */
     public static SamResourceManager instantiate(ReaderPlugin readerPlugin, String samReaderFilter,
-            int maxBlockingTime, int sleepTime) throws KeypleReaderException {
+            int maxBlockingTime, int sleepTime) {
         return new SamResourceManagerDefault(readerPlugin, samReaderFilter, maxBlockingTime,
                 sleepTime);
     }
 
-    static public SamResourceManager instantiate(ReaderPlugin readerPlugin, String samReaderFilter)
-            throws KeypleReaderException {
+    public static SamResourceManager instantiate(ReaderPlugin readerPlugin,
+            String samReaderFilter) {
         return new SamResourceManagerDefault(readerPlugin, samReaderFilter, MAX_BLOCKING_TIME,
                 DEFAULT_SLEEP_TIME);
     }

@@ -31,7 +31,7 @@ public interface PluginFactory {
      * @throws KeyplePluginInstantiationException if instantiation failed, mostly when the third
      *         party library which manages the Se Reader interface is not ready
      */
-    ReaderPlugin getPluginInstance() throws KeyplePluginInstantiationException;
+    ReaderPlugin getPluginInstance();
 
 
 }

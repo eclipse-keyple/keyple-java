@@ -32,7 +32,7 @@ public class PcscPluginFactory implements PluginFactory {
      * @throws KeyplePluginInstantiationException if Smartcard.io library is not ready
      */
     @Override
-    public ReaderPlugin getPluginInstance() throws KeyplePluginInstantiationException {
+    public ReaderPlugin getPluginInstance() {
         try {
             return PcscPluginImpl.getInstance();
         } catch (Exception e) {

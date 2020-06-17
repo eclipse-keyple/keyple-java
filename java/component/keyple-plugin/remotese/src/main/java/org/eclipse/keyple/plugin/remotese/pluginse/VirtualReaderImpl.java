@@ -106,8 +106,7 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
      */
     @Override
     protected List<SeResponse> processSeRequests(List<SeRequest> seRequests,
-            MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
-            throws KeypleReaderIOException {
+            MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl) {
 
         RmTransmitSetTx transmit = new RmTransmitSetTx(seRequests, multiSeRequestProcessing,
                 channelControl, session.getSessionId(), this.getNativeReaderName(), this.getName(),
@@ -133,8 +132,7 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
-    protected SeResponse processSeRequest(SeRequest seRequest, ChannelControl channelControl)
-            throws KeypleReaderIOException {
+    protected SeResponse processSeRequest(SeRequest seRequest, ChannelControl channelControl) {
 
         RmTransmitTx transmit = new RmTransmitTx(seRequest, channelControl, session.getSessionId(),
                 this.getNativeReaderName(), this.getName(), session.getMasterNodeId(),
@@ -170,7 +168,7 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
     }
 
     @Override
-    public void setParameter(String key, String value) throws KeypleReaderIOException {
+    public void setParameter(String key, String value) {
         parameters.put(key, value);
     }
 

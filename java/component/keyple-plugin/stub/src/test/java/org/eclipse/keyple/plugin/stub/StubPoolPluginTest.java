@@ -45,8 +45,7 @@ public class StubPoolPluginTest extends BaseStubTest {
      * Plug a pool reader
      */
     @Test
-    public void plugStubPoolReader_success()
-            throws KeypleReaderException, KeyplePluginInstantiationException {
+    public void plugStubPoolReader_success() {
         StubPoolPluginImpl stubPoolPlugin =
                 (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)
                         .getPluginInstance();

@@ -13,7 +13,6 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 
 /**
@@ -33,8 +32,7 @@ public interface RemoteSePlugin extends ReaderPlugin, ObservablePlugin {
      * @return corresponding Virtual reader if exists
      * @throws KeypleReaderNotFoundException if no virtual reader match the native reader name
      */
-    VirtualReader getReaderByRemoteName(String remoteName, String slaveNodeId)
-            throws KeypleReaderNotFoundException;
+    VirtualReader getReaderByRemoteName(String remoteName, String slaveNodeId);
 
 
     /**
@@ -45,8 +43,7 @@ public interface RemoteSePlugin extends ReaderPlugin, ObservablePlugin {
      * @param slaveNodeId : slave node Id of the reader to disconnect
      * @throws KeypleReaderNotFoundException if no virtual reader match the native reader name
      */
-    void disconnectVirtualReader(String remoteName, String slaveNodeId)
-            throws KeypleReaderException;
+    void disconnectVirtualReader(String remoteName, String slaveNodeId);
 
 
 }

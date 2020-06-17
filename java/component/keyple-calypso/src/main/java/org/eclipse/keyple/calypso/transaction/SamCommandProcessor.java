@@ -103,8 +103,7 @@ class SamCommandProcessor {
      * @throws CalypsoDesynchronizedExchangesException if the APDU SAM exchanges are out of sync
      * @throws CalypsoSamCommandException if the SAM has responded with an error status
      */
-    byte[] getSessionTerminalChallenge() throws CalypsoSamIOException,
-            CalypsoDesynchronizedExchangesException, CalypsoSamCommandException {
+    byte[] getSessionTerminalChallenge() {
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
 
         // diversify only if this has not already been done.
@@ -359,8 +358,7 @@ class SamCommandProcessor {
      * @throws CalypsoDesynchronizedExchangesException if the APDU SAM exchanges are out of sync
      * @throws CalypsoSamCommandException if the SAM has responded with an error status
      */
-    byte[] getTerminalSignature() throws CalypsoSamIOException,
-            CalypsoDesynchronizedExchangesException, CalypsoSamCommandException {
+    byte[] getTerminalSignature() {
 
         // All remaining SAM digest operations will now run at once.
         // Get the SAM Digest request including Digest Close from the cache manager
@@ -415,8 +413,7 @@ class SamCommandProcessor {
      * @throws CalypsoDesynchronizedExchangesException if the APDU SAM exchanges are out of sync
      * @throws CalypsoSamCommandException if the SAM has responded with an error status
      */
-    void authenticatePoSignature(byte[] poSignatureLo) throws CalypsoSamIOException,
-            CalypsoSamCommandException, CalypsoDesynchronizedExchangesException {
+    void authenticatePoSignature(byte[] poSignatureLo) {
         // Check the PO signature part with the SAM
         // Build and send SAM Digest Authenticate command
         DigestAuthenticateCmdBuild digestAuthenticateCmdBuild = new DigestAuthenticateCmdBuild(

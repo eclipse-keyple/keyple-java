@@ -21,7 +21,6 @@ import org.eclipse.keyple.calypso.CalypsoBaseTest;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
 import org.eclipse.keyple.core.seproxy.*;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
@@ -50,7 +49,7 @@ public class SamResourceManagerDefaultTest extends CalypsoBaseTest {
     }
 
     @Test
-    public void waitResources() throws KeypleReaderException {
+    public void waitResources() {
         // init SamResourceManager with a not mathching filter
         SamResourceManagerDefault srmSpy = srmSpy("notMatchingFilter");
         long start = System.currentTimeMillis();
@@ -75,8 +74,7 @@ public class SamResourceManagerDefaultTest extends CalypsoBaseTest {
     }
 
     @Test
-    public void getSamResource()
-            throws KeypleReaderException, CalypsoNoSamResourceAvailableException {
+    public void getSamResource() {
 
         // init SamResourceManager with a mathching filter
         SamResourceManagerDefault srmSpy = srmSpy(".*");
@@ -116,7 +114,7 @@ public class SamResourceManagerDefaultTest extends CalypsoBaseTest {
 
 
     // get a sam manager spy with a selectable sam
-    SamResourceManagerDefault srmSpy(String samFilter) throws KeypleReaderException {
+    SamResourceManagerDefault srmSpy(String samFilter) {
 
         List<SeResponse> selectionResponses = new ArrayList<SeResponse>();
         selectionResponses.add(samSelectionSuccess());

@@ -26,7 +26,7 @@ public class SamWriteKeyRespParsTest {
     private static final String SW1SW2_OK = "9000";
 
     @Test(expected = CalypsoSamCommandException.class)
-    public void samWriteKeyRespPars_badStatus() throws CalypsoSamCommandException {
+    public void samWriteKeyRespPars_badStatus() {
         SamWriteKeyRespPars samWriteKeyRespPars = new SamWriteKeyRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null), null);
         samWriteKeyRespPars.checkStatus();
@@ -34,7 +34,7 @@ public class SamWriteKeyRespParsTest {
     }
 
     @Test
-    public void samWriteKeyRespPars_goodStatus() throws CalypsoSamCommandException {
+    public void samWriteKeyRespPars_goodStatus() {
         SamWriteKeyRespPars samWriteKeyRespPars = new SamWriteKeyRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_OK), null), null);
         samWriteKeyRespPars.checkStatus();

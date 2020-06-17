@@ -26,7 +26,7 @@ public class UnlockRespParsTest {
     private static final String SW1SW2_OK = "9000";
 
     @Test(expected = CalypsoSamCommandException.class)
-    public void unlockRespPars_badStatus() throws CalypsoSamCommandException {
+    public void unlockRespPars_badStatus() {
         UnlockRespPars unlockRespPars =
                 new UnlockRespPars(new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null), null);
         unlockRespPars.checkStatus();
@@ -34,7 +34,7 @@ public class UnlockRespParsTest {
     }
 
     @Test
-    public void unlockRespPars_goodStatus() throws CalypsoSamCommandException {
+    public void unlockRespPars_goodStatus() {
         UnlockRespPars unlockRespPars =
                 new UnlockRespPars(new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_OK), null), null);
         unlockRespPars.checkStatus();

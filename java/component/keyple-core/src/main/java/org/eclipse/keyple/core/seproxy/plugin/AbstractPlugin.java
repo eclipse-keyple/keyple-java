@@ -37,7 +37,7 @@ public abstract class AbstractPlugin extends AbstractSeProxyComponent implements
      * @param name name of the plugin
      * @throws KeypleReaderException when an issue is raised with reader
      */
-    protected AbstractPlugin(String name) throws KeypleReaderException {
+    protected AbstractPlugin(String name) {
         super(name);
         readers.addAll(initNativeReaders());
     }
@@ -82,7 +82,7 @@ public abstract class AbstractPlugin extends AbstractSeProxyComponent implements
      * @return the list of AbstractReader objects.
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    protected abstract SortedSet<SeReader> initNativeReaders() throws KeypleReaderIOException;
+    protected abstract SortedSet<SeReader> initNativeReaders();
 
     /**
      * Compare the name of the current ReaderPlugin to the name of the ReaderPlugin provided in
@@ -104,7 +104,7 @@ public abstract class AbstractPlugin extends AbstractSeProxyComponent implements
      * @throws KeypleReaderNotFoundException if the wanted reader is not found
      */
     @Override
-    public final SeReader getReader(String name) throws KeypleReaderNotFoundException {
+    public final SeReader getReader(String name) {
         for (SeReader reader : readers) {
             if (reader.getName().equals(name)) {
                 return reader;

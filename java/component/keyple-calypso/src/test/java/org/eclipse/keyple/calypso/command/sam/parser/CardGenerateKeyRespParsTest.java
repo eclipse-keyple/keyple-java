@@ -29,7 +29,7 @@ public class CardGenerateKeyRespParsTest {
     private static final String APDU_GENERATE_KEY = CIPHERED_DATA + SW1SW2_OK;
 
     @Test(expected = CalypsoSamCommandException.class)
-    public void cardGenerateKeyRespPars_badStatus() throws CalypsoSamCommandException {
+    public void cardGenerateKeyRespPars_badStatus() {
         CardGenerateKeyRespPars cardGenerateKeyRespPars = new CardGenerateKeyRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null), null);
         cardGenerateKeyRespPars.checkStatus();
@@ -37,8 +37,7 @@ public class CardGenerateKeyRespParsTest {
     }
 
     @Test
-    public void cardGenerateKeyRespPars_goodStatus_getSignature()
-            throws CalypsoSamCommandException {
+    public void cardGenerateKeyRespPars_goodStatus_getSignature() {
         CardGenerateKeyRespPars cardGenerateKeyRespPars = new CardGenerateKeyRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(APDU_GENERATE_KEY), null), null);
         cardGenerateKeyRespPars.checkStatus();

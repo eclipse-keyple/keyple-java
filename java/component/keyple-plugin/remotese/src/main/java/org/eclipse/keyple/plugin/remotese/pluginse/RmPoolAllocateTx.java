@@ -60,7 +60,7 @@ public class RmPoolAllocateTx extends AbstractRemoteMethodTx<SeReader> {
 
 
     @Override
-    protected SeReader parseResponse(KeypleDto keypleDto) throws KeypleRemoteException {
+    protected SeReader parseResponse(KeypleDto keypleDto) {
         logger.trace("KeypleDto : {}", keypleDto);
         if (KeypleDtoHelper.containsException(keypleDto)) {
             logger.trace("KeypleDto contains an exception: {}", keypleDto);

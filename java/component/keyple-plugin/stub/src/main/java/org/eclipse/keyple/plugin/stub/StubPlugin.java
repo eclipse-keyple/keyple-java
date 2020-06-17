@@ -58,7 +58,7 @@ public interface StubPlugin extends ObservablePlugin {
      * @param synchronous : should the stubreader be removed synchronously (without waiting for the
      *        observation thread). An READER_DISCONNECTED event is raised in both cases
      */
-    void unplugStubReader(String name, Boolean synchronous) throws KeypleReaderException;
+    void unplugStubReader(String name, Boolean synchronous);
 
     /**
      * Unplug a list of readers

@@ -88,6 +88,7 @@ allprojects {
         // 5. Change highly optional. Nice to have, such as a consistent naming policy for package/class/fields…
         rulePriority = 1
     }
+
 }
 
 task setVersion {

@@ -177,7 +177,7 @@ public class SlaveAPITest {
      * @throws Exception
      */
     @Test
-    public void testKOConnectError() throws KeypleReaderException {
+    public void testKOConnectError() {
 
         // first connectReader is successful
         String sessionId = spySlaveAPI.connectReader(nativeReader);

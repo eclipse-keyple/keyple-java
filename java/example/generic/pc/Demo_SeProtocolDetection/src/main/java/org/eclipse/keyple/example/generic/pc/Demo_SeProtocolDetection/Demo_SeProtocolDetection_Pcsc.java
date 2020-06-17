@@ -47,7 +47,7 @@ public class Demo_SeProtocolDetection_Pcsc {
      * @throws IllegalArgumentException in case of a bad argument
      * @throws KeypleException if a reader error occurs
      */
-    public static void main(String[] args) throws KeypleException {
+    public static void main(String[] args) {
         // get the SeProxyService instance
         SeProxyService seProxyService = SeProxyService.getInstance();
 

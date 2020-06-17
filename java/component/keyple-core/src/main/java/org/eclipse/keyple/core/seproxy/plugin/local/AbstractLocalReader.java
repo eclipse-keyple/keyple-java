@@ -82,9 +82,10 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * through a call to the processSeRemoved method.
      *
      * @return true if the SE is present
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
-    public boolean isSePresent() throws KeypleReaderIOException {
+    public boolean isSePresent() {
         return checkSePresence();
     }
 
@@ -99,7 +100,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * @return true if the SE is present
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    protected abstract boolean checkSePresence() throws KeypleReaderIOException;
+    protected abstract boolean checkSePresence();
 
 
     /* ==== Physical and logical channels management ====================== */
@@ -140,9 +141,9 @@ public abstract class AbstractLocalReader extends AbstractReader {
      *
      * @param aidSelector used to retrieve the successful status codes from the main AidSelector
      * @return a ApduResponse containing the FCI
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    private ApduResponse recoverSelectionFciData(SeSelector.AidSelector aidSelector)
-            throws KeypleReaderIOException {
+    private ApduResponse recoverSelectionFciData(SeSelector.AidSelector aidSelector) {
         ApduResponse fciResponse;
         // Get Data APDU: CLA, INS, P1: always 0, P2: 0x6F FCI for the current DF, LC: 0
         byte[] getDataCommand = {(byte) 0x00, (byte) 0xCA, (byte) 0x00, (byte) 0x6F, (byte) 0x00};
@@ -168,8 +169,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * @return the response to the select application command
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    private ApduResponse processExplicitAidSelection(SeSelector.AidSelector aidSelector)
-            throws KeypleReaderIOException {
+    private ApduResponse processExplicitAidSelection(SeSelector.AidSelector aidSelector) {
         ApduResponse fciResponse;
         final byte[] aid = aidSelector.getAidToSelect();
         if (aid == null) {
@@ -232,8 +232,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * @deprecated will change in a later version
      */
     @Deprecated
-    protected SelectionStatus openLogicalChannel(SeSelector seSelector)
-            throws KeypleReaderIOException {
+    protected SelectionStatus openLogicalChannel(SeSelector seSelector) {
         byte[] atr = getATR();
         boolean selectionHasMatched = true;
         SelectionStatus selectionStatus;
@@ -320,8 +319,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * @deprecated will change in a later version
      */
     @Deprecated
-    protected final SelectionStatus openLogicalChannelAndSelect(SeSelector seSelector)
-            throws KeypleReaderIOException {
+    protected final SelectionStatus openLogicalChannelAndSelect(SeSelector seSelector) {
 
         SelectionStatus selectionStatus;
 
@@ -352,7 +350,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      *
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    protected abstract void openPhysicalChannel() throws KeypleReaderIOException;
+    protected abstract void openPhysicalChannel();
 
     /**
      * Closes the current physical channel.
@@ -361,7 +359,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      *
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    protected abstract void closePhysicalChannel() throws KeypleReaderIOException;
+    protected abstract void closePhysicalChannel();
 
     /**
      * Tells if the physical channel is open or not
@@ -443,8 +441,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * @return true if the current protocol matches the provided protocol flag
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    protected abstract boolean protocolFlagMatches(SeProtocol protocolFlag)
-            throws KeypleReaderIOException;
+    protected abstract boolean protocolFlagMatches(SeProtocol protocolFlag);
 
     /* ==== SeRequestSe and SeRequest transmission management ============= */
 
@@ -464,8 +461,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      */
     @Override
     protected final List<SeResponse> processSeRequests(List<SeRequest> seRequests,
-            MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
-            throws KeypleReaderIOException {
+            MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl) {
 
         boolean[] requestMatchesProtocol = new boolean[seRequests.size()];
         int requestIndex = 0;
@@ -590,8 +586,8 @@ public abstract class AbstractLocalReader extends AbstractReader {
     @SuppressWarnings({"PMD.ModifiedCyclomaticComplexity", "PMD.CyclomaticComplexity",
             "PMD.StdCyclomaticComplexity", "PMD.NPathComplexity", "PMD.ExcessiveMethodLength"})
     @Override
-    protected final SeResponse processSeRequest(SeRequest seRequest, ChannelControl channelControl)
-            throws KeypleReaderIOException {
+    protected final SeResponse processSeRequest(SeRequest seRequest,
+            ChannelControl channelControl) {
 
         SeResponse seResponse = null;
 
@@ -656,7 +652,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * @return seResponse
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    private SeResponse processSeRequestLogical(SeRequest seRequest) throws KeypleReaderIOException {
+    private SeResponse processSeRequestLogical(SeRequest seRequest) {
         boolean previouslyOpen = true;
         SelectionStatus selectionStatus = null;
 
@@ -786,8 +782,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * @return APDU response
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    private ApduResponse processApduRequest(ApduRequest apduRequest)
-            throws KeypleReaderIOException {
+    private ApduResponse processApduRequest(ApduRequest apduRequest) {
         ApduResponse apduResponse;
         if (logger.isDebugEnabled()) {
             long timeStamp = System.nanoTime();
@@ -826,8 +821,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * @return ApduResponse the response to the get response command
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    private ApduResponse case4HackGetResponse(int originalStatusCode)
-            throws KeypleReaderIOException {
+    private ApduResponse case4HackGetResponse(int originalStatusCode) {
         /*
          * build a get response command the actual length expected by the SE in the get response
          * command is handled in transmitApdu
@@ -876,5 +870,5 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * @return apduResponse byte buffer containing the outgoing data.
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    protected abstract byte[] transmitApdu(byte[] apduIn) throws KeypleReaderIOException;
+    protected abstract byte[] transmitApdu(byte[] apduIn);
 }

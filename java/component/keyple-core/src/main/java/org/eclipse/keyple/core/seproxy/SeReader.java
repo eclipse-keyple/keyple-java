@@ -35,7 +35,7 @@ public interface SeReader extends ProxyElement, Comparable<SeReader> {
      * @return true if a Secure Element is present in the reader
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    boolean isSePresent() throws KeypleReaderIOException;
+    boolean isSePresent();
 
     /**
      * A protocol setting is an association that establish the link between a protocol identifier

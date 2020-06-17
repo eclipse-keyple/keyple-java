@@ -26,7 +26,7 @@ public class DigestUpdateRespParsTest {
     private static final String SW1SW2_OK = "9000";
 
     @Test(expected = CalypsoSamCommandException.class)
-    public void digestUpdateRespPars_badStatus() throws CalypsoSamCommandException {
+    public void digestUpdateRespPars_badStatus() {
         DigestUpdateRespPars digestUpdateRespPars = new DigestUpdateRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null), null);
         digestUpdateRespPars.checkStatus();
@@ -34,7 +34,7 @@ public class DigestUpdateRespParsTest {
     }
 
     @Test
-    public void digestUpdateRespPars_goodStatus() throws CalypsoSamCommandException {
+    public void digestUpdateRespPars_goodStatus() {
         DigestUpdateRespPars digestUpdateRespPars = new DigestUpdateRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_OK), null), null);
         digestUpdateRespPars.checkStatus();

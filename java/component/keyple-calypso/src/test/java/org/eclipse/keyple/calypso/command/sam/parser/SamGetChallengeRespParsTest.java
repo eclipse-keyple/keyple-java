@@ -29,7 +29,7 @@ public class SamGetChallengeRespParsTest {
     private static final String APDU_GET_CHALLENGE = SAM_CHALLENGE + SW1SW2_OK;
 
     @Test(expected = CalypsoSamCommandException.class)
-    public void samGetChallengeRespPars_badStatus() throws CalypsoSamCommandException {
+    public void samGetChallengeRespPars_badStatus() {
         SamGetChallengeRespPars samGetChallengeRespPars = new SamGetChallengeRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null), null);
         samGetChallengeRespPars.checkStatus();
@@ -37,8 +37,7 @@ public class SamGetChallengeRespParsTest {
     }
 
     @Test
-    public void samGetChallengeRespPars_goodStatus_getSignature()
-            throws CalypsoSamCommandException {
+    public void samGetChallengeRespPars_goodStatus_getSignature() {
         SamGetChallengeRespPars samGetChallengeRespPars = new SamGetChallengeRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex(APDU_GET_CHALLENGE), null), null);
         samGetChallengeRespPars.checkStatus();

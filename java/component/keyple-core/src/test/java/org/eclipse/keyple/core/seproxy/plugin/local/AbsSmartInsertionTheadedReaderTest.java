@@ -20,7 +20,6 @@ import java.util.concurrent.CountDownLatch;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.plugin.mock.BlankSmartInsertionTheadedReader;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -55,7 +54,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
 
 
     @Before
-    public void setUp() throws KeypleReaderException {
+    public void setUp() {
         logger.info("------------------------------");
         logger.info("Test {}", name.getMethodName() + "");
         logger.info("------------------------------");

@@ -13,7 +13,6 @@ package org.eclipse.keyple.example.common.generic;
 
 
 import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
-import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalArgumentException;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
@@ -22,7 +21,6 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 
 /**
@@ -51,8 +49,7 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
         this.poReader = poReader;
     }
 
-    public AbstractDefaultSelectionsRequest prepareSeSelection()
-            throws CalypsoPoIllegalArgumentException {
+    public AbstractDefaultSelectionsRequest prepareSeSelection() {
 
         seSelection = new SeSelection();
 
@@ -100,8 +97,7 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
      * {@link AbstractDefaultSelectionsResponse} showing the APDUs exchanges
      */
     @Override
-    public void processSeMatch(AbstractDefaultSelectionsResponse defaultSelectionsResponse)
-            throws KeypleException {
+    public void processSeMatch(AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
         /* get the SE that matches one of the two selection targets */
         if (seSelection.processDefaultSelection(defaultSelectionsResponse).hasActiveSelection()) {
             AbstractMatchingSe selectedSe = seSelection

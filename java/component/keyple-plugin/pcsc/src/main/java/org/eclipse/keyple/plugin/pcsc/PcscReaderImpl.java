@@ -141,8 +141,11 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                 AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    protected void closePhysicalChannel() throws KeypleReaderIOException {
+    protected void closePhysicalChannel() {
         try {
             if (card != null) {
                 logger.debug("[{}] closePhysicalChannel => closing the channel.", this.getName());
@@ -159,8 +162,11 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    protected boolean checkSePresence() throws KeypleReaderIOException {
+    protected boolean checkSePresence() {
         try {
             return terminal.isCardPresent();
         } catch (CardException e) {
@@ -170,11 +176,12 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         }
     }
 
-    /*
-     * Implements from SmartInsertionReader
+    /**
+     * Implements from SmartInsertionReader<br>
+     * {@inheritDoc}
      */
     @Override
-    public boolean waitForCardPresent() throws KeypleReaderIOException {
+    public boolean waitForCardPresent() {
         logger.debug("[{}] waitForCardPresent => loop with latency of {} ms.", this.getName(),
                 INSERT_LATENCY);
 
@@ -212,8 +219,9 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
 
     }
 
-    /*
-     * Implements from SmartInsertionReader
+    /**
+     * Implements from SmartInsertionReader<br>
+     * {@inheritDoc}
      */
     @Override
     public void stopWaitForCard() {
@@ -222,12 +230,11 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
 
 
     /**
-     * Wait for the card absent event from smartcard.io
-     * 
-     * @return true if the card is removed within the delay
+     * Wait for the card absent event from smartcard.io<br>
+     * {@inheritDoc}
      */
     @Override
-    public boolean waitForCardAbsentNative() throws KeypleReaderIOException {
+    public boolean waitForCardAbsentNative() {
         logger.debug("[{}] waitForCardAbsentNative => loop with latency of {} ms.", this.getName(),
                 REMOVAL_LATENCY);
 
@@ -262,8 +269,9 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         }
     }
 
-    /*
-     * Implements from SmartRemovalReader
+    /**
+     * Implements from SmartRemovalReader<br>
+     * {@inheritDoc}
      */
     @Override
     public void stopWaitForCardRemoval() {
@@ -271,14 +279,10 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     }
 
     /**
-     * Transmission of single APDU
-     *
-     * @param apduIn APDU in buffer
-     * @return apduOut buffer
-     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+     * {@inheritDoc}
      */
     @Override
-    protected byte[] transmitApdu(byte[] apduIn) throws KeypleReaderIOException {
+    protected byte[] transmitApdu(byte[] apduIn) {
         ResponseAPDU apduResponseData;
 
         if (channel != null) {
@@ -307,7 +311,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
-    protected boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderIOException {
+    protected boolean protocolFlagMatches(SeProtocol protocolFlag) {
         boolean result;
         // Test protocolFlag to check if ATR based protocol filtering is required
         if (protocolFlag != null) {
@@ -375,7 +379,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
      *         when disabling the exclusive mode as it's executed instantly
      */
     @Override
-    public void setParameter(String name, String value) throws KeypleReaderIOException {
+    public void setParameter(String name, String value) {
 
         logger.debug("[{}] setParameter => PCSC: Set a parameter. NAME = {}, VALUE = {}",
                 this.getName(), name, value);
@@ -496,7 +500,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
-    protected void openPhysicalChannel() throws KeypleReaderIOException {
+    protected void openPhysicalChannel() {
         // init of the physical SE channel: if not yet established, opening of a new physical
         // channel
         try {

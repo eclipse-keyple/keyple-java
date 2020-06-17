@@ -56,7 +56,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
      * @throws KeypleReaderException thrown if an error occurs while getting the readers list.
      */
     protected SamResourceManagerDefault(ReaderPlugin readerPlugin, String samReaderFilter,
-            int maxBlockingTime, int sleepTime) throws KeypleReaderException {
+            int maxBlockingTime, int sleepTime) {
         /*
          * Assign parameters
          */
@@ -126,7 +126,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
 
     @Override
     public SamResource allocateSamResource(AllocationMode allocationMode,
-            SamIdentifier samIdentifier) throws CalypsoNoSamResourceAvailableException {
+            SamIdentifier samIdentifier) {
         long maxBlockingDate = System.currentTimeMillis() + maxBlockingTime;
         boolean noSamResourceLogged = false;
         logger.trace("Allocating SAM reader channel...");
@@ -377,8 +377,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
         return false;
     }
 
-    private void initSamReader(SeReader samReader, ReaderObserver readerObserver)
-            throws KeypleReaderException {
+    private void initSamReader(SeReader samReader, ReaderObserver readerObserver) {
         samReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO7816_3, ".*");
 
         /*
