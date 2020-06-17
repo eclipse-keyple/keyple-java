@@ -12,6 +12,7 @@
 package org.eclipse.keyple.plugin.remotese.nativese;
 
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -342,7 +343,8 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
     public SeReader findLocalReader(String nativeReaderName) {
         logger.trace("Find local reader by name {} in {} plugin(s)", nativeReaderName,
                 seProxyService.getPlugins().size());
-        for (ReaderPlugin plugin : seProxyService.getPlugins()) {
+        final Collection<ReaderPlugin> plugins = seProxyService.getPlugins().values();
+        for (ReaderPlugin plugin : plugins) {
             try {
                 return plugin.getReader(nativeReaderName);
             } catch (KeypleReaderNotFoundException e) {

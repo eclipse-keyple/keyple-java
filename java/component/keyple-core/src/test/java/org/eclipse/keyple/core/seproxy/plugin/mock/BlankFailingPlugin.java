@@ -13,6 +13,7 @@ package org.eclipse.keyple.core.seproxy.plugin.mock;
 
 import java.util.Map;
 import java.util.SortedSet;
+import java.util.concurrent.ConcurrentMap;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
@@ -37,7 +38,7 @@ public class BlankFailingPlugin extends AbstractThreadedObservablePlugin {
     }
 
     @Override
-    protected SortedSet<SeReader> initNativeReaders() {
+    protected ConcurrentMap<String, SeReader> initNativeReaders() {
         throw new KeypleReaderIOException("");
     }
 

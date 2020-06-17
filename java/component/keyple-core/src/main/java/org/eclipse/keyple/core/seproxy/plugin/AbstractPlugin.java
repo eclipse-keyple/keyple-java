@@ -11,8 +11,11 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
-import java.util.SortedSet;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ConcurrentSkipListMap;
+
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.*;
@@ -25,7 +28,7 @@ public abstract class AbstractPlugin extends AbstractSeProxyComponent implements
     /**
      * The list of readers
      */
-    protected ConcurrentSkipListSet<SeReader> readers = new ConcurrentSkipListSet<SeReader>();
+    protected ConcurrentMap<String, SeReader> readers = new ConcurrentSkipListMap<String, SeReader>();
 
     /**
      * Instantiates a new ReaderPlugin. Retrieve the current readers list.
@@ -39,19 +42,19 @@ public abstract class AbstractPlugin extends AbstractSeProxyComponent implements
      */
     protected AbstractPlugin(String name) {
         super(name);
-        readers.addAll(initNativeReaders());
+        readers.putAll(initNativeReaders());
     }
 
     /**
-     * Returns the current readers list.
+     * Returns the current readers name instance map.
      *
-     * The list is initialized in the constructor and may be updated in background in the case of a
+     * The map is initialized in the constructor and may be updated in background in the case of a
      * threaded plugin {@link AbstractThreadedObservablePlugin}
      *
-     * @return the current reader list, can be an empty list
+     * @return the current readers map, can be an empty
      */
     @Override
-    public final SortedSet<SeReader> getReaders() {
+    public final ConcurrentMap<String, SeReader> getReaders() {
         return readers;
     }
 
@@ -63,26 +66,23 @@ public abstract class AbstractPlugin extends AbstractSeProxyComponent implements
      * @return a list of String
      */
     @Override
-    public final SortedSet<String> getReaderNames() {
-        SortedSet<String> readerNames = new ConcurrentSkipListSet<String>();
-        for (SeReader reader : readers) {
-            readerNames.add(reader.getName());
-        }
-        return readerNames;
+    public final Set<String> getReaderNames() {
+        return readers.keySet();
     }
 
     /**
-     * Init connected native readers (from third party library) and returns a list of corresponding
-     * {@link SeReader}
+     * Init connected native readers (from third party library) and returns a map of corresponding
+     * {@link SeReader} whith their name as key.
      * <p>
      * {@link SeReader} are new instances.
      * <p>
      * this method is called once in the plugin constructor.
      *
-     * @return the list of AbstractReader objects.
+     * @return the map of AbstractReader objects.
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    protected abstract SortedSet<SeReader> initNativeReaders();
+    protected abstract ConcurrentMap<String, SeReader> initNativeReaders()
+            throws KeypleReaderIOException;
 
     /**
      * Compare the name of the current ReaderPlugin to the name of the ReaderPlugin provided in
@@ -104,12 +104,11 @@ public abstract class AbstractPlugin extends AbstractSeProxyComponent implements
      * @throws KeypleReaderNotFoundException if the wanted reader is not found
      */
     @Override
-    public final SeReader getReader(String name) {
-        for (SeReader reader : readers) {
-            if (reader.getName().equals(name)) {
-                return reader;
-            }
+    public final SeReader getReader(String name){
+        SeReader seReader = readers.get(name);
+        if (seReader == null) {
+            throw new KeypleReaderNotFoundException(name);
         }
-        throw new KeypleReaderNotFoundException(name);
+        return seReader;
     }
 }

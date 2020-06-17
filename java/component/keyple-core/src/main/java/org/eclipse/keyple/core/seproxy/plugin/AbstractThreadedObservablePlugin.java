@@ -197,7 +197,8 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                          */
                         /* build changed reader names list */
                         changedReaderNames.clear();
-                        for (SeReader reader : readers) {
+                        final Collection<SeReader> readerCollection = readers.values();
+                        for (SeReader reader : readerCollection) {
                             if (!actualNativeReadersNames.contains(reader.getName())) {
                                 changedReaderNames.add(reader.getName());
                             }
@@ -211,7 +212,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                             notifyObservers(new PluginEvent(this.pluginName, changedReaderNames,
                                     PluginEvent.EventType.READER_DISCONNECTED));
                             /* list update */
-                            for (SeReader reader : readers) {
+                            for (SeReader reader : readerCollection) {
                                 if (!actualNativeReadersNames.contains(reader.getName())) {
                                     /* removes any possible observers before removing the reader */
                                     if (reader instanceof ObservableReader) {
@@ -243,7 +244,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                         for (String readerName : actualNativeReadersNames) {
                             if (!nativeReadersNames.contains(readerName)) {
                                 SeReader reader = fetchNativeReader(readerName);
-                                readers.add(reader);
+                                readers.put(reader.getName(), reader);
                                 /* add to the notification list */
                                 changedReaderNames.add(readerName);
                                 if (logger.isTraceEnabled()) {

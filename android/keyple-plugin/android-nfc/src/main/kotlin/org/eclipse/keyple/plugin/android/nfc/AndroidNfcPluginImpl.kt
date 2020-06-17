@@ -17,6 +17,8 @@ import java.util.TreeSet
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin
 import timber.log.Timber
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentMap
 
 /**
  * Enables Keyple to communicate with the the Android device by providing access to the
@@ -44,12 +46,11 @@ internal object AndroidNfcPluginImpl : AbstractPlugin(AndroidNfcPlugin.PLUGIN_NA
      * @return SortedSet<ProxyReader> : contains only one element, the
      * singleton @[AndroidNfcReaderImpl]
     </ProxyReader> */
-    override fun initNativeReaders(): SortedSet<SeReader> {
+    override fun initNativeReaders(): ConcurrentMap<String, SeReader>? {
         Timber.d("InitNativeReader() add the unique instance of AndroidNfcReaderImpl")
-
+        val readers = ConcurrentHashMap<String, SeReader>()
+        readers[AndroidNfcReaderImpl.name] = AndroidNfcReaderImpl
         // Nfc android adapter availability is checked in AndroidNfcFragment
-        val readers = TreeSet<SeReader>()
-        readers.add(AndroidNfcReaderImpl)
         return readers
     }
 }

@@ -16,7 +16,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.SortedSet;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -101,7 +100,7 @@ public class SeProxyServiceTest {
         ReaderPlugin testPlugin = proxyService.registerPlugin(factory1);
 
         // results
-        SortedSet testPlugins = proxyService.getPlugins();
+        ConcurrentMap<String, ReaderPlugin> testPlugins = proxyService.getPlugins();
 
         Assert.assertNotNull(testPlugin);
         Assert.assertEquals(PLUGIN_NAME_1, testPlugin.getName());
@@ -121,7 +120,7 @@ public class SeProxyServiceTest {
         proxyService.registerPlugin(factory1);
 
         // should not be added twice
-        SortedSet testPlugins = proxyService.getPlugins();
+        ConcurrentMap<String, ReaderPlugin> testPlugins = proxyService.getPlugins();
         Assert.assertEquals(1, testPlugins.size());
 
         // unregister
@@ -137,7 +136,7 @@ public class SeProxyServiceTest {
         proxyService.registerPlugin(factory2);
 
         // should not be added twice
-        SortedSet testPlugins = proxyService.getPlugins();
+        ConcurrentMap<String, ReaderPlugin> testPlugins = proxyService.getPlugins();
         Assert.assertEquals(2, testPlugins.size());
 
         // unregister
@@ -267,8 +266,6 @@ public class SeProxyServiceTest {
         assertEquals(0, proxyService.getPlugins().size());
         // unregister
         proxyService.unregisterPlugin(PLUGIN_NAME_1);
-
-
     }
 
 }

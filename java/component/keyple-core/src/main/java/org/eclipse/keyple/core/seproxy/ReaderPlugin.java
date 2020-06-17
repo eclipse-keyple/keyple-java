@@ -11,7 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy;
 
-import java.util.SortedSet;
+import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 
 
@@ -26,14 +27,15 @@ public interface ReaderPlugin extends ProxyElement, Comparable<ReaderPlugin> {
      *
      * @return a list of String
      */
-    SortedSet<String> getReaderNames();
+    Set<String> getReaderNames();
 
     /**
      * Gets the readers.
      *
-     * @return list of connected readers in this plugin, can be an empty list, can not be null;
+     * @return the map of this plugin's connected reader's name and instance, can be an empty list,
+     *         can not be null;
      */
-    SortedSet<SeReader> getReaders();
+    ConcurrentMap<String, SeReader> getReaders();
 
     /**
      * Gets the reader whose name is provided as an argument

@@ -75,7 +75,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
                 "PLUGINNAME = {} initialize the localSamResources with the {} connected readers filtered by {}",
                 samReaderPlugin.getName(), samReaderPlugin.getReaders().size(), samReaderFilter);
 
-        SortedSet<? extends SeReader> samReaders = samReaderPlugin.getReaders();
+        Collection<? extends SeReader> samReaders = samReaderPlugin.getReaders().values();
         for (SeReader samReader : samReaders) {
             String readerName = samReader.getName();
             Pattern p = Pattern.compile(samReaderFilter);

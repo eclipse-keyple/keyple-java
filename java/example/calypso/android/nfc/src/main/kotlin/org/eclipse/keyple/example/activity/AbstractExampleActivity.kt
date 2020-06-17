@@ -90,7 +90,7 @@ abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnN
         /**
          *  remove the observer if it already exist
          */
-        reader = plugin.readers.first() as AndroidNfcReader
+        reader = plugin.readers.values.first() as AndroidNfcReader;
         reader.configFlags(presenceCheckDelay = 100, noPlateformSound = 0, skipNdefCheck = 0)
 
         (reader as ObservableReader).addObserver(this)

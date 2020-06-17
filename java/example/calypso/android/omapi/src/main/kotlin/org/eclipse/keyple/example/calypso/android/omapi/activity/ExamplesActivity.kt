@@ -31,13 +31,14 @@ import org.eclipse.keyple.example.calypso.android.omapi.model.ChoiceEventModel
 import org.eclipse.keyple.example.calypso.android.omapi.model.EventModel
 import org.eclipse.keyple.plugin.android.omapi.PLUGIN_NAME
 import timber.log.Timber
+import java.util.concurrent.ConcurrentMap
 
 abstract class ExamplesActivity : BasicActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     /**
      * Variables for event window
      */
-    protected lateinit var readers: SortedSet<SeReader>
+    protected lateinit var readers: ConcurrentMap<String, SeReader>
     private lateinit var adapter: RecyclerView.Adapter<*>
     private lateinit var layoutManager: RecyclerView.LayoutManager
     protected val events = arrayListOf<EventModel>()
