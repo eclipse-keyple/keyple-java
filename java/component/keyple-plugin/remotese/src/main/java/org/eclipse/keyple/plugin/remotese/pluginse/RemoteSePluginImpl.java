@@ -117,7 +117,7 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
                     new RemoteMethodTxEngine(dtoSender, rpcTimeout, executorService), slaveNodeId,
                     transmissionMode, options);
         }
-        readers.put(nativeReaderName, virtualReader);
+        readers.put(virtualReader.getName(), virtualReader);
 
         notifyObservers(new PluginEvent(getName(), virtualReader.getName(),
                 PluginEvent.EventType.READER_CONNECTED));
@@ -149,7 +149,7 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
         }
 
         // remove reader
-        readers.remove(virtualReader);
+        readers.remove(virtualReader.getName());
 
         notifyObservers(new PluginEvent(getName(), virtualReader.getName(),
                 PluginEvent.EventType.READER_DISCONNECTED));

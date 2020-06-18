@@ -67,16 +67,15 @@ public final class SeProxyService {
         }
 
         synchronized (MONITOR) {
-            final ReaderPlugin readerPlugin = this.plugins
-                    .putIfAbsent(pluginFactory.getPluginName(), pluginFactory.getPluginInstance());
-            if (readerPlugin != null) {
-                logger.warn("Plugin has already been registered to the platform : {}",
-                        readerPlugin.getName());
-                return readerPlugin;
+            final String pluginName = pluginFactory.getPluginName();
+            if (this.plugins.containsKey(pluginName)) {
+                logger.warn("Plugin has already been registered to the platform : {}", pluginName);
+                return this.plugins.get(pluginName);
             } else {
-                logger.info("Registering a new Plugin to the platform : {}",
-                        pluginFactory.getPluginName());
-                return pluginFactory.getPluginInstance();
+                ReaderPlugin pluginInstance = pluginFactory.getPluginInstance();
+                logger.info("Registering a new Plugin to the platform : {}", pluginName);
+                this.plugins.put(pluginName, pluginInstance);
+                return pluginInstance;
             }
         }
 
