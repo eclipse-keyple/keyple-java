@@ -56,7 +56,7 @@ public class StubPluginTest extends BaseStubTest {
 
         StubPluginFactory factory = new StubPluginFactory(PLUGIN_NAME);
 
-        ReaderPlugin plugin = factory.getPluginInstance();
+        ReaderPlugin plugin = factory.getPlugin();
 
         Assert.assertEquals(PLUGIN_NAME, plugin.getName());
     }

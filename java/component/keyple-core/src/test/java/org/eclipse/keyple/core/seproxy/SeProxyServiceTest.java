@@ -66,8 +66,8 @@ public class SeProxyServiceTest {
 
         Assert.assertEquals(0, proxyService.getPlugins().size());
 
-        when(factory1.getPluginInstance()).thenReturn(plugin1);
-        when(factory2.getPluginInstance()).thenReturn(plugin2);
+        when(factory1.getPlugin()).thenReturn(plugin1);
+        when(factory2.getPlugin()).thenReturn(plugin2);
 
         when(factory1.getPluginName()).thenReturn(PLUGIN_NAME_1);
         when(factory2.getPluginName()).thenReturn(PLUGIN_NAME_2);
@@ -88,7 +88,7 @@ public class SeProxyServiceTest {
     @Test(expected = KeyplePluginInstantiationException.class)
     public void testFailingPlugin() {
 
-        doThrow(new KeyplePluginInstantiationException("")).when(factory1).getPluginInstance();
+        doThrow(new KeyplePluginInstantiationException("")).when(factory1).getPlugin();
 
         proxyService.registerPlugin(factory1);
     }

@@ -35,7 +35,7 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
 
     public StubPoolPluginImpl(String pluginName) {
         // create an embedded stubplugin to manage reader
-        this.stubPlugin = (StubPluginImpl) new StubPluginFactory(pluginName).getPluginInstance();
+        this.stubPlugin = (StubPluginImpl) new StubPluginFactory(pluginName).getPlugin();
         this.readerPool = new HashMap<String, StubReaderImpl>();
         this.allocatedReader = new HashMap<String, String>();
 

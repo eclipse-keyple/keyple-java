@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.common.generic;
 
+import java.util.Collection;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -43,7 +44,8 @@ public class ObservableReaderNotificationEngine {
          * We add an observer to each plugin (only one in this example) the readers observers will
          * be added dynamically upon plugin notification (see SpecificPluginObserver.update)
          */
-        for (ReaderPlugin plugin : SeProxyService.getInstance().getPlugins()) {
+        Collection<ReaderPlugin> readerPlugins = SeProxyService.getInstance().getPlugins().values();
+        for (ReaderPlugin plugin : readerPlugins) {
 
             if (plugin instanceof ObservablePlugin) {
                 logger.info("Add observer PLUGINNAME = {}", plugin.getName());

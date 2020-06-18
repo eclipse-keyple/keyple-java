@@ -28,7 +28,7 @@ public class MockObservablePluginFactory implements PluginFactory {
     }
 
     @Override
-    public ReaderPlugin getPluginInstance() {
+    public ReaderPlugin getPlugin() {
         try {
             return new MockAbstractThreadedPlugin(pluginName);
         } catch (Exception e) {

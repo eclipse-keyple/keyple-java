@@ -20,7 +20,7 @@ class AndroidNfcPluginFactory : PluginFactory {
         return AndroidNfcPlugin.PLUGIN_NAME
     }
 
-    override fun getPluginInstance(): ReaderPlugin {
+    override fun getPlugin(): ReaderPlugin {
         return AndroidNfcPluginImpl
     }
 }

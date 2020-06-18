@@ -14,7 +14,7 @@ package org.eclipse.keyple.core.seproxy #FFFFFF {
 
 +abstract PluginFactory {
 	{abstract} #String getPluginName()
-	{abstract} #ReaderPlugin getPluginInstance()
+	{abstract} #ReaderPlugin getPlugin()
 }
 
 +interface ReaderPlugin {
@@ -40,7 +40,7 @@ package plugin.specific #FFCCFF {
 
 +class SpecificPluginFactory {
 	#String getPluginName()
-	#ReaderPlugin getPluginInstance()
+	#ReaderPlugin getPlugin()
 }
 
 +interface SpecificPlugin {

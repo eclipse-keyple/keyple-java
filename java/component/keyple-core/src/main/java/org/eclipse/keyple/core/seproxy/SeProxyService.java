@@ -72,7 +72,7 @@ public final class SeProxyService {
                 logger.warn("Plugin has already been registered to the platform : {}", pluginName);
                 return this.plugins.get(pluginName);
             } else {
-                ReaderPlugin pluginInstance = pluginFactory.getPluginInstance();
+                ReaderPlugin pluginInstance = pluginFactory.getPlugin();
                 logger.info("Registering a new Plugin to the platform : {}", pluginName);
                 this.plugins.put(pluginName, pluginInstance);
                 return pluginInstance;

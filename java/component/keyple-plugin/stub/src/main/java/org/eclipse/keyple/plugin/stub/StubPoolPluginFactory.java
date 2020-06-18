@@ -39,8 +39,7 @@ public class StubPoolPluginFactory implements PluginFactory {
     /**
      * {@inheritDoc}
      */
-    @Override
-    public ReaderPlugin getPluginInstance() {
+    public ReaderPlugin getPlugin() {
         try {
             return new StubPoolPluginImpl(pluginName);
         } catch (Exception e) {
