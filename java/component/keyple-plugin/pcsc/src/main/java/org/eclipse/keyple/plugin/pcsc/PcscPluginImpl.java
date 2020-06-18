@@ -128,7 +128,8 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
                 terminals);
         try {
             for (CardTerminal term : terminals.list()) {
-                nativeReaders.put(this.getName(), new PcscReaderImpl(this.getName(), term));
+                final PcscReaderImpl pcscReader = new PcscReaderImpl(this.getName(), term);
+                nativeReaders.put(pcscReader.getName(), pcscReader);
             }
         } catch (CardException e) {
             if (e.getCause().toString().contains("SCARD_E_NO_READERS_AVAILABLE")) {
