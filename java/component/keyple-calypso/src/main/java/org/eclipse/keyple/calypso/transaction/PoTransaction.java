@@ -1140,12 +1140,12 @@ public class PoTransaction {
     /**
      * Prepare a select file ApduRequest to be executed following the selection.
      *
-     * @param selectControl provides the navigation case: FIRST, NEXT or CURRENT
+     * @param control provides the navigation case: FIRST, NEXT or CURRENT
      */
-    public final void prepareSelectFile(SelectFileControl selectControl) {
+    public final void prepareSelectFile(SelectFileControl control) {
         // create the builder and add it to the list of commands
         poCommandManager.addRegularCommand(
-                CalypsoPoUtils.prepareSelectFile(calypsoPo.getPoClass(), selectControl));
+                CalypsoPoUtils.prepareSelectFile(calypsoPo.getPoClass(), control));
     }
 
 
@@ -1233,16 +1233,16 @@ public class PoTransaction {
      * Returns the associated response parser.
      *
      * @param sfi the sfi to select
-     * @param newRecordData the new record data to write
+     * @param recordData the new record data to write
      * @throws IllegalArgumentException - if the command is inconsistent
      */
-    public final void prepareAppendRecord(byte sfi, byte[] newRecordData) {
+    public final void prepareAppendRecord(byte sfi, byte[] recordData) {
         Assert.getInstance() //
                 .isInRange((int) sfi, CalypsoPoUtils.SFI_MIN, CalypsoPoUtils.SFI_MAX, "sfi");
 
         // create the builder and add it to the list of commands
         poCommandManager.addRegularCommand(
-                new AppendRecordCmdBuild(calypsoPo.getPoClass(), sfi, newRecordData));
+                new AppendRecordCmdBuild(calypsoPo.getPoClass(), sfi, recordData));
     }
 
     /**
@@ -1253,20 +1253,20 @@ public class PoTransaction {
      *
      * @param sfi the sfi to select
      * @param recordNumber the record number to update
-     * @param newRecordData the new record data. If length &lt; RecSize, bytes beyond length are
-     *        left unchanged.
+     * @param recordData the new record data. If length &lt; RecSize, bytes beyond length are left
+     *        unchanged.
      * @throws IllegalArgumentException - if record number is &lt; 1
      * @throws IllegalArgumentException - if the request is inconsistent
      */
-    public final void prepareUpdateRecord(byte sfi, byte recordNumber, byte[] newRecordData) {
+    public final void prepareUpdateRecord(byte sfi, int recordNumber, byte[] recordData) {
         Assert.getInstance() //
                 .isInRange((int) sfi, CalypsoPoUtils.SFI_MIN, CalypsoPoUtils.SFI_MAX, "sfi") //
-                .isInRange((int) recordNumber, CalypsoPoUtils.NB_REC_MIN, CalypsoPoUtils.NB_REC_MAX,
+                .isInRange(recordNumber, CalypsoPoUtils.NB_REC_MIN, CalypsoPoUtils.NB_REC_MAX,
                         "recordNumber");
 
         // create the builder and add it to the list of commands
         poCommandManager.addRegularCommand(
-                new UpdateRecordCmdBuild(calypsoPo.getPoClass(), sfi, recordNumber, newRecordData));
+                new UpdateRecordCmdBuild(calypsoPo.getPoClass(), sfi, recordNumber, recordData));
     }
 
 
@@ -1278,20 +1278,20 @@ public class PoTransaction {
      *
      * @param sfi the sfi to select
      * @param recordNumber the record number to write
-     * @param overwriteRecordData the data to overwrite in the record. If length &lt; RecSize, bytes
-     *        beyond length are left unchanged.
+     * @param recordData the data to overwrite in the record. If length &lt; RecSize, bytes beyond
+     *        length are left unchanged.
      * @throws IllegalArgumentException - if record number is &lt; 1
      * @throws IllegalArgumentException - if the request is inconsistent
      */
-    public final void prepareWriteRecord(byte sfi, byte recordNumber, byte[] overwriteRecordData) {
+    public final void prepareWriteRecord(byte sfi, int recordNumber, byte[] recordData) {
         Assert.getInstance() //
                 .isInRange((int) sfi, CalypsoPoUtils.SFI_MIN, CalypsoPoUtils.SFI_MAX, "sfi") //
-                .isInRange((int) recordNumber, CalypsoPoUtils.NB_REC_MIN, CalypsoPoUtils.NB_REC_MAX,
+                .isInRange(recordNumber, CalypsoPoUtils.NB_REC_MIN, CalypsoPoUtils.NB_REC_MAX,
                         "recordNumber");
 
         // create the builder and add it to the list of commands
-        poCommandManager.addRegularCommand(new WriteRecordCmdBuild(calypsoPo.getPoClass(), sfi,
-                recordNumber, overwriteRecordData));
+        poCommandManager.addRegularCommand(
+                new WriteRecordCmdBuild(calypsoPo.getPoClass(), sfi, recordNumber, recordData));
     }
 
     /**
@@ -1308,11 +1308,11 @@ public class PoTransaction {
      * @throws IllegalArgumentException - if the decrement value is out of range
      * @throws IllegalArgumentException - if the command is inconsistent
      */
-    public final void prepareIncrease(byte sfi, byte counterNumber, int incValue) {
+    public final void prepareIncreaseCounter(byte sfi, int counterNumber, int incValue) {
         Assert.getInstance() //
                 .isInRange((int) sfi, CalypsoPoUtils.SFI_MIN, CalypsoPoUtils.SFI_MAX, "sfi") //
-                .isInRange((int) counterNumber, CalypsoPoUtils.NB_CNT_MIN,
-                        CalypsoPoUtils.NB_CNT_MAX, "counterNumber") //
+                .isInRange(counterNumber, CalypsoPoUtils.NB_CNT_MIN, CalypsoPoUtils.NB_CNT_MAX,
+                        "counterNumber") //
                 .isInRange(incValue, CalypsoPoUtils.CNT_VALUE_MIN, CalypsoPoUtils.CNT_VALUE_MAX,
                         "incValue");
 
@@ -1335,11 +1335,11 @@ public class PoTransaction {
      * @throws IllegalArgumentException - if the decrement value is out of range
      * @throws IllegalArgumentException - if the command is inconsistent
      */
-    public final void prepareDecrease(byte sfi, byte counterNumber, int decValue) {
+    public final void prepareDecreaseCounter(byte sfi, int counterNumber, int decValue) {
         Assert.getInstance() //
                 .isInRange((int) sfi, CalypsoPoUtils.SFI_MIN, CalypsoPoUtils.SFI_MAX, "sfi") //
-                .isInRange((int) counterNumber, CalypsoPoUtils.NB_CNT_MIN,
-                        CalypsoPoUtils.NB_CNT_MAX, "counterNumber") //
+                .isInRange(counterNumber, CalypsoPoUtils.NB_CNT_MIN, CalypsoPoUtils.NB_CNT_MAX,
+                        "counterNumber") //
                 .isInRange(decValue, CalypsoPoUtils.CNT_VALUE_MIN, CalypsoPoUtils.CNT_VALUE_MAX,
                         "decValue");
 

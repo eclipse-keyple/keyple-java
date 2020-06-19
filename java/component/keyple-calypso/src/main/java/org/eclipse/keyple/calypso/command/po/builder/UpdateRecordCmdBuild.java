@@ -42,8 +42,7 @@ public final class UpdateRecordCmdBuild extends AbstractPoCommandBuilder<UpdateR
      * @throws IllegalArgumentException - if record number is &lt; 1
      * @throws IllegalArgumentException - if the request is inconsistent
      */
-    public UpdateRecordCmdBuild(PoClass poClass, byte sfi, byte recordNumber,
-            byte[] newRecordData) {
+    public UpdateRecordCmdBuild(PoClass poClass, byte sfi, int recordNumber, byte[] newRecordData) {
         super(command, null);
 
         byte cla = poClass.getValue();
@@ -53,7 +52,7 @@ public final class UpdateRecordCmdBuild extends AbstractPoCommandBuilder<UpdateR
 
         byte p2 = (sfi == 0) ? (byte) 0x04 : (byte) ((byte) (sfi * 8) + 4);
 
-        this.request = setApduRequest(cla, command, recordNumber, p2, newRecordData, null);
+        this.request = setApduRequest(cla, command, (byte) recordNumber, p2, newRecordData, null);
 
         if (logger.isDebugEnabled()) {
             String extraInfo = String.format("SFI=%02X, REC=%d", sfi, recordNumber);

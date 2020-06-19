@@ -111,7 +111,7 @@ class SamCommandProcessor {
             // build the SAM Select Diversifier command to provide the SAM with the PO S/N
             AbstractApduCommandBuilder selectDiversifier =
                     new SelectDiversifierCmdBuild(samResource.getMatchingSe().getSamRevision(),
-                            poResource.getMatchingSe().getApplicationSerialNumber());
+                            poResource.getMatchingSe().getApplicationSerialNumberBytes());
 
             apduRequests.add(selectDiversifier.getApduRequest());
 
