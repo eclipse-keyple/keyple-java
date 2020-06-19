@@ -14,9 +14,9 @@ package org.eclipse.keyple.plugin.stub;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -212,7 +212,7 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
     @Override
     protected ConcurrentMap<String, SeReader> initNativeReaders() {
         /* init Stub Readers response object */
-        ConcurrentMap<String, SeReader> newNativeReaders = new ConcurrentSkipListMap();
+        ConcurrentMap<String, SeReader> newNativeReaders = new ConcurrentHashMap();
         return newNativeReaders;
     }
 
