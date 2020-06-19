@@ -12,6 +12,7 @@
 package org.eclipse.keyple.plugin.stub;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentMap;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -34,7 +35,7 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
 
     public StubPoolPluginImpl(String pluginName) {
         // create an embedded stubplugin to manage reader
-        this.stubPlugin = (StubPluginImpl) new StubPluginFactory(pluginName).getPluginInstance();
+        this.stubPlugin = (StubPluginImpl) new StubPluginFactory(pluginName).getPlugin();
         this.readerPool = new HashMap<String, StubReaderImpl>();
         this.allocatedReader = new HashMap<String, String>();
 
@@ -168,12 +169,12 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
      */
 
     @Override
-    public SortedSet<String> getReaderNames() {
+    public Set<String> getReaderNames() {
         return stubPlugin.getReaderNames();
     }
 
     @Override
-    public SortedSet<SeReader> getReaders() {
+    public ConcurrentMap<String, SeReader> getReaders() {
         return stubPlugin.getReaders();
     }
 

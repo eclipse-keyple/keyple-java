@@ -11,9 +11,11 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.SortedSet;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.core.CoreBaseTest;
@@ -57,7 +59,7 @@ public class AbstractPluginTest extends CoreBaseTest {
     @Test
     public void addRemoveReadersMultiThreaded() throws Exception {
         ReaderPlugin plugin = new BlankAbstractPlugin("addRemoveReadersMultiThreaded");
-        SortedSet<SeReader> readers = plugin.getReaders();
+        ConcurrentMap<String, SeReader> readers = plugin.getReaders();
         final CountDownLatch lock = new CountDownLatch(10);
 
         addReaderThread(readers, 10, lock);
@@ -79,12 +81,13 @@ public class AbstractPluginTest extends CoreBaseTest {
     }
 
 
-    public static void listReaders(final SortedSet<SeReader> readers, final int N,
+    public static void listReaders(final ConcurrentMap<String, SeReader> readers, final int N,
             final CountDownLatch lock) {
         Thread thread = new Thread() {
             public void run() {
                 for (int i = 0; i < N; i++) {
-                    for (SeReader reader : readers) {
+                    final Collection<SeReader> readerCollection = readers.values();
+                    for (SeReader reader : readerCollection) {
                         logger.debug("list, readers: {}, reader {}", readers.size(),
                                 reader.getName());
                     }
@@ -102,14 +105,19 @@ public class AbstractPluginTest extends CoreBaseTest {
     }
 
 
-    public static void removeReaderThread(final SortedSet<SeReader> readers, final int N,
-            final CountDownLatch lock) {
+    public static void removeReaderThread(final ConcurrentMap<String, SeReader> readers,
+            final int N, final CountDownLatch lock) {
         Thread thread = new Thread() {
             public void run() {
                 for (int i = 0; i < N; i++) {
                     try {
-                        SeReader seReader = readers.first();
-                        readers.remove(seReader);
+                        if (readers.size() > 0) {
+                            Map.Entry<String, SeReader> seReader =
+                                    readers.entrySet().iterator().next();
+                            readers.remove(seReader.getKey());
+                        } else {
+                            throw new NoSuchElementException("Empty reader list");
+                        }
                         logger.debug("readers: {}, remove first reader", readers.size());
                     } catch (NoSuchElementException e) {
                         // list is empty
@@ -128,14 +136,14 @@ public class AbstractPluginTest extends CoreBaseTest {
         thread.start();
     }
 
-    public static void addReaderThread(final SortedSet<SeReader> readers, final int N,
+    public static void addReaderThread(final ConcurrentMap<String, SeReader> readers, final int N,
             final CountDownLatch lock) {
         Thread thread = new Thread() {
             public void run() {
                 for (int i = 0; i < N; i++) {
                     SeReader reader =
                             new BlankAbstractReader("pluginName", UUID.randomUUID().toString());
-                    readers.add(reader);
+                    readers.put(reader.getName(), reader);
                     logger.debug("readers: {}, add reader {}", readers.size(), reader.getName());
 
                     try {

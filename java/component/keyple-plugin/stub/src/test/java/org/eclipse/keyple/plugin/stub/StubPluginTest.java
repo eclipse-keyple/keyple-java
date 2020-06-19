@@ -56,7 +56,7 @@ public class StubPluginTest extends BaseStubTest {
 
         StubPluginFactory factory = new StubPluginFactory(PLUGIN_NAME);
 
-        ReaderPlugin plugin = factory.getPluginInstance();
+        ReaderPlugin plugin = factory.getPlugin();
 
         Assert.assertEquals(PLUGIN_NAME, plugin.getName());
     }
@@ -72,9 +72,9 @@ public class StubPluginTest extends BaseStubTest {
 
         // connect reader
         stubPlugin.plugStubReader(READER_NAME, TransmissionMode.CONTACTLESS, true);
-        StubReader stubReader = (StubReader) stubPlugin.getReaders().first();
 
         Assert.assertEquals(1, stubPlugin.getReaders().size());
+        StubReader stubReader = (StubReader) stubPlugin.getReaders().values().toArray()[0];
         Assert.assertEquals(READER_NAME, stubReader.getName());
         Assert.assertEquals(TransmissionMode.CONTACTLESS, stubReader.getTransmissionMode());
 

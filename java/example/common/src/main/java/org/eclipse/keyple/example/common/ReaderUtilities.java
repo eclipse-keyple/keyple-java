@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.common;
 
+import java.util.Collection;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
@@ -34,8 +35,10 @@ public final class ReaderUtilities {
      */
     public static SeReader getReaderByName(String pattern) throws KeypleReaderException {
         Pattern p = Pattern.compile(pattern);
-        for (ReaderPlugin plugin : SeProxyService.getInstance().getPlugins()) {
-            for (SeReader reader : plugin.getReaders()) {
+        Collection<ReaderPlugin> readerPlugins = SeProxyService.getInstance().getPlugins().values();
+        for (ReaderPlugin plugin : readerPlugins) {
+            Collection<SeReader> seReaders = plugin.getReaders().values();
+            for (SeReader reader : seReaders) {
                 if (p.matcher(reader.getName()).matches()) {
                     return reader;
                 }

@@ -75,7 +75,7 @@ class AndroidNfcPluginImplTest {
     @Throws(KeypleReaderException::class)
     fun getReaders() {
         Assert.assertEquals(1, plugin.readers.size)
-        Assert.assertTrue(plugin.readers.first() is AndroidNfcReaderImpl)
+        Assert.assertTrue(plugin.readers.values.first() is AndroidNfcReaderImpl)
     }
 
     @Test
@@ -98,6 +98,6 @@ class AndroidNfcPluginImplTest {
     @Throws(Exception::class)
     fun getNativeReaders() {
         Assert.assertEquals(1, plugin.readers.size)
-        Assert.assertTrue(plugin.readers.first() is AndroidNfcReaderImpl)
+        Assert.assertTrue(plugin.readers.values.first() is AndroidNfcReaderImpl)
     }
 }

@@ -44,7 +44,7 @@ class AndroidOmapiPluginFactory(private val context: Context) : PluginFactory {
     }
 
     @Throws(KeyplePluginInstantiationException::class)
-    override fun getPluginInstance(): ReaderPlugin {
+    override fun getPlugin(): ReaderPlugin {
         return getReaderPluginRegardingOsVersion()
     }
 
@@ -69,6 +69,6 @@ class AndroidOmapiPluginFactory(private val context: Context) : PluginFactory {
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     @Throws(KeyplePluginInstantiationException::class)
     fun pluginInstance(): ReaderPlugin {
-        return this.pluginInstance
+        return this.plugin
     }
 }

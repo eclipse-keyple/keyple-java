@@ -40,7 +40,7 @@ public class StubPluginFactory implements PluginFactory {
      * {@inheritDoc}
      */
     @Override
-    public ReaderPlugin getPluginInstance() {
+    public ReaderPlugin getPlugin() {
         try {
             return new StubPluginImpl(pluginName);
         } catch (Exception e) {

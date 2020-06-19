@@ -47,8 +47,7 @@ public class StubPoolPluginTest extends BaseStubTest {
     @Test
     public void plugStubPoolReader_success() {
         StubPoolPluginImpl stubPoolPlugin =
-                (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)
-                        .getPluginInstance();
+                (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME).getPlugin();
 
         SeReader seReader = stubPoolPlugin.plugStubPoolReader("anyGroup", "anyName", stubSe);
 
@@ -63,8 +62,7 @@ public class StubPoolPluginTest extends BaseStubTest {
     @Test
     public void unplugStubPoolReader_success() throws Exception {
         StubPoolPluginImpl stubPoolPlugin =
-                (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)
-                        .getPluginInstance();
+                (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME).getPlugin();
 
         // plug a reader
         stubPoolPlugin.plugStubPoolReader("anyGroup", "anyName", stubSe);
@@ -85,8 +83,7 @@ public class StubPoolPluginTest extends BaseStubTest {
     public void allocate_success() throws Exception {
         // init stubPoolPlugin
         StubPoolPluginImpl stubPoolPlugin =
-                (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)
-                        .getPluginInstance();
+                (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME).getPlugin();
 
         // plug readers
         stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubSe);
@@ -111,8 +108,7 @@ public class StubPoolPluginTest extends BaseStubTest {
     public void allocate_twice() throws Exception {
         // init stubPoolPlugin
         StubPoolPluginImpl stubPoolPlugin =
-                (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)
-                        .getPluginInstance();
+                (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME).getPlugin();
 
         // plug readers
         stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubSe);
@@ -131,8 +127,7 @@ public class StubPoolPluginTest extends BaseStubTest {
     public void release_success() throws Exception {
         // init stubPoolPlugin
         StubPoolPluginImpl stubPoolPlugin =
-                (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)
-                        .getPluginInstance();
+                (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME).getPlugin();
 
         // plug readers
         stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubSe);

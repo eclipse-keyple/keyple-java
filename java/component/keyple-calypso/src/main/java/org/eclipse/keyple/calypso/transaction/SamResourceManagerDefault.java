@@ -75,22 +75,20 @@ public class SamResourceManagerDefault extends SamResourceManager {
                 "PLUGINNAME = {} initialize the localSamResources with the {} connected readers filtered by {}",
                 samReaderPlugin.getName(), samReaderPlugin.getReaders().size(), samReaderFilter);
 
-        SortedSet<? extends SeReader> samReaders = samReaderPlugin.getReaders();
-        for (SeReader samReader : samReaders) {
-            String readerName = samReader.getName();
-            Pattern p = Pattern.compile(samReaderFilter);
-            if (p.matcher(readerName).matches()) {
-                logger.trace("Add reader: {}", readerName);
+        Pattern p = Pattern.compile(samReaderFilter);
+        Set<String> samReadersNames = samReaderPlugin.getReaders().keySet();
+        for (String samReaderName : samReadersNames) {
+            if (p.matcher(samReaderName).matches()) {
+                logger.trace("Add reader: {}", samReaderName);
                 try {
-                    initSamReader(samReader, readerObserver);
+                    initSamReader(samReaderPlugin.getReader(samReaderName), readerObserver);
                 } catch (KeypleReaderException e) {
-                    logger.error("could not init samReader {}", samReader.getName(), e);
+                    logger.error("could not init samReader {}", samReaderName, e);
                 }
             } else {
-                logger.trace("Reader not matching: {}", readerName);
+                logger.trace("Reader not matching: {}", samReaderName);
             }
         }
-
         if (readerPlugin instanceof ObservablePlugin) {
 
             // add an observer to monitor reader and SAM insertions

@@ -46,7 +46,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
             if (readers.size < 1) {
                 addResultEvent("No readers available")
             } else {
-                readers.forEach { seReader: SeReader ->
+                readers.values.forEach { seReader: SeReader ->
                     addHeaderEvent("Starting explicitAidSelection with $poAid on Reader ${seReader.name}")
                     /*
                      * Prepare a Calypso PO selection. Default parameters:
@@ -105,7 +105,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
         if (readers.size < 1) {
             addResultEvent("No readers available")
         } else {
-            readers.forEach { seReader: SeReader ->
+            readers.values.forEach { seReader: SeReader ->
                 if (aidEnum == AidEnum.NAVIGO2013) {
 
                     val poAid = aidEnum.aid

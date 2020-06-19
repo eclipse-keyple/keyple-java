@@ -52,7 +52,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
         final CountDownLatch remove = new CountDownLatch(1);
 
         PcscPluginImpl plugin = PcscPluginImpl.getInstance();
-        PcscReader reader = (PcscReader) plugin.getReaders().first();
+        PcscReader reader = (PcscReader) plugin.getReaders().values().toArray()[0];
         logger.info("Working this reader [{}]", reader.getName());
 
         reader.addObserver(onInsertedCountDown(insert));
@@ -85,7 +85,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
         final CountDownLatch remove = new CountDownLatch(1);
 
         PcscPluginImpl plugin = PcscPluginImpl.getInstance();
-        PcscReader reader = (PcscReader) plugin.getReaders().first();
+        PcscReader reader = (PcscReader) plugin.getReaders().values().toArray()[0];
         logger.info("Working this reader [{}]", reader.getName());
 
         reader.addObserver(onInsertedCountDown(insert));
@@ -115,7 +115,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
             public void update(PluginEvent event) {}
         });
 
-        PcscReader reader = (PcscReader) plugin.getReaders().first();
+        PcscReader reader = (PcscReader) plugin.getReaders().values().toArray()[0];
         logger.info("Working this reader [{}]", reader.getName());
 
         reader.addObserver(onInsertedCountDown(insert));
@@ -216,7 +216,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
                 if (event.getEventType() == PluginEvent.EventType.READER_CONNECTED) {
                     logger.info("[{}] Reader connected.", event.getReaderNames().first());
                     if (connectedLock != null) {
-                        PcscReader reader = (PcscReader) plugin.getReaders().first();
+                        PcscReader reader = (PcscReader) plugin.getReaders().values().toArray()[0];
                         reader.addObserver(onInsertedCountDown(insertedlock));
                         reader.addObserver(onRemovedCountDown(removedlock));
                         reader.startSeDetection(ObservableReader.PollingMode.REPEATING);
