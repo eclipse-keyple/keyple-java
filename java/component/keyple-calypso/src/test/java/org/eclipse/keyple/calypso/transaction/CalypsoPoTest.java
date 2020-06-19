@@ -24,7 +24,6 @@ import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -119,82 +118,74 @@ public class CalypsoPoTest {
 
     @Test
     public void getRevision() {
-        Assert.assertEquals(getPoApplicationByte((byte) 0x01).getRevision(), PoRevision.REV2_4);
-
-        Assert.assertEquals(getPoApplicationByte((byte) 0x04).getRevision(), PoRevision.REV2_4);
-
-        Assert.assertEquals(getPoApplicationByte((byte) 0x06).getRevision(), PoRevision.REV2_4);
-
-        Assert.assertEquals(getPoApplicationByte((byte) 0x1F).getRevision(), PoRevision.REV2_4);
-
-        Assert.assertEquals(getPoApplicationByte((byte) 0x20).getRevision(), PoRevision.REV3_1);
-
-        Assert.assertEquals(getPoApplicationByte((byte) 0x27).getRevision(), PoRevision.REV3_1);
-
-        Assert.assertEquals(getPoApplicationByte((byte) 0x28).getRevision(), PoRevision.REV3_2);
-
-        Assert.assertEquals(getPoApplicationByte((byte) 0x2F).getRevision(), PoRevision.REV3_2);
-
-        Assert.assertEquals(getPoApplicationByte((byte) 0x90).getRevision(),
-                PoRevision.REV3_1_CLAP);
+        assertThat(getPoApplicationByte((byte) 0x01).getRevision()).isEqualTo(PoRevision.REV2_4);
+        assertThat(getPoApplicationByte((byte) 0x04).getRevision()).isEqualTo(PoRevision.REV2_4);
+        assertThat(getPoApplicationByte((byte) 0x06).getRevision()).isEqualTo(PoRevision.REV2_4);
+        assertThat(getPoApplicationByte((byte) 0x1F).getRevision()).isEqualTo(PoRevision.REV2_4);
+        assertThat(getPoApplicationByte((byte) 0x20).getRevision()).isEqualTo(PoRevision.REV3_1);
+        assertThat(getPoApplicationByte((byte) 0x27).getRevision()).isEqualTo(PoRevision.REV3_1);
+        assertThat(getPoApplicationByte((byte) 0x28).getRevision()).isEqualTo(PoRevision.REV3_2);
+        assertThat(getPoApplicationByte((byte) 0x2F).getRevision()).isEqualTo(PoRevision.REV3_2);
+        assertThat(getPoApplicationByte((byte) 0x90).getRevision())
+                .isEqualTo(PoRevision.REV3_1_CLAP);
     }
 
     @Test
     public void getDfNameBytes() {
-        Assert.assertArrayEquals(ByteArrayUtil.fromHex(DF_NAME),
-                getPoApplicationByte((byte) 0x01).getDfNameBytes());
+        assertThat(getPoApplicationByte((byte) 0x01).getDfNameBytes())
+                .isEqualTo(ByteArrayUtil.fromHex(DF_NAME));
     }
 
     @Test
     public void getDfName() {
-        Assert.assertEquals(DF_NAME, getPoApplicationByte((byte) 0x01).getDfName());
+        assertThat(getPoApplicationByte((byte) 0x01).getDfName()).isEqualTo(DF_NAME);
     }
 
     @Test
     public void getApplicationSerialNumber() {
-        Assert.assertArrayEquals(ByteArrayUtil.fromHex(SERIAL_NUMBER),
-                getPoApplicationByte((byte) 0x01).getApplicationSerialNumber());
+        assertThat(getPoApplicationByte((byte) 0x01).getApplicationSerialNumberBytes())
+                .isEqualTo(ByteArrayUtil.fromHex(SERIAL_NUMBER));
     }
 
     @Test
     public void getAtrBytes() {
-        Assert.assertArrayEquals(ByteArrayUtil.fromHex(ATR_VALUE),
-                getPoApplicationByte((byte) 0x01).getAtrBytes());
+        assertThat(getPoApplicationByte((byte) 0x01).getAtrBytes())
+                .isEqualTo(ByteArrayUtil.fromHex(ATR_VALUE));
     }
 
     @Test
     public void getAtr() {
-        Assert.assertEquals(ATR_VALUE, getPoApplicationByte((byte) 0x01).getAtr());
+        assertThat(getPoApplicationByte((byte) 0x01).getAtr()).isEqualTo(ATR_VALUE);
     }
 
     @Test
     public void isModificationsCounterInBytes() {
         // false for rev 2
-        Assert.assertFalse(getPoApplicationByte((byte) 0x01).isModificationsCounterInBytes());
+        assertThat(getPoApplicationByte((byte) 0x01).isModificationsCounterInBytes()).isFalse();
         // true for rev 3
-        Assert.assertTrue(getPoApplicationByte((byte) 0x27).isModificationsCounterInBytes());
+        assertThat(getPoApplicationByte((byte) 0x27).isModificationsCounterInBytes()).isTrue();
     }
 
     @Test
     public void getModificationsCounter() {
         // 6 for rev 2
-        Assert.assertEquals(6, getPoApplicationByte((byte) 0x01).getModificationsCounter());
+        assertThat(getPoApplicationByte((byte) 0x01).getModificationsCounter()).isEqualTo(6);
         // 215 bytes for rev 3
-        Assert.assertEquals(215, getPoApplicationByte((byte) 0x27).getModificationsCounter());
+        assertThat(getPoApplicationByte((byte) 0x27).getModificationsCounter()).isEqualTo(215);
     }
 
     @Test
     public void getPoClass() {
         // LEGACY for rev 2
-        Assert.assertEquals(PoClass.LEGACY, getPoApplicationByte((byte) 0x01).getPoClass());
+        assertThat(getPoApplicationByte((byte) 0x01).getPoClass()).isEqualTo(PoClass.LEGACY);
         // ISO bytes for rev 3
-        Assert.assertEquals(PoClass.ISO, getPoApplicationByte((byte) 0x27).getPoClass());
+        assertThat(getPoApplicationByte((byte) 0x27).getPoClass()).isEqualTo(PoClass.ISO);
     }
 
     @Test
     public void getStartupInfo() {
         // Startup info
-        Assert.assertEquals("0A3C2F05141001", po.getStartupInfo());
+        assertThat(po.getStartupInfo()).isEqualTo("0A3C2F05141001");
     }
 
     @Test(expected = IllegalStateException.class)
@@ -210,10 +201,9 @@ public class CalypsoPoTest {
     @Test
     public void getCalypsoAndApplicationSerialNumber() {
         CalypsoPo calypsoPo = getCalypsoPo(ATR_VALUE, FCI_REV31_HCE);
-        Assert.assertArrayEquals(ByteArrayUtil.fromHex("9988112233445566"),
-                calypsoPo.getCalypsoSerialNumber());
-        Assert.assertArrayEquals(ByteArrayUtil.fromHex("0000112233445566"),
-                calypsoPo.getApplicationSerialNumber());
+        assertThat(calypsoPo.getCalypsoSerialNumber())
+                .isEqualTo(ByteArrayUtil.fromHex("9988112233445566"));
+        assertThat(calypsoPo.getApplicationSerialNumber()).isEqualTo("0000112233445566");
     }
 
     @Test(expected = IllegalStateException.class)
@@ -233,42 +223,41 @@ public class CalypsoPoTest {
                 new SeResponse(true, false, new SelectionStatus(atr, fciData, true), null);
         CalypsoPo calypsoPo = new CalypsoPo(selectionData, TransmissionMode.CONTACTLESS);
 
-        Assert.assertEquals(PoRevision.REV1_0, calypsoPo.getRevision());
-        Assert.assertNull(calypsoPo.getDfNameBytes());
-        Assert.assertArrayEquals(ByteArrayUtil.fromHex(SERIAL_NUMBER),
-                calypsoPo.getApplicationSerialNumber());
-        Assert.assertFalse(calypsoPo.isModificationsCounterInBytes());
-        Assert.assertEquals(3, calypsoPo.getModificationsCounter());
-        Assert.assertEquals(PoClass.LEGACY, calypsoPo.getPoClass());
+        assertThat(calypsoPo.getRevision()).isEqualTo(PoRevision.REV1_0);
+        assertThat(calypsoPo.getDfNameBytes()).isNull();
+        assertThat(calypsoPo.getApplicationSerialNumber()).isEqualTo(SERIAL_NUMBER);
+        assertThat(calypsoPo.isModificationsCounterInBytes()).isFalse();
+        assertThat(calypsoPo.getModificationsCounter()).isEqualTo(3);
+        assertThat(calypsoPo.getPoClass()).isEqualTo(PoClass.LEGACY);
     }
 
     @Test
     public void testFlags_true() {
         CalypsoPo calypsoPo = getCalypsoPo(ATR_VALUE, FCI_REV31);
-        Assert.assertTrue(calypsoPo.isConfidentialSessionModeSupported());
+        assertThat(calypsoPo.isConfidentialSessionModeSupported()).isTrue();
         // negative logic for this one
-        Assert.assertFalse(calypsoPo.isDeselectRatificationSupported());
-        Assert.assertTrue(calypsoPo.isPinFeatureAvailable());
-        Assert.assertTrue(calypsoPo.isSvFeatureAvailable());
+        assertThat(calypsoPo.isDeselectRatificationSupported()).isFalse();
+        assertThat(calypsoPo.isPinFeatureAvailable()).isTrue();
+        assertThat(calypsoPo.isSvFeatureAvailable()).isTrue();
     }
 
 
     @Test
     public void testFlags_false() {
         CalypsoPo calypsoPo = getCalypsoPo(ATR_VALUE, FCI_REV31_FLAGS_FALSE);
-        Assert.assertFalse(calypsoPo.isConfidentialSessionModeSupported());
+        assertThat(calypsoPo.isConfidentialSessionModeSupported()).isFalse();
         // negative logic for this one
-        Assert.assertTrue(calypsoPo.isDeselectRatificationSupported());
-        Assert.assertFalse(calypsoPo.isPinFeatureAvailable());
-        Assert.assertFalse(calypsoPo.isSvFeatureAvailable());
+        assertThat(calypsoPo.isDeselectRatificationSupported()).isTrue();
+        assertThat(calypsoPo.isPinFeatureAvailable()).isFalse();
+        assertThat(calypsoPo.isSvFeatureAvailable()).isFalse();
     }
 
     @Test
     public void testDfInvalidated() {
         CalypsoPo calypsoPo = getCalypsoPo(ATR_VALUE, FCI_REV31_INVALIDATED);
-        Assert.assertTrue(calypsoPo.isDfInvalidated());
+        assertThat(calypsoPo.isDfInvalidated()).isTrue();
         calypsoPo = getCalypsoPo(ATR_VALUE, FCI_REV31);
-        Assert.assertFalse(calypsoPo.isDfInvalidated());
+        assertThat(calypsoPo.isDfInvalidated()).isFalse();
     }
 
     @Test
@@ -276,26 +265,27 @@ public class CalypsoPoTest {
         CalypsoPo calypsoPo;
         /* Rev1 PO */
         calypsoPo = getCalypsoPo(ATR_VALUE, "6700");
-        Assert.assertFalse(calypsoPo.isModificationsCounterInBytes());
-        Assert.assertEquals(3, calypsoPo.getModificationsCounter());
-        Assert.assertEquals(3, calypsoPo.getModificationsCounter());
-        Assert.assertEquals(0x08, calypsoPo.getPlatform());
-        Assert.assertEquals(0x03, calypsoPo.getApplicationType());
-        Assert.assertEquals(0x04, calypsoPo.getApplicationSubtype());
-        Assert.assertEquals(0x00, calypsoPo.getSoftwareIssuer());
-        Assert.assertEquals(0x02, calypsoPo.getSoftwareVersion());
-        Assert.assertEquals(0x00, calypsoPo.getSoftwareRevision());
+        assertThat(calypsoPo.isModificationsCounterInBytes()).isFalse();
+        assertThat(calypsoPo.getModificationsCounter()).isEqualTo(3);
+        assertThat(calypsoPo.getSessionModification()).isEqualTo((byte) 0x03);
+        assertThat(calypsoPo.getPlatform()).isEqualTo((byte) 0x08);
+        assertThat(calypsoPo.getApplicationType()).isEqualTo((byte) 0x03);
+        assertThat(calypsoPo.getApplicationSubtype()).isEqualTo((byte) 0x04);
+        assertThat(calypsoPo.getSoftwareIssuer()).isEqualTo((byte) 0x00);
+        assertThat(calypsoPo.getSoftwareVersion()).isEqualTo((byte) 0x02);
+        assertThat(calypsoPo.getSoftwareRevision()).isEqualTo((byte) 0x00);
 
         /* Rev 3.1 */
         calypsoPo = getCalypsoPo(ATR_VALUE, FCI_REV31);
-        Assert.assertTrue(calypsoPo.isModificationsCounterInBytes());
-        Assert.assertEquals(430, calypsoPo.getModificationsCounter());
-        Assert.assertEquals(0x3C, calypsoPo.getPlatform());
-        Assert.assertEquals(0x2F, calypsoPo.getApplicationType());
-        Assert.assertEquals(0x05, calypsoPo.getApplicationSubtype());
-        Assert.assertEquals(0x14, calypsoPo.getSoftwareIssuer());
-        Assert.assertEquals(0x10, calypsoPo.getSoftwareVersion());
-        Assert.assertEquals(0x01, calypsoPo.getSoftwareRevision());
+        assertThat(calypsoPo.isModificationsCounterInBytes()).isTrue();
+        assertThat(calypsoPo.getModificationsCounter()).isEqualTo(430);
+        assertThat(calypsoPo.getSessionModification()).isEqualTo((byte) 0x0A);
+        assertThat(calypsoPo.getPlatform()).isEqualTo((byte) 0x3C);
+        assertThat(calypsoPo.getApplicationType()).isEqualTo((byte) 0x2F);
+        assertThat(calypsoPo.getApplicationSubtype()).isEqualTo((byte) 0x05);
+        assertThat(calypsoPo.getSoftwareIssuer()).isEqualTo((byte) 0x14);
+        assertThat(calypsoPo.getSoftwareVersion()).isEqualTo((byte) 0x10);
+        assertThat(calypsoPo.getSoftwareRevision()).isEqualTo((byte) 0x01);
     }
 
     @Test
