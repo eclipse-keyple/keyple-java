@@ -17,12 +17,12 @@ import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandExcepti
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.ElementaryFile;
-import org.eclipse.keyple.calypso.transaction.PoResource;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.SamIdentifier;
 import org.eclipse.keyple.calypso.transaction.SamResource;
 import org.eclipse.keyple.calypso.transaction.SamResourceManager;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
+import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -92,7 +92,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
                     poReader = masterAPI.getPlugin().getReader(event.getReaderName());
 
                     // create a Po Resource
-                    PoResource poResource = new PoResource(poReader, calypsoPo);
+                    SeResource<CalypsoPo> poResource = new SeResource<CalypsoPo>(poReader, calypsoPo);
 
                     // PO has matched
                     // executeReadEventLog(poResource);
@@ -155,7 +155,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
      * 
      * @param poResource : Reference to the matching PO embeeded in a PoResource
      */
-    private void executeReadEventLog(PoResource poResource) {
+    private void executeReadEventLog(SeResource<CalypsoPo> poResource) {
         try {
 
             logger.info("{} Observer notification: the selection of the PO has succeeded.", nodeId);
@@ -217,7 +217,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
      * @param samResource : Required SAM Resource to execute this transaction
      * @param poResource : Reference to the matching PO embeeded in a PoResource
      */
-    private void executeCalypso4_PoAuthentication(PoResource poResource, SamResource samResource) {
+    private void executeCalypso4_PoAuthentication(SeResource<CalypsoPo> poResource, SamResource samResource) {
         try {
 
             /* Go on with the reading of the first record of the EventLog file */

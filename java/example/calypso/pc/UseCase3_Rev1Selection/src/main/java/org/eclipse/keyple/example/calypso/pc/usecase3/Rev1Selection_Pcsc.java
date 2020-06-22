@@ -15,10 +15,10 @@ package org.eclipse.keyple.example.calypso.pc.usecase3;
 import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.ElementaryFile;
-import org.eclipse.keyple.calypso.transaction.PoResource;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
@@ -127,7 +127,7 @@ public class Rev1Selection_Pcsc {
             // Go on with the reading of the first record of the EventLog file
             logger.info("= #### 2nd PO exchange: reading transaction of the EventLog file.");
 
-            PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo));
+            PoTransaction poTransaction = new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPo));
 
             // Prepare the reading order and keep the associated parser for later use once the
             // transaction has been processed. We provide the expected record length since the REV1

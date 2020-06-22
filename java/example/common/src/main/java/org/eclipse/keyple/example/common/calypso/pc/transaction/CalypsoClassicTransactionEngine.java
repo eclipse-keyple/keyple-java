@@ -19,13 +19,13 @@ import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.ElementaryFile;
-import org.eclipse.keyple.calypso.transaction.PoResource;
 import org.eclipse.keyple.calypso.transaction.PoSecuritySettings;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.SamResource;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
+import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -363,7 +363,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
                         CalypsoUtilities.getSecuritySettings(samResource);
 
                 PoTransaction poTransaction =
-                        new PoTransaction(new PoResource(poReader, calypsoPo), poSecuritySettings);
+                        new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPo), poSecuritySettings);
 
                 doCalypsoReadWriteTransaction(calypsoPo, poTransaction, true);
 

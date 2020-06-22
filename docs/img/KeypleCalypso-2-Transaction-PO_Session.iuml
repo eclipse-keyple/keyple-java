@@ -10,7 +10,7 @@ package org.keyple.calypso.transaction #FFFFFF {
 }
 
 +class "<b>final</b> PoTransaction" as PoTransaction {
-	+PoTransaction(PoResource poResource, SamResource[0..1] samResource, SecuritySettings[0..1] securitySettings)
+	+PoTransaction(SeResource<CalypsoPo> poResource, SamResource[0..1] samResource, SecuritySettings[0..1] securitySettings)
 
 	+int prepareSelectFileCmd(byte[] path, String extraInfo)
 	+int prepareSelectFileCmd(SelectFileCmdBuild.SelectControl selectControl, String extraInfo)

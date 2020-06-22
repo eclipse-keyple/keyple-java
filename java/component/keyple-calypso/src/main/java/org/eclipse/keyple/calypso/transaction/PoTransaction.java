@@ -45,6 +45,7 @@ import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionIlle
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoSamIOException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoSessionAuthenticationException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoUnauthorizedKvcException;
+import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
@@ -102,12 +103,11 @@ public class PoTransaction {
      * <li>Logical channels with PO &amp; SAM could already be established or not.</li>
      * <li>A list of SAM parameters is provided as en EnumMap.</li>
      * </ul>
-     *
+     * 
      * @param poResource the PO resource (combination of {@link SeReader} and {@link CalypsoPo})
      * @param poSecuritySettings a list of security settings ({@link PoSecuritySettings}) used in
-     *        the session (such as key identification)
      */
-    public PoTransaction(PoResource poResource, PoSecuritySettings poSecuritySettings) {
+    public PoTransaction(SeResource<CalypsoPo> poResource, PoSecuritySettings poSecuritySettings) {
 
         this(poResource);
 
@@ -124,7 +124,7 @@ public class PoTransaction {
      *
      * @param poResource the PO resource (combination of {@link SeReader} and {@link CalypsoPo})
      */
-    public PoTransaction(PoResource poResource) {
+    public PoTransaction(SeResource<CalypsoPo> poResource) {
         this.poReader = (ProxyReader) poResource.getSeReader();
 
         this.calypsoPo = poResource.getMatchingSe();

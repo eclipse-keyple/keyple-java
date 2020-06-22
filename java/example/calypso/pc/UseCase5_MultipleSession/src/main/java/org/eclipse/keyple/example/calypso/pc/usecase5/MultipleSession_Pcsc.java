@@ -14,12 +14,12 @@ package org.eclipse.keyple.example.calypso.pc.usecase5;
 
 import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
-import org.eclipse.keyple.calypso.transaction.PoResource;
 import org.eclipse.keyple.calypso.transaction.PoSecuritySettings;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.SamResource;
+import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
@@ -149,7 +149,7 @@ public class MultipleSession_Pcsc {
                             .build();
 
             PoTransaction poTransaction =
-                    new PoTransaction(new PoResource(poReader, calypsoPo), poSecuritySettings);
+                    new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPo), poSecuritySettings);
 
             // Open Session for the debit key
             poTransaction

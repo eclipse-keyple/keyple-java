@@ -15,11 +15,11 @@ package org.eclipse.keyple.example.calypso.pc.usecase4;
 import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.ElementaryFile;
-import org.eclipse.keyple.calypso.transaction.PoResource;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.SamResource;
+import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
@@ -132,7 +132,7 @@ public class PoAuthentication_Pcsc {
             logger.info(
                     "= ##### 2nd PO exchange: open and close a secure session to perform authentication.");
 
-            PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo),
+            PoTransaction poTransaction = new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPo),
                     CalypsoUtilities.getSecuritySettings(samResource));
 
             // Read the EventLog file at the Session Opening
