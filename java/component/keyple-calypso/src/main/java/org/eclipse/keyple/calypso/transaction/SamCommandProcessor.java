@@ -25,6 +25,7 @@ import org.eclipse.keyple.calypso.command.sam.parser.security.SamGetChallengeRes
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronizedExchangesException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoSamIOException;
 import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
+import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
@@ -52,11 +53,11 @@ class SamCommandProcessor {
     private static final byte SIGNATURE_LENGTH_REV32 = (byte) 0x08;
 
     /** The SAM resource */
-    private final SamResource samResource;
+    private final SeResource<CalypsoSam> samResource;
     /** The Proxy reader to communicate with the SAM */
     private final ProxyReader samReader;
     /** The PO resource */
-    private final PoResource poResource;
+    private final SeResource<CalypsoPo> poResource;
     /** The security settings. */
     private final PoSecuritySettings poSecuritySettings;
     /*
@@ -79,7 +80,7 @@ class SamCommandProcessor {
      * @param poResource the PO resource containing the PO reader and the Calypso PO information
      * @param poSecuritySettings the security settings from the application layer
      */
-    SamCommandProcessor(PoResource poResource, PoSecuritySettings poSecuritySettings) {
+    SamCommandProcessor(SeResource<CalypsoPo> poResource, PoSecuritySettings poSecuritySettings) {
         this.poResource = poResource;
         this.poSecuritySettings = poSecuritySettings;
         this.samResource = poSecuritySettings.getSamResource();
@@ -96,7 +97,7 @@ class SamCommandProcessor {
      * If the key diversification is already done, the Select Diversifier command is omitted.
      * <p>
      * The length of the challenge varies from one PO revision to another. This information can be
-     * found in the PoResource class field.
+     * found in the SeResource class field.
      * 
      * @return the terminal challenge as an array of bytes
      * @throws CalypsoSamIOException if the communication with the SAM has failed.

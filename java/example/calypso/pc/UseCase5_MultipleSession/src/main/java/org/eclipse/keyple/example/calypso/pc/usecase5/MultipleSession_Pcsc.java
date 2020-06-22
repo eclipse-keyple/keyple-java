@@ -14,12 +14,12 @@ package org.eclipse.keyple.example.calypso.pc.usecase5;
 
 import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
-import org.eclipse.keyple.calypso.transaction.PoResource;
+import org.eclipse.keyple.calypso.transaction.CalypsoSam;
 import org.eclipse.keyple.calypso.transaction.PoSecuritySettings;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
-import org.eclipse.keyple.calypso.transaction.SamResource;
+import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
@@ -87,7 +87,7 @@ public class MultipleSession_Pcsc {
         // Get a SAM reader ready to work with Calypso PO. Use the getReader helper method from
         // the
         // CalypsoUtilities class.
-        SamResource samResource = CalypsoUtilities.getDefaultSamResource();
+        SeResource<CalypsoSam> samResource = CalypsoUtilities.getDefaultSamResource();
 
         logger.info("=============== UseCase Calypso #5: Po Authentication ==================");
         logger.info("= PO Reader  NAME = {}", poReader.getName());
@@ -148,8 +148,8 @@ public class MultipleSession_Pcsc {
                                     PoTransaction.SessionSetting.ModificationMode.MULTIPLE)
                             .build();
 
-            PoTransaction poTransaction =
-                    new PoTransaction(new PoResource(poReader, calypsoPo), poSecuritySettings);
+            PoTransaction poTransaction = new PoTransaction(
+                    new SeResource<CalypsoPo>(poReader, calypsoPo), poSecuritySettings);
 
             // Open Session for the debit key
             poTransaction

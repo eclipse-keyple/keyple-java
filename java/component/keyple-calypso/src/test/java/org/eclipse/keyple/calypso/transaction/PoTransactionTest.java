@@ -28,6 +28,7 @@ import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoIOException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionIllegalStateException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoSessionAuthenticationException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoUnauthorizedKvcException;
+import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
@@ -58,7 +59,7 @@ public class PoTransactionTest {
     final byte DEFAULT_KEY_RECORD_NUMBER_DEBIT = (byte) 0x03;
     private SeReader poReader;
     private PoTransaction poTransaction;
-    private SamResource samResource;
+    private SeResource<CalypsoSam> samResource;
 
     private final Map<String, String> poCommandsTestSet = new HashMap<String, String>();
     private final Map<String, String> samCommandsTestSet = new HashMap<String, String>();
@@ -241,7 +242,7 @@ public class PoTransactionTest {
         SeReader samReader = createMockReader("SAM", TransmissionMode.CONTACTS, samCommandsTestSet);
         CalypsoSam calypsoSam = createCalypsoSam();
 
-        samResource = new SamResource(samReader, calypsoSam);
+        samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
     }
 
     /* Standard opening with two records read */
@@ -250,7 +251,7 @@ public class PoTransactionTest {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
 
         // PoTransaction without PoSecuritySettings
-        poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
+        poTransaction = new PoTransaction(new SeResource(poReader, calypsoPoRev31));
 
         // should raise an exception
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
@@ -267,8 +268,8 @@ public class PoTransactionTest {
                                 DEFAULT_KEY_RECORD_NUMBER_DEBIT)
                         .build();
 
-        poTransaction =
-                new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
+        poTransaction = new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPoRev31),
+                poSecuritySettings);
         samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
         samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
 
@@ -302,7 +303,7 @@ public class PoTransactionTest {
                         .build();
 
         poTransaction =
-                new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
+                new PoTransaction(new SeResource(poReader, calypsoPoRev31), poSecuritySettings);
         samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
         samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
 
@@ -334,7 +335,7 @@ public class PoTransactionTest {
                                 DEFAULT_KEY_RECORD_NUMBER_DEBIT)
                         .build();
         poTransaction =
-                new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
+                new PoTransaction(new SeResource(poReader, calypsoPoRev31), poSecuritySettings);
         samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
         samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
         poCommandsTestSet.put(PO_OPEN_SECURE_SESSION_CMD, PO_OPEN_SECURE_SESSION_RSP);
@@ -364,7 +365,7 @@ public class PoTransactionTest {
                         .sessionAuthorizedKvcList(authorizedKvc).build();
 
         poTransaction =
-                new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
+                new PoTransaction(new SeResource(poReader, calypsoPoRev31), poSecuritySettings);
         samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
         samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
 
@@ -390,7 +391,7 @@ public class PoTransactionTest {
                                 DEFAULT_KEY_RECORD_NUMBER_DEBIT)
                         .build();
         poTransaction =
-                new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
+                new PoTransaction(new SeResource(poReader, calypsoPoRev31), poSecuritySettings);
         samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
         samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
 
@@ -434,7 +435,7 @@ public class PoTransactionTest {
                                 DEFAULT_KEY_RECORD_NUMBER_DEBIT)
                         .build();
         poTransaction =
-                new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
+                new PoTransaction(new SeResource(poReader, calypsoPoRev31), poSecuritySettings);
 
         poTransaction.prepareReadRecordFile(FILE7, 1);
         // 12 x update (29 b) = 12 x (29 + 6) = 420 consumed in the session buffer
@@ -462,7 +463,7 @@ public class PoTransactionTest {
                                 DEFAULT_KEY_RECORD_NUMBER_DEBIT)
                         .build();
         poTransaction =
-                new PoTransaction(new PoResource(poReader, calypsoPoRev24), poSecuritySettings);
+                new PoTransaction(new SeResource(poReader, calypsoPoRev24), poSecuritySettings);
         samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
         samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
 
@@ -495,7 +496,7 @@ public class PoTransactionTest {
                                 DEFAULT_KEY_RECORD_NUMBER_DEBIT)
                         .build();
         poTransaction =
-                new PoTransaction(new PoResource(poReader, calypsoPoRev24), poSecuritySettings);
+                new PoTransaction(new SeResource(poReader, calypsoPoRev24), poSecuritySettings);
 
         poTransaction.prepareReadRecordFile(FILE7, 1);
         // 7 x update (29 b) = 7 operations consumed in the session buffer
@@ -524,7 +525,7 @@ public class PoTransactionTest {
                         .build();
 
         poTransaction =
-                new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
+                new PoTransaction(new SeResource(poReader, calypsoPoRev31), poSecuritySettings);
         samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
         samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
         samCommandsTestSet.put(SAM_DIGEST_INIT_OPEN_SECURE_SESSION_SFI7_REC1_CMD, SW1SW2_OK_RSP);
@@ -557,7 +558,7 @@ public class PoTransactionTest {
     @Test
     public void testProcessPoCommands_nominalCase() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
-        poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
+        poTransaction = new PoTransaction(new SeResource(poReader, calypsoPoRev31));
 
         poCommandsTestSet.put(PO_READ_REC_SFI7_REC1_CMD, PO_READ_REC_SFI7_REC1_RSP);
         poCommandsTestSet.put(PO_READ_REC_SFI8_REC1_CMD, PO_READ_REC_SFI8_REC1_RSP);
@@ -591,7 +592,7 @@ public class PoTransactionTest {
                         .build();
 
         poTransaction =
-                new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
+                new PoTransaction(new SeResource(poReader, calypsoPoRev31), poSecuritySettings);
 
         samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
         samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
@@ -611,7 +612,7 @@ public class PoTransactionTest {
     @Test(expected = CalypsoPoTransactionIllegalStateException.class)
     public void testProcessPoCommandsInSession_noSessionOpen() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
-        poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
+        poTransaction = new PoTransaction(new SeResource(poReader, calypsoPoRev31));
 
         poTransaction.prepareReadRecordFile(FILE8, 1);
         // expected exception: no session is open
@@ -630,7 +631,7 @@ public class PoTransactionTest {
                         .build();
 
         poTransaction =
-                new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
+                new PoTransaction(new SeResource(poReader, calypsoPoRev31), poSecuritySettings);
 
         samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
         samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
@@ -654,7 +655,7 @@ public class PoTransactionTest {
     @Test(expected = CalypsoPoTransactionIllegalStateException.class)
     public void testProcessClosing_noSessionOpen() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
-        poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
+        poTransaction = new PoTransaction(new SeResource(poReader, calypsoPoRev31));
 
         poTransaction.prepareReadRecordFile(FILE8, 1);
         // expected exception: no session is open
@@ -673,7 +674,7 @@ public class PoTransactionTest {
                         .build();
 
         poTransaction =
-                new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
+                new PoTransaction(new SeResource(poReader, calypsoPoRev31), poSecuritySettings);
 
         samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
         samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
@@ -748,7 +749,7 @@ public class PoTransactionTest {
                         .build();
 
         poTransaction =
-                new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
+                new PoTransaction(new SeResource(poReader, calypsoPoRev31), poSecuritySettings);
 
         samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
         samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
@@ -783,7 +784,7 @@ public class PoTransactionTest {
                         .build();
 
         poTransaction =
-                new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
+                new PoTransaction(new SeResource(poReader, calypsoPoRev31), poSecuritySettings);
 
         samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
         samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
@@ -819,7 +820,7 @@ public class PoTransactionTest {
                         .build();
 
         poTransaction =
-                new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
+                new PoTransaction(new SeResource(poReader, calypsoPoRev31), poSecuritySettings);
 
         samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
         samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
@@ -857,7 +858,7 @@ public class PoTransactionTest {
                         .build();
 
         poTransaction =
-                new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
+                new PoTransaction(new SeResource(poReader, calypsoPoRev31), poSecuritySettings);
 
         samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
         samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
@@ -914,7 +915,7 @@ public class PoTransactionTest {
                         .build();
 
         poTransaction =
-                new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
+                new PoTransaction(new SeResource(poReader, calypsoPoRev31), poSecuritySettings);
 
         samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
         samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
@@ -966,7 +967,7 @@ public class PoTransactionTest {
                         .build();
 
         poTransaction =
-                new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
+                new PoTransaction(new SeResource(poReader, calypsoPoRev31), poSecuritySettings);
 
         samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
         samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
@@ -1025,7 +1026,7 @@ public class PoTransactionTest {
                         .build();
 
         poTransaction =
-                new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
+                new PoTransaction(new SeResource(poReader, calypsoPoRev31), poSecuritySettings);
 
         samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
         samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
@@ -1058,7 +1059,7 @@ public class PoTransactionTest {
                         .build();
 
         poTransaction =
-                new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
+                new PoTransaction(new SeResource(poReader, calypsoPoRev31), poSecuritySettings);
 
         samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
         samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
@@ -1119,7 +1120,7 @@ public class PoTransactionTest {
                         .build();
 
         poTransaction =
-                new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
+                new PoTransaction(new SeResource(poReader, calypsoPoRev31), poSecuritySettings);
 
         samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
         samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
@@ -1187,7 +1188,7 @@ public class PoTransactionTest {
                         .build();
 
         poTransaction =
-                new PoTransaction(new PoResource(poReader, calypsoPoRev31), poSecuritySettings);
+                new PoTransaction(new SeResource(poReader, calypsoPoRev31), poSecuritySettings);
         samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
         samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
 
@@ -1213,7 +1214,7 @@ public class PoTransactionTest {
     @Test
     public void testPrepareSelectFile_selectControl() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
-        poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
+        poTransaction = new PoTransaction(new SeResource(poReader, calypsoPoRev31));
 
         poCommandsTestSet.put(PO_SELECT_FILE_CURRENT_CMD, PO_SELECT_FILE_3F00_RSP);
         poCommandsTestSet.put(PO_SELECT_FILE_FIRST_CMD, PO_SELECT_FILE_0002_RSP);
@@ -1267,7 +1268,7 @@ public class PoTransactionTest {
     @Test
     public void testPrepareSelectFile_lid() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
-        poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
+        poTransaction = new PoTransaction(new SeResource(poReader, calypsoPoRev31));
 
         poCommandsTestSet.put(PO_SELECT_FILE_3F00_CMD, PO_SELECT_FILE_3F00_RSP);
         poCommandsTestSet.put(PO_SELECT_FILE_0002_CMD, PO_SELECT_FILE_0002_RSP);
@@ -1329,7 +1330,7 @@ public class PoTransactionTest {
     @Test
     public void testPrepareReadCounterFile() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
-        poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
+        poTransaction = new PoTransaction(new SeResource(poReader, calypsoPoRev31));
 
         poCommandsTestSet.put(PO_READ_REC_SFI7_REC1_6B_COUNTER_CMD,
                 PO_READ_REC_SFI7_REC1_6B_COUNTER_RSP);
@@ -1347,7 +1348,7 @@ public class PoTransactionTest {
     @Test(expected = CalypsoPoIOException.class)
     public void testPoIoException() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
-        poTransaction = new PoTransaction(new PoResource(poReader, calypsoPoRev31));
+        poTransaction = new PoTransaction(new SeResource(poReader, calypsoPoRev31));
         poTransaction.prepareReadRecordFile(FILE7, 1);
         poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
     }
