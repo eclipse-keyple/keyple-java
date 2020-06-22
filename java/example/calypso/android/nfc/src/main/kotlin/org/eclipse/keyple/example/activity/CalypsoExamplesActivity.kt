@@ -22,11 +22,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.eclipse.keyple.calypso.transaction.CalypsoPo
-import org.eclipse.keyple.calypso.transaction.PoResource
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest
 import org.eclipse.keyple.calypso.transaction.PoSelector
 import org.eclipse.keyple.calypso.transaction.PoSelector.InvalidatedPo
 import org.eclipse.keyple.calypso.transaction.PoTransaction
+import org.eclipse.keyple.core.selection.SeResource
 import org.eclipse.keyple.core.selection.SeSelection
 import org.eclipse.keyple.core.seproxy.ChannelControl
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
@@ -552,7 +552,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                 addResultEvent("Environment file data: ${ByteArrayUtil.toHex(environmentAndHolder)}")
 
                 addResultEvent("2nd PO exchange: read the event log file")
-                val poTransaction = PoTransaction(PoResource(reader, calypsoPo))
+                val poTransaction = PoTransaction(SeResource(reader, calypsoPo))
 
                 /*
                  * Prepare the reading order and keep the associated parser for later use once the

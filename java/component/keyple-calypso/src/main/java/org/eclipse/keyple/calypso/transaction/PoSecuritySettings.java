@@ -79,7 +79,7 @@ public class PoSecuritySettings {
          */
         public PoSecuritySettingsBuilder(SeResource<CalypsoSam> samResource) {
             if (samResource == null) {
-                throw new IllegalStateException("ManagedSamResource cannot be null.");
+                throw new IllegalStateException("SAM resource cannot be null.");
             }
             this.samResource = samResource;
         }
