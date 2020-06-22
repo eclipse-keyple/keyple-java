@@ -14,11 +14,11 @@ package org.eclipse.keyple.example.calypso.pc.usecase4;
 
 import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
+import org.eclipse.keyple.calypso.transaction.CalypsoSam;
 import org.eclipse.keyple.calypso.transaction.ElementaryFile;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
-import org.eclipse.keyple.calypso.transaction.SamResource;
 import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
@@ -74,7 +74,7 @@ public class PoAuthentication_Pcsc {
 
         // Get a SAM reader ready to work with Calypso PO. Use the getReader helper method from the
         // CalypsoUtilities class.
-        SamResource samResource = CalypsoUtilities.getDefaultSamResource();
+        SeResource<CalypsoSam> samResource = CalypsoUtilities.getDefaultSamResource();
 
         String samSerialNumber = ByteArrayUtil.toHex(samResource.getMatchingSe().getSerialNumber());
         logger.info("=============== UseCase Calypso #4: Po Authentication ==================");
@@ -132,8 +132,9 @@ public class PoAuthentication_Pcsc {
             logger.info(
                     "= ##### 2nd PO exchange: open and close a secure session to perform authentication.");
 
-            PoTransaction poTransaction = new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPo),
-                    CalypsoUtilities.getSecuritySettings(samResource));
+            PoTransaction poTransaction =
+                    new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPo),
+                            CalypsoUtilities.getSecuritySettings(samResource));
 
             // Read the EventLog file at the Session Opening
             poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_EventLog,

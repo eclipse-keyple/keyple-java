@@ -16,10 +16,10 @@ import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException;
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
+import org.eclipse.keyple.calypso.transaction.CalypsoSam;
 import org.eclipse.keyple.calypso.transaction.ElementaryFile;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.SamIdentifier;
-import org.eclipse.keyple.calypso.transaction.SamResource;
 import org.eclipse.keyple.calypso.transaction.SamResourceManager;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
 import org.eclipse.keyple.core.selection.SeResource;
@@ -87,18 +87,19 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
 
                 // retrieve PO virtual reader
                 SeReader poReader = null;
-                SamResource samResource = null;
+                SeResource<CalypsoSam> samResource = null;
                 try {
                     poReader = masterAPI.getPlugin().getReader(event.getReaderName());
 
                     // create a Po Resource
-                    SeResource<CalypsoPo> poResource = new SeResource<CalypsoPo>(poReader, calypsoPo);
+                    SeResource<CalypsoPo> poResource =
+                            new SeResource<CalypsoPo>(poReader, calypsoPo);
 
                     // PO has matched
                     // executeReadEventLog(poResource);
 
-                    /**
-                     * Get a SamResource to perform authentication
+                    /*
+                     * Get a SeResource<CalypsoSam> to perform authentication
                      */
                     samResource = samResourceManager.allocateSamResource(
                             SamResourceManager.AllocationMode.BLOCKING, SamIdentifier.builder()
@@ -120,8 +121,8 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
                 } catch (KeypleAllocationReaderException e) {
                     logger.error("SAM resource allocation error exception {}", e.getMessage());
                 } finally {
-                    /**
-                     * Release SamResource
+                    /*
+                     * Release SeResource<CalypsoSam>
                      */
 
                     if (samResource != null) {
@@ -217,7 +218,8 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
      * @param samResource : Required SAM Resource to execute this transaction
      * @param poResource : Reference to the matching PO embeeded in a PoResource
      */
-    private void executeCalypso4_PoAuthentication(SeResource<CalypsoPo> poResource, SamResource samResource) {
+    private void executeCalypso4_PoAuthentication(SeResource<CalypsoPo> poResource,
+            SeResource<CalypsoSam> samResource) {
         try {
 
             /* Go on with the reading of the first record of the EventLog file */

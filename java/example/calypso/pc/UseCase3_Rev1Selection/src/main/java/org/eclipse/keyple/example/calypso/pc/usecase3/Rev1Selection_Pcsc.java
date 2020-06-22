@@ -127,7 +127,8 @@ public class Rev1Selection_Pcsc {
             // Go on with the reading of the first record of the EventLog file
             logger.info("= #### 2nd PO exchange: reading transaction of the EventLog file.");
 
-            PoTransaction poTransaction = new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPo));
+            PoTransaction poTransaction =
+                    new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPo));
 
             // Prepare the reading order and keep the associated parser for later use once the
             // transaction has been processed. We provide the expected record length since the REV1

@@ -53,7 +53,7 @@ class SamCommandProcessor {
     private static final byte SIGNATURE_LENGTH_REV32 = (byte) 0x08;
 
     /** The SAM resource */
-    private final SamResource samResource;
+    private final SeResource<CalypsoSam> samResource;
     /** The Proxy reader to communicate with the SAM */
     private final ProxyReader samReader;
     /** The PO resource */

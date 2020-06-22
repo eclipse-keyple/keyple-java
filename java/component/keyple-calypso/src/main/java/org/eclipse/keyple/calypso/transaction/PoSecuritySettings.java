@@ -14,6 +14,7 @@ package org.eclipse.keyple.calypso.transaction;
 import static org.eclipse.keyple.calypso.transaction.PoTransaction.SessionSetting.*;
 import java.util.EnumMap;
 import java.util.List;
+import org.eclipse.keyple.core.selection.SeResource;
 
 
 /**
@@ -25,7 +26,7 @@ import java.util.List;
  * The getKeyInfo method returns the specified setting value.
  */
 public class PoSecuritySettings {
-    private final SamResource samResource;
+    private final SeResource<CalypsoSam> samResource;
     /** List of authorized KVCs */
     private final List<Byte> authorizedKvcList;
 
@@ -55,7 +56,7 @@ public class PoSecuritySettings {
      * Builder pattern
      */
     public static final class PoSecuritySettingsBuilder {
-        private final SamResource samResource;
+        private final SeResource<CalypsoSam> samResource;
         /** List of authorized KVCs */
         private List<Byte> authorizedKvcList;
 
@@ -76,9 +77,9 @@ public class PoSecuritySettings {
          * @param samResource the SAM resource we'll be working with<br>
          *        Needed in any cases.
          */
-        public PoSecuritySettingsBuilder(SamResource samResource) {
+        public PoSecuritySettingsBuilder(SeResource<CalypsoSam> samResource) {
             if (samResource == null) {
-                throw new IllegalStateException("SamResource cannot be null.");
+                throw new IllegalStateException("ManagedSamResource cannot be null.");
             }
             this.samResource = samResource;
         }
@@ -181,7 +182,7 @@ public class PoSecuritySettings {
      * @return the Sam resource
      * @since 0.9
      */
-    SamResource getSamResource() {
+    SeResource<CalypsoSam> getSamResource() {
         return samResource;
     }
 

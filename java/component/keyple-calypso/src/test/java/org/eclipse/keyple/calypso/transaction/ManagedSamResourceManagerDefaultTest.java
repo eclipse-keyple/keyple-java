@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.eclipse.keyple.calypso.CalypsoBaseTest;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
+import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -35,11 +36,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SamResourceManagerDefaultTest extends CalypsoBaseTest {
+public class ManagedSamResourceManagerDefaultTest extends CalypsoBaseTest {
 
 
     private static final Logger logger =
-            LoggerFactory.getLogger(SamResourceManagerDefaultTest.class);
+            LoggerFactory.getLogger(ManagedSamResourceManagerDefaultTest.class);
 
     private static final String SAM_READER_NAME = "sam-reader-name";
 
@@ -58,7 +59,7 @@ public class SamResourceManagerDefaultTest extends CalypsoBaseTest {
         Boolean exceptionThrown = false;
 
         // test
-        SamResource out = null;
+        SeResource<CalypsoSam> out = null;
         try {
             out = srmSpy.allocateSamResource(SamResourceManager.AllocationMode.BLOCKING,
                     SamIdentifier.builder().samRevision(SamRevision.AUTO).serialNumber("any")
@@ -85,8 +86,9 @@ public class SamResourceManagerDefaultTest extends CalypsoBaseTest {
         long start = System.currentTimeMillis();
 
         // test
-        SamResource out = srmSpy.allocateSamResource(SamResourceManager.AllocationMode.BLOCKING,
-                SamIdentifier.builder().samRevision(SamRevision.AUTO).build());
+        SeResource<CalypsoSam> out =
+                srmSpy.allocateSamResource(SamResourceManager.AllocationMode.BLOCKING,
+                        SamIdentifier.builder().samRevision(SamRevision.AUTO).build());
 
         long stop = System.currentTimeMillis();
 
@@ -141,8 +143,9 @@ public class SamResourceManagerDefaultTest extends CalypsoBaseTest {
                 DEFAULT_SLEEP_TIME));
     }
 
-    SamResource samResourceMock() {
-        SamResource mock = Mockito.mock(SamResource.class);
+    SamResourceManagerDefault.ManagedSamResource samResourceMock() {
+        SamResourceManagerDefault.ManagedSamResource mock =
+                Mockito.mock(SamResourceManagerDefault.ManagedSamResource.class);
         doReturn(true).when(mock).isSamMatching(any(SamIdentifier.class));
         doReturn(true).when(mock).isSamResourceFree();
         return mock;

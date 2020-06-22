@@ -59,7 +59,7 @@ public class PoTransactionTest {
     final byte DEFAULT_KEY_RECORD_NUMBER_DEBIT = (byte) 0x03;
     private SeReader poReader;
     private PoTransaction poTransaction;
-    private SamResource samResource;
+    private SeResource<CalypsoSam> samResource;
 
     private final Map<String, String> poCommandsTestSet = new HashMap<String, String>();
     private final Map<String, String> samCommandsTestSet = new HashMap<String, String>();
@@ -242,7 +242,7 @@ public class PoTransactionTest {
         SeReader samReader = createMockReader("SAM", TransmissionMode.CONTACTS, samCommandsTestSet);
         CalypsoSam calypsoSam = createCalypsoSam();
 
-        samResource = new SamResource(samReader, calypsoSam);
+        samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
     }
 
     /* Standard opening with two records read */
@@ -268,8 +268,8 @@ public class PoTransactionTest {
                                 DEFAULT_KEY_RECORD_NUMBER_DEBIT)
                         .build();
 
-        poTransaction =
-                new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPoRev31), poSecuritySettings);
+        poTransaction = new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPoRev31),
+                poSecuritySettings);
         samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
         samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
 
