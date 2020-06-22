@@ -37,7 +37,7 @@ public class BaseStubTest {
         logger.info("------------------------------");
 
         logger.info("setupStub, assert stubplugin is empty");
-        stubPlugin = (StubPluginImpl) new StubPluginFactory(PLUGIN_NAME).getPluginInstance();
+        stubPlugin = (StubPluginImpl) new StubPluginFactory(PLUGIN_NAME).getPlugin();
 
         logger.info("Stubplugin readers size {}", stubPlugin.getReaders().size());
         Assert.assertEquals(0, stubPlugin.getReaders().size());

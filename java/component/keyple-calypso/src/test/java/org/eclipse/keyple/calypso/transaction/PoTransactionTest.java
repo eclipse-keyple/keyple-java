@@ -716,8 +716,8 @@ public class PoTransactionTest {
         poTransaction.prepareReadRecordFile(FILE11, 1);
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
 
-        poTransaction.prepareDecrease(FILE10, (byte) 1, 100);
-        poTransaction.prepareIncrease(FILE11, (byte) 1, 100);
+        poTransaction.prepareDecreaseCounter(FILE10, (byte) 1, 100);
+        poTransaction.prepareIncreaseCounter(FILE11, (byte) 1, 100);
         poTransaction.prepareUpdateRecord(FILE7, (byte) 1, ByteArrayUtil.fromHex(FILE7_REC1_4B));
         poTransaction.prepareWriteRecord(FILE8, (byte) 1, ByteArrayUtil.fromHex(FILE8_REC1_4B));
         poTransaction.prepareAppendRecord(FILE9, ByteArrayUtil.fromHex(FILE9_REC1_4B));

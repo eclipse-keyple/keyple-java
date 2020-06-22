@@ -137,7 +137,7 @@ public class VirtualReaderBaseTest {
 
     protected VirtualReader getVirtualReader() throws Exception {
         Assert.assertEquals(1, this.masterAPI.getPlugin().getReaders().size());
-        return (VirtualReader) this.masterAPI.getPlugin().getReaders().first();
+        return (VirtualReader) this.masterAPI.getPlugin().getReaders().values().toArray()[0];
     }
 
 

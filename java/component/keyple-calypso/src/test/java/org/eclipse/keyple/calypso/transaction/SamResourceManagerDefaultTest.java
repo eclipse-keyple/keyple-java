@@ -17,6 +17,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import org.eclipse.keyple.calypso.CalypsoBaseTest;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
@@ -127,12 +129,13 @@ public class SamResourceManagerDefaultTest extends CalypsoBaseTest {
                 any(MultiSeRequestProcessing.class), any(ChannelControl.class));
 
         // create a list of mock readers
-        SortedSet<SeReader> readers = new TreeSet<SeReader>();
-        readers.add(reader);
+        ConcurrentMap<String, SeReader> readers = new ConcurrentHashMap<String, SeReader>();
+        readers.put(reader.getName(), reader);
 
         // create the mock plugin
         ReaderPlugin plugin = Mockito.mock(ReaderPlugin.class);
         when(plugin.getReaders()).thenReturn(readers);
+        when(plugin.getReader(SAM_READER_NAME)).thenReturn(reader);
 
         return Mockito.spy(new SamResourceManagerDefault(plugin, samFilter, MAX_BLOCKING_TIME,
                 DEFAULT_SLEEP_TIME));

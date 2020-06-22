@@ -45,7 +45,7 @@ public final class DecreaseCmdBuild extends AbstractPoCommandBuilder<DecreaseRes
      * @throws IllegalArgumentException - if the command is inconsistent
      */
 
-    public DecreaseCmdBuild(PoClass poClass, byte sfi, byte counterNumber, int decValue) {
+    public DecreaseCmdBuild(PoClass poClass, byte sfi, int counterNumber, int decValue) {
         super(command, null);
 
         byte cla = poClass.getValue();
@@ -62,7 +62,8 @@ public final class DecreaseCmdBuild extends AbstractPoCommandBuilder<DecreaseRes
         byte p2 = (byte) (sfi * 8);
 
         /* this is a case4 command, we set Le = 0 */
-        this.request = setApduRequest(cla, command, counterNumber, p2, decValueBuffer, (byte) 0);
+        this.request =
+                setApduRequest(cla, command, (byte) counterNumber, p2, decValueBuffer, (byte) 0);
 
         if (logger.isDebugEnabled()) {
             String extraInfo = String.format("SFI=%02X, COUNTER=%d, DECREMENT=%d", sfi,

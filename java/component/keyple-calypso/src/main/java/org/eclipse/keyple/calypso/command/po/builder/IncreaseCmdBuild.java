@@ -36,15 +36,15 @@ public final class IncreaseCmdBuild extends AbstractPoCommandBuilder<IncreaseRes
      * Instantiates a new increase cmd build from command parameters.
      *
      * @param poClass indicates which CLA byte should be used for the Apdu
+     * @param sfi SFI of the file to select or 00h for current EF
      * @param counterNumber &gt;= 01h: Counters file, number of the counter. 00h: Simulated Counter
      *        file.
-     * @param sfi SFI of the file to select or 00h for current EF
      * @param incValue Value to add to the counter (defined as a positive int &lt;= 16777215
      *        [FFFFFFh])
      * @throws IllegalArgumentException - if the decrement value is out of range
      * @throws IllegalArgumentException - if the command is inconsistent
      */
-    public IncreaseCmdBuild(PoClass poClass, byte sfi, byte counterNumber, int incValue) {
+    public IncreaseCmdBuild(PoClass poClass, byte sfi, int counterNumber, int incValue) {
         super(command, null);
 
         byte cla = poClass.getValue();
@@ -61,7 +61,8 @@ public final class IncreaseCmdBuild extends AbstractPoCommandBuilder<IncreaseRes
         byte p2 = (byte) (sfi * 8);
 
         /* this is a case4 command, we set Le = 0 */
-        this.request = setApduRequest(cla, command, counterNumber, p2, incValueBuffer, (byte) 0x00);
+        this.request =
+                setApduRequest(cla, command, (byte) counterNumber, p2, incValueBuffer, (byte) 0x00);
 
         if (logger.isDebugEnabled()) {
             String extraInfo = String.format("SFI=%02X, COUNTER=%d, INCREMENT=%d", sfi,

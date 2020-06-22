@@ -33,6 +33,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException
 import org.eclipse.keyple.example.calypso.android.omapi.R
 import org.eclipse.keyple.plugin.android.omapi.PLUGIN_NAME
 import timber.log.Timber
+import java.util.concurrent.ConcurrentMap
 
 class MainActivity : BasicActivity(), View.OnClickListener {
 
@@ -74,11 +75,10 @@ class MainActivity : BasicActivity(), View.OnClickListener {
     }
 
     @Throws(KeyplePluginNotFoundException::class, KeyplePluginInstantiationException::class)
-    private suspend fun connectOmapi(): SortedSet<SeReader> = withContext(Dispatchers.IO) {
-        var readers: SortedSet<SeReader>? = null
+    private suspend fun connectOmapi(): ConcurrentMap<String, SeReader> = withContext(Dispatchers.IO) {
+        var readers: ConcurrentMap<String, SeReader> ? = null
         for (x in 1..MAX_TRIES) {
-            readers = SeProxyService.getInstance()
-                    .getPlugin(PLUGIN_NAME).readers
+            readers = SeProxyService.getInstance().getPlugin(PLUGIN_NAME).readers
             if (readers == null || readers.size < 1) {
                 Timber.d("No readers found in OMAPI Keyple Plugin")
                 Timber.d("Retrying in 1 second")

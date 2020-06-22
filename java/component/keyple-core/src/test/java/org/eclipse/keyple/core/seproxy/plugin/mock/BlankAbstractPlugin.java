@@ -12,8 +12,8 @@
 package org.eclipse.keyple.core.seproxy.plugin.mock;
 
 import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
@@ -28,8 +28,8 @@ public class BlankAbstractPlugin extends AbstractPlugin {
     }
 
     @Override
-    protected SortedSet<SeReader> initNativeReaders() {
-        return new TreeSet<SeReader>();
+    protected ConcurrentMap<String, SeReader> initNativeReaders() throws KeypleReaderIOException {
+        return new ConcurrentHashMap<String, SeReader>();
     }
 
     @Override

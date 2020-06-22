@@ -42,8 +42,7 @@ class RemoteSePluginFactory implements PluginFactory {
         return pluginName;
     }
 
-    @Override
-    public ReaderPlugin getPluginInstance() {
+    public ReaderPlugin getPlugin() {
         try {
             return new RemoteSePluginImpl(sessionManager, dtoSender, rpc_timeout, pluginName,
                     executorService);

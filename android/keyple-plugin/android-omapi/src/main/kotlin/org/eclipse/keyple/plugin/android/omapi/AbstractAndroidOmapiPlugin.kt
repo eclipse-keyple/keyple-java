@@ -12,7 +12,7 @@
 package org.eclipse.keyple.plugin.android.omapi
 
 import android.content.Context
-import java.util.concurrent.ConcurrentSkipListSet
+import java.util.concurrent.ConcurrentSkipListMap
 import org.eclipse.keyple.core.seproxy.ReaderPlugin
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin
@@ -45,14 +45,13 @@ internal abstract class AbstractAndroidOmapiPlugin<T, V> : AbstractPlugin(PLUGIN
         }
     }
 
-    override fun initNativeReaders(): ConcurrentSkipListSet<SeReader> {
+    override fun initNativeReaders(): ConcurrentSkipListMap<String, SeReader> {
 
         Timber.d("initNativeReaders")
-        val readers = ConcurrentSkipListSet<SeReader>() // empty list is returned us service not connected
-        getNativeReaders()?.let { nativeReaders ->
-            readers.addAll(nativeReaders.map { nativeReader ->
-                mapToSeReader(nativeReader)
-            })
+        val readers = ConcurrentSkipListMap<String, SeReader>() // empty list is returned us service not connected
+        getNativeReaders()?.forEach { nativeReader ->
+            val seReader = mapToSeReader(nativeReader)
+            readers[seReader.name] = seReader
         }
 
         if (readers.isEmpty()) {

@@ -17,7 +17,29 @@ Releases:
  - [keyple-android-plugin-android-omapi 0.9a](#keyple-android-plugin-android-omapi-09a)
 
 ### keyple-java-core 0.9a
+* KEYP-108, 213 : improved plugin lifecycle management (SeProxyService, PluginFactory)
+* KEYP-145 : improved command builders and parsers to manage erroneous status word with dedicated exceptions
+* KEYP-154,295 : improved exceptions management, all exceptions are now runtime exceptions
+* KEYP-243,250,251 : improvement of the classes from the selection package (deep refactoring and simplification)
+* KEYP-245 : improved isolation in the plugin API
+* KEYP-202, 241, 242 : fixed misused Set fields (changed into List), simplified ProxyReader API (less methods)
+* fixed a comparison issue in the Tag class
+* various other refactorings and improvements
+* fixed many issues raised by Sonarqube
+ 
 ### keyple-java-calypso 0.9a
+* KEYP-101 : enhanced CalypsoPo with card data (updated during the transaction)
+* KEYP-102 : update the content of CalypsoPo during selection
+* KEYP-103,113 : extensive reworking of the PoTransaction class (split into 3 classes). The data received from the PO are now made available in CalypsoPo instead of the previous parser system. 
+* KEYP-134,216 : extensive reworking of the selection classes. The data received from the PO are now made available in CalypsoPo.
+* KEYP-145 : extensive reworking of command builders and parsers 
+* KEYP-154 : improved exceptions management, add many exception cases
+* KEYP-290 : fixed NPE when opening a secure session without reading with rev 2.4 PO
+* KEYP-292 : make CalypsoPo and CalypsoSam classes extendable
+* updated with the new keyple-java-core API
+* various other refactorings and improvements
+* fixed many issues raised by Sonarqube
+
 ### keyple-java-plugin-pcsc 0.9a
 ### keyple-java-plugin-stub 0.9a
 * any parameters can be set in the stub reader

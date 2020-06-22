@@ -51,11 +51,11 @@ class AndroidOmapiPluginFactoryTest {
     @Test
     fun getPluginInstanceForOSSup28() {
         androidOmapiPluginFactory = AndroidOmapiPluginFactory(context, 28)
-        var readerPlugin = androidOmapiPluginFactory.pluginInstance()
+        var readerPlugin = androidOmapiPluginFactory.getPlugin()
         Assert.assertTrue(readerPlugin is org.eclipse.keyple.plugin.android.omapi.se.AndroidOmapiPlugin)
 
         androidOmapiPluginFactory = AndroidOmapiPluginFactory(context, 29)
-        readerPlugin = androidOmapiPluginFactory.pluginInstance()
+        readerPlugin = androidOmapiPluginFactory.getPlugin()
         Assert.assertTrue(readerPlugin is org.eclipse.keyple.plugin.android.omapi.se.AndroidOmapiPlugin)
     }
 

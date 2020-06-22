@@ -12,9 +12,11 @@
 package org.eclipse.keyple.plugin.stub;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -96,7 +98,8 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
 
         if (!exist && synchronous) {
             /* add the reader as a new reader to the readers list */
-            readers.add(new StubReaderImpl(this.getName(), readerName, transmissionMode));
+            readers.put(readerName,
+                    new StubReaderImpl(this.getName(), readerName, transmissionMode));
         }
 
         connectedStubNames.add(readerName);
@@ -126,11 +129,12 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
 
         if (newNames.size() > 0) {
             if (synchronous) {
-                List<StubReaderImpl> newReaders = new ArrayList<StubReaderImpl>();
+                ConcurrentMap<String, StubReaderImpl> newReaders =
+                        new ConcurrentHashMap<String, StubReaderImpl>();
                 for (String name : newNames) {
-                    newReaders.add(new StubReaderImpl(this.getName(), name));
+                    newReaders.put(name, new StubReaderImpl(this.getName(), name));
                 }
-                readers.addAll(newReaders);
+                readers.putAll(newReaders);
             }
 
             connectedStubNames.addAll(readerNames);
@@ -155,7 +159,7 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
             /* remove the reader from the readers list */
             if (synchronous) {
                 connectedStubNames.remove(readerName);
-                readers.remove(getReader(readerName));
+                readers.remove(readerName);
             } else {
                 connectedStubNames.remove(readerName);
             }
@@ -179,7 +183,9 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
         }
         connectedStubNames.removeAll(readerNames);
         if (synchronous) {
-            readers.removeAll(readersToDelete);
+            for (StubReaderImpl reader : readersToDelete) {
+                readers.remove(reader.getName());
+            }
         }
     }
 
@@ -200,13 +206,13 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
     /**
      * Init native Readers to empty Set
      * 
-     * @return the list of SeReader objects.
-     * @throws KeypleReaderIOException if a reader error occurs
+     * @return the map of SeReader objects.
+     * @throws KeypleReaderException if a reader error occurs
      */
     @Override
-    protected SortedSet<SeReader> initNativeReaders() {
+    protected ConcurrentMap<String, SeReader> initNativeReaders() {
         /* init Stub Readers response object */
-        SortedSet<SeReader> newNativeReaders = new ConcurrentSkipListSet<SeReader>();
+        ConcurrentMap<String, SeReader> newNativeReaders = new ConcurrentHashMap();
         return newNativeReaders;
     }
 
@@ -218,18 +224,11 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
      *
      * @param readerName name of the reader
      * @return the reader object
-     * @throws KeypleReaderNotFoundException if the reader was not found by its name
-     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     @Override
     protected SeReader fetchNativeReader(String readerName) {
-        for (SeReader reader : readers) {
-            if (reader.getName().equals(readerName)) {
-                return reader;
-            }
-        }
-        SeReader reader = null;
-        if (connectedStubNames.contains(readerName)) {
+        SeReader reader = readers.get(readerName);
+        if (reader == null && connectedStubNames.contains(readerName)) {
             reader = new StubReaderImpl(this.getName(), readerName);
         }
         return reader;

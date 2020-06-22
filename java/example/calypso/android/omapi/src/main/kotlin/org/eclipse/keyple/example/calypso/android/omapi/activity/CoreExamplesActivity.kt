@@ -42,7 +42,7 @@ class CoreExamplesActivity : ExamplesActivity() {
     private fun getReadersInfos() {
         addHeaderEvent("Readers found ${readers.size}, getting infos")
 
-        readers.forEach {
+        readers.values.forEach {
 
             addActionEvent("Get reader name [reader.name]")
             val name = it.name
@@ -70,7 +70,7 @@ class CoreExamplesActivity : ExamplesActivity() {
                 addResultEvent("No readers available")
             } else {
                 readers.forEach {
-                    addHeaderEvent("Starting explicitAidSelection with $poAid on Reader ${it.name}")
+                    addHeaderEvent("Starting explicitAidSelection with $poAid on Reader ${it.key}")
 
                     val seSelector = SeSelector.builder()
                             .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
@@ -80,7 +80,7 @@ class CoreExamplesActivity : ExamplesActivity() {
 
                     addActionEvent("Sending SeRequest to select: $poAid")
                     try {
-                        val seResponse = (it as ProxyReader).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN)
+                        val seResponse = (it.value as ProxyReader).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN)
 
                         if (seResponse?.selectionStatus?.hasMatched() == true) {
                             addResultEvent("The selection of the PO has succeeded.")
@@ -146,7 +146,7 @@ class CoreExamplesActivity : ExamplesActivity() {
         if (readers.size <1) {
             addResultEvent("No readers available")
         } else {
-            readers.forEach { seReader: SeReader ->
+            readers.values.forEach { seReader: SeReader ->
                 if (seReader.isSePresent) {
                     addActionEvent("Sending multiSelection request based on AID Prefix $seAidPrefix to ${seReader.name}")
                     try {
@@ -185,7 +185,7 @@ class CoreExamplesActivity : ExamplesActivity() {
         if (readers.size <1) {
             addResultEvent("No readers available")
         } else {
-            readers.forEach { seReader: SeReader ->
+            readers.values.forEach { seReader: SeReader ->
                 if (seReader.isSePresent) {
 
                     var seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH,

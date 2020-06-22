@@ -15,6 +15,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.SortedSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
@@ -109,8 +111,8 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
      * @throws KeypleReaderException if a reader error occurs
      */
     @Override
-    protected SortedSet<SeReader> initNativeReaders() {
-        SortedSet<SeReader> nativeReaders = new ConcurrentSkipListSet<SeReader>();
+    protected ConcurrentMap<String, SeReader> initNativeReaders() {
+        ConcurrentMap<String, SeReader> nativeReaders = new ConcurrentHashMap<String, SeReader>();
 
         /*
          * activate a special processing "SCARD_E_NO_NO_SERVICE" (on Windows platforms the removal
@@ -126,7 +128,8 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
                 terminals);
         try {
             for (CardTerminal term : terminals.list()) {
-                nativeReaders.add(new PcscReaderImpl(this.getName(), term));
+                final PcscReaderImpl pcscReader = new PcscReaderImpl(this.getName(), term);
+                nativeReaders.put(pcscReader.getName(), pcscReader);
             }
         } catch (CardException e) {
             if (e.getCause().toString().contains("SCARD_E_NO_READERS_AVAILABLE")) {
@@ -157,23 +160,21 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
     @Override
     protected SeReader fetchNativeReader(String name) {
         // return the current reader if it is already listed
-        for (SeReader reader : readers) {
-            if (reader.getName().equals(name)) {
-                return reader;
-            }
+        SeReader seReader = readers.get(name);
+        if (seReader != null) {
+            return seReader;
         }
         /*
          * parse the current PC/SC readers list to create the ProxyReader(s) associated with new
          * reader(s)
          */
-        AbstractReader reader = null;
         CardTerminals terminals = getCardTerminals();
         try {
             for (CardTerminal term : terminals.list()) {
                 if (term.getName().equals(name)) {
                     logger.trace("[{}] fetchNativeReader => CardTerminal in new PcscReader: {}",
                             this.getName(), terminals);
-                    reader = new PcscReaderImpl(this.getName(), term);
+                    seReader = new PcscReaderImpl(this.getName(), term);
                 }
             }
         } catch (CardException e) {
@@ -181,10 +182,10 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
                     e.getMessage());
             throw new KeypleReaderIOException("Could not access terminals list", e);
         }
-        if (reader == null) {
+        if (seReader == null) {
             throw new KeypleReaderNotFoundException("Reader " + name + " not found!");
         }
-        return reader;
+        return seReader;
     }
 
     private CardTerminals getCardTerminals() {

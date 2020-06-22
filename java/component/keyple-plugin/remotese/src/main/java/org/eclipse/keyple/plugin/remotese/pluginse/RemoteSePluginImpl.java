@@ -12,6 +12,8 @@
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
@@ -60,13 +62,12 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
 
 
     public VirtualReaderImpl getReaderByRemoteName(String remoteName, String slaveNodeId) {
-        for (SeReader virtualReader : readers) {
-            if (((VirtualReaderImpl) virtualReader).getName()
-                    .equals(RemoteSePluginImpl.generateReaderName(remoteName, slaveNodeId))) {
-                return (VirtualReaderImpl) virtualReader;
-            }
+        SeReader virtualReader =
+                readers.get(RemoteSePluginImpl.generateReaderName(remoteName, slaveNodeId));
+        if (virtualReader == null) {
+            throw new KeypleReaderNotFoundException(remoteName);
         }
-        throw new KeypleReaderNotFoundException(remoteName);
+        return (VirtualReaderImpl) virtualReader;
     }
 
 
@@ -116,7 +117,7 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
                     new RemoteMethodTxEngine(dtoSender, rpcTimeout, executorService), slaveNodeId,
                     transmissionMode, options);
         }
-        readers.add(virtualReader);
+        readers.put(virtualReader.getName(), virtualReader);
 
         notifyObservers(new PluginEvent(getName(), virtualReader.getName(),
                 PluginEvent.EventType.READER_CONNECTED));
@@ -148,7 +149,7 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
         }
 
         // remove reader
-        readers.remove(virtualReader);
+        readers.remove(virtualReader.getName());
 
         notifyObservers(new PluginEvent(getName(), virtualReader.getName(),
                 PluginEvent.EventType.READER_DISCONNECTED));
@@ -175,11 +176,15 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
 
     /**
      * Init Native Readers to empty Set
+     *
+     * @return
      */
     @Override
-    protected SortedSet<SeReader> initNativeReaders() {
-        return new TreeSet<SeReader>();
+    protected ConcurrentMap<String, SeReader> initNativeReaders() {
+        return new ConcurrentHashMap<String, SeReader>();
     }
+
+
 
     @Override
     public Map<String, String> getParameters() {

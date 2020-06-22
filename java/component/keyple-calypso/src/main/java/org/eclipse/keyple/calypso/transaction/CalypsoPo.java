@@ -160,6 +160,8 @@ public class CalypsoPo extends AbstractMatchingSe {
             modificationsCounterMax = REV1_PO_DEFAULT_WRITE_OPERATIONS_NUMBER_SUPPORTED_PER_SESSION;
 
             startupInfo = new byte[7];
+            // create buffer size indicator
+            startupInfo[0] = (byte) modificationsCounterMax;
             // create the startup info with the 6 bytes of the ATR from position 6
             System.arraycopy(atr, 6, startupInfo, 1, 6);
 
@@ -255,11 +257,20 @@ public class CalypsoPo extends AbstractMatchingSe {
      *
      * @return a byte array containing the Application Serial Number (8 bytes)
      */
-    public final byte[] getApplicationSerialNumber() {
+    public final byte[] getApplicationSerialNumberBytes() {
         byte[] applicationSerialNumber = calypsoSerialNumber.clone();
         applicationSerialNumber[0] = 0;
         applicationSerialNumber[1] = 0;
         return applicationSerialNumber;
+    }
+
+    /**
+     * The serial number for the application, is unique ID for the PO.
+     *
+     * @return a String representing the Application Serial Number (8 hex bytes)
+     */
+    public final String getApplicationSerialNumber() {
+        return ByteArrayUtil.toHex(getApplicationSerialNumberBytes());
     }
 
     /**
@@ -301,7 +312,7 @@ public class CalypsoPo extends AbstractMatchingSe {
      * @return the maximum length of data that an APDU in this PO can carry
      * @since 0.9
      */
-    public final int getPayloadCapacity() {
+    protected final int getPayloadCapacity() {
         // TODO make this value dependent on the type of PO identified
         return 250;
     }
@@ -441,6 +452,16 @@ public class CalypsoPo extends AbstractMatchingSe {
      */
     public final byte getSoftwareRevision() {
         return startupInfo[SI_SOFTWARE_REVISION];
+    }
+
+    /**
+     * Depending on the type of PO, the session modification byte indicates the maximum number of
+     * bytes that can be modified or the number of possible write commands in a session.
+     *
+     * @return the Session Modifications byte
+     */
+    public final byte getSessionModification() {
+        return startupInfo[SI_BUFFER_SIZE_INDICATOR];
     }
 
     /**
