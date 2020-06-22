@@ -16,7 +16,7 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 /**
  * The SeResource class groups a AbstractMatchingSe and its associated SeReader
  */
-public class SeResource<T extends AbstractMatchingSe> {
+public final class SeResource<T extends AbstractMatchingSe> {
     private final SeReader seReader;
     private final T matchingSe;
 
