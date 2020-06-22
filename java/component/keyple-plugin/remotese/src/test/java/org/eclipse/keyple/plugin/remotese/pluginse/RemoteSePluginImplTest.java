@@ -15,6 +15,7 @@ import static org.mockito.Mockito.doReturn;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -121,11 +122,17 @@ public class RemoteSePluginImplTest extends CoreBaseTest {
         Thread thread = new Thread() {
             public void run() {
                 for (int i = 0; i < N; i++) {
-                    if (readers.size() > 0) {
-                        Map.Entry<String, SeReader> seReader = readers.entrySet().iterator().next();
-                        logger.debug("Removing reader {}", seReader.getKey());
-                        readers.remove(seReader.getKey());
-                    } else {
+                    try {
+                        Map.Entry<String, SeReader> entry = readers.entrySet().iterator().next();
+                        if (entry != null) {
+                            logger.debug("Removing reader {}", entry.getKey());
+                            readers.remove(entry.getKey());
+                        } else {
+                            // list is empty
+                            logger.debug("readers: {}, list is empty", readers.size());
+                        }
+                    } catch (NoSuchElementException e) {
+                        // list is empty
                         logger.debug("readers: {}, list is empty", readers.size());
                     }
 
