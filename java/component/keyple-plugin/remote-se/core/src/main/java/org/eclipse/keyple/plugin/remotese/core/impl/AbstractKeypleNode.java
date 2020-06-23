@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.core.impl;
 
+import java.util.List;
 import java.util.UUID;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 
@@ -47,13 +48,13 @@ public abstract class AbstractKeypleNode {
     }
 
     /**
-     * Send a request and return a response.
+     * Send a request and return a list of responses.
      *
      * @param msg The message to send (must be not null).
-     * @return a not null response.
+     * @return a not null list of responses.
      * @since 1.0
      */
-    public abstract KeypleMessageDto sendRequest(KeypleMessageDto msg);
+    public abstract List<KeypleMessageDto> sendRequest(KeypleMessageDto msg);
 
     /**
      * Send a message.

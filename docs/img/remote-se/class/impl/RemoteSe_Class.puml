@@ -1,6 +1,6 @@
 @startuml
 title
-    Keyple Plugin Remote SE (16/06/2020)
+    Keyple Plugin Remote SE (23/06/2020)
 end title
 
 ' == THEME ==
@@ -140,35 +140,33 @@ package org.eclipse.keyple.plugin.remotese {
             +abstract AbstractKeypleNode {
                 # String nodeId
                 ~ AbstractKeypleNode (AbstractKeypleMessageHandler handler)
-                + {abstract} **abstract** KeypleMessageDto sendRequest (KeypleMessageDto msg)
+                + {abstract} **abstract** List<KeypleMessageDto> sendRequest (KeypleMessageDto msg)
                 + {abstract} **abstract** void sendMessage (KeypleMessageDto msg)
             }
             ' Async Node
             +class "**final** KeypleClientAsyncNodeImpl" as KeypleClientAsyncNodeImpl extends AbstractKeypleNode implements KeypleClientAsyncNode {
                 ~ KeypleClientAsyncNodeImpl (\n KeypleClientAsync endpoint,\n AbstractKeypleMessageHandler handler)
                 + void openSession (String sessionId)
-                + KeypleMessageDto sendRequest (KeypleMessageDto msg)
+                + List<KeypleMessageDto> sendRequest (KeypleMessageDto msg)
                 + void sendMessage (KeypleMessageDto msg)
                 + void closeSession (String sessionId)
             }
             +class "**final** KeypleServerAsyncNodeImpl" as KeypleServerAsyncNodeImpl extends AbstractKeypleNode implements KeypleServerAsyncNode {
                 ~ KeypleServerAsyncNodeImpl (\n KeypleServerAsync endpoint,\n AbstractKeypleMessageHandler handler)
-                + KeypleMessageDto sendRequest (KeypleMessageDto msg)
+                + List<KeypleMessageDto> sendRequest (KeypleMessageDto msg)
                 + void sendMessage (KeypleMessageDto msg)
             }
             ' Sync Node
             +class "**final** KeypleClientSyncNodeImpl" as KeypleClientSyncNodeImpl extends AbstractKeypleNode implements KeypleClientSyncNode {
-                - KeypleMessageDto nextIncomingMessage
                 ~ KeypleClientSyncNodeImpl (\n KeypleClientSync endpoint,\n AbstractKeypleMessageHandler handler,\n ServerPushEventStrategy pluginObservationStrategy,\n ServerPushEventStrategy readerObservationStrategy)
-                + KeypleMessageDto sendRequest (KeypleMessageDto msg)
+                + List<KeypleMessageDto> sendRequest (KeypleMessageDto msg)
                 + void sendMessage (KeypleMessageDto msg)
-                + boolean processIncomingMessage ()
             }
             +class "**final** KeypleServerSyncNodeImpl" as KeypleServerSyncNodeImpl extends AbstractKeypleNode implements KeypleServerSyncNode {
                 - Map<String, Object> : clientRequesterById
                 - Map<Object, KeypleMessageDto> : clientAdditionalMessageByRequester
                 ~ KeypleServerSyncNodeImpl (\n AbstractKeypleMessageHandler handler)
-                + KeypleMessageDto sendRequest (KeypleMessageDto msg)
+                + List<KeypleMessageDto> sendRequest (KeypleMessageDto msg)
                 + void sendMessage (KeypleMessageDto msg)
                 + void setAdditionalOutgoingMessage (KeypleMessageDto msg)
             }
@@ -244,25 +242,24 @@ package org.eclipse.keyple.plugin.remotese {
                 ' Native Handler
                 ~abstract AbstractNativeSeService extends AbstractKeypleMessageHandler {
                     ~ AbstractNativeSeService ()
-                    ~ void onMessage (KeypleMessageDto msg)
-                    ~ SeReader findLocalReader (String nativeReaderName)
+                    # void onMessage (KeypleMessageDto msg)
+                    # SeReader findLocalReader (String nativeReaderName)
                 }
                 ~class "<< Singleton >>\n<< <back:#E59866>ReaderObserver</back> >>\n**final** NativeSeClientServiceImpl" as NativeSeClientServiceImpl extends AbstractNativeSeService implements NativeSeClientService {
-                    - String currentSessionId
                     - NativeSeClientServiceImpl ()
                     ~ {static} NativeSeClientServiceImpl createInstance (boolean withReaderObservation)
                     ~ {static} NativeSeClientServiceImpl getInstance ()
-                    ~ void onMessage (KeypleMessageDto msg)
+                    # void onMessage (KeypleMessageDto msg)
                 }
                 ~class "<< Singleton >>\n<< <back:#E59866>ReaderObserver</back> >>\n**final** NativeSeServerServiceImpl" as NativeSeServerServiceImpl extends AbstractNativeSeService implements NativeSeServerService {
                     - NativeSeServerServiceImpl ()
                     ~ {static} NativeSeServerServiceImpl getInstance ()
-                    ~ void onMessage (KeypleMessageDto msg)
+                    # void onMessage (KeypleMessageDto msg)
                 }
                 ~class "<< Singleton >>\n**final** NativeSePoolServerServiceImpl" as NativeSePoolServerServiceImpl extends AbstractNativeSeService implements NativeSePoolServerService {
                     - NativeSePoolServerServiceImpl ()
                     ~ {static} NativeSePoolServerServiceImpl getInstance ()
-                    ~ void onMessage (KeypleMessageDto msg)
+                    # void onMessage (KeypleMessageDto msg)
                 }
 
             }
@@ -329,24 +326,24 @@ package org.eclipse.keyple.plugin.remotese {
             ' Remote Handler
             ~abstract "<< <back:#D2B4DE>ReaderPlugin</back> >>\nAbstractRemoteSePlugin" as AbstractRemoteSePlugin extends AbstractKeypleMessageHandler {
                 ~ AbstractRemoteSePlugin (String name)
-                ~ void onMessage (\n KeypleMessageDto msg)
+                # void onMessage (\n KeypleMessageDto msg)
             }
 
 
             ~class "**final** RemoteSeServerPluginImpl" as RemoteSeServerPluginImpl extends AbstractRemoteSePlugin implements RemoteSeServerPlugin {
                 ~ RemoteSeServerPluginImpl (String name)
-                ~ void onMessage (\n KeypleMessageDto msg)
+                # void onMessage (\n KeypleMessageDto msg)
             }
             ~class "**final** RemoteSeClientObservablePluginImpl" as RemoteSeClientObservablePluginImpl extends RemoteSeClientPluginImpl implements RemoteSeClientObservablePlugin {
                 ~ RemoteSeClientObservablePluginImpl (String name,\n ServerPushEventStrategy pluginObservationStrategy,\n ServerPushEventStrategy readerObservationStrategy)
             }
             ~class "**final** RemoteSePoolClientPluginImpl" as RemoteSePoolClientPluginImpl extends AbstractRemoteSePlugin implements RemoteSePoolClientPlugin {
                 ~ RemoteSePoolClientPluginImpl (String name)
-                ~ void onMessage (\n KeypleMessageDto msg)
+                # void onMessage (\n KeypleMessageDto msg)
             }
             ~class "RemoteSeClientPluginImpl" as RemoteSeClientPluginImpl extends AbstractRemoteSePlugin implements RemoteSeClientPlugin {
                 ~ RemoteSeClientPluginImpl (String name,\n ServerPushEventStrategy readerObservationStrategy)
-                ~ void onMessage (KeypleMessageDto msg)
+                # void onMessage (KeypleMessageDto msg)
             }
             ' Virtual Readers
             ~abstract "<< <back:#D0ECE7>SeReader</back> >>\nAbstractVirtualReader" as AbstractVirtualReader {

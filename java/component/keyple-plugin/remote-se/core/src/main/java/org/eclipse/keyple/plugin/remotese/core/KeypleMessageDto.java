@@ -35,6 +35,15 @@ public class KeypleMessageDto {
     private String errorMessage;
 
     /**
+     * Action enum (for internal use only).
+     *
+     * @since 1.0
+     */
+    public enum Action {
+        CHECK_PLUGIN_EVENT, CHECK_READER_EVENT;
+    }
+
+    /**
      * Gets the session id.<br>
      * In case of a full duplex communication, this field will permit to client and server to
      * identify the socket.<br>
