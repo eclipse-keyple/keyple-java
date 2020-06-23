@@ -23,6 +23,7 @@ Releases:
 * KEYP-243,250,251 : improvement of the classes from the selection package (deep refactoring and simplification)
 * KEYP-245 : improved isolation in the plugin API
 * KEYP-202, 241, 242 : fixed misused Set fields (changed into List), simplified ProxyReader API (less methods)
+* KEYP-225 : SeResource constructor is now public
 * fixed a comparison issue in the Tag class
 * various other refactorings and improvements
 * fixed many issues raised by Sonarqube
@@ -36,6 +37,7 @@ Releases:
 * KEYP-154 : improved exceptions management, add many exception cases
 * KEYP-290 : fixed NPE when opening a secure session without reading with rev 2.4 PO
 * KEYP-292 : make CalypsoPo and CalypsoSam classes extendable
+* KEYP-225 : PoResource and SamResource classes are removed, their usage is replaced by SeResource<CalypsoPo/CalypsoSam> 
 * updated with the new keyple-java-core API
 * various other refactorings and improvements
 * fixed many issues raised by Sonarqube

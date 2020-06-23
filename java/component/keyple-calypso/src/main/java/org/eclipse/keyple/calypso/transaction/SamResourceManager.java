@@ -13,6 +13,7 @@ package org.eclipse.keyple.calypso.transaction;
 
 import static org.eclipse.keyple.calypso.command.sam.SamRevision.AUTO;
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
+import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -57,7 +58,7 @@ public abstract class SamResourceManager {
      * @throws KeypleReaderException if a reader error occurs
      * @throws KeypleAllocationReaderException if reader allocation fails
      */
-    public abstract SamResource allocateSamResource(AllocationMode allocationMode,
+    public abstract SeResource<CalypsoSam> allocateSamResource(AllocationMode allocationMode,
             SamIdentifier samIdentifier);
 
     /**
@@ -65,7 +66,7 @@ public abstract class SamResourceManager {
      *
      * @param samResource the SAM resource reference to free
      */
-    public abstract void freeSamResource(SamResource samResource);
+    public abstract void freeSamResource(SeResource<CalypsoSam> samResource);
 
     /**
      * Create a SAM resource from the provided SAM reader.
@@ -75,10 +76,10 @@ public abstract class SamResourceManager {
      * the selection.
      *
      * @param samReader the SAM reader with which the APDU exchanges will be done.
-     * @return a {@link SamResource}
+     * @return a {@link SeResource}
      * @throws CalypsoNoSamResourceAvailableException if an error occurs while doing the selection
      */
-    protected SamResource createSamResource(SeReader samReader) {
+    protected SamResourceManagerDefault.ManagedSamResource createSamResource(SeReader samReader) {
 
         SeSelection samSelection = new SeSelection();
 
@@ -104,6 +105,6 @@ public abstract class SamResourceManager {
 
         CalypsoSam calypsoSam = (CalypsoSam) selectionsResult.getActiveMatchingSe();
 
-        return new SamResource(samReader, calypsoSam);
+        return new SamResourceManagerDefault.ManagedSamResource(samReader, calypsoSam);
     }
 }

@@ -15,11 +15,11 @@ import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.ElementaryFile;
-import org.eclipse.keyple.calypso.transaction.PoResource;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
+import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
@@ -170,7 +170,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
                 logger.info("= #### 2nd PO exchange: reading transaction of the EventLog file.");
 
                 PoTransaction poTransaction =
-                        new PoTransaction(new PoResource(poReader, calypsoPo));
+                        new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPo));
 
                 // Prepare the reading order and keep the associated parser for later use once the
                 // transaction has been processed.

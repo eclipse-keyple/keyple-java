@@ -14,12 +14,12 @@ package org.eclipse.keyple.example.calypso.pc.usecase4;
 
 import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
+import org.eclipse.keyple.calypso.transaction.CalypsoSam;
 import org.eclipse.keyple.calypso.transaction.ElementaryFile;
-import org.eclipse.keyple.calypso.transaction.PoResource;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
-import org.eclipse.keyple.calypso.transaction.SamResource;
+import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
@@ -110,7 +110,7 @@ public class PoAuthentication_Stub {
 
         // Open logical channel for the SAM inserted in the reader
         // (We expect the right is inserted)
-        SamResource samResource = CalypsoUtilities.checkSamAndOpenChannel(samReader);
+        SeResource<CalypsoSam> samResource = CalypsoUtilities.checkSamAndOpenChannel(samReader);
 
         logger.info("=============== UseCase Calypso #4: Po Authentication ==================");
         logger.info("= PO Reader  NAME = {}", poReader.getName());
@@ -168,8 +168,9 @@ public class PoAuthentication_Stub {
             logger.info(
                     "= ##### 2nd PO exchange: open and close a secure session to perform authentication.");
 
-            PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo),
-                    CalypsoUtilities.getSecuritySettings(samResource));
+            PoTransaction poTransaction =
+                    new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPo),
+                            CalypsoUtilities.getSecuritySettings(samResource));
 
             // Read the EventLog file at the Session Opening
             poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_EventLog,

@@ -13,8 +13,12 @@ package org.eclipse.keyple.calypso.transaction;
 
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Pattern;
+import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
+import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -33,7 +37,8 @@ import org.slf4j.LoggerFactory;
 public class SamResourceManagerDefault extends SamResourceManager {
     private static final Logger logger = LoggerFactory.getLogger(SamResourceManagerDefault.class);
 
-    private final List<SamResource> localSamResources = new ArrayList<SamResource>();
+    private final ConcurrentMap<String, ManagedSamResource> localManagedSamResources =
+            new ConcurrentHashMap<String, ManagedSamResource>();
     final SamResourceManagerDefault.ReaderObserver readerObserver;// only used with observable
                                                                   // readers
     protected final ReaderPlugin samReaderPlugin;
@@ -72,7 +77,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
 
         readerObserver = new SamResourceManagerDefault.ReaderObserver();
         logger.info(
-                "PLUGINNAME = {} initialize the localSamResources with the {} connected readers filtered by {}",
+                "PLUGINNAME = {} initialize the localManagedSamResources with the {} connected readers filtered by {}",
                 samReaderPlugin.getName(), samReaderPlugin.getReaders().size(), samReaderFilter);
 
         Pattern p = Pattern.compile(samReaderFilter);
@@ -101,41 +106,40 @@ public class SamResourceManagerDefault extends SamResourceManager {
     }
 
     /**
-     * Remove a {@link SamResource}from the current SamResource list
+     * Remove a {@link SeResource} from the current {@code SeResourceCalypsoSam>} list
      *
      * @param samReader the SAM reader of the resource to remove from the list.
      */
     protected void removeResource(SeReader samReader) {
-        ListIterator<SamResource> iterator = localSamResources.listIterator();
-        while (iterator.hasNext()) {
-            SamResource currentSamResource = iterator.next();
-            if (currentSamResource.getSeReader().equals(samReader)) {
-                if (logger.isInfoEnabled()) {
-                    logger.trace(
-                            "Freed SAM resource: READER = {}, SAM_REVISION = {}, SAM_SERIAL_NUMBER = {}",
-                            samReader.getName(),
-                            currentSamResource.getMatchingSe().getSamRevision(), ByteArrayUtil
-                                    .toHex(currentSamResource.getMatchingSe().getSerialNumber()));
-                }
-                iterator.remove();
+        ManagedSamResource managedSamResource = localManagedSamResources.get(samReader.getName());
+        if (managedSamResource != null) {
+            localManagedSamResources.remove(samReader.getName());
+            if (logger.isInfoEnabled()) {
+                logger.trace(
+                        "Freed SAM resource: READER = {}, SAM_REVISION = {}, SAM_SERIAL_NUMBER = {}",
+                        samReader.getName(), managedSamResource.getMatchingSe().getSamRevision(),
+                        ByteArrayUtil.toHex(managedSamResource.getMatchingSe().getSerialNumber()));
             }
         }
     }
 
     @Override
-    public SamResource allocateSamResource(AllocationMode allocationMode,
+    public SeResource<CalypsoSam> allocateSamResource(AllocationMode allocationMode,
             SamIdentifier samIdentifier) {
         long maxBlockingDate = System.currentTimeMillis() + maxBlockingTime;
         boolean noSamResourceLogged = false;
         logger.trace("Allocating SAM reader channel...");
         while (true) {
-            synchronized (localSamResources) {
-                for (SamResource samResource : localSamResources) {
-                    if (samResource.isSamResourceFree()) {
-                        if (samResource.isSamMatching(samIdentifier)) {
-                            samResource.setSamResourceStatus(SamResource.SamResourceStatus.BUSY);
+            synchronized (localManagedSamResources) {
+                for (Map.Entry<String, ManagedSamResource> entry : localManagedSamResources
+                        .entrySet()) {
+                    ManagedSamResource managedSamResource = entry.getValue();
+                    if (managedSamResource.isSamResourceFree()) {
+                        if (managedSamResource.isSamMatching(samIdentifier)) {
+                            managedSamResource.setSamResourceStatus(
+                                    ManagedSamResource.SamResourceStatus.BUSY);
                             logger.debug("Allocation succeeded. SAM resource created.");
-                            return samResource;
+                            return managedSamResource;
                         }
                     }
                 }
@@ -172,10 +176,16 @@ public class SamResourceManagerDefault extends SamResourceManager {
     }
 
     @Override
-    public void freeSamResource(SamResource samResource) {
-        synchronized (localSamResources) {
-            logger.trace("Freeing local SAM resource.");
-            samResource.setSamResourceStatus(SamResource.SamResourceStatus.FREE);
+    public void freeSamResource(SeResource<CalypsoSam> samResource) {
+        synchronized (localManagedSamResources) {
+            ManagedSamResource managedSamResource =
+                    localManagedSamResources.get(samResource.getSeReader().getName());
+            if (managedSamResource != null) {
+                logger.trace("Freeing local SAM resource.");
+                managedSamResource.setSamResourceStatus(ManagedSamResource.SamResourceStatus.FREE);
+            } else {
+                logger.error("SAM resource not found while freeing.");
+            }
         }
     }
 
@@ -222,7 +232,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
                 }
                 switch (event.getEventType()) {
                     case READER_CONNECTED:
-                        if (containsReader(localSamResources, readerName)) {
+                        if (localManagedSamResources.containsKey(readerName)) {
                             logger.trace(
                                     "Reader is already present in the local samResources -  READERNAME = {}",
                                     readerName);
@@ -305,7 +315,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
         /**
          * Handle {@link ReaderEvent}
          * <p>
-         * Create {@link SamResource}
+         * Create {@link SeResource<CalypsoSam>}
          *
          * @param event the reader event
          */
@@ -318,11 +328,11 @@ public class SamResourceManagerDefault extends SamResourceManager {
             } catch (KeypleReaderNotFoundException e) {
                 e.printStackTrace();
             }
-            synchronized (localSamResources) {
+            synchronized (localManagedSamResources) {
                 switch (event.getEventType()) {
                     case SE_MATCHED:
                     case SE_INSERTED:
-                        if (containsReader(localSamResources, samReader.getName())) {
+                        if (localManagedSamResources.containsKey(samReader.getName())) {
                             logger.trace(
                                     "Reader is already present in the local samResources -  READERNAME = {}",
                                     samReader.getName());
@@ -330,7 +340,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
                             return;
                         }
 
-                        SamResource newSamResource = null;
+                        ManagedSamResource newSamResource = null;
                         try {
                             /*
                              * although the reader allocation is dynamic, the SAM resource type is
@@ -338,7 +348,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
                              */
                             newSamResource = createSamResource(samReader);
                         } catch (CalypsoNoSamResourceAvailableException e) {
-                            logger.error("Failed to create a SamResource from {}",
+                            logger.error("Failed to create a SeResource<CalypsoSam> from {}",
                                     samReader.getName());
                         }
                         /* failures are ignored */
@@ -351,7 +361,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
                                         ByteArrayUtil.toHex(
                                                 newSamResource.getMatchingSe().getSerialNumber()));
                             }
-                            localSamResources.add(newSamResource);
+                            localManagedSamResources.put(samReader.getName(), newSamResource);
                         }
                         break;
                     case SE_REMOVED:
@@ -361,18 +371,6 @@ public class SamResourceManagerDefault extends SamResourceManager {
                 }
             }
         }
-    }
-
-    /*
-     * Helper
-     */
-    private static boolean containsReader(List<SamResource> samResources, String readerName) {
-        for (SamResource resource : samResources) {
-            if (readerName.equals(resource.getSeReader().getName())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private void initSamReader(SeReader samReader, ReaderObserver readerObserver) {
@@ -390,8 +388,8 @@ public class SamResourceManagerDefault extends SamResourceManager {
             samReader.setParameter("mode", "shared");
             if (samReader.isSePresent()) {
                 logger.trace("Create SAM resource: {}", samReader.getName());
-                synchronized (localSamResources) {
-                    localSamResources.add(createSamResource(samReader));
+                synchronized (localManagedSamResources) {
+                    localManagedSamResources.put(samReader.getName(), createSamResource(samReader));
                 }
             }
         } catch (KeypleException e) {
@@ -405,6 +403,86 @@ public class SamResourceManagerDefault extends SamResourceManager {
             ((ObservableReader) samReader).startSeDetection(ObservableReader.PollingMode.REPEATING);
         } else {
             logger.trace("Sam Reader is not an ObservableReader = {}", samReader.getName());
+        }
+    }
+
+    /**
+     * (package-private)<br>
+     * Inner class to handle specific attributes associated with an {@code SeResource<CalypsoSam>}
+     * in the {@link SamResourceManager} context.
+     * 
+     * @since 0.9
+     */
+    static class ManagedSamResource extends SeResource<CalypsoSam> {
+        /** the free/busy enum status */
+        public enum SamResourceStatus {
+            FREE, BUSY;
+        }
+
+        /** the free/busy status of the resource */
+        private SamResourceStatus samResourceStatus;
+
+        /** the sam identifier */
+        private SamIdentifier samIdentifier;
+
+        /**
+         * Constructor
+         *
+         * @param seReader the {@link SeReader} with which the SE is communicating
+         * @param calypsoSam the {@link CalypsoSam} information structure
+         */
+        public ManagedSamResource(SeReader seReader, CalypsoSam calypsoSam) {
+            super(seReader, calypsoSam);
+
+            samResourceStatus = SamResourceStatus.FREE;
+            samIdentifier = null;
+        }
+
+        /**
+         * Indicates whether the ManagedSamResource is FREE or BUSY
+         *
+         * @return the busy status
+         */
+        public boolean isSamResourceFree() {
+            return samResourceStatus.equals(SamResourceStatus.FREE);
+        }
+
+        /**
+         * Defines the {@link SamIdentifier} of the current {@link ManagedSamResource}
+         *
+         * @param samIdentifier the SAM identifier
+         */
+        public void setSamIdentifier(SamIdentifier samIdentifier) {
+            this.samIdentifier = samIdentifier;
+        }
+
+        /**
+         * Indicates whether the ManagedSamResource matches the provided SAM identifier.
+         * <p>
+         * The test includes the {@link SamRevision}, serial number and group reference provided by
+         * the {@link SamIdentifier}.
+         * <p>
+         * The SAM serial number can be null or empty, in this case all serial numbers are accepted.
+         * It can also be a regular expression target one or more specific serial numbers.
+         * <p>
+         * The groupe reference can be null or empty to let all group references match but not empty
+         * the group reference must match the {@link SamIdentifier} to have the method returning
+         * true.
+         *
+         * @param samIdentifier the SAM identifier
+         * @return true or false according to the result of the correspondence test
+         */
+        public boolean isSamMatching(SamIdentifier samIdentifier) {
+            return samIdentifier.matches(this.samIdentifier);
+        }
+
+        /**
+         * Sets the free/busy status of the ManagedSamResource
+         *
+         * @param samResourceStatus FREE/BUSY enum value
+         */
+        public void setSamResourceStatus(SamResourceStatus samResourceStatus) {
+            this.samResourceStatus = samResourceStatus;
         }
     }
 }

@@ -19,9 +19,9 @@ import java.io.InputStream;
 import java.util.Properties;
 import org.eclipse.keyple.calypso.transaction.CalypsoSam;
 import org.eclipse.keyple.calypso.transaction.PoSecuritySettings;
-import org.eclipse.keyple.calypso.transaction.SamResource;
 import org.eclipse.keyple.calypso.transaction.SamSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.SamSelector;
+import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -79,10 +79,10 @@ public final class CalypsoUtilities {
     /**
      * Get the default reader for SAM communications
      * 
-     * @return a {@link SamResource} object
+     * @return a {@link SeResource} object
      * @throws KeypleException if an error occurred
      */
-    public static SamResource getDefaultSamResource() {
+    public static SeResource<CalypsoSam> getDefaultSamResource() {
         SeReader samReader =
                 ReaderUtilities.getReaderByName(properties.getProperty("sam.reader.regex"));
 
@@ -96,7 +96,7 @@ public final class CalypsoUtilities {
         return checkSamAndOpenChannel(samReader);
     }
 
-    public static PoSecuritySettings getSecuritySettings(SamResource samResource) {
+    public static PoSecuritySettings getSecuritySettings(SeResource<CalypsoSam> samResource) {
 
         // The default KIF values for personalization, loading and debiting
         final byte DEFAULT_KIF_PERSO = (byte) 0x21;
@@ -122,13 +122,15 @@ public final class CalypsoUtilities {
     }
 
     /**
-     * Check SAM presence and consistency and return a SamResource when everything is correct.
+     * Check SAM presence and consistency and return a {@code SeResource<CalypsoSam>} when
+     * everything is correct.
      * <p>
      * Throw an exception if the expected SAM is not available
      *
      * @param samReader the SAM reader
+     * @return the SAM SeResource
      */
-    public static SamResource checkSamAndOpenChannel(SeReader samReader) {
+    public static SeResource<CalypsoSam> checkSamAndOpenChannel(SeReader samReader) {
         /*
          * check the availability of the SAM doing a ATR based selection, open its physical and
          * logical channels and keep it open
@@ -162,6 +164,6 @@ public final class CalypsoUtilities {
             throw new IllegalStateException("Reader exception: " + e.getMessage());
         }
         logger.info("The SAM resource has been created");
-        return new SamResource(samReader, calypsoSam);
+        return new SeResource<CalypsoSam>(samReader, calypsoSam);
     }
 }

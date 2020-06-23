@@ -12,6 +12,7 @@
 package org.eclipse.keyple.calypso.transaction;
 
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
+import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -58,7 +59,7 @@ public class SamResourceManagerPool extends SamResourceManager {
      * {@inheritDoc}
      */
     @Override
-    public SamResource allocateSamResource(AllocationMode allocationMode,
+    public SeResource<CalypsoSam> allocateSamResource(AllocationMode allocationMode,
             SamIdentifier samIdentifier) {
         long maxBlockingDate = System.currentTimeMillis() + maxBlockingTime;
         boolean noSamResourceLogged = false;
@@ -69,9 +70,10 @@ public class SamResourceManagerPool extends SamResourceManager {
                 SeReader samReader = ((ReaderPoolPlugin) samReaderPlugin)
                         .allocateReader(samIdentifier.getGroupReference());
                 if (samReader != null) {
-                    SamResource samResource = createSamResource(samReader);
+                    SamResourceManagerDefault.ManagedSamResource managedSamResource =
+                            createSamResource(samReader);
                     logger.debug("Allocation succeeded. SAM resource created.");
-                    return samResource;
+                    return managedSamResource;
                 }
 
                 // loop until MAX_BLOCKING_TIME in blocking mode, only once in non-blocking mode
@@ -111,7 +113,7 @@ public class SamResourceManagerPool extends SamResourceManager {
     }
 
     @Override
-    public void freeSamResource(SamResource samResource) {
+    public void freeSamResource(SeResource<CalypsoSam> samResource) {
         // virtually infinite number of readers
         logger.debug("Freeing HSM SAM resource.");
         ((ReaderPoolPlugin) samReaderPlugin).releaseReader(samResource.getSeReader());

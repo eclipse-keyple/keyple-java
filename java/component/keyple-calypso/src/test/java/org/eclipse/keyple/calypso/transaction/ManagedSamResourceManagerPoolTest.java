@@ -18,6 +18,7 @@ import static org.mockito.Mockito.doReturn;
 import org.eclipse.keyple.calypso.CalypsoBaseTest;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
+import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
@@ -31,10 +32,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SamResourceManagerPoolTest extends CalypsoBaseTest {
+public class ManagedSamResourceManagerPoolTest extends CalypsoBaseTest {
 
 
-    private static final Logger logger = LoggerFactory.getLogger(SamResourceManagerPoolTest.class);
+    private static final Logger logger =
+            LoggerFactory.getLogger(ManagedSamResourceManagerPoolTest.class);
 
     @Before
     public void setUp() {
@@ -52,9 +54,10 @@ public class SamResourceManagerPoolTest extends CalypsoBaseTest {
 
         // test
         try {
-            SamResource out = srmSpy.allocateSamResource(SamResourceManager.AllocationMode.BLOCKING,
-                    SamIdentifier.builder().samRevision(SamRevision.AUTO).serialNumber("any")
-                            .groupReference("any").build());
+            SeResource<CalypsoSam> out =
+                    srmSpy.allocateSamResource(SamResourceManager.AllocationMode.BLOCKING,
+                            SamIdentifier.builder().samRevision(SamRevision.AUTO)
+                                    .serialNumber("any").groupReference("any").build());
 
         } catch (CalypsoNoSamResourceAvailableException e) {
             exceptionThrown = true;
@@ -82,9 +85,10 @@ public class SamResourceManagerPoolTest extends CalypsoBaseTest {
         long start = System.currentTimeMillis();
 
         // test
-        SamResource out = srmSpy.allocateSamResource(SamResourceManager.AllocationMode.BLOCKING,
-                SamIdentifier.builder().samRevision(SamRevision.AUTO).serialNumber("any")
-                        .groupReference("any").build());
+        SeResource<CalypsoSam> out =
+                srmSpy.allocateSamResource(SamResourceManager.AllocationMode.BLOCKING,
+                        SamIdentifier.builder().samRevision(SamRevision.AUTO).serialNumber("any")
+                                .groupReference("any").build());
 
         long stop = System.currentTimeMillis();
 
@@ -109,8 +113,9 @@ public class SamResourceManagerPoolTest extends CalypsoBaseTest {
                 .spy(new SamResourceManagerPool(poolPlugin, MAX_BLOCKING_TIME, DEFAULT_SLEEP_TIME));
     }
 
-    SamResource samResourceMock() {
-        SamResource mock = Mockito.mock(SamResource.class);
+    SamResourceManagerDefault.ManagedSamResource samResourceMock() {
+        SamResourceManagerDefault.ManagedSamResource mock =
+                Mockito.mock(SamResourceManagerDefault.ManagedSamResource.class);
         return mock;
     }
 
