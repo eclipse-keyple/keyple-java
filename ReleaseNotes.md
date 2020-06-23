@@ -23,7 +23,7 @@ Releases:
 * KEYP-243,250,251 : improvement of the classes from the selection package (deep refactoring and simplification)
 * KEYP-245 : improved isolation in the plugin API
 * KEYP-202, 241, 242 : fixed misused Set fields (changed into List), simplified ProxyReader API (less methods)
-* KEYP-225 : SeResource constructor is now public
+* KEYP-225 : SeResource constructor is now public and the object final.
 * fixed a comparison issue in the Tag class
 * various other refactorings and improvements
 * fixed many issues raised by Sonarqube
