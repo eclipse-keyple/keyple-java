@@ -1,12 +1,30 @@
+/********************************************************************************
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
+import org.eclipse.keyple.core.seproxy.PluginFactory;
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.mockito.Mockito.doReturn;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AbstractNativeSeServiceTest {
@@ -17,20 +35,32 @@ public class AbstractNativeSeServiceTest {
 
     /**
      * Find local reader among plugin no plugin
+     * 
      * @throws Exception
      */
     @Test(expected = KeypleReaderNotFoundException.class)
-    public void testFindLocalReader_notFound() throws Exception {
-        AbstractNativeSeService abstractNativeSeService = new AbstractNativeSeService() {
-            @Override
-            protected void onMessage(KeypleMessageDto msg) {
-
-            }
-        };
-
+    public void findLocalReader_notFound() throws Exception {
+        // init
+        AbstractNativeSeService abstractNativeSeService =
+                Mockito.spy(AbstractNativeSeService.class);
+        // execute
         abstractNativeSeService.findLocalReader("test");
-        //should throw exception
+        // should throw exception
     }
 
 
+    /*
+     * helpers
+     */
+
+    public PluginFactory mockPluginFactory() {
+        PluginFactory mockFactory = Mockito.mock(PluginFactory.class);
+        ReaderPlugin mockPlugin = Mockito.mock(ReaderPlugin.class);
+        SeReader mockReader = Mockito.mock(SeReader.class);
+        doReturn(mockPlugin).when(mockFactory).getPlugin();
+        doReturn("mockPlugin").when(mockFactory).getPluginName();
+        doReturn("mockPlugin").when(mockPlugin).getName();
+        doReturn(mockReader).when(mockPlugin).getReader("test");
+        return mockFactory;
+    }
 }
