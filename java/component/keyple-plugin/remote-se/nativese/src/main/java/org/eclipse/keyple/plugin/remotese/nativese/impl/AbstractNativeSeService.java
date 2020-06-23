@@ -20,8 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Abstract class for NativeSeSeService.
- * This is an internal class an must not be used by the user.
+ * Abstract class for NativeSeSeService. This is an internal class an must not be used by the user.
  * 
  * @since 1.0
  */

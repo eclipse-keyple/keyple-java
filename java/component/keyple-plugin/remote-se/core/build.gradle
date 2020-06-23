@@ -168,7 +168,7 @@ task installPlugin{
 dependencies {
 
     //use keyple library : core
-    //implementation project(path:':java:component:keyple-core')
+    //api project(path:':java:component:keyple-core')
     api group: 'org.eclipse.keyple', name: 'keyple-java-core', version: project.version
 
     implementation "com.google.code.gson:gson:${gson_version}"
@@ -183,19 +183,17 @@ dependencies {
     // https://mvnrepository.com/artifact/junit/junit
     testImplementation "junit:junit:${junit_version}"
 
+    // https://search.maven.org/artifact/org.assertj/assertj-core/2.9.1/bundle
+    testImplementation "org.assertj:assertj-core:${assertj_version}"
+
     // https://mvnrepository.com/artifact/org.mockito/mockito-core
     testImplementation "org.mockito:mockito-core:${mockitocore_version}"
 
     //add slf4j simple logger implementation
     testImplementation "org.slf4j:slf4j-simple:${slf4jsimple_version}"
 
-    //use keyple library : keyple plugin stub unit tests
-    testImplementation project(path: ':java:component:keyple-plugin:keyple-plugin-stub', configuration: 'testArtifacts')
-    testImplementation project(path: ':java:component:keyple-plugin:keyple-plugin-stub')
-
-    //use keyple library : keyple calypso
-    testImplementation project(path:':java:component:keyple-calypso')
-
+    // https://github.com/awaitility/awaitility
+    testImplementation 'org.awaitility:awaitility:4.0.3'
 }
 
 jacocoTestReport {
@@ -206,5 +204,4 @@ jacocoTestReport {
     }
 }
 
-test.exclude '**'
 test.finalizedBy jacocoTestReport
