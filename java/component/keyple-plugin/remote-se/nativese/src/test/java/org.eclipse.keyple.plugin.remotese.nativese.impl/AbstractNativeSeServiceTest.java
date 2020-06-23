@@ -48,6 +48,23 @@ public class AbstractNativeSeServiceTest {
         // should throw exception
     }
 
+    /**
+     * Find local reader among plugin : reader found
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void findLocalReader_Found() throws Exception {
+        // init
+        AbstractNativeSeService abstractNativeSeService =
+                Mockito.spy(AbstractNativeSeService.class);
+        SeProxyService.getInstance().registerPlugin(mockPluginFactory());
+        // execute
+        SeReader seReader = abstractNativeSeService.findLocalReader("test");
+        // results
+        Assert.assertNotNull(seReader);
+    }
+
 
     /*
      * helpers
