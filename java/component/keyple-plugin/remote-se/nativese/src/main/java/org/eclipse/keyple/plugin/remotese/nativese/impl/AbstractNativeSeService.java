@@ -15,6 +15,7 @@ import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remotese.core.impl.AbstractKeypleMessageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,7 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
      * Find a local reader among all plugins
      * 
      * @param nativeReaderName name of the reader to be found
-     * @return Se Reader found
+     * @return a not null instance
      * @throws KeypleReaderNotFoundException if no reader is found with this name
      * @since 1.0
      */
@@ -55,6 +56,26 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
             }
         }
         throw new KeypleReaderNotFoundException(nativeReaderName);
+    }
+
+    /**
+     * Execute a keypleMessageDto on the local nativeReader, returns the response embeeded on a keypleMessageDto ready to be sent back.
+     *
+     * @param keypleMessageDto not nullable KeypleMessageDto
+     * @return a not null instance of the keypleMessageDto response
+     * @since 1.0
+     *
+     */
+    protected KeypleMessageDto executeRequestDto(KeypleMessageDto keypleMessageDto) {
+        MethodExecutor method;
+        switch (KeypleMessageDto.Action.valueOf(keypleMessageDto.getAction())) {
+            case TRANSMIT:
+                return new TransmitExecutor().execute(keypleMessageDto);
+            case TRANSMIT_SET:
+                return new TransmitSetExecutor().execute(keypleMessageDto);
+            default:
+                throw new IllegalStateException("No executor found for dto " + keypleMessageDto);
+        }
     }
 
 

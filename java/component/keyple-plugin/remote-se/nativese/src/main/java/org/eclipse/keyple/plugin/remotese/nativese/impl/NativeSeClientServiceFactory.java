@@ -15,11 +15,17 @@ package org.eclipse.keyple.plugin.remotese.nativese.impl;
 import org.eclipse.keyple.plugin.remotese.core.KeypleClientAsync;
 import org.eclipse.keyple.plugin.remotese.core.KeypleClientSync;
 import org.eclipse.keyple.plugin.remotese.nativese.NativeSeClientService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Use this factory to create a NativeSeClientService
+ *
+ * @since 1.0
  */
 public class NativeSeClientServiceFactory {
+
+    private static final Logger logger = LoggerFactory.getLogger(NativeSeClientServiceFactory.class);
 
     /**
      * First step to create the service
@@ -43,12 +49,15 @@ public class NativeSeClientServiceFactory {
 
         @Override
         public NativeSeClientService getService() {
+
             NativeSeClientServiceImpl service =
                     NativeSeClientServiceImpl.createInstance(withReaderObservation);
             if (asyncClient != null) {
+                logger.info("Create a new NativeSeClientServiceImpl with an async client and params withReaderObservation:{}",withReaderObservation);
                 service.bindClientAsyncNode(asyncClient);
             }
             if (syncClient != null) {
+                logger.info("Create a new NativeSeClientServiceImpl with a sync client and params withReaderObservation:{}",withReaderObservation);
                 service.bindClientSyncNode(syncClient, null, null);// todo
             }
             return service;
