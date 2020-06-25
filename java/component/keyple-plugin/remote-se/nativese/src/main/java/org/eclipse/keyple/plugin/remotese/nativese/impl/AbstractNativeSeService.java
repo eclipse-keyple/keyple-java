@@ -36,7 +36,7 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
      * @throws KeypleReaderNotFoundException if no reader is found with this name
      * @since 1.0
      */
-    protected SeReader findLocalReader(String nativeReaderName) {
+    protected static SeReader findLocalReader(String nativeReaderName) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("Find local reader by name '{}' in {} plugin(s)", nativeReaderName,
