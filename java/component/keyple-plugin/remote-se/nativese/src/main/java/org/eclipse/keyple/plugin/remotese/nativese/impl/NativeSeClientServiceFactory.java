@@ -1,3 +1,14 @@
+/********************************************************************************
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
 
@@ -12,9 +23,10 @@ public class NativeSeClientServiceFactory {
 
     /**
      * First step to create the service
+     * 
      * @return next configuration step
      */
-    NodeStep builder(){
+    NodeStep builder() {
         return new Step();
     }
 
@@ -22,7 +34,8 @@ public class NativeSeClientServiceFactory {
     /*
      * implementation of builder step
      */
-    public class Step implements NativeSeClientServiceFactory.BuilderStep, NativeSeClientServiceFactory.NodeStep, NativeSeClientServiceFactory.ReaderStep{
+    public class Step implements NativeSeClientServiceFactory.BuilderStep,
+            NativeSeClientServiceFactory.NodeStep, NativeSeClientServiceFactory.ReaderStep {
 
         KeypleClientAsync asyncClient;
         KeypleClientSync syncClient;
@@ -30,12 +43,13 @@ public class NativeSeClientServiceFactory {
 
         @Override
         public NativeSeClientService getService() {
-            NativeSeClientServiceImpl service = NativeSeClientServiceImpl.createInstance(withReaderObservation);
-            if(asyncClient !=null){
+            NativeSeClientServiceImpl service =
+                    NativeSeClientServiceImpl.createInstance(withReaderObservation);
+            if (asyncClient != null) {
                 service.bindClientAsyncNode(asyncClient);
             }
-            if(syncClient !=null){
-                service.bindClientSyncNode(syncClient,null,null);//todo
+            if (syncClient != null) {
+                service.bindClientSyncNode(syncClient, null, null);// todo
             }
             return service;
         }
@@ -69,6 +83,7 @@ public class NativeSeClientServiceFactory {
     public interface BuilderStep {
         /**
          * Build the service
+         * 
          * @return
          */
         NativeSeClientService getService();
@@ -77,28 +92,32 @@ public class NativeSeClientServiceFactory {
     public interface NodeStep {
         /**
          * Configure the service with an async Client
+         * 
          * @param asyncClient
          * @return next configuration step
          */
-        ReaderStep withAsyncNode (KeypleClientAsync asyncClient);
+        ReaderStep withAsyncNode(KeypleClientAsync asyncClient);
 
         /**
          * Configure the service with a sync Client
+         * 
          * @param syncClient
          * @return next configuration step
          */
-        ReaderStep withSyncNode (KeypleClientSync syncClient);
+        ReaderStep withSyncNode(KeypleClientSync syncClient);
     }
 
     public interface ReaderStep {
         /**
          * Configure the service to observe the local reader
+         * 
          * @return next configuration step
          */
         BuilderStep withReaderObservation();
 
         /**
          * Configure the service without observation
+         * 
          * @return next configuration step
          */
         BuilderStep withoutReaderObservation();

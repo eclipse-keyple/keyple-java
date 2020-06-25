@@ -1,6 +1,16 @@
+/********************************************************************************
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.plugin.remotese.core.KeypleClientAsync;
 import org.eclipse.keyple.plugin.remotese.core.KeypleClientSync;
 import org.eclipse.keyple.plugin.remotese.nativese.NativeSeClientService;
@@ -19,32 +29,26 @@ public class NativeSeClientServiceFactoryTest {
 
     @Test
     public void buildSync() throws Exception {
-        //init
+        // init
         KeypleClientSync syncClient = Mockito.mock(KeypleClientSync.class);
-        //test
-        NativeSeClientService service = new NativeSeClientServiceFactory()
-                .builder()
-                .withSyncNode(syncClient)
-                .withReaderObservation()
-                .getService();
+        // test
+        NativeSeClientService service = new NativeSeClientServiceFactory().builder()
+                .withSyncNode(syncClient).withReaderObservation().getService();
 
-        //assert
+        // assert
         Assert.assertNotNull(service);
 
     }
 
     @Test
     public void buildASync() throws Exception {
-        //init
+        // init
         KeypleClientAsync asyncClient = Mockito.mock(KeypleClientAsync.class);
-        //test
-        NativeSeClientService service = new NativeSeClientServiceFactory()
-                .builder()
-                .withAsyncNode(asyncClient)
-                .withReaderObservation()
-                .getService();
+        // test
+        NativeSeClientService service = new NativeSeClientServiceFactory().builder()
+                .withAsyncNode(asyncClient).withReaderObservation().getService();
 
-        //assert
+        // assert
         Assert.assertNotNull(service);
 
     }
