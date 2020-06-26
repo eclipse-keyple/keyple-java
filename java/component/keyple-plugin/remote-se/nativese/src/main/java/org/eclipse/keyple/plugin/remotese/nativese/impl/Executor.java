@@ -13,7 +13,10 @@ package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 
-interface MethodExecutor {
+/**
+ * Internal interface for Dto Executor
+ */
+interface Executor {
 
     KeypleMessageDto execute(KeypleMessageDto keypleMessageDto);
 }

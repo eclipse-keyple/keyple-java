@@ -29,7 +29,7 @@ import com.google.gson.reflect.TypeToken;
 /**
  * Execute locally a TRANSMIT KeypleMessageDto
  */
-class TransmitSetExecutor implements MethodExecutor {
+class TransmitSetExecutor implements Executor {
 
     private static final Logger logger = LoggerFactory.getLogger(TransmitSetExecutor.class);
 

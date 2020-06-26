@@ -25,7 +25,7 @@ import com.google.gson.JsonObject;
 /**
  * Execute locally a TRANSMIT KeypleMessageDto
  */
-class TransmitExecutor implements MethodExecutor {
+class TransmitExecutor implements Executor {
 
     private static final Logger logger = LoggerFactory.getLogger(TransmitExecutor.class);
 
