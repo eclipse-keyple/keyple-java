@@ -14,6 +14,7 @@ package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
 import org.eclipse.keyple.plugin.remotese.core.KeypleClientAsync;
 import org.eclipse.keyple.plugin.remotese.core.KeypleClientSync;
+import org.eclipse.keyple.plugin.remotese.core.impl.ServerPushEventStrategy;
 import org.eclipse.keyple.plugin.remotese.nativese.NativeSeClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,10 +26,11 @@ import org.slf4j.LoggerFactory;
  */
 public class NativeSeClientServiceFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(NativeSeClientServiceFactory.class);
+    private static final Logger logger =
+            LoggerFactory.getLogger(NativeSeClientServiceFactory.class);
 
     /**
-     * First step to create the service
+     * Init the builder
      * 
      * @return next configuration step
      */
@@ -36,42 +38,230 @@ public class NativeSeClientServiceFactory {
         return new Step();
     }
 
+    public interface BuilderStep {
+        /**
+         * Build the service
+         *
+         * @return
+         */
+        NativeSeClientService getService();
+    }
+
+    public interface NodeStep {
+        /**
+         * Configure the service with an async Client
+         *
+         * @param asyncClient
+         * @return next configuration step
+         */
+        AsyncPluginStep withAsyncNode(KeypleClientAsync asyncClient);
+
+        /**
+         * Configure the service with a sync Client
+         *
+         * @param syncClient
+         * @return next configuration step
+         */
+        SyncPluginStep withSyncNode(KeypleClientSync syncClient);
+    }
+
+    public interface AsyncPluginStep {
+        /**
+         * Configure the service to observe the local plugin
+         *
+         * @return next configuration step
+         */
+        AsyncReaderStep withPluginObservation();
+
+        /**
+         * Configure the service without observation
+         *
+         * @return next configuration step
+         */
+        AsyncReaderStep withoutPluginObservation();
+    }
+
+    public interface SyncPluginStep {
+        /**
+         * Configure the service to observe the local plugin
+         * @param pluginObservationStrategy polling strategy for plugin observation (must not be null).
+         * @return next configuration step
+         */
+        SyncReaderStep withPluginObservation(ServerPushEventStrategy pluginObservationStrategy);
+
+        /**
+         * Configure the service without observation
+         *
+         * @return next configuration step
+         */
+        SyncReaderStep withoutPluginObservation();
+    }
+
+    public interface AsyncReaderStep {
+        /**
+         * Configure the service to observe the local reader
+         *
+         * @return next configuration step
+         */
+        BuilderStep withReaderObservation();
+
+        /**
+         * Configure the service without observation
+         *
+         * @return next configuration step
+         */
+        BuilderStep withoutReaderObservation();
+    }
+
+    public interface SyncReaderStep {
+        /**
+         * Configure the service to observe the local reader
+         *
+         * @param readerObservationStrategy polling strategy for reader observation (must not be null).
+         * @return next configuration step
+         */
+        BuilderStep withReaderObservation(
+                ServerPushEventStrategy readerObservationStrategy);
+
+        /**
+         * Configure the service without observation
+         *
+         * @return next configuration step
+         */
+        BuilderStep withoutReaderObservation();
+    }
+
+    public class Step implements NativeSeClientServiceFactory.NodeStep{
+
+        protected KeypleClientAsync asyncClient;
+        protected KeypleClientSync syncClient;
+
+        @Override
+        public AsyncPluginStep withAsyncNode(KeypleClientAsync asyncClient) {
+            this.asyncClient = asyncClient;
+            return new AsyncStep();
+        }
+
+        @Override
+        public SyncPluginStep withSyncNode(KeypleClientSync syncClient) {
+            this.syncClient = syncClient;
+            return new SyncStep();
+        }
+    }
+
+
 
     /*
      * implementation of builder step
      */
-    public class Step implements NativeSeClientServiceFactory.BuilderStep,
-            NativeSeClientServiceFactory.NodeStep, NativeSeClientServiceFactory.ReaderStep {
+    public class SyncStep extends Step implements NativeSeClientServiceFactory.BuilderStep,
+            NativeSeClientServiceFactory.SyncReaderStep,
+            NativeSeClientServiceFactory.SyncPluginStep {
 
-        KeypleClientAsync asyncClient;
-        KeypleClientSync syncClient;
         Boolean withReaderObservation;
+        Boolean withPluginObservation;
+        ServerPushEventStrategy pluginObservationStrategy;
+        ServerPushEventStrategy readerObservationStrategy;
 
         @Override
         public NativeSeClientService getService() {
-
+            // create the service
             NativeSeClientServiceImpl service =
-                    NativeSeClientServiceImpl.createInstance(withReaderObservation);
-            if (asyncClient != null) {
-                logger.info("Create a new NativeSeClientServiceImpl with an async client and params withReaderObservation:{}",withReaderObservation);
-                service.bindClientAsyncNode(asyncClient);
-            }
-            if (syncClient != null) {
-                logger.info("Create a new NativeSeClientServiceImpl with a sync client and params withReaderObservation:{}",withReaderObservation);
-                service.bindClientSyncNode(syncClient, null, null);// todo
-            }
+                    NativeSeClientServiceImpl.createInstance(withPluginObservation, withReaderObservation);
+
+            logger.info(
+                    "Create a new NativeSeClientServiceImpl with a sync client and params " +
+                            "withPluginObservation:{}, " +
+                            "pluginObservationStrategy:{}, " +
+                            "withReaderObservation:{}, " +
+                            "readerObservationStrategy:{}.",
+                            withPluginObservation,
+                            pluginObservationStrategy!=null?readerObservationStrategy.getType():"null",
+                            withReaderObservation,
+                            readerObservationStrategy!=null?readerObservationStrategy.getType():"null"
+                            );
+
+
+            // bind the service to the node
+            service.bindClientSyncNode(syncClient, pluginObservationStrategy,
+                    readerObservationStrategy);
+
             return service;
         }
 
         @Override
-        public ReaderStep withAsyncNode(KeypleClientAsync client) {
-            this.asyncClient = client;
+        public BuilderStep withoutReaderObservation() {
+            this.withReaderObservation = false;
             return this;
         }
 
         @Override
-        public ReaderStep withSyncNode(KeypleClientSync client) {
-            this.syncClient = client;
+        public SyncReaderStep withPluginObservation(ServerPushEventStrategy pluginObservationStrategy) {
+            if (pluginObservationStrategy == null) {
+                throw new IllegalArgumentException("pluginObservationStrategy must be set");
+            }
+            this.withPluginObservation = true;
+            this.pluginObservationStrategy = pluginObservationStrategy;
+            return this;
+        }
+
+        @Override
+        public SyncReaderStep withoutPluginObservation() {
+            this.withPluginObservation = false;
+            return this;
+        }
+
+        @Override
+        public BuilderStep withReaderObservation(ServerPushEventStrategy readerObservationStrategy) {
+            // check params nullity
+            if (readerObservationStrategy == null) {
+                throw new IllegalArgumentException("readerObservationStrategy must be set");
+            }
+            this.withReaderObservation = true;
+            this.readerObservationStrategy = readerObservationStrategy;
+            return this;
+        }
+    }
+
+
+    /*
+     * implementation of builder step
+     */
+    public class AsyncStep extends Step implements NativeSeClientServiceFactory.BuilderStep,
+            NativeSeClientServiceFactory.AsyncReaderStep,
+            NativeSeClientServiceFactory.AsyncPluginStep {
+
+        Boolean withReaderObservation;
+        Boolean withPluginObservation;
+
+        @Override
+        public NativeSeClientService getService() {
+            // create the service
+            NativeSeClientServiceImpl service =
+                    NativeSeClientServiceImpl.createInstance(withPluginObservation, withReaderObservation);
+
+            logger.info(
+                    "Create a new NativeSeClientServiceImpl with a async client and params " +
+                            "withPluginObservation:{}, " +
+                            "withReaderObservation:{}.",
+                            withPluginObservation,
+                            withReaderObservation);
+
+            // bind the service to the node
+            service.bindClientAsyncNode(asyncClient);
+
+            return service;
+        }
+
+        @Override
+        public AsyncReaderStep withPluginObservation() {
+            this.withPluginObservation = true;
+            return this;
+        }
+
+        @Override
+        public AsyncReaderStep withoutPluginObservation() {
+            this.withPluginObservation = false;
             return this;
         }
 
@@ -86,50 +276,12 @@ public class NativeSeClientServiceFactory {
             this.withReaderObservation = false;
             return this;
         }
+
+
     }
 
 
-    public interface BuilderStep {
-        /**
-         * Build the service
-         * 
-         * @return
-         */
-        NativeSeClientService getService();
-    }
 
-    public interface NodeStep {
-        /**
-         * Configure the service with an async Client
-         * 
-         * @param asyncClient
-         * @return next configuration step
-         */
-        ReaderStep withAsyncNode(KeypleClientAsync asyncClient);
 
-        /**
-         * Configure the service with a sync Client
-         * 
-         * @param syncClient
-         * @return next configuration step
-         */
-        ReaderStep withSyncNode(KeypleClientSync syncClient);
-    }
-
-    public interface ReaderStep {
-        /**
-         * Configure the service to observe the local reader
-         * 
-         * @return next configuration step
-         */
-        BuilderStep withReaderObservation();
-
-        /**
-         * Configure the service without observation
-         * 
-         * @return next configuration step
-         */
-        BuilderStep withoutReaderObservation();
-    }
 
 }

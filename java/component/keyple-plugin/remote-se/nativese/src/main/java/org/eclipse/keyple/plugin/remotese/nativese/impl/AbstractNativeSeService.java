@@ -59,7 +59,8 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
     }
 
     /**
-     * Execute a keypleMessageDto on the local nativeReader, returns the response embeeded on a keypleMessageDto ready to be sent back.
+     * Execute a keypleMessageDto on the local nativeReader, returns the response embeeded on a
+     * keypleMessageDto ready to be sent back.
      *
      * @param keypleMessageDto not nullable KeypleMessageDto
      * @return a not null instance of the keypleMessageDto response
@@ -67,12 +68,13 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
      *
      */
     protected KeypleMessageDto executeRequestDto(KeypleMessageDto keypleMessageDto) {
-        MethodExecutor method;
+        Executor method;
         switch (KeypleMessageDto.Action.valueOf(keypleMessageDto.getAction())) {
             case TRANSMIT:
                 return new TransmitExecutor().execute(keypleMessageDto);
             case TRANSMIT_SET:
                 return new TransmitSetExecutor().execute(keypleMessageDto);
+            // todo SET DEFAULT SELECTION
             default:
                 throw new IllegalStateException("No executor found for dto " + keypleMessageDto);
         }

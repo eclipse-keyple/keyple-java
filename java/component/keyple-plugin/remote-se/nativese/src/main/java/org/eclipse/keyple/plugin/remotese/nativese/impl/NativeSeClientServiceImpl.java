@@ -13,7 +13,9 @@ package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
 import java.util.List;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
+import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.plugin.remotese.core.*;
 import org.eclipse.keyple.plugin.remotese.core.impl.json.KeypleJsonParser;
@@ -27,31 +29,37 @@ import com.google.gson.JsonObject;
  * @since 1.0
  */
 final class NativeSeClientServiceImpl extends AbstractNativeSeService
-        implements ObservableReader.ReaderObserver, NativeSeClientService {
+        implements ObservableReader.ReaderObserver, ObservablePlugin.PluginObserver, NativeSeClientService {
 
     private Boolean withReaderObservation;
+    private Boolean withPluginObservation;
 
     private static NativeSeClientServiceImpl uniqueInstance;// TODO make singleton thread safe
 
-    //private constructor
-    private NativeSeClientServiceImpl(Boolean withReaderObservation) {
+    // private constructor
+    private NativeSeClientServiceImpl(Boolean withPluginObservation, Boolean withReaderObservation) {
+        super();
+        this.withPluginObservation = withPluginObservation;
         this.withReaderObservation = withReaderObservation;
     }
 
     /**
      * Create an instance of this singleton service
+     * 
      * @param withReaderObservation true is observation should be activated
+     * @param withPluginObservation true is observation should be activated
      * @return a not null instance of the singleton
      */
-    static NativeSeClientServiceImpl createInstance(boolean withReaderObservation) {
+    static NativeSeClientServiceImpl createInstance(boolean withPluginObservation,boolean withReaderObservation) {
         if (uniqueInstance == null) {
-            uniqueInstance = new NativeSeClientServiceImpl(withReaderObservation);
+            uniqueInstance = new NativeSeClientServiceImpl(withPluginObservation,withReaderObservation);
         }
         return uniqueInstance;
     }
 
     /**
      * Retrieve the instance of this singleton service
+     * 
      * @return a not null instance
      */
     static NativeSeClientServiceImpl getInstance() {
@@ -67,9 +75,9 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
             throw new IllegalArgumentException("parameter and userOutDataFactory must be set");
         }
 
-        if(isBoundToSyncNode){
+        if (isBoundToSyncNode) {
             return syncExecuteRemoteService(parameters, userOutputDataFactory);
-        }else{
+        } else {
             return asyncExecuteRemoteService(parameters, userOutputDataFactory);
         }
 
@@ -83,21 +91,45 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
     /**
      * Propagate Reader Events to RemoteSePlugin (internal use)
      *
-     * @param event : event to be propagated
+     * @param event : event to be propagated (not null)
      *
      */
     @Override
     public void update(ReaderEvent event) {
-        if(withReaderObservation){
+        //todo where to add this instance as an observer for plugin events?
+        if (withReaderObservation) {
 
-            //prepare body
+            // prepare body
             String body = KeypleJsonParser.getGson().toJson(event);
 
             // build keypleMessageDto READER_EVENT
-            KeypleMessageDto eventDto = new KeypleMessageDto()
-                    .setAction(KeypleMessageDto.Action.READER_EVENT.name())
-                    .setBody(body)
-                    .setNativeReaderName(event.getReaderName());
+            KeypleMessageDto eventDto =
+                    new KeypleMessageDto().setAction(KeypleMessageDto.Action.READER_EVENT.name())
+                            .setBody(body).setNativeReaderName(event.getReaderName());
+
+            // send keypleMessageDto through the node
+            node.sendMessage(eventDto);
+        }
+    }
+
+    /**
+     * Propagate Plugin Events to RemoteSePlugin (internal use)
+     *
+     * @param event : event to be propagated (not null)
+     *
+     */
+    @Override
+    public void update(PluginEvent event) {
+        //todo where to add this instance as an observer for plugin events?
+        if (withPluginObservation) {
+
+            // prepare body
+            String body = KeypleJsonParser.getGson().toJson(event);
+
+            // build keypleMessageDto READER_EVENT
+            KeypleMessageDto eventDto =
+                    new KeypleMessageDto().setAction(KeypleMessageDto.Action.PLUGIN_EVENT.name())
+                            .setBody(body);
 
             // send keypleMessageDto through the node
             node.sendMessage(eventDto);
@@ -107,11 +139,13 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
     /**
      * Execute the remote service with a sync node
      */
-    private <T extends KeypleUserData> T syncExecuteRemoteService(RemoteServiceParameters parameters,
-                                                              KeypleUserDataFactory<T> userOutputDataFactory) {
+    private <T extends KeypleUserData> T syncExecuteRemoteService(
+            RemoteServiceParameters parameters, KeypleUserDataFactory<T> userOutputDataFactory) {
+
+        //todo plugin and reader observation does not make sense here
 
         // build keypleMessageDto EXECUTE_REMOTE_SERVICE with user params
-        KeypleMessageDto remoteServiceDto = remoteServiceDto(parameters);
+        KeypleMessageDto remoteServiceDto = buildMessage(parameters);
 
         // send keypleMessageDto through the node
         List<KeypleMessageDto> keypleMessageDtos = node.sendRequest(remoteServiceDto);
@@ -120,14 +154,14 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
          * two messages are received from the server
          */
 
-        // first message is a READER_CONNECTED from the server notying that the virtual se context has been
+        // first message is a READER_CONNECTED from the server notying that the virtual se context
+        // has been
         // correctly initialized
         KeypleMessageDto connectResponse = keypleMessageDtos.get(0);
 
-        if(connectResponse.getSessionId() == null
-                || connectResponse.getSessionId().isEmpty()){
-            //session wasn't created. abort
-            //todo throw exception
+        if (connectResponse.getSessionId() == null || connectResponse.getSessionId().isEmpty()) {
+            // session wasn't created. abort
+            // todo throw exception
         }
 
         // second message should be TRANSMIT, TRANSMIT_SET.. : execute dto request locally with
@@ -155,32 +189,31 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
         // TERMINATE_SERVICE has been received with a userOutputData
 
         // return userOutputData
-        return extractUserData(dtoReceived,userOutputDataFactory);
+        return extractUserData(dtoReceived, userOutputDataFactory);
     }
 
     /**
      * Execute the remote service with an async node
      */
-    private <T extends KeypleUserData> T asyncExecuteRemoteService(RemoteServiceParameters parameters,
-                                                                  KeypleUserDataFactory<T> userOutputDataFactory) {
-        //todo
+    private <T extends KeypleUserData> T asyncExecuteRemoteService(
+            RemoteServiceParameters parameters, KeypleUserDataFactory<T> userOutputDataFactory) {
+        //todo plugin and reader observation make sense here, add service as an observer for plugin and reader if asked by the user
+
         return null;
     }
-
-
 
 
 
     private <T extends KeypleUserData> T extractUserData(KeypleMessageDto keypleMessageDto,
-                                                         KeypleUserDataFactory<T> userOutputDataFactory) {
-        //todo
+            KeypleUserDataFactory<T> userOutputDataFactory) {
+        // todo
         return null;
     }
 
     /*
-     * builds Dto for EXECUTE_SERVICE
+     * builds KeypleMessageDto for EXECUTE_SERVICE
      */
-    KeypleMessageDto remoteServiceDto(RemoteServiceParameters parameters) {
+    private KeypleMessageDto buildMessage(RemoteServiceParameters parameters) {
         final AbstractMatchingSe initialSeContent = parameters.getInitialSeContent();
         final KeypleUserData userInputData = parameters.getUserInputData();
 
@@ -190,11 +223,13 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
         body.add("userInputData", KeypleJsonParser.getGson().toJsonTree(userInputData.toMap()));
         body.add("serviceId", KeypleJsonParser.getGson().toJsonTree(parameters.getServiceId()));
 
-        return new KeypleMessageDto().setAction(KeypleMessageDto.Action.EXECUTE_SERVICE.name())
+        return new KeypleMessageDto()
+                .setAction(KeypleMessageDto.Action.EXECUTE_SERVICE.name())
                 .setNativeReaderName(parameters.getNativeReader().getName())
                 .setBody(body.getAsString());
 
     }
+
 
 
 }
