@@ -37,6 +37,7 @@ public class PoSecuritySettings {
 
     private final ModificationMode sessionModificationMode;
     private final RatificationMode ratificationMode;
+    private final PoTransaction.PinTransmissionMode pinTransmissionMode;
 
     public static final ModificationMode defaultSessionModificationMode = ModificationMode.ATOMIC;
     public static final RatificationMode defaultRatificationMode = RatificationMode.CLOSE_RATIFIED;
@@ -50,6 +51,7 @@ public class PoSecuritySettings {
         this.defaultKeyRecordNumber = builder.defaultKeyRecordNumber;
         this.sessionModificationMode = builder.sessionModificationMode;
         this.ratificationMode = builder.ratificationMode;
+        this.pinTransmissionMode = builder.pinTransmissionMode;
     }
 
     /**
@@ -70,6 +72,7 @@ public class PoSecuritySettings {
 
         ModificationMode sessionModificationMode = defaultSessionModificationMode;
         RatificationMode ratificationMode = defaultRatificationMode;
+        PoTransaction.PinTransmissionMode pinTransmissionMode;
 
         /**
          * Constructor
@@ -108,6 +111,20 @@ public class PoSecuritySettings {
          */
         public PoSecuritySettingsBuilder ratificationMode(RatificationMode ratificationMode) {
             this.ratificationMode = ratificationMode;
+            return this;
+        }
+
+        /**
+         * Set the Ratification Mode<br>
+         * The default value is CLOSE_RATIFIED
+         *
+         * @param pinTransmissionMode the desired PIN Transmission Mode
+         * @return the builder instance
+         * @since 0.9
+         */
+        public PoSecuritySettingsBuilder pinTransmissionMode(
+                PoTransaction.PinTransmissionMode pinTransmissionMode) {
+            this.pinTransmissionMode = pinTransmissionMode;
             return this;
         }
 
@@ -204,6 +221,17 @@ public class PoSecuritySettings {
      */
     RatificationMode getRatificationMode() {
         return ratificationMode;
+    }
+
+
+    /**
+     * (package-private)<br>
+     *
+     * @return the PIN Transmission Mode
+     * @since 0.9
+     */
+    public PoTransaction.PinTransmissionMode getPinTransmissionMode() {
+        return pinTransmissionMode;
     }
 
     /**

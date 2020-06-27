@@ -60,6 +60,9 @@ public enum CalypsoPoCommand implements SeCommand {
     /* The po change key */
     CHANGE_KEY("Change Key", (byte) 0xD8),
 
+    /* The po verify PIN */
+    VERIFY_PIN("Verify PIN", (byte) 0x20),
+
     /* The po get data for traceability */
     GET_DATA_TRACE("Get Data'Trace'", (byte) 0xCA);
 

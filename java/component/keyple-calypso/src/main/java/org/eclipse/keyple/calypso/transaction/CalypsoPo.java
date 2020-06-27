@@ -602,6 +602,42 @@ public class CalypsoPo extends AbstractMatchingSe {
         return ef;
     }
 
+
+    /**
+     * Indicates if the PIN is blocked. The maximum number of incorrect PIN submissions has been
+     * reached.
+     * 
+     * @return true if the PIN status is blocked
+     * @since 0.9
+     */
+    public final boolean isPinBlocked() {
+        // TODO Complete this
+        return true;
+    }
+
+    /**
+     * Gives the number of erroneous PIN presentations remaining before blocking.
+     * 
+     * @return the number of remaining attempts
+     * @since 0.9
+     */
+    public final int getPinAttemptRemaining() {
+        // TODO Complete this
+        return 0;
+    }
+
+    /**
+     * (package-private)<br>
+     * Sets the PIN code status.<br>
+     * The status of the PIN code is interpreted to give the returns of the {@code isPinBlocked} and
+     * {@code getPinAttemptRemaining} methods.
+     * 
+     * @param pinStatus the two-byte status returned by the PO
+     */
+    final void setPinStatus(byte[] pinStatus) {
+        // TODO Complete this
+    }
+
     /**
      * (package-private)<br>
      * Sets the provided {@link FileHeader} to the EF having the provided SFI.<br>

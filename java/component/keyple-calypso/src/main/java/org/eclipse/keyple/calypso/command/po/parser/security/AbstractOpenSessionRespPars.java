@@ -65,7 +65,6 @@ public abstract class AbstractOpenSessionRespPars extends AbstractPoResponsePars
 
     @Override
     protected Map<Integer, StatusProperties> getStatusTable() {
-        // At this stage, the status table is the same for everyone
         return STATUS_TABLE;
     }
 

@@ -597,6 +597,13 @@ public class PoTransaction {
     }
 
     /**
+     * The {@link PinTransmissionMode} indicates whether the PIN transmission is encrypted or not.
+     */
+    public enum PinTransmissionMode {
+        PLAIN, ENCRYPTED
+    }
+
+    /**
      * Gets the value of the designated counter
      * 
      * @param sfi the SFI of the EF containing the counter
@@ -1230,7 +1237,6 @@ public class PoTransaction {
      * Builds an AppendRecord command and add it to the list of commands to be sent with the next
      * process command.
      * <p>
-     * Returns the associated response parser.
      *
      * @param sfi the sfi to select
      * @param recordData the new record data to write
@@ -1249,7 +1255,6 @@ public class PoTransaction {
      * Builds an UpdateRecord command and add it to the list of commands to be sent with the next
      * process command
      * <p>
-     * Returns the associated response parser index.
      *
      * @param sfi the sfi to select
      * @param recordNumber the record number to update
@@ -1274,7 +1279,6 @@ public class PoTransaction {
      * Builds an WriteRecord command and add it to the list of commands to be sent with the next
      * process command
      * <p>
-     * Returns the associated response parser index.
      *
      * @param sfi the sfi to select
      * @param recordNumber the record number to write
@@ -1298,7 +1302,6 @@ public class PoTransaction {
      * Builds a Increase command and add it to the list of commands to be sent with the next process
      * command
      * <p>
-     * Returns the associated response parser index.
      *
      * @param counterNumber &gt;= 01h: Counters file, number of the counter. 00h: Simulated Counter
      *        file.
@@ -1325,7 +1328,6 @@ public class PoTransaction {
      * Builds a Decrease command and add it to the list of commands to be sent with the next process
      * command
      * <p>
-     * Returns the associated response parser index.
      *
      * @param counterNumber &gt;= 01h: Counters file, number of the counter. 00h: Simulated Counter
      *        file.
@@ -1346,5 +1348,22 @@ public class PoTransaction {
         // create the builder and add it to the list of commands
         poCommandManager.addRegularCommand(
                 new DecreaseCmdBuild(calypsoPo.getPoClass(), sfi, counterNumber, decValue));
+    }
+
+    /**
+     * Builds an VerifyPin command without PIN presentation in order to get the attempt counter.
+     * Adds it to the list of commands to be sent with the next process command.
+     * <p>
+     */
+    public final void prepareCheckPinStatus() {
+        // TODO Complete this
+    }
+
+    public final void prepareVerifyPin(String pin) {
+        // TODO Complete this
+    }
+
+    public final void prepareVerifyPin(byte[] pin) {
+        // TODO Complete this
     }
 }
