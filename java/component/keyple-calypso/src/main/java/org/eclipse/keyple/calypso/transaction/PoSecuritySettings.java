@@ -41,6 +41,8 @@ public class PoSecuritySettings {
 
     public static final ModificationMode defaultSessionModificationMode = ModificationMode.ATOMIC;
     public static final RatificationMode defaultRatificationMode = RatificationMode.CLOSE_RATIFIED;
+    public static final PoTransaction.PinTransmissionMode defaultPinTransmissionMode =
+            PoTransaction.PinTransmissionMode.ENCRYPTED;
 
     /** Private constructor */
     private PoSecuritySettings(PoSecuritySettingsBuilder builder) {
@@ -72,7 +74,7 @@ public class PoSecuritySettings {
 
         ModificationMode sessionModificationMode = defaultSessionModificationMode;
         RatificationMode ratificationMode = defaultRatificationMode;
-        PoTransaction.PinTransmissionMode pinTransmissionMode;
+        PoTransaction.PinTransmissionMode pinTransmissionMode = defaultPinTransmissionMode;
 
         /**
          * Constructor
@@ -115,8 +117,8 @@ public class PoSecuritySettings {
         }
 
         /**
-         * Set the Ratification Mode<br>
-         * The default value is CLOSE_RATIFIED
+         * Set the PIN Transmission Mode<br>
+         * The default value is ENCRYPTED
          *
          * @param pinTransmissionMode the desired PIN Transmission Mode
          * @return the builder instance
