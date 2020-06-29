@@ -84,7 +84,9 @@ public class NativeSeClientServiceFactory {
     public interface SyncPluginStep {
         /**
          * Configure the service to observe the local plugin
-         * @param pluginObservationStrategy polling strategy for plugin observation (must not be null).
+         * 
+         * @param pluginObservationStrategy polling strategy for plugin observation (must not be
+         *        null).
          * @return next configuration step
          */
         SyncReaderStep withPluginObservation(ServerPushEventStrategy pluginObservationStrategy);
@@ -117,11 +119,11 @@ public class NativeSeClientServiceFactory {
         /**
          * Configure the service to observe the local reader
          *
-         * @param readerObservationStrategy polling strategy for reader observation (must not be null).
+         * @param readerObservationStrategy polling strategy for reader observation (must not be
+         *        null).
          * @return next configuration step
          */
-        BuilderStep withReaderObservation(
-                ServerPushEventStrategy readerObservationStrategy);
+        BuilderStep withReaderObservation(ServerPushEventStrategy readerObservationStrategy);
 
         /**
          * Configure the service without observation
@@ -131,7 +133,7 @@ public class NativeSeClientServiceFactory {
         BuilderStep withoutReaderObservation();
     }
 
-    public class Step implements NativeSeClientServiceFactory.NodeStep{
+    public class Step implements NativeSeClientServiceFactory.NodeStep {
 
         protected KeypleClientAsync asyncClient;
         protected KeypleClientSync syncClient;
@@ -166,20 +168,19 @@ public class NativeSeClientServiceFactory {
         @Override
         public NativeSeClientService getService() {
             // create the service
-            NativeSeClientServiceImpl service =
-                    NativeSeClientServiceImpl.createInstance(withPluginObservation, withReaderObservation);
+            NativeSeClientServiceImpl service = NativeSeClientServiceImpl
+                    .createInstance(withPluginObservation, withReaderObservation);
 
             logger.info(
-                    "Create a new NativeSeClientServiceImpl with a sync client and params " +
-                            "withPluginObservation:{}, " +
-                            "pluginObservationStrategy:{}, " +
-                            "withReaderObservation:{}, " +
-                            "readerObservationStrategy:{}.",
-                            withPluginObservation,
-                            pluginObservationStrategy!=null?readerObservationStrategy.getType():"null",
-                            withReaderObservation,
-                            readerObservationStrategy!=null?readerObservationStrategy.getType():"null"
-                            );
+                    "Create a new NativeSeClientServiceImpl with a sync client and params "
+                            + "withPluginObservation:{}, " + "pluginObservationStrategy:{}, "
+                            + "withReaderObservation:{}, " + "readerObservationStrategy:{}.",
+                    withPluginObservation,
+                    pluginObservationStrategy != null ? readerObservationStrategy.getType()
+                            : "null",
+                    withReaderObservation,
+                    readerObservationStrategy != null ? readerObservationStrategy.getType()
+                            : "null");
 
 
             // bind the service to the node
@@ -196,7 +197,8 @@ public class NativeSeClientServiceFactory {
         }
 
         @Override
-        public SyncReaderStep withPluginObservation(ServerPushEventStrategy pluginObservationStrategy) {
+        public SyncReaderStep withPluginObservation(
+                ServerPushEventStrategy pluginObservationStrategy) {
             if (pluginObservationStrategy == null) {
                 throw new IllegalArgumentException("pluginObservationStrategy must be set");
             }
@@ -212,7 +214,8 @@ public class NativeSeClientServiceFactory {
         }
 
         @Override
-        public BuilderStep withReaderObservation(ServerPushEventStrategy readerObservationStrategy) {
+        public BuilderStep withReaderObservation(
+                ServerPushEventStrategy readerObservationStrategy) {
             // check params nullity
             if (readerObservationStrategy == null) {
                 throw new IllegalArgumentException("readerObservationStrategy must be set");
@@ -237,15 +240,13 @@ public class NativeSeClientServiceFactory {
         @Override
         public NativeSeClientService getService() {
             // create the service
-            NativeSeClientServiceImpl service =
-                    NativeSeClientServiceImpl.createInstance(withPluginObservation, withReaderObservation);
+            NativeSeClientServiceImpl service = NativeSeClientServiceImpl
+                    .createInstance(withPluginObservation, withReaderObservation);
 
             logger.info(
-                    "Create a new NativeSeClientServiceImpl with a async client and params " +
-                            "withPluginObservation:{}, " +
-                            "withReaderObservation:{}.",
-                            withPluginObservation,
-                            withReaderObservation);
+                    "Create a new NativeSeClientServiceImpl with a async client and params "
+                            + "withPluginObservation:{}, " + "withReaderObservation:{}.",
+                    withPluginObservation, withReaderObservation);
 
             // bind the service to the node
             service.bindClientAsyncNode(asyncClient);
@@ -279,8 +280,6 @@ public class NativeSeClientServiceFactory {
 
 
     }
-
-
 
 
 

@@ -28,16 +28,17 @@ import com.google.gson.JsonObject;
  *
  * @since 1.0
  */
-final class NativeSeClientServiceImpl extends AbstractNativeSeService
-        implements ObservableReader.ReaderObserver, ObservablePlugin.PluginObserver, NativeSeClientService {
+final class NativeSeClientServiceImpl extends AbstractNativeSeService implements
+        ObservableReader.ReaderObserver, ObservablePlugin.PluginObserver, NativeSeClientService {
 
     private Boolean withReaderObservation;
     private Boolean withPluginObservation;
 
-    private static NativeSeClientServiceImpl uniqueInstance;// TODO make singleton thread safe
+    private static NativeSeClientServiceImpl uniqueInstance; // TODO make singleton thread safe
 
     // private constructor
-    private NativeSeClientServiceImpl(Boolean withPluginObservation, Boolean withReaderObservation) {
+    private NativeSeClientServiceImpl(Boolean withPluginObservation,
+            Boolean withReaderObservation) {
         super();
         this.withPluginObservation = withPluginObservation;
         this.withReaderObservation = withReaderObservation;
@@ -50,9 +51,11 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
      * @param withPluginObservation true is observation should be activated
      * @return a not null instance of the singleton
      */
-    static NativeSeClientServiceImpl createInstance(boolean withPluginObservation,boolean withReaderObservation) {
+    static NativeSeClientServiceImpl createInstance(boolean withPluginObservation,
+            boolean withReaderObservation) {
         if (uniqueInstance == null) {
-            uniqueInstance = new NativeSeClientServiceImpl(withPluginObservation,withReaderObservation);
+            uniqueInstance =
+                    new NativeSeClientServiceImpl(withPluginObservation, withReaderObservation);
         }
         return uniqueInstance;
     }
@@ -96,7 +99,7 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
      */
     @Override
     public void update(ReaderEvent event) {
-        //todo where to add this instance as an observer for plugin events?
+        // todo where to add this instance as an observer for plugin events?
         if (withReaderObservation) {
 
             // prepare body
@@ -120,16 +123,15 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
      */
     @Override
     public void update(PluginEvent event) {
-        //todo where to add this instance as an observer for plugin events?
+        // todo where to add this instance as an observer for plugin events?
         if (withPluginObservation) {
 
             // prepare body
             String body = KeypleJsonParser.getGson().toJson(event);
 
             // build keypleMessageDto READER_EVENT
-            KeypleMessageDto eventDto =
-                    new KeypleMessageDto().setAction(KeypleMessageDto.Action.PLUGIN_EVENT.name())
-                            .setBody(body);
+            KeypleMessageDto eventDto = new KeypleMessageDto()
+                    .setAction(KeypleMessageDto.Action.PLUGIN_EVENT.name()).setBody(body);
 
             // send keypleMessageDto through the node
             node.sendMessage(eventDto);
@@ -142,7 +144,7 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
     private <T extends KeypleUserData> T syncExecuteRemoteService(
             RemoteServiceParameters parameters, KeypleUserDataFactory<T> userOutputDataFactory) {
 
-        //todo plugin and reader observation does not make sense here
+        // todo plugin and reader observation does not make sense here
 
         // build keypleMessageDto EXECUTE_REMOTE_SERVICE with user params
         KeypleMessageDto remoteServiceDto = buildMessage(parameters);
@@ -197,7 +199,8 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
      */
     private <T extends KeypleUserData> T asyncExecuteRemoteService(
             RemoteServiceParameters parameters, KeypleUserDataFactory<T> userOutputDataFactory) {
-        //todo plugin and reader observation make sense here, add service as an observer for plugin and reader if asked by the user
+        // todo plugin and reader observation make sense here, add service as an observer for plugin
+        // and reader if asked by the user
 
         return null;
     }
@@ -223,8 +226,7 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
         body.add("userInputData", KeypleJsonParser.getGson().toJsonTree(userInputData.toMap()));
         body.add("serviceId", KeypleJsonParser.getGson().toJsonTree(parameters.getServiceId()));
 
-        return new KeypleMessageDto()
-                .setAction(KeypleMessageDto.Action.EXECUTE_SERVICE.name())
+        return new KeypleMessageDto().setAction(KeypleMessageDto.Action.EXECUTE_SERVICE.name())
                 .setNativeReaderName(parameters.getNativeReader().getName())
                 .setBody(body.getAsString());
 
