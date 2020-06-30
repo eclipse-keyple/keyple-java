@@ -34,7 +34,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <h1>Use Case ‘Calypso 6’ – Verify Pin (outside and inside secure session) (PC/SC)</h1>
+ * <h1>Use Case ‘Calypso 6’ – Verify Pin (outside and inside secure session) (PC/SC)</h1><br>
+ * The example shows 4 successive presentations of PIN codes:
+ * <ul>
+ * <li>Outside session, transmission in plain
+ * <li>Outside session, transmission encrypted
+ * <li>Inside session, incorrect PIN
+ * <li>Inside session, correct PIN
+ * </ul>
+ * The remaining attempt counter is logged after each operation.
  */
 public class VerifyPin_Pcsc {
     private static final Logger logger = LoggerFactory.getLogger(VerifyPin_Pcsc.class);
@@ -122,12 +130,21 @@ public class VerifyPin_Pcsc {
             String pinOk = "0000";
             String pinKo = "0001";
 
+            // create an unsecured PoTransaction
+            PoTransaction poTransactionUnsecured = new PoTransaction(poResource);
+
+            ////////////////////////////
+            // Verification of the PIN (correct) out of a secure session in plain mode
+            poTransactionUnsecured.processVerifyPin(pinOk);
+            logger.info("Remaining attempts #1: {}", calypsoPo.getPinAttemptRemaining());
+
+            // create a secured PoTransaction
             PoTransaction poTransaction = new PoTransaction(poResource, poSecuritySettings);
 
             ////////////////////////////
-            // Verification of the PIN (correct) out of a secure session
+            // Verification of the PIN (correct) out of a secure session in encrypted mode
             poTransaction.processVerifyPin(pinOk);
-            logger.info("Remaining attempts #1: {}", calypsoPo.getPinAttemptRemaining());
+            logger.info("Remaining attempts #2: {}", calypsoPo.getPinAttemptRemaining());
 
             ////////////////////////////
             // Verification of the PIN (incorrect) inside a secure session
@@ -139,7 +156,7 @@ public class VerifyPin_Pcsc {
                 logger.error("PIN Exception: {}", ex.getMessage());
             }
             poTransaction.processCancel(ChannelControl.KEEP_OPEN);
-            logger.error("Remaining attempts #2: {}", calypsoPo.getPinAttemptRemaining());
+            logger.error("Remaining attempts #3: {}", calypsoPo.getPinAttemptRemaining());
 
             ////////////////////////////
             // Verification of the PIN (correct) inside a secure session
@@ -147,7 +164,7 @@ public class VerifyPin_Pcsc {
                     .processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT);
             poTransaction.processVerifyPin(pinOk);
             poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
-            logger.info("Remaining attempts #3: {}", calypsoPo.getPinAttemptRemaining());
+            logger.info("Remaining attempts #4: {}", calypsoPo.getPinAttemptRemaining());
         } else {
             logger.error("The PO selection failed");
         }

@@ -34,6 +34,7 @@ import org.eclipse.keyple.calypso.command.po.builder.security.PoGetChallengeCmdB
 import org.eclipse.keyple.calypso.command.po.builder.security.RatificationCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.security.VerifyPinCmdBuild;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoPinException;
 import org.eclipse.keyple.calypso.command.po.parser.security.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.CloseSessionRespPars;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException;
@@ -998,15 +999,31 @@ public class PoTransaction {
         sessionState = SessionState.SESSION_CLOSED;
     }
 
-    public void processVerifyPin(String pin) {
-        processVerifyPin(pin.getBytes());
-    }
-
-    public void processVerifyPin(byte[] pin) {
+    /**
+     * Performs a PIN verification, in order to authenticate the cardholder and/or unlock access to
+     * certain PO files.<br>
+     * This command can be performed both in and out of a secure session.<br>
+     * The PIN code can be transmitted in plain text or encrypted according to the parameter set in
+     * PoSecuritySettings (by default the transmission is encrypted).<br>
+     * If the execution is done out of session but an encrypted transmission is requested, then
+     * PoTransaction must be constructed with {@link PoSecuritySettings}<br>
+     * If PoTransaction is constructed without {@link PoSecuritySettings} the transmission in done
+     * in plain.
+     *
+     * @param pin the PIN code value (4-byte long byte array)
+     * @throws CalypsoPoTransactionException if a functional error occurs (including PO and SAM IO
+     *         errors)
+     * @throws CalypsoPoCommandException if a response from the PO was unexpected
+     * @throws CalypsoPoPinException if the PIN presentation failed (the remaining attempt counter
+     *         is update in Calypso)
+     * @see CalypsoPo {@code isPinBlocked and getPinAttemptRemaining methods}
+     */
+    public final void processVerifyPin(byte[] pin) {
         Assert.getInstance().isTrue(pin != null, "pin").isEqual(pin.length,
                 CalypsoPoUtils.PIN_LENGTH, "PIN length");
 
-        if (PinTransmissionMode.ENCRYPTED.equals(poSecuritySettings.getPinTransmissionMode())) {
+        if (poSecuritySettings != null && PinTransmissionMode.ENCRYPTED
+                .equals(poSecuritySettings.getPinTransmissionMode())) {
             poCommandManager.addRegularCommand(new PoGetChallengeCmdBuild(calypsoPo.getPoClass()));
 
             // transmit and receive data with the PO
@@ -1031,6 +1048,16 @@ public class PoTransaction {
 
         // sets the flag indicating that the commands have been executed
         poCommandManager.notifyCommandsProcessed();
+    }
+
+    /**
+     * ProcessVerifyPin variant with the PIN supplied as an ASCII string.<br>
+     * E.g. "1234" will be transmited as { 0x31,032,0x33,0x34 }
+     * 
+     * @param pin an ASCII string (4-character long)
+     */
+    public final void processVerifyPin(String pin) {
+        processVerifyPin(pin.getBytes());
     }
 
     private SeResponse safePoTransmit(SeRequest poSeRequest, ChannelControl channelControl) {
@@ -1388,8 +1415,11 @@ public class PoTransaction {
     }
 
     /**
-     * Builds an VerifyPin command without PIN presentation in order to get the attempt counter.
+     * Builds a VerifyPin command without PIN presentation in order to get the attempt counter.<br>
+     * The PIN status will made available in CalypsoPo after the execution of process command.<br>
      * Adds it to the list of commands to be sent with the next process command.
+     * 
+     * @see CalypsoPo {@code isPinBlocked and getPinAttemptRemaining methods}
      */
     public final void prepareCheckPinStatus() {
         // create the builder and add it to the list of commands
