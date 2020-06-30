@@ -14,11 +14,13 @@ package org.eclipse.keyple.calypso.transaction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.eclipse.keyple.calypso.KeyReference;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
 import org.eclipse.keyple.calypso.command.sam.builder.security.*;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException;
+import org.eclipse.keyple.calypso.command.sam.parser.security.CardCipherPinRespPars;
 import org.eclipse.keyple.calypso.command.sam.parser.security.DigestAuthenticateRespPars;
 import org.eclipse.keyple.calypso.command.sam.parser.security.DigestCloseRespPars;
 import org.eclipse.keyple.calypso.command.sam.parser.security.SamGetChallengeRespPars;
@@ -73,6 +75,7 @@ class SamCommandProcessor {
     private byte workKeyKVC;
     private boolean isDiversificationDone;
     private boolean isDigestInitDone;
+    private boolean isDigesterInitialized;
 
     /**
      * Constructor
@@ -210,7 +213,9 @@ class SamCommandProcessor {
 
         this.sessionEncryption = sessionEncryption;
         this.verificationMode = verificationMode;
-        this.workKeyRecordNumber = poSecuritySettings.getSessionDefaultKeyRecordNumber(accessLevel);
+        // TODO check in which case this key number is needed
+        // this.workKeyRecordNumber =
+        // poSecuritySettings.getSessionDefaultKeyRecordNumber(accessLevel);
         this.workKeyKif = determineWorkKif(poKif, accessLevel);
         // TODO handle Rev 1.0 case where KVC is not available
         this.workKeyKVC = poKVC;
@@ -237,6 +242,7 @@ class SamCommandProcessor {
         poDigestDataCache.add(digestData);
 
         isDigestInitDone = false;
+        isDigesterInitialized = true;
     }
 
     /**
@@ -462,5 +468,71 @@ class SamCommandProcessor {
             }
         }
         return apduRequests;
+    }
+
+    /**
+     * Compute the PIN ciphered data for the encrypted PIN verification or PIN update commands
+     * 
+     * @param poChallenge the challenge from the PO
+     * @param currentPin the current PIN value
+     * @param newPin the new PIN value (set to null if the operation is a PIN presentation)
+     * @return the PIN ciphered data
+     * @throws CalypsoSamIOException if the communication with the SAM has failed.
+     * @throws CalypsoDesynchronizedExchangesException if the APDU SAM exchanges are out of sync
+     * @throws CalypsoSamCommandException if the SAM has responded with an error status
+     */
+    byte[] getCipheredPinData(byte[] poChallenge, byte[] currentPin, byte[] newPin) {
+        List<AbstractSamCommandBuilder<? extends AbstractSamResponseParser>> samCommands =
+                new ArrayList<AbstractSamCommandBuilder<? extends AbstractSamResponseParser>>();
+        KeyReference pinCipheringKey;
+
+        if (workKeyKif != 0) {
+            // the current work key has been set (a secure session is open)
+            pinCipheringKey = new KeyReference(workKeyKif, workKeyKVC);
+        } else {
+            // no current work key is available (outside secure session)
+            pinCipheringKey = poSecuritySettings.getDefaultPinCipheringKey();
+        }
+
+        if (!isDiversificationDone) {
+            /* Build the SAM Select Diversifier command to provide the SAM with the PO S/N */
+            samCommands
+                    .add(new SelectDiversifierCmdBuild(samResource.getMatchingSe().getSamRevision(),
+                            poResource.getMatchingSe().getApplicationSerialNumberBytes()));
+            isDiversificationDone = true;
+        }
+
+        if (isDigesterInitialized) {
+            /* Get the pending SAM ApduRequest and add it to the current ApduRequest list */
+            samCommands.addAll(getPendingSamCommands(false));
+        }
+
+        samCommands.add(
+                new GiveRandomCmdBuild(samResource.getMatchingSe().getSamRevision(), poChallenge));
+
+        int cardCipherPinCmdIndex = samCommands.size();
+
+        CardCipherPinCmdBuild cardCipherPinCmdBuild = new CardCipherPinCmdBuild(
+                samResource.getMatchingSe().getSamRevision(), pinCipheringKey, currentPin, newPin);
+        samCommands.add(new CardCipherPinCmdBuild(samResource.getMatchingSe().getSamRevision(),
+                pinCipheringKey, currentPin, newPin));
+
+        // build a SAM SeRequest
+        SeRequest samSeRequest = new SeRequest(getApduRequests(samCommands));
+
+        // execute the command
+        SeResponse samSeResponse =
+                samReader.transmitSeRequest(samSeRequest, ChannelControl.KEEP_OPEN);
+
+        ApduResponse cardCipherPinResponse =
+                samSeResponse.getApduResponses().get(cardCipherPinCmdIndex);
+
+        // create a parser
+        CardCipherPinRespPars cardCipherPinRespPars =
+                cardCipherPinCmdBuild.createResponseParser(cardCipherPinResponse);
+
+        cardCipherPinRespPars.checkStatus();
+
+        return cardCipherPinRespPars.getCipheredData();
     }
 }

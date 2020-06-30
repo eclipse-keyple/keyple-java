@@ -83,6 +83,8 @@ public class CalypsoPo extends AbstractMatchingSe {
     private final Map<Short, Byte> sfiByLid = new HashMap<Short, Byte>();
     private final Map<Short, Byte> sfiByLidBackup = new HashMap<Short, Byte>();
     private Boolean isDfRatified = null;
+    private byte[] challenge;
+    private Integer pinAttemptCounter;
 
     /**
      * Constructor.
@@ -492,6 +494,30 @@ public class CalypsoPo extends AbstractMatchingSe {
 
     /**
      * (package-private)<br>
+     * Set the challenge received from the PO
+     *
+     * @param challenge an array of bytes containing the challenge bytes (variable length according
+     *        to the revision of the PO)
+     * @since 0.9
+     */
+    final void setChallenge(byte[] challenge) {
+        this.challenge = challenge.clone();
+    }
+
+    /**
+     * (package-private)<br>
+     * Get the challenge received from the PO
+     *
+     * @return an array of bytes containing the challenge bytes (variable length according to the
+     *         revision of the PO). May be null if the challenge is not available.
+     * @since 0.9
+     */
+    final byte[] getChallenge() {
+        return challenge;
+    }
+
+    /**
+     * (package-private)<br>
      * Set the ratification status
      * 
      * @param dfRatified true if the session was ratified
@@ -608,34 +634,37 @@ public class CalypsoPo extends AbstractMatchingSe {
      * reached.
      * 
      * @return true if the PIN status is blocked
+     * @throws IllegalStateException if the PIN has not been checked
      * @since 0.9
      */
     public final boolean isPinBlocked() {
-        // TODO Complete this
-        return true;
+        return getPinAttemptRemaining() == 0;
     }
 
     /**
      * Gives the number of erroneous PIN presentations remaining before blocking.
      * 
      * @return the number of remaining attempts
+     * @throws IllegalStateException if the PIN has not been checked
      * @since 0.9
      */
     public final int getPinAttemptRemaining() {
-        // TODO Complete this
-        return 0;
+        if (pinAttemptCounter == null) {
+            throw new IllegalStateException("PIN status has not been checked.");
+        }
+        return pinAttemptCounter;
     }
 
     /**
      * (package-private)<br>
-     * Sets the PIN code status.<br>
-     * The status of the PIN code is interpreted to give the returns of the {@code isPinBlocked} and
-     * {@code getPinAttemptRemaining} methods.
+     * Sets the PIN attempts counter.<br>
+     * The PIN attempt counter is interpreted to give the results of the methods
+     * {@code isPinBlocked} and {@code getPinAttemptRemaining}.
      * 
-     * @param pinStatus the two-byte status returned by the PO
+     * @param pinAttemptCounter the number of remaining attempts to present the PIN code
      */
-    final void setPinStatus(byte[] pinStatus) {
-        // TODO Complete this
+    final void setPinAttemptRemaining(int pinAttemptCounter) {
+        this.pinAttemptCounter = pinAttemptCounter;
     }
 
     /**

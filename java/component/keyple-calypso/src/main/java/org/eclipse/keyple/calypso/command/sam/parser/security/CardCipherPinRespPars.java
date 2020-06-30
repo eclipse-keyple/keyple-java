@@ -48,6 +48,7 @@ public class CardCipherPinRespPars extends AbstractSamResponseParser {
      * Instantiates a new CardCipherPinRespPars.
      *
      * @param response from the SAM
+     * @param builder the reference to the builder that created this parser
      */
     public CardCipherPinRespPars(ApduResponse response, CardCipherPinCmdBuild builder) {
         super(response, builder);

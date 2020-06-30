@@ -16,7 +16,6 @@ import static org.assertj.core.api.Java6Assertions.shouldHaveThrown;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.parser.security.VerifyPinRespPars;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
-import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
@@ -54,12 +53,9 @@ public class VerifyPinCmdBuildTest {
 
     @Test
     public void verifyPin_encrypted() {
-        VerifyPinCmdBuild builder = new VerifyPinCmdBuild(PoClass.ISO,
-                PoTransaction.PinTransmissionMode.ENCRYPTED, ByteArrayUtil.fromHex(PIN_DATA));
-        ApduRequest apduRequest = builder.getApduRequest();
-        assertThat(apduRequest).isEqualTo(null);
-        assertThat(builder.getPin()).isEqualTo(ByteArrayUtil.fromHex(PIN_DATA));
-        builder.setCipheredPinData(ByteArrayUtil.fromHex(CIPHERED_PIN_DATA));
+        VerifyPinCmdBuild builder =
+                new VerifyPinCmdBuild(PoClass.ISO, PoTransaction.PinTransmissionMode.ENCRYPTED,
+                        ByteArrayUtil.fromHex(CIPHERED_PIN_DATA));
         byte[] apduRequestBytes = builder.getApduRequest().getBytes();
         assertThat(apduRequestBytes).isEqualTo(ByteArrayUtil.fromHex(APDU_ISO_ENCRYPTED));
     }
@@ -67,16 +63,15 @@ public class VerifyPinCmdBuildTest {
     @Test(expected = IllegalArgumentException.class)
     public void verifyPin_encrypted_pin_null() {
         VerifyPinCmdBuild builder = new VerifyPinCmdBuild(PoClass.ISO,
-                PoTransaction.PinTransmissionMode.ENCRYPTED, ByteArrayUtil.fromHex(PIN_DATA));
-        builder.setCipheredPinData(null);
+                PoTransaction.PinTransmissionMode.ENCRYPTED, null);
         shouldHaveThrown(IllegalArgumentException.class);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void verifyPin_encrypted_pin_bad_length() {
-        VerifyPinCmdBuild builder = new VerifyPinCmdBuild(PoClass.ISO,
-                PoTransaction.PinTransmissionMode.ENCRYPTED, ByteArrayUtil.fromHex(PIN_DATA));
-        builder.setCipheredPinData(ByteArrayUtil.fromHex(CIPHERED_PIN_DATA + CIPHERED_PIN_DATA));
+        VerifyPinCmdBuild builder =
+                new VerifyPinCmdBuild(PoClass.ISO, PoTransaction.PinTransmissionMode.ENCRYPTED,
+                        ByteArrayUtil.fromHex(CIPHERED_PIN_DATA + CIPHERED_PIN_DATA));
         shouldHaveThrown(IllegalArgumentException.class);
     }
 

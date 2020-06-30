@@ -22,7 +22,7 @@ public class VerifyPinCmdBuild extends AbstractPoCommandBuilder<VerifyPinRespPar
     private static final CalypsoPoCommand command = CalypsoPoCommand.VERIFY_PIN;
 
     private final byte cla;
-    private final byte[] pin = new byte[4];
+    private final boolean readCounterOnly;
 
     /**
      * Verify the PIN
@@ -37,24 +37,25 @@ public class VerifyPinCmdBuild extends AbstractPoCommandBuilder<VerifyPinRespPar
             byte[] pin) {
         super(command, null);
 
-        if (pin == null || pin.length != 4) {
+        if (pin == null
+                || (pinTransmissionMode == PoTransaction.PinTransmissionMode.PLAIN
+                        && pin.length != 4)
+                || (pinTransmissionMode == PoTransaction.PinTransmissionMode.ENCRYPTED
+                        && pin.length != 8)) {
             throw new IllegalArgumentException("The PIN must be 4 bytes long");
         }
 
         cla = poClass.getValue();
 
-        if (PoTransaction.PinTransmissionMode.ENCRYPTED.equals(pinTransmissionMode)) {
-            // only keep the pin
-            System.arraycopy(pin, 0, this.pin, 0, 4);
-        } else {
-            byte p1 = (byte) 0x00;
-            byte p2 = (byte) 0x00;
+        byte p1 = (byte) 0x00;
+        byte p2 = (byte) 0x00;
 
-            this.request = setApduRequest(cla, command, p1, p2, pin, null);
-            if (logger.isDebugEnabled()) {
-                this.addSubName(pinTransmissionMode.toString());
-            }
+        this.request = setApduRequest(cla, command, p1, p2, pin, null);
+        if (logger.isDebugEnabled()) {
+            this.addSubName(pinTransmissionMode.toString());
         }
+
+        readCounterOnly = false;
     }
 
     /**
@@ -73,31 +74,8 @@ public class VerifyPinCmdBuild extends AbstractPoCommandBuilder<VerifyPinRespPar
         if (logger.isDebugEnabled()) {
             this.addSubName("Read presentation counter");
         }
-    }
 
-    /**
-     * @return the value of the PIN stored at the time of construction
-     */
-    public byte[] getPin() {
-        return pin;
-    }
-
-    /**
-     * Finalizes the builder in the case of an encrypted transmission
-     * 
-     * @param pinData the encrypted PIN
-     */
-    public void setCipheredPinData(byte[] pinData) {
-        if (pinData == null || pinData.length != 8) {
-            throw new IllegalArgumentException("Wrong length of the PIN encrypted data");
-        }
-        byte p1 = (byte) 0x00;
-        byte p2 = (byte) 0x00;
-
-        this.request = setApduRequest(cla, command, p1, p2, pinData, null);
-        if (logger.isDebugEnabled()) {
-            this.addSubName(PoTransaction.PinTransmissionMode.ENCRYPTED.toString());
-        }
+        readCounterOnly = true;
     }
 
     @Override
@@ -108,5 +86,14 @@ public class VerifyPinCmdBuild extends AbstractPoCommandBuilder<VerifyPinRespPar
     @Override
     public boolean isSessionBufferUsed() {
         return false;
+    }
+
+    /**
+     * Indicates if the command is used to read the attempt counter only
+     * 
+     * @return true if the command is used to read the attempt counter
+     */
+    public boolean isReadCounterOnly() {
+        return readCounterOnly;
     }
 }

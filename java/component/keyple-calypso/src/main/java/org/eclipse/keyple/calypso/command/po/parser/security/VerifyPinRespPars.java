@@ -55,6 +55,7 @@ public class VerifyPinRespPars extends AbstractPoResponseParser {
      * Instantiates a new VerifyPinRespPars
      *
      * @param response the response from the PO
+     * @param builder the reference to the builder that created this parser
      */
     public VerifyPinRespPars(ApduResponse response, VerifyPinCmdBuild builder) {
         super(response, builder);

@@ -30,7 +30,9 @@ import org.eclipse.keyple.calypso.command.po.builder.UpdateRecordCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.WriteRecordCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.security.AbstractOpenSessionCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.security.CloseSessionCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.security.PoGetChallengeCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.security.RatificationCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.security.VerifyPinCmdBuild;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
 import org.eclipse.keyple.calypso.command.po.parser.security.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.CloseSessionRespPars;
@@ -996,6 +998,41 @@ public class PoTransaction {
         sessionState = SessionState.SESSION_CLOSED;
     }
 
+    public void processVerifyPin(String pin) {
+        processVerifyPin(pin.getBytes());
+    }
+
+    public void processVerifyPin(byte[] pin) {
+        Assert.getInstance().isTrue(pin != null, "pin").isEqual(pin.length,
+                CalypsoPoUtils.PIN_LENGTH, "PIN length");
+
+        if (PinTransmissionMode.ENCRYPTED.equals(poSecuritySettings.getPinTransmissionMode())) {
+            poCommandManager.addRegularCommand(new PoGetChallengeCmdBuild(calypsoPo.getPoClass()));
+
+            // transmit and receive data with the PO
+            processAtomicPoCommands(poCommandManager.getPoCommandBuilders(),
+                    ChannelControl.KEEP_OPEN);
+
+            // sets the flag indicating that the commands have been executed
+            poCommandManager.notifyCommandsProcessed();
+
+            // Get the encrypted PIN with the help of the SAM
+            byte[] cipheredPin =
+                    samCommandProcessor.getCipheredPinData(calypsoPo.getChallenge(), pin, null);
+            poCommandManager.addRegularCommand(new VerifyPinCmdBuild(calypsoPo.getPoClass(),
+                    PinTransmissionMode.ENCRYPTED, cipheredPin));
+        } else {
+            poCommandManager.addRegularCommand(
+                    new VerifyPinCmdBuild(calypsoPo.getPoClass(), PinTransmissionMode.PLAIN, pin));
+        }
+
+        // transmit and receive data with the PO
+        processAtomicPoCommands(poCommandManager.getPoCommandBuilders(), ChannelControl.KEEP_OPEN);
+
+        // sets the flag indicating that the commands have been executed
+        poCommandManager.notifyCommandsProcessed();
+    }
+
     private SeResponse safePoTransmit(SeRequest poSeRequest, ChannelControl channelControl) {
         try {
             return poReader.transmitSeRequest(poSeRequest, channelControl);
@@ -1353,17 +1390,9 @@ public class PoTransaction {
     /**
      * Builds an VerifyPin command without PIN presentation in order to get the attempt counter.
      * Adds it to the list of commands to be sent with the next process command.
-     * <p>
      */
     public final void prepareCheckPinStatus() {
-        // TODO Complete this
-    }
-
-    public final void prepareVerifyPin(String pin) {
-        // TODO Complete this
-    }
-
-    public final void prepareVerifyPin(byte[] pin) {
-        // TODO Complete this
+        // create the builder and add it to the list of commands
+        poCommandManager.addRegularCommand(new VerifyPinCmdBuild(calypsoPo.getPoClass()));
     }
 }
