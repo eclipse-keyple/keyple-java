@@ -20,40 +20,36 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
 
 public class VerifyPinRespParsTest {
-    private static final String SW1SW2_KO = "6A82";
-    private static final String SW1SW2_OK = "9000";
-    private static final String ATTEMPTS_1 = "63C1";
-    private static final String ATTEMPTS_2 = "63C2";
-    private static final String PIN_BLOCKED = "6983";
+    private static final byte[] SW1SW2_KO = ByteArrayUtil.fromHex("6A82");
+    private static final byte[] SW1SW2_OK = ByteArrayUtil.fromHex("9000");
+    private static final byte[] ATTEMPTS_1 = ByteArrayUtil.fromHex("63C1");
+    private static final byte[] ATTEMPTS_2 = ByteArrayUtil.fromHex("63C2");
+    private static final byte[] PIN_BLOCKED = ByteArrayUtil.fromHex("6983");
 
     @Test
     public void verifyPinRespPars_goodStatus() {
-        VerifyPinRespPars parser = new VerifyPinRespPars(
-                new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_OK), null), null);
+        VerifyPinRespPars parser = new VerifyPinRespPars(new ApduResponse(SW1SW2_OK, null), null);
         parser.checkStatus();
         assertThat(parser.getRemainingAttemptCounter()).isEqualTo(3);
     }
 
     @Test(expected = CalypsoPoCommandException.class)
     public void verifyPinRespPars_badStatus() {
-        VerifyPinRespPars parser = new VerifyPinRespPars(
-                new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null), null);
+        VerifyPinRespPars parser = new VerifyPinRespPars(new ApduResponse(SW1SW2_KO, null), null);
         parser.checkStatus();
         shouldHaveThrown(CalypsoPoCommandException.class);
     }
 
     @Test(expected = IllegalStateException.class)
     public void verifyPinRespPars_badStatus_2() {
-        VerifyPinRespPars parser = new VerifyPinRespPars(
-                new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null), null);
+        VerifyPinRespPars parser = new VerifyPinRespPars(new ApduResponse(SW1SW2_KO, null), null);
         parser.getRemainingAttemptCounter();
         shouldHaveThrown(IllegalStateException.class);
     }
 
     @Test(expected = CalypsoPoPinException.class)
     public void verifyPinRespPars_attempts_1() {
-        VerifyPinRespPars parser = new VerifyPinRespPars(
-                new ApduResponse(ByteArrayUtil.fromHex(ATTEMPTS_1), null), null);
+        VerifyPinRespPars parser = new VerifyPinRespPars(new ApduResponse(ATTEMPTS_1, null), null);
         assertThat(parser.getRemainingAttemptCounter()).isEqualTo(1);
         parser.checkStatus();
         shouldHaveThrown(CalypsoPoPinException.class);
@@ -61,8 +57,7 @@ public class VerifyPinRespParsTest {
 
     @Test(expected = CalypsoPoPinException.class)
     public void verifyPinRespPars_attempts_2() {
-        VerifyPinRespPars parser = new VerifyPinRespPars(
-                new ApduResponse(ByteArrayUtil.fromHex(ATTEMPTS_2), null), null);
+        VerifyPinRespPars parser = new VerifyPinRespPars(new ApduResponse(ATTEMPTS_2, null), null);
         assertThat(parser.getRemainingAttemptCounter()).isEqualTo(2);
         parser.checkStatus();
         shouldHaveThrown(CalypsoPoPinException.class);
@@ -70,8 +65,7 @@ public class VerifyPinRespParsTest {
 
     @Test(expected = CalypsoPoPinException.class)
     public void verifyPinRespPars_pin_blocked() {
-        VerifyPinRespPars parser = new VerifyPinRespPars(
-                new ApduResponse(ByteArrayUtil.fromHex(PIN_BLOCKED), null), null);
+        VerifyPinRespPars parser = new VerifyPinRespPars(new ApduResponse(PIN_BLOCKED, null), null);
         assertThat(parser.getRemainingAttemptCounter()).isEqualTo(0);
         parser.checkStatus();
         shouldHaveThrown(CalypsoPoPinException.class);

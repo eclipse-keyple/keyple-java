@@ -229,7 +229,7 @@ final class CalypsoPoUtils {
      * Updated the {@link CalypsoPo} object with the response to a Write Record command sent and
      * received from the PO <br>
      * The records read are added to the {@link CalypsoPo} file structure using the dedicated
-     * {@code fillContent} method.
+     * {@link CalypsoPo#fillContent } method.
      *
      * @param calypsoPo the {@link CalypsoPo} object to update
      * @param writeRecordCmdBuild the Write Record command builder

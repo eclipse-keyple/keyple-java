@@ -1015,12 +1015,12 @@ public class PoTransaction {
      *         errors)
      * @throws CalypsoPoCommandException if a response from the PO was unexpected
      * @throws CalypsoPoPinException if the PIN presentation failed (the remaining attempt counter
-     *         is update in Calypso)
-     * @see CalypsoPo {@code isPinBlocked and getPinAttemptRemaining methods}
+     *         is update in Calypso). See {@link CalypsoPo#isPinBlocked} and
+     *         {@link CalypsoPo#getPinAttemptRemaining} methods
      */
     public final void processVerifyPin(byte[] pin) {
-        Assert.getInstance().isTrue(pin != null, "pin").isEqual(pin.length,
-                CalypsoPoUtils.PIN_LENGTH, "PIN length");
+        Assert.getInstance().notNull(pin, "pin").isEqual(pin.length, CalypsoPoUtils.PIN_LENGTH,
+                "PIN length");
 
         if (poSecuritySettings != null && PinTransmissionMode.ENCRYPTED
                 .equals(poSecuritySettings.getPinTransmissionMode())) {
@@ -1419,7 +1419,7 @@ public class PoTransaction {
      * The PIN status will made available in CalypsoPo after the execution of process command.<br>
      * Adds it to the list of commands to be sent with the next process command.
      * 
-     * @see CalypsoPo {@code isPinBlocked and getPinAttemptRemaining methods}
+     * @link CalypsoPo#isPinBlocked and CalypsoPo#getPinAttemptRemaining methods
      */
     public final void prepareCheckPinStatus() {
         // create the builder and add it to the list of commands

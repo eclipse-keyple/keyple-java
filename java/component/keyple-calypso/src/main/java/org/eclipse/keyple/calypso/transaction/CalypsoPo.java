@@ -501,7 +501,7 @@ public class CalypsoPo extends AbstractMatchingSe {
      * @since 0.9
      */
     final void setChallenge(byte[] challenge) {
-        this.challenge = challenge.clone();
+        this.challenge = challenge;
     }
 
     /**
@@ -659,7 +659,7 @@ public class CalypsoPo extends AbstractMatchingSe {
      * (package-private)<br>
      * Sets the PIN attempts counter.<br>
      * The PIN attempt counter is interpreted to give the results of the methods
-     * {@code isPinBlocked} and {@code getPinAttemptRemaining}.
+     * {@link #isPinBlocked} and {@link #getPinAttemptRemaining}.
      * 
      * @param pinAttemptCounter the number of remaining attempts to present the PIN code
      */

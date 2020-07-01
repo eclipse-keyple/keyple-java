@@ -20,22 +20,27 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
 
 public class CardCipherPinRespParsTest {
-    private static final String SW1SW2_KO = "6A82";
-    private static final String SW1SW2_OK = "9000";
-    private static final String CIPHERED_DATA = "1122334455667788";
+    private static final String SW1SW2_KO_STR = "6A82";
+    private static final String SW1SW2_OK_STR = "9000";
+    private static final String CIPHERED_DATA_STR = "1122334455667788";
+
+    private static final byte[] SW1SW2_KO = ByteArrayUtil.fromHex(SW1SW2_KO_STR);
+    private static final byte[] CIPHERED_DATA = ByteArrayUtil.fromHex(CIPHERED_DATA_STR);
+    private static final byte[] APDU_RESPONSE_OK =
+            ByteArrayUtil.fromHex(CIPHERED_DATA_STR + SW1SW2_OK_STR);
 
     @Test
     public void cardCipherPinRespPars_goodStatus() {
-        CardCipherPinRespPars parser = new CardCipherPinRespPars(
-                new ApduResponse(ByteArrayUtil.fromHex(CIPHERED_DATA + SW1SW2_OK), null), null);
+        CardCipherPinRespPars parser =
+                new CardCipherPinRespPars(new ApduResponse(APDU_RESPONSE_OK, null), null);
         parser.checkStatus();
-        assertThat(parser.getCipheredData()).isEqualTo(ByteArrayUtil.fromHex(CIPHERED_DATA));
+        assertThat(parser.getCipheredData()).isEqualTo(CIPHERED_DATA);
     }
 
     @Test(expected = CalypsoSamCommandException.class)
     public void cardCipherPinRespPars_badStatus() {
-        CardCipherPinRespPars parser = new CardCipherPinRespPars(
-                new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null), null);
+        CardCipherPinRespPars parser =
+                new CardCipherPinRespPars(new ApduResponse(SW1SW2_KO, null), null);
         parser.checkStatus();
         shouldHaveThrown(CalypsoSamCommandException.class);
     }
