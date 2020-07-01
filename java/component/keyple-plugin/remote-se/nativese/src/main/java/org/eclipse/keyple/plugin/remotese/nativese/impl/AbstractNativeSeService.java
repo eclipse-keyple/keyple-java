@@ -13,8 +13,8 @@ package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remotese.core.impl.AbstractKeypleMessageHandler;
 import org.slf4j.Logger;
@@ -37,7 +37,7 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
      * @throws KeypleReaderNotFoundException if no reader is found with this name
      * @since 1.0
      */
-    protected static SeReader findLocalReader(String nativeReaderName) {
+    protected ProxyReader findLocalReader(String nativeReaderName) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("Find local reader by name '{}' in {} plugin(s)", nativeReaderName,
@@ -50,7 +50,7 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
                     logger.trace("Local reader found '{}' in plugin {}", nativeReaderName,
                             plugin.getName());
                 }
-                return plugin.getReader(nativeReaderName);
+                return (ProxyReader) plugin.getReader(nativeReaderName);
             } catch (KeypleReaderNotFoundException e) {
                 // reader has not been found in this plugin, continue
             }
@@ -67,17 +67,22 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
      * @since 1.0
      *
      */
-    protected KeypleMessageDto executeRequestDto(KeypleMessageDto keypleMessageDto) {
-        Executor method;
+    protected KeypleMessageDto executeLocally(ProxyReader nativeReader,
+            KeypleMessageDto keypleMessageDto) {
+
         switch (KeypleMessageDto.Action.valueOf(keypleMessageDto.getAction())) {
             case TRANSMIT:
-                return new TransmitExecutor().execute(keypleMessageDto);
+                return new TransmitExecutor(nativeReader).execute(keypleMessageDto);
             case TRANSMIT_SET:
-                return new TransmitSetExecutor().execute(keypleMessageDto);
-            // todo SET DEFAULT SELECTION
+                return new TransmitSetExecutor(nativeReader).execute(keypleMessageDto);
+            case SET_DEFAULT_SELECTION:
+                return new DefaultSelectionExecutor(nativeReader).execute(keypleMessageDto);
             default:
-                throw new IllegalStateException("No executor found for dto " + keypleMessageDto);
+                return new KeypleMessageDto().setErrorCode("404")
+                        .setErrorMessage("Method not found");// todo
         }
+
+
     }
 
 

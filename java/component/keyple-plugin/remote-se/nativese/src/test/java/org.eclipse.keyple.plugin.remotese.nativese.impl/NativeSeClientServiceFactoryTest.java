@@ -13,10 +13,15 @@ package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import org.eclipse.keyple.core.selection.AbstractMatchingSe;
+import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.plugin.remotese.core.KeypleClientAsync;
 import org.eclipse.keyple.plugin.remotese.core.KeypleClientSync;
-import org.eclipse.keyple.plugin.remotese.core.impl.ServerPushEventStrategy;
+import org.eclipse.keyple.plugin.remotese.core.KeypleUserData;
+import org.eclipse.keyple.plugin.remotese.core.KeypleUserDataFactory;
 import org.eclipse.keyple.plugin.remotese.nativese.NativeSeClientService;
+import org.eclipse.keyple.plugin.remotese.nativese.RemoteServiceParameters;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -28,31 +33,53 @@ import org.slf4j.LoggerFactory;
 public class NativeSeClientServiceFactoryTest {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractNativeSeServiceTest.class);
+    KeypleClientSync syncClient;
+    KeypleClientAsync asyncClient;
+    ProxyReader nativeReader;
+    AbstractMatchingSe matchingSe;
+    KeypleUserDataFactory keypleUserDataFactory;
+
+    @Before
+    public void setUp() {
+        syncClient = Mockito.mock(KeypleClientSync.class);
+        asyncClient = Mockito.mock(KeypleClientAsync.class);
+        nativeReader = Mockito.mock(ProxyReader.class);
+        matchingSe = Mockito.mock(AbstractMatchingSe.class);
+        keypleUserDataFactory = Mockito.mock(KeypleUserDataFactory.class);
+    }
+
+
 
     @Test
-    public void buildService_withSyncNode_withoutObservation() throws Exception {
-        // init
-        KeypleClientSync syncClient = Mockito.mock(KeypleClientSync.class);
+    public void buildService_withSyncNode_withoutObservation() {
+        // test
+        NativeSeClientService service = new NativeSeClientServiceFactory().builder()
+                .withSyncNode(syncClient).withoutReaderObservation().getService();
+
+        // assert
+        assertThat(service).isNotNull();
+    }
+
+    @Test
+    public void buildService_withSyncNode__withReaderObservation() {
         // test
         NativeSeClientService service =
                 new NativeSeClientServiceFactory().builder().withSyncNode(syncClient)
-                        .withoutPluginObservation().withoutReaderObservation().getService();
+                        .withReaderObservation(Mockito.mock(
+                                NativeSeClientServiceFactory.KeypleClientReaderEventFilter.class))
+                        .getService();
 
         // assert
         assertThat(service).isNotNull();
+
     }
 
     @Test
-    public void buildService_withSyncNode_withoutPluginObservation_withReaderObservation()
-            throws Exception {
-        // init
-        KeypleClientSync syncClient = Mockito.mock(KeypleClientSync.class);
+    public void buildService_withAsyncNode_withoutReaderObservation() {
+
         // test
         NativeSeClientService service = new NativeSeClientServiceFactory().builder()
-                .withSyncNode(syncClient).withoutPluginObservation()
-                .withReaderObservation(
-                        new ServerPushEventStrategy(ServerPushEventStrategy.Type.LONG_POLLING))
-                .getService();
+                .withAsyncNode(asyncClient).withoutReaderObservation().getService();
 
         // assert
         assertThat(service).isNotNull();
@@ -60,33 +87,42 @@ public class NativeSeClientServiceFactoryTest {
     }
 
     @Test
-    public void buildService_withAsyncNode__withPluginObservation_withoutReaderObservation()
-            throws Exception {
-        // init
-        KeypleClientAsync asyncClient = Mockito.mock(KeypleClientAsync.class);
+    public void buildService_withAsyncNode_withReaderObservation() {
         // test
         NativeSeClientService service =
                 new NativeSeClientServiceFactory().builder().withAsyncNode(asyncClient)
-                        .withPluginObservation().withoutReaderObservation().getService();
+                        .withReaderObservation(Mockito.mock(
+                                NativeSeClientServiceFactory.KeypleClientReaderEventFilter.class))
+                        .getService();
 
         // assert
         assertThat(service).isNotNull();
 
     }
 
-    @Test
-    public void buildService_withAsyncNode__withoutPluginObservation_withReaderObservation()
-            throws Exception {
+
+    public void executeService_withAsyncNode() {
         // init
-        KeypleClientAsync asyncClient = Mockito.mock(KeypleClientAsync.class);
+        NativeSeClientService nativeSeClientService = new NativeSeClientServiceFactory().builder()
+                .withAsyncNode(asyncClient).withoutReaderObservation().getService();
+
+        RemoteServiceParameters params =
+                RemoteServiceParameters.builder("SERVICE_ID_1", nativeReader).build();
+
         // test
-        NativeSeClientService service =
-                new NativeSeClientServiceFactory().builder().withAsyncNode(asyncClient)
-                        .withoutPluginObservation().withReaderObservation().getService();
+        KeypleUserData output =
+                nativeSeClientService.executeRemoteService(params, keypleUserDataFactory);
 
         // assert
-        assertThat(service).isNotNull();
+        assertThat(output).isNotNull();
 
     }
+
+
+
+    /*
+     * Helper
+     */
+
 
 }

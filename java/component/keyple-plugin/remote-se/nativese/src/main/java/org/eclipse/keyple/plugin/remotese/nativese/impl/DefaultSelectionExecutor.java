@@ -12,7 +12,6 @@
 package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
@@ -39,7 +38,7 @@ class DefaultSelectionExecutor implements Executor {
 
     @Override
     public KeypleMessageDto execute(KeypleMessageDto keypleMessageDto) {
-        //init value
+        // init value
         ObservableReader.PollingMode pollingMode = null;
         Boolean hasPollingMode = false;
         DefaultSelectionsRequest defaultSelectionsRequest = null;
@@ -47,13 +46,13 @@ class DefaultSelectionExecutor implements Executor {
 
         // Extract info from keypleDto
         String body = keypleMessageDto.getBody();
-        JsonObject jsonObject = KeypleJsonParser.getGson().fromJson(body, JsonObject.class);
+        JsonObject jsonObject = KeypleJsonParser.getParser().fromJson(body, JsonObject.class);
 
         // Selection Request
         String selectionRequestJson =
                 jsonObject.getAsJsonPrimitive("defaultSelectionsRequest").getAsString();
-        defaultSelectionsRequest = KeypleJsonParser.getGson()
-                .fromJson(selectionRequestJson, DefaultSelectionsRequest.class);
+        defaultSelectionsRequest = KeypleJsonParser.getParser().fromJson(selectionRequestJson,
+                DefaultSelectionsRequest.class);
 
         // Notification Mode
         notificationMode = ObservableReader.NotificationMode
@@ -85,8 +84,7 @@ class DefaultSelectionExecutor implements Executor {
                         notificationMode);
             }
 
-            // prepare response
-            String parseBody = "{}";
+            // no body in response
             return new KeypleMessageDto().setAction(keypleMessageDto.getAction())
                     .setSessionId(keypleMessageDto.getSessionId())
                     .setNativeReaderName(keypleMessageDto.getNativeReaderName())
@@ -95,7 +93,7 @@ class DefaultSelectionExecutor implements Executor {
                     .setVirtualReaderName(keypleMessageDto.getVirtualReaderName());
 
         } else {
-            //error
+            // error
             return null;
         }
     }

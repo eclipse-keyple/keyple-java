@@ -17,16 +17,30 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * Json Parser for Keyple DTO and Keyple DTO fields
+ * Json Parser for Keyple DTO and Keyple DTO body
  */
 public class KeypleJsonParser {
 
-    public static Gson getGson() {
-        final GsonBuilder gsonBuilder = new GsonBuilder();
+    final private Gson parser;
+
+    private KeypleJsonParser() {
+        GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(SeProtocol.class, new GsonSeProtocolTypeAdapter());
         gsonBuilder.registerTypeAdapter(byte[].class, new HexTypeAdapter());
         // gsonBuilder.setPrettyPrinting(); disable pretty printing for inline json
-        return gsonBuilder.create();
+        parser = gsonBuilder.create();
+    }
+
+    private static class GsonParser {
+        private static final KeypleJsonParser INSTANCE = new KeypleJsonParser();
+    }
+
+    public static Gson getParser() {
+        return GsonParser.INSTANCE.getGson();
+    }
+
+    private Gson getGson() {
+        return parser;
     }
 
 }

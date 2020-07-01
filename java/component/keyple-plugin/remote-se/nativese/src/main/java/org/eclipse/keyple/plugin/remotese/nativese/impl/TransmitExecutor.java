@@ -12,7 +12,7 @@
 package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
 import org.eclipse.keyple.core.seproxy.ChannelControl;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
@@ -29,10 +29,14 @@ class TransmitExecutor implements Executor {
 
     private static final Logger logger = LoggerFactory.getLogger(TransmitExecutor.class);
 
+    private final ProxyReader reader;
+
     /**
      * Builds a TRANSMIT KeypleMessageDto executor
      */
-    TransmitExecutor() {}
+    TransmitExecutor(ProxyReader reader) {
+        this.reader = reader;
+    }
 
     @Override
     public KeypleMessageDto execute(KeypleMessageDto keypleMessageDto) {
@@ -41,45 +45,45 @@ class TransmitExecutor implements Executor {
 
         // Extract info from keypleDto
         JsonObject bodyObject =
-                KeypleJsonParser.getGson().fromJson(keypleMessageDto.getBody(), JsonObject.class);
+                KeypleJsonParser.getParser().fromJson(keypleMessageDto.getBody(), JsonObject.class);
 
         ChannelControl channelControl =
                 ChannelControl.valueOf(bodyObject.get("channelControl").getAsString());
 
-        SeRequest seRequest = KeypleJsonParser.getGson()
+        SeRequest seRequest = KeypleJsonParser.getParser()
                 .fromJson(bodyObject.get("seRequest").getAsString(), SeRequest.class);
 
-        String nativeReaderName = keypleMessageDto.getNativeReaderName();
         if (logger.isTraceEnabled()) {
             logger.trace("Execute locally seRequest : {} with params {} ", seRequest,
                     channelControl);
         }
 
         try {
-            // find native reader by name
-            ProxyReader reader =
-                    (ProxyReader) AbstractNativeSeService.findLocalReader(nativeReaderName);
 
             // execute transmit
             SeResponse seResponse = reader.transmitSeRequest(seRequest, channelControl);
 
             // prepate response body
-            String bodySerialized = KeypleJsonParser.getGson().toJson(seResponse, SeResponse.class);
+            String body = KeypleJsonParser.getParser().toJson(seResponse, SeResponse.class);
 
             response = new KeypleMessageDto().setAction(keypleMessageDto.getAction())
                     .setSessionId(keypleMessageDto.getSessionId())
                     .setClientNodeId(keypleMessageDto.getClientNodeId())
                     .setVirtualReaderName(keypleMessageDto.getVirtualReaderName())
-                    .setServerNodeId(keypleMessageDto.getServerNodeId()).setBody(bodySerialized);;
+                    .setServerNodeId(keypleMessageDto.getServerNodeId()).setBody(body);;
 
-        } catch (KeypleReaderException e) {
+        } catch (KeypleReaderIOException e) {
+
+            String body = KeypleJsonParser.getParser().toJson(e, KeypleReaderIOException.class);
+
             // if an exception occurs, send it into a keypleDto to the Master
             response = new KeypleMessageDto().setAction(keypleMessageDto.getAction())
                     .setSessionId(keypleMessageDto.getSessionId())
                     .setClientNodeId(keypleMessageDto.getClientNodeId())
                     .setVirtualReaderName(keypleMessageDto.getVirtualReaderName())
                     .setServerNodeId(keypleMessageDto.getServerNodeId()).setErrorCode(null)
-                    .setErrorMessage(e.getMessage());// todo : handle error code
+                    .setErrorMessage(e.getMessage()).setBody(body);// todo : handle error code
+            // todo KeypleReaderIOException is sent in the body
         }
 
         return response;
