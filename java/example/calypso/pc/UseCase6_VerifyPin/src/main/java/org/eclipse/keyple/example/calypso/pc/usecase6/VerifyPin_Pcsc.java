@@ -144,6 +144,7 @@ public class VerifyPin_Pcsc {
             ////////////////////////////
             // Verification of the PIN (correct) out of a secure session in encrypted mode
             poTransaction.processVerifyPin(pinOk);
+            // log the current counter value (should be 3)
             logger.info("Remaining attempts #2: {}", calypsoPo.getPinAttemptRemaining());
 
             ////////////////////////////
@@ -156,15 +157,21 @@ public class VerifyPin_Pcsc {
                 logger.error("PIN Exception: {}", ex.getMessage());
             }
             poTransaction.processCancel(ChannelControl.KEEP_OPEN);
+            // log the current counter value (should be 2)
             logger.error("Remaining attempts #3: {}", calypsoPo.getPinAttemptRemaining());
 
             ////////////////////////////
-            // Verification of the PIN (correct) inside a secure session
+            // Verification of the PIN (correct) inside a secure session with reading of the counter
+            //////////////////////////// before
+            poTransaction.prepareCheckPinStatus();
             poTransaction
                     .processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT);
+            // log the current counter value (should be 2)
+            logger.info("Remaining attempts #4: {}", calypsoPo.getPinAttemptRemaining());
             poTransaction.processVerifyPin(pinOk);
             poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
-            logger.info("Remaining attempts #4: {}", calypsoPo.getPinAttemptRemaining());
+            // log the current counter value (should be 3)
+            logger.info("Remaining attempts #5: {}", calypsoPo.getPinAttemptRemaining());
         } else {
             logger.error("The PO selection failed");
         }
