@@ -1022,6 +1022,16 @@ public class PoTransaction {
         Assert.getInstance().notNull(pin, "pin").isEqual(pin.length, CalypsoPoUtils.PIN_LENGTH,
                 "PIN length");
 
+        if (!calypsoPo.isPinFeatureAvailable()) {
+            throw new CalypsoPoTransactionIllegalStateException(
+                    "PIN is not available for this SE.");
+        }
+
+        if (poCommandManager.hasCommands()) {
+            throw new CalypsoPoTransactionIllegalStateException(
+                    "No commands should have been prepared prior to a PIN submission.");
+        }
+
         if (poSecuritySettings != null && PinTransmissionMode.ENCRYPTED
                 .equals(poSecuritySettings.getPinTransmissionMode())) {
             poCommandManager.addRegularCommand(new PoGetChallengeCmdBuild(calypsoPo.getPoClass()));
@@ -1419,7 +1429,7 @@ public class PoTransaction {
      * The PIN status will made available in CalypsoPo after the execution of process command.<br>
      * Adds it to the list of commands to be sent with the next process command.
      * 
-     * @link CalypsoPo#isPinBlocked and CalypsoPo#getPinAttemptRemaining methods
+     * See {@link CalypsoPo#isPinBlocked} and {@link CalypsoPo#getPinAttemptRemaining} methods.
      */
     public final void prepareCheckPinStatus() {
         // create the builder and add it to the list of commands
