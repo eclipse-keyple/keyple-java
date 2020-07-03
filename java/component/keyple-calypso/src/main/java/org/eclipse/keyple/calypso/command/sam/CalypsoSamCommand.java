@@ -57,7 +57,15 @@ public enum CalypsoSamCommand implements SeCommand {
 
     READ_EVENT_COUNTER("Read Event Counter", (byte) 0xBE),
 
-    READ_CEILINGS("Read Ceilings", (byte) 0xBE);
+    READ_CEILINGS("Read Ceilings", (byte) 0xBE),
+
+    SV_CHECK("SV Check", (byte) 0x58),
+
+    SV_PREPARE_DEBIT("SV Prepare Debit", (byte) 0x54),
+
+    SV_PREPARE_LOAD("SV Prepare Load", (byte) 0x56),
+
+    SV_PREPARE_UNDEBIT("SV Prepare Undebit", (byte) 0x5C);
 
     /** The name. */
     private final String name;

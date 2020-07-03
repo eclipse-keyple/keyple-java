@@ -24,6 +24,7 @@ import org.eclipse.keyple.calypso.command.po.builder.*;
 import org.eclipse.keyple.calypso.command.po.builder.security.AbstractOpenSessionCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.security.PoGetChallengeCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.security.VerifyPinCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.storedvalue.SvGetCmdBuild;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoPinException;
 import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
@@ -36,6 +37,7 @@ import org.eclipse.keyple.calypso.command.po.parser.WriteRecordRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.PoGetChallengeRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.VerifyPinRespPars;
+import org.eclipse.keyple.calypso.command.po.parser.storedvalue.SvGetRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.Assert;
 
@@ -370,6 +372,18 @@ final class CalypsoPoUtils {
         return verifyPinRespPars;
     }
 
+    private static SvGetRespPars updateCalypsoPoSvGet(CalypsoPo calypsoPo,
+            SvGetCmdBuild svGetCmdBuild, ApduResponse apduResponse) {
+        SvGetRespPars svGetRespPars = svGetCmdBuild.createResponseParser(apduResponse);
+
+        svGetRespPars.checkStatus();
+
+        calypsoPo.setSvData(svGetRespPars.getBalance(), svGetRespPars.getTransactionNumber(),
+                svGetRespPars.getLoadLog(), svGetRespPars.getDebitLog());
+
+        return svGetRespPars;
+    }
+
     /**
      * Parses the proprietaryInformation field of a file identified as an DF and create a
      * {@link DirectoryHeader}
@@ -534,6 +548,9 @@ final class CalypsoPoUtils {
                         (PoGetChallengeCmdBuild) commandBuilder, apduResponse);
             case VERIFY_PIN:
                 return updateCalypsoVerifyPin(calypsoPo, (VerifyPinCmdBuild) commandBuilder,
+                        apduResponse);
+            case SV_GET:
+                return updateCalypsoPoSvGet(calypsoPo, (SvGetCmdBuild) commandBuilder,
                         apduResponse);
             case CHANGE_KEY:
             case GET_DATA_FCI:

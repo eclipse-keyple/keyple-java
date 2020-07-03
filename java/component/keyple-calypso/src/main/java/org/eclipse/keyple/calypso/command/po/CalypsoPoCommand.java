@@ -64,7 +64,19 @@ public enum CalypsoPoCommand implements SeCommand {
     VERIFY_PIN("Verify PIN", (byte) 0x20),
 
     /* The po get data for traceability */
-    GET_DATA_TRACE("Get Data'Trace'", (byte) 0xCA);
+    GET_DATA_TRACE("Get Data'Trace'", (byte) 0xCA),
+
+    /* The po SV Get */
+    SV_GET("SV Get", (byte) 0x7C),
+
+    /* The po SV Debit */
+    SV_DEBIT("SV Debit", (byte) 0xBA),
+
+    /* The po SV Reload */
+    SV_RELOAD("SV Reload", (byte) 0xB8),
+
+    /* The po SV Undebit */
+    SV_UNDEBIT("SV Undebit", (byte) 0xBC);
 
     /** The name. */
     private final String name;

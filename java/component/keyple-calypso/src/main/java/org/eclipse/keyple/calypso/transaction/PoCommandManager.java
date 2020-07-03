@@ -15,6 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
+import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionIllegalStateException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -29,11 +33,16 @@ import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
  * AbstractPoCommandBuilder is added or when a attempt
  */
 class PoCommandManager {
+    private static final Logger logger = LoggerFactory.getLogger(PoCommandManager.class);
+
     /** The list to contain the prepared commands and their parsers */
     private final List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poCommands =
             new ArrayList<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>>();
     /** The command index, incremented each time a command is added */
     private boolean preparedCommandsProcessed;
+    private CalypsoPoCommand svLastCommand = CalypsoPoCommand.SV_UNDEBIT;
+    private PoTransaction.SvSettings.Operation svOperation =
+            PoTransaction.SvSettings.Operation.DEBIT;
 
     PoCommandManager() {
         preparedCommandsProcessed = true;
@@ -51,9 +60,68 @@ class PoCommandManager {
         /*
          * Reset the list if the preparation of the command is done after a previous processing
          * notified by notifyCommandsProcessed.
-         *
-         * However, the parsers have remained available until now.
          */
+        if (preparedCommandsProcessed) {
+            poCommands.clear();
+            preparedCommandsProcessed = false;
+        }
+        poCommands.add(commandBuilder);
+    }
+
+    /**
+     * Add a StoredValue command to the builders and parsers list.
+     * <p>
+     * Handle the clearing of the list if needed.
+     * <p>
+     * Set up a mini state machine to manage the scheduling of Stored Value commands keeping the
+     * position of the last SvGet/Operation in the command list.
+     * <p>
+     * The {@link PoTransaction.SvSettings.Operation} and {@link PoTransaction.SvSettings.Action}
+     * are also used to check the consistency of the SV process.
+     * <p>
+     * The svOperationPending flag is set when an SV operation (Reload/Debit/Undebit) command is
+     * added.
+     *
+     * @param commandBuilder the StoredValue command builder
+     * @param svOperation the type of the current SV operation (Realod/Debit/Undebit)
+     * @throws IllegalStateException if the provided command is not an SV command
+     * @throws CalypsoPoTransactionIllegalStateException if the SV API is not properly used.
+     */
+    void addStoredValueCommand(
+            AbstractPoCommandBuilder<? extends AbstractPoResponseParser> commandBuilder,
+            PoTransaction.SvSettings.Operation svOperation) {
+        // Check the logic of the SV command sequencing
+        switch (commandBuilder.getCommandRef()) {
+            case SV_GET:
+                this.svOperation = svOperation;
+                break;
+            case SV_RELOAD:
+            case SV_DEBIT:
+            case SV_UNDEBIT:
+                if (!poCommands.isEmpty()) {
+                    throw new CalypsoPoTransactionIllegalStateException(
+                            "This SV command can only be placed in the first position in the list of prepared commands");
+                }
+
+                if (svLastCommand != CalypsoPoCommand.SV_GET) {
+                    // @see Calypso Layer ID 8.07/8.08 (200108)
+                    throw new IllegalStateException(
+                            "This SV command must follow an SV Get command");
+                }
+
+                // here, we expect the builder and the SV operation to be consistent
+                if (svOperation != this.svOperation) {
+                    logger.error("Sv operation = {}, current command = {}", this.svOperation,
+                            svOperation);
+                    throw new CalypsoPoTransactionIllegalStateException(
+                            "Inconsistent SV operation.");
+                }
+                this.svOperation = svOperation;
+                break;
+            default:
+                throw new IllegalStateException("An SV command is expected.");
+        }
+        svLastCommand = commandBuilder.getCommandRef();
         if (preparedCommandsProcessed) {
             poCommands.clear();
             preparedCommandsProcessed = false;

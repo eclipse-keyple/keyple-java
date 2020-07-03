@@ -85,6 +85,10 @@ public class CalypsoPo extends AbstractMatchingSe {
     private Boolean isDfRatified = null;
     private byte[] challenge;
     private Integer pinAttemptCounter;
+    private int svBalance;
+    private int svLastTNum;
+    private SvLoadLogRecord svLoadLogRecord;
+    private SvDebitLogRecord svDebitLogRecord;
 
     /**
      * Constructor.
@@ -514,6 +518,34 @@ public class CalypsoPo extends AbstractMatchingSe {
      */
     final byte[] getChallenge() {
         return challenge;
+    }
+
+    final void setSvData(int svBalance, int svLastTNum, SvLoadLogRecord svLoadLogRecord,
+            SvDebitLogRecord svDebitLogRecord) {
+        this.svBalance = svBalance;
+        this.svLastTNum = svLastTNum;
+        this.svLoadLogRecord = svLoadLogRecord;
+        this.svDebitLogRecord = svDebitLogRecord;
+    }
+
+    public final int getSvBalance() {
+        return svBalance;
+    }
+
+    public final int getSvLastTNum() {
+        return svLastTNum;
+    }
+
+    public final SvLoadLogRecord getSvLoadLogRecord() {
+        return svLoadLogRecord;
+    }
+
+    public final SvDebitLogRecord getSvDebitLogLastRecord() {
+        return svDebitLogRecord;
+    }
+
+    public final List<SvDebitLogRecord> getSvDebitLogAllRecords() {
+        return null;
     }
 
     /**
