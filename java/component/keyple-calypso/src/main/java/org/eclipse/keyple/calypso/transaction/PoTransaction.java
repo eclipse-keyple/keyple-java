@@ -30,8 +30,11 @@ import org.eclipse.keyple.calypso.command.po.builder.UpdateRecordCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.WriteRecordCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.security.AbstractOpenSessionCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.security.CloseSessionCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.security.PoGetChallengeCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.security.RatificationCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.security.VerifyPinCmdBuild;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoPinException;
 import org.eclipse.keyple.calypso.command.po.parser.security.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.CloseSessionRespPars;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException;
@@ -597,6 +600,13 @@ public class PoTransaction {
     }
 
     /**
+     * The {@link PinTransmissionMode} indicates whether the PIN transmission is encrypted or not.
+     */
+    public enum PinTransmissionMode {
+        PLAIN, ENCRYPTED
+    }
+
+    /**
      * Gets the value of the designated counter
      * 
      * @param sfi the SFI of the EF containing the counter
@@ -989,6 +999,77 @@ public class PoTransaction {
         sessionState = SessionState.SESSION_CLOSED;
     }
 
+    /**
+     * Performs a PIN verification, in order to authenticate the cardholder and/or unlock access to
+     * certain PO files.<br>
+     * This command can be performed both in and out of a secure session.<br>
+     * The PIN code can be transmitted in plain text or encrypted according to the parameter set in
+     * PoSecuritySettings (by default the transmission is encrypted).<br>
+     * If the execution is done out of session but an encrypted transmission is requested, then
+     * PoTransaction must be constructed with {@link PoSecuritySettings}<br>
+     * If PoTransaction is constructed without {@link PoSecuritySettings} the transmission in done
+     * in plain.
+     *
+     * @param pin the PIN code value (4-byte long byte array)
+     * @throws CalypsoPoTransactionException if a functional error occurs (including PO and SAM IO
+     *         errors)
+     * @throws CalypsoPoCommandException if a response from the PO was unexpected
+     * @throws CalypsoPoPinException if the PIN presentation failed (the remaining attempt counter
+     *         is update in Calypso). See {@link CalypsoPo#isPinBlocked} and
+     *         {@link CalypsoPo#getPinAttemptRemaining} methods
+     */
+    public final void processVerifyPin(byte[] pin) {
+        Assert.getInstance().notNull(pin, "pin").isEqual(pin.length, CalypsoPoUtils.PIN_LENGTH,
+                "PIN length");
+
+        if (!calypsoPo.isPinFeatureAvailable()) {
+            throw new CalypsoPoTransactionIllegalStateException(
+                    "PIN is not available for this SE.");
+        }
+
+        if (poCommandManager.hasCommands()) {
+            throw new CalypsoPoTransactionIllegalStateException(
+                    "No commands should have been prepared prior to a PIN submission.");
+        }
+
+        if (poSecuritySettings != null && PinTransmissionMode.ENCRYPTED
+                .equals(poSecuritySettings.getPinTransmissionMode())) {
+            poCommandManager.addRegularCommand(new PoGetChallengeCmdBuild(calypsoPo.getPoClass()));
+
+            // transmit and receive data with the PO
+            processAtomicPoCommands(poCommandManager.getPoCommandBuilders(),
+                    ChannelControl.KEEP_OPEN);
+
+            // sets the flag indicating that the commands have been executed
+            poCommandManager.notifyCommandsProcessed();
+
+            // Get the encrypted PIN with the help of the SAM
+            byte[] cipheredPin =
+                    samCommandProcessor.getCipheredPinData(calypsoPo.getChallenge(), pin, null);
+            poCommandManager.addRegularCommand(new VerifyPinCmdBuild(calypsoPo.getPoClass(),
+                    PinTransmissionMode.ENCRYPTED, cipheredPin));
+        } else {
+            poCommandManager.addRegularCommand(
+                    new VerifyPinCmdBuild(calypsoPo.getPoClass(), PinTransmissionMode.PLAIN, pin));
+        }
+
+        // transmit and receive data with the PO
+        processAtomicPoCommands(poCommandManager.getPoCommandBuilders(), ChannelControl.KEEP_OPEN);
+
+        // sets the flag indicating that the commands have been executed
+        poCommandManager.notifyCommandsProcessed();
+    }
+
+    /**
+     * ProcessVerifyPin variant with the PIN supplied as an ASCII string.<br>
+     * E.g. "1234" will be transmited as { 0x31,032,0x33,0x34 }
+     * 
+     * @param pin an ASCII string (4-character long)
+     */
+    public final void processVerifyPin(String pin) {
+        processVerifyPin(pin.getBytes());
+    }
+
     private SeResponse safePoTransmit(SeRequest poSeRequest, ChannelControl channelControl) {
         try {
             return poReader.transmitSeRequest(poSeRequest, channelControl);
@@ -1230,7 +1311,6 @@ public class PoTransaction {
      * Builds an AppendRecord command and add it to the list of commands to be sent with the next
      * process command.
      * <p>
-     * Returns the associated response parser.
      *
      * @param sfi the sfi to select
      * @param recordData the new record data to write
@@ -1249,7 +1329,6 @@ public class PoTransaction {
      * Builds an UpdateRecord command and add it to the list of commands to be sent with the next
      * process command
      * <p>
-     * Returns the associated response parser index.
      *
      * @param sfi the sfi to select
      * @param recordNumber the record number to update
@@ -1274,7 +1353,6 @@ public class PoTransaction {
      * Builds an WriteRecord command and add it to the list of commands to be sent with the next
      * process command
      * <p>
-     * Returns the associated response parser index.
      *
      * @param sfi the sfi to select
      * @param recordNumber the record number to write
@@ -1298,7 +1376,6 @@ public class PoTransaction {
      * Builds a Increase command and add it to the list of commands to be sent with the next process
      * command
      * <p>
-     * Returns the associated response parser index.
      *
      * @param counterNumber &gt;= 01h: Counters file, number of the counter. 00h: Simulated Counter
      *        file.
@@ -1325,7 +1402,6 @@ public class PoTransaction {
      * Builds a Decrease command and add it to the list of commands to be sent with the next process
      * command
      * <p>
-     * Returns the associated response parser index.
      *
      * @param counterNumber &gt;= 01h: Counters file, number of the counter. 00h: Simulated Counter
      *        file.
@@ -1346,5 +1422,17 @@ public class PoTransaction {
         // create the builder and add it to the list of commands
         poCommandManager.addRegularCommand(
                 new DecreaseCmdBuild(calypsoPo.getPoClass(), sfi, counterNumber, decValue));
+    }
+
+    /**
+     * Builds a VerifyPin command without PIN presentation in order to get the attempt counter.<br>
+     * The PIN status will made available in CalypsoPo after the execution of process command.<br>
+     * Adds it to the list of commands to be sent with the next process command.
+     * 
+     * See {@link CalypsoPo#isPinBlocked} and {@link CalypsoPo#getPinAttemptRemaining} methods.
+     */
+    public final void prepareCheckPinStatus() {
+        // create the builder and add it to the list of commands
+        poCommandManager.addRegularCommand(new VerifyPinCmdBuild(calypsoPo.getPoClass()));
     }
 }

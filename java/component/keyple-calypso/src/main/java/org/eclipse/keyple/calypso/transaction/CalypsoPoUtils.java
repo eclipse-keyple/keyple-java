@@ -22,7 +22,10 @@ import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.builder.*;
 import org.eclipse.keyple.calypso.command.po.builder.security.AbstractOpenSessionCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.security.PoGetChallengeCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.security.VerifyPinCmdBuild;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoPinException;
 import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.DecreaseRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.IncreaseRespPars;
@@ -31,6 +34,8 @@ import org.eclipse.keyple.calypso.command.po.parser.SelectFileRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.UpdateRecordRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.WriteRecordRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.AbstractOpenSessionRespPars;
+import org.eclipse.keyple.calypso.command.po.parser.security.PoGetChallengeRespPars;
+import org.eclipse.keyple.calypso.command.po.parser.security.VerifyPinRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.Assert;
 
@@ -93,6 +98,7 @@ final class CalypsoPoUtils {
     public static final int SEL_DATA_REF_OFFSET = 14;
     public static final int SEL_LID_OFFSET = 21;
 
+    public static final int PIN_LENGTH = 4;
 
     /**
      * Private constructor
@@ -222,7 +228,8 @@ final class CalypsoPoUtils {
     /**
      * Updated the {@link CalypsoPo} object with the response to a Write Record command sent and
      * received from the PO <br>
-     * The records read are added to the {@link CalypsoPo} file structure
+     * The records read are added to the {@link CalypsoPo} file structure using the dedicated
+     * {@link CalypsoPo#fillContent } method.
      *
      * @param calypsoPo the {@link CalypsoPo} object to update
      * @param writeRecordCmdBuild the Write Record command builder
@@ -236,8 +243,7 @@ final class CalypsoPoUtils {
 
         writeRecordRespPars.checkStatus();
 
-        // TODO we should add another method to Calypso to emulate the behavior of Write Record
-        calypsoPo.setContent((byte) writeRecordCmdBuild.getSfi(),
+        calypsoPo.fillContent((byte) writeRecordCmdBuild.getSfi(),
                 writeRecordCmdBuild.getRecordNumber(), writeRecordCmdBuild.getData());
 
         return writeRecordRespPars;
@@ -310,6 +316,59 @@ final class CalypsoPoUtils {
         return increaseRespPars;
     }
 
+    /**
+     * Updated the {@link CalypsoPo} object with the response to an Get Challenge command received
+     * from the PO <br>
+     * The PO challenge value is stored in the {@link CalypsoPo}
+     *
+     * @param calypsoPo the {@link CalypsoPo} object to update
+     * @param poGetChallengeCmdBuild the Get Challenge command builder
+     * @param apduResponse the response received
+     * @throws CalypsoPoCommandException if a response from the PO was unexpected
+     */
+    private static PoGetChallengeRespPars updateCalypsoPoGetChallenge(CalypsoPo calypsoPo,
+            PoGetChallengeCmdBuild poGetChallengeCmdBuild, ApduResponse apduResponse) {
+        PoGetChallengeRespPars poGetChallengeRespPars =
+                poGetChallengeCmdBuild.createResponseParser(apduResponse);
+
+        poGetChallengeRespPars.checkStatus();
+
+        calypsoPo.setChallenge(apduResponse.getDataOut());
+
+        return poGetChallengeRespPars;
+    }
+
+    /**
+     * Updated the {@link CalypsoPo} object with the response to an Verify Pin command received from
+     * the PO <br>
+     * The PIN attempt counter value is stored in the {@link CalypsoPo}<br>
+     * CalypsoPoPinException are filtered when the initial command targets the reading of the
+     * attempt counter.
+     *
+     * @param calypsoPo the {@link CalypsoPo} object to update
+     * @param verifyPinCmdBuild the Verify PIN command builder
+     * @param apduResponse the response received
+     * @throws CalypsoPoCommandException if a response from the PO was unexpected
+     */
+    private static VerifyPinRespPars updateCalypsoVerifyPin(CalypsoPo calypsoPo,
+            VerifyPinCmdBuild verifyPinCmdBuild, ApduResponse apduResponse) {
+        VerifyPinRespPars verifyPinRespPars = verifyPinCmdBuild.createResponseParser(apduResponse);
+
+        calypsoPo.setPinAttemptRemaining(verifyPinRespPars.getRemainingAttemptCounter());
+
+        try {
+            verifyPinRespPars.checkStatus();
+        } catch (CalypsoPoPinException ex) {
+            // forward the exception if the operation do not target the reading of the attempt
+            // counter.
+            // catch it silently otherwise
+            if (!verifyPinCmdBuild.isReadCounterOnly()) {
+                throw ex;
+            }
+        }
+
+        return verifyPinRespPars;
+    }
 
     /**
      * Parses the proprietaryInformation field of a file identified as an DF and create a
@@ -470,6 +529,12 @@ final class CalypsoPoUtils {
             case OPEN_SESSION_32:
                 return updateCalypsoPoOpenSession(calypsoPo,
                         (AbstractOpenSessionCmdBuild) commandBuilder, apduResponse);
+            case GET_CHALLENGE:
+                return updateCalypsoPoGetChallenge(calypsoPo,
+                        (PoGetChallengeCmdBuild) commandBuilder, apduResponse);
+            case VERIFY_PIN:
+                return updateCalypsoVerifyPin(calypsoPo, (VerifyPinCmdBuild) commandBuilder,
+                        apduResponse);
             case CHANGE_KEY:
             case GET_DATA_FCI:
             case GET_DATA_TRACE:

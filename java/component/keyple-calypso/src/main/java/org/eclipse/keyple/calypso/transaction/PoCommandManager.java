@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 
 
 /**
@@ -85,17 +84,9 @@ class PoCommandManager {
     }
 
     /**
-     * Returns the parser positioned at the indicated index
-     * 
-     * @param commandIndex the index of the wanted parser
-     * @return the parser
+     * @return true if the {@link PoCommandManager} has commands
      */
-    public AbstractApduResponseParser getResponseParser(int commandIndex) {
-        if (commandIndex < 0 || commandIndex >= poCommands.size()) {
-            throw new IllegalArgumentException(
-                    String.format("Bad command index: index = %d, number of commands = %d",
-                            commandIndex, poCommands.size()));
-        }
-        return null;
+    boolean hasCommands() {
+        return !poCommands.isEmpty();
     }
 }
