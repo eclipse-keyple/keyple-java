@@ -83,6 +83,8 @@ public class CalypsoPo extends AbstractMatchingSe {
     private final Map<Short, Byte> sfiByLid = new HashMap<Short, Byte>();
     private final Map<Short, Byte> sfiByLidBackup = new HashMap<Short, Byte>();
     private Boolean isDfRatified = null;
+    private byte[] challenge;
+    private Integer pinAttemptCounter;
 
     /**
      * Constructor.
@@ -492,6 +494,30 @@ public class CalypsoPo extends AbstractMatchingSe {
 
     /**
      * (package-private)<br>
+     * Set the challenge received from the PO
+     *
+     * @param challenge an array of bytes containing the challenge bytes (variable length according
+     *        to the revision of the PO)
+     * @since 0.9
+     */
+    final void setChallenge(byte[] challenge) {
+        this.challenge = challenge;
+    }
+
+    /**
+     * (package-private)<br>
+     * Get the challenge received from the PO
+     *
+     * @return an array of bytes containing the challenge bytes (variable length according to the
+     *         revision of the PO). May be null if the challenge is not available.
+     * @since 0.9
+     */
+    final byte[] getChallenge() {
+        return challenge;
+    }
+
+    /**
+     * (package-private)<br>
      * Set the ratification status
      * 
      * @param dfRatified true if the session was ratified
@@ -600,6 +626,45 @@ public class CalypsoPo extends AbstractMatchingSe {
             efBySfi.put(sfi, ef);
         }
         return ef;
+    }
+
+
+    /**
+     * Indicates if the PIN is blocked. The maximum number of incorrect PIN submissions has been
+     * reached.
+     * 
+     * @return true if the PIN status is blocked
+     * @throws IllegalStateException if the PIN has not been checked
+     * @since 0.9
+     */
+    public final boolean isPinBlocked() {
+        return getPinAttemptRemaining() == 0;
+    }
+
+    /**
+     * Gives the number of erroneous PIN presentations remaining before blocking.
+     * 
+     * @return the number of remaining attempts
+     * @throws IllegalStateException if the PIN has not been checked
+     * @since 0.9
+     */
+    public final int getPinAttemptRemaining() {
+        if (pinAttemptCounter == null) {
+            throw new IllegalStateException("PIN status has not been checked.");
+        }
+        return pinAttemptCounter;
+    }
+
+    /**
+     * (package-private)<br>
+     * Sets the PIN attempts counter.<br>
+     * The PIN attempt counter is interpreted to give the results of the methods
+     * {@link #isPinBlocked} and {@link #getPinAttemptRemaining}.
+     * 
+     * @param pinAttemptCounter the number of remaining attempts to present the PIN code
+     */
+    final void setPinAttemptRemaining(int pinAttemptCounter) {
+        this.pinAttemptCounter = pinAttemptCounter;
     }
 
     /**

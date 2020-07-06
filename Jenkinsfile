@@ -50,7 +50,8 @@ pipeline {
                     junit allowEmptyResults: true, testResults: 'java/component/**/build/test-results/test/*.xml'
 
                     script {
-                        keypleVersion = sh(script: 'grep version java/component/keyple-core/gradle.properties | cut -d= -f2 | tr -d "[:space:]"', returnStdout: true)
+                        keypleVersion = sh(script: 'grep version java/component/keyple-core/gradle.properties | cut -d= -f2 | tr -d "[:space:]"', returnStdout: true).trim()
+                        echo "Building version ${keypleVersion}"
                     }
                 }
             }
@@ -59,8 +60,8 @@ pipeline {
             steps{
                 container('java-builder') {
                     dir('android') {
-                        sh './gradlew :keyple-plugin:keyple-plugin-android-nfc:check'
-                        sh './gradlew :keyple-plugin:keyple-plugin-android-omapi:check'
+                        sh './gradlew :keyple-plugin:keyple-plugin-android-nfc:installPlugin :keyple-plugin:keyple-plugin-android-nfc:check'
+                        sh './gradlew :keyple-plugin:keyple-plugin-android-omapi:installPlugin :keyple-plugin:keyple-plugin-android-omapi:check'
                         junit allowEmptyResults: true, testResults: 'keyple-plugin/**/build/test-results/testDebugUnitTest/*.xml'
                     }
                 }
@@ -69,7 +70,16 @@ pipeline {
         stage('Keyple Examples: Build and Test') {
             steps{
                 container('java-builder') {
+                    sh 'keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 90'
+                    
                     sh "./gradlew -b java/example/calypso/remotese/build.gradle check -P keyple_version=${keypleVersion}"
+                    
+                    dir('java/example/calypso/android/nfc/') {
+                        sh "./gradlew assembleDebug -P keyple_version=${keypleVersion}"
+                    }
+                    dir('java/example/calypso/android/omapi') {
+                        sh "./gradlew assembleDebug -P keyple_version=${keypleVersion}"
+                    }
                 }
             }
         }
@@ -80,7 +90,7 @@ pipeline {
             steps {
                 catchError(buildResult: 'SUCCESS', message: 'Unable to log code quality to Sonar.', stageResult: 'FAILURE') {
                     container('java-builder') {
-                        withCredentials([string(credentialsId: 'sonar_eclipse_keyple-java', variable: 'SONAR_LOGIN')]) {
+                        withCredentials([string(credentialsId: 'sonarcloud-token', variable: 'SONAR_LOGIN')]) {
                             sh './gradlew codeQuality --info'
                         }
                     }
@@ -95,7 +105,7 @@ pipeline {
                 catchError(buildResult: 'SUCCESS', message: 'Unable to log code quality to Sonar.', stageResult: 'FAILURE') {
                     container('java-builder') {
                         dir('android') {
-                            withCredentials([string(credentialsId: 'sonar_eclipse_keyple-java', variable: 'SONAR_LOGIN')]) {
+                            withCredentials([string(credentialsId: 'sonarcloud-token', variable: 'SONAR_LOGIN')]) {
                                 sh './gradlew codeQuality'
                             }
                         }
@@ -139,19 +149,6 @@ pipeline {
                             sh './gradlew :keyple-plugin:keyple-plugin-android-omapi:uploadArchives ${uploadParams} -P keyple_version=${keypleVersion}'
                             sh './gradlew --stop'
                         }
-                    }
-                }
-            }
-        }
-        stage('Keyple Java: Generate apks') {
-            steps{
-                container('java-builder') {
-                    sh 'keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 90'
-                    dir('java/example/calypso/android/nfc/') {
-                        sh './gradlew assembleDebug'
-                    }
-                    dir('java/example/calypso/android/omapi') {
-                        sh './gradlew assembleDebug'
                     }
                 }
             }

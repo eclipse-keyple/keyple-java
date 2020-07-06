@@ -14,6 +14,7 @@ package org.eclipse.keyple.calypso.transaction;
 import static org.eclipse.keyple.calypso.transaction.PoTransaction.SessionSetting.*;
 import java.util.EnumMap;
 import java.util.List;
+import org.eclipse.keyple.calypso.KeyReference;
 import org.eclipse.keyple.core.selection.SeResource;
 
 
@@ -37,9 +38,14 @@ public class PoSecuritySettings {
 
     private final ModificationMode sessionModificationMode;
     private final RatificationMode ratificationMode;
+    private final PoTransaction.PinTransmissionMode pinTransmissionMode;
+    private final KeyReference pinCipheringKey;
 
     public static final ModificationMode defaultSessionModificationMode = ModificationMode.ATOMIC;
     public static final RatificationMode defaultRatificationMode = RatificationMode.CLOSE_RATIFIED;
+    public static final PoTransaction.PinTransmissionMode defaultPinTransmissionMode =
+            PoTransaction.PinTransmissionMode.ENCRYPTED;
+    private static final KeyReference defaultPinCipheringKey = new KeyReference((byte) 0, (byte) 0);
 
     /** Private constructor */
     private PoSecuritySettings(PoSecuritySettingsBuilder builder) {
@@ -50,6 +56,8 @@ public class PoSecuritySettings {
         this.defaultKeyRecordNumber = builder.defaultKeyRecordNumber;
         this.sessionModificationMode = builder.sessionModificationMode;
         this.ratificationMode = builder.ratificationMode;
+        this.pinTransmissionMode = builder.pinTransmissionMode;
+        this.pinCipheringKey = builder.pinCipheringKey;
     }
 
     /**
@@ -70,6 +78,8 @@ public class PoSecuritySettings {
 
         ModificationMode sessionModificationMode = defaultSessionModificationMode;
         RatificationMode ratificationMode = defaultRatificationMode;
+        PoTransaction.PinTransmissionMode pinTransmissionMode = defaultPinTransmissionMode;
+        KeyReference pinCipheringKey = defaultPinCipheringKey;
 
         /**
          * Constructor
@@ -108,6 +118,20 @@ public class PoSecuritySettings {
          */
         public PoSecuritySettingsBuilder ratificationMode(RatificationMode ratificationMode) {
             this.ratificationMode = ratificationMode;
+            return this;
+        }
+
+        /**
+         * Set the PIN Transmission Mode<br>
+         * The default value is ENCRYPTED
+         *
+         * @param pinTransmissionMode the desired PIN Transmission Mode
+         * @return the builder instance
+         * @since 0.9
+         */
+        public PoSecuritySettingsBuilder pinTransmissionMode(
+                PoTransaction.PinTransmissionMode pinTransmissionMode) {
+            this.pinTransmissionMode = pinTransmissionMode;
             return this;
         }
 
@@ -167,6 +191,19 @@ public class PoSecuritySettings {
         }
 
         /**
+         * Provides the KIF/KVC pair of the PIN ciphering key
+         *
+         * @param kif the KIF of the PIN ciphering key
+         * @param kvc the KVC of the PIN ciphering key
+         * @return the builder instance
+         */
+        public PoSecuritySettingsBuilder pinCipheringKey(byte kif, byte kvc) {
+            this.pinCipheringKey = new KeyReference(kif, kvc);
+            return this;
+        }
+
+
+        /**
          * Build a new {@code PoSecuritySettings}.
          *
          * @return a new instance
@@ -204,6 +241,17 @@ public class PoSecuritySettings {
      */
     RatificationMode getRatificationMode() {
         return ratificationMode;
+    }
+
+
+    /**
+     * (package-private)<br>
+     *
+     * @return the PIN Transmission Mode
+     * @since 0.9
+     */
+    public PoTransaction.PinTransmissionMode getPinTransmissionMode() {
+        return pinTransmissionMode;
     }
 
     /**
@@ -247,5 +295,9 @@ public class PoSecuritySettings {
      */
     public boolean isSessionKvcAuthorized(byte kvc) {
         return authorizedKvcList == null || authorizedKvcList.contains(kvc);
+    }
+
+    public KeyReference getDefaultPinCipheringKey() {
+        return pinCipheringKey;
     }
 }
