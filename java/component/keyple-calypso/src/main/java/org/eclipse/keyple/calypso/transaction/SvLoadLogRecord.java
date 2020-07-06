@@ -101,15 +101,10 @@ public class SvLoadLogRecord {
 
     @Override
     public String toString() {
-        return "SvDebitLogRecord{" +
-                "amount=" + getAmount() +
-                ", balance=" + getBalance() +
-                ", debitDate=" + getLoadDate() +
-                ", debitTime=" + getLoadDate() +
-                ", freeBytes=" + ByteArrayUtil.toHex(getFreeByteBytes()) +
-                ", samId=" + ByteArrayUtil.toHex(getSamIdBytes()) +
-                ", svTransactionNumber=" + getSvTNum() +
-                ", svSamTransactionNumber=" + getSamTNum() +
-                '}';
+        return "SvDebitLogRecord{" + "amount=" + getAmount() + ", balance=" + getBalance()
+                + ", debitDate=" + getLoadDate() + ", debitTime=" + getLoadDate() + ", freeBytes="
+                + ByteArrayUtil.toHex(getFreeByteBytes()) + ", samId="
+                + ByteArrayUtil.toHex(getSamIdBytes()) + ", svTransactionNumber=" + getSvTNum()
+                + ", svSamTransactionNumber=" + getSamTNum() + '}';
     }
 }

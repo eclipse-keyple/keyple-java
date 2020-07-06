@@ -21,8 +21,8 @@ import org.junit.Test;
 public class SvGetCmdBuildTest {
     @Test
     public void svGetCmdBuild_mode_compat_reload() {
-        SvGetCmdBuild svGetCmdBuild = new SvGetCmdBuild(PoClass.ISO, PoRevision.REV3_1,
-                SvSettings.Operation.RELOAD, new Exception().getStackTrace()[0].getMethodName());
+        SvGetCmdBuild svGetCmdBuild =
+                new SvGetCmdBuild(PoClass.ISO, PoRevision.REV3_1, SvSettings.Operation.RELOAD);
 
         String cmdBytes = ByteArrayUtil.toHex(svGetCmdBuild.getApduRequest().getBytes());
 
@@ -31,8 +31,8 @@ public class SvGetCmdBuildTest {
 
     @Test
     public void svGetCmdBuild_mode_compat_debit() {
-        SvGetCmdBuild svGetCmdBuild = new SvGetCmdBuild(PoClass.ISO, PoRevision.REV3_1,
-                SvSettings.Operation.DEBIT, new Exception().getStackTrace()[0].getMethodName());
+        SvGetCmdBuild svGetCmdBuild =
+                new SvGetCmdBuild(PoClass.ISO, PoRevision.REV3_1, SvSettings.Operation.DEBIT);
 
         String cmdBytes = ByteArrayUtil.toHex(svGetCmdBuild.getApduRequest().getBytes());
 
@@ -41,18 +41,18 @@ public class SvGetCmdBuildTest {
 
     @Test
     public void svGetCmdBuild_mode_compat_get_sv_operation() {
-        SvGetCmdBuild svGetCmdBuild = new SvGetCmdBuild(PoClass.ISO, PoRevision.REV3_1,
-                SvSettings.Operation.RELOAD, new Exception().getStackTrace()[0].getMethodName());
+        SvGetCmdBuild svGetCmdBuild =
+                new SvGetCmdBuild(PoClass.ISO, PoRevision.REV3_1, SvSettings.Operation.RELOAD);
         Assert.assertEquals(SvSettings.Operation.RELOAD, svGetCmdBuild.getSvOperation());
-        svGetCmdBuild = new SvGetCmdBuild(PoClass.ISO, PoRevision.REV3_1,
-                SvSettings.Operation.DEBIT, new Exception().getStackTrace()[0].getMethodName());
+        svGetCmdBuild =
+                new SvGetCmdBuild(PoClass.ISO, PoRevision.REV3_1, SvSettings.Operation.DEBIT);
         Assert.assertEquals(SvSettings.Operation.DEBIT, svGetCmdBuild.getSvOperation());
     }
 
     @Test
     public void svGetCmdBuild_mode_rev32_reload() {
-        SvGetCmdBuild svGetCmdBuild = new SvGetCmdBuild(PoClass.ISO, PoRevision.REV3_2,
-                SvSettings.Operation.RELOAD, new Exception().getStackTrace()[0].getMethodName());
+        SvGetCmdBuild svGetCmdBuild =
+                new SvGetCmdBuild(PoClass.ISO, PoRevision.REV3_2, SvSettings.Operation.RELOAD);
 
         String cmdBytes = ByteArrayUtil.toHex(svGetCmdBuild.getApduRequest().getBytes());
 
@@ -61,8 +61,8 @@ public class SvGetCmdBuildTest {
 
     @Test
     public void svGetCmdBuild_mode_rev32_debit() {
-        SvGetCmdBuild svGetCmdBuild = new SvGetCmdBuild(PoClass.ISO, PoRevision.REV3_2,
-                SvSettings.Operation.DEBIT, new Exception().getStackTrace()[0].getMethodName());
+        SvGetCmdBuild svGetCmdBuild =
+                new SvGetCmdBuild(PoClass.ISO, PoRevision.REV3_2, SvSettings.Operation.DEBIT);
 
         String cmdBytes = ByteArrayUtil.toHex(svGetCmdBuild.getApduRequest().getBytes());
 
@@ -71,11 +71,11 @@ public class SvGetCmdBuildTest {
 
     @Test
     public void svGetCmdBuild_mode_rev32_get_sv_operation() {
-        SvGetCmdBuild svGetCmdBuild = new SvGetCmdBuild(PoClass.ISO, PoRevision.REV3_2,
-                SvSettings.Operation.RELOAD, new Exception().getStackTrace()[0].getMethodName());
+        SvGetCmdBuild svGetCmdBuild =
+                new SvGetCmdBuild(PoClass.ISO, PoRevision.REV3_2, SvSettings.Operation.RELOAD);
         Assert.assertEquals(SvSettings.Operation.RELOAD, svGetCmdBuild.getSvOperation());
-        svGetCmdBuild = new SvGetCmdBuild(PoClass.ISO, PoRevision.REV3_2,
-                SvSettings.Operation.DEBIT, new Exception().getStackTrace()[0].getMethodName());
+        svGetCmdBuild =
+                new SvGetCmdBuild(PoClass.ISO, PoRevision.REV3_2, SvSettings.Operation.DEBIT);
         Assert.assertEquals(SvSettings.Operation.DEBIT, svGetCmdBuild.getSvOperation());
     }
 }

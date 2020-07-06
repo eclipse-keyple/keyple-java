@@ -11,9 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
-import org.eclipse.keyple.core.util.ByteArrayUtil;
 
-import java.util.Arrays;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 public class SvDebitLogRecord {
     final int offset;
@@ -87,14 +86,9 @@ public class SvDebitLogRecord {
 
     @Override
     public String toString() {
-        return "SvDebitLogRecord{" +
-                "amount=" + getAmount() +
-                ", balance=" + getBalance() +
-                ", debitDate=" + getDebitDate() +
-                ", debitTime=" + getDebitDate() +
-                ", samId=" + ByteArrayUtil.toHex(getSamIdBytes()) +
-                ", svTransactionNumber=" + getSvTNum() +
-                ", svSamTransactionNumber=" + getSamTNum() +
-                '}';
+        return "SvDebitLogRecord{" + "amount=" + getAmount() + ", balance=" + getBalance()
+                + ", debitDate=" + getDebitDate() + ", debitTime=" + getDebitDate() + ", samId="
+                + ByteArrayUtil.toHex(getSamIdBytes()) + ", svTransactionNumber=" + getSvTNum()
+                + ", svSamTransactionNumber=" + getSamTNum() + '}';
     }
 }

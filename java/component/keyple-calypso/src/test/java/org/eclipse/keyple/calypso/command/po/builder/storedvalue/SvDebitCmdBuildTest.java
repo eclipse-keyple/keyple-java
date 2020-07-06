@@ -30,10 +30,8 @@ public class SvDebitCmdBuildTest {
                                  * KVC
                                  */ (byte) 0xAA, /* date */ ByteArrayUtil.fromHex("1122"),
                 /* time */ ByteArrayUtil.fromHex("3344"));
-        svDebitCmdBuild.finalizeBuilder(
-                /* SAM ID + prepare SV Debit data */ ByteArrayUtil
-                        .fromHex("AABBCCDD5566771234561122334455"),
-                new Exception().getStackTrace()[0].getMethodName());
+        svDebitCmdBuild.finalizeBuilder(/* SAM ID + prepare SV Debit data */ ByteArrayUtil
+                .fromHex("AABBCCDD5566771234561122334455"));
         String apdu = ByteArrayUtil.toHex(svDebitCmdBuild.getApduRequest().getBytes());
         Assert.assertEquals("00BA55661477FFFF11223344AAAABBCCDD1234561122334455", apdu);
     }
@@ -54,10 +52,8 @@ public class SvDebitCmdBuildTest {
         SvDebitCmdBuild svDebitCmdBuild = new SvDebitCmdBuild(PoClass.ISO, PoRevision.REV3_1,
                 /* amount */ 4081, /* KVC */ (byte) 0xAA, /* date */ ByteArrayUtil.fromHex("1122"),
                 /* time */ ByteArrayUtil.fromHex("3344"));
-        svDebitCmdBuild.finalizeBuilder(
-                /* SAM ID + prepare SV Debit data */ ByteArrayUtil
-                        .fromHex("AABBCCDD5566771234561122334455"),
-                new Exception().getStackTrace()[0].getMethodName());
+        svDebitCmdBuild.finalizeBuilder(/* SAM ID + prepare SV Debit data */ ByteArrayUtil
+                .fromHex("AABBCCDD5566771234561122334455"));
         String apdu = ByteArrayUtil.toHex(svDebitCmdBuild.getApduRequest().getBytes());
         Assert.assertEquals("00BA55661477F00F11223344AAAABBCCDD1234561122334455", apdu);
     }
@@ -68,10 +64,8 @@ public class SvDebitCmdBuildTest {
         SvDebitCmdBuild svDebitCmdBuild = new SvDebitCmdBuild(PoClass.ISO, PoRevision.REV3_1,
                 /* amount */ -1, /* KVC */ (byte) 0xAA, /* date */ ByteArrayUtil.fromHex("1122"),
                 /* time */ ByteArrayUtil.fromHex("3344"));
-        svDebitCmdBuild.finalizeBuilder(
-                /* SAM ID + prepare SV Debit data */ ByteArrayUtil
-                        .fromHex("AABBCCDD5566771234561122334455"),
-                new Exception().getStackTrace()[0].getMethodName());
+        svDebitCmdBuild.finalizeBuilder(/* SAM ID + prepare SV Debit data */ ByteArrayUtil
+                .fromHex("AABBCCDD5566771234561122334455"));
         String apdu = ByteArrayUtil.toHex(svDebitCmdBuild.getApduRequest().getBytes());
     }
 
@@ -81,10 +75,8 @@ public class SvDebitCmdBuildTest {
         SvDebitCmdBuild svDebitCmdBuild = new SvDebitCmdBuild(PoClass.ISO, PoRevision.REV3_1,
                 /* amount */ 32768, /* KVC */ (byte) 0xAA, /* date */ ByteArrayUtil.fromHex("1122"),
                 /* time */ ByteArrayUtil.fromHex("3344"));
-        svDebitCmdBuild.finalizeBuilder(
-                /* SAM ID + prepare SV Debit data */ ByteArrayUtil
-                        .fromHex("AABBCCDD5566771234561122334455"),
-                new Exception().getStackTrace()[0].getMethodName());
+        svDebitCmdBuild.finalizeBuilder(/* SAM ID + prepare SV Debit data */ ByteArrayUtil
+                .fromHex("AABBCCDD5566771234561122334455"));
         String apdu = ByteArrayUtil.toHex(svDebitCmdBuild.getApduRequest().getBytes());
     }
 
@@ -93,10 +85,8 @@ public class SvDebitCmdBuildTest {
         SvDebitCmdBuild svDebitCmdBuild = new SvDebitCmdBuild(PoClass.ISO, PoRevision.REV3_1,
                 /* amount */ 1, /* KVC */ (byte) 0xAA, /* date */ ByteArrayUtil.fromHex("1122"),
                 /* time */ ByteArrayUtil.fromHex("3344"));
-        svDebitCmdBuild.finalizeBuilder(
-                /* SAM ID + prepare SV Debit data */ ByteArrayUtil
-                        .fromHex("AABBCCDD55667712345611223344556677889900"),
-                new Exception().getStackTrace()[0].getMethodName());
+        svDebitCmdBuild.finalizeBuilder(/* SAM ID + prepare SV Debit data */ ByteArrayUtil
+                .fromHex("AABBCCDD55667712345611223344556677889900"));
         String apdu = ByteArrayUtil.toHex(svDebitCmdBuild.getApduRequest().getBytes());
     }
 
@@ -105,10 +95,8 @@ public class SvDebitCmdBuildTest {
         SvDebitCmdBuild svDebitCmdBuild = new SvDebitCmdBuild(PoClass.ISO, PoRevision.REV3_1,
                 /* amount */ 1, /* KVC */ (byte) 0xAA, /* date */ ByteArrayUtil.fromHex("1122"),
                 /* time */ ByteArrayUtil.fromHex("3344"));
-        svDebitCmdBuild.finalizeBuilder(
-                /* SAM ID + prepare SV Debit data */ ByteArrayUtil
-                        .fromHex("AABBCCDD556677123456112233"),
-                new Exception().getStackTrace()[0].getMethodName());
+        svDebitCmdBuild.finalizeBuilder(/* SAM ID + prepare SV Debit data */ ByteArrayUtil
+                .fromHex("AABBCCDD556677123456112233"));
         String apdu = ByteArrayUtil.toHex(svDebitCmdBuild.getApduRequest().getBytes());
     }
 
@@ -171,10 +159,8 @@ public class SvDebitCmdBuildTest {
                                  */ (byte) 0xAA, /* date */ ByteArrayUtil.fromHex("1122"),
                 /* time */ ByteArrayUtil.fromHex("3344"));
         byte[] svDebitData = svDebitCmdBuild.getSvDebitData();
-        svDebitCmdBuild.finalizeBuilder(
-                /* SAM ID + prepare SV Debit data */ ByteArrayUtil
-                        .fromHex("AABBCCDD5566771234561122334455"),
-                new Exception().getStackTrace()[0].getMethodName());
+        svDebitCmdBuild.finalizeBuilder(/* SAM ID + prepare SV Debit data */ ByteArrayUtil
+                .fromHex("AABBCCDD5566771234561122334455"));
         SvDebitRespPars svBuildCmdParser = svDebitCmdBuild
                 .createResponseParser(new ApduResponse(ByteArrayUtil.fromHex("1122339000"), null));
         Assert.assertArrayEquals(ByteArrayUtil.fromHex("112233"),
@@ -187,10 +173,8 @@ public class SvDebitCmdBuildTest {
         SvDebitCmdBuild svDebitCmdBuild = new SvDebitCmdBuild(PoClass.ISO, PoRevision.REV3_2,
                 /* amount */ 1, /* KVC */ (byte) 0xAA, /* date */ ByteArrayUtil.fromHex("1122"),
                 /* time */ ByteArrayUtil.fromHex("3344"));
-        svDebitCmdBuild.finalizeBuilder(
-                /* SAM ID + prepare SV Debit data */ ByteArrayUtil
-                        .fromHex("AABBCCDD55667712345611223344556677889900"),
-                new Exception().getStackTrace()[0].getMethodName());
+        svDebitCmdBuild.finalizeBuilder(/* SAM ID + prepare SV Debit data */ ByteArrayUtil
+                .fromHex("AABBCCDD55667712345611223344556677889900"));
         String apdu = ByteArrayUtil.toHex(svDebitCmdBuild.getApduRequest().getBytes());
         Assert.assertEquals("00BA55661977FFFF11223344AAAABBCCDD12345611223344556677889900", apdu);
     }
@@ -212,10 +196,8 @@ public class SvDebitCmdBuildTest {
         SvDebitCmdBuild svDebitCmdBuild = new SvDebitCmdBuild(PoClass.ISO, PoRevision.REV3_2,
                 /* amount */ 4081, /* KVC */ (byte) 0xAA, /* date */ ByteArrayUtil.fromHex("1122"),
                 /* time */ ByteArrayUtil.fromHex("3344"));
-        svDebitCmdBuild.finalizeBuilder(
-                /* SAM ID + prepare SV Debit data */ ByteArrayUtil
-                        .fromHex("AABBCCDD55667712345611223344556677889900"),
-                new Exception().getStackTrace()[0].getMethodName());
+        svDebitCmdBuild.finalizeBuilder(/* SAM ID + prepare SV Debit data */ ByteArrayUtil
+                .fromHex("AABBCCDD55667712345611223344556677889900"));
         String apdu = ByteArrayUtil.toHex(svDebitCmdBuild.getApduRequest().getBytes());
         Assert.assertEquals("00BA55661977F00F11223344AAAABBCCDD12345611223344556677889900", apdu);
     }
@@ -226,10 +208,8 @@ public class SvDebitCmdBuildTest {
         SvDebitCmdBuild svDebitCmdBuild = new SvDebitCmdBuild(PoClass.ISO, PoRevision.REV3_2,
                 /* amount */ -1, /* KVC */ (byte) 0xAA, /* date */ ByteArrayUtil.fromHex("1122"),
                 /* time */ ByteArrayUtil.fromHex("3344"));
-        svDebitCmdBuild.finalizeBuilder(
-                /* SAM ID + prepare SV Debit data */ ByteArrayUtil
-                        .fromHex("AABBCCDD5566771234561122334455"),
-                new Exception().getStackTrace()[0].getMethodName());
+        svDebitCmdBuild.finalizeBuilder(/* SAM ID + prepare SV Debit data */ ByteArrayUtil
+                .fromHex("AABBCCDD5566771234561122334455"));
         String apdu = ByteArrayUtil.toHex(svDebitCmdBuild.getApduRequest().getBytes());
     }
 
@@ -239,10 +219,8 @@ public class SvDebitCmdBuildTest {
         SvDebitCmdBuild svDebitCmdBuild = new SvDebitCmdBuild(PoClass.ISO, PoRevision.REV3_2,
                 /* amount */ 32768, /* KVC */ (byte) 0xAA, /* date */ ByteArrayUtil.fromHex("1122"),
                 /* time */ ByteArrayUtil.fromHex("3344"));
-        svDebitCmdBuild.finalizeBuilder(
-                /* SAM ID + prepare SV Debit data */ ByteArrayUtil
-                        .fromHex("AABBCCDD5566771234561122334455"),
-                new Exception().getStackTrace()[0].getMethodName());
+        svDebitCmdBuild.finalizeBuilder(/* SAM ID + prepare SV Debit data */ ByteArrayUtil
+                .fromHex("AABBCCDD5566771234561122334455"));
         String apdu = ByteArrayUtil.toHex(svDebitCmdBuild.getApduRequest().getBytes());
     }
 
@@ -251,10 +229,8 @@ public class SvDebitCmdBuildTest {
         SvDebitCmdBuild svDebitCmdBuild = new SvDebitCmdBuild(PoClass.ISO, PoRevision.REV3_2,
                 /* amount */ 1, /* KVC */ (byte) 0xAA, /* date */ ByteArrayUtil.fromHex("1122"),
                 /* time */ ByteArrayUtil.fromHex("3344"));
-        svDebitCmdBuild.finalizeBuilder(
-                /* SAM ID + prepare SV Debit data */ ByteArrayUtil
-                        .fromHex("AABBCCDD5566771234561122334455"),
-                new Exception().getStackTrace()[0].getMethodName());
+        svDebitCmdBuild.finalizeBuilder(/* SAM ID + prepare SV Debit data */ ByteArrayUtil
+                .fromHex("AABBCCDD5566771234561122334455"));
         String apdu = ByteArrayUtil.toHex(svDebitCmdBuild.getApduRequest().getBytes());
     }
 
@@ -263,10 +239,8 @@ public class SvDebitCmdBuildTest {
         SvDebitCmdBuild svDebitCmdBuild = new SvDebitCmdBuild(PoClass.ISO, PoRevision.REV3_2,
                 /* amount */ 1, /* KVC */ (byte) 0xAA, /* date */ ByteArrayUtil.fromHex("1122"),
                 /* time */ ByteArrayUtil.fromHex("3344"));
-        svDebitCmdBuild.finalizeBuilder(
-                /* SAM ID + prepare SV Debit data */ ByteArrayUtil
-                        .fromHex("AABBCCDD556677123456112233"),
-                new Exception().getStackTrace()[0].getMethodName());
+        svDebitCmdBuild.finalizeBuilder(/* SAM ID + prepare SV Debit data */ ByteArrayUtil
+                .fromHex("AABBCCDD556677123456112233"));
         String apdu = ByteArrayUtil.toHex(svDebitCmdBuild.getApduRequest().getBytes());
     }
 
@@ -329,10 +303,8 @@ public class SvDebitCmdBuildTest {
                                  */ (byte) 0xAA, /* date */ ByteArrayUtil.fromHex("1122"),
                 /* time */ ByteArrayUtil.fromHex("3344"));
         byte[] svDebitData = svDebitCmdBuild.getSvDebitData();
-        svDebitCmdBuild.finalizeBuilder(
-                /* SAM ID + prepare SV Debit data */ ByteArrayUtil
-                        .fromHex("AABBCCDD55667712345611223344556677889900"),
-                new Exception().getStackTrace()[0].getMethodName());
+        svDebitCmdBuild.finalizeBuilder(/* SAM ID + prepare SV Debit data */ ByteArrayUtil
+                .fromHex("AABBCCDD55667712345611223344556677889900"));
         SvDebitRespPars svBuildCmdParser = svDebitCmdBuild.createResponseParser(
                 new ApduResponse(ByteArrayUtil.fromHex("1122334455669000"), null));
         Assert.assertArrayEquals(ByteArrayUtil.fromHex("112233445566"),

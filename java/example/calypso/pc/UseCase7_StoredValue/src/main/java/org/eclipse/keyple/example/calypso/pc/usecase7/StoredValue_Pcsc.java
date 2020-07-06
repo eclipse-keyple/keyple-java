@@ -121,7 +121,8 @@ public class StoredValue_Pcsc {
 
             PoTransaction poTransaction = new PoTransaction(poResource, poSecuritySettings);
 
-            poTransaction.processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT);
+            poTransaction
+                    .processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT);
 
             poTransaction.prepareSvGet(SvSettings.Operation.RELOAD, SvSettings.Action.DO);
 
