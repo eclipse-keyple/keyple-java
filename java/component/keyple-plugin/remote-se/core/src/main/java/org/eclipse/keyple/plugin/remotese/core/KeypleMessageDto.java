@@ -90,6 +90,7 @@ public class KeypleMessageDto {
     /**
      * Constructor by copy.
      *
+     * @param from The source dto to copy.
      * @since 1.0
      */
     public KeypleMessageDto(KeypleMessageDto from) {
