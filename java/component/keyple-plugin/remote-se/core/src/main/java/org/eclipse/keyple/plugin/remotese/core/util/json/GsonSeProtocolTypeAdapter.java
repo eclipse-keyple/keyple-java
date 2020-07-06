@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.plugin.remotese.core.impl.json;
+package org.eclipse.keyple.plugin.remotese.core.util.json;
 
 
 import java.lang.reflect.Type;
@@ -20,7 +20,7 @@ import com.google.gson.*;
 /**
  * Gson Adapter to serialize and unserialize {@link SeProtocol}
  */
-class GsonSeProtocolTypeAdapter
+public class GsonSeProtocolTypeAdapter
         implements JsonDeserializer<SeProtocol>, JsonSerializer<SeProtocol> {
 
     @Override

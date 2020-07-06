@@ -9,10 +9,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.plugin.remotese.core.impl.json;
+package org.eclipse.keyple.plugin.remotese.core.util;
 
 
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
+import org.eclipse.keyple.plugin.remotese.core.util.json.GsonSeProtocolTypeAdapter;
+import org.eclipse.keyple.plugin.remotese.core.util.json.HexTypeAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 

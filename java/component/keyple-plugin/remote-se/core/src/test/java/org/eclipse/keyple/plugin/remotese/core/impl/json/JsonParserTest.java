@@ -21,6 +21,7 @@ import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.plugin.remotese.core.util.json.KeypleJsonParser;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -38,8 +39,8 @@ public class JsonParserTest {
      * Test Serialization of Keyple Se Proxy Objects
      */
 
-    //@Test
-    //todo do not work
+    // @Test
+    // todo do not work
     public void abstractMatchingSe() {
         AbstractMatchingSe abstractMatchingSe = SampleFactory.getAMatchingSe();
         testSerializeDeserializeObj(abstractMatchingSe, AbstractMatchingSe.class);

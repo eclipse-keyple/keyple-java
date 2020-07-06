@@ -191,6 +191,8 @@ dependencies {
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
     api "org.slf4j:slf4j-api:${slf4japi_version}"
 
+    api "com.google.code.gson:gson:${gson_version}"
+
     testImplementation "junit:junit:${junit_version}"
 
     // https://search.maven.org/artifact/org.assertj/assertj-core/2.9.1/bundle

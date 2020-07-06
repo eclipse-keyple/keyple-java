@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.plugin.remotese.core.impl.json;
+package org.eclipse.keyple.plugin.remotese.core.util.json;
 
 import java.lang.reflect.Type;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
