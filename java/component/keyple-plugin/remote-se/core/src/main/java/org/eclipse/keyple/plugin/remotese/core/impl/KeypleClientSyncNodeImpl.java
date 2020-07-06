@@ -31,7 +31,7 @@ import com.google.gson.JsonObject;
 public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
         implements KeypleClientSyncNode {
 
-    private final static Logger logger = LoggerFactory.getLogger(KeypleClientSyncNodeImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(KeypleClientSyncNodeImpl.class);
 
     private final KeypleClientSync endpoint;
     private final EventObserver pluginEventObserver;
@@ -44,9 +44,11 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
      * @param endpoint The user client sync endpoint (must be not null).
      * @param handler The associated handler (must be not null).
      * @param pluginObservationStrategy The server push event strategy associated to the plugin
-     *        observation (null if must not be activate).
+     *        observation (null if must not be activate).<br>
+     *        This parameter can be used only for <b>Remote SE Client Plugin</b> use case.
      * @param readerObservationStrategy The server push event strategy associated to the reader
-     *        observation (null if must not be activate).
+     *        observation (null if must not be activate).<br>
+     *        This parameter can be used only for <b>Remote SE Client Plugin</b> use case.
      */
     KeypleClientSyncNodeImpl(KeypleClientSync endpoint, AbstractKeypleMessageHandler handler,
             ServerPushEventStrategy pluginObservationStrategy,
@@ -73,8 +75,21 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
      * {@inheritDoc}
      */
     @Override
-    public List<KeypleMessageDto> sendRequest(KeypleMessageDto msg) {
-        return endpoint.sendRequest(msg);
+    public KeypleMessageDto sendRequest(KeypleMessageDto msg) {
+
+        List<KeypleMessageDto> responses = endpoint.sendRequest(msg);
+
+        if (responses == null || responses.isEmpty()) {
+            return null;
+        } else if (responses.size() == 1) {
+            return responses.get(0);
+        } else {
+            String errorMessage =
+                    "The list returned by the client endpoint should have contained a single element but contains "
+                            + responses.size() + " elements.";
+            logger.error(errorMessage);
+            throw new IllegalStateException(errorMessage);
+        }
     }
 
     /**
@@ -87,7 +102,8 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
 
     /**
      * (private)<br>
-     * Event Observer inner class.
+     * Event Observer inner class.<br>
+     * This class can be used only for <b>Remote SE Client Plugin</b> use case.
      */
     private class EventObserver {
 
@@ -189,7 +205,7 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
         private void checkForEvents() {
             List<KeypleMessageDto> responses;
             try {
-                responses = sendRequest(msg);
+                responses = endpoint.sendRequest(msg);
             } catch (Exception e) {
                 logger.error("Server connection error", e);
                 responses = retryRequest();
@@ -220,7 +236,7 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
                     Thread.sleep(timer);
                     try {
                         logger.info("Retry to send request after {} seconds...", timer / 1000);
-                        responses = sendRequest(msg);
+                        responses = endpoint.sendRequest(msg);
                         logger.info("Server connection retrieved");
                         return responses;
                     } catch (Exception e) {

@@ -1,6 +1,6 @@
 @startuml
 title
-    Keyple Plugin Remote SE (23/06/2020)
+    Keyple Plugin Remote SE (02/07/2020)
 end title
 
 ' == THEME ==
@@ -120,6 +120,11 @@ package org.eclipse.keyple.plugin.remotese {
             +interface KeypleUserData {
                 +Map<String, String> toMap()
             }
+            +interface KeypleClientReaderEventFilter<T extends KeypleUserData> {
+                +KeypleUserDataFactory<T> getUserOutputDataFactory ()
+                +KeypleUserData beforePropagation (ReaderEvent event)
+                +void afterPropagation (T userOutputData)
+            }
 
         }
 
@@ -127,7 +132,6 @@ package org.eclipse.keyple.plugin.remotese {
 
             ' Handler
             +abstract AbstractKeypleMessageHandler {
-                # boolean isBoundToSyncNode
                 # AbstractKeypleMessageHandler ()
                 + void bindClientAsyncNode (KeypleClientAsync endpoint)
                 + void bindServerAsyncNode (KeypleServerAsync endpoint)
@@ -140,35 +144,34 @@ package org.eclipse.keyple.plugin.remotese {
             +abstract AbstractKeypleNode {
                 # String nodeId
                 ~ AbstractKeypleNode (AbstractKeypleMessageHandler handler)
-                + {abstract} **abstract** List<KeypleMessageDto> sendRequest (KeypleMessageDto msg)
+                + {abstract} **abstract** KeypleMessageDto sendRequest (KeypleMessageDto msg)
                 + {abstract} **abstract** void sendMessage (KeypleMessageDto msg)
             }
             ' Async Node
             +class "**final** KeypleClientAsyncNodeImpl" as KeypleClientAsyncNodeImpl extends AbstractKeypleNode implements KeypleClientAsyncNode {
                 ~ KeypleClientAsyncNodeImpl (\n KeypleClientAsync endpoint,\n AbstractKeypleMessageHandler handler)
                 + void openSession (String sessionId)
-                + List<KeypleMessageDto> sendRequest (KeypleMessageDto msg)
+                + KeypleMessageDto sendRequest (KeypleMessageDto msg)
                 + void sendMessage (KeypleMessageDto msg)
                 + void closeSession (String sessionId)
             }
             +class "**final** KeypleServerAsyncNodeImpl" as KeypleServerAsyncNodeImpl extends AbstractKeypleNode implements KeypleServerAsyncNode {
                 ~ KeypleServerAsyncNodeImpl (\n KeypleServerAsync endpoint,\n AbstractKeypleMessageHandler handler)
-                + List<KeypleMessageDto> sendRequest (KeypleMessageDto msg)
+                + KeypleMessageDto sendRequest (KeypleMessageDto msg)
                 + void sendMessage (KeypleMessageDto msg)
             }
             ' Sync Node
             +class "**final** KeypleClientSyncNodeImpl" as KeypleClientSyncNodeImpl extends AbstractKeypleNode implements KeypleClientSyncNode {
                 ~ KeypleClientSyncNodeImpl (\n KeypleClientSync endpoint,\n AbstractKeypleMessageHandler handler,\n ServerPushEventStrategy pluginObservationStrategy,\n ServerPushEventStrategy readerObservationStrategy)
-                + List<KeypleMessageDto> sendRequest (KeypleMessageDto msg)
+                + KeypleMessageDto sendRequest (KeypleMessageDto msg)
                 + void sendMessage (KeypleMessageDto msg)
             }
             +class "**final** KeypleServerSyncNodeImpl" as KeypleServerSyncNodeImpl extends AbstractKeypleNode implements KeypleServerSyncNode {
                 - Map<String, Object> : clientRequesterById
                 - Map<Object, KeypleMessageDto> : clientAdditionalMessageByRequester
                 ~ KeypleServerSyncNodeImpl (\n AbstractKeypleMessageHandler handler)
-                + List<KeypleMessageDto> sendRequest (KeypleMessageDto msg)
+                + KeypleMessageDto sendRequest (KeypleMessageDto msg)
                 + void sendMessage (KeypleMessageDto msg)
-                + void setAdditionalOutgoingMessage (KeypleMessageDto msg)
             }
 
             ' Server Push Event Strategy
@@ -396,6 +399,7 @@ KeypleUserDataFactory -right-> KeypleUserData #C_LINK : create >
 ObservableReader -[hidden]- AbstractKeypleMessageHandler
 KeypleServerSyncNodeImpl -[hidden]- KeypleMessageDto
 KeypleMessageDto -[hidden]- KeypleUserData
+KeypleUserData -[hidden]right- KeypleClientReaderEventFilter
 KeypleUserData -[hidden]- NativeSeClientService
 NativeSeClientService -[hidden]- AbstractNativeSeService
 

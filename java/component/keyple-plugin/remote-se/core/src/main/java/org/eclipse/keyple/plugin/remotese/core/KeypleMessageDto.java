@@ -40,7 +40,68 @@ public class KeypleMessageDto {
      * @since 1.0
      */
     public enum Action {
-        CHECK_PLUGIN_EVENT, CHECK_READER_EVENT;
+        EXECUTE_REMOTE_SERVICE, //
+        CHECK_PLUGIN_EVENT, //
+        PLUGIN_EVENT, //
+        CHECK_READER_EVENT, //
+        READER_EVENT, //
+        ERROR;
+    }
+
+    /**
+     * Error enum (for internal use only).
+     *
+     * @since 1.0
+     */
+    public enum ErrorCode {
+
+        TIMEOUT_CLIENT_TASK(1), //
+        TIMEOUT_SERVER_TASK(2), //
+        UNKNOWN(99);
+
+        private int code;
+
+        ErrorCode(int code) {
+            this.code = code;
+        }
+
+        public String getCode() {
+            return String.valueOf(code);
+        }
+
+        public ErrorCode valueOfCode(String code) {
+            int val = Integer.parseInt(code);
+            for (ErrorCode ec : values()) {
+                if (ec.code == val) {
+                    return ec;
+                }
+            }
+            return null;
+        }
+    }
+
+    /**
+     * Constructor.
+     *
+     * @since 1.0
+     */
+    public KeypleMessageDto() {}
+
+    /**
+     * Constructor by copy.
+     *
+     * @since 1.0
+     */
+    public KeypleMessageDto(KeypleMessageDto from) {
+        sessionId = from.getSessionId();
+        action = from.getAction();
+        clientNodeId = from.getClientNodeId();
+        serverNodeId = from.getServerNodeId();
+        nativeReaderName = from.getNativeReaderName();
+        virtualReaderName = from.getVirtualReaderName();
+        body = from.getBody();
+        errorCode = from.getErrorCode();
+        errorMessage = from.getErrorMessage();
     }
 
     /**
