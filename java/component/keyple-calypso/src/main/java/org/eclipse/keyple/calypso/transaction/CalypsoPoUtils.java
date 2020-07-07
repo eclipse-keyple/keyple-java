@@ -102,6 +102,11 @@ final class CalypsoPoUtils {
 
     public static final int PIN_LENGTH = 4;
 
+    private static byte[] challenge;
+    private static byte svKvc;
+    private static byte[] svGetHeader;
+    private static byte[] svGetData;
+
     /**
      * Private constructor
      */
@@ -319,23 +324,21 @@ final class CalypsoPoUtils {
     }
 
     /**
-     * Updated the {@link CalypsoPo} object with the response to an Get Challenge command received
-     * from the PO <br>
-     * The PO challenge value is stored in the {@link CalypsoPo}
+     * Parse the response to a Get Challenge command received from the PO <br>
+     * The PO challenge value is stored in {@link CalypsoPoUtils}
      *
-     * @param calypsoPo the {@link CalypsoPo} object to update
      * @param poGetChallengeCmdBuild the Get Challenge command builder
      * @param apduResponse the response received
      * @throws CalypsoPoCommandException if a response from the PO was unexpected
      */
-    private static PoGetChallengeRespPars updateCalypsoPoGetChallenge(CalypsoPo calypsoPo,
+    private static PoGetChallengeRespPars updateCalypsoPoGetChallenge(
             PoGetChallengeCmdBuild poGetChallengeCmdBuild, ApduResponse apduResponse) {
         PoGetChallengeRespPars poGetChallengeRespPars =
                 poGetChallengeCmdBuild.createResponseParser(apduResponse);
 
         poGetChallengeRespPars.checkStatus();
 
-        calypsoPo.setChallenge(apduResponse.getDataOut());
+        challenge = apduResponse.getDataOut();
 
         return poGetChallengeRespPars;
     }
@@ -381,7 +384,22 @@ final class CalypsoPoUtils {
         calypsoPo.setSvData(svGetRespPars.getBalance(), svGetRespPars.getTransactionNumber(),
                 svGetRespPars.getLoadLog(), svGetRespPars.getDebitLog());
 
+        svKvc = svGetRespPars.getCurrentKVC();
+        svGetHeader = svGetRespPars.getSvGetCommandHeader();
+        svGetData = svGetRespPars.getApduResponse().getBytes();
+
         return svGetRespPars;
+    }
+
+    private static AbstractPoResponseParser updateCalypsoPoSvOperation(CalypsoPo calypsoPo,
+            AbstractPoCommandBuilder<? extends AbstractPoResponseParser> svOperationCmdBuild,
+            ApduResponse apduResponse) {
+        AbstractPoResponseParser svOperationRespPars =
+                svOperationCmdBuild.createResponseParser(apduResponse);
+
+        svOperationRespPars.checkStatus();
+
+        return svOperationRespPars;
     }
 
     /**
@@ -544,14 +562,18 @@ final class CalypsoPoUtils {
                 return updateCalypsoPoOpenSession(calypsoPo,
                         (AbstractOpenSessionCmdBuild) commandBuilder, apduResponse);
             case GET_CHALLENGE:
-                return updateCalypsoPoGetChallenge(calypsoPo,
-                        (PoGetChallengeCmdBuild) commandBuilder, apduResponse);
+                return updateCalypsoPoGetChallenge((PoGetChallengeCmdBuild) commandBuilder,
+                        apduResponse);
             case VERIFY_PIN:
                 return updateCalypsoVerifyPin(calypsoPo, (VerifyPinCmdBuild) commandBuilder,
                         apduResponse);
             case SV_GET:
                 return updateCalypsoPoSvGet(calypsoPo, (SvGetCmdBuild) commandBuilder,
                         apduResponse);
+            case SV_RELOAD:
+            case SV_DEBIT:
+            case SV_UNDEBIT:
+                return updateCalypsoPoSvOperation(calypsoPo, commandBuilder, apduResponse);
             case CHANGE_KEY:
             case GET_DATA_FCI:
             case GET_DATA_TRACE:
@@ -624,5 +646,50 @@ final class CalypsoPoUtils {
      */
     static SelectFileCmdBuild prepareSelectFile(PoClass poClass, SelectFileControl selectControl) {
         return new SelectFileCmdBuild(poClass, selectControl);
+    }
+
+    /**
+     * (package-private)<br>
+     * Get the challenge received from the PO
+     *
+     * @return an array of bytes containing the challenge bytes (variable length according to the
+     *         revision of the PO). May be null if the challenge is not available.
+     * @since 0.9
+     */
+    static byte[] getChallenge() {
+        return challenge;
+    }
+
+    /**
+     * (package-private)<br>
+     * Get the SV KVC from the PO
+     *
+     * @return the SV KVC byte.
+     * @since 0.9
+     */
+    static byte getSvKvc() {
+        return svKvc;
+    }
+
+    /**
+     * (package-private)<br>
+     * Get the SV Get command header
+     *
+     * @return a byte array containing the SV Get command header.
+     * @since 0.9
+     */
+    public static byte[] getSvGetHeader() {
+        return svGetHeader;
+    }
+
+    /**
+     * (package-private)<br>
+     * Get the SV Get command response data
+     *
+     * @return a byte array containing the SV Get command response data.
+     * @since 0.9
+     */
+    public static byte[] getSvGetData() {
+        return svGetData;
     }
 }

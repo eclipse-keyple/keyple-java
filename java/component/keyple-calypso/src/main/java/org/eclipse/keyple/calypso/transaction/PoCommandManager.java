@@ -90,6 +90,11 @@ class PoCommandManager {
     void addStoredValueCommand(
             AbstractPoCommandBuilder<? extends AbstractPoResponseParser> commandBuilder,
             PoTransaction.SvSettings.Operation svOperation) {
+        if (preparedCommandsProcessed) {
+            poCommands.clear();
+            preparedCommandsProcessed = false;
+        }
+
         // Check the logic of the SV command sequencing
         switch (commandBuilder.getCommandRef()) {
             case SV_GET:

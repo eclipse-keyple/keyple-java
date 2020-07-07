@@ -11,8 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
-import static org.eclipse.keyple.calypso.command.po.CalypsoPoCommand.DECREASE;
-import static org.eclipse.keyple.calypso.command.po.CalypsoPoCommand.INCREASE;
+import static org.eclipse.keyple.calypso.command.po.CalypsoPoCommand.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -33,7 +32,10 @@ import org.eclipse.keyple.calypso.command.po.builder.security.CloseSessionCmdBui
 import org.eclipse.keyple.calypso.command.po.builder.security.PoGetChallengeCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.security.RatificationCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.security.VerifyPinCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.storedvalue.SvDebitCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.storedvalue.SvGetCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.storedvalue.SvReloadCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.storedvalue.SvUndebitCmdBuild;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoPinException;
 import org.eclipse.keyple.calypso.command.po.parser.security.AbstractOpenSessionRespPars;
@@ -100,6 +102,7 @@ public class PoTransaction {
     private int modificationsCounter;
 
     private final PoCommandManager poCommandManager;
+    private SvSettings.Action svAction;
 
     /**
      * PoTransaction with PO and SAM readers.
@@ -695,6 +698,11 @@ public class PoTransaction {
         return new ApduResponse(response, null);
     }
 
+    static final ApduResponse RESPONSE_OK =
+            new ApduResponse(new byte[] {(byte) 0x90, (byte) 0x00}, null);
+    static final ApduResponse RESPONSE_OK_POSTPONED =
+            new ApduResponse(new byte[] {(byte) 0x62, (byte) 0x00}, null);
+
     /**
      * Get the anticipated response to the command sent in processClosing.<br>
      * These commands are supposed to be "modifying commands" i.e.
@@ -721,9 +729,12 @@ public class PoTransaction {
                     int newCounterValue = getCounterValue(sfi, counter)
                             + ((IncreaseCmdBuild) commandBuilder).getIncValue();
                     apduResponses.add(createIncreaseDecreaseResponse(newCounterValue));
+                } else if (commandBuilder.getCommandRef() == SV_RELOAD
+                        || commandBuilder.getCommandRef() == SV_DEBIT
+                        || commandBuilder.getCommandRef() == SV_UNDEBIT) {
+                    apduResponses.add(RESPONSE_OK_POSTPONED);
                 } else { // Append/Update/Write Record: response = 9000
-                    apduResponses
-                            .add(new ApduResponse(new byte[] {(byte) 0x90, (byte) 0x00}, null));
+                    apduResponses.add(RESPONSE_OK);
                 }
             }
         }
@@ -1099,8 +1110,8 @@ public class PoTransaction {
             poCommandManager.notifyCommandsProcessed();
 
             // Get the encrypted PIN with the help of the SAM
-            byte[] cipheredPin =
-                    samCommandProcessor.getCipheredPinData(calypsoPo.getChallenge(), pin, null);
+            byte[] cipheredPin = samCommandProcessor
+                    .getCipheredPinData(CalypsoPoUtils.getChallenge(), pin, null);
             poCommandManager.addRegularCommand(new VerifyPinCmdBuild(calypsoPo.getPoClass(),
                     PinTransmissionMode.ENCRYPTED, cipheredPin));
         } else {
@@ -1504,10 +1515,10 @@ public class PoTransaction {
      * @param svOperation informs about the nature of the intended operation: debit or reload
      * @param svAction the type of action: DO a debit or a positive reload, UNDO an undebit or a
      *        negative reload
-     * @throws CalypsoPoTransactionIllegalStateException if the PIN feature is not available for
-     *         this PO.
+     * @throws CalypsoPoTransactionIllegalStateException if the SV feature is not available for this
+     *         PO.
      */
-    public void prepareSvGet(SvSettings.Operation svOperation, SvSettings.Action svAction) {
+    public final void prepareSvGet(SvSettings.Operation svOperation, SvSettings.Action svAction) {
         if (!calypsoPo.isPinFeatureAvailable()) {
             throw new CalypsoPoTransactionIllegalStateException(
                     "Stored Value is not available for this PO.");
@@ -1531,271 +1542,153 @@ public class PoTransaction {
                     new SvGetCmdBuild(calypsoPo.getPoClass(), calypsoPo.getRevision(), svOperation),
                     svOperation);
         }
+        this.svAction = svAction;
     }
 
-    // /**
-    // * Getter for the SV Get output data.
-    // * <p>
-    // * Depending on the parameter {@link SvSettings.LogRead} used when calling prepareSvGet and
-    // also
-    // * the type of PO, the output data of this command can come from the result of two seperate
-    // * APDUs.
-    // * <p>
-    // * This method takes this into account and provides a SvGetPoResponse object built from one or
-    // * two SvGetRespPars.
-    // *
-    // * @return a SvGetPoResponse object
-    // */
-    // public SvGetPoResponse getSvGetPoResponse() {
-    // if (svDoubleGet) {
-    // /*
-    // * 2 SV Get commands have been performed: we use the two last parsers from the SV Get
-    // * parser index
-    // */
-    // return new SvGetPoResponse(
-    // (SvGetRespPars) (poCommandManager.getResponseParser(
-    // poCommandManager.getSvGetResponseParserIndex() - 1)),
-    // (SvGetRespPars) (poCommandManager
-    // .getResponseParser(poCommandManager.getSvGetResponseParserIndex())));
-    // } else {
-    // /* 1 SV Get command have been performed */
-    // return new SvGetPoResponse((SvGetRespPars) (poCommandManager
-    // .getResponseParser(poCommandManager.getSvGetResponseParserIndex())));
-    // }
-    // }
-    //
-    // /**
-    // * Prepares an SV reload (increasing the current SV balance)
-    // * <p>
-    // * Note: the key used is the reload key
-    // *
-    // * @param amount the value to be reloaded, positive or negative integer in the range
-    // * -8388608..8388607
-    // * @param date 2-byte free value
-    // * @param time 2-byte free value
-    // * @param free 2-byte free value
-    // * @param extraInfo extra information included in the logs (can be null or empty)
-    // * @return the command index
-    // * @throws KeypleCalypsoSvSecurityException in case of security issue
-    // * @throws KeypleReaderException in case of failure during the SAM communication
-    // */
-    // private int prepareSvReloadPriv(int amount, byte[] date, byte[] time, byte[] free,
-    // String extraInfo) throws KeypleReaderException {
-    // // create the initial builder with the application data
-    // SvReloadCmdBuild svReloadCmdBuild =
-    // new SvReloadCmdBuild(calypsoPo.getPoClass(), calypsoPo.getRevision(), amount,
-    // ((SvGetRespPars) poCommandManager
-    // .getResponseParser(poCommandManager.getSvGetResponseParserIndex()))
-    // .getCurrentKVC(),
-    // date, time, free);
-    //
-    // // get the security data from the SAM
-    // byte[] svReloadComplementaryData = samCommandsProcessor.getSvReloadComplementaryData(
-    // (SvGetRespPars) poCommandManager
-    // .getResponseParser(poCommandManager.getSvGetResponseParserIndex()),
-    // svReloadCmdBuild);
-    //
-    // // finalize the SvReload command builder with the data provided by the SAM
-    // svReloadCmdBuild.finalizeBuilder(svReloadComplementaryData, extraInfo);
-    //
-    // /*
-    // * create and keep the PoCommand, return the command index
-    // */
-    // return poCommandManager.addStoredValueCommand(svReloadCmdBuild,
-    // SvSettings.Operation.RELOAD, SvSettings.Action.DO);
-    // }
-    //
-    // /**
-    // * Prepares an SV reload (increasing the current SV balance)
-    // * <p>
-    // * Note: the key used is the reload key
-    // *
-    // * @param amount the value to be reloaded, positive integer in the range 0..8388607 for a DO
-    // * action, in the range 0..8388608 for an UNDO action.
-    // * @param date 2-byte free value
-    // * @param time 2-byte free value
-    // * @param free 2-byte free value
-    // * @param extraInfo extra information included in the logs (can be null or empty)
-    // * @return the command index
-    // * @throws KeypleCalypsoSvSecurityException in case of security issue
-    // * @throws KeypleReaderException in case of failure during the SAM communication
-    // */
-    // public int prepareSvReload(int amount, byte[] date, byte[] time, byte[] free, String
-    // extraInfo)
-    // throws KeypleReaderException {
-    // if (SvSettings.Action.UNDO.equals(poCommandManager.getSvAction())) {
-    // amount = -amount;
-    // }
-    // return prepareSvReloadPriv(amount, date, time, free, extraInfo);
-    // }
-    //
-    // /**
-    // * Prepares an SV reload (increasing the current SV balance)
-    // * <p>
-    // * Note: the key used is the reload key
-    // *
-    // * @param amount the value to be reloaded, positive integer in the range 0..8388607 for a DO
-    // * action, in the range 0..8388608 for an UNDO action.
-    // * @return the command index
-    // * @throws KeypleCalypsoSvSecurityException in case of security issue
-    // * @throws KeypleReaderException in case of failure during the SAM communication
-    // */
-    // public int prepareSvReload(int amount) throws KeypleReaderException {
-    // byte[] zero = {0x00, 0x00};
-    // String extraInfo = poCommandManager.getSvAction().toString() + " reload " + amount;
-    // return prepareSvReload(amount, zero, zero, zero, extraInfo);
-    // }
-    //
-    // /**
-    // * Prepares an SV debit.
-    // * <p>
-    // * It consists in decreasing the current balance of the SV by a certain amount.
-    // * <p>
-    // * Note: the key used is the debit key
-    // *
-    // * @param amount the amount to be subtracted, positive integer in the range 0..32767
-    // * @param date 2-byte free value
-    // * @param time 2-byte free value
-    // * @param extraInfo extra information included in the logs (can be null or empty)
-    // * @return the command index
-    // * @throws KeypleCalypsoSvException if the balance were to turn negative and the negative
-    // * balance is not allowed in the settings.
-    // * @throws KeypleCalypsoSvSecurityException in case of security issue
-    // * @throws KeypleCalypsoSvException if the resulting balance becomes negative and this is not
-    // * allowed (see allowSvNegativeBalances)
-    // * @throws KeypleReaderException in case of failure during the SAM communication
-    // */
-    // private int prepareSvDebitPriv(int amount, byte[] date, byte[] time,
-    // SvSettings.NegativeBalance negativeBalance, String extraInfo)
-    // throws KeypleReaderException {
-    //
-    // if (SvSettings.NegativeBalance.FORBIDDEN.equals(negativeBalance)
-    // && (((SvGetRespPars) poCommandManager
-    // .getResponseParser(poCommandManager.getSvGetResponseParserIndex()))
-    // .getBalance()
-    // - amount) < 0) {
-    // throw new KeypleCalypsoSvException("Negative balances not allowed.");
-    // }
-    //
-    // // create the initial builder with the application data
-    // SvDebitCmdBuild svDebitCmdBuild =
-    // new SvDebitCmdBuild(calypsoPo.getPoClass(), calypsoPo.getRevision(), amount,
-    // ((SvGetRespPars) poCommandManager
-    // .getResponseParser(poCommandManager.getSvGetResponseParserIndex()))
-    // .getCurrentKVC(),
-    // date, time);
-    //
-    // // get the security data from the SAM
-    // byte[] svDebitComplementaryData = samCommandsProcessor.getSvDebitComplementaryData(
-    // (SvGetRespPars) poCommandManager
-    // .getResponseParser(poCommandManager.getSvGetResponseParserIndex()),
-    // svDebitCmdBuild);
-    //
-    // // finalize the SvReload command builder with the data provided by the SAM
-    // svDebitCmdBuild.finalizeBuilder(svDebitComplementaryData, extraInfo);
-    //
-    // /*
-    // * create and keep the PoCommand, return the command index
-    // */
-    // return poCommandManager.addStoredValueCommand(svDebitCmdBuild, SvSettings.Operation.DEBIT,
-    // SvSettings.Action.DO);
-    // }
-    //
-    // /**
-    // * Prepares an SV Undebit (partially or totally cancels the last SV debit command).
-    // * <p>
-    // * It consists in canceling a previous debit.
-    // * <p>
-    // * Note: the key used is the debit key
-    // *
-    // * @param amount the amount to be subtracted, positive integer in the range 0..32767
-    // * @param date 2-byte free value
-    // * @param time 2-byte free value
-    // * @param extraInfo extra information included in the logs (can be null or empty)
-    // * @return the command index
-    // * @throws KeypleCalypsoSvSecurityException in case of security issue
-    // * @throws KeypleReaderException in case of failure during the SAM communication TODO add
-    // * specific exception
-    // */
-    // private int prepareSvUndebitPriv(int amount, byte[] date, byte[] time, String extraInfo)
-    // throws KeypleReaderException {
-    // // create the initial builder with the application data
-    // SvUndebitCmdBuild svUndebitCmdBuild =
-    // new SvUndebitCmdBuild(calypsoPo.getPoClass(), calypsoPo.getRevision(), amount,
-    // ((SvGetRespPars) poCommandManager
-    // .getResponseParser(poCommandManager.getSvGetResponseParserIndex()))
-    // .getCurrentKVC(),
-    // date, time);
-    //
-    // // get the security data from the SAM
-    // byte[] svUndebitComplementaryData = samCommandsProcessor.getSvUndebitComplementaryData(
-    // (SvGetRespPars) poCommandManager
-    // .getResponseParser(poCommandManager.getSvGetResponseParserIndex()),
-    // svUndebitCmdBuild);
-    //
-    // // finalize the SvReload command builder with the data provided by the SAM
-    // svUndebitCmdBuild.finalizeBuilder(svUndebitComplementaryData, extraInfo);
-    //
-    // /*
-    // * create and keep the PoCommand, return the command index
-    // */
-    // return poCommandManager.addStoredValueCommand(svUndebitCmdBuild,
-    // SvSettings.Operation.DEBIT, SvSettings.Action.UNDO);
-    // }
-    //
-    // /**
-    // * Prepares an SV debit or Undebit (partially or totally cancels the last SV debit command).
-    // * <p>
-    // * It consists in decreasing the current balance of the SV by a certain amount or canceling a
-    // * previous debit.
-    // * <p>
-    // * Note: the key used is the debit key
-    // *
-    // * @param amount the amount to be subtracted or added, positive integer in the range 0..32767
-    // * when subtracted and 0..32768 when added.
-    // * @param date 2-byte free value
-    // * @param time 2-byte free value
-    // * @param negativeBalance indicates whether negative balance is allowed or not
-    // * @param extraInfo extra information included in the logs (can be null or empty)
-    // * @return the command index
-    // * @throws KeypleCalypsoSvException if the balance were to turn negative and the negative
-    // * balance is not allowed in the settings.
-    // * @throws KeypleReaderException in case of failure during the SAM communication
-    // */
-    // public int prepareSvDebit(int amount, byte[] date, byte[] time,
-    // SvSettings.NegativeBalance negativeBalance, String extraInfo)
-    // throws KeypleReaderException {
-    // if (SvSettings.Action.DO.equals(poCommandManager.getSvAction())) {
-    // return prepareSvDebitPriv(amount, date, time, negativeBalance, extraInfo);
-    // } else {
-    // return prepareSvUndebitPriv(amount, date, time, extraInfo);
-    // }
-    // }
-    //
-    // /**
-    // * Prepares an SV debit or Undebit (partially or totally cancels the last SV debit command).
-    // * <p>
-    // * It consists in decreasing the current balance of the SV by a certain amount or canceling a
-    // * previous debit.
-    // * <p>
-    // * The information fields such as date and time are set to 0. The extraInfo field propagated
-    // in
-    // * Logs are automatically generated with the type of transaction and amount.
-    // * <p>
-    // * Operations that would result in a negative balance are forbidden (SV Exception raised).
-    // * <p>
-    // * Note: the key used is the debit key
-    // *
-    // * @param amount the amount to be subtracted or added, positive integer in the range 0..32767
-    // * when subtracted and 0..32768 when added.
-    // * @return the command index
-    // * @throws KeypleCalypsoSvException if the balance were to turn negative and the negative
-    // * balance is not allowed in the settings.
-    // * @throws KeypleReaderException in case of failure during the SAM communication
-    // */
-    // public int prepareSvDebit(int amount) throws KeypleReaderException {
-    // byte[] zero = {0x00, 0x00};
-    // String extraInfo = poCommandManager.getSvAction().toString() + " debit " + amount;
-    // return prepareSvDebit(amount, zero, zero, SvSettings.NegativeBalance.FORBIDDEN, extraInfo);
-    // }
+    /**
+     * Prepares an SV reload (increasing the current SV balance)
+     * <p>
+     * Note: the key used is the reload key
+     *
+     * @param amount the value to be reloaded, positive or negative integer in the range
+     *        -8388608..8388607
+     * @param date 2-byte free value
+     * @param time 2-byte free value
+     * @param free 2-byte free value
+     * @throws CalypsoPoTransactionIllegalStateException if the SV feature is not available for this
+     *         PO.
+     */
+    public final void prepareSvReload(int amount, byte[] date, byte[] time, byte[] free) {
+        // create the initial builder with the application data
+        SvReloadCmdBuild svReloadCmdBuild = new SvReloadCmdBuild(calypsoPo.getPoClass(),
+                calypsoPo.getRevision(), amount, CalypsoPoUtils.getSvKvc(), date, time, free);
+
+        // get the security data from the SAM
+        byte[] svReloadComplementaryData = samCommandProcessor.getSvReloadComplementaryData(
+                svReloadCmdBuild, CalypsoPoUtils.getSvGetHeader(), CalypsoPoUtils.getSvGetData());
+
+        // finalize the SvReload command builder with the data provided by the SAM
+        svReloadCmdBuild.finalizeBuilder(svReloadComplementaryData);
+
+        // create and keep the PoCommand
+        poCommandManager.addStoredValueCommand(svReloadCmdBuild, SvSettings.Operation.RELOAD);
+    }
+
+    /**
+     * Prepares an SV reload (increasing the current SV balance)
+     * <p>
+     * Note: the key used is the reload key
+     *
+     * @param amount the value to be reloaded, positive integer in the range 0..8388607 for a DO
+     *        action, in the range 0..8388608 for an UNDO action.
+     * @throws CalypsoPoTransactionIllegalStateException if the SV feature is not available for this
+     *         PO.
+     */
+    public final void prepareSvReload(int amount) {
+        byte[] zero = {0x00, 0x00};
+        prepareSvReload(amount, zero, zero, zero);
+    }
+
+    /**
+     * Prepares an SV debit.
+     * <p>
+     * It consists in decreasing the current balance of the SV by a certain amount.
+     * <p>
+     * Note: the key used is the debit key
+     *
+     * @param amount the amount to be subtracted, positive integer in the range 0..32767
+     * @param date 2-byte free value
+     * @param time 2-byte free value
+     */
+    private void prepareSvDebitPriv(int amount, byte[] date, byte[] time) {
+
+        if (SvSettings.NegativeBalance.FORBIDDEN.equals(poSecuritySettings.getSvNegativeBalance())
+                && (calypsoPo.getSvBalance() - amount) < 0) {
+            throw new CalypsoPoTransactionIllegalStateException("Negative balances not allowed.");
+        }
+
+        // create the initial builder with the application data
+        SvDebitCmdBuild svDebitCmdBuild = new SvDebitCmdBuild(calypsoPo.getPoClass(),
+                calypsoPo.getRevision(), amount, CalypsoPoUtils.getSvKvc(), date, time);
+
+        // get the security data from the SAM
+        byte[] svDebitComplementaryData = samCommandProcessor.getSvDebitComplementaryData(
+                svDebitCmdBuild, CalypsoPoUtils.getSvGetHeader(), CalypsoPoUtils.getSvGetData());
+
+        // finalize the SvDebit command builder with the data provided by the SAM
+        svDebitCmdBuild.finalizeBuilder(svDebitComplementaryData);
+
+        // create and keep the PoCommand
+        poCommandManager.addStoredValueCommand(svDebitCmdBuild, SvSettings.Operation.DEBIT);
+    }
+
+    /**
+     * Prepares an SV Undebit (partially or totally cancels the last SV debit command).
+     * <p>
+     * It consists in canceling a previous debit.
+     * <p>
+     * Note: the key used is the debit key
+     *
+     * @param amount the amount to be subtracted, positive integer in the range 0..32767
+     * @param date 2-byte free value
+     * @param time 2-byte free value
+     */
+    private void prepareSvUndebitPriv(int amount, byte[] date, byte[] time) {
+
+        // create the initial builder with the application data
+        SvUndebitCmdBuild svUndebitCmdBuild = new SvUndebitCmdBuild(calypsoPo.getPoClass(),
+                calypsoPo.getRevision(), amount, CalypsoPoUtils.getSvKvc(), date, time);
+
+        // get the security data from the SAM
+        byte[] svDebitComplementaryData = samCommandProcessor.getSvUndebitComplementaryData(
+                svUndebitCmdBuild, CalypsoPoUtils.getSvGetHeader(), CalypsoPoUtils.getSvGetData());
+
+        // finalize the SvUndebit command builder with the data provided by the SAM
+        svUndebitCmdBuild.finalizeBuilder(svDebitComplementaryData);
+
+        // create and keep the PoCommand
+        poCommandManager.addStoredValueCommand(svUndebitCmdBuild, SvSettings.Operation.DEBIT);
+    }
+
+    /**
+     * Prepares an SV debit or Undebit (partially or totally cancels the last SV debit command).
+     * <p>
+     * It consists in decreasing the current balance of the SV by a certain amount or canceling a
+     * previous debit.
+     * <p>
+     * Note: the key used is the debit key
+     *
+     * @param amount the amount to be subtracted or added, positive integer in the range 0..32767
+     *        when subtracted and 0..32768 when added.
+     * @param date 2-byte free value
+     * @param time 2-byte free value
+     */
+    public final void prepareSvDebit(int amount, byte[] date, byte[] time) {
+        if (SvSettings.Action.DO.equals(svAction)) {
+            prepareSvDebitPriv(amount, date, time);
+        } else {
+            prepareSvUndebitPriv(amount, date, time);
+        }
+    }
+
+    /**
+     * Prepares an SV debit or Undebit (partially or totally cancels the last SV debit command).
+     * <p>
+     * It consists in decreasing the current balance of the SV by a certain amount or canceling a
+     * previous debit.
+     * <p>
+     * The information fields such as date and time are set to 0. The extraInfo field propagated in
+     * Logs are automatically generated with the type of transaction and amount.
+     * <p>
+     * Operations that would result in a negative balance are forbidden (SV Exception raised).
+     * <p>
+     * Note: the key used is the debit key
+     *
+     * @param amount the amount to be subtracted or added, positive integer in the range 0..32767
+     *        when subtracted and 0..32768 when added.
+     */
+    public final void prepareSvDebit(int amount) {
+        byte[] zero = {0x00, 0x00};
+        prepareSvDebit(amount, zero, zero);
+    }
 }

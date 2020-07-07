@@ -12,7 +12,6 @@
 package org.eclipse.keyple.calypso.command.sam.builder.security;
 
 import org.eclipse.keyple.calypso.command.po.builder.storedvalue.SvReloadCmdBuild;
-import org.eclipse.keyple.calypso.command.po.parser.storedvalue.SvGetRespPars;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
@@ -22,7 +21,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 /**
  * Builder for the SAM SV Prepare Load APDU command.
  */
-public class SvPrepareLoadCmdBuild extends AbstractSamCommandBuilder {
+public class SvPrepareLoadCmdBuild extends AbstractSamCommandBuilder<SvPrepareOperationRespPars> {
     /** The command reference. */
     private static final CalypsoSamCommand command = CalypsoSamCommand.SV_PREPARE_LOAD;
 
@@ -33,22 +32,22 @@ public class SvPrepareLoadCmdBuild extends AbstractSamCommandBuilder {
      * command
      * 
      * @param samRevision the SAM revision
-     * @param svGetRespPars the SV get response parser
+     * @param svGetHeader the SV Get command header
+     * @param svGetData a byte array containing the data from the SV get command and response
      * @param svReloadCmdBuild the SV reload command builder
      */
-    public SvPrepareLoadCmdBuild(SamRevision samRevision, SvGetRespPars svGetRespPars,
+    public SvPrepareLoadCmdBuild(SamRevision samRevision, byte[] svGetHeader, byte[] svGetData,
             SvReloadCmdBuild svReloadCmdBuild) {
         super(command, null);
 
         byte cla = samRevision.getClassByte();
         byte p1 = (byte) 0x01;
         byte p2 = (byte) 0xFF;
-        int svGetDataLength = svGetRespPars.getApduResponse().getBytes().length;
-        byte[] data = new byte[19 + svGetDataLength]; // header(4) + SvReload data (15) = 19 bytes
+        byte[] data = new byte[19 + svGetData.length]; // header(4) + SvReload data (15) = 19 bytes
 
-        System.arraycopy(svGetRespPars.getSvGetCommandHeader(), 0, data, 0, 4);
-        System.arraycopy(svGetRespPars.getApduResponse().getBytes(), 0, data, 4, svGetDataLength);
-        System.arraycopy(svReloadCmdBuild.getSvReloadData(), 0, data, 4 + svGetDataLength,
+        System.arraycopy(svGetHeader, 0, data, 0, 4);
+        System.arraycopy(svGetData, 0, data, 4, svGetData.length);
+        System.arraycopy(svReloadCmdBuild.getSvReloadData(), 0, data, 4 + svGetData.length,
                 svReloadCmdBuild.getSvReloadData().length);
 
         request = setApduRequest(cla, command, p1, p2, data, null);

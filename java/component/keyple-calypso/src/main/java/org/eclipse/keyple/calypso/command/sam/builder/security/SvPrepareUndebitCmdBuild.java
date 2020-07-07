@@ -12,7 +12,6 @@
 package org.eclipse.keyple.calypso.command.sam.builder.security;
 
 import org.eclipse.keyple.calypso.command.po.builder.storedvalue.SvUndebitCmdBuild;
-import org.eclipse.keyple.calypso.command.po.parser.storedvalue.SvGetRespPars;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
@@ -22,7 +21,8 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 /**
  * Builder for the SAM SV Undebit APDU command.
  */
-public class SvPrepareUndebitCmdBuild extends AbstractSamCommandBuilder {
+public class SvPrepareUndebitCmdBuild
+        extends AbstractSamCommandBuilder<SvPrepareOperationRespPars> {
     /** The command reference. */
     private static final CalypsoSamCommand command = CalypsoSamCommand.SV_PREPARE_UNDEBIT;
 
@@ -31,23 +31,23 @@ public class SvPrepareUndebitCmdBuild extends AbstractSamCommandBuilder {
      * debit transaction.
      *
      * @param samRevision the SAM revision
-     * @param svGetRespPars the SV get response parser
+     * @param svGetHeader the SV Get command header
+     * @param svGetData a byte array containing the data from the SV get command and response
      * @param svUndebitCmdBuildDebitCmdBuild the SV undebit command builder
      */
-    public SvPrepareUndebitCmdBuild(SamRevision samRevision, SvGetRespPars svGetRespPars,
+    public SvPrepareUndebitCmdBuild(SamRevision samRevision, byte[] svGetHeader, byte[] svGetData,
             SvUndebitCmdBuild svUndebitCmdBuildDebitCmdBuild) {
         super(command, null);
 
         byte cla = samRevision.getClassByte();
         byte p1 = (byte) 0x01;
         byte p2 = (byte) 0xFF;
-        int svGetDataLength = svGetRespPars.getApduResponse().getBytes().length;
-        byte[] data = new byte[16 + svGetDataLength]; // header(4) + SvDebit data (12) = 16 bytes
+        byte[] data = new byte[16 + svGetData.length]; // header(4) + SvDebit data (12) = 16 bytes
 
-        System.arraycopy(svGetRespPars.getSvGetCommandHeader(), 0, data, 0, 4);
-        System.arraycopy(svGetRespPars.getApduResponse().getBytes(), 0, data, 4, svGetDataLength);
+        System.arraycopy(svGetHeader, 0, data, 0, 4);
+        System.arraycopy(svGetData, 0, data, 4, svGetData.length);
         System.arraycopy(svUndebitCmdBuildDebitCmdBuild.getSvUndebitData(), 0, data,
-                4 + svGetDataLength, svUndebitCmdBuildDebitCmdBuild.getSvUndebitData().length);
+                4 + svGetData.length, svUndebitCmdBuildDebitCmdBuild.getSvUndebitData().length);
 
         request = setApduRequest(cla, command, p1, p2, data, null);
     }

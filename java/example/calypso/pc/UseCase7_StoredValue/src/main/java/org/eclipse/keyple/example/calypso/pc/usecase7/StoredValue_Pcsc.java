@@ -19,6 +19,8 @@ import org.eclipse.keyple.calypso.transaction.PoSecuritySettings;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.calypso.transaction.SvDebitLogRecord;
+import org.eclipse.keyple.calypso.transaction.SvLoadLogRecord;
 import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
@@ -32,6 +34,10 @@ import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 /**
  * <h1>Use Case ‘Calypso 7’ – Stored Value (PC/SC)</h1><br>
@@ -89,6 +95,13 @@ public class StoredValue_Pcsc {
         return false;
     }
 
+    private static String prettyPrintJson(String uglyJSONString) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonParser jp = new JsonParser();
+        JsonElement je = jp.parse(uglyJSONString);
+        return gson.toJson(je);
+    }
+
     public static void main(String[] args) {
 
         // Get the instance of the SeProxyService (Singleton pattern)
@@ -121,18 +134,32 @@ public class StoredValue_Pcsc {
 
             PoTransaction poTransaction = new PoTransaction(poResource, poSecuritySettings);
 
-            poTransaction
-                    .processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT);
+            poTransaction.processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_LOAD);
 
-            poTransaction.prepareSvGet(SvSettings.Operation.RELOAD, SvSettings.Action.DO);
+            poTransaction.prepareSvGet(SvSettings.Operation.DEBIT, SvSettings.Action.DO);
 
             poTransaction.processPoCommandsInSession();
 
             logger.info("SV Get:");
             logger.info("Balance = {}", calypsoPo.getSvBalance());
             logger.info("Last Transaction Number = {}", calypsoPo.getSvLastTNum());
-            logger.info("Load log record = {}", calypsoPo.getSvLoadLogRecord());
-            logger.info("Debit log record = {}", calypsoPo.getSvDebitLogLastRecord());
+            SvLoadLogRecord loadLogRecord = calypsoPo.getSvLoadLogRecord();
+            SvDebitLogRecord debitLogRecord = calypsoPo.getSvDebitLogLastRecord();
+            if (loadLogRecord != null) {
+                logger.info("Load log record = {}", prettyPrintJson(loadLogRecord.toString()));
+            } else {
+                logger.info("No load log record");
+            }
+            if (debitLogRecord != null) {
+                logger.info("Debit log record = {}", prettyPrintJson(debitLogRecord.toString()));
+
+            } else {
+                logger.info("No debit log record");
+            }
+
+            poTransaction.prepareSvDebit(2);
+
+            // poTransaction.processPoCommandsInSession();
 
             poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
         } else {

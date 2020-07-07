@@ -83,7 +83,6 @@ public class CalypsoPo extends AbstractMatchingSe {
     private final Map<Short, Byte> sfiByLid = new HashMap<Short, Byte>();
     private final Map<Short, Byte> sfiByLidBackup = new HashMap<Short, Byte>();
     private Boolean isDfRatified = null;
-    private byte[] challenge;
     private Integer pinAttemptCounter;
     private int svBalance;
     private int svLastTNum;
@@ -494,30 +493,6 @@ public class CalypsoPo extends AbstractMatchingSe {
         }
         throw new IllegalStateException(
                 "Unable to determine the ratification status. No session was opened.");
-    }
-
-    /**
-     * (package-private)<br>
-     * Set the challenge received from the PO
-     *
-     * @param challenge an array of bytes containing the challenge bytes (variable length according
-     *        to the revision of the PO)
-     * @since 0.9
-     */
-    final void setChallenge(byte[] challenge) {
-        this.challenge = challenge;
-    }
-
-    /**
-     * (package-private)<br>
-     * Get the challenge received from the PO
-     *
-     * @return an array of bytes containing the challenge bytes (variable length according to the
-     *         revision of the PO). May be null if the challenge is not available.
-     * @since 0.9
-     */
-    final byte[] getChallenge() {
-        return challenge;
     }
 
     final void setSvData(int svBalance, int svLastTNum, SvLoadLogRecord svLoadLogRecord,
