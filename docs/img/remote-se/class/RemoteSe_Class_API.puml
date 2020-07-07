@@ -1,7 +1,7 @@
 @startuml
 title
     Keyple Plugin Remote SE
-    Public API (16/06/2020)
+    Public API (02/07/2020)
 end title
 
 ' == THEME ==
@@ -78,7 +78,7 @@ package org.eclipse.keyple.plugin.remotese {
         ' Remote Handlers
             +interface "<< <back:#82E0AA>ObservablePlugin</back> >>\nRemoteSeServerPlugin" as RemoteSeServerPlugin {
                 +RemoteSeServerReader getReader (String name)
-                +void terminateService (\n    String virtualReaderName, KeypleUserData userOutputData)
+                +void terminateService (\n    String virtualReaderName,\n    KeypleUserData userOutputData,\n    boolean unregisterVirtualReader)
             }
             ' Remote Readers
             +interface "<< <back:#D0ECE7>SeReader</back> >>\nRemoteSeServerReader" as RemoteSeServerReader {
@@ -201,10 +201,15 @@ package org.eclipse.keyple.plugin.remotese {
             + String errorMessage
         }
         +interface KeypleUserDataFactory<T extends KeypleUserData> {
-            +T getInstance(Map<String, String> data)
+            +T getInstance (Map<String, String> data)
         }
         +interface KeypleUserData {
             +Map<String, String> toMap()
+        }
+        +interface KeypleClientReaderEventFilter<T extends KeypleUserData> {
+            +KeypleUserDataFactory<T> getUserOutputDataFactory ()
+            +KeypleUserData beforePropagation (ReaderEvent event)
+            +void afterPropagation (T userOutputData)
         }
 
         ' Nodes & Senders
@@ -267,7 +272,7 @@ package org.eclipse.keyple.plugin.remotese {
                 + ReaderStep withSyncNode (KeypleClientSync endpoint)
             }
             +interface "ReaderStep" as NativeSeClientServiceFactoryReaderStep {
-                + BuilderStep withReaderObservation ()
+                + BuilderStep withReaderObservation (KeypleClientReaderEventFilter filter)
                 + BuilderStep withoutReaderObservation ()
             }
             +interface "BuilderStep" as NativeSeClientServiceFactoryBuilderStep {
@@ -375,7 +380,8 @@ NativeSePoolServerServiceFactoryBuilderStep -[hidden]- NativeSePoolServerUtils
 KeypleClientAsync -[hidden]- KeypleServerAsync
 KeypleServerAsyncNode -[hidden]- KeypleMessageDto
 KeypleMessageDto -[hidden]- KeypleUserDataFactory
-KeypleUserData -[hidden]- KeypleClientSyncNode
+KeypleUserData -[hidden]- KeypleClientReaderEventFilter
+KeypleClientReaderEventFilter -[hidden]- KeypleClientSyncNode
 KeypleClientSync -[hidden]- KeypleServerSyncNode
 
 RemoteServiceParametersBuilder -[hidden]- NativeSeServerService
@@ -457,5 +463,6 @@ KeypleServerAsyncNode <<red>>
 KeypleMessageDto <<grey>>
 KeypleUserDataFactory <<grey>>
 KeypleUserData <<grey>>
+KeypleClientReaderEventFilter <<grey>>
 
 @enduml

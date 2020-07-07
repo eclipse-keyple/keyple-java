@@ -57,6 +57,7 @@ public interface KeypleServerSyncNode {
      *
      * @param msg The message to process.
      * @return not null but empty list if there is no result.
+     * @throws IllegalArgumentException if some arguments are incorrect.
      * @since 1.0
      */
     List<KeypleMessageDto> onRequest(KeypleMessageDto msg);

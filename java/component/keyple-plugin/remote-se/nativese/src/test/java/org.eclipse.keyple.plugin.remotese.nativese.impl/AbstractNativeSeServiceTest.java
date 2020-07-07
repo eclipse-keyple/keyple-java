@@ -62,6 +62,7 @@ public class AbstractNativeSeServiceTest {
         SeReader seReader = abstractNativeSeService.findLocalReader("test");
         // results
         Assert.assertNotNull(seReader);
+        SeProxyService.getInstance().unregisterPlugin("mockPlugin");
     }
 
 

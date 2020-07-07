@@ -20,67 +20,26 @@ import org.eclipse.keyple.plugin.remotese.core.KeypleClientSync;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 import org.junit.Before;
 import org.junit.Test;
-import com.google.gson.JsonObject;
 
-public class KeypleClientSyncNodeImplTest {
+public class KeypleClientSyncNodeImplTest extends AbstractKeypleSyncNode {
 
-    public KeypleMessageHandlerMock handler;
-    public KeypleMessageHandlerErrorMock handlerError;
     public KeypleClientSyncPollingMock endpoint;
     public KeypleClientSyncLongPollingMock endpointLongPolling;
     public KeypleClientSyncErrorMock endpointError;
-    public KeypleMessageDto msg = new KeypleMessageDto();
-    public List<KeypleMessageDto> response = new ArrayList<KeypleMessageDto>();
-    public ServerPushEventStrategy pollingEventStrategy =
-            new ServerPushEventStrategy(ServerPushEventStrategy.Type.POLLING).setDuration(1);
-    public ServerPushEventStrategy longPollingEventStrategy =
-            new ServerPushEventStrategy(ServerPushEventStrategy.Type.LONG_POLLING).setDuration(1);
-
-    public String bodyPolling;
-    public String bodyLongPolling;
-    {
-        JsonObject body = new JsonObject();
-        body.addProperty("strategy", ServerPushEventStrategy.Type.POLLING.name());
-        bodyPolling = body.toString();
-
-        body = new JsonObject();
-        body.addProperty("strategy", ServerPushEventStrategy.Type.LONG_POLLING.name());
-        body.addProperty("duration", 1);
-        bodyLongPolling = body.toString();
-
-        response.add(msg);
-    }
-
-    public class KeypleMessageHandlerMock extends AbstractKeypleMessageHandler {
-        public List<KeypleMessageDto> messages = new ArrayList<KeypleMessageDto>();
-
-        @Override
-        protected void onMessage(KeypleMessageDto msg) {
-            messages.add(msg);
-        }
-    }
-
-    public class KeypleMessageHandlerErrorMock extends AbstractKeypleMessageHandler {
-        public boolean isError = false;
-
-        @Override
-        protected void onMessage(KeypleMessageDto msg) {
-            isError = true;
-            throw new RuntimeException("Handler error mocked");
-        }
-    }
 
     public class KeypleClientSyncPollingMock implements KeypleClientSync {
+
         public List<KeypleMessageDto> messages = new ArrayList<KeypleMessageDto>();
 
         @Override
         public List<KeypleMessageDto> sendRequest(KeypleMessageDto msg) {
             messages.add(msg);
-            return response;
+            return responses;
         }
     }
 
     public class KeypleClientSyncLongPollingMock implements KeypleClientSync {
+
         public List<KeypleMessageDto> messages = new ArrayList<KeypleMessageDto>();
 
         @Override
@@ -91,11 +50,12 @@ public class KeypleClientSyncNodeImplTest {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            return response;
+            return responses;
         }
     }
 
     public class KeypleClientSyncErrorMock implements KeypleClientSync {
+
         public List<KeypleMessageDto> messages = new ArrayList<KeypleMessageDto>();
         public int cpt = 0;
 
@@ -106,7 +66,7 @@ public class KeypleClientSyncNodeImplTest {
                 throw new RuntimeException("Endpoint error mocked");
             }
             messages.add(msg);
-            return response;
+            return responses;
         }
     }
 
@@ -144,8 +104,7 @@ public class KeypleClientSyncNodeImplTest {
 
     @Before
     public void setUp() {
-        handler = new KeypleMessageHandlerMock();
-        handlerError = new KeypleMessageHandlerErrorMock();
+        super.setUp();
         endpoint = new KeypleClientSyncPollingMock();
         endpointLongPolling = new KeypleClientSyncLongPollingMock();
         endpointError = new KeypleClientSyncErrorMock();
@@ -217,8 +176,8 @@ public class KeypleClientSyncNodeImplTest {
         new KeypleClientSyncNodeImpl(endpoint, handler, pollingEventStrategy, null);
         await().atMost(5, TimeUnit.SECONDS).until(endpointMessagesHasMinSize(1));
         assertThat(handler.messages).isNotEmpty();
-        assertThat(handler.messages.get(0)).isSameAs(msg);
-        assertThat(handler.messages.get(0)).isEqualToComparingFieldByField(msg);
+        assertThat(handler.messages.get(0)).isSameAs(response);
+        assertThat(handler.messages.get(0)).isEqualToComparingFieldByField(response);
     }
 
     @Test
@@ -239,13 +198,12 @@ public class KeypleClientSyncNodeImplTest {
     @Test
     public void sendRequest_shouldCallEndpointAndReturnEndpointResponse() {
         KeypleClientSyncNodeImpl node = new KeypleClientSyncNodeImpl(endpoint, handler, null, null);
-        List<KeypleMessageDto> result = node.sendRequest(msg);
+        KeypleMessageDto result = node.sendRequest(msg);
         assertThat(endpoint.messages).hasSize(1);
         assertThat(endpoint.messages.get(0)).isSameAs(msg);
         assertThat(endpoint.messages.get(0)).isEqualToComparingFieldByField(msg);
-        assertThat(result).hasSize(1);
         assertThat(result).isSameAs(response);
-        assertThat(result).isEqualTo(response);
+        assertThat(result).isEqualToComparingFieldByField(response);
         assertThat(handler.messages).hasSize(0);
     }
 

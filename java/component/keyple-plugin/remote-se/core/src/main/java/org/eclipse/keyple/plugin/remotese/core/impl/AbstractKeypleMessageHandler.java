@@ -24,12 +24,6 @@ public abstract class AbstractKeypleMessageHandler {
 
     /**
      * (protected)<br>
-     * Indicates whether the handler is bound to a synchronous node.
-     */
-    protected boolean isBoundToSyncNode;
-
-    /**
-     * (protected)<br>
      * The bounded node.
      */
     protected AbstractKeypleNode node;
@@ -85,7 +79,8 @@ public abstract class AbstractKeypleMessageHandler {
     public void bindClientSyncNode(KeypleClientSync endpoint,
             ServerPushEventStrategy pluginObservationStrategy,
             ServerPushEventStrategy readerObservationStrategy) {
-        // TODO KEYP-257
+        node = new KeypleClientSyncNodeImpl(endpoint, this, pluginObservationStrategy,
+                readerObservationStrategy);
     }
 
     /**
@@ -95,6 +90,6 @@ public abstract class AbstractKeypleMessageHandler {
      * @since 1.0
      */
     public void bindServerSyncNode() {
-        // TODO KEYP-258
+        node = new KeypleServerSyncNodeImpl(this, 20);
     }
 }
