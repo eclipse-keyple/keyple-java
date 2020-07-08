@@ -498,6 +498,12 @@ public class PoTransaction {
                     ex);
         }
 
+        // If necessary, we check the status of the SV after the session has been successfully
+        // closed.
+        if (poCommandManager.isSvOperationPending()) {
+            samCommandProcessor.checkSvStatus(poCloseSessionPars.getPostponedData());
+        }
+
         sessionState = SessionState.SESSION_CLOSED;
 
         if (ratificationCommandResponseReceived) { // NOSONAR: boolean change in catch
@@ -668,7 +674,6 @@ public class PoTransaction {
      * @param sfi the SFI of the EF containing the counter
      * @param counter the number of the counter
      * @return the value of the counter
-     * @{@link CalypsoPo}
      */
     private int getCounterValue(int sfi, int counter) {
         try {
@@ -1111,7 +1116,7 @@ public class PoTransaction {
 
             // Get the encrypted PIN with the help of the SAM
             byte[] cipheredPin = samCommandProcessor
-                    .getCipheredPinData(CalypsoPoUtils.getChallenge(), pin, null);
+                    .getCipheredPinData(CalypsoPoUtils.getPoChallenge(), pin, null);
             poCommandManager.addRegularCommand(new VerifyPinCmdBuild(calypsoPo.getPoClass(),
                     PinTransmissionMode.ENCRYPTED, cipheredPin));
         } else {
@@ -1519,7 +1524,7 @@ public class PoTransaction {
      *         PO.
      */
     public final void prepareSvGet(SvSettings.Operation svOperation, SvSettings.Action svAction) {
-        if (!calypsoPo.isPinFeatureAvailable()) {
+        if (!calypsoPo.isSvFeatureAvailable()) {
             throw new CalypsoPoTransactionIllegalStateException(
                     "Stored Value is not available for this PO.");
         }
@@ -1585,15 +1590,14 @@ public class PoTransaction {
      *         PO.
      */
     public final void prepareSvReload(int amount) {
-        byte[] zero = {0x00, 0x00};
+        final byte[] zero = {0x00, 0x00};
         prepareSvReload(amount, zero, zero, zero);
     }
 
     /**
      * Prepares an SV debit.
      * <p>
-     * It consists in decreasing the current balance of the SV by a certain amount.
-     * <p>
+     * It consists in decreasing the current balance of the SV by a certain amount. <br>
      * Note: the key used is the debit key
      *
      * @param amount the amount to be subtracted, positive integer in the range 0..32767
@@ -1625,8 +1629,7 @@ public class PoTransaction {
     /**
      * Prepares an SV Undebit (partially or totally cancels the last SV debit command).
      * <p>
-     * It consists in canceling a previous debit.
-     * <p>
+     * It consists in canceling a previous debit. <br>
      * Note: the key used is the debit key
      *
      * @param amount the amount to be subtracted, positive integer in the range 0..32767
@@ -1654,8 +1657,7 @@ public class PoTransaction {
      * Prepares an SV debit or Undebit (partially or totally cancels the last SV debit command).
      * <p>
      * It consists in decreasing the current balance of the SV by a certain amount or canceling a
-     * previous debit.
-     * <p>
+     * previous debit. <br>
      * Note: the key used is the debit key
      *
      * @param amount the amount to be subtracted or added, positive integer in the range 0..32767
@@ -1675,20 +1677,17 @@ public class PoTransaction {
      * Prepares an SV debit or Undebit (partially or totally cancels the last SV debit command).
      * <p>
      * It consists in decreasing the current balance of the SV by a certain amount or canceling a
-     * previous debit.
-     * <p>
+     * previous debit. <br>
      * The information fields such as date and time are set to 0. The extraInfo field propagated in
-     * Logs are automatically generated with the type of transaction and amount.
-     * <p>
-     * Operations that would result in a negative balance are forbidden (SV Exception raised).
-     * <p>
+     * Logs are automatically generated with the type of transaction and amount. <br>
+     * Operations that would result in a negative balance are forbidden (SV Exception raised). <br>
      * Note: the key used is the debit key
      *
      * @param amount the amount to be subtracted or added, positive integer in the range 0..32767
      *        when subtracted and 0..32768 when added.
      */
     public final void prepareSvDebit(int amount) {
-        byte[] zero = {0x00, 0x00};
+        final byte[] zero = {0x00, 0x00};
         prepareSvDebit(amount, zero, zero);
     }
 }

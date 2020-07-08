@@ -27,6 +27,7 @@ import org.eclipse.keyple.calypso.command.sam.parser.security.CardCipherPinRespP
 import org.eclipse.keyple.calypso.command.sam.parser.security.DigestAuthenticateRespPars;
 import org.eclipse.keyple.calypso.command.sam.parser.security.DigestCloseRespPars;
 import org.eclipse.keyple.calypso.command.sam.parser.security.SamGetChallengeRespPars;
+import org.eclipse.keyple.calypso.command.sam.parser.security.SvCheckRespPars;
 import org.eclipse.keyple.calypso.command.sam.parser.security.SvPrepareOperationRespPars;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronizedExchangesException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoSamIOException;
@@ -553,7 +554,7 @@ class SamCommandProcessor {
      * <li>The SAM part of the SV signature (5 or 10 bytes depending on PO mode)
      * </ul>
      *
-     * @param svPrepareRequest the prepare command request (can be prepareSvReload/Debit/Undebit)
+     * @param svPrepareCmdBuild the prepare command builder (can be prepareSvReload/Debit/Undebit)
      * @return a byte array containing the complementary data
      * @throws CalypsoSamIOException if the communication with the SAM has failed.
      */
@@ -688,17 +689,19 @@ class SamCommandProcessor {
      * The PO signature is compared by the SAM with the one it has computed on its side.
      * 
      * @param svOperationResponseData the data of the SV operation performed
-     * @return true if the SV check is successful
-     * @throws KeypleReaderException if the communication with the SAM fails
+     * @throws CalypsoSamIOException if the communication with the SAM has failed.
+     * @throws CalypsoSamCommandException if the SAM has responded with an error status
      */
-    boolean getSvCheckStatus(byte[] svOperationResponseData) {
-        List<ApduRequest> samApduRequestList = new ArrayList<ApduRequest>();
-        AbstractApduCommandBuilder svCheckCmdBuilder = new SvCheckCmdBuild(
+    void checkSvStatus(byte[] svOperationResponseData) {
+        List<AbstractSamCommandBuilder<? extends AbstractSamResponseParser>> samCommands =
+                new ArrayList<AbstractSamCommandBuilder<? extends AbstractSamResponseParser>>();
+
+        SvCheckCmdBuild svCheckCmdBuilder = new SvCheckCmdBuild(
                 samResource.getMatchingSe().getSamRevision(), svOperationResponseData);
-        samApduRequestList.add(svCheckCmdBuilder.getApduRequest());
+        samCommands.add(svCheckCmdBuilder);
 
         // build a SAM SeRequest
-        SeRequest samSeRequest = new SeRequest(samApduRequestList);
+        SeRequest samSeRequest = new SeRequest(getApduRequests(samCommands));
 
         // execute the command
         SeResponse samSeResponse =
@@ -706,11 +709,9 @@ class SamCommandProcessor {
 
         ApduResponse svCheckResponse = samSeResponse.getApduResponses().get(0);
 
-        if (!svCheckResponse.isSuccessful() && logger.isErrorEnabled()) {
-            logger.error("SAM command prepareReload failed with status word {}",
-                    ByteArrayUtil.toHex(svCheckResponse.getBytes()));
-        }
+        // create a parser
+        SvCheckRespPars svCheckRespPars = svCheckCmdBuilder.createResponseParser(svCheckResponse);
 
-        return svCheckResponse.isSuccessful();
+        svCheckRespPars.checkStatus();
     }
 }

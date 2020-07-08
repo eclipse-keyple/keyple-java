@@ -30,7 +30,7 @@ public class SvCheckRespPars extends AbstractSamResponseParser {
                 new StatusProperties("Incorrect Lc.", CalypsoSamIllegalParameterException.class));
         m.put(0x6985, new StatusProperties("No active SV transaction.",
                 CalypsoSamAccessForbiddenException.class));
-        m.put(0x6988, new StatusProperties("Incorrect signature.",
+        m.put(0x6988, new StatusProperties("Incorrect SV signature.",
                 CalypsoSamSecurityDataException.class));
         STATUS_TABLE = m;
     }

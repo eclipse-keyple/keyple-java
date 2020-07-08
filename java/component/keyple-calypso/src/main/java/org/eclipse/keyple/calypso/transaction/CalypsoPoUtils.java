@@ -102,7 +102,7 @@ final class CalypsoPoUtils {
 
     public static final int PIN_LENGTH = 4;
 
-    private static byte[] challenge;
+    private static byte[] poChallenge;
     private static byte svKvc;
     private static byte[] svGetHeader;
     private static byte[] svGetData;
@@ -324,8 +324,9 @@ final class CalypsoPoUtils {
     }
 
     /**
-     * Parse the response to a Get Challenge command received from the PO <br>
-     * The PO challenge value is stored in {@link CalypsoPoUtils}
+     * Parses the response to a Get Challenge command received from the PO <br>
+     * The PO challenge value is stored in {@link CalypsoPoUtils} and made available through a
+     * dedicated getters for later use
      *
      * @param poGetChallengeCmdBuild the Get Challenge command builder
      * @param apduResponse the response received
@@ -338,7 +339,7 @@ final class CalypsoPoUtils {
 
         poGetChallengeRespPars.checkStatus();
 
-        challenge = apduResponse.getDataOut();
+        poChallenge = apduResponse.getDataOut();
 
         return poGetChallengeRespPars;
     }
@@ -375,6 +376,17 @@ final class CalypsoPoUtils {
         return verifyPinRespPars;
     }
 
+    /**
+     * Updated the {@link CalypsoPo} object with the response to an SV Get command received from the
+     * PO <br>
+     * The SV Data values (KVC, command header, response data) are stored in {@link CalypsoPoUtils}
+     * and made available through a dedicated getters for later use<br>
+     *
+     * @param calypsoPo the {@link CalypsoPo} object to update
+     * @param svGetCmdBuild the SV Get command builder
+     * @param apduResponse the response received
+     * @throws CalypsoPoCommandException if a response from the PO was unexpected
+     */
     private static SvGetRespPars updateCalypsoPoSvGet(CalypsoPo calypsoPo,
             SvGetCmdBuild svGetCmdBuild, ApduResponse apduResponse) {
         SvGetRespPars svGetRespPars = svGetCmdBuild.createResponseParser(apduResponse);
@@ -391,6 +403,16 @@ final class CalypsoPoUtils {
         return svGetRespPars;
     }
 
+    /**
+     * Checks the response to a SV Operation command (reload, debit or undebit) response received
+     * from the PO<br>
+     *
+     * @param calypsoPo the {@link CalypsoPo} object to update
+     * @param svOperationCmdBuild the SV Operation command builder (SvReloadCmdBuild,
+     *        SvDebitCmdBuild or SvUndebitCmdBuild)
+     * @param apduResponse the response received
+     * @throws CalypsoPoCommandException if a response from the PO was unexpected
+     */
     private static AbstractPoResponseParser updateCalypsoPoSvOperation(CalypsoPo calypsoPo,
             AbstractPoCommandBuilder<? extends AbstractPoResponseParser> svOperationCmdBuild,
             ApduResponse apduResponse) {
@@ -650,22 +672,20 @@ final class CalypsoPoUtils {
 
     /**
      * (package-private)<br>
-     * Get the challenge received from the PO
+     * Gets the challenge received from the PO
      *
      * @return an array of bytes containing the challenge bytes (variable length according to the
      *         revision of the PO). May be null if the challenge is not available.
-     * @since 0.9
      */
-    static byte[] getChallenge() {
-        return challenge;
+    static byte[] getPoChallenge() {
+        return poChallenge;
     }
 
     /**
      * (package-private)<br>
-     * Get the SV KVC from the PO
+     * Gets the SV KVC from the PO
      *
      * @return the SV KVC byte.
-     * @since 0.9
      */
     static byte getSvKvc() {
         return svKvc;
@@ -673,23 +693,21 @@ final class CalypsoPoUtils {
 
     /**
      * (package-private)<br>
-     * Get the SV Get command header
+     * Gets the SV Get command header
      *
      * @return a byte array containing the SV Get command header.
-     * @since 0.9
      */
-    public static byte[] getSvGetHeader() {
+    static byte[] getSvGetHeader() {
         return svGetHeader;
     }
 
     /**
      * (package-private)<br>
-     * Get the SV Get command response data
+     * Gets the SV Get command response data
      *
      * @return a byte array containing the SV Get command response data.
-     * @since 0.9
      */
-    public static byte[] getSvGetData() {
+    static byte[] getSvGetData() {
         return svGetData;
     }
 }

@@ -40,9 +40,9 @@ class PoCommandManager {
             new ArrayList<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>>();
     /** The command index, incremented each time a command is added */
     private boolean preparedCommandsProcessed;
-    private CalypsoPoCommand svLastCommand = CalypsoPoCommand.SV_UNDEBIT;
-    private PoTransaction.SvSettings.Operation svOperation =
-            PoTransaction.SvSettings.Operation.DEBIT;
+    private CalypsoPoCommand svLastCommand;
+    private PoTransaction.SvSettings.Operation svOperation;
+    private boolean svOperationPending = false;
 
     PoCommandManager() {
         preparedCommandsProcessed = true;
@@ -122,15 +122,13 @@ class PoCommandManager {
                             "Inconsistent SV operation.");
                 }
                 this.svOperation = svOperation;
+                svOperationPending = true;
                 break;
             default:
                 throw new IllegalStateException("An SV command is expected.");
         }
         svLastCommand = commandBuilder.getCommandRef();
-        if (preparedCommandsProcessed) {
-            poCommands.clear();
-            preparedCommandsProcessed = false;
-        }
+
         poCommands.add(commandBuilder);
     }
 
@@ -161,5 +159,14 @@ class PoCommandManager {
      */
     boolean hasCommands() {
         return !poCommands.isEmpty();
+    }
+
+    /**
+     * Indicates whether an SV (Reload/Debit) operation has been requested
+     *
+     * @return true if a reload or debit command has been requested
+     */
+    public boolean isSvOperationPending() {
+        return svOperationPending;
     }
 }

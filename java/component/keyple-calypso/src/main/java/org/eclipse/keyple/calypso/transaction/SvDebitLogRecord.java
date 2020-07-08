@@ -25,6 +25,9 @@ public class SvDebitLogRecord {
 
     /**
      * Constructor
+     * 
+     * @param poResponse the Sv Get response data
+     * @param offset the debit log offset in the response (may change from a PO to another)
      */
     public SvDebitLogRecord(byte[] poResponse, int offset) {
         this.poResponse = poResponse;

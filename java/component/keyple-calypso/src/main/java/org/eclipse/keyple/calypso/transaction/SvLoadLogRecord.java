@@ -25,6 +25,9 @@ public class SvLoadLogRecord {
 
     /**
      * Constructor
+     * 
+     * @param poResponse the Sv Get response data
+     * @param offset the load log offset in the response (may change from a PO to another)
      */
     public SvLoadLogRecord(byte[] poResponse, int offset) {
         this.poResponse = poResponse;
