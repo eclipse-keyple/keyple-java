@@ -35,46 +35,35 @@ import org.slf4j.LoggerFactory;
 class PoCommandManager {
     private static final Logger logger = LoggerFactory.getLogger(PoCommandManager.class);
 
-    /** The list to contain the prepared commands and their parsers */
+    /** The list to contain the prepared commands */
     private final List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poCommands =
             new ArrayList<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>>();
-    /** The command index, incremented each time a command is added */
-    private boolean preparedCommandsProcessed;
     private CalypsoPoCommand svLastCommand;
     private PoTransaction.SvSettings.Operation svOperation;
     private boolean svOperationPending = false;
 
-    PoCommandManager() {
-        preparedCommandsProcessed = true;
-    }
+    /**
+     * (package-private)<br>
+     * Constructor
+     */
+    PoCommandManager() {}
 
     /**
+     * (package-private)<br>
      * Add a regular command to the builders and parsers list.
-     * <p>
-     * Handle the clearing of the list if needed.
      *
      * @param commandBuilder the command builder
      */
     void addRegularCommand(
             AbstractPoCommandBuilder<? extends AbstractPoResponseParser> commandBuilder) {
-        /*
-         * Reset the list if the preparation of the command is done after a previous processing
-         * notified by notifyCommandsProcessed.
-         */
-        if (preparedCommandsProcessed) {
-            poCommands.clear();
-            preparedCommandsProcessed = false;
-        }
         poCommands.add(commandBuilder);
     }
 
     /**
+     * (package-private)<br>
      * Add a StoredValue command to the builders and parsers list.
      * <p>
-     * Handle the clearing of the list if needed.
-     * <p>
-     * Set up a mini state machine to manage the scheduling of Stored Value commands keeping the
-     * position of the last SvGet/Operation in the command list.
+     * Set up a mini state machine to manage the scheduling of Stored Value commands.
      * <p>
      * The {@link PoTransaction.SvSettings.Operation} and {@link PoTransaction.SvSettings.Action}
      * are also used to check the consistency of the SV process.
@@ -90,11 +79,6 @@ class PoCommandManager {
     void addStoredValueCommand(
             AbstractPoCommandBuilder<? extends AbstractPoResponseParser> commandBuilder,
             PoTransaction.SvSettings.Operation svOperation) {
-        if (preparedCommandsProcessed) {
-            poCommands.clear();
-            preparedCommandsProcessed = false;
-        }
-
         // Check the logic of the SV command sequencing
         switch (commandBuilder.getCommandRef()) {
             case SV_GET:
@@ -133,28 +117,28 @@ class PoCommandManager {
     }
 
     /**
+     * (package-private)<br>
      * Informs that the commands have been processed.
      * <p>
      * Just record the information. The initialization of the list of commands will be done only the
      * next time a command is added, this allows access to the parsers contained in the list..
      */
     void notifyCommandsProcessed() {
-        preparedCommandsProcessed = true;
+        poCommands.clear();
     }
 
     /**
+     * (package-private)<br>
+     * 
      * @return the current AbstractPoCommandBuilder list
      */
     List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> getPoCommandBuilders() {
-        /* Clear the list if no command has been added since the last call to a process method. */
-        if (preparedCommandsProcessed) {
-            poCommands.clear();
-            preparedCommandsProcessed = false;
-        }
         return poCommands;
     }
 
     /**
+     * (package-private)<br>
+     * 
      * @return true if the {@link PoCommandManager} has commands
      */
     boolean hasCommands() {
@@ -162,11 +146,12 @@ class PoCommandManager {
     }
 
     /**
+     * (package-private)<br>
      * Indicates whether an SV (Reload/Debit) operation has been requested
      *
      * @return true if a reload or debit command has been requested
      */
-    public boolean isSvOperationPending() {
+    boolean isSvOperationPending() {
         return svOperationPending;
     }
 }

@@ -508,8 +508,13 @@ public class CalypsoPo extends AbstractMatchingSe {
             SvDebitLogRecord svDebitLogRecord) {
         this.svBalance = svBalance;
         this.svLastTNum = svLastTNum;
-        this.svLoadLogRecord = svLoadLogRecord;
-        this.svDebitLogRecord = svDebitLogRecord;
+        // update logs, do not overwrite existing values (case of double reading)
+        if (this.svLoadLogRecord == null) {
+            this.svLoadLogRecord = svLoadLogRecord;
+        }
+        if (this.svDebitLogRecord == null) {
+            this.svDebitLogRecord = svDebitLogRecord;
+        }
     }
 
     /**

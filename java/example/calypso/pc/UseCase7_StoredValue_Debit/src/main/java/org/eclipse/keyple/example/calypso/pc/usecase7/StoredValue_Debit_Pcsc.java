@@ -15,12 +15,11 @@ package org.eclipse.keyple.example.calypso.pc.usecase7;
 import static org.eclipse.keyple.calypso.transaction.PoTransaction.SvSettings;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.CalypsoSam;
+import org.eclipse.keyple.calypso.transaction.ElementaryFile;
 import org.eclipse.keyple.calypso.transaction.PoSecuritySettings;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
-import org.eclipse.keyple.calypso.transaction.SvDebitLogRecord;
-import org.eclipse.keyple.calypso.transaction.SvLoadLogRecord;
 import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
@@ -29,6 +28,7 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
@@ -40,7 +40,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 /**
- * <h1>Use Case ‘Calypso 7’ – Stored Value (PC/SC)</h1><br>
+ * <h1>Use Case ‘Calypso 7’ – Stored Value Debit (PC/SC)</h1><br>
+ * This example illustrates an SV debit within a secure session.<br>
  */
 public class StoredValue_Debit_Pcsc {
     private static final Logger logger = LoggerFactory.getLogger(StoredValue_Debit_Pcsc.class);
@@ -95,13 +96,13 @@ public class StoredValue_Debit_Pcsc {
         return false;
     }
 
-    private static String prettyPrintJson(String uglyJSONString) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        JsonParser jp = new JsonParser();
-        JsonElement je = jp.parse(uglyJSONString);
-        return gson.toJson(je);
-    }
-
+    /**
+     * Main program entry
+     * <p>
+     * Any error will be notified by a runtime exception (not captured in this example).
+     *
+     * @param args not used
+     */
     public static void main(String[] args) {
 
         // Get the instance of the SeProxyService (Singleton pattern)
@@ -124,6 +125,7 @@ public class StoredValue_Debit_Pcsc {
 
         if (selectPo()) {
             // Security settings
+            // Keep the default setting for SV logs reading (only the debit log will be read here)
             PoSecuritySettings poSecuritySettings =
                     new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)//
                             .build();
@@ -134,38 +136,66 @@ public class StoredValue_Debit_Pcsc {
 
             PoTransaction poTransaction = new PoTransaction(poResource, poSecuritySettings);
 
-            poTransaction.processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_LOAD);
+            // Read the EventLog file at the Session Opening
+            poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_EventLog,
+                    CalypsoClassicInfo.RECORD_NUMBER_1);
 
+            // Open a secure session (DEBIT level) and execute the prepared command
+            poTransaction
+                    .processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT);
+
+            // Get and display the EventLog data
+            ElementaryFile efEventLog = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+
+            String eventLog = ByteArrayUtil.toHex(efEventLog.getData().getContent());
+            logger.info("File Event log: {}", eventLog);
+
+            // Prepare a SV Debit (this command could also have been placed before processOpening
+            // since it is not followed by any other command)
             poTransaction.prepareSvGet(SvSettings.Operation.DEBIT, SvSettings.Action.DO);
 
+            // Execute the prepared command
             poTransaction.processPoCommandsInSession();
 
-            logger.info("SV Get:");
-            logger.info("Balance = {}", calypsoPo.getSvBalance());
-            logger.info("Last Transaction Number = {}", calypsoPo.getSvLastTNum());
-            SvLoadLogRecord loadLogRecord = calypsoPo.getSvLoadLogRecord();
-            SvDebitLogRecord debitLogRecord = calypsoPo.getSvDebitLogLastRecord();
-            if (loadLogRecord != null) {
-                logger.info("Load log record = {}", prettyPrintJson(loadLogRecord.toString()));
-            } else {
-                logger.info("No load log record");
-            }
-            if (debitLogRecord != null) {
-                logger.info("Debit log record = {}", prettyPrintJson(debitLogRecord.toString()));
+            // Display the current SV status
+            logger.info("Current SV status (SV Get for DEBIT):");
+            logger.info(". Balance = {}", calypsoPo.getSvBalance());
+            logger.info(". Last Transaction Number = {}", calypsoPo.getSvLastTNum());
 
-            } else {
-                logger.info("No debit log record");
-            }
+            // To easily display the content of the log, we use here the toString method which
+            // exports the data in JSON format.
+            String debitLogRecordJson =
+                    prettyPrintJson(calypsoPo.getSvDebitLogLastRecord().toString());
+            logger.info(". Debit log record = {}", debitLogRecordJson);
 
+            // Prepare an SV Debit of 2 units
             poTransaction.prepareSvDebit(2);
 
-            // poTransaction.processPoCommandsInSession();
+            // Prepare to append a new record to EventLog. Just increment the first byte.
+            byte[] log = efEventLog.getData().getContent();
+            log[0] = (byte) (log[0] + 1);
+            poTransaction.prepareAppendRecord(CalypsoClassicInfo.SFI_EventLog, log);
 
+            // Execute the 2 prepared commands, close the secure session, verify the SV signature
+            // and close the communication after
             poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
         } else {
             logger.error("The PO selection failed");
         }
 
         System.exit(0);
+    }
+
+    /**
+     * Help method for formatting a JSON data string
+     *
+     * @param uglyJSONString the string to format
+     * @return the formatted string
+     */
+    private static String prettyPrintJson(String uglyJSONString) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonParser jp = new JsonParser();
+        JsonElement je = jp.parse(uglyJSONString);
+        return gson.toJson(je);
     }
 }
