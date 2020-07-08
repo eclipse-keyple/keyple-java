@@ -40,17 +40,14 @@ public class SvCheckCmdBuild extends AbstractSamCommandBuilder {
         if (revision != null) {
             this.defaultRevision = revision;
         }
+
         byte cla = this.defaultRevision.getClassByte();
-
-        byte p1, p2;
-        byte[] data;
-
-        p1 = (byte) 0x00;
-        p2 = (byte) 0x00;
+        byte p1 = (byte) 0x00;
+        byte p2 = (byte) 0x00;
 
         if (svPoSignature != null) {
             // the operation is not "abort"
-            data = new byte[svPoSignature.length];
+            byte[] data = new byte[svPoSignature.length];
             System.arraycopy(svPoSignature, 0, data, 0, svPoSignature.length);
             request = setApduRequest(cla, command, p1, p2, data, null);
         } else {
