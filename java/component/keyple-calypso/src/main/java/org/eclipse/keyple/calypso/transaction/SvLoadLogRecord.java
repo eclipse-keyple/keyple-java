@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
-import java.util.Arrays;
+
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /**
@@ -35,7 +35,7 @@ public class SvLoadLogRecord {
     }
 
     /**
-     * Get the load amount
+     * Gets the load amount
      * 
      * @return the amount value
      * @since 0.9
@@ -45,7 +45,7 @@ public class SvLoadLogRecord {
     }
 
     /**
-     * Get the SV balance
+     * Gets the SV balance
      * 
      * @return the balance value
      * @since 0.9
@@ -55,7 +55,7 @@ public class SvLoadLogRecord {
     }
 
     /**
-     * Get the load time
+     * Gets the load time
      * 
      * @return the time value as an int
      * @since 0.9
@@ -65,7 +65,7 @@ public class SvLoadLogRecord {
     }
 
     /**
-     * Get the load time
+     * Gets the load time
      * 
      * @return the time value as a 2-byte byte array
      * @since 0.9
@@ -78,7 +78,7 @@ public class SvLoadLogRecord {
     }
 
     /**
-     * Get the load date
+     * Gets the load date
      * 
      * @return the date value as an int
      * @since 0.9
@@ -88,7 +88,7 @@ public class SvLoadLogRecord {
     }
 
     /**
-     * Get the load date
+     * Gets the load date
      * 
      * @return the date value as a 2-byte byte array
      * @since 0.9
@@ -100,10 +100,22 @@ public class SvLoadLogRecord {
         return date;
     }
 
+    /**
+     * Gets the free bytes as a String
+     *
+     * @return the free value as an Ascii string
+     * @since 0.9
+     */
     public String getFreeByte() {
-        return Arrays.toString(getFreeByteBytes());
+        return new String(getFreeByteBytes());
     }
 
+    /**
+     * Gets the free bytes
+     *
+     * @return the free value as a 2-byte byte array
+     * @since 0.9
+     */
     public byte[] getFreeByteBytes() {
         final byte[] free = new byte[2];
         free[0] = poResponse[offset + 2];
@@ -111,12 +123,18 @@ public class SvLoadLogRecord {
         return free;
     }
 
-    public byte getKVC() {
+    /**
+     * Gets the KVC of the load key (as given in the last SV Reload)
+     *
+     * @return the KVC value
+     * @since 0.9
+     */
+    public byte getKvc() {
         return poResponse[offset + 3];
     }
 
     /**
-     * Get the SAM ID
+     * Gets the SAM ID
      * 
      * @return the SAM ID value as an int
      * @since 0.9
@@ -126,7 +144,7 @@ public class SvLoadLogRecord {
     }
 
     /**
-     * Get the SAM ID
+     * Gets the SAM ID
      * 
      * @return the SAM ID value as a 4-byte byte array
      * @since 0.9
@@ -138,7 +156,7 @@ public class SvLoadLogRecord {
     }
 
     /**
-     * Get the SV transaction number
+     * Gets the SV transaction number
      * 
      * @return the SV transaction number value as an int
      * @since 0.9
@@ -148,7 +166,7 @@ public class SvLoadLogRecord {
     }
 
     /**
-     * Get the SV transaction number
+     * Gets the SV transaction number
      * 
      * @return the SV transaction number value as a 2-byte byte array
      * @since 0.9
@@ -161,7 +179,7 @@ public class SvLoadLogRecord {
     }
 
     /**
-     * Get the SAM transaction number
+     * Gets the SAM transaction number
      * 
      * @return the SAM transaction number value as an int
      * @since 0.9
@@ -171,7 +189,7 @@ public class SvLoadLogRecord {
     }
 
     /**
-     * Get the SAM transaction number
+     * Gets the SAM transaction number
      * 
      * @return the SAM transaction number value as a 3-byte byte array
      * @since 0.9
@@ -182,12 +200,16 @@ public class SvLoadLogRecord {
         return samTNum;
     }
 
+
+    /**
+     * @return a JSON formatted string with the debit log content
+     */
     @Override
     public String toString() {
         return "{\"SvLoadLogRecord\":{" + "\"amount\":" + getAmount() + ", \"balance\":"
                 + getBalance() + ", \"debitDate\":" + getLoadDate() + ", \"debitTime\":"
                 + getLoadDate() + ", \"freeBytes\":" + ByteArrayUtil.toHex(getFreeByteBytes())
-                + ", \"samId\":" + ByteArrayUtil.toHex(getSamIdBytes())
+                + ", \"Kvc\":" + getKvc() + ", \"samId\":" + ByteArrayUtil.toHex(getSamIdBytes())
                 + ", \"svTransactionNumber\":" + getSvTNum() + ", \"svSamTransactionNumber\":"
                 + getSamTNum() + "}}";
     }

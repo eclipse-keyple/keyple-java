@@ -11,8 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.*;
 import static org.eclipse.keyple.calypso.transaction.PoTransaction.SessionSetting.AccessLevel;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -20,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import org.eclipse.keyple.calypso.SelectFileControl;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoAtomicTransactionException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoAuthenticationNotVerifiedException;
@@ -69,7 +69,8 @@ public class PoTransactionTest {
             "6F2A8410A0000004040125090101000000000000A516BF0C13C708 0000000011223344 53070A2E11420001019000";
     private static final String FCI_REV31 =
             "6F238409315449432E49434131A516BF0C13C708 0000000011223344 53070A3C23121410019000";
-
+    private static final String FCI_STORED_VALUE_REV31 =
+            "6F238409315449432E49434131A516BF0C13C708 0000000011223344 53070A3C23201410019000";
     private static final String ATR1 = "3B3F9600805A0080C120000012345678829000";
 
     private static final String PIN_OK = "0000";
@@ -201,6 +202,32 @@ public class PoTransactionTest {
     private static final String PO_VERIFY_PIN_OK_RSP = "9000";
     private static final String PO_VERIFY_PIN_KO_RSP = "63C2";
 
+    private static int SV_BALANCE = 0x123456;
+    private static String SV_BALANCE_STR = "123456";
+    private static final String PO_SV_GET_DEBIT_CMD = "007C000900";
+    private static final String PO_SV_GET_DEBIT_RSP = "790073A54BC97DFA" + SV_BALANCE_STR
+            + "FFFE0000000079123456780000DD0000160072" + SW1SW2_OK;
+    private static final String PO_SV_GET_RELOAD_CMD = "007C000700";
+    private static final String PO_SV_GET_RELOAD_RSP = "79007221D35F0E36" + SV_BALANCE_STR
+            + "000000790000001A0000020000123456780000DB0070" + SW1SW2_OK;
+    private static final String PO_SV_RELOAD_CMD =
+            "00B89591171600000079000000020000123456780000DE2C8CB3D280";
+    private static final String PO_SV_RELOAD_RSP = "A54BC9" + SW1SW2_OK;
+    private static final String PO_SV_DEBIT_CMD =
+            "00BACD001434FFFE0000000079123456780000DF0C9437AABB";
+    private static final String PO_SV_DEBIT_RSP = "A54BC9" + SW1SW2_OK;
+    private static final String PO_SV_UNDEBIT_CMD =
+            "00BCCD00143400020000000079123456780000DF0C9437AABB";
+    private static final String PO_SV_UNDEBIT_RSP = "A54BC9" + SW1SW2_OK;
+    private static final String PO_READ_SV_LOAD_LOG_FILE_CMD = "00B201A400";
+    private static final String PO_READ_SV_LOAD_LOG_FILE_RSP =
+            "000000780000001A0000020000AABBCCDD0000DB007000000000000000" + SW1SW2_OK;
+    private static final String PO_READ_SV_DEBIT_LOG_FILE_CMD = "00B201AD5D";
+    private static final String PO_READ_SV_DEBIT_LOG_FILE_RSP =
+            "011DFFFE0000000079AABBCC010000DA000018006F00000000000000000000"
+                    + "021DFFFE0000000079AABBCC020000DA000018006F00000000000000000000"
+                    + "031DFFFE0000000079AABBCC030000DA000018006F00000000000000000000" + SW1SW2_OK;
+
     private static final String PO_GET_CHALLENGE_CMD = "0084000008";
     private static final String PO_GET_CHALLENGE_RSP = PO_CHALLENGE + SW1SW2_OK;
 
@@ -252,6 +279,17 @@ public class PoTransactionTest {
     private static final String SAM_CARD_CIPHER_PIN_RSP = CIPHER_PIN_OK + SW1SW2_OK;
     private static final String SAM_GIVE_RANDOM_CMD = "8086000008" + PO_CHALLENGE;
     private static final String SAM_GIVE_RANDOM_RSP = SW1SW2_OK;
+    private static final String SAM_PREPARE_LOAD_CMD = "805601FF367C00070079007221D35F0E36"
+            + SV_BALANCE_STR
+            + "000000790000001A0000020000123456780000DB00709000B80000170000000079000000020000";
+    private static final String SAM_PREPARE_LOAD_RSP = "9591160000DE2C8CB3D280" + SW1SW2_OK;
+    private static final String SAM_PREPARE_DEBIT_CMD = "805401FF307C000900790073A54BC97DFA"
+            + SV_BALANCE_STR + "FFFE0000000079123456780000DD00001600729000BA00001400FFFE0000000079";
+    private static final String SAM_PREPARE_DEBIT_RSP = "CD00340000DF0C9437AABB" + SW1SW2_OK;
+    private static final String SAM_PREPARE_UNDEBIT_CMD = "805C01FF307C000900790073A54BC97DFA"
+            + SV_BALANCE_STR + "FFFE0000000079123456780000DD00001600729000BC0000140000020000000079";
+    private static final String SAM_PREPARE_UNDEBIT_RSP = "CD00340000DF0C9437AABB" + SW1SW2_OK;
+    private static final String SAM_SV_CHECK_CMD = "8058000003A54BC9";
 
     @Before
     public void setUp() {
@@ -1421,6 +1459,130 @@ public class PoTransactionTest {
         assertThat(calypsoPoRev31.getFileBySfi(FILE7).getData().getContentAsCounterValue(2))
                 .isEqualTo(ByteArrayUtil.threeBytesToInt(ByteArrayUtil.fromHex(FILE7_REC1_COUNTER2),
                         0));
+    }
+
+    @Test
+    public void testPrepareSvGet_Reload() {
+        CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
+        PoSecuritySettings poSecuritySettings =
+                new PoSecuritySettings.PoSecuritySettingsBuilder(samResource).build();
+        poTransaction = new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPoRev31),
+                poSecuritySettings);
+
+        samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_PREPARE_LOAD_CMD, SAM_PREPARE_LOAD_RSP);
+        samCommandsTestSet.put(SAM_SV_CHECK_CMD, SW1SW2_OK);
+
+        poCommandsTestSet.put(PO_SV_GET_RELOAD_CMD, PO_SV_GET_RELOAD_RSP);
+        poCommandsTestSet.put(PO_SV_RELOAD_CMD, PO_SV_RELOAD_RSP);
+
+        poTransaction.prepareSvGet(PoTransaction.SvSettings.Operation.RELOAD,
+                PoTransaction.SvSettings.Action.DO);
+        poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
+        poTransaction.prepareSvReload(2);
+        poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER);
+        assertThat(calypsoPoRev31.getSvBalance()).isEqualTo(SV_BALANCE);
+        assertThat(calypsoPoRev31.getSvLoadLogRecord()).isNotNull();
+        try {
+            assertThat(calypsoPoRev31.getSvDebitLogLastRecord()).isNull();
+            shouldHaveThrown(NoSuchElementException.class);
+        } catch (NoSuchElementException ex) {
+        }
+    }
+
+    @Test
+    public void testPrepareSvGet_Reload_AllLogs() {
+        CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
+        PoSecuritySettings poSecuritySettings =
+                new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)//
+                        .svGetLogReadMode(PoTransaction.SvSettings.LogRead.ALL).build();
+        poTransaction = new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPoRev31),
+                poSecuritySettings);
+
+        samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_PREPARE_LOAD_CMD, SAM_PREPARE_LOAD_RSP);
+        samCommandsTestSet.put(SAM_SV_CHECK_CMD, SW1SW2_OK);
+
+        poCommandsTestSet.put(PO_SV_GET_DEBIT_CMD, PO_SV_GET_DEBIT_RSP);
+        poCommandsTestSet.put(PO_SV_GET_RELOAD_CMD, PO_SV_GET_RELOAD_RSP);
+        poCommandsTestSet.put(PO_SV_RELOAD_CMD, PO_SV_RELOAD_RSP);
+
+        poTransaction.prepareSvGet(PoTransaction.SvSettings.Operation.RELOAD,
+                PoTransaction.SvSettings.Action.DO);
+        poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
+        poTransaction.prepareSvReload(2);
+        poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER);
+        assertThat(calypsoPoRev31.getSvBalance()).isEqualTo(SV_BALANCE);
+        assertThat(calypsoPoRev31.getSvLoadLogRecord()).isNotNull();
+        assertThat(calypsoPoRev31.getSvDebitLogLastRecord()).isNotNull();
+    }
+
+    @Test
+    public void testPrepareSvGet_Debit() {
+        CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
+        PoSecuritySettings poSecuritySettings =
+                new PoSecuritySettings.PoSecuritySettingsBuilder(samResource).build();
+        poTransaction = new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPoRev31),
+                poSecuritySettings);
+
+        samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_PREPARE_DEBIT_CMD, SAM_PREPARE_DEBIT_RSP);
+        samCommandsTestSet.put(SAM_SV_CHECK_CMD, SW1SW2_OK);
+
+        poCommandsTestSet.put(PO_SV_GET_DEBIT_CMD, PO_SV_GET_DEBIT_RSP);
+        poCommandsTestSet.put(PO_SV_DEBIT_CMD, PO_SV_DEBIT_RSP);
+
+        poTransaction.prepareSvGet(PoTransaction.SvSettings.Operation.DEBIT,
+                PoTransaction.SvSettings.Action.DO);
+        poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
+        poTransaction.prepareSvDebit(2);
+        poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER);
+        assertThat(calypsoPoRev31.getSvBalance()).isEqualTo(SV_BALANCE);
+        assertThat(calypsoPoRev31.getSvDebitLogLastRecord()).isNotNull();
+    }
+
+    @Test
+    public void testPrepareSvGet_Undebit() {
+        CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
+        PoSecuritySettings poSecuritySettings =
+                new PoSecuritySettings.PoSecuritySettingsBuilder(samResource).build();
+        poTransaction = new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPoRev31),
+                poSecuritySettings);
+
+        samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_PREPARE_UNDEBIT_CMD, SAM_PREPARE_UNDEBIT_RSP);
+        samCommandsTestSet.put(SAM_SV_CHECK_CMD, SW1SW2_OK);
+
+        poCommandsTestSet.put(PO_SV_GET_DEBIT_CMD, PO_SV_GET_DEBIT_RSP);
+        poCommandsTestSet.put(PO_SV_UNDEBIT_CMD, PO_SV_UNDEBIT_RSP);
+
+        poTransaction.prepareSvGet(PoTransaction.SvSettings.Operation.DEBIT,
+                PoTransaction.SvSettings.Action.UNDO);
+        poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
+        poTransaction.prepareSvDebit(2);
+        poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER);
+        assertThat(calypsoPoRev31.getSvBalance()).isEqualTo(SV_BALANCE);
+        assertThat(calypsoPoRev31.getSvDebitLogLastRecord()).isNotNull();
+    }
+
+    @Test
+    public void testPrepareSvReadAllLogs() {
+        CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_STORED_VALUE_REV31);
+        poTransaction = new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPoRev31));
+
+        poCommandsTestSet.put(PO_READ_SV_LOAD_LOG_FILE_CMD, PO_READ_SV_LOAD_LOG_FILE_RSP);
+        poCommandsTestSet.put(PO_READ_SV_DEBIT_LOG_FILE_CMD, PO_READ_SV_DEBIT_LOG_FILE_RSP);
+
+        poTransaction.prepareSvReadAllLogs();
+        poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER);
+
+        assertThat(calypsoPoRev31.getSvLoadLogRecord()).isNotNull();
+        assertThat(calypsoPoRev31.getSvDebitLogLastRecord()).isNotNull();
+        List<SvDebitLogRecord> allDebitLogs = calypsoPoRev31.getSvDebitLogAllRecords();
+        assertThat(calypsoPoRev31.getSvDebitLogAllRecords().size()).isEqualTo(3);
+        assertThat(allDebitLogs.get(0).getSamId()).isEqualTo(0xAABBCC01);
+        assertThat(allDebitLogs.get(1).getSamId()).isEqualTo(0xAABBCC02);
+        assertThat(allDebitLogs.get(2).getSamId()).isEqualTo(0xAABBCC03);
     }
 
     @Test(expected = CalypsoPoIOException.class)

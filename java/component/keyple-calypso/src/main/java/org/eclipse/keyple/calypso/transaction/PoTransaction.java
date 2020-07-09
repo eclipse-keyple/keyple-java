@@ -21,6 +21,7 @@ import org.eclipse.keyple.calypso.SelectFileControl;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
+import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.AppendRecordCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.DecreaseCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.IncreaseCmdBuild;
@@ -1534,7 +1535,7 @@ public class PoTransaction {
                     "Stored Value is not available for this PO.");
         }
         if (SvSettings.LogRead.ALL.equals(poSecuritySettings.getSvGetLogReadMode())
-                && !calypsoPo.isConfidentialSessionModeSupported()) {
+                && (calypsoPo.getRevision() != PoRevision.REV3_2)) {
             // @see Calypso Layer ID 8.09/8.10 (200108): both reload and debit logs are requested
             // for a non rev3.2 PO add two SvGet commands (for RELOAD then for DEBIT).
             SvSettings.Operation operation1 =
@@ -1543,15 +1544,10 @@ public class PoTransaction {
             poCommandManager.addStoredValueCommand(
                     new SvGetCmdBuild(calypsoPo.getPoClass(), calypsoPo.getRevision(), operation1),
                     operation1);
-            poCommandManager.addStoredValueCommand(
-                    new SvGetCmdBuild(calypsoPo.getPoClass(), calypsoPo.getRevision(), svOperation),
-                    svOperation);
-        } else {
-            // create and keep the requested PoCommand, return the command index
-            poCommandManager.addStoredValueCommand(
-                    new SvGetCmdBuild(calypsoPo.getPoClass(), calypsoPo.getRevision(), svOperation),
-                    svOperation);
         }
+        poCommandManager.addStoredValueCommand(
+                new SvGetCmdBuild(calypsoPo.getPoClass(), calypsoPo.getRevision(), svOperation),
+                svOperation);
         this.svAction = svAction;
     }
 

@@ -35,7 +35,7 @@ public class SvDebitLogRecord {
     }
 
     /**
-     * Get the debit amount
+     * Gets the debit amount
      * 
      * @return the amount value
      * @since 0.9
@@ -45,7 +45,7 @@ public class SvDebitLogRecord {
     }
 
     /**
-     * Get the SV balance
+     * Gets the SV balance
      * 
      * @return the balance value
      * @since 0.9
@@ -55,7 +55,7 @@ public class SvDebitLogRecord {
     }
 
     /**
-     * Get the debit time
+     * Gets the debit time
      * 
      * @return the time value as an int
      * @since 0.9
@@ -65,7 +65,7 @@ public class SvDebitLogRecord {
     }
 
     /**
-     * Get the debit time
+     * Gets the debit time
      * 
      * @return the time value as a 2-byte byte array
      * @since 0.9
@@ -78,7 +78,7 @@ public class SvDebitLogRecord {
     }
 
     /**
-     * Get the debit date
+     * Gets the debit date
      * 
      * @return the date value as an int
      * @since 0.9
@@ -88,7 +88,7 @@ public class SvDebitLogRecord {
     }
 
     /**
-     * Get the debit date
+     * Gets the debit date
      * 
      * @return the date value as a 2-byte byte array
      * @since 0.9
@@ -101,7 +101,17 @@ public class SvDebitLogRecord {
     }
 
     /**
-     * Get the SAM ID
+     * Gets the KVC of the load key (as given in the last SV Reload)
+     *
+     * @return the KVC value
+     * @since 0.9
+     */
+    public byte getKvc() {
+        return poResponse[offset + 6];
+    }
+
+    /**
+     * Gets the SAM ID
      * 
      * @return the SAM ID value as an int
      * @since 0.9
@@ -111,7 +121,7 @@ public class SvDebitLogRecord {
     }
 
     /**
-     * Get the SAM ID
+     * Gets the SAM ID
      * 
      * @return the SAM ID value as a 4-byte byte array
      * @since 0.9
@@ -123,7 +133,7 @@ public class SvDebitLogRecord {
     }
 
     /**
-     * Get the SV transaction number
+     * Gets the SV transaction number
      * 
      * @return the SV transaction number value as an int
      * @since 0.9
@@ -133,7 +143,7 @@ public class SvDebitLogRecord {
     }
 
     /**
-     * Get the SV transaction number
+     * Gets the SV transaction number
      * 
      * @return the SV transaction number value as a 2-byte byte array
      * @since 0.9
@@ -146,7 +156,7 @@ public class SvDebitLogRecord {
     }
 
     /**
-     * Get the SAM transaction number
+     * Gets the SAM transaction number
      * 
      * @return the SAM transaction number value as an int
      * @since 0.9
@@ -156,7 +166,7 @@ public class SvDebitLogRecord {
     }
 
     /**
-     * Get the SAM transaction number
+     * Gets the SAM transaction number
      * 
      * @return the SAM transaction number value as a 3-byte byte array
      * @since 0.9
@@ -167,12 +177,15 @@ public class SvDebitLogRecord {
         return samTNum;
     }
 
+    /**
+     * @return a JSON formatted string with the load log content
+     */
     @Override
     public String toString() {
         return "{\"SvDebitLogRecord\":{" + "\"amount\":" + getAmount() + ", \"balance\":"
                 + getBalance() + ", \"debitDate\":" + getDebitDate() + ", \"debitTime\":"
-                + getDebitDate() + ", \"samId\":" + ByteArrayUtil.toHex(getSamIdBytes())
-                + ", \"svTransactionNumber\":" + getSvTNum() + ", \"svSamTransactionNumber\":"
-                + getSamTNum() + "}}";
+                + getDebitDate() + ", \"Kvc\":" + getKvc() + ", \"samId\":"
+                + ByteArrayUtil.toHex(getSamIdBytes()) + ", \"svTransactionNumber\":" + getSvTNum()
+                + ", \"svSamTransactionNumber\":" + getSamTNum() + "}}";
     }
 }

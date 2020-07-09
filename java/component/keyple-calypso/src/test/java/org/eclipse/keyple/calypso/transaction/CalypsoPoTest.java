@@ -14,6 +14,7 @@ package org.eclipse.keyple.calypso.transaction;
 
 import static org.assertj.core.api.Assertions.*;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import org.eclipse.keyple.calypso.command.PoClass;
@@ -260,6 +261,19 @@ public class CalypsoPoTest {
         assertThat(calypsoPo.isDfInvalidated()).isFalse();
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void testDfRatified_Unset() {
+        assertThat(po.isDfRatified()).isFalse();
+    }
+
+    @Test
+    public void testDfRatified() {
+        po.setDfRatified(true);
+        assertThat(po.isDfRatified()).isTrue();
+        po.setDfRatified(false);
+        assertThat(po.isDfRatified()).isFalse();
+    }
+
     @Test
     public void otherAttributes() {
         CalypsoPo calypsoPo;
@@ -443,5 +457,83 @@ public class CalypsoPoTest {
 
         content = po.getFileBySfi((byte) 1).getData().getContent(1);
         assertThat(content).isEqualTo(contentV1);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void pin_NotPresented() {
+        po.getPinAttemptRemaining();
+    }
+
+    @Test
+    public void pin_1() {
+        po.setPinAttemptRemaining(1);
+        assertThat(po.isPinBlocked()).isFalse();
+        assertThat(po.getPinAttemptRemaining()).isEqualTo(1);
+    }
+
+    @Test
+    public void pin_0() {
+        po.setPinAttemptRemaining(0);
+        assertThat(po.getPinAttemptRemaining()).isEqualTo(0);
+        assertThat(po.isPinBlocked()).isTrue();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void svData_NotAvailable_Balance() {
+        po.getSvBalance();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void svData_NotAvailable_LastTNum() {
+        po.getSvLastTNum();
+    }
+
+    @Test
+    public void svData_REV3_1() {
+        byte[] svGetReloadData = ByteArrayUtil
+                .fromHex("79007013DE31022200001A000000780000001A0000020000AABBCCDD0000DB00709000");
+        byte[] svGetDebitData = ByteArrayUtil
+                .fromHex("79007013DE31A75F00001AFFFE0000000079AABBCCDD0000DA000018006F");
+        po.setSvData(123, 456, new SvLoadLogRecord(svGetReloadData, 11),
+                new SvDebitLogRecord(svGetDebitData, 11));
+        assertThat(po.getSvBalance()).isEqualTo(123);
+        assertThat(po.getSvLastTNum()).isEqualTo(456);
+        assertThat(po.getSvLoadLogRecord()).isNotNull();
+        assertThat(po.getSvDebitLogLastRecord()).isNotNull();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void svData_AllRecords_empty() {
+        byte[] svGetReloadData = ByteArrayUtil
+                .fromHex("79007013DE31022200001A000000780000001A0000020000AABBCCDD0000DB00709000");
+        byte[] svGetDebitData = ByteArrayUtil
+                .fromHex("79007013DE31A75F00001AFFFE0000000079AABBCCDD0000DA000018006F");
+        po.setSvData(123, 456, new SvLoadLogRecord(svGetReloadData, 11),
+                new SvDebitLogRecord(svGetDebitData, 11));
+        po.getSvDebitLogAllRecords();
+    }
+
+    @Test
+    public void svData_AllRecords() {
+        byte[] svLoadRecordData =
+                ByteArrayUtil.fromHex("000000780000001A0000020000AABBCCDD0000DB007000000000000000");
+        byte[] svDebitRecordData1 =
+                ByteArrayUtil.fromHex("FFFE0000000079AABBCC010000DA000018006F00000000000000000000");
+        byte[] svDebitRecordData2 =
+                ByteArrayUtil.fromHex("FFFE0000000079AABBCC020000DA000018006F00000000000000000000");
+        byte[] svDebitRecordData3 =
+                ByteArrayUtil.fromHex("FFFE0000000079AABBCC030000DA000018006F00000000000000000000");
+        po.setContent(CalypsoPoUtils.SV_RELOAD_LOG_FILE_SFI, 1, svLoadRecordData);
+        po.setContent(CalypsoPoUtils.SV_DEBIT_LOG_FILE_SFI, 1, svDebitRecordData1);
+        po.setContent(CalypsoPoUtils.SV_DEBIT_LOG_FILE_SFI, 2, svDebitRecordData2);
+        po.setContent(CalypsoPoUtils.SV_DEBIT_LOG_FILE_SFI, 3, svDebitRecordData3);
+
+        assertThat(po.getSvLoadLogRecord()).isNotNull();
+        assertThat(po.getSvDebitLogLastRecord()).isNotNull();
+        List<SvDebitLogRecord> allDebitLogs = po.getSvDebitLogAllRecords();
+        assertThat(po.getSvDebitLogAllRecords().size()).isEqualTo(3);
+        assertThat(allDebitLogs.get(0).getSamId()).isEqualTo(0xAABBCC01);
+        assertThat(allDebitLogs.get(1).getSamId()).isEqualTo(0xAABBCC02);
+        assertThat(allDebitLogs.get(2).getSamId()).isEqualTo(0xAABBCC03);
     }
 }
