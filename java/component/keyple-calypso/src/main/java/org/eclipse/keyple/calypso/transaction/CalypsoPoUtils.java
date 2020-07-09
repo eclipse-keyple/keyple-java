@@ -102,10 +102,18 @@ final class CalypsoPoUtils {
 
     public static final int PIN_LENGTH = 4;
 
+    public static final byte STORED_VALUE_FILE_STRUCTURE_ID = (byte) 0x20;
+    public static final byte SV_RELOAD_LOG_FILE_SFI = (byte) 0x14;
+    public static final int SV_RELOAD_LOG_FILE_NB_REC = 1;
+    public static final byte SV_DEBIT_LOG_FILE_SFI = (byte) 0x15;
+    public static final int SV_DEBIT_LOG_FILE_NB_REC = 3;
+    public static final int SV_LOG_FILE_REC_LENGTH = 29;
+
     private static byte[] poChallenge;
     private static byte svKvc;
     private static byte[] svGetHeader;
     private static byte[] svGetData;
+    private static byte[] svOperationSignature;
 
     /**
      * Private constructor
@@ -406,6 +414,7 @@ final class CalypsoPoUtils {
     /**
      * Checks the response to a SV Operation command (reload, debit or undebit) response received
      * from the PO<br>
+     * Keep the PO SV signature if any (command executed outside a secure session).
      *
      * @param calypsoPo the {@link CalypsoPo} object to update
      * @param svOperationCmdBuild the SV Operation command builder (SvReloadCmdBuild,
@@ -420,6 +429,8 @@ final class CalypsoPoUtils {
                 svOperationCmdBuild.createResponseParser(apduResponse);
 
         svOperationRespPars.checkStatus();
+
+        svOperationSignature = svOperationRespPars.getApduResponse().getDataOut();
 
         return svOperationRespPars;
     }
@@ -709,5 +720,15 @@ final class CalypsoPoUtils {
      */
     static byte[] getSvGetData() {
         return svGetData;
+    }
+
+    /**
+     * (package-private)<br>
+     * Gets the last SV Operation signature (SV Reload, Debit or Undebit)
+     *
+     * @return a byte array containing the SV Operation signature or null if not available.
+     */
+    static byte[] getSvOperationSignature() {
+        return svOperationSignature;
     }
 }

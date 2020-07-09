@@ -500,7 +500,7 @@ public class PoTransaction {
 
         // If necessary, we check the status of the SV after the session has been successfully
         // closed.
-        if (poCommandManager.isSvOperationPending()) {
+        if (poCommandManager.isSvOperationCompleteOneTime()) {
             samCommandProcessor.checkSvStatus(poCloseSessionPars.getPostponedData());
         }
 
@@ -847,7 +847,7 @@ public class PoTransaction {
      */
     public final void processPoCommands(ChannelControl channelControl) {
 
-        /** This method should be called only if no session was previously open */
+        // This method should be called only if no session was previously open
         checkSessionIsNotOpen();
 
         // PO commands sent outside a Secure Session. No modifications buffer limitation.
@@ -855,6 +855,11 @@ public class PoTransaction {
 
         // sets the flag indicating that the commands have been executed
         poCommandManager.notifyCommandsProcessed();
+
+        // If an SV transaction was performed, we check the signature returned by the PO here
+        if (poCommandManager.isSvOperationCompleteOneTime()) {
+            samCommandProcessor.checkSvStatus(CalypsoPoUtils.getSvOperationSignature());
+        }
     }
 
     /**
@@ -1689,5 +1694,28 @@ public class PoTransaction {
     public final void prepareSvDebit(int amount) {
         final byte[] zero = {0x00, 0x00};
         prepareSvDebit(amount, zero, zero);
+    }
+
+    /**
+     * Prepare the reading of all SV log records
+     * <p>
+     * The SV transaction logs are contained in two files with fixed identifiers.<br>
+     * The file whose SFI is 0x14 contains 1 record containing the unique reload log.<br>
+     * The file whose SFI is 0x15 contains 3 records containing the last three debit logs.<br>
+     * At the end of this reading operation, the data will be accessible in CalypsoPo in raw format
+     * via the standard commands for accessing read files or in the form of dedicated objects (see
+     * {@link CalypsoPo#getSvLoadLogRecord()} and {@link CalypsoPo#getSvDebitLogAllRecords()})
+     */
+    public final void prepareSvReadAllLogs() {
+        if (calypsoPo.getApplicationSubtype() != CalypsoPoUtils.STORED_VALUE_FILE_STRUCTURE_ID) {
+            throw new CalypsoPoTransactionIllegalStateException(
+                    "The currently selected application is not an SV application.");
+        }
+        // reset SV data in CalypsoPo if any
+        calypsoPo.setSvData(0, 0, null, null);
+        prepareReadRecordFile(CalypsoPoUtils.SV_RELOAD_LOG_FILE_SFI,
+                CalypsoPoUtils.SV_RELOAD_LOG_FILE_NB_REC);
+        prepareReadRecordFile(CalypsoPoUtils.SV_DEBIT_LOG_FILE_SFI, 1,
+                CalypsoPoUtils.SV_DEBIT_LOG_FILE_NB_REC, CalypsoPoUtils.SV_LOG_FILE_REC_LENGTH);
     }
 }

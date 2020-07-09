@@ -40,7 +40,7 @@ class PoCommandManager {
             new ArrayList<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>>();
     private CalypsoPoCommand svLastCommand;
     private PoTransaction.SvSettings.Operation svOperation;
-    private boolean svOperationPending = false;
+    private boolean svOperationComplete = false;
 
     /**
      * (package-private)<br>
@@ -106,7 +106,7 @@ class PoCommandManager {
                             "Inconsistent SV operation.");
                 }
                 this.svOperation = svOperation;
-                svOperationPending = true;
+                svOperationComplete = true;
                 break;
             default:
                 throw new IllegalStateException("An SV command is expected.");
@@ -147,11 +147,16 @@ class PoCommandManager {
 
     /**
      * (package-private)<br>
-     * Indicates whether an SV (Reload/Debit) operation has been requested
+     * Indicates whether an SV Operation has been completed (Reload/Debit/Undebit requested) <br>
+     * This method is dedicated to triggering the signature verification after an SV transaction has
+     * been executed. It is a single-use method, as the flag is systematically reset to false after
+     * it is called.
      *
      * @return true if a reload or debit command has been requested
      */
-    boolean isSvOperationPending() {
-        return svOperationPending;
+    boolean isSvOperationCompleteOneTime() {
+        boolean flag = svOperationComplete;
+        svOperationComplete = false;
+        return flag;
     }
 }

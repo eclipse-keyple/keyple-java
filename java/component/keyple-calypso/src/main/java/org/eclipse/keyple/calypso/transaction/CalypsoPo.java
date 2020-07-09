@@ -549,9 +549,16 @@ public class CalypsoPo extends AbstractMatchingSe {
      * Gets the last SV load log record
      * 
      * @return a last SV load log record object or null if not available
+     * @throws NoSuchElementException if requested log is not found.
      * @since 0.9
      */
     public final SvLoadLogRecord getSvLoadLogRecord() {
+        if (svLoadLogRecord == null) {
+            // try to get it from the file data
+            byte[] logRecord =
+                    getFileBySfi(CalypsoPoUtils.SV_RELOAD_LOG_FILE_SFI).getData().getContent();
+            svLoadLogRecord = new SvLoadLogRecord(logRecord, 0);
+        }
         return svLoadLogRecord;
     }
 
@@ -559,9 +566,15 @@ public class CalypsoPo extends AbstractMatchingSe {
      * Gets the last SV debit log record
      * 
      * @return a last SV debit log record object or null if not available
+     * @throws NoSuchElementException if requested log is not found.
      * @since 0.9
      */
     public final SvDebitLogRecord getSvDebitLogLastRecord() {
+        if (svDebitLogRecord == null) {
+            // try to get it from the file data
+            List<SvDebitLogRecord> svDebitLogRecords = getSvDebitLogAllRecords();
+            svDebitLogRecord = svDebitLogRecords.get(0);
+        }
         return svDebitLogRecord;
     }
 
@@ -569,11 +582,18 @@ public class CalypsoPo extends AbstractMatchingSe {
      * Gets all available SV debit log records
      * 
      * @return a list of SV debit log record objects or null if not available
+     * @throws NoSuchElementException if requested log is not found.
      * @since 0.9
      */
     public final List<SvDebitLogRecord> getSvDebitLogAllRecords() {
-        // TODO Complete this
-        return null;
+        // get the logs from the file data
+        SortedMap<Integer, byte[]> logRecords =
+                getFileBySfi(CalypsoPoUtils.SV_DEBIT_LOG_FILE_SFI).getData().getAllRecordsContent();
+        List<SvDebitLogRecord> svDebitLogRecords = new ArrayList<SvDebitLogRecord>();
+        for (Map.Entry<Integer, byte[]> entry : logRecords.entrySet()) {
+            svDebitLogRecords.add(new SvDebitLogRecord(entry.getValue(), 0));
+        }
+        return svDebitLogRecords;
     }
 
     /**
