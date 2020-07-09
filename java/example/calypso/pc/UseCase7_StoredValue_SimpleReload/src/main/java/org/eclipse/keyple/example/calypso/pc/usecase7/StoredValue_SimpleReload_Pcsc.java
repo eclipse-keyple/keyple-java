@@ -44,7 +44,8 @@ import com.google.gson.JsonParser;
  * Both logs (reload and debit) are read.
  */
 public class StoredValue_SimpleReload_Pcsc {
-    private static final Logger logger = LoggerFactory.getLogger(StoredValue_SimpleReload_Pcsc.class);
+    private static final Logger logger =
+            LoggerFactory.getLogger(StoredValue_SimpleReload_Pcsc.class);
     private static SeReader poReader;
     private static CalypsoPo calypsoPo;
 
@@ -147,8 +148,7 @@ public class StoredValue_SimpleReload_Pcsc {
 
             // To easily display the content of the log, we use here the toString method which
             // exports the data in JSON format.
-            String loadLogRecordJson =
-                    prettyPrintJson(calypsoPo.getSvLoadLogRecord().toString());
+            String loadLogRecordJson = prettyPrintJson(calypsoPo.getSvLoadLogRecord().toString());
             logger.info(". Debit log record = {}", loadLogRecordJson);
 
             // Reload with 2 units

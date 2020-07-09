@@ -44,7 +44,8 @@ import com.google.gson.JsonParser;
  * This example illustrates an SV debit within a secure session.<br>
  */
 public class StoredValue_DebitInSession_Pcsc {
-    private static final Logger logger = LoggerFactory.getLogger(StoredValue_DebitInSession_Pcsc.class);
+    private static final Logger logger =
+            LoggerFactory.getLogger(StoredValue_DebitInSession_Pcsc.class);
     private static SeReader poReader;
     private static CalypsoPo calypsoPo;
 
