@@ -125,10 +125,10 @@ public class StoredValue_DebitInSession_Pcsc {
 
         if (selectPo()) {
             // Security settings
-            // Keep the default setting for SV logs reading (only the debit log will be read here)
+            // Both Reload and Debit SV logs are requested
             PoSecuritySettings poSecuritySettings =
                     new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)//
-                            .build();
+                            .svGetLogReadMode(SvSettings.LogRead.ALL).build();
 
             // Create the PO resource
             SeResource<CalypsoPo> poResource;
@@ -162,10 +162,12 @@ public class StoredValue_DebitInSession_Pcsc {
             logger.info(". Balance = {}", calypsoPo.getSvBalance());
             logger.info(". Last Transaction Number = {}", calypsoPo.getSvLastTNum());
 
-            // To easily display the content of the log, we use here the toString method which
+            // To easily display the content of the logs, we use here the toString method which
             // exports the data in JSON format.
+            String loadLogRecordJson = prettyPrintJson(calypsoPo.getSvLoadLogRecord().toString());
             String debitLogRecordJson =
                     prettyPrintJson(calypsoPo.getSvDebitLogLastRecord().toString());
+            logger.info(". Load log record = {}", loadLogRecordJson);
             logger.info(". Debit log record = {}", debitLogRecordJson);
 
             // Prepare an SV Debit of 2 units

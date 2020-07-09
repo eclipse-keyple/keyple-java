@@ -121,10 +121,10 @@ public class StoredValue_SimpleReload_Pcsc {
 
         if (selectPo()) {
             // Security settings
-            // Both Reload and Debit SV logs are requested
+            // Keep the default setting for SV logs reading (only the reload log will be read here)
             PoSecuritySettings poSecuritySettings =
                     new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)//
-                            .svGetLogReadMode(SvSettings.LogRead.ALL).build();
+                            .build();
 
             // Create the PO resource
             SeResource<CalypsoPo> poResource;
@@ -144,13 +144,12 @@ public class StoredValue_SimpleReload_Pcsc {
             logger.info(". Balance = {}", calypsoPo.getSvBalance());
             logger.info(". Last Transaction Number = {}", calypsoPo.getSvLastTNum());
 
-            // To easily display the content of the logs, we use here the toString method which
+
+            // To easily display the content of the log, we use here the toString method which
             // exports the data in JSON format.
-            String loadLogRecordJson = prettyPrintJson(calypsoPo.getSvLoadLogRecord().toString());
-            String debitLogRecordJson =
-                    prettyPrintJson(calypsoPo.getSvDebitLogLastRecord().toString());
-            logger.info(". Load log record = {}", loadLogRecordJson);
-            logger.info(". Debit log record = {}", debitLogRecordJson);
+            String loadLogRecordJson =
+                    prettyPrintJson(calypsoPo.getSvLoadLogRecord().toString());
+            logger.info(". Debit log record = {}", loadLogRecordJson);
 
             // Reload with 2 units
             poTransaction.prepareSvReload(2);
