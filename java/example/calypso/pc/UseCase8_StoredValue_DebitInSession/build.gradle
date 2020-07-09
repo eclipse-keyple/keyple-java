@@ -15,7 +15,7 @@ ext {
 mainClassName = 'org.eclipse.keyple.example.calypso.pc.usecase6.StoredValue_Pcsc'
 
 task('runPcsc', dependsOn: 'classes', type: JavaExec, group:'application') {
-    main = 'org.eclipse.keyple.example.calypso.pc.usecase7.StoredValue_Debit_Pcsc'
+    main = 'org.eclipse.keyple.example.calypso.pc.usecase7.StoredValue_DebitInSession_Pcsc'
     classpath = sourceSets.main.runtimeClasspath
 }
 

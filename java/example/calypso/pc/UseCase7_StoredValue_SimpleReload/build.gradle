@@ -12,10 +12,10 @@ ext {
     keyple_v = project.hasProperty("keyple_version") ? keyple_version : '+'
 }
 
-mainClassName = 'org.eclipse.keyple.example.calypso.pc.usecase6.StoredValue_Pcsc'
+mainClassName = 'org.eclipse.keyple.example.calypso.pc.usecase7.StoredValue_SimpleReload_Pcsc'
 
 task('runPcsc', dependsOn: 'classes', type: JavaExec, group:'application') {
-    main = 'org.eclipse.keyple.example.calypso.pc.usecase8.StoredValue_Reload_Pcsc'
+    main = 'org.eclipse.keyple.example.calypso.pc.usecase7.StoredValue_SimpleReload_Pcsc'
     classpath = sourceSets.main.runtimeClasspath
 }
 
