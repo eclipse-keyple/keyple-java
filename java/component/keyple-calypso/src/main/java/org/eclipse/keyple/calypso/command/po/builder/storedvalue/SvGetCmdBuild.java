@@ -60,7 +60,7 @@ public final class SvGetCmdBuild extends AbstractPoCommandBuilder<SvGetRespPars>
     /**
      * Gets the request SV operation (used to check the SV command sequence)
      * 
-     * @return the current SvSettings.Operation item
+     * @return the current SvSettings.Operation enum value
      */
     public SvSettings.Operation getSvOperation() {
         return svOperation;

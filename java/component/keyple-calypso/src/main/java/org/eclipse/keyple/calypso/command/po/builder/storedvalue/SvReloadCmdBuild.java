@@ -121,7 +121,7 @@ public final class SvReloadCmdBuild extends AbstractPoCommandBuilder<SvReloadRes
     /**
      * Gets the SV Reload part of the data to include in the SAM SV Prepare Load command
      * 
-     * @return a 15-byte array
+     * @return a byte array containing the SV reload data
      */
     public byte[] getSvReloadData() {
         byte[] svReloadData = new byte[15];

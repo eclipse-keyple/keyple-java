@@ -29,6 +29,7 @@ Releases:
 * fixed many issues raised by Sonarqube
  
 ### keyple-java-calypso 0.9a
+* KEYP-96 : added Stored Value management commands
 * KEYP-23 : added PIN management commands
 * KEYP-101 : enhanced CalypsoPo with card data (updated during the transaction)
 * KEYP-102 : update the content of CalypsoPo during selection

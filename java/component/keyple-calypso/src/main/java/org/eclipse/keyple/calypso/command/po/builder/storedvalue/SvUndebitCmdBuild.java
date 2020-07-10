@@ -121,7 +121,7 @@ public final class SvUndebitCmdBuild extends AbstractPoCommandBuilder<SvUndebitR
     /**
      * Gets the SV Debit part of the data to include in the SAM SV Prepare Debit command
      *
-     * @return a 12-byte array
+     * @return a byte array containing the SV undebit data
      */
     public byte[] getSvUndebitData() {
         byte[] svUndebitData = new byte[12];
