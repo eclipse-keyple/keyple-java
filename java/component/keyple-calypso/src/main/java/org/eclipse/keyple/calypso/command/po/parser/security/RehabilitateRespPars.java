@@ -12,6 +12,8 @@
 package org.eclipse.keyple.calypso.command.po.parser.security;
 
 
+import java.util.HashMap;
+import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.builder.security.RehabilitateCmdBuild;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoAccessForbiddenException;
@@ -20,9 +22,6 @@ import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoSecurityContextE
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoSessionBufferOverflowException;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Rehabilitate response parser.

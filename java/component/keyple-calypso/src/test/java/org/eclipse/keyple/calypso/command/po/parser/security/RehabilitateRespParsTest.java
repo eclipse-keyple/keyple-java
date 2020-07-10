@@ -22,13 +22,15 @@ public class RehabilitateRespParsTest {
 
     @Test
     public void rehabilitateRespPars_goodStatus() {
-        RehabilitateRespPars parser = new RehabilitateRespPars(new ApduResponse(SW1SW2_OK, null), null);
+        RehabilitateRespPars parser =
+                new RehabilitateRespPars(new ApduResponse(SW1SW2_OK, null), null);
         parser.checkStatus();
     }
 
     @Test(expected = CalypsoPoCommandException.class)
     public void rehabilitateRespPars_badStatus() {
-        RehabilitateRespPars parser = new RehabilitateRespPars(new ApduResponse(SW1SW2_KO, null), null);
+        RehabilitateRespPars parser =
+                new RehabilitateRespPars(new ApduResponse(SW1SW2_KO, null), null);
         parser.checkStatus();
     }
 }

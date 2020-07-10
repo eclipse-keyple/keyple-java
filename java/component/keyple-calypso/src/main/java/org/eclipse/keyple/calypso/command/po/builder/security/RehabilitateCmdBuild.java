@@ -14,13 +14,12 @@ package org.eclipse.keyple.calypso.command.po.builder.security;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
-import org.eclipse.keyple.calypso.command.po.parser.security.InvalidateRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.RehabilitateRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
- * The Class {@link RehabilitateCmdBuild}. This class provides the dedicated constructor to build the
- * PO Rehabilitate command.
+ * The Class {@link RehabilitateCmdBuild}. This class provides the dedicated constructor to build
+ * the PO Rehabilitate command.
  */
 public final class RehabilitateCmdBuild extends AbstractPoCommandBuilder<RehabilitateRespPars> {
 

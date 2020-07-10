@@ -11,14 +11,11 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.command.po.parser.security;
 
+
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
-import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoPinException;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
-
-import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.assertj.core.api.Java6Assertions.shouldHaveThrown;
 
 public class InvalidateRespParsTest {
     private static final byte[] SW1SW2_OK = ByteArrayUtil.fromHex("9000");

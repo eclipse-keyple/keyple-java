@@ -71,6 +71,9 @@ public class PoTransactionTest {
             "6F238409315449432E49434131A516BF0C13C708 0000000011223344 53070A3C23121410019000";
     private static final String FCI_STORED_VALUE_REV31 =
             "6F238409315449432E49434131A516BF0C13C708 0000000011223344 53070A3C23201410019000";
+    private static final String FCI_REV31_INVALIDATED =
+            "6F238409315449432E49434131A516BF0C13C708 0000000011223344 53070A3C23121410016283";
+
     private static final String ATR1 = "3B3F9600805A0080C120000012345678829000";
 
     private static final String PIN_OK = "0000";
@@ -227,6 +230,9 @@ public class PoTransactionTest {
             "011DFFFE0000000079AABBCC010000DA000018006F00000000000000000000"
                     + "021DFFFE0000000079AABBCC020000DA000018006F00000000000000000000"
                     + "031DFFFE0000000079AABBCC030000DA000018006F00000000000000000000" + SW1SW2_OK;
+
+    private static final String PO_INVALIDATE_CMD = "0004000000";
+    private static final String PO_REHABILITATE_CMD = "0044000000";
 
     private static final String PO_GET_CHALLENGE_CMD = "0084000008";
     private static final String PO_GET_CHALLENGE_RSP = PO_CHALLENGE + SW1SW2_OK;
@@ -1583,6 +1589,50 @@ public class PoTransactionTest {
         assertThat(allDebitLogs.get(0).getSamId()).isEqualTo(0xAABBCC01);
         assertThat(allDebitLogs.get(1).getSamId()).isEqualTo(0xAABBCC02);
         assertThat(allDebitLogs.get(2).getSamId()).isEqualTo(0xAABBCC03);
+    }
+
+    @Test
+    public void testPrepareInvalidate_notInvalidated() {
+        CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
+        poTransaction = new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPoRev31));
+
+        poCommandsTestSet.put(PO_INVALIDATE_CMD, SW1SW2_OK_RSP);
+
+        poTransaction.prepareInvalidate();
+        poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER);
+    }
+
+    @Test(expected = CalypsoPoTransactionIllegalStateException.class)
+    public void testPrepareInvalidate_invalidated() {
+        CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31_INVALIDATED);
+        poTransaction = new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPoRev31));
+
+        poCommandsTestSet.put(PO_INVALIDATE_CMD, SW1SW2_OK_RSP);
+
+        poTransaction.prepareInvalidate();
+        poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER);
+    }
+
+    @Test(expected = CalypsoPoTransactionIllegalStateException.class)
+    public void testPrepareRehabilitate_notInvalidated() {
+        CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
+        poTransaction = new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPoRev31));
+
+        poCommandsTestSet.put(PO_REHABILITATE_CMD, SW1SW2_OK_RSP);
+
+        poTransaction.prepareRehabilitate();
+        poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER);
+    }
+
+    @Test
+    public void testPrepareRehabilitate_invalidated() {
+        CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31_INVALIDATED);
+        poTransaction = new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPoRev31));
+
+        poCommandsTestSet.put(PO_REHABILITATE_CMD, SW1SW2_OK_RSP);
+
+        poTransaction.prepareRehabilitate();
+        poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER);
     }
 
     @Test(expected = CalypsoPoIOException.class)
