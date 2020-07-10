@@ -88,6 +88,13 @@ public final class SvReloadRespPars extends AbstractPoResponseParser {
         }
     }
 
+    /**
+     * Gets the SV signature. <br>
+     * The signature can be empty here in the case of a secure session where the transmission of the
+     * signature is postponed until the end of the session.
+     * 
+     * @return a byte array containing the signature
+     */
     public byte[] getSignatureLo() {
         return getApduResponse().getDataOut();
     }

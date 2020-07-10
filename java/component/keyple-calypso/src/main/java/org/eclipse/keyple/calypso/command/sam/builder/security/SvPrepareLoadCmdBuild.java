@@ -11,7 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.command.sam.builder.security;
 
-import org.eclipse.keyple.calypso.command.po.builder.storedvalue.SvReloadCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
@@ -26,7 +25,7 @@ public class SvPrepareLoadCmdBuild extends AbstractSamCommandBuilder<SvPrepareOp
     private static final CalypsoSamCommand command = CalypsoSamCommand.SV_PREPARE_LOAD;
 
     /**
-     * Instantiates a new SvPrepareLoadCmdBuild to a load transaction.
+     * Instantiates a new SvPrepareLoadCmdBuild to prepare a load transaction.
      * <p>
      * Build the SvPrepareLoad APDU from the SvGet command and response, the SvReload partial
      * command
@@ -34,10 +33,10 @@ public class SvPrepareLoadCmdBuild extends AbstractSamCommandBuilder<SvPrepareOp
      * @param samRevision the SAM revision
      * @param svGetHeader the SV Get command header
      * @param svGetData a byte array containing the data from the SV get command and response
-     * @param svReloadCmdBuild the SV reload command builder
+     * @param svReloadCmdBuildData the SV reload command builder data
      */
     public SvPrepareLoadCmdBuild(SamRevision samRevision, byte[] svGetHeader, byte[] svGetData,
-            SvReloadCmdBuild svReloadCmdBuild) {
+            byte[] svReloadCmdBuildData) {
         super(command, null);
 
         byte cla = samRevision.getClassByte();
@@ -47,8 +46,8 @@ public class SvPrepareLoadCmdBuild extends AbstractSamCommandBuilder<SvPrepareOp
 
         System.arraycopy(svGetHeader, 0, data, 0, 4);
         System.arraycopy(svGetData, 0, data, 4, svGetData.length);
-        System.arraycopy(svReloadCmdBuild.getSvReloadData(), 0, data, 4 + svGetData.length,
-                svReloadCmdBuild.getSvReloadData().length);
+        System.arraycopy(svReloadCmdBuildData, 0, data, 4 + svGetData.length,
+                svReloadCmdBuildData.length);
 
         request = setApduRequest(cla, command, p1, p2, data, null);
     }

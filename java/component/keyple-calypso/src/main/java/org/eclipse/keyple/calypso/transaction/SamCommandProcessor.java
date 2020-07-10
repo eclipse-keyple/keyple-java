@@ -630,7 +630,7 @@ class SamCommandProcessor {
         // get the complementary data from the SAM
         SvPrepareLoadCmdBuild svPrepareLoadCmdBuild =
                 new SvPrepareLoadCmdBuild(samResource.getMatchingSe().getSamRevision(), svGetHeader,
-                        svGetData, svReloadCmdBuild);
+                        svGetData, svReloadCmdBuild.getSvReloadData());
 
         return getSvComplementaryData(svPrepareLoadCmdBuild);
     }
@@ -654,7 +654,7 @@ class SamCommandProcessor {
         // get the complementary data from the SAM
         SvPrepareDebitCmdBuild svPrepareDebitCmdBuild =
                 new SvPrepareDebitCmdBuild(samResource.getMatchingSe().getSamRevision(),
-                        svGetHeader, svGetData, svDebitCmdBuild);
+                        svGetHeader, svGetData, svDebitCmdBuild.getSvDebitData());
 
         return getSvComplementaryData(svPrepareDebitCmdBuild);
     }
@@ -678,7 +678,7 @@ class SamCommandProcessor {
         // get the complementary data from the SAM
         SvPrepareUndebitCmdBuild svPrepareUndebitCmdBuild =
                 new SvPrepareUndebitCmdBuild(samResource.getMatchingSe().getSamRevision(),
-                        svGetHeader, svGetData, svUndebitCmdBuild);
+                        svGetHeader, svGetData, svUndebitCmdBuild.getSvUndebitData());
 
         return getSvComplementaryData(svPrepareUndebitCmdBuild);
     }

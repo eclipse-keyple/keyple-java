@@ -26,7 +26,7 @@ public class SvDebitLogRecord {
     /**
      * Constructor
      * 
-     * @param poResponse the Sv Get response data
+     * @param poResponse the Sv Get or Read Record (SV Load log file) response data
      * @param offset the debit log offset in the response (may change from a PO to another)
      */
     public SvDebitLogRecord(byte[] poResponse, int offset) {
@@ -184,7 +184,7 @@ public class SvDebitLogRecord {
     public String toString() {
         return "{\"SvDebitLogRecord\":{" + "\"amount\":" + getAmount() + ", \"balance\":"
                 + getBalance() + ", \"debitDate\":" + getDebitDate() + ", \"debitTime\":"
-                + getDebitDate() + ", \"Kvc\":" + getKvc() + ", \"samId\":"
+                + getDebitDate() + ", \"kvc\":" + getKvc() + ", \"samId\":"
                 + ByteArrayUtil.toHex(getSamIdBytes()) + ", \"svTransactionNumber\":" + getSvTNum()
                 + ", \"svSamTransactionNumber\":" + getSamTNum() + "}}";
     }

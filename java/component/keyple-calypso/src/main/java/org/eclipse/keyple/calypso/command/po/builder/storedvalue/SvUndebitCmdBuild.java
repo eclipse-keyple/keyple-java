@@ -32,8 +32,7 @@ public final class SvUndebitCmdBuild extends AbstractPoCommandBuilder<SvUndebitR
     private final PoClass poClass;
     private final PoRevision poRevision;
     /** apdu data array */
-    private byte[] dataIn;
-    private boolean finalized = false;
+    private final byte[] dataIn;
 
     /**
      * Instantiates a new SvUndebitCmdBuild.
@@ -117,8 +116,6 @@ public final class SvUndebitCmdBuild extends AbstractPoCommandBuilder<SvUndebitR
                 undebitComplementaryData.length - 10);
 
         this.request = setApduRequest(poClass.getValue(), command, p1, p2, dataIn, null);
-
-        finalized = true;
     }
 
     /**

@@ -11,7 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.command.sam.builder.security;
 
-import org.eclipse.keyple.calypso.command.po.builder.storedvalue.SvDebitCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
@@ -33,10 +32,10 @@ SvPrepareDebitCmdBuild extends AbstractSamCommandBuilder<SvPrepareOperationRespP
      * @param samRevision the SAM revision
      * @param svGetHeader the SV Get command header
      * @param svGetData a byte array containing the data from the SV get command and response
-     * @param svDebitCmdBuild the SV debit command builder
+     * @param svDebitCmdBuildData the SV debit command builder data
      */
     public SvPrepareDebitCmdBuild(SamRevision samRevision, byte[] svGetHeader, byte[] svGetData,
-            SvDebitCmdBuild svDebitCmdBuild) {
+            byte[] svDebitCmdBuildData) {
         super(command, null);
 
         byte cla = samRevision.getClassByte();
@@ -46,8 +45,8 @@ SvPrepareDebitCmdBuild extends AbstractSamCommandBuilder<SvPrepareOperationRespP
 
         System.arraycopy(svGetHeader, 0, data, 0, 4);
         System.arraycopy(svGetData, 0, data, 4, svGetData.length);
-        System.arraycopy(svDebitCmdBuild.getSvDebitData(), 0, data, 4 + svGetData.length,
-                svDebitCmdBuild.getSvDebitData().length);
+        System.arraycopy(svDebitCmdBuildData, 0, data, 4 + svGetData.length,
+                svDebitCmdBuildData.length);
 
         request = setApduRequest(cla, command, p1, p2, data, null);
     }

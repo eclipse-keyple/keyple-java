@@ -30,8 +30,7 @@ public final class SvReloadCmdBuild extends AbstractPoCommandBuilder<SvReloadRes
     private final PoClass poClass;
     private final PoRevision poRevision;
     /** apdu data array */
-    private byte[] dataIn;
-    private boolean finalized = false;
+    private final byte[] dataIn;
 
     /**
      * Instantiates a new SvReloadCmdBuild.
@@ -117,8 +116,6 @@ public final class SvReloadCmdBuild extends AbstractPoCommandBuilder<SvReloadRes
                 reloadComplementaryData.length - 10);
 
         this.request = setApduRequest(poClass.getValue(), command, p1, p2, dataIn, null);
-
-        finalized = true;
     }
 
     /**

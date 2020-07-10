@@ -31,8 +31,7 @@ public final class SvDebitCmdBuild extends AbstractPoCommandBuilder<SvDebitRespP
     private final PoClass poClass;
     private final PoRevision poRevision;
     /** apdu data array */
-    private byte[] dataIn;
-    private boolean finalized = false;
+    private final byte[] dataIn;
 
     /**
      * Instantiates a new SvDebitCmdBuild.
@@ -49,7 +48,7 @@ public final class SvDebitCmdBuild extends AbstractPoCommandBuilder<SvDebitRespP
             byte[] date, byte[] time) {
         super(command, null);
 
-        /** @see Calypso Layer ID 8.02 (200108) */
+        /* @see Calypso Layer ID 8.02 (200108) */
         if (amount < 0 || amount > 32767) {
             throw new IllegalArgumentException(
                     "Amount is outside allowed boundaries (0 <= amount <= 32767)");
@@ -113,8 +112,6 @@ public final class SvDebitCmdBuild extends AbstractPoCommandBuilder<SvDebitRespP
                 debitComplementaryData.length - 10);
 
         this.request = setApduRequest(poClass.getValue(), command, p1, p2, dataIn, null);
-
-        finalized = true;
     }
 
     /**
@@ -142,12 +139,4 @@ public final class SvDebitCmdBuild extends AbstractPoCommandBuilder<SvDebitRespP
     public boolean isSessionBufferUsed() {
         return false;
     }
-
-    // @Override
-    // public ApduRequest getApduRequest() {
-    // if (!finalized) {
-    // throw new IllegalStateException("The builder has not been finalized");
-    // }
-    // return super.getApduRequest();
-    // }
 }

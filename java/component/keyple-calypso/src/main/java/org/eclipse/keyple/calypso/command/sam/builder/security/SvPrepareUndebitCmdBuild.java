@@ -11,7 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.command.sam.builder.security;
 
-import org.eclipse.keyple.calypso.command.po.builder.storedvalue.SvUndebitCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
@@ -33,10 +32,10 @@ public class SvPrepareUndebitCmdBuild
      * @param samRevision the SAM revision
      * @param svGetHeader the SV Get command header
      * @param svGetData a byte array containing the data from the SV get command and response
-     * @param svUndebitCmdBuildDebitCmdBuild the SV undebit command builder
+     * @param svUndebitCmdBuildDebitCmdBuildData the SV undebit command builder data
      */
     public SvPrepareUndebitCmdBuild(SamRevision samRevision, byte[] svGetHeader, byte[] svGetData,
-            SvUndebitCmdBuild svUndebitCmdBuildDebitCmdBuild) {
+            byte[] svUndebitCmdBuildDebitCmdBuildData) {
         super(command, null);
 
         byte cla = samRevision.getClassByte();
@@ -46,8 +45,8 @@ public class SvPrepareUndebitCmdBuild
 
         System.arraycopy(svGetHeader, 0, data, 0, 4);
         System.arraycopy(svGetData, 0, data, 4, svGetData.length);
-        System.arraycopy(svUndebitCmdBuildDebitCmdBuild.getSvUndebitData(), 0, data,
-                4 + svGetData.length, svUndebitCmdBuildDebitCmdBuild.getSvUndebitData().length);
+        System.arraycopy(svUndebitCmdBuildDebitCmdBuildData, 0, data, 4 + svGetData.length,
+                svUndebitCmdBuildDebitCmdBuildData.length);
 
         request = setApduRequest(cla, command, p1, p2, data, null);
     }

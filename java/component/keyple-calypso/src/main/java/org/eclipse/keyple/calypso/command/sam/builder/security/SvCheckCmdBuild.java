@@ -25,7 +25,7 @@ public class SvCheckCmdBuild extends AbstractSamCommandBuilder {
     private static final CalypsoSamCommand command = CalypsoSamCommand.SV_CHECK;
 
     /**
-     * Instantiates a new SvCheckCmdBuild to authenticate a card transaction.
+     * Instantiates a new SvCheckCmdBuild to authenticate a card SV transaction.
      *
      * @param revision of the SAM
      * @param svPoSignature null if the operation is to abort the SV transaction, a 3 or 6-byte
