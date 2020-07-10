@@ -436,6 +436,25 @@ final class CalypsoPoUtils {
     }
 
     /**
+     * Checks the response to Invalidate/Rehabilitate commands
+     * 
+     * @param calypsoPo the {@link CalypsoPo} object to update
+     * @param invalidateRehabilitateCmdBuild the Invalidate or Rehabilitate response parser
+     * @param apduResponse the response received
+     * @throws CalypsoPoCommandException if a response from the PO was unexpected
+     */
+    private static AbstractPoResponseParser updateCalypsoInvalidateRehabilitate(CalypsoPo calypsoPo,
+            AbstractPoCommandBuilder<? extends AbstractPoResponseParser> invalidateRehabilitateCmdBuild,
+            ApduResponse apduResponse) {
+        AbstractPoResponseParser invalidateRehabilitateRespPars =
+                invalidateRehabilitateCmdBuild.createResponseParser(apduResponse);
+
+        invalidateRehabilitateRespPars.checkStatus();
+
+        return invalidateRehabilitateRespPars;
+    }
+
+    /**
      * Parses the proprietaryInformation field of a file identified as an DF and create a
      * {@link DirectoryHeader}
      *
@@ -607,6 +626,9 @@ final class CalypsoPoUtils {
             case SV_DEBIT:
             case SV_UNDEBIT:
                 return updateCalypsoPoSvOperation(calypsoPo, commandBuilder, apduResponse);
+            case INVALIDATE:
+            case REHABILITATE:
+                return updateCalypsoInvalidateRehabilitate(calypsoPo, commandBuilder, apduResponse);
             case CHANGE_KEY:
             case GET_DATA_FCI:
             case GET_DATA_TRACE:

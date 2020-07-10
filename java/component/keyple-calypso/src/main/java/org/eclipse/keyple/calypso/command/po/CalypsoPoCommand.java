@@ -76,7 +76,13 @@ public enum CalypsoPoCommand implements SeCommand {
     SV_RELOAD("SV Reload", (byte) 0xB8),
 
     /* The po SV Undebit */
-    SV_UNDEBIT("SV Undebit", (byte) 0xBC);
+    SV_UNDEBIT("SV Undebit", (byte) 0xBC),
+
+    /* The po Invalidate */
+    INVALIDATE("Invalidate", (byte) 0x04),
+
+    /* The po Rehabilitate */
+    REHABILITATE("Invalidate", (byte) 0x44);
 
     /** The name. */
     private final String name;

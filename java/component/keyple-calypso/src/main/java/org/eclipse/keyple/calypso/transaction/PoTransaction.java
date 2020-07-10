@@ -30,8 +30,10 @@ import org.eclipse.keyple.calypso.command.po.builder.UpdateRecordCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.WriteRecordCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.security.AbstractOpenSessionCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.security.CloseSessionCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.security.InvalidateCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.security.PoGetChallengeCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.security.RatificationCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.security.RehabilitateCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.security.VerifyPinCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.storedvalue.SvDebitCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.storedvalue.SvGetCmdBuild;
@@ -1713,5 +1715,33 @@ public class PoTransaction {
                 CalypsoPoUtils.SV_RELOAD_LOG_FILE_NB_REC);
         prepareReadRecordFile(CalypsoPoUtils.SV_DEBIT_LOG_FILE_SFI, 1,
                 CalypsoPoUtils.SV_DEBIT_LOG_FILE_NB_REC, CalypsoPoUtils.SV_LOG_FILE_REC_LENGTH);
+    }
+
+    /**
+     * Prepare the invalidation of the PO<br>
+     * This command is usually executed within a secure session with the SESSION_LVL_DEBIT key
+     * (depends on the access rights given to this command in the file structure of the PO).
+     * 
+     * @throws CalypsoPoTransactionIllegalStateException if the PO is already invalidated
+     */
+    public final void prepareInvalidate() {
+        if (calypsoPo.isDfInvalidated()) {
+            throw new CalypsoPoTransactionIllegalStateException("This PO is already invalidated.");
+        }
+        poCommandManager.addRegularCommand(new InvalidateCmdBuild(calypsoPo.getPoClass()));
+    }
+
+    /**
+     * Prepare the rehabilitation of the PO<br>
+     * This command is usually executed within a secure session with the SESSION_LVL_PERSO key
+     * (depends on the access rights given to this command in the file structure of the PO).
+     * 
+     * @throws CalypsoPoTransactionIllegalStateException if the PO is not invalidated
+     */
+    public final void prepareRehabilitate() {
+        if (!calypsoPo.isDfInvalidated()) {
+            throw new CalypsoPoTransactionIllegalStateException("This PO is not invalidated.");
+        }
+        poCommandManager.addRegularCommand(new RehabilitateCmdBuild(calypsoPo.getPoClass()));
     }
 }
