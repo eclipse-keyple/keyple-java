@@ -24,6 +24,7 @@ import org.eclipse.keyple.calypso.command.po.builder.*;
 import org.eclipse.keyple.calypso.command.po.builder.security.AbstractOpenSessionCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.security.PoGetChallengeCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.security.VerifyPinCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.storedvalue.SvGetCmdBuild;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoPinException;
 import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
@@ -36,6 +37,7 @@ import org.eclipse.keyple.calypso.command.po.parser.WriteRecordRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.PoGetChallengeRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.VerifyPinRespPars;
+import org.eclipse.keyple.calypso.command.po.parser.storedvalue.SvGetRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.Assert;
 
@@ -99,6 +101,19 @@ final class CalypsoPoUtils {
     public static final int SEL_LID_OFFSET = 21;
 
     public static final int PIN_LENGTH = 4;
+
+    public static final byte STORED_VALUE_FILE_STRUCTURE_ID = (byte) 0x20;
+    public static final byte SV_RELOAD_LOG_FILE_SFI = (byte) 0x14;
+    public static final int SV_RELOAD_LOG_FILE_NB_REC = 1;
+    public static final byte SV_DEBIT_LOG_FILE_SFI = (byte) 0x15;
+    public static final int SV_DEBIT_LOG_FILE_NB_REC = 3;
+    public static final int SV_LOG_FILE_REC_LENGTH = 29;
+
+    private static byte[] poChallenge;
+    private static byte svKvc;
+    private static byte[] svGetHeader;
+    private static byte[] svGetData;
+    private static byte[] svOperationSignature;
 
     /**
      * Private constructor
@@ -317,23 +332,22 @@ final class CalypsoPoUtils {
     }
 
     /**
-     * Updated the {@link CalypsoPo} object with the response to an Get Challenge command received
-     * from the PO <br>
-     * The PO challenge value is stored in the {@link CalypsoPo}
+     * Parses the response to a Get Challenge command received from the PO <br>
+     * The PO challenge value is stored in {@link CalypsoPoUtils} and made available through a
+     * dedicated getters for later use
      *
-     * @param calypsoPo the {@link CalypsoPo} object to update
      * @param poGetChallengeCmdBuild the Get Challenge command builder
      * @param apduResponse the response received
      * @throws CalypsoPoCommandException if a response from the PO was unexpected
      */
-    private static PoGetChallengeRespPars updateCalypsoPoGetChallenge(CalypsoPo calypsoPo,
+    private static PoGetChallengeRespPars updateCalypsoPoGetChallenge(
             PoGetChallengeCmdBuild poGetChallengeCmdBuild, ApduResponse apduResponse) {
         PoGetChallengeRespPars poGetChallengeRespPars =
                 poGetChallengeCmdBuild.createResponseParser(apduResponse);
 
         poGetChallengeRespPars.checkStatus();
 
-        calypsoPo.setChallenge(apduResponse.getDataOut());
+        poChallenge = apduResponse.getDataOut();
 
         return poGetChallengeRespPars;
     }
@@ -368,6 +382,57 @@ final class CalypsoPoUtils {
         }
 
         return verifyPinRespPars;
+    }
+
+    /**
+     * Updated the {@link CalypsoPo} object with the response to an SV Get command received from the
+     * PO <br>
+     * The SV Data values (KVC, command header, response data) are stored in {@link CalypsoPoUtils}
+     * and made available through a dedicated getters for later use<br>
+     *
+     * @param calypsoPo the {@link CalypsoPo} object to update
+     * @param svGetCmdBuild the SV Get command builder
+     * @param apduResponse the response received
+     * @throws CalypsoPoCommandException if a response from the PO was unexpected
+     */
+    private static SvGetRespPars updateCalypsoPoSvGet(CalypsoPo calypsoPo,
+            SvGetCmdBuild svGetCmdBuild, ApduResponse apduResponse) {
+        SvGetRespPars svGetRespPars = svGetCmdBuild.createResponseParser(apduResponse);
+
+        svGetRespPars.checkStatus();
+
+        calypsoPo.setSvData(svGetRespPars.getBalance(), svGetRespPars.getTransactionNumber(),
+                svGetRespPars.getLoadLog(), svGetRespPars.getDebitLog());
+
+        svKvc = svGetRespPars.getCurrentKVC();
+        svGetHeader = svGetRespPars.getSvGetCommandHeader();
+        svGetData = svGetRespPars.getApduResponse().getBytes();
+
+        return svGetRespPars;
+    }
+
+    /**
+     * Checks the response to a SV Operation command (reload, debit or undebit) response received
+     * from the PO<br>
+     * Keep the PO SV signature if any (command executed outside a secure session).
+     *
+     * @param calypsoPo the {@link CalypsoPo} object to update
+     * @param svOperationCmdBuild the SV Operation command builder (SvReloadCmdBuild,
+     *        SvDebitCmdBuild or SvUndebitCmdBuild)
+     * @param apduResponse the response received
+     * @throws CalypsoPoCommandException if a response from the PO was unexpected
+     */
+    private static AbstractPoResponseParser updateCalypsoPoSvOperation(CalypsoPo calypsoPo,
+            AbstractPoCommandBuilder<? extends AbstractPoResponseParser> svOperationCmdBuild,
+            ApduResponse apduResponse) {
+        AbstractPoResponseParser svOperationRespPars =
+                svOperationCmdBuild.createResponseParser(apduResponse);
+
+        svOperationRespPars.checkStatus();
+
+        svOperationSignature = svOperationRespPars.getApduResponse().getDataOut();
+
+        return svOperationRespPars;
     }
 
     /**
@@ -530,11 +595,18 @@ final class CalypsoPoUtils {
                 return updateCalypsoPoOpenSession(calypsoPo,
                         (AbstractOpenSessionCmdBuild) commandBuilder, apduResponse);
             case GET_CHALLENGE:
-                return updateCalypsoPoGetChallenge(calypsoPo,
-                        (PoGetChallengeCmdBuild) commandBuilder, apduResponse);
+                return updateCalypsoPoGetChallenge((PoGetChallengeCmdBuild) commandBuilder,
+                        apduResponse);
             case VERIFY_PIN:
                 return updateCalypsoVerifyPin(calypsoPo, (VerifyPinCmdBuild) commandBuilder,
                         apduResponse);
+            case SV_GET:
+                return updateCalypsoPoSvGet(calypsoPo, (SvGetCmdBuild) commandBuilder,
+                        apduResponse);
+            case SV_RELOAD:
+            case SV_DEBIT:
+            case SV_UNDEBIT:
+                return updateCalypsoPoSvOperation(calypsoPo, commandBuilder, apduResponse);
             case CHANGE_KEY:
             case GET_DATA_FCI:
             case GET_DATA_TRACE:
@@ -607,5 +679,56 @@ final class CalypsoPoUtils {
      */
     static SelectFileCmdBuild prepareSelectFile(PoClass poClass, SelectFileControl selectControl) {
         return new SelectFileCmdBuild(poClass, selectControl);
+    }
+
+    /**
+     * (package-private)<br>
+     * Gets the challenge received from the PO
+     *
+     * @return an array of bytes containing the challenge bytes (variable length according to the
+     *         revision of the PO). May be null if the challenge is not available.
+     */
+    static byte[] getPoChallenge() {
+        return poChallenge;
+    }
+
+    /**
+     * (package-private)<br>
+     * Gets the SV KVC from the PO
+     *
+     * @return the SV KVC byte.
+     */
+    static byte getSvKvc() {
+        return svKvc;
+    }
+
+    /**
+     * (package-private)<br>
+     * Gets the SV Get command header
+     *
+     * @return a byte array containing the SV Get command header.
+     */
+    static byte[] getSvGetHeader() {
+        return svGetHeader;
+    }
+
+    /**
+     * (package-private)<br>
+     * Gets the SV Get command response data
+     *
+     * @return a byte array containing the SV Get command response data.
+     */
+    static byte[] getSvGetData() {
+        return svGetData;
+    }
+
+    /**
+     * (package-private)<br>
+     * Gets the last SV Operation signature (SV Reload, Debit or Undebit)
+     *
+     * @return a byte array containing the SV Operation signature or null if not available.
+     */
+    static byte[] getSvOperationSignature() {
+        return svOperationSignature;
     }
 }

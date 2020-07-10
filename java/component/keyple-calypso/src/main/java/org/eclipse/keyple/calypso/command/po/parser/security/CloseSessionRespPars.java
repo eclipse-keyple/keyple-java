@@ -71,7 +71,7 @@ public final class CloseSessionRespPars extends AbstractPoResponseParser {
     private void parse(byte[] response) {
         if (response.length == 8) {
             signatureLo = Arrays.copyOfRange(response, 4, 8);
-            postponedData = Arrays.copyOfRange(response, 0, 4);
+            postponedData = Arrays.copyOfRange(response, 1, 4);
         } else if (response.length == 4) {
             signatureLo = Arrays.copyOfRange(response, 0, 4);
         } else {

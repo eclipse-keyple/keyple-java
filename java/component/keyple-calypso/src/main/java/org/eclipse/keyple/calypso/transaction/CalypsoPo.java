@@ -83,8 +83,11 @@ public class CalypsoPo extends AbstractMatchingSe {
     private final Map<Short, Byte> sfiByLid = new HashMap<Short, Byte>();
     private final Map<Short, Byte> sfiByLidBackup = new HashMap<Short, Byte>();
     private Boolean isDfRatified = null;
-    private byte[] challenge;
     private Integer pinAttemptCounter;
+    private Integer svBalance;
+    private int svLastTNum;
+    private SvLoadLogRecord svLoadLogRecord;
+    private SvDebitLogRecord svDebitLogRecord;
 
     /**
      * Constructor.
@@ -494,31 +497,108 @@ public class CalypsoPo extends AbstractMatchingSe {
 
     /**
      * (package-private)<br>
-     * Set the challenge received from the PO
-     *
-     * @param challenge an array of bytes containing the challenge bytes (variable length according
-     *        to the revision of the PO)
+     * Sets the Stored Value data from the SV Get command
+     * 
+     * @param svBalance the current SV balance
+     * @param svLastTNum the last SV transaction number
+     * @param svLoadLogRecord the SV load log record (may be null if not available)
+     * @param svDebitLogRecord the SV debit log record (may be null if not available)
+     */
+    final void setSvData(int svBalance, int svLastTNum, SvLoadLogRecord svLoadLogRecord,
+            SvDebitLogRecord svDebitLogRecord) {
+        this.svBalance = svBalance;
+        this.svLastTNum = svLastTNum;
+        // update logs, do not overwrite existing values (case of double reading)
+        if (this.svLoadLogRecord == null) {
+            this.svLoadLogRecord = svLoadLogRecord;
+        }
+        if (this.svDebitLogRecord == null) {
+            this.svDebitLogRecord = svDebitLogRecord;
+        }
+    }
+
+    /**
+     * Gets the current SV balance
+     * 
+     * @return the current SV balance value
+     * @throws IllegalStateException if no SV Get command has been executed
      * @since 0.9
      */
-    final void setChallenge(byte[] challenge) {
-        this.challenge = challenge;
+    public final int getSvBalance() {
+        if (svBalance == null) {
+            throw new IllegalStateException("No SV Get command has been executed.");
+        }
+        return svBalance;
+    }
+
+    /**
+     * Gets the last SV transaction number
+     * 
+     * @return the last SV transaction number value
+     * @throws IllegalStateException if no SV Get command has been executed
+     * @since 0.9
+     */
+    public final int getSvLastTNum() {
+        if (svBalance == null) {
+            throw new IllegalStateException("No SV Get command has been executed.");
+        }
+        return svLastTNum;
+    }
+
+    /**
+     * Gets the last SV load log record
+     * 
+     * @return a last SV load log record object or null if not available
+     * @throws NoSuchElementException if requested log is not found.
+     * @since 0.9
+     */
+    public final SvLoadLogRecord getSvLoadLogRecord() {
+        if (svLoadLogRecord == null) {
+            // try to get it from the file data
+            byte[] logRecord =
+                    getFileBySfi(CalypsoPoUtils.SV_RELOAD_LOG_FILE_SFI).getData().getContent();
+            svLoadLogRecord = new SvLoadLogRecord(logRecord, 0);
+        }
+        return svLoadLogRecord;
+    }
+
+    /**
+     * Gets the last SV debit log record
+     * 
+     * @return a last SV debit log record object or null if not available
+     * @throws NoSuchElementException if requested log is not found.
+     * @since 0.9
+     */
+    public final SvDebitLogRecord getSvDebitLogLastRecord() {
+        if (svDebitLogRecord == null) {
+            // try to get it from the file data
+            List<SvDebitLogRecord> svDebitLogRecords = getSvDebitLogAllRecords();
+            svDebitLogRecord = svDebitLogRecords.get(0);
+        }
+        return svDebitLogRecord;
+    }
+
+    /**
+     * Gets all available SV debit log records
+     * 
+     * @return a list of SV debit log record objects or null if not available
+     * @throws NoSuchElementException if requested log is not found.
+     * @since 0.9
+     */
+    public final List<SvDebitLogRecord> getSvDebitLogAllRecords() {
+        // get the logs from the file data
+        SortedMap<Integer, byte[]> logRecords =
+                getFileBySfi(CalypsoPoUtils.SV_DEBIT_LOG_FILE_SFI).getData().getAllRecordsContent();
+        List<SvDebitLogRecord> svDebitLogRecords = new ArrayList<SvDebitLogRecord>();
+        for (Map.Entry<Integer, byte[]> entry : logRecords.entrySet()) {
+            svDebitLogRecords.add(new SvDebitLogRecord(entry.getValue(), 0));
+        }
+        return svDebitLogRecords;
     }
 
     /**
      * (package-private)<br>
-     * Get the challenge received from the PO
-     *
-     * @return an array of bytes containing the challenge bytes (variable length according to the
-     *         revision of the PO). May be null if the challenge is not available.
-     * @since 0.9
-     */
-    final byte[] getChallenge() {
-        return challenge;
-    }
-
-    /**
-     * (package-private)<br>
-     * Set the ratification status
+     * Sets the ratification status
      * 
      * @param dfRatified true if the session was ratified
      * @since 0.9

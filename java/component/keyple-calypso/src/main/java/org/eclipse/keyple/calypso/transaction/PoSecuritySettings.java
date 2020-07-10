@@ -40,12 +40,18 @@ public class PoSecuritySettings {
     private final RatificationMode ratificationMode;
     private final PoTransaction.PinTransmissionMode pinTransmissionMode;
     private final KeyReference pinCipheringKey;
+    private final PoTransaction.SvSettings.LogRead svGetLogReadMode;
+    private final PoTransaction.SvSettings.NegativeBalance svNegativeBalance;
 
     public static final ModificationMode defaultSessionModificationMode = ModificationMode.ATOMIC;
     public static final RatificationMode defaultRatificationMode = RatificationMode.CLOSE_RATIFIED;
     public static final PoTransaction.PinTransmissionMode defaultPinTransmissionMode =
             PoTransaction.PinTransmissionMode.ENCRYPTED;
     private static final KeyReference defaultPinCipheringKey = new KeyReference((byte) 0, (byte) 0);
+    private static final PoTransaction.SvSettings.LogRead defaultSvGetLogReadMode =
+            PoTransaction.SvSettings.LogRead.SINGLE;
+    private static final PoTransaction.SvSettings.NegativeBalance defaultSvNegativeBalance =
+            PoTransaction.SvSettings.NegativeBalance.FORBIDDEN;
 
     /** Private constructor */
     private PoSecuritySettings(PoSecuritySettingsBuilder builder) {
@@ -58,6 +64,8 @@ public class PoSecuritySettings {
         this.ratificationMode = builder.ratificationMode;
         this.pinTransmissionMode = builder.pinTransmissionMode;
         this.pinCipheringKey = builder.pinCipheringKey;
+        this.svGetLogReadMode = builder.svGetLogReadMode;
+        this.svNegativeBalance = builder.svNegativeBalance;
     }
 
     /**
@@ -80,6 +88,8 @@ public class PoSecuritySettings {
         RatificationMode ratificationMode = defaultRatificationMode;
         PoTransaction.PinTransmissionMode pinTransmissionMode = defaultPinTransmissionMode;
         KeyReference pinCipheringKey = defaultPinCipheringKey;
+        PoTransaction.SvSettings.LogRead svGetLogReadMode = defaultSvGetLogReadMode;
+        PoTransaction.SvSettings.NegativeBalance svNegativeBalance = defaultSvNegativeBalance;
 
         /**
          * Constructor
@@ -202,6 +212,32 @@ public class PoSecuritySettings {
             return this;
         }
 
+        /**
+         * Sets the SV Get log read mode to indicate whether only one or both log files are to be
+         * read
+         * 
+         * @param svGetLogReadMode the {@link PoTransaction.SvSettings.LogRead} mode
+         * @return the builder instance
+         */
+        public PoSecuritySettingsBuilder svGetLogReadMode(
+                PoTransaction.SvSettings.LogRead svGetLogReadMode) {
+            this.svGetLogReadMode = svGetLogReadMode;
+            return this;
+        }
+
+
+        /**
+         * Sets the SV negative balance mode to indicate whether negative balances are allowed or
+         * not
+         * 
+         * @param svNegativeBalance the {@link PoTransaction.SvSettings.NegativeBalance} mode
+         * @return the builder instance
+         */
+        public PoSecuritySettingsBuilder svNegativeBalance(
+                PoTransaction.SvSettings.NegativeBalance svNegativeBalance) {
+            this.svNegativeBalance = svNegativeBalance;
+            return this;
+        }
 
         /**
          * Build a new {@code PoSecuritySettings}.
@@ -293,11 +329,34 @@ public class PoSecuritySettings {
      * @param kvc to be tested
      * @return true if the kvc is authorized
      */
-    public boolean isSessionKvcAuthorized(byte kvc) {
+    boolean isSessionKvcAuthorized(byte kvc) {
         return authorizedKvcList == null || authorizedKvcList.contains(kvc);
     }
 
-    public KeyReference getDefaultPinCipheringKey() {
+    /**
+     * (package-private)<br>
+     *
+     * @return the default key reference to be used for PIN encryption
+     */
+    KeyReference getDefaultPinCipheringKey() {
         return pinCipheringKey;
+    }
+
+    /**
+     * (package-private)<br>
+     *
+     * @return how SV logs are read, indicating whether or not all SV logs are needed
+     */
+    PoTransaction.SvSettings.LogRead getSvGetLogReadMode() {
+        return svGetLogReadMode;
+    }
+
+    /**
+     * (package-private)<br>
+     *
+     * @return an indication of whether negative balances are allowed or not
+     */
+    PoTransaction.SvSettings.NegativeBalance getSvNegativeBalance() {
+        return svNegativeBalance;
     }
 }
