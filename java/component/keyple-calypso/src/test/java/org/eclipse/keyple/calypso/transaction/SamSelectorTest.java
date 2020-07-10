@@ -71,7 +71,7 @@ public class SamSelectorTest {
                 .isEqualTo("3B(.{6}|.{10})805A..80C120.{4}11223344829000");
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void test_UnlockData_notSet() {
 
         SamSelector samSelector = SamSelector.builder()
@@ -80,6 +80,7 @@ public class SamSelectorTest {
                         .serialNumber("11223344")//
                         .build())//
                 .build();
+        assertThat(samSelector.getUnlockData()).isNull();
     }
 
     @Test

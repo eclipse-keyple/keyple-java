@@ -182,13 +182,9 @@ public class SamSelector extends SeSelector {
     /**
      * Gets the SAM unlock data
      * 
-     * @return a byte array containing the unlock data
-     * @throws IllegalStateException if the unlock data is not set prior the call to this method
+     * @return a byte array containing the unlock data or null if the unlock data is not set
      */
     public byte[] getUnlockData() {
-        if (unlockData == null) {
-            throw new IllegalStateException("SAM unlock data is not set.");
-        }
         return unlockData;
     }
 }
