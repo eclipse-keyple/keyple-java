@@ -1719,8 +1719,8 @@ public class PoTransaction {
 
     /**
      * Prepare the invalidation of the PO<br>
-     * This command is usually executed within a secure session with the DEBIT key (depends on the
-     * access rights given to this command in the file structure of the PO).
+     * This command is usually executed within a secure session with the SESSION_LVL_DEBIT key
+     * (depends on the access rights given to this command in the file structure of the PO).
      * 
      * @throws CalypsoPoTransactionIllegalStateException if the PO is already invalidated
      */
@@ -1733,8 +1733,8 @@ public class PoTransaction {
 
     /**
      * Prepare the rehabilitation of the PO<br>
-     * This command is usually executed within a secure session with the LOAD key (depends on the
-     * access rights given to this command in the file structure of the PO).
+     * This command is usually executed within a secure session with the SESSION_LVL_PERSO key
+     * (depends on the access rights given to this command in the file structure of the PO).
      * 
      * @throws CalypsoPoTransactionIllegalStateException if the PO is not invalidated
      */
