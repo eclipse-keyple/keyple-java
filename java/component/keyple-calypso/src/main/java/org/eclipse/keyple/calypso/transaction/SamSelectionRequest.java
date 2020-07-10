@@ -11,13 +11,17 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
+import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
+import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
+import org.eclipse.keyple.calypso.command.sam.builder.security.UnlockCmdBuild;
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 
 /**
  * Specialized selection request to manage the specific characteristics of Calypso SAMs
  */
-public class SamSelectionRequest extends AbstractSeSelectionRequest {
+public class SamSelectionRequest extends
+        AbstractSeSelectionRequest<AbstractSamCommandBuilder<? extends AbstractSamResponseParser>> {
     /**
      * Create a {@link SamSelectionRequest}
      * 
@@ -25,6 +29,13 @@ public class SamSelectionRequest extends AbstractSeSelectionRequest {
      */
     public SamSelectionRequest(SamSelector samSelector) {
         super(samSelector);
+        byte[] unlockData = samSelector.getUnlockData();
+        if (unlockData != null) {
+            // a unlock data value has been set, let's add the unlock command to be executed
+            // following the selection
+            addCommandBuilder(new UnlockCmdBuild(samSelector.getTargetSamRevision(),
+                    samSelector.getUnlockData()));
+        }
     }
 
     /**

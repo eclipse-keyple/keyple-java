@@ -20,6 +20,8 @@ import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
  * such as model identification.
  */
 public class SamSelector extends SeSelector {
+    private final SamRevision targetSamRevision;
+    private final byte[] unlockData;
 
     /** Private constructor */
     private SamSelector(SamSelectorBuilder builder) {
@@ -34,16 +36,18 @@ public class SamSelector extends SeSelector {
             /* match the provided serial number (could be a regex substring) */
             snRegex = builder.serialNumber;
         }
+        unlockData = builder.unlockData;
+        targetSamRevision = builder.samRevision;
         /*
          * build the final Atr regex according to the SAM subtype and serial number if any.
          *
          * The header is starting with 3B, its total length is 4 or 6 bytes (8 or 10 hex digits)
          */
-        switch (builder.samRevision) {
+        switch (targetSamRevision) {
             case C1:
             case S1D:
             case S1E:
-                atrRegex = "3B(.{6}|.{10})805A..80" + builder.samRevision.getApplicationTypeMask()
+                atrRegex = "3B(.{6}|.{10})805A..80" + targetSamRevision.getApplicationTypeMask()
                         + "20.{4}" + snRegex + "829000";
                 break;
             case AUTO:
@@ -64,6 +68,7 @@ public class SamSelector extends SeSelector {
     public static class SamSelectorBuilder extends SeSelector.SeSelectorBuilder {
         private SamRevision samRevision;
         private String serialNumber;
+        private byte[] unlockData;
 
         public SamSelectorBuilder() {
             super();
@@ -105,6 +110,22 @@ public class SamSelector extends SeSelector {
         }
 
         /**
+         * Sets the unlock data
+         *
+         * @param unlockData a byte array containing the unlock data (8 or 16 bytes)
+         * @return the builder instance
+         * @throws IllegalArgumentException if the provided buffer size is not 8 or 16
+         */
+        public SamSelectorBuilder unlockData(byte[] unlockData) {
+            if (unlockData == null || (unlockData.length != 8 && unlockData.length != 16)) {
+                throw new IllegalArgumentException(
+                        "Bad unlock data length. Should be 8 or 16 bytes.");
+            }
+            this.unlockData = unlockData;
+            return this;
+        }
+
+        /**
          * {@inheritDoc}
          */
         @Override
@@ -128,6 +149,7 @@ public class SamSelector extends SeSelector {
             return (SamSelectorBuilder) super.aidSelector(aidSelector);
         }
 
+
         /**
          * Build a new {@code SamSelector}.
          *
@@ -146,5 +168,27 @@ public class SamSelector extends SeSelector {
      */
     public static SamSelectorBuilder builder() {
         return new SamSelectorBuilder();
+    }
+
+    /**
+     * Gets the targeted SAM revision
+     * 
+     * @return the target SAM revision value
+     */
+    public SamRevision getTargetSamRevision() {
+        return targetSamRevision;
+    }
+
+    /**
+     * Gets the SAM unlock data
+     * 
+     * @return a byte array containing the unlock data
+     * @throws IllegalStateException if the unlock data is not set prior the call to this method
+     */
+    public byte[] getUnlockData() {
+        if (unlockData == null) {
+            throw new IllegalStateException("SAM unlock data is not set.");
+        }
+        return unlockData;
     }
 }
