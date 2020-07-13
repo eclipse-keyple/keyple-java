@@ -32,7 +32,7 @@ public class UnlockRespPars extends AbstractSamResponseParser {
                 new HashMap<Integer, StatusProperties>(AbstractSamResponseParser.STATUS_TABLE);
         m.put(0x6700,
                 new StatusProperties("Incorrect Lc.", CalypsoSamIllegalParameterException.class));
-        m.put(0x6985, new StatusProperties("Preconditions not satisfied.",
+        m.put(0x6985, new StatusProperties("Preconditions not satisfied (SAM not locked?).",
                 CalypsoSamAccessForbiddenException.class));
         m.put(0x6988, new StatusProperties("Incorrect UnlockData.",
                 CalypsoSamSecurityDataException.class));

@@ -60,8 +60,18 @@ public class SamSelectorTest {
         assertThat(samSelector.getAtrFilter().getAtrRegex()).isEqualTo(".*");
     }
 
+
     @Test
     public void test_SamSerialNumber() {
+        SamSelector samSelector = SamSelector.builder()//
+                .samRevision(SamRevision.C1)//
+                .serialNumber("11223344").build();
+        assertThat(samSelector.getAtrFilter().getAtrRegex())
+                .isEqualTo("3B(.{6}|.{10})805A..80C120.{4}11223344829000");
+    }
+
+    @Test
+    public void test_SamSerialNumber_SamIdentifier() {
         SamSelector samSelector =
                 SamSelector.builder()
                         .samIdentifier(new SamIdentifier.SamIdentifierBuilder()
