@@ -21,7 +21,6 @@ import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.plugin.mock.BlankSmartInsertionTheadedReader;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.After;
 import org.junit.Assert;

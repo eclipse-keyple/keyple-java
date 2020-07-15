@@ -16,7 +16,6 @@ import static org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableSta
 import static org.mockito.Mockito.*;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeRemoval;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -9,18 +9,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin.mock;
+package org.eclipse.keyple.core.seproxy.plugin.local;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.keyple.core.seproxy.exception.*;
-import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableLocalReader;
-import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState;
-import org.eclipse.keyple.core.seproxy.plugin.local.ObservableReaderStateService;
-import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeInsertion;
-import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeProcessing;
-import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeRemoval;
-import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForStartDetect;
+import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 
@@ -105,5 +98,15 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
     @Override
     public void setParameter(String key, String value) {
 
+    }
+
+    /**
+     * The purpose of this method is to provide certain test methods with public access to
+     * processSeInserted that is package-private.
+     * 
+     * @return ReaderEvent returned by processSeInserted
+     */
+    public ReaderEvent processSeInsertedTest() {
+        return processSeInserted();
     }
 }

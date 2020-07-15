@@ -9,20 +9,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin.mock;
+package org.eclipse.keyple.core.seproxy.plugin.local;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.eclipse.keyple.core.seproxy.exception.*;
-import org.eclipse.keyple.core.seproxy.plugin.local.*;
-import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.SmartInsertionMonitoringJob;
-import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.SmartRemovalMonitoringJob;
-import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeInsertion;
-import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeProcessing;
-import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeRemoval;
-import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForStartDetect;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.slf4j.Logger;
