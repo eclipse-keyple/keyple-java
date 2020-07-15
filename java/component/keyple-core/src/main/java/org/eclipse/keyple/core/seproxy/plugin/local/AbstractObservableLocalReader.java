@@ -290,7 +290,6 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      * @return true if the SE is present
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
-    @Deprecated // will change in a later version
     @Override
     public final boolean isSePresent() {
         if (checkSePresence()) {
@@ -391,6 +390,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
     }
 
     /**
+     * (package-private)<br>
      * This method initiates the SE removal sequence.
      *
      * <p>
@@ -398,8 +398,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      * change to the WAIT_FOR_START_DETECTION or WAIT_FOR_SE_INSERTION state depending on what was
      * set when the detection was started.
      */
-    @Deprecated // will change in a later version
-    protected void startRemovalSequence() {
+    void startRemovalSequence() {
         if (logger.isTraceEnabled()) {
             logger.trace("[{}] start removal sequence of the reader", getName());
         }
@@ -407,6 +406,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
     }
 
     /**
+     * (package-private)<br>
      * This method is invoked when a SE is inserted in the case of an observable reader.
      *
      * <p>
@@ -431,8 +431,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      * @return ReaderEvent that should be notified to observers, contains the results of the default
      *         selection if any, can be null if no event should be sent
      */
-    @Deprecated // will change in a later version
-    public final ReaderEvent processSeInserted() {
+    ReaderEvent processSeInserted() {
         if (logger.isTraceEnabled()) {
             logger.trace("[{}] process the inserted se", getName());
         }
@@ -525,6 +524,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
     }
 
     /**
+     * (package-private)<br>
      * Sends a neutral APDU to the SE to check its presence. The status of the response is not
      * verified as long as the mere fact that the SE responds is sufficient to indicate whether or
      * not it is present.
@@ -537,8 +537,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      *
      * @return true if the SE still responds, false if not
      */
-    @Deprecated // will change in a later version
-    public boolean isSePresentPing() {
+    boolean isSePresentPing() {
         // APDU sent to check the communication with the PO
         final byte[] apdu = {(byte) 0x00, (byte) 0xC0, (byte) 0x00, (byte) 0x00, (byte) 0x00};
         // transmits the APDU and checks for the IO exception.
@@ -568,40 +567,39 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      * The SE will be notified removed only if it has been previously notified present (observable
      * reader only)
      */
-    @Deprecated // will change in a later version
-    public final void processSeRemoved() {
+    final void processSeRemoved() {
         closeLogicalAndPhysicalChannels();
         notifyObservers(new ReaderEvent(getPluginName(), getName(),
                 ReaderEvent.EventType.SE_REMOVED, null));
     }
 
     /**
+     * (package-private)<br>
      * Get polling mode
      *
      * @return the current polling mode
      */
-    @Deprecated // will change in a later version
-    public ObservableReader.PollingMode getPollingMode() {
+    ObservableReader.PollingMode getPollingMode() {
         return currentPollingMode;
     }
 
     /**
+     * (package-private)<br>
      * Changes the state of the state machine
      *
      * @param stateId : new stateId
      */
-    @Deprecated // will change in a later version
-    protected void switchState(AbstractObservableState.MonitoringState stateId) {
+    void switchState(AbstractObservableState.MonitoringState stateId) {
         this.stateService.switchState(stateId);
     }
 
     /**
+     * (package-private)<br>
      * Get the current monitoring state
      *
      * @return current getMonitoringState
      */
-    @Deprecated // will change in a later version
-    public AbstractObservableState.MonitoringState getCurrentMonitoringState() {
+    AbstractObservableState.MonitoringState getCurrentMonitoringState() {
         return this.stateService.getCurrentMonitoringState();
     }
 
@@ -611,8 +609,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      *
      * @param event internal event
      */
-    @Deprecated // will change in a later version
-    public void onEvent(InternalEvent event) {
+    protected void onEvent(InternalEvent event) {
         this.stateService.onEvent(event);
     }
 }

@@ -107,11 +107,8 @@ public abstract class AbstractLocalReader extends AbstractReader {
 
     /**
      * Close both logical and physical channels
-     * 
-     * @deprecated will change in a later version
      */
-    @Deprecated
-    protected void closeLogicalAndPhysicalChannels() {
+    void closeLogicalAndPhysicalChannels() {
         closeLogicalChannel();
         try {
             closePhysicalChannel();
@@ -229,10 +226,8 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * @return the SelectionStatus containing the actual selection result (ATR and/or FCI and the
      *         matching status flag).
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
-     * @deprecated will change in a later version
      */
-    @Deprecated
-    protected SelectionStatus openLogicalChannel(SeSelector seSelector) {
+    SelectionStatus openLogicalChannel(SeSelector seSelector) {
         byte[] atr = getATR();
         boolean selectionHasMatched = true;
         SelectionStatus selectionStatus;
@@ -316,10 +311,8 @@ public abstract class AbstractLocalReader extends AbstractReader {
      *         the selection process result. When ATR or FCI are not available, they are set to null
      *         but they can't be both null at the same time.
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
-     * @deprecated will change in a later version
      */
-    @Deprecated
-    protected final SelectionStatus openLogicalChannelAndSelect(SeSelector seSelector) {
+    final SelectionStatus openLogicalChannelAndSelect(SeSelector seSelector) {
 
         SelectionStatus selectionStatus;
 
@@ -374,19 +367,14 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * Tells if a logical channel is open
      *
      * @return true if the logical channel is open
-     * @deprecated will change in a later version
      */
-    @Deprecated
     final boolean isLogicalChannelOpen() {
         return logicalChannelIsOpen;
     }
 
     /**
      * Close the logical channel.
-     * 
-     * @deprecated will change in a later version
      */
-    @Deprecated
     private void closeLogicalChannel() {
         logger.trace("[{}] closeLogicalChannel => Closing of the logical channel.", this.getName());
         logicalChannelIsOpen = false;
