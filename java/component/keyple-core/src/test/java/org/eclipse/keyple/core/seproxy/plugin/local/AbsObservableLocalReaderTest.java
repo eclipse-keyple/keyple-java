@@ -248,10 +248,6 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         Assert.assertEquals(0, r.countObservers());
     }
 
-    public ReaderEvent processSeInserted() {
-        return processSeInserted();
-    }
-
     /*
      * HELPERS
      */
