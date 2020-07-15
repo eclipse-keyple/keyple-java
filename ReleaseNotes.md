@@ -29,6 +29,8 @@ Releases:
 * fixed many issues raised by Sonarqube
  
 ### keyple-java-calypso 0.9a
+* KEYP-312 : restricting access to methods of the reader API that are not used by the plugins.
+* KEYP-311 : added the possibility to unlock the SAM when it is selected
 * KEYP-96 : added Stored Value management commands
 * KEYP-23 : added PIN management commands
 * KEYP-101 : enhanced CalypsoPo with card data (updated during the transaction)
