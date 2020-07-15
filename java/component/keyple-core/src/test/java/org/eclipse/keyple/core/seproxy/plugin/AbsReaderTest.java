@@ -25,7 +25,7 @@ import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeRequestTest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponseTest;
-import org.eclipse.keyple.core.seproxy.plugin.mock.BlankAbstractReader;
+import org.eclipse.keyple.core.seproxy.plugin.local.BlankAbstractReader;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

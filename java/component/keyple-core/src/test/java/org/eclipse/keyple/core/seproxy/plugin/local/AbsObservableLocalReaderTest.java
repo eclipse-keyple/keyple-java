@@ -22,7 +22,6 @@ import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.plugin.mock.BlankObservableLocalReader;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -247,6 +246,10 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         r.addObserver(obs);
         r.removeObserver(obs);
         Assert.assertEquals(0, r.countObservers());
+    }
+
+    public ReaderEvent processSeInserted() {
+        return processSeInserted();
     }
 
     /*

@@ -9,45 +9,37 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin.mock;
+package org.eclipse.keyple.core.seproxy.plugin.local;
 
 import java.util.Map;
 import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractReader;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
 
-public class MockAbstractThreadedPlugin extends AbstractThreadedObservablePlugin {
+/**
+ * This mock plugin fails when instantiate
+ */
+public class BlankFailingPlugin extends AbstractThreadedObservablePlugin {
 
-
-    public MockAbstractThreadedPlugin(String name) {
+    public BlankFailingPlugin(String name) {
         super(name);
-    }
-
-    public Boolean isMonitoring() {
-        return super.isMonitoring();
-    }
-
-    public void finalize() throws Throwable {
-        super.finalize();
     }
 
     @Override
     protected SortedSet<String> fetchNativeReadersNames() {
-        return new TreeSet<String>();
+        return null;
+    }
+
+    @Override
+    protected SeReader fetchNativeReader(String name) {
+        return null;
     }
 
     @Override
     protected ConcurrentMap<String, SeReader> initNativeReaders() {
-        return new ConcurrentHashMap<String, SeReader>();
-    }
-
-    @Override
-    protected AbstractReader fetchNativeReader(String name) {
-        return null;
+        throw new KeypleReaderIOException("");
     }
 
     @Override
@@ -59,5 +51,4 @@ public class MockAbstractThreadedPlugin extends AbstractThreadedObservablePlugin
     public void setParameter(String key, String value) {
 
     }
-
 }

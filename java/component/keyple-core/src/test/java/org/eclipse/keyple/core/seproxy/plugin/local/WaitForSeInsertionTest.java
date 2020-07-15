@@ -17,7 +17,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeInsertion;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

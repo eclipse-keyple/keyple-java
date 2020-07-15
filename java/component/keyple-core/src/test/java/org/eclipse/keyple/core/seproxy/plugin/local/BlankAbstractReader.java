@@ -9,62 +9,51 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin.mock;
+package org.eclipse.keyple.core.seproxy.plugin.local;
 
+import java.util.List;
 import java.util.Map;
-import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.exception.*;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
-import org.eclipse.keyple.core.seproxy.plugin.local.AbstractLocalReader;
-import org.eclipse.keyple.core.seproxy.plugin.local.SmartSelectionReader;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.message.SeRequest;
+import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 
-public class BlankSmartSelectionReader extends AbstractLocalReader implements SmartSelectionReader {
+/**
+ * A blank class extending AbstractReader only purpose is to be tested and spied by mockito
+ */
+public class BlankAbstractReader extends AbstractReader {
 
-
-    public BlankSmartSelectionReader(String pluginName, String readerName) {
+    public BlankAbstractReader(String pluginName, String readerName) {
         super(pluginName, readerName);
     }
 
     @Override
-    public boolean checkSePresence() {
-        return false;
-    }
-
-    @Override
-    public byte[] getATR() {
-        return new byte[0];
-    }
-
-    @Override
-    public void openPhysicalChannel() {
-
-    }
-
-    @Override
-    public void closePhysicalChannel() {
-
-    }
-
-    @Override
-    public boolean isPhysicalChannelOpen() {
-        return false;
-    }
-
-    @Override
-    public boolean protocolFlagMatches(SeProtocol protocolFlag) {
-        return false;
-    }
-
-    @Override
-    public byte[] transmitApdu(byte[] apduIn) {
-        return new byte[0];
-    }
-
-    @Override
-    public ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector) {
+    protected List<SeResponse> processSeRequests(List<SeRequest> seRequests,
+            MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl) {
         return null;
+    }
+
+    @Override
+    protected SeResponse processSeRequest(SeRequest seRequest, ChannelControl channelControl) {
+        return null;
+    }
+
+    @Override
+    public boolean isSePresent() {
+        return false;
+    }
+
+    @Override
+    public void addSeProtocolSetting(SeProtocol seProtocol, String protocolRule) {
+
+    }
+
+    @Override
+    public void setSeProtocolSetting(Map<SeProtocol, String> protocolSetting) {
+
     }
 
     @Override

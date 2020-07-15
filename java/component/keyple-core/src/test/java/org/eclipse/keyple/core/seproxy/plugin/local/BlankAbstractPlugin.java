@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin.mock;
+package org.eclipse.keyple.core.seproxy.plugin.local;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

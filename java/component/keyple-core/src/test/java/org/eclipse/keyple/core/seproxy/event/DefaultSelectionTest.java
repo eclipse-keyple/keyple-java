@@ -23,7 +23,7 @@ import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.plugin.local.AbsObservableLocalReaderTest;
-import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.local.BlankObservableLocalReader;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -40,11 +40,11 @@ public class DefaultSelectionTest {
     @Test
     public void seInserted() throws Exception {
         // empty reader
-        AbstractObservableLocalReader r =
-                AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
+        BlankObservableLocalReader r = (BlankObservableLocalReader) AbsObservableLocalReaderTest
+                .getSpy(PLUGIN_NAME, READER_NAME);
 
         // test
-        ReaderEvent event = r.processSeInserted();
+        ReaderEvent event = r.processSeInsertedTest();
 
         Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
         Assert.assertNull(event.getDefaultSelectionsResponse());
@@ -57,8 +57,8 @@ public class DefaultSelectionTest {
      */
     @Test
     public void seInserted_ALWAYS() throws Exception {
-        AbstractObservableLocalReader r =
-                AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
+        BlankObservableLocalReader r = (BlankObservableLocalReader) AbsObservableLocalReaderTest
+                .getSpy(PLUGIN_NAME, READER_NAME);
 
         // configure parameters
         List<SeRequest> selections = new ArrayList<SeRequest>();
@@ -73,7 +73,7 @@ public class DefaultSelectionTest {
         // test
         r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel),
                 mode);
-        ReaderEvent event = r.processSeInserted();
+        ReaderEvent event = r.processSeInsertedTest();
 
         // assert
         Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
@@ -89,8 +89,8 @@ public class DefaultSelectionTest {
      */
     @Test
     public void seMatched_MATCHED_ONLY() throws Exception {
-        AbstractObservableLocalReader r =
-                AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
+        BlankObservableLocalReader r = (BlankObservableLocalReader) AbsObservableLocalReaderTest
+                .getSpy(PLUGIN_NAME, READER_NAME);
 
         // configure parameters
         List<SeRequest> selections = new ArrayList<SeRequest>();
@@ -106,7 +106,7 @@ public class DefaultSelectionTest {
         // test
         r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel),
                 mode);
-        ReaderEvent event = r.processSeInserted();
+        ReaderEvent event = r.processSeInsertedTest();
 
         Assert.assertEquals(ReaderEvent.EventType.SE_MATCHED, event.getEventType());
         Assert.assertEquals(responses,
@@ -123,8 +123,8 @@ public class DefaultSelectionTest {
      */
     @Test
     public void noEvent_MATCHED_ONLY() throws Exception {
-        AbstractObservableLocalReader r =
-                AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
+        BlankObservableLocalReader r = (BlankObservableLocalReader) AbsObservableLocalReaderTest
+                .getSpy(PLUGIN_NAME, READER_NAME);
 
         // configure parameters
         List<SeRequest> selections = new ArrayList<SeRequest>();
@@ -138,7 +138,7 @@ public class DefaultSelectionTest {
         // test
         r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel),
                 mode);
-        ReaderEvent event = r.processSeInserted();
+        ReaderEvent event = r.processSeInsertedTest();
 
         Assert.assertEquals(null, event);
     }
@@ -150,8 +150,8 @@ public class DefaultSelectionTest {
      */
     @Test
     public void noEvent_IOError() throws Exception {
-        AbstractObservableLocalReader r =
-                AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
+        BlankObservableLocalReader r = (BlankObservableLocalReader) AbsObservableLocalReaderTest
+                .getSpy(PLUGIN_NAME, READER_NAME);
 
         // configure parameters
         List<SeRequest> selections = new ArrayList<SeRequest>();
@@ -167,10 +167,10 @@ public class DefaultSelectionTest {
         // test
         r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel),
                 mode);
-        r.processSeInserted();
+        r.processSeInsertedTest();
 
         // test
-        ReaderEvent event = r.processSeInserted();
+        ReaderEvent event = r.processSeInsertedTest();
         Assert.assertEquals(null, event);
     }
 }

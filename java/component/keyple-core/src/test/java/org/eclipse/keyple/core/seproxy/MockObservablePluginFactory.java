@@ -12,7 +12,7 @@
 package org.eclipse.keyple.core.seproxy;
 
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
-import org.eclipse.keyple.core.seproxy.plugin.mock.MockAbstractThreadedPlugin;
+import org.eclipse.keyple.core.seproxy.plugin.local.MockAbstractThreadedPlugin;
 
 public class MockObservablePluginFactory implements PluginFactory {
 
