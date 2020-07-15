@@ -11,13 +11,24 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
+import java.util.List;
+import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
+import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
+import org.eclipse.keyple.calypso.command.sam.builder.security.UnlockCmdBuild;
+import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException;
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronizedExchangesException;
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 
 /**
- * Specialized selection request to manage the specific characteristics of Calypso SAMs
+ * Specialized selection request to manage the specific characteristics of Calypso SAMs<br>
+ * Beyond the creation of a {@link CalypsoSam} object, this class also allows to execute a command
+ * to Unlock the SAM if unlockData are present in the {@link SamSelector}.<br>
+ * This unlock command is currently the only one allowed during the SAM selection process.
  */
-public class SamSelectionRequest extends AbstractSeSelectionRequest {
+public class SamSelectionRequest extends
+        AbstractSeSelectionRequest<AbstractSamCommandBuilder<? extends AbstractSamResponseParser>> {
     /**
      * Create a {@link SamSelectionRequest}
      * 
@@ -25,16 +36,40 @@ public class SamSelectionRequest extends AbstractSeSelectionRequest {
      */
     public SamSelectionRequest(SamSelector samSelector) {
         super(samSelector);
+        byte[] unlockData = samSelector.getUnlockData();
+        if (unlockData != null) {
+            // a unlock data value has been set, let's add the unlock command to be executed
+            // following the selection
+            addCommandBuilder(new UnlockCmdBuild(samSelector.getTargetSamRevision(),
+                    samSelector.getUnlockData()));
+        }
     }
 
     /**
-     * Create a CalypsoSam object containing the selection data received from the plugin
+     * Create a CalypsoSam object containing the selection data received from the plugin<br>
+     * If an Unlock command has been prepared, its status is checked.
      *
      * @param seResponse the SE response received
      * @return a {@link CalypsoSam}
+     * @throws CalypsoDesynchronizedExchangesException if the APDU SAM exchanges are out of sync
+     * @throws CalypsoSamCommandException if the SAM has responded with an error status
      */
     @Override
     protected CalypsoSam parse(SeResponse seResponse) {
+        List<AbstractSamCommandBuilder<? extends AbstractSamResponseParser>> commandBuilders =
+                getCommandBuilders();
+
+        if (commandBuilders.size() == 1) {
+            // an unlock command has been requested
+            List<ApduResponse> apduResponses = seResponse.getApduResponses();
+            if (apduResponses == null) {
+                throw new CalypsoDesynchronizedExchangesException(
+                        "Mismatch in the number of requests/responses");
+            }
+            // check the SAM response to the unlock command
+            commandBuilders.get(0).createResponseParser(apduResponses.get(0)).checkStatus();
+        }
+
         return new CalypsoSam(seResponse, seSelector.getSeProtocol().getTransmissionMode());
     }
 }
