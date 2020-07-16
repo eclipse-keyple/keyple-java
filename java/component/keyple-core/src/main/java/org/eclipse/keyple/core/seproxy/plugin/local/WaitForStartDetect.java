@@ -34,16 +34,17 @@ public class WaitForStartDetect extends AbstractObservableState {
         super(MonitoringState.WAIT_FOR_START_DETECTION, reader);
     }
 
-    public WaitForStartDetect(AbstractObservableLocalReader reader, AbstractMonitoringJob monitoringJob,
-            ExecutorService executorService) {
+    public WaitForStartDetect(AbstractObservableLocalReader reader,
+            AbstractMonitoringJob monitoringJob, ExecutorService executorService) {
         super(MonitoringState.WAIT_FOR_START_DETECTION, reader, monitoringJob, executorService);
     }
 
     @Override
     public void onEvent(AbstractObservableLocalReader.InternalEvent event) {
-        logger.trace("[{}] onEvent => Event {} received in currentState {}", reader.getName(),
-                event, state);
-
+        if (logger.isTraceEnabled()) {
+            logger.trace("[{}] onEvent => Event {} received in currentState {}", reader.getName(),
+                    event, state);
+        }
         /*
          * Process InternalEvent
          */

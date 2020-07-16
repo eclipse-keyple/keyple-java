@@ -37,16 +37,17 @@ public class WaitForSeProcessing extends AbstractObservableState {
         super(MonitoringState.WAIT_FOR_SE_PROCESSING, reader);
     }
 
-    public WaitForSeProcessing(AbstractObservableLocalReader reader, AbstractMonitoringJob monitoringJob,
-            ExecutorService executorService) {
+    public WaitForSeProcessing(AbstractObservableLocalReader reader,
+            AbstractMonitoringJob monitoringJob, ExecutorService executorService) {
         super(MonitoringState.WAIT_FOR_SE_PROCESSING, reader, monitoringJob, executorService);
     }
 
     @Override
     public void onEvent(AbstractObservableLocalReader.InternalEvent event) {
-        logger.trace("[{}] onEvent => Event {} received in currentState {}", reader.getName(),
-                event, state);
-
+        if (logger.isTraceEnabled()) {
+            logger.trace("[{}] onEvent => Event {} received in currentState {}", reader.getName(),
+                    event, state);
+        }
         /*
          * Process InternalEvent
          */

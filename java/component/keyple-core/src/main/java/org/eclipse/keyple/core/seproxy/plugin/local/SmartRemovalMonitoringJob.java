@@ -55,9 +55,11 @@ public class SmartRemovalMonitoringJob extends AbstractMonitoringJob {
                         // timeout is already managed within the task
                         state.onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
                     } else {
-                        logger.trace(
-                                "[{}] waitForCardAbsentNative => return false, task interrupted",
-                                reader.getName());
+                        if (logger.isTraceEnabled()) {
+                            logger.trace(
+                                    "[{}] waitForCardAbsentNative => return false, task interrupted",
+                                    reader.getName());
+                        }
                     }
                 } catch (KeypleReaderIOException e) {
                     logger.trace(

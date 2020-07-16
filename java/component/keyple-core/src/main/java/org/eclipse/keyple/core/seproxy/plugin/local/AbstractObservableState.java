@@ -56,7 +56,7 @@ public abstract class AbstractObservableState {
      * @param executorService the executor service
      */
     protected AbstractObservableState(MonitoringState state, AbstractObservableLocalReader reader,
-                                      AbstractMonitoringJob monitoringJob, ExecutorService executorService) {
+            AbstractMonitoringJob monitoringJob, ExecutorService executorService) {
         this.reader = reader;
         this.state = state;
         this.monitoringJob = monitoringJob;
@@ -103,8 +103,9 @@ public abstract class AbstractObservableState {
      * Invoked when activated, a custom behaviour can be added here
      */
     public void onActivate() {
-        logger.trace("[{}] onActivate => {}", this.reader.getName(), this.getMonitoringState());
-
+        if (logger.isTraceEnabled()) {
+            logger.trace("[{}] onActivate => {}", this.reader.getName(), this.getMonitoringState());
+        }
         // launch the monitoringJob is necessary
         if (monitoringJob != null) {
             if (executorService == null) {
@@ -118,17 +119,21 @@ public abstract class AbstractObservableState {
      * Invoked when deactivated
      */
     public void onDeactivate() {
-        logger.trace("[{}] onDeactivate => {}", this.reader.getName(), this.getMonitoringState());
-
+        if (logger.isTraceEnabled()) {
+            logger.trace("[{}] onDeactivate => {}", this.reader.getName(),
+                    this.getMonitoringState());
+        }
         // cancel the monitoringJob is necessary
         if (monitoringEvent != null && !monitoringEvent.isDone()) {
             monitoringJob.stop();
 
             // TODO this could be inside the stop method?
             boolean canceled = monitoringEvent.cancel(false);
-            logger.trace(
-                    "[{}] onDeactivate => cancel runnable waitForCarPresent by thead interruption {}",
-                    reader.getName(), canceled);
+            if (logger.isTraceEnabled()) {
+                logger.trace(
+                        "[{}] onDeactivate => cancel runnable waitForCarPresent by thead interruption {}",
+                        reader.getName(), canceled);
+            }
         }
     }
 

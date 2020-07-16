@@ -113,8 +113,11 @@ public abstract class AbstractLocalReader extends AbstractReader {
         try {
             closePhysicalChannel();
         } catch (KeypleReaderIOException e) {
-            logger.debug("[{}] Exception occurred in closeLogicalAndPhysicalChannels. Message: {}",
-                    this.getName(), e.getMessage());
+            if (logger.isDebugEnabled()) {
+                logger.debug(
+                        "[{}] Exception occurred in closeLogicalAndPhysicalChannels. Message: {}",
+                        this.getName(), e.getMessage());
+            }
         }
     }
 
@@ -152,8 +155,10 @@ public abstract class AbstractLocalReader extends AbstractReader {
                 aidSelector.getSuccessfulSelectionStatusCodes()));
 
         if (!fciResponse.isSuccessful()) {
-            logger.debug("[{}] selectionGetData => Get data failed. SELECTOR = {}", this.getName(),
-                    aidSelector);
+            if (logger.isDebugEnabled()) {
+                logger.debug("[{}] selectionGetData => Get data failed. SELECTOR = {}",
+                        this.getName(), aidSelector);
+            }
         }
         return fciResponse;
     }
@@ -200,8 +205,11 @@ public abstract class AbstractLocalReader extends AbstractReader {
                 selectApplicationCommand, true, aidSelector.getSuccessfulSelectionStatusCodes()));
 
         if (!fciResponse.isSuccessful()) {
-            logger.debug("[{}] openLogicalChannel => Application Selection failed. SELECTOR = {}",
-                    this.getName(), aidSelector);
+            if (logger.isDebugEnabled()) {
+                logger.debug(
+                        "[{}] openLogicalChannel => Application Selection failed. SELECTOR = {}",
+                        this.getName(), aidSelector);
+            }
         }
         return fciResponse;
     }
@@ -376,7 +384,10 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * Close the logical channel.
      */
     private void closeLogicalChannel() {
-        logger.trace("[{}] closeLogicalChannel => Closing of the logical channel.", this.getName());
+        if (logger.isTraceEnabled()) {
+            logger.trace("[{}] closeLogicalChannel => Closing of the logical channel.",
+                    this.getName());
+        }
         logicalChannelIsOpen = false;
         aidCurrentlySelected = null;
         currentSelectionStatus = null;
@@ -491,7 +502,10 @@ public abstract class AbstractLocalReader extends AbstractReader {
 
             if (!stopProcess) {
                 if (requestMatchesProtocol[requestIndex]) {
-                    logger.debug("[{}] processSeRequests => transmit {}", this.getName(), request);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("[{}] processSeRequests => transmit {}", this.getName(),
+                                request);
+                    }
                     SeResponse response;
                     try {
                         response = processSeRequestLogical(request);
@@ -504,13 +518,18 @@ public abstract class AbstractLocalReader extends AbstractReader {
                         responses.add(ex.getSeResponse());
                         /* Build a List of SeResponse with the available data. */
                         ex.setSeResponses(responses);
-                        logger.debug(
-                                "[{}] processSeRequests => transmit : process interrupted, collect previous responses {}",
-                                this.getName(), responses);
+                        if (logger.isDebugEnabled()) {
+                            logger.debug(
+                                    "[{}] processSeRequests => transmit : process interrupted, collect previous responses {}",
+                                    this.getName(), responses);
+                        }
                         throw ex;
                     }
                     responses.add(response);
-                    logger.debug("[{}] processSeRequests => receive {}", this.getName(), response);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("[{}] processSeRequests => receive {}", this.getName(),
+                                response);
+                    }
                 } else {
                     /*
                      * in case the protocolFlag of a SeRequest doesn't match the reader status, a
@@ -702,11 +721,15 @@ public abstract class AbstractLocalReader extends AbstractReader {
 
                 try {
                     selectionStatus = openLogicalChannelAndSelect(seRequest.getSeSelector());
-                    logger.trace("[{}] processSeRequest => Logical channel opening success.",
-                            this.getName());
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("[{}] processSeRequest => Logical channel opening success.",
+                                this.getName());
+                    }
                 } catch (IllegalArgumentException e) {
-                    logger.debug("[{}] processSeRequest => Logical channel opening failure",
-                            this.getName());
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("[{}] processSeRequest => Logical channel opening failure",
+                                this.getName());
+                    }
                     closeLogicalChannel();
                     /* return a null SeResponse when the opening of the logical channel failed */
                     return null;
@@ -745,8 +768,10 @@ public abstract class AbstractLocalReader extends AbstractReader {
                      * The process has been interrupted. We close the logical channel and launch a
                      * KeypleReaderException with the Apdu responses collected so far.
                      */
-                    logger.debug(
-                            "The process has been interrupted, collect Apdu responses collected so far");
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(
+                                "The process has been interrupted, collect Apdu responses collected so far");
+                    }
                     closeLogicalAndPhysicalChannels();
                     ex.setSeResponse(
                             new SeResponse(false, previouslyOpen, selectionStatus, apduResponses));

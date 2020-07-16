@@ -53,22 +53,27 @@ public class CardPresentMonitoringJob extends AbstractMonitoringJob {
 
             @Override
             public void run() {
-                logger.debug("[{}] Polling from isSePresent", reader.getName());
-
+                if (logger.isDebugEnabled()) {
+                    logger.debug("[{}] Polling from isSePresent", reader.getName());
+                }
                 // re-init loop value to true
                 loop.set(true);
                 while (loop.get()) {
                     try {
                         // polls for SE_INSERTED
                         if (monitorInsertion && reader.isSePresent()) {
-                            logger.debug("[{}] The SE is present ", reader.getName());
+                            if (logger.isDebugEnabled()) {
+                                logger.debug("[{}] The SE is present ", reader.getName());
+                            }
                             loop.set(false);
                             state.onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
                             return;
                         }
                         // polls for SE_REMOVED
                         if (!monitorInsertion && !reader.isSePresent()) {
-                            logger.debug("[{}] The SE is not present ", reader.getName());
+                            if (logger.isDebugEnabled()) {
+                                logger.debug("[{}] The SE is not present ", reader.getName());
+                            }
                             loop.set(false);
                             state.onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
                             return;
@@ -88,13 +93,14 @@ public class CardPresentMonitoringJob extends AbstractMonitoringJob {
                         // wait a bit
                         Thread.sleep(waitTimeout);
                     } catch (InterruptedException ignored) {
-                        // Restore interrupted state...      
+                        // Restore interrupted state...
                         Thread.currentThread().interrupt();
                         loop.set(false);
                     }
                 }
-                logger.trace("[{}] Looping has been stopped", reader.getName());
-
+                if (logger.isTraceEnabled()) {
+                    logger.trace("[{}] Looping has been stopped", reader.getName());
+                }
             }
         };
     }
@@ -104,7 +110,9 @@ public class CardPresentMonitoringJob extends AbstractMonitoringJob {
      */
     @Override
     void stop() {
-        logger.debug("[{}] Stop polling ", reader.getName());
+        if (logger.isDebugEnabled()) {
+            logger.debug("[{}] Stop polling ", reader.getName());
+        }
         loop.set(false);
     }
 

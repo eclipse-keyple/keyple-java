@@ -73,13 +73,16 @@ public class CardAbsentPingMonitoringJob extends AbstractMonitoringJob {
 
             @Override
             public void run() {
-                logger.debug("[{}] Polling from isSePresentPing", reader.getName());
-
+                if (logger.isDebugEnabled()) {
+                    logger.debug("[{}] Polling from isSePresentPing", reader.getName());
+                }
                 // re-init loop value to true
                 loop.set(true);
                 while (loop.get()) {
                     if (!reader.isSePresentPing()) {
-                        logger.debug("[{}] The SE stopped responding", reader.getName());
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("[{}] The SE stopped responding", reader.getName());
+                        }
                         loop.set(false);
                         state.onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
                         return;
@@ -93,14 +96,15 @@ public class CardAbsentPingMonitoringJob extends AbstractMonitoringJob {
                         // wait a bit
                         Thread.sleep(removalWait);
                     } catch (InterruptedException ignored) {
-                        // Restore interrupted state...      
+                        // Restore interrupted state...
                         Thread.currentThread().interrupt();
                         loop.set(false);
                     }
                 }
 
-                logger.debug("[{}] Polling loop has been stopped", reader.getName());
-
+                if (logger.isDebugEnabled()) {
+                    logger.debug("[{}] Polling loop has been stopped", reader.getName());
+                }
             }
         };
         return job;
@@ -111,7 +115,9 @@ public class CardAbsentPingMonitoringJob extends AbstractMonitoringJob {
      */
     @Override
     public void stop() {
-        logger.debug("[{}] Stop Polling ", reader.getName());
+        if (logger.isDebugEnabled()) {
+            logger.debug("[{}] Stop Polling ", reader.getName());
+        }
         loop.set(false);
     }
 }
