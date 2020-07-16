@@ -37,16 +37,17 @@ public class WaitForSeInsertion extends AbstractObservableState {
         super(MonitoringState.WAIT_FOR_SE_INSERTION, reader);
     }
 
-    public WaitForSeInsertion(AbstractObservableLocalReader reader, AbstractMonitoringJob monitoringJob,
-            ExecutorService executorService) {
+    public WaitForSeInsertion(AbstractObservableLocalReader reader,
+            AbstractMonitoringJob monitoringJob, ExecutorService executorService) {
         super(MonitoringState.WAIT_FOR_SE_INSERTION, reader, monitoringJob, executorService);
     }
 
     @Override
     public void onEvent(AbstractObservableLocalReader.InternalEvent event) {
-        logger.trace("[{}] onEvent => Event {} received in currentState {}", reader.getName(),
-                event, state);
-
+        if (logger.isTraceEnabled()) {
+            logger.trace("[{}] onEvent => Event {} received in currentState {}", reader.getName(),
+                    event, state);
+        }
         /*
          * Process InternalEvent
          */
@@ -63,7 +64,10 @@ public class WaitForSeInsertion extends AbstractObservableState {
                     // if none event was sent to the application, back to SE detection
                     // stay in the same state, however switch to WAIT_FOR_SE_INSERTION to relaunch
                     // the monitoring job
-                    logger.trace("[{}] onEvent => Inserted SE hasn't matched", reader.getName());
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("[{}] onEvent => Inserted SE hasn't matched",
+                                reader.getName());
+                    }
                     switchState(MonitoringState.WAIT_FOR_SE_INSERTION);
                 }
                 break;

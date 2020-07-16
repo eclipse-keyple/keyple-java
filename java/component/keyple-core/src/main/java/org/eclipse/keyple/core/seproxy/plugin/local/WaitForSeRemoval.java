@@ -36,16 +36,17 @@ public class WaitForSeRemoval extends AbstractObservableState {
         super(MonitoringState.WAIT_FOR_SE_REMOVAL, reader);
     }
 
-    public WaitForSeRemoval(AbstractObservableLocalReader reader, AbstractMonitoringJob monitoringJob,
-            ExecutorService executorService) {
+    public WaitForSeRemoval(AbstractObservableLocalReader reader,
+            AbstractMonitoringJob monitoringJob, ExecutorService executorService) {
         super(MonitoringState.WAIT_FOR_SE_REMOVAL, reader, monitoringJob, executorService);
     }
 
     @Override
     public void onEvent(AbstractObservableLocalReader.InternalEvent event) {
-        logger.trace("[{}] onEvent => Event {} received in currentState {}", reader.getName(),
-                event, state);
-
+        if (logger.isTraceEnabled()) {
+            logger.trace("[{}] onEvent => Event {} received in currentState {}", reader.getName(),
+                    event, state);
+        }
         /*
          * Process InternalEvent
          */

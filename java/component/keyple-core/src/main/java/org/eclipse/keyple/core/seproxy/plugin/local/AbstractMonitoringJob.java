@@ -15,15 +15,16 @@ package org.eclipse.keyple.core.seproxy.plugin.local;
 /**
  * Monitoring jobs abstract class.
  * <p>
- * Observable readers can instantiate {@link AbstractMonitoringJob} to perform background processing during
- * the different states of the generic state machine.
+ * Observable readers can instantiate {@link AbstractMonitoringJob} to perform background processing
+ * during the different states of the generic state machine.
  * <p>
  * Internal events ({@link AbstractObservableLocalReader.InternalEvent}) can be fired to change the
  * state of the machine via the {@link AbstractObservableState} class passed as a constructor's
  * argument.
  * <p>
- * Standard {@link AbstractMonitoringJob} are already defined in the local.monitoring package but it is
- * possible to define new ones within a plugin reader if necessary, implementing this abstract class.
+ * Standard {@link AbstractMonitoringJob} are already defined in the local.monitoring package but it
+ * is possible to define new ones within a plugin reader if necessary, implementing this abstract
+ * class.
  */
 abstract class AbstractMonitoringJob {
 

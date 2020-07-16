@@ -49,15 +49,19 @@ public class SmartInsertionMonitoringJob extends AbstractMonitoringJob {
         return new Runnable() {
             @Override
             public void run() {
-                logger.trace("[{}] Invoke waitForCardPresent asynchronously", reader.getName());
+                if (logger.isTraceEnabled()) {
+                    logger.trace("[{}] Invoke waitForCardPresent asynchronously", reader.getName());
+                }
                 try {
                     if (reader.waitForCardPresent()) {
                         state.onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
                     }
                 } catch (KeypleReaderIOException e) {
-                    logger.trace(
-                            "[{}] waitForCardPresent => Error while polling SE with waitForCardPresent",
-                            reader.getName());
+                    if (logger.isTraceEnabled()) {
+                        logger.trace(
+                                "[{}] waitForCardPresent => Error while polling SE with waitForCardPresent",
+                                reader.getName());
+                    }
                     state.onEvent(AbstractObservableLocalReader.InternalEvent.STOP_DETECT);
                 }
             }
@@ -69,7 +73,9 @@ public class SmartInsertionMonitoringJob extends AbstractMonitoringJob {
      */
     @Override
     public void stop() {
-        logger.trace("[{}] stopWaitForCard on reader", reader.getName());
+        if (logger.isTraceEnabled()) {
+            logger.trace("[{}] stopWaitForCard on reader", reader.getName());
+        }
         reader.stopWaitForCard();
     }
 

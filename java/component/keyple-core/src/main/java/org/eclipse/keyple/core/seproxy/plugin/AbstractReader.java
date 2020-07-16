@@ -139,12 +139,13 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
         try {
             seResponses = processSeRequests(seRequests, multiSeRequestProcessing, channelControl);
         } catch (KeypleReaderIOException ex) {
-            long timeStamp = System.nanoTime();
-            long elapsed10ms = (timeStamp - before) / 100000;
-            this.before = timeStamp;
-            logger.debug("[{}] transmit => SEREQUESTLIST IO failure. elapsed {}", this.getName(),
-                    elapsed10ms / 10.0);
-            /* Throw an exception with the responses collected so far. */
+            if (logger.isDebugEnabled()) {
+                long timeStamp = System.nanoTime();
+                long elapsed10ms = (timeStamp - before) / 100000;
+                this.before = timeStamp;
+                logger.debug("[{}] transmit => SEREQUESTLIST IO failure. elapsed {}",
+                        this.getName(), elapsed10ms / 10.0);
+            } /* Throw an exception with the responses collected so far. */
             throw ex;
         }
 
@@ -208,11 +209,13 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
         try {
             seResponse = processSeRequest(seRequest, channelControl);
         } catch (KeypleReaderIOException ex) {
-            long timeStamp = System.nanoTime();
-            long elapsed10ms = (timeStamp - before) / 100000;
-            this.before = timeStamp;
-            logger.debug("[{}] transmit => SEREQUEST IO failure. elapsed {}", this.getName(),
-                    elapsed10ms / 10.0);
+            if (logger.isDebugEnabled()) {
+                long timeStamp = System.nanoTime();
+                long elapsed10ms = (timeStamp - before) / 100000;
+                this.before = timeStamp;
+                logger.debug("[{}] transmit => SEREQUEST IO failure. elapsed {}", this.getName(),
+                        elapsed10ms / 10.0);
+            }
             /* Throw an exception with the responses collected so far (ex.getSeResponse()). */
             throw ex;
         }
