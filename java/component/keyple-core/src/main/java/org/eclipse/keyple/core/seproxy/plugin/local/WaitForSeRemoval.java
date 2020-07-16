@@ -36,7 +36,7 @@ public class WaitForSeRemoval extends AbstractObservableState {
         super(MonitoringState.WAIT_FOR_SE_REMOVAL, reader);
     }
 
-    public WaitForSeRemoval(AbstractObservableLocalReader reader, MonitoringJob monitoringJob,
+    public WaitForSeRemoval(AbstractObservableLocalReader reader, AbstractMonitoringJob monitoringJob,
             ExecutorService executorService) {
         super(MonitoringState.WAIT_FOR_SE_REMOVAL, reader, monitoringJob, executorService);
     }

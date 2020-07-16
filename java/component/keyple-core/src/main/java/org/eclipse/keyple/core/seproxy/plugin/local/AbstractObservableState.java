@@ -37,12 +37,12 @@ public abstract class AbstractObservableState {
     protected AbstractObservableLocalReader reader;
 
     /* Background job definition if any */
-    protected MonitoringJob monitoringJob;
+    protected AbstractMonitoringJob monitoringJob;
 
     /* Result of the background job if any */
     protected Future monitoringEvent;
 
-    /* Executor service used to execute MonitoringJob */
+    /* Executor service used to execute AbstractMonitoringJob */
     protected ExecutorService executorService;
 
 
@@ -56,7 +56,7 @@ public abstract class AbstractObservableState {
      * @param executorService the executor service
      */
     protected AbstractObservableState(MonitoringState state, AbstractObservableLocalReader reader,
-            MonitoringJob monitoringJob, ExecutorService executorService) {
+                                      AbstractMonitoringJob monitoringJob, ExecutorService executorService) {
         this.reader = reader;
         this.state = state;
         this.monitoringJob = monitoringJob;

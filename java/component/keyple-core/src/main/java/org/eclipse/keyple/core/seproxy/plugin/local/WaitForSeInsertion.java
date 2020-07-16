@@ -37,7 +37,7 @@ public class WaitForSeInsertion extends AbstractObservableState {
         super(MonitoringState.WAIT_FOR_SE_INSERTION, reader);
     }
 
-    public WaitForSeInsertion(AbstractObservableLocalReader reader, MonitoringJob monitoringJob,
+    public WaitForSeInsertion(AbstractObservableLocalReader reader, AbstractMonitoringJob monitoringJob,
             ExecutorService executorService) {
         super(MonitoringState.WAIT_FOR_SE_INSERTION, reader, monitoringJob, executorService);
     }

@@ -34,7 +34,7 @@ public class WaitForStartDetect extends AbstractObservableState {
         super(MonitoringState.WAIT_FOR_START_DETECTION, reader);
     }
 
-    public WaitForStartDetect(AbstractObservableLocalReader reader, MonitoringJob monitoringJob,
+    public WaitForStartDetect(AbstractObservableLocalReader reader, AbstractMonitoringJob monitoringJob,
             ExecutorService executorService) {
         super(MonitoringState.WAIT_FOR_START_DETECTION, reader, monitoringJob, executorService);
     }

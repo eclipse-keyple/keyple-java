@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * If a communication problem with the reader occurs (KeypleReaderIOException) an internal
  * STOP_DETECT event is fired.
  */
-public class SmartRemovalMonitoringJob implements MonitoringJob {
+public class SmartRemovalMonitoringJob extends AbstractMonitoringJob {
 
     private static final Logger logger = LoggerFactory.getLogger(SmartRemovalMonitoringJob.class);
 
@@ -39,9 +39,12 @@ public class SmartRemovalMonitoringJob implements MonitoringJob {
         this.reader = reader;
     }
 
+    /**
+     * (package-private)<br>
+     */
     @Override
-    public Runnable getMonitoringJob(final AbstractObservableState state) {
-        /**
+    Runnable getMonitoringJob(final AbstractObservableState state) {
+        /*
          * Invoke the method SmartRemovalReader#waitForCardAbsentNative() in another thread
          */
         return new Runnable() {
@@ -66,6 +69,9 @@ public class SmartRemovalMonitoringJob implements MonitoringJob {
         };
     }
 
+    /**
+     * (package-private)<br>
+     */
     @Override
     public void stop() {
         reader.stopWaitForCardRemoval();
