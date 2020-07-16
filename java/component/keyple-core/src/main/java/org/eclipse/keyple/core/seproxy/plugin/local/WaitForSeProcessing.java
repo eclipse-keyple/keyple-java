@@ -37,7 +37,7 @@ public class WaitForSeProcessing extends AbstractObservableState {
         super(MonitoringState.WAIT_FOR_SE_PROCESSING, reader);
     }
 
-    public WaitForSeProcessing(AbstractObservableLocalReader reader, MonitoringJob monitoringJob,
+    public WaitForSeProcessing(AbstractObservableLocalReader reader, AbstractMonitoringJob monitoringJob,
             ExecutorService executorService) {
         super(MonitoringState.WAIT_FOR_SE_PROCESSING, reader, monitoringJob, executorService);
     }

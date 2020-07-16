@@ -21,14 +21,14 @@ import org.slf4j.LoggerFactory;
  * This monitoring job polls the {@link SeReader#isSePresent()} method to detect
  * SE_INSERTED/SE_REMOVED
  */
-public class CardPresentMonitoringJob implements MonitoringJob {
+public class CardPresentMonitoringJob extends AbstractMonitoringJob {
 
     private static final Logger logger = LoggerFactory.getLogger(CardPresentMonitoringJob.class);
 
     private final long waitTimeout;
     private final boolean monitorInsertion;
     private final SeReader reader;
-    final private AtomicBoolean loop = new AtomicBoolean();
+    private final AtomicBoolean loop = new AtomicBoolean();
 
     /**
      * Build a monitoring job to detect the card insertion
@@ -43,8 +43,11 @@ public class CardPresentMonitoringJob implements MonitoringJob {
         this.monitorInsertion = monitorInsertion;
     }
 
+    /**
+     * (package-private)<br>
+     */
     @Override
-    public Runnable getMonitoringJob(final AbstractObservableState state) {
+    Runnable getMonitoringJob(final AbstractObservableState state) {
         return new Runnable() {
             long retries = 0;
 
@@ -96,8 +99,11 @@ public class CardPresentMonitoringJob implements MonitoringJob {
         };
     }
 
+    /**
+     * (package-private)<br>
+     */
     @Override
-    public void stop() {
+    void stop() {
         logger.debug("[{}] Stop polling ", reader.getName());
         loop.set(false);
     }

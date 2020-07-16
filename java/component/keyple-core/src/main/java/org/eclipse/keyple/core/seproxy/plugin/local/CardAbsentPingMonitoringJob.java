@@ -28,13 +28,13 @@ import org.slf4j.LoggerFactory;
  * <p>
  * By default a delay of 200 ms is inserted between each APDU sending .
  */
-public class CardAbsentPingMonitoringJob implements MonitoringJob {
+public class CardAbsentPingMonitoringJob extends AbstractMonitoringJob {
 
     private static final Logger logger = LoggerFactory.getLogger(CardAbsentPingMonitoringJob.class);
 
     private final AbstractObservableLocalReader reader;
     private Runnable job;
-    final private AtomicBoolean loop = new AtomicBoolean();
+    private final AtomicBoolean loop = new AtomicBoolean();
     private long removalWait = 200;
 
     /**
@@ -57,10 +57,13 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
         this.removalWait = removalWait;
     }
 
+    /**
+     * (package-private)<br>
+     */
     @Override
-    public Runnable getMonitoringJob(final AbstractObservableState state) {
+    Runnable getMonitoringJob(final AbstractObservableState state) {
 
-        /**
+        /*
          * Loop until one the following condition is met : -
          * AbstractObservableLocalReader#isSePresentPing returns false, meaning that the SE ping has
          * failed - InterruptedException is caught
@@ -103,6 +106,9 @@ public class CardAbsentPingMonitoringJob implements MonitoringJob {
         return job;
     }
 
+    /**
+     * (package-private)<br>
+     */
     @Override
     public void stop() {
         logger.debug("[{}] Stop Polling ", reader.getName());
