@@ -40,6 +40,17 @@ import org.eclipse.keyple.core.util.json.KeypleJsonParser;
  * </ul>
  */
 public class CalypsoPo extends AbstractMatchingSe {
+    private final boolean isConfidentialSessionModeSupported;
+    private final boolean isDeselectRatificationSupported;
+    private final boolean isSvFeatureAvailable;
+    private final boolean isPinFeatureAvailable;
+    private final boolean isPublicAuthenticationSupported;
+    private final boolean isDfInvalidated;
+    private final PoClass poClass;
+    private final byte[] calypsoSerialNumber;
+    private final byte[] startupInfo;
+    private final PoRevision revision;
+    private final byte[] dfName;
     private static final int PO_REV1_ATR_LENGTH = 20;
     private static final int REV1_PO_DEFAULT_WRITE_OPERATIONS_NUMBER_SUPPORTED_PER_SESSION = 3;
     private static final int REV2_PO_DEFAULT_WRITE_OPERATIONS_NUMBER_SUPPORTED_PER_SESSION = 6;
@@ -64,26 +75,6 @@ public class CalypsoPo extends AbstractMatchingSe {
             3444, 4096, 4870, 5792, 6888, 8192, 9741, 11585, 13777, 16384, 19483, 23170, 27554,
             32768, 38967, 46340, 55108, 65536, 77935, 92681, 110217, 131072, 155871, 185363, 220435,
             262144, 311743, 370727, 440871, 524288, 623487, 741455, 881743, 1048576};
-
-    public static class CalypsoPoFactory implements AbstractMatchingSeFactory<CalypsoPo> {
-
-        @Override
-        public CalypsoPo fromJson(String json) {
-            return KeypleJsonParser.getParser().fromJson(json, CalypsoPo.class);
-        }
-    }
-
-    private final boolean isConfidentialSessionModeSupported;
-    private final boolean isDeselectRatificationSupported;
-    private final boolean isSvFeatureAvailable;
-    private final boolean isPinFeatureAvailable;
-    private final boolean isPublicAuthenticationSupported;
-    private final boolean isDfInvalidated;
-    private final PoClass poClass;
-    private final byte[] calypsoSerialNumber;
-    private final byte[] startupInfo;
-    private final PoRevision revision;
-    private final byte[] dfName;
 
     private final int modificationsCounterMax;
     private boolean modificationCounterIsInBytes = true;
@@ -195,12 +186,6 @@ public class CalypsoPo extends AbstractMatchingSe {
             poClass = PoClass.ISO;
         }
     }
-
-    @Override
-    public String toJson() {
-        return KeypleJsonParser.getParser().toJson(this);
-    }
-
 
     /**
      * Resolve the PO revision from the application type byte
@@ -905,5 +890,15 @@ public class CalypsoPo extends AbstractMatchingSe {
         dest.putAll(src);
     }
 
+    @Override
+    public String toJson() {
+        return KeypleJsonParser.getParser().toJson(this);
+    }
 
+    public static class CalypsoPoFactory implements AbstractMatchingSeFactory<CalypsoPo> {
+        @Override
+        public CalypsoPo fromJson(String json) {
+            return KeypleJsonParser.getParser().fromJson(json, CalypsoPo.class);
+        }
+    }
 }
