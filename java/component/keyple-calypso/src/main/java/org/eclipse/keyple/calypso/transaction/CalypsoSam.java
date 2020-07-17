@@ -96,20 +96,6 @@ public class CalypsoSam extends AbstractMatchingSe {
         }
     }
 
-    @Override
-    public String toJson() {
-        return KeypleJsonParser.getParser().toJson(this);
-    }
-
-    public static class CalypsoSamFactory implements AbstractMatchingSeFactory<CalypsoSam> {
-
-        @Override
-        public CalypsoSam fromJson(String json) {
-            return KeypleJsonParser.getParser().fromJson(json, CalypsoSam.class);
-        }
-    }
-
-
     public final SamRevision getSamRevision() {
         return samRevision;
     }
@@ -140,5 +126,18 @@ public class CalypsoSam extends AbstractMatchingSe {
 
     public final byte getSoftwareRevision() {
         return softwareRevision;
+    }
+
+    @Override
+    public String toJson() {
+        return KeypleJsonParser.getParser().toJson(this);
+    }
+
+    public static class CalypsoSamFactory implements AbstractMatchingSeFactory<CalypsoSam> {
+
+        @Override
+        public CalypsoSam fromJson(String json) {
+            return KeypleJsonParser.getParser().fromJson(json, CalypsoSam.class);
+        }
     }
 }
