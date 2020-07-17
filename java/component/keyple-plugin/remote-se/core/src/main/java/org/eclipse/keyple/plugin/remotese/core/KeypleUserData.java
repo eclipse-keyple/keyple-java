@@ -23,7 +23,7 @@ package org.eclipse.keyple.plugin.remotese.core;
 public interface KeypleUserData {
 
     /**
-     * Converts the object content to a json compatible element
+     * Converts the object content to a json string
      *
      * @return a not null reference.
      * @since 1.0
