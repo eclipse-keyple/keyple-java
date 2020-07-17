@@ -9,25 +9,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.plugin.remotese.core;
+package org.eclipse.keyple.plugin.remotese.core.exception;
 
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 
-/**
- * <b>Keyple User Data</b> API to be implemented by the user.
- * <p>
- * This interface must be implemented by a user personal object that you want to exchange between
- * client and server using Keyple services.
- *
- * @since 1.0
- */
-public interface KeypleUserData {
+public class KeypleDoNotPropagateEventException extends KeypleException {
 
-    /**
-     * Converts the object content to a json compatible element
-     *
-     * @return a not null reference.
-     * @since 1.0
-     */
-    String toJson();
-
+    public KeypleDoNotPropagateEventException(String message) {
+        super(message);
+    }
 }

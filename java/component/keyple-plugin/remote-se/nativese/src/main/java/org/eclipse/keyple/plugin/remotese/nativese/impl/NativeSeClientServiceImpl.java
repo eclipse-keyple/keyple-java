@@ -11,13 +11,14 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
-import java.util.List;
+import java.util.UUID;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
+import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remotese.core.*;
-import org.eclipse.keyple.plugin.remotese.core.impl.json.KeypleJsonParser;
+import org.eclipse.keyple.plugin.remotese.core.exception.KeypleDoNotPropagateEventException;
 import org.eclipse.keyple.plugin.remotese.nativese.NativeSeClientService;
 import org.eclipse.keyple.plugin.remotese.nativese.RemoteServiceParameters;
 import org.slf4j.Logger;
@@ -44,9 +45,6 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
             NativeSeClientServiceFactory.KeypleClientReaderEventFilter eventFilter) {
         super();
         this.withReaderObservation = withReaderObservation;
-        if (withReaderObservation && eventFilter == null) {
-            throw new IllegalArgumentException("eventFilter must not be null");
-        }
         this.eventFilter = eventFilter;
     }
 
@@ -58,9 +56,8 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
      */
     static NativeSeClientServiceImpl createInstance(boolean withReaderObservation,
             NativeSeClientServiceFactory.KeypleClientReaderEventFilter eventFilter) {
-        if (uniqueInstance == null) {
-            uniqueInstance = new NativeSeClientServiceImpl(withReaderObservation, eventFilter);
-        }
+        uniqueInstance = new NativeSeClientServiceImpl(withReaderObservation, eventFilter);
+
         return uniqueInstance;
     }
 
@@ -77,6 +74,7 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
     @Override
     public <T extends KeypleUserData> T executeRemoteService(RemoteServiceParameters parameters,
             KeypleUserDataFactory<T> userOutputDataFactory) {
+
         // check params nullity
         if (parameters == null || userOutputDataFactory == null) {
             throw new IllegalArgumentException("parameter and userOutDataFactory must be set");
@@ -86,30 +84,15 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
         ProxyReader nativeReader = (ProxyReader) parameters.getNativeReader();
 
         if (logger.isTraceEnabled()) {
-            logger.trace("Execute remoteService {} with on reader {}", parameters.getServiceId(),
-                    nativeReader);
+            logger.trace("Execute remoteService {} for native reader {}", parameters.getServiceId(),
+                    nativeReader.getName());
         }
 
         // build keypleMessageDto EXECUTE_REMOTE_SERVICE with user params
-        KeypleMessageDto remoteServiceDto = buildMessage(parameters);
+        KeypleMessageDto remoteServiceDto = buildRemoteServiceMessage(parameters);
 
         // send keypleMessageDto through the node
-        List<KeypleMessageDto> keypleMessageDtos = node.sendRequest(remoteServiceDto);
-
-        /*
-         * two messages are received from the server
-         */
-
-        // first message is a VIRTUAL_READER_CREATED from the server notifying that the virtual se
-        // context
-        // has been
-        // correctly initialized
-        KeypleMessageDto connectResponse = keypleMessageDtos.get(0);
-
-        if (connectResponse.getErrorCode() != null && !connectResponse.getErrorCode().isEmpty()) {
-            // error whil created the session
-            // todo throw exception
-        }
+        KeypleMessageDto receivedDto = node.sendRequest(remoteServiceDto);
 
         // start observation if needed
         if (withReaderObservation) {
@@ -119,26 +102,24 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
                             nativeReader.getName());
                 }
                 ((ObservableReader) nativeReader).addObserver(this);
+            } else {
+                throw new IllegalArgumentException(
+                        "Observation can not be activated because native reader is not observable");
             }
         }
 
-        // second message should be TRANSMIT, TRANSMIT_SET.. : execute dto request locally with
-        // method onMessage
-        KeypleMessageDto receivedDto = keypleMessageDtos.get(1);
-
         // check server response : while dto is not a terminate service, execute dto locally and
         // send back response
-        while (!receivedDto.getAction().equals(KeypleMessageDto.Action.TERMINATE_SERVICE.name())) {
+        while (!receivedDto.getAction().equals(KeypleMessageDto.Action.TERMINATE_SERVICE.name())
+                && !receivedDto.getAction().equals(KeypleMessageDto.Action.ERROR.name())) {
 
             // execute dto request locally
             KeypleMessageDto responseDto = executeLocally(nativeReader, receivedDto);
 
             // get response dto - send dto response to server
-            List<KeypleMessageDto> receivedDtos = node.sendRequest(responseDto);
+            receivedDto = node.sendRequest(responseDto);
 
-            receivedDto = receivedDtos.get(0);
         }
-        // TERMINATE_SERVICE has been received with a userOutputData
 
         // return userOutputData
         return extractUserData(receivedDto, userOutputDataFactory);
@@ -162,79 +143,68 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
 
         try {
             userData = eventFilter.beforePropagation(event);
-        } catch (Exception e) {
-            // todo
+        } catch (KeypleDoNotPropagateEventException e) {
             // do not throw event
+            logger.trace("Reader event propagation is cancelled by eventFilter");
             return;
         }
 
         KeypleMessageDto eventMessageDto = buildEventMessage(userData, event);
 
         // send keypleMessageDto through the node
-        List<KeypleMessageDto> keypleMessageDtos = node.sendRequest(eventMessageDto);
-
-        // first message should be TRANSMIT, TRANSMIT_SET.. : execute dto request locally with
-        // method onMessage
-        KeypleMessageDto receivedDto = keypleMessageDtos.get(0);
+        KeypleMessageDto receivedDto = node.sendRequest(eventMessageDto);
 
         // execute KeypleMessage(s) locally
-        while (!receivedDto.getAction().equals(KeypleMessageDto.Action.TERMINATE_SERVICE.name())) {
+        while (!receivedDto.getAction().equals(KeypleMessageDto.Action.TERMINATE_SERVICE.name())
+                && !receivedDto.getAction().equals(KeypleMessageDto.Action.ERROR.name())) {
 
-            // check dto is not an error
-            if (!receivedDto.getErrorCode().isEmpty()) {
-                // TODO throw exception
-            }
             ProxyReader nativeReader = findLocalReader(event.getReaderName());
 
             // execute dto request locally
             KeypleMessageDto responseDto = executeLocally(nativeReader, receivedDto);
 
             // get response dto - send dto response to server
-            List<KeypleMessageDto> receivedDtos = node.sendRequest(responseDto);
-
-            receivedDto = receivedDtos.get(0);
+            receivedDto = node.sendRequest(responseDto);
         }
 
-        // TERMINATE_SERVICE has been received with a userOutputData
-
-        // exract userOutputData
+        // extract userOutputData
         KeypleUserData userOutputData =
                 extractUserData(receivedDto, eventFilter.getUserOutputDataFactory());
 
         // invoke callback
         eventFilter.afterPropagation(userOutputData);
-
-        // todo, invoke on error?
     }
 
 
     private <T extends KeypleUserData> T extractUserData(KeypleMessageDto keypleMessageDto,
             KeypleUserDataFactory<T> userOutputDataFactory) {
-        // todo
-        return null;
+        JsonObject body =
+                KeypleJsonParser.getParser().fromJson(keypleMessageDto.getBody(), JsonObject.class);
+        return userOutputDataFactory.getInstance(body.get("userOutputData").getAsString());
     }
 
     /*
      * builds KeypleMessageDto for EXECUTE_SERVICE
      */
-    private KeypleMessageDto buildMessage(RemoteServiceParameters parameters) {
+    private KeypleMessageDto buildRemoteServiceMessage(RemoteServiceParameters parameters) {
         final AbstractMatchingSe initialSeContent = parameters.getInitialSeContent();
         final KeypleUserData userInputData = parameters.getUserInputData();
 
         JsonObject body = new JsonObject();
 
-        body.add("serviceId", KeypleJsonParser.getParser().toJsonTree(parameters.getServiceId()));
+        body.addProperty("serviceId", parameters.getServiceId());
 
         if (userInputData != null) {
-            body.add("userInputData",
-                    KeypleJsonParser.getParser().toJsonTree(userInputData.toMap()));
+            body.addProperty("userInputData", userInputData.toJson());
         }
         if (initialSeContent != null) {
-            body.add("initialSeContent", KeypleJsonParser.getParser().toJsonTree(initialSeContent));
+            body.addProperty("initialSeContent", initialSeContent.toJson());
         }
 
-        return new KeypleMessageDto().setAction(KeypleMessageDto.Action.EXECUTE_SERVICE.name())
-                .setNativeReaderName(parameters.getNativeReader().getName())
+        return new KeypleMessageDto()//
+                .setAction(KeypleMessageDto.Action.EXECUTE_REMOTE_SERVICE.name())//
+                .setSessionId(generateSessionId())//
+                .setNativeReaderName(parameters.getNativeReader().getName())//
                 .setBody(body.toString());
 
     }
@@ -244,12 +214,24 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
 
         JsonObject body = new JsonObject();
 
-        body.add("userInputData", KeypleJsonParser.getParser().toJsonTree(userInputData.toMap()));
+        body.addProperty("userInputData", userInputData.toJson());
         body.add("readerEvent", KeypleJsonParser.getParser().toJsonTree(readerEvent));
 
-        return new KeypleMessageDto().setAction(KeypleMessageDto.Action.EXECUTE_SERVICE.name())
-                .setNativeReaderName(readerEvent.getReaderName()).setBody(body.getAsString());
+        return new KeypleMessageDto()//
+                .setSessionId(generateSessionId())//
+                .setAction(KeypleMessageDto.Action.READER_EVENT.name())//
+                .setSessionId(generateSessionId())//
+                .setNativeReaderName(readerEvent.getReaderName())//
+                .setBody(body.toString());//
+    }
 
+    /**
+     * Generate a unique session Id
+     * 
+     * @return not null instance
+     */
+    private String generateSessionId() {
+        return UUID.randomUUID().toString();
     }
 
 }

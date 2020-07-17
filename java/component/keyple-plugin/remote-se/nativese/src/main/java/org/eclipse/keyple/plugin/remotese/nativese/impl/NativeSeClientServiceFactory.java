@@ -17,6 +17,7 @@ import org.eclipse.keyple.plugin.remotese.core.KeypleClientAsync;
 import org.eclipse.keyple.plugin.remotese.core.KeypleClientSync;
 import org.eclipse.keyple.plugin.remotese.core.KeypleUserData;
 import org.eclipse.keyple.plugin.remotese.core.KeypleUserDataFactory;
+import org.eclipse.keyple.plugin.remotese.core.exception.KeypleDoNotPropagateEventException;
 import org.eclipse.keyple.plugin.remotese.nativese.NativeSeClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,7 @@ public class NativeSeClientServiceFactory {
         /**
          * Build the service
          *
-         * @return
+         * @return singleton instance of the service
          */
         NativeSeClientService getService();
     }
@@ -53,7 +54,7 @@ public class NativeSeClientServiceFactory {
         /**
          * Configure the service with an async Client
          *
-         * @param asyncClient
+         * @param asyncClient non nullable instance of an async client
          * @return next configuration step
          */
         ReaderStep withAsyncNode(KeypleClientAsync asyncClient);
@@ -61,7 +62,7 @@ public class NativeSeClientServiceFactory {
         /**
          * Configure the service with a sync Client
          *
-         * @param syncClient
+         * @param syncClient non nullable instance of a sync client
          * @return next configuration step
          */
         ReaderStep withSyncNode(KeypleClientSync syncClient);
@@ -99,10 +100,10 @@ public class NativeSeClientServiceFactory {
          * 
          * @param event that will be propagated
          * @return nullable data that will be sent to the server.
-         *
+         * @throws KeypleDoNotPropagateEventException if event should not be propagated to server
          */
-        KeypleUserData beforePropagation(ReaderEvent event); // todo throw exception to cancel the
-                                                             // sending
+        KeypleUserData beforePropagation(ReaderEvent event)
+                throws KeypleDoNotPropagateEventException;
 
         /**
          * Retrieve the output from the event global processing
@@ -113,7 +114,8 @@ public class NativeSeClientServiceFactory {
 
     }
 
-    public class Step implements NativeSeClientServiceFactory.NodeStep, ReaderStep, BuilderStep {
+    static public class Step
+            implements NativeSeClientServiceFactory.NodeStep, ReaderStep, BuilderStep {
 
         private KeypleClientAsync asyncClient;
         private KeypleClientSync syncClient;
@@ -166,8 +168,7 @@ public class NativeSeClientServiceFactory {
                 logger.info(
                         "Create a new NativeSeClientServiceImpl with a sync client and params withReaderObservation:{}",
                         withReaderObservation);
-                // todo
-                // service.bindClientSyncNode(syncClient);
+                service.bindClientSyncNode(syncClient, null, null);
             }
             return service;
         }

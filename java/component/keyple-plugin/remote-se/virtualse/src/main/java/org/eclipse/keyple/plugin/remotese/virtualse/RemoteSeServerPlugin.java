@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.virtualse;
 
-import java.util.SortedSet;
+import java.util.concurrent.ConcurrentMap;
 import org.eclipse.keyple.core.seproxy.PluginFactory;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -78,7 +78,7 @@ public interface RemoteSeServerPlugin extends ObservablePlugin {
      * @since 1.0
      */
     @Override
-    SortedSet<SeReader> getReaders();
+    ConcurrentMap<String, SeReader> getReaders();
 
     /**
      * {@inheritDoc}

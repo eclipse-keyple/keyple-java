@@ -13,11 +13,11 @@ package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
-import org.eclipse.keyple.core.seproxy.message.ProxyReader;
+import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
-import org.eclipse.keyple.plugin.remotese.core.impl.json.KeypleJsonParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -27,18 +27,18 @@ class DefaultSelectionExecutor implements Executor {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultSelectionExecutor.class);
 
-    private final ProxyReader reader;
+    private final ObservableReader reader;
 
     /**
      * Builds a TRANSMIT KeypleMessageDto executor
      */
-    DefaultSelectionExecutor(ProxyReader reader) {
+    DefaultSelectionExecutor(ObservableReader reader) {
         this.reader = reader;
     }
 
     @Override
     public KeypleMessageDto execute(KeypleMessageDto keypleMessageDto) {
-        // init value
+        // Init value
         ObservableReader.PollingMode pollingMode = null;
         Boolean hasPollingMode = false;
         DefaultSelectionsRequest defaultSelectionsRequest = null;
@@ -49,8 +49,8 @@ class DefaultSelectionExecutor implements Executor {
         JsonObject jsonObject = KeypleJsonParser.getParser().fromJson(body, JsonObject.class);
 
         // Selection Request
-        String selectionRequestJson =
-                jsonObject.getAsJsonPrimitive("defaultSelectionsRequest").getAsString();
+        JsonElement selectionRequestJson = jsonObject.get("defaultSelectionsRequest");
+
         defaultSelectionsRequest = KeypleJsonParser.getParser().fromJson(selectionRequestJson,
                 DefaultSelectionsRequest.class);
 
@@ -61,40 +61,31 @@ class DefaultSelectionExecutor implements Executor {
         // Polling Mode can be set or not.
         String pollingModeJson = jsonObject.get("pollingMode").getAsString();
 
-        if (!pollingModeJson.equals(KeypleMessageDto.Value.NONE.name())) {
+        if (pollingModeJson != null) {
             pollingMode = ObservableReader.PollingMode.valueOf(pollingModeJson);
             hasPollingMode = true;
+
         }
 
-        logger.debug("Execute locally SetDefaultSelectionRequest : {} - {} - {}", notificationMode,
-                hasPollingMode ? pollingMode : KeypleMessageDto.Value.NONE.name(),
-                defaultSelectionsRequest.getSelectionSeRequests());
+        if (logger.isTraceEnabled()) {
+            logger.trace(
+                    "Execute locally set DefaultSelectionExecutor on reader : {} with params {} {} {}",
+                    reader.getName(), defaultSelectionsRequest, notificationMode,
+                    hasPollingMode ? pollingMode : "no-polling-mode");
+        }
 
-        if (reader instanceof ObservableReader) {
-            logger.debug(reader.getName()
-                    + " is an ObservableReader, invoke setDefaultSelectionRequest on it");
 
-            // invoke a different method if polling Mode was set
-            if (hasPollingMode) {
-                // this method has a different behaviour with the parameter pollingMode
-                ((ObservableReader) reader).setDefaultSelectionRequest(defaultSelectionsRequest,
-                        notificationMode, pollingMode);
-            } else {
-                ((ObservableReader) reader).setDefaultSelectionRequest(defaultSelectionsRequest,
-                        notificationMode);
-            }
-
-            // no body in response
-            return new KeypleMessageDto().setAction(keypleMessageDto.getAction())
-                    .setSessionId(keypleMessageDto.getSessionId())
-                    .setNativeReaderName(keypleMessageDto.getNativeReaderName())
-                    .setClientNodeId(keypleMessageDto.getClientNodeId())
-                    .setServerNodeId(keypleMessageDto.getServerNodeId())
-                    .setVirtualReaderName(keypleMessageDto.getVirtualReaderName());
-
+        // invoke a different method if polling Mode was set
+        if (hasPollingMode) {
+            // this method has a different behaviour with the parameter pollingMode
+            ((ObservableReader) reader).setDefaultSelectionRequest(defaultSelectionsRequest,
+                    notificationMode, pollingMode);
         } else {
-            // error
-            return null;
+            ((ObservableReader) reader).setDefaultSelectionRequest(defaultSelectionsRequest,
+                    notificationMode);
         }
+
+        // no body in response
+        return new KeypleMessageDto(keypleMessageDto).setBody("{}");
     }
 }

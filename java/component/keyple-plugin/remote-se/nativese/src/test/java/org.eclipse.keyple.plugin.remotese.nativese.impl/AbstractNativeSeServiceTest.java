@@ -15,8 +15,8 @@ import static org.mockito.Mockito.doReturn;
 import org.eclipse.keyple.core.seproxy.PluginFactory;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,7 +59,7 @@ public class AbstractNativeSeServiceTest {
                 Mockito.spy(AbstractNativeSeService.class);
         SeProxyService.getInstance().registerPlugin(mockPluginFactory());
         // execute
-        SeReader seReader = abstractNativeSeService.findLocalReader("test");
+        ProxyReader seReader = abstractNativeSeService.findLocalReader("test");
         // results
         Assert.assertNotNull(seReader);
         SeProxyService.getInstance().unregisterPlugin("mockPlugin");
@@ -70,10 +70,10 @@ public class AbstractNativeSeServiceTest {
      * helpers
      */
 
-    public PluginFactory mockPluginFactory() {
+    static public PluginFactory mockPluginFactory() {
         PluginFactory mockFactory = Mockito.mock(PluginFactory.class);
         ReaderPlugin mockPlugin = Mockito.mock(ReaderPlugin.class);
-        SeReader mockReader = Mockito.mock(SeReader.class);
+        ProxyReader mockReader = Mockito.mock(ProxyReader.class);
         doReturn(mockPlugin).when(mockFactory).getPlugin();
         doReturn("mockPlugin").when(mockFactory).getPluginName();
         doReturn("mockPlugin").when(mockPlugin).getName();

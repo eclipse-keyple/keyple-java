@@ -11,16 +11,18 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
+import java.util.List;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
-import org.eclipse.keyple.plugin.remotese.core.impl.json.KeypleJsonParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * Execute locally a TRANSMIT KeypleMessageDto
@@ -47,15 +49,18 @@ class TransmitExecutor implements Executor {
         JsonObject bodyObject =
                 KeypleJsonParser.getParser().fromJson(keypleMessageDto.getBody(), JsonObject.class);
 
+
         ChannelControl channelControl =
                 ChannelControl.valueOf(bodyObject.get("channelControl").getAsString());
 
         SeRequest seRequest = KeypleJsonParser.getParser()
                 .fromJson(bodyObject.get("seRequest").getAsString(), SeRequest.class);
 
+
+
         if (logger.isTraceEnabled()) {
-            logger.trace("Execute locally seRequest : {} with params {} ", seRequest,
-                    channelControl);
+            logger.trace("Execute locally seRequest : {} with params {} on reader {}", seRequest,
+                    channelControl, reader.getName());
         }
 
         try {
@@ -63,27 +68,28 @@ class TransmitExecutor implements Executor {
             // execute transmit
             SeResponse seResponse = reader.transmitSeRequest(seRequest, channelControl);
 
-            // prepate response body
-            String body = KeypleJsonParser.getParser().toJson(seResponse, SeResponse.class);
-
-            response = new KeypleMessageDto().setAction(keypleMessageDto.getAction())
-                    .setSessionId(keypleMessageDto.getSessionId())
-                    .setClientNodeId(keypleMessageDto.getClientNodeId())
-                    .setVirtualReaderName(keypleMessageDto.getVirtualReaderName())
-                    .setServerNodeId(keypleMessageDto.getServerNodeId()).setBody(body);;
+            // prepare response body
+            response = new KeypleMessageDto(keypleMessageDto)
+                    .setBody(KeypleJsonParser.getParser().toJson(seResponse, SeResponse.class));;
 
         } catch (KeypleReaderIOException e) {
 
-            String body = KeypleJsonParser.getParser().toJson(e, KeypleReaderIOException.class);
+            JsonObject body = new JsonObject();
+            if (e.getSeResponses() != null) {
+                body.add("seResponses", KeypleJsonParser.getParser().toJsonTree(e.getSeResponses(),
+                        new TypeToken<List<SeResponse>>() {}.getType()));
+            }
+            if (e.getSeResponse() != null) {
+                body.add("seResponse", KeypleJsonParser.getParser().toJsonTree(e.getSeResponse(),
+                        SeResponse.class));
+            }
 
             // if an exception occurs, send it into a keypleDto to the Master
-            response = new KeypleMessageDto().setAction(keypleMessageDto.getAction())
-                    .setSessionId(keypleMessageDto.getSessionId())
-                    .setClientNodeId(keypleMessageDto.getClientNodeId())
-                    .setVirtualReaderName(keypleMessageDto.getVirtualReaderName())
-                    .setServerNodeId(keypleMessageDto.getServerNodeId()).setErrorCode(null)
-                    .setErrorMessage(e.getMessage()).setBody(body);// todo : handle error code
-            // todo KeypleReaderIOException is sent in the body
+            response = new KeypleMessageDto(keypleMessageDto)
+                    .setAction(KeypleMessageDto.Action.ERROR.name())//
+                    .setErrorCode(KeypleMessageDto.ErrorCode.KeypleReaderIOException.getCode())//
+                    .setErrorMessage(e.getMessage())//
+                    .setBody(body.toString());
         }
 
         return response;

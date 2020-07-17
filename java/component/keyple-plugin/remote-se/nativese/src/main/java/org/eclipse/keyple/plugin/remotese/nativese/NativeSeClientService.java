@@ -13,6 +13,8 @@ package org.eclipse.keyple.plugin.remotese.nativese;
 
 import org.eclipse.keyple.plugin.remotese.core.KeypleUserData;
 import org.eclipse.keyple.plugin.remotese.core.KeypleUserDataFactory;
+import org.eclipse.keyple.plugin.remotese.nativese.impl.NativeSeClientServiceFactory;
+import org.eclipse.keyple.plugin.remotese.nativese.impl.NativeSeClientUtils;
 
 /**
  * <b>Native SE Client Service</b> API.

@@ -11,7 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.core;
 
-import java.util.Map;
 
 /**
  * <b>Keyple User Data Factory</b> API to be implemented by the user.
@@ -24,11 +23,11 @@ import java.util.Map;
 public interface KeypleUserDataFactory<T extends KeypleUserData> {
 
     /**
-     * Gets a new instance of <b>T</b> from a Map of key-values pair strings.
+     * Gets a new instance of <b>T</b> from a Json representation
      *
-     * @param data The data of <b>T</b> as a Map of key-values pair strings.
+     * @param data The data of <b>T</b> as a Json String
      * @return a new instance of <b>T</b>
      * @since 1.0
      */
-    T getInstance(Map<String, String> data);
+    T getInstance(String data);
 }

@@ -13,6 +13,7 @@ package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
@@ -76,12 +77,14 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
             case TRANSMIT_SET:
                 return new TransmitSetExecutor(nativeReader).execute(keypleMessageDto);
             case SET_DEFAULT_SELECTION:
-                return new DefaultSelectionExecutor(nativeReader).execute(keypleMessageDto);
+                return new DefaultSelectionExecutor((ObservableReader) nativeReader)
+                        .execute(keypleMessageDto);
             default:
-                return new KeypleMessageDto().setErrorCode("404")
-                        .setErrorMessage("Method not found");// todo
+                return new KeypleMessageDto()//
+                        .setErrorCode(KeypleMessageDto.ErrorCode.UNKNOWN.getCode())//
+                        .setErrorMessage("Method not found : " + keypleMessageDto.getAction()
+                                + " - sessionId : " + keypleMessageDto.getSessionId());
         }
-
 
     }
 

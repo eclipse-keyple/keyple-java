@@ -45,6 +45,10 @@ public class KeypleMessageDto {
         PLUGIN_EVENT, //
         CHECK_READER_EVENT, //
         READER_EVENT, //
+        TRANSMIT, //
+        TRANSMIT_SET, //
+        SET_DEFAULT_SELECTION, //
+        TERMINATE_SERVICE, //
         ERROR;
     }
 
@@ -57,6 +61,14 @@ public class KeypleMessageDto {
 
         TIMEOUT_CLIENT_TASK(1), //
         TIMEOUT_SERVER_TASK(2), //
+
+        // Core
+
+        // Plugin
+
+        // Reader
+        KeypleReaderIOException(300), //
+
         UNKNOWN(99);
 
         private int code;
