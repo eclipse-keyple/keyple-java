@@ -29,12 +29,6 @@ public abstract class AbstractMatchingSe {
     private TransmissionMode transmissionMode;
 
     /**
-     * Constructor from a json serialized string
-     * 
-     * @param data json serialized public AbstractMatchingSe(String data) { fromJson(data); };
-     */
-
-    /**
      * serialize this object to a json string
      * 
      * @return not null json string
@@ -48,7 +42,6 @@ public abstract class AbstractMatchingSe {
          * 
          * @param data not nullable json serialized string
          */
-
         T fromJson(String data);
     }
 
