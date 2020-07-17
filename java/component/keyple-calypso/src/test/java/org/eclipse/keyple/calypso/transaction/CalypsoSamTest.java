@@ -14,16 +14,19 @@ package org.eclipse.keyple.calypso.transaction;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Java6Assertions.shouldHaveThrown;
 import static org.eclipse.keyple.calypso.command.sam.SamRevision.*;
+import org.assertj.core.api.Assertions;
 import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class CalypsoSamTest {
+    private static final Logger logger = LoggerFactory.getLogger(CalypsoSamTest.class);
 
     public static String ATR1 = "3B001122805A0180D002030411223344829000";
     public static String ATR2 = "3B001122805A0180D102030411223344829000";
@@ -138,5 +141,17 @@ public class CalypsoSamTest {
         CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null),
                 TransmissionMode.CONTACTS);
         shouldHaveThrown(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void json_fromJson() {
+        SelectionStatus selectionStatus =
+                new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR1)), null, true);
+        CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null),
+                TransmissionMode.CONTACTS);
+        CalypsoSam.CalypsoSamFactory factory = new CalypsoSam.CalypsoSamFactory();
+        String json = calypsoSam.toJson();
+        logger.debug(json);
+        Assertions.assertThat(factory.fromJson(json)).isEqualToComparingFieldByField(calypsoSam);
     }
 }

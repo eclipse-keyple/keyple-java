@@ -29,9 +29,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CalypsoPoTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(CalypsoPoTest.class);
+
     public static final String ATR_VALUE = "3B8F8001805A08030400020011223344829000F3";
     public static final String ATR_VALUE_2 = "3B8F8001805A08030400020011223344829000";
     /*
@@ -535,5 +540,14 @@ public class CalypsoPoTest {
         assertThat(allDebitLogs.get(0).getSamId()).isEqualTo(0xAABBCC01);
         assertThat(allDebitLogs.get(1).getSamId()).isEqualTo(0xAABBCC02);
         assertThat(allDebitLogs.get(2).getSamId()).isEqualTo(0xAABBCC03);
+    }
+
+
+    @Test
+    public void json_fromJson() {
+        CalypsoPo.CalypsoPoFactory factory = new CalypsoPo.CalypsoPoFactory();
+        String json = po.toJson();
+        logger.debug(json);
+        assertThat(factory.fromJson(json)).isEqualToComparingFieldByField(po);
     }
 }

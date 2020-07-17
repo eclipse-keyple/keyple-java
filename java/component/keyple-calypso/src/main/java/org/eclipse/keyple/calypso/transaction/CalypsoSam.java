@@ -19,6 +19,7 @@ import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,6 +95,20 @@ public class CalypsoSam extends AbstractMatchingSe {
             throw new IllegalStateException("Unrecognized ATR structure: " + atrString);
         }
     }
+
+    @Override
+    public String toJson() {
+        return KeypleJsonParser.getParser().toJson(this);
+    }
+
+    public static class CalypsoSamFactory implements AbstractMatchingSeFactory<CalypsoSam> {
+
+        @Override
+        public CalypsoSam fromJson(String json) {
+            return KeypleJsonParser.getParser().fromJson(json, CalypsoSam.class);
+        }
+    }
+
 
     public final SamRevision getSamRevision() {
         return samRevision;

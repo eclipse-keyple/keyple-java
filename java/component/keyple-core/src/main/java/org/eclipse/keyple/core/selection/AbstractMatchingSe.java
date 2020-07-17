@@ -24,9 +24,33 @@ import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
  * they are available.
  */
 public abstract class AbstractMatchingSe {
-    private final byte[] fciBytes;
-    private final byte[] atrBytes;
-    private final TransmissionMode transmissionMode;
+    private byte[] fciBytes;
+    private byte[] atrBytes;
+    private TransmissionMode transmissionMode;
+
+    /**
+     * Constructor from a json serialized string
+     * 
+     * @param data json serialized public AbstractMatchingSe(String data) { fromJson(data); };
+     */
+
+    /**
+     * serialize this object to a json string
+     * 
+     * @return not null json string
+     */
+    public abstract String toJson();
+
+    public interface AbstractMatchingSeFactory<T extends AbstractMatchingSe> {
+
+        /**
+         * create a new instance from a json serialized string
+         * 
+         * @param data not nullable json serialized string
+         */
+
+        T fromJson(String data);
+    }
 
     /**
      * Constructor.
@@ -92,4 +116,7 @@ public abstract class AbstractMatchingSe {
         }
         throw new IllegalStateException("No ATR is available in this AbstractMatchingSe");
     }
+
+
+
 }

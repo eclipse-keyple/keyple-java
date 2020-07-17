@@ -18,6 +18,7 @@ import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.junit.Test;
 
 public class SelectionsResultTest {
@@ -58,6 +59,11 @@ public class SelectionsResultTest {
     }
 
     private static class TestMatchingSe extends AbstractMatchingSe {
+        @Override
+        public String toJson() {
+            return KeypleJsonParser.getParser().toJson(this);
+        }
+
         protected TestMatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode) {
             super(selectionResponse, transmissionMode);
         }

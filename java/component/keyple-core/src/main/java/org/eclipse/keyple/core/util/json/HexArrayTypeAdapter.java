@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.plugin.remotese.core.util.json;
+package org.eclipse.keyple.core.util.json;
 
 import java.lang.reflect.Type;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -18,7 +18,7 @@ import com.google.gson.*;
 /**
  * Gson Adapter to serialize and unserialize byte[] to Hex String
  */
-public class HexTypeAdapter implements JsonSerializer<byte[]>, JsonDeserializer<byte[]> {
+public class HexArrayTypeAdapter implements JsonSerializer<byte[]>, JsonDeserializer<byte[]> {
 
     @Override
     public byte[] deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)

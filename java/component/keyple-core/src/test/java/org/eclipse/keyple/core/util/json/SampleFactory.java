@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.plugin.remotese.core.impl.json;
+package org.eclipse.keyple.core.util.json;
 
 
 import java.io.IOException;
@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeSelector;
@@ -26,10 +25,11 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 public class SampleFactory {
+
+
 
     public static KeypleReaderIOException getAStackedKeypleException() {
         return new KeypleReaderIOException("Keyple Reader Exception", new IOException("IO Error",
@@ -45,9 +45,6 @@ public class SampleFactory {
                 MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
     }
 
-    public static AbstractMatchingSe getAMatchingSe() {
-        return new MatchingSeImpl(getASeResponse(), TransmissionMode.CONTACTLESS);
-    }
 
     public static ObservableReader.NotificationMode getNotificationMode() {
         return ObservableReader.NotificationMode.ALWAYS;
@@ -92,7 +89,6 @@ public class SampleFactory {
         seRequests.add(seRequest);
 
         return seRequests;
-
     }
 
     public static SeRequest getASeRequest_ISO14443_4() {
@@ -115,16 +111,7 @@ public class SampleFactory {
 
     }
 
-    public static SeRequest getASeRequest() {
-        String poAid = "A000000291A000000191";
 
-        List<ApduRequest> poApduRequests;
-        poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
-
-        SeRequest seRequest = new SeRequest(poApduRequests);
-        return seRequest;
-
-    }
 
     public static List<SeRequest> getCompleteRequestList() {
         String poAid = "A000000291A000000191";
@@ -184,17 +171,6 @@ public class SampleFactory {
         return new SeResponse(true, true, new SelectionStatus(atr, apdu, true), apduResponses);
     }
 
-    static public class MatchingSeImpl extends AbstractMatchingSe {
 
-        /**
-         * Constructor.
-         *
-         * @param selectionResponse the response from the SE
-         * @param transmissionMode the transmission mode, contact or contactless
-         */
-        protected MatchingSeImpl(SeResponse selectionResponse, TransmissionMode transmissionMode) {
-            super(selectionResponse, transmissionMode);
-        }
-    }
 
 }

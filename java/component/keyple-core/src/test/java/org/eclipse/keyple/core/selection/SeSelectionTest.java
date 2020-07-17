@@ -26,6 +26,7 @@ import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -304,6 +305,11 @@ public class SeSelectionTest extends CoreBaseTest {
      * Matching Se instantiation
      */
     private final class MatchingSe extends AbstractMatchingSe {
+        @Override
+        public String toJson() {
+            return KeypleJsonParser.getParser().toJson(this);
+        }
+
         MatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode) {
             super(selectionResponse, transmissionMode);
         }
