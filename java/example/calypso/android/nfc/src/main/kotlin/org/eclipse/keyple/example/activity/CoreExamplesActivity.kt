@@ -400,7 +400,11 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             class GenericMatchingSe(
                 selectionResponse: SeResponse,
                 transmissionMode: TransmissionMode
-            ) : AbstractMatchingSe(selectionResponse, transmissionMode)
+            ) : AbstractMatchingSe(selectionResponse, transmissionMode){
+                override fun toJson(): String {
+                    return "{}"
+                }
+            }
             return GenericMatchingSe(seResponse, transmissionMode)
         }
     }

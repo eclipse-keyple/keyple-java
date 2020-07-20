@@ -34,6 +34,12 @@ public class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
             public GenericMatchingSe(SeResponse selectionResponse,
                     TransmissionMode transmissionMode) {
                 super(selectionResponse, transmissionMode);
+
+            }
+
+            @Override
+            public String toJson() {
+                return "{}";
             }
         }
         return new GenericMatchingSe(seResponse, transmissionMode);
