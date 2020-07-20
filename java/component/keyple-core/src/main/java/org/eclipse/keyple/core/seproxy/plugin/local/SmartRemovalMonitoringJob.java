@@ -75,7 +75,7 @@ public class SmartRemovalMonitoringJob extends AbstractMonitoringJob {
      * (package-private)<br>
      */
     @Override
-    public void stop() {
+    void stop() {
         reader.stopWaitForCardRemoval();
     }
 

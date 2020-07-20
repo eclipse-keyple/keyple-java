@@ -72,7 +72,7 @@ public class SmartInsertionMonitoringJob extends AbstractMonitoringJob {
      * (package-private)<br>
      */
     @Override
-    public void stop() {
+    void stop() {
         if (logger.isTraceEnabled()) {
             logger.trace("[{}] stopWaitForCard on reader", reader.getName());
         }

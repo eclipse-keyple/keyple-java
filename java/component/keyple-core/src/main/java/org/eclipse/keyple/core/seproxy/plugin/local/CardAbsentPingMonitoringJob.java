@@ -114,7 +114,7 @@ public class CardAbsentPingMonitoringJob extends AbstractMonitoringJob {
      * (package-private)<br>
      */
     @Override
-    public void stop() {
+    void stop() {
         if (logger.isDebugEnabled()) {
             logger.debug("[{}] Stop Polling ", reader.getName());
         }
