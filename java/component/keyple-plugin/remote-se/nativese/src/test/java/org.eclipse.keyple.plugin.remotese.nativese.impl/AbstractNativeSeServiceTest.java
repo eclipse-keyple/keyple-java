@@ -70,7 +70,7 @@ public class AbstractNativeSeServiceTest {
      * helpers
      */
 
-    static public PluginFactory mockPluginFactory() {
+    public static PluginFactory mockPluginFactory() {
         PluginFactory mockFactory = Mockito.mock(PluginFactory.class);
         ReaderPlugin mockPlugin = Mockito.mock(ReaderPlugin.class);
         ProxyReader mockReader = Mockito.mock(ProxyReader.class);

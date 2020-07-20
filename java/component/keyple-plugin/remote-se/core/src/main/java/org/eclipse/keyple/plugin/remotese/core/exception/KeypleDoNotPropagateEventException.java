@@ -13,6 +13,9 @@ package org.eclipse.keyple.plugin.remotese.core.exception;
 
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 
+/**
+ * Used in KeypleClientReaderEventFilter to prevent the event from being sent to the VirtualSePlugin
+ */
 public class KeypleDoNotPropagateEventException extends KeypleException {
 
     public KeypleDoNotPropagateEventException(String message) {

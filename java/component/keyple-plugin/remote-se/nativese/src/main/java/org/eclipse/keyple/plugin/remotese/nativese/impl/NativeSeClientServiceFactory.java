@@ -37,7 +37,7 @@ public class NativeSeClientServiceFactory {
      * 
      * @return next configuration step
      */
-    NodeStep builder() {
+    public NodeStep builder() {
         return new Step();
     }
 
@@ -114,8 +114,7 @@ public class NativeSeClientServiceFactory {
 
     }
 
-    static public class Step
-            implements NativeSeClientServiceFactory.NodeStep, ReaderStep, BuilderStep {
+    public static class Step implements NodeStep, ReaderStep, BuilderStep {
 
         private KeypleClientAsync asyncClient;
         private KeypleClientSync syncClient;
