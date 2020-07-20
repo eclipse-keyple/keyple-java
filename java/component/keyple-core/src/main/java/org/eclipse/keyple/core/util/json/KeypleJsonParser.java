@@ -36,11 +36,7 @@ public class KeypleJsonParser {
     }
 
     public static Gson getParser() {
-        return GsonParser.INSTANCE.getGson();
-    }
-
-    private Gson getGson() {
-        return parser;
+        return GsonParser.INSTANCE.parser;
     }
 
 }
