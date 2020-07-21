@@ -9,25 +9,29 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin.local;
+package org.eclipse.keyple.core.seproxy.plugin;
 
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
-/**
- * Interface implemented by readers able to handle natively the SE selection process (e.g. Android
- * OMAPI readers).
- */
-public interface SmartSelectionReader extends SeReader {
+public interface SmartInsertionReader extends ObservableReader {
+    /**
+     * Waits for a SE. Returns true if a SE is detected before the end of the provided timeout.
+     * <p>
+     * This method must be implemented by the plugin's reader class when it implements the
+     * {@link SmartInsertionReader} interface.
+     * <p>
+     * Returns false if no SE is detected.
+     *
+     * @return presence status
+     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+     *         (disconnection)
+     */
+    boolean waitForCardPresent();
+
 
     /**
-     * Opens a logical channel for the provided AID
-     * 
-     * @param aidSelector the selection data
-     * @return an ApduResponse containing the SE answer to selection
-     * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+     * Interrupts the waiting of a SE
      */
-    ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector);
+    void stopWaitForCard();
 }

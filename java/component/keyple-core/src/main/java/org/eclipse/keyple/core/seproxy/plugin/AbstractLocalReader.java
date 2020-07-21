@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin.local;
+package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.*;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
@@ -18,7 +18,6 @@ import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
@@ -402,7 +401,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * interpreted by reader plugins implementing protocolFlagMatches (e.g. ATR regex for Pcsc
      * plugins, technology name for Nfc plugins, etc).
      */
-    protected final Map<SeProtocol, String> protocolsMap = new HashMap<SeProtocol, String>();
+    private final Map<SeProtocol, String> protocolsMap = new HashMap<SeProtocol, String>();
 
     /**
      * Defines the protocol setting Map to allow SE to be differentiated according to their
@@ -424,6 +423,14 @@ public abstract class AbstractLocalReader extends AbstractReader {
     @Override
     public void setSeProtocolSetting(Map<SeProtocol, String> protocolSetting) {
         this.protocolsMap.putAll(protocolSetting);
+    }
+
+    /**
+     * @return the Map containing the protocol definitions set by addSeProtocolSetting and
+     *         setSeProtocolSetting
+     */
+    protected Map<SeProtocol, String> getProtocolsMap() {
+        return protocolsMap;
     }
 
     /**
