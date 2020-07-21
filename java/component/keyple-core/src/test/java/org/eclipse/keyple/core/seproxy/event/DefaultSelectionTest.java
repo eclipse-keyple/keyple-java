@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.event;
 
-import static org.eclipse.keyple.core.seproxy.plugin.local.AbsObservableLocalReaderTest.getNotMatchingResponses;
+import static org.eclipse.keyple.core.seproxy.plugin.AbsObservableLocalReaderTest.getNotMatchingResponses;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import java.util.ArrayList;
@@ -22,8 +22,8 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.plugin.local.AbsObservableLocalReaderTest;
-import org.eclipse.keyple.core.seproxy.plugin.local.BlankObservableLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.AbsObservableLocalReaderTest;
+import org.eclipse.keyple.core.seproxy.plugin.BlankObservableLocalReader;
 import org.junit.Assert;
 import org.junit.Test;
 

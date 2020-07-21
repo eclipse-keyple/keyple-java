@@ -43,6 +43,7 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
     private final String pluginName;
 
     /**
+     * (package-private)<br>
      * This flag is used with transmit or transmitSet
      * <p>
      * It will be used by the notifySeProcessed method (AbstractObservableLocalReader) to determine
@@ -50,7 +51,6 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
      * directly to the removal sequence for the observed readers.<br>
      * TODO find a better way to manage this need
      */
-    @Deprecated // will change in a later version
     protected boolean forceClosing = true;
 
     /**

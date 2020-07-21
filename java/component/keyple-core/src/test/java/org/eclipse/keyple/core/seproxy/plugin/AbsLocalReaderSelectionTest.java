@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin.local;
+package org.eclipse.keyple.core.seproxy.plugin;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -264,7 +264,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
         String protocolRule = "any";
         r.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4, protocolRule);
         Assert.assertEquals(protocolRule,
-                r.protocolsMap.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+                r.getProtocolsMap().get(SeCommonProtocols.PROTOCOL_ISO14443_4));
     }
 
     @Test
@@ -275,7 +275,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
         protocols.put(SeCommonProtocols.PROTOCOL_ISO14443_4, protocolRule);
         r.setSeProtocolSetting(protocols);
         Assert.assertEquals(protocolRule,
-                r.protocolsMap.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+                r.getProtocolsMap().get(SeCommonProtocols.PROTOCOL_ISO14443_4));
     }
 
 

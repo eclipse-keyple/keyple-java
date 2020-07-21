@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin.local;
+package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +27,7 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
     private static final Logger logger =
             LoggerFactory.getLogger(BlankSmartInsertionTheadedReader.class);
 
-    Integer mockDetect;
+    Integer mockDetect; // TODO check why mockDetect is not initialized!
     Integer detectCount = 0;
     ExecutorService executorService = Executors.newSingleThreadExecutor();
 

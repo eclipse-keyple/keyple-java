@@ -9,27 +9,36 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin.local;
+package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.SortedSet;
 import java.util.concurrent.ConcurrentMap;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
 
 /**
  * This mock plugin fails when instantiate
  */
-public class BlankAbstractPlugin extends AbstractPlugin {
+public class BlankFailingPlugin extends AbstractThreadedObservablePlugin {
 
-    public BlankAbstractPlugin(String name) {
+    public BlankFailingPlugin(String name) {
         super(name);
     }
 
     @Override
-    protected ConcurrentMap<String, SeReader> initNativeReaders() throws KeypleReaderIOException {
-        return new ConcurrentHashMap<String, SeReader>();
+    protected SortedSet<String> fetchNativeReadersNames() {
+        return null;
+    }
+
+    @Override
+    protected SeReader fetchNativeReader(String name) {
+        return null;
+    }
+
+    @Override
+    protected ConcurrentMap<String, SeReader> initNativeReaders() {
+        throw new KeypleReaderIOException("");
     }
 
     @Override
@@ -38,6 +47,7 @@ public class BlankAbstractPlugin extends AbstractPlugin {
     }
 
     @Override
-    public void setParameter(String key, String value)
-            throws IllegalArgumentException, KeypleReaderIOException {}
+    public void setParameter(String key, String value) {
+
+    }
 }

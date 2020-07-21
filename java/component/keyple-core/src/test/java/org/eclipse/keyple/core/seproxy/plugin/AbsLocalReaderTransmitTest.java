@@ -9,9 +9,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin.local;
+package org.eclipse.keyple.core.seproxy.plugin;
 
-import static org.eclipse.keyple.core.seproxy.plugin.local.AbsLocalReaderSelectionTest.ATR;
+import static org.eclipse.keyple.core.seproxy.plugin.AbsLocalReaderSelectionTest.ATR;
 import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.List;
