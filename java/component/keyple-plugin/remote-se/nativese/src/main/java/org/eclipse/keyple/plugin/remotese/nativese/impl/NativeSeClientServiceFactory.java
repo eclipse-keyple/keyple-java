@@ -13,6 +13,7 @@ package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
 
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remotese.core.KeypleClientAsync;
 import org.eclipse.keyple.plugin.remotese.core.KeypleClientSync;
 import org.eclipse.keyple.plugin.remotese.core.KeypleUserData;
@@ -142,9 +143,8 @@ public class NativeSeClientServiceFactory {
         @Override
         public BuilderStep withReaderObservation(KeypleClientReaderEventFilter eventFilter) {
             // check params nullity
-            if (eventFilter == null) {
-                throw new IllegalArgumentException("Reader Event filter must be set");
-            }
+            Assert.getInstance().notNull(eventFilter, "eventFilter");
+
             this.withReaderObservation = true;
             this.eventFilter = eventFilter;
             return this;

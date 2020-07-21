@@ -16,6 +16,7 @@ import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
+import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remotese.core.*;
 import org.eclipse.keyple.plugin.remotese.core.exception.KeypleDoNotPropagateEventException;
@@ -76,9 +77,8 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
             KeypleUserDataFactory<T> userOutputDataFactory) {
 
         // check params nullity
-        if (parameters == null || userOutputDataFactory == null) {
-            throw new IllegalArgumentException("parameter and userOutDataFactory must be set");
-        }
+        Assert.getInstance().notNull(parameters, "parameters");
+        Assert.getInstance().notNull(userOutputDataFactory, "userOutputDataFactory");
 
         // get nativeReader
         ProxyReader nativeReader = (ProxyReader) parameters.getNativeReader();
