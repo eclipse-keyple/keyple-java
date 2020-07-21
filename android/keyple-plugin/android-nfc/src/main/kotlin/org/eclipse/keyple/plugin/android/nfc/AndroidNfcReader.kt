@@ -15,7 +15,7 @@ import android.app.Activity
 import android.content.Intent
 import android.nfc.NfcAdapter
 import org.eclipse.keyple.core.seproxy.SeReader
-import org.eclipse.keyple.core.seproxy.plugin.local.SmartRemovalReader
+import org.eclipse.keyple.core.seproxy.plugin.SmartRemovalReader
 
 /**
  * [SeReader] to communicate with NFC Tag though
