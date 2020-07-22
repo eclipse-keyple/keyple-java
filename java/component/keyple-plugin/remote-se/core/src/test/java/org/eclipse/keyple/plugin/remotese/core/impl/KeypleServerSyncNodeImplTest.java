@@ -23,35 +23,35 @@ import org.junit.Test;
 
 public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
 
-    public static final String sessionId1 = "sessionId1";
-    public static final String pluginSessionId = "pluginSessionId";
-    public static final String readerSessionId = "readerSessionId";
-    public static final String clientNodeId1 = "clientNodeId1";
-    public static final String clientNodeId2 = "clientNodeId2";
+    static final String sessionId1 = "sessionId1";
+    static final String pluginSessionId = "pluginSessionId";
+    static final String readerSessionId = "readerSessionId";
+    static final String clientNodeId1 = "clientNodeId1";
+    static final String clientNodeId2 = "clientNodeId2";
 
-    public KeypleServerSyncNodeImpl node;
+    KeypleServerSyncNodeImpl node;
 
-    public KeypleMessageDto msg2;
-    public KeypleMessageDto msg3;
-    public KeypleMessageDto msg4;
+    KeypleMessageDto msg2;
+    KeypleMessageDto msg3;
+    KeypleMessageDto msg4;
 
-    public KeypleMessageDto pluginCheckPollingClient1;
-    public KeypleMessageDto pluginCheckLongPollingClient1;
-    public KeypleMessageDto pluginCheckLongPollingLongTimeoutClient1;
-    public KeypleMessageDto pluginEvent1Client1;
-    public KeypleMessageDto pluginEvent2Client1;
+    KeypleMessageDto pluginCheckPollingClient1;
+    KeypleMessageDto pluginCheckLongPollingClient1;
+    KeypleMessageDto pluginCheckLongPollingLongTimeoutClient1;
+    KeypleMessageDto pluginEvent1Client1;
+    KeypleMessageDto pluginEvent2Client1;
 
-    public KeypleMessageDto pluginCheckLongPollingClient2;
-    public KeypleMessageDto pluginEvent1Client2;
+    KeypleMessageDto pluginCheckLongPollingClient2;
+    KeypleMessageDto pluginEvent1Client2;
 
-    public KeypleMessageDto readerCheckPollingClient1;
-    public KeypleMessageDto readerCheckLongPollingClient1;
-    public KeypleMessageDto readerCheckLongPollingLongTimeoutClient1;
-    public KeypleMessageDto readerEvent1Client1;
-    public KeypleMessageDto readerEvent2Client1;
+    KeypleMessageDto readerCheckPollingClient1;
+    KeypleMessageDto readerCheckLongPollingClient1;
+    KeypleMessageDto readerCheckLongPollingLongTimeoutClient1;
+    KeypleMessageDto readerEvent1Client1;
+    KeypleMessageDto readerEvent2Client1;
 
-    public KeypleMessageDto readerCheckLongPollingClient2;
-    public KeypleMessageDto readerEvent1Client2;
+    KeypleMessageDto readerCheckLongPollingClient2;
+    KeypleMessageDto readerEvent1Client2;
 
     {
         msg2 = new KeypleMessageDto(msg);
@@ -79,7 +79,7 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
         readerEvent1Client2 = buildEventMessage(clientNodeId2, false);
     }
 
-    private KeypleMessageDto buildCheckEventMessage(String clientNodeId, boolean isPlugin,
+    KeypleMessageDto buildCheckEventMessage(String clientNodeId, boolean isPlugin,
             boolean isLongPolling, boolean withLongTimeout) {
         return new KeypleMessageDto()//
                 .setSessionId(isPlugin ? pluginSessionId : readerSessionId)//
@@ -91,21 +91,21 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
                         : bodyPolling);
     }
 
-    private KeypleMessageDto buildEventMessage(String clientNodeId, boolean isPlugin) {
+    KeypleMessageDto buildEventMessage(String clientNodeId, boolean isPlugin) {
         return new KeypleMessageDto()//
                 .setAction(isPlugin ? KeypleMessageDto.Action.PLUGIN_EVENT.name()
                         : KeypleMessageDto.Action.READER_EVENT.name())//
                 .setClientNodeId(clientNodeId);
     }
 
-    private KeypleMessageDto buildMinimalMessage(String sessionId, String clientNodeId) {
+    KeypleMessageDto buildMinimalMessage(String sessionId, String clientNodeId) {
         return new KeypleMessageDto()//
                 .setSessionId(sessionId)//
                 .setAction(KeypleMessageDto.Action.EXECUTE_REMOTE_SERVICE.name())//
                 .setClientNodeId(clientNodeId);
     }
 
-    public Callable<Boolean> threadHasStateTimedWaiting(final Thread thread) {
+    Callable<Boolean> threadHasStateTimedWaiting(final Thread thread) {
         return new Callable<Boolean>() {
             public Boolean call() {
                 return thread.getState() == Thread.State.TIMED_WAITING;
@@ -113,7 +113,7 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
         };
     }
 
-    public Callable<Boolean> threadHasStateTerminated(final Thread thread) {
+    Callable<Boolean> threadHasStateTerminated(final Thread thread) {
         return new Callable<Boolean>() {
             public Boolean call() {
                 return thread.getState() == Thread.State.TERMINATED;
@@ -121,14 +121,14 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
         };
     }
 
-    private class MessageScheduler extends Thread {
+    class MessageScheduler extends Thread {
 
-        public boolean isError;
-        public KeypleMessageDto response;
-        public List<KeypleMessageDto> responses;
-        private Thread ownerThread;
-        private KeypleMessageDto msg;
-        private int mode;
+        boolean isError;
+        KeypleMessageDto response;
+        List<KeypleMessageDto> responses;
+        Thread ownerThread;
+        KeypleMessageDto msg;
+        int mode;
 
         MessageScheduler(final KeypleMessageDto msg, final int mode) {
             ownerThread = Thread.currentThread();
@@ -157,29 +157,29 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
         }
     }
 
-    private MessageScheduler scheduleOnRequest(final KeypleMessageDto msg) {
+    MessageScheduler scheduleOnRequest(final KeypleMessageDto msg) {
         MessageScheduler t = new MessageScheduler(msg, 1);
         t.start();
         return t;
     }
 
-    private MessageScheduler scheduleSendRequest(final KeypleMessageDto msg) {
+    MessageScheduler scheduleSendRequest(final KeypleMessageDto msg) {
         MessageScheduler t = new MessageScheduler(msg, 2);
         t.start();
         return t;
     }
 
-    private MessageScheduler scheduleSendMessage(final KeypleMessageDto msg) {
+    MessageScheduler scheduleSendMessage(final KeypleMessageDto msg) {
         MessageScheduler t = new MessageScheduler(msg, 3);
         t.start();
         return t;
     }
 
-    private class ClientMessageSender extends Thread {
+    class ClientMessageSender extends Thread {
 
-        public boolean isError;
-        public List<KeypleMessageDto> responses;
-        private KeypleMessageDto msg;
+        boolean isError;
+        List<KeypleMessageDto> responses;
+        KeypleMessageDto msg;
 
         ClientMessageSender(final KeypleMessageDto msg) {
             this.msg = msg;
@@ -195,7 +195,7 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
         }
     }
 
-    private ClientMessageSender callOnRequestAsync(final KeypleMessageDto msg) {
+    ClientMessageSender callOnRequestAsync(final KeypleMessageDto msg) {
         ClientMessageSender t = new ClientMessageSender(msg);
         t.start();
         return t;
@@ -223,8 +223,8 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
         checkErrorMessage(messages, originalMessage, KeypleMessageDto.ErrorCode.UNKNOWN.getCode());
     }
 
-    private void checkErrorMessage(List<KeypleMessageDto> messages,
-            KeypleMessageDto originalMessage, String errorCode) {
+    public void checkErrorMessage(List<KeypleMessageDto> messages, KeypleMessageDto originalMessage,
+            String errorCode) {
         assertThat(messages).hasSize(1);
         KeypleMessageDto msg = messages.get(0);
         assertThat(msg.getSessionId()).isEqualTo(originalMessage.getSessionId());

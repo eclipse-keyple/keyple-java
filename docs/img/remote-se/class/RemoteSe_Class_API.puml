@@ -1,7 +1,7 @@
 @startuml
 title
     Keyple Plugin Remote SE
-    Public API (02/07/2020)
+    Public API (22/07/2020)
 end title
 
 ' == THEME ==
@@ -84,7 +84,7 @@ package org.eclipse.keyple.plugin.remotese {
             +interface "<< <back:#D0ECE7>SeReader</back> >>\nRemoteSeServerReader" as RemoteSeServerReader {
                 +String getServiceId ()
                 +<T extends KeypleUserData> T getUserInputData (\n    KeypleUserDataFactory<T> userInputDataFactory)
-                +AbstractMatchingSe getInitialSeContent ()
+                +<T extends AbstractMatchingSe> T getInitialSeContent (\n    Class<T> classOfMatchingSe)
             }
             +interface "<< <back:#FDEBD0>ObservableReader</back> >>\nRemoteSeServerObservableReader" as RemoteSeServerObservableReader extends RemoteSeServerReader {
             }
@@ -197,14 +197,12 @@ package org.eclipse.keyple.plugin.remotese {
             + String nativeReaderName
             + String virtualReaderName
             + String body
-            + String errorCode
-            + String errorMessage
         }
         +interface KeypleUserDataFactory<T extends KeypleUserData> {
-            +T getInstance (Map<String, String> data)
+            +T getInstance (String json)
         }
         +interface KeypleUserData {
-            +Map<String, String> toMap()
+            +String toJson()
         }
         +interface KeypleClientReaderEventFilter<T extends KeypleUserData> {
             +KeypleUserDataFactory<T> getUserOutputDataFactory ()
@@ -265,7 +263,6 @@ package org.eclipse.keyple.plugin.remotese {
             ' Factories
             +class NativeSeClientServiceFactory {
                 + {static} NodeStep builder ()
-                + NativeSeClientService getService ()
             }
             +interface "NodeStep" as NativeSeClientServiceFactoryNodeStep {
                 + ReaderStep withAsyncNode (KeypleClientAsync endpoint)
@@ -276,29 +273,27 @@ package org.eclipse.keyple.plugin.remotese {
                 + BuilderStep withoutReaderObservation ()
             }
             +interface "BuilderStep" as NativeSeClientServiceFactoryBuilderStep {
-                + NativeSeClientServiceFactory build ()
+                + NativeSeClientService getService ()
             }
             +class NativeSeServerServiceFactory {
                 + {static} NodeStep builder ()
-                + NativeSeServerService getService ()
             }
             +interface "NodeStep" as NativeSeServerServiceFactoryNodeStep {
                 + BuilderStep withAsyncNode (KeypleServerAsync endpoint)
                 + BuilderStep withSyncNode ()
             }
             +interface "BuilderStep" as NativeSeServerServiceFactoryBuilderStep {
-                + NativeSeServerServiceFactory build ()
+                + NativeSeServerService getService ()
             }
             +class NativeSePoolServerServiceFactory {
                 + {static} NodeStep builder ()
-                + NativeSePoolServerService getService ()
             }
             +interface "NodeStep" as NativeSePoolServerServiceFactoryNodeStep {
                 + BuilderStep withAsyncNode (KeypleServerAsync endpoint)
                 + BuilderStep withSyncNode ()
             }
             +interface "BuilderStep" as NativeSePoolServerServiceFactoryBuilderStep {
-                + NativeSePoolServerServiceFactory build ()
+                + NativeSePoolServerService getService ()
             }
 
             ' Utilitaires Slave

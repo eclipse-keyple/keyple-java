@@ -30,6 +30,12 @@ public abstract class AbstractKeypleMessageHandler {
 
     /**
      * (protected)<br>
+     * Is handler bound to async node ?
+     */
+    protected boolean isBoundToAsyncNode;
+
+    /**
+     * (protected)<br>
      * Constructor.
      */
     protected AbstractKeypleMessageHandler() {}
@@ -51,7 +57,8 @@ public abstract class AbstractKeypleMessageHandler {
      * @since 1.0
      */
     public void bindClientAsyncNode(KeypleClientAsync endpoint) {
-        // TODO KEYP-259
+        node = new KeypleClientAsyncNodeImpl(this, endpoint, 20);
+        isBoundToAsyncNode = true;
     }
 
     /**
@@ -63,6 +70,7 @@ public abstract class AbstractKeypleMessageHandler {
      */
     public void bindServerAsyncNode(KeypleServerAsync endpoint) {
         // TODO KEYP-296
+        isBoundToAsyncNode = true;
     }
 
     /**
@@ -79,8 +87,9 @@ public abstract class AbstractKeypleMessageHandler {
     public void bindClientSyncNode(KeypleClientSync endpoint,
             ServerPushEventStrategy pluginObservationStrategy,
             ServerPushEventStrategy readerObservationStrategy) {
-        node = new KeypleClientSyncNodeImpl(endpoint, this, pluginObservationStrategy,
+        node = new KeypleClientSyncNodeImpl(this, endpoint, pluginObservationStrategy,
                 readerObservationStrategy);
+        isBoundToAsyncNode = false;
     }
 
     /**
@@ -91,5 +100,6 @@ public abstract class AbstractKeypleMessageHandler {
      */
     public void bindServerSyncNode() {
         node = new KeypleServerSyncNodeImpl(this, 20);
+        isBoundToAsyncNode = false;
     }
 }
