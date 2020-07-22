@@ -96,10 +96,8 @@ public abstract class AbstractObservablePlugin extends AbstractPlugin
 
     /**
      * Remove all observers at once
-     * 
-     * @deprecated will change in a later version
      */
-    @Deprecated
+    @Override
     public void clearObservers() {
         if (observers != null) {
             this.observers.clear();
@@ -109,6 +107,7 @@ public abstract class AbstractObservablePlugin extends AbstractPlugin
     /**
      * @return the number of observers
      */
+    @Override
     public final int countObservers() {
         return observers == null ? 0 : observers.size();
     }

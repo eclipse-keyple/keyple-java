@@ -108,9 +108,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
      * <p>
      * Overrides the method defined in {@link AbstractObservablePlugin}, the thread is ended.
      * 
-     * @deprecated will change in a later version
      */
-    @Deprecated
     @Override
     public final void clearObservers() {
         super.clearObservers();
@@ -218,9 +216,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                                     if (reader instanceof ObservableReader) {
                                         ((ObservableReader) reader).clearObservers();
 
-                                        /*
-                                         * In case where Reader was detected SE
-                                         */
+                                        // In case where Reader was detecting SE
                                         ((ObservableReader) reader).stopSeDetection();
                                     }
                                     readers.remove(reader.getName());
