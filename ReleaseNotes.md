@@ -29,6 +29,10 @@ Releases:
 * fixed many issues raised by Sonarqube
  
 ### keyple-java-calypso 0.9a
+* KEYP-312 : restricting access to methods of the reader API that are not used by the plugins.
+* KEYP-311 : added the possibility to unlock the SAM when it is selected
+* KEYP-96 : added Stored Value management commands
+* KEYP-23 : added PIN management commands
 * KEYP-101 : enhanced CalypsoPo with card data (updated during the transaction)
 * KEYP-102 : update the content of CalypsoPo during selection
 * KEYP-103,113 : extensive reworking of the PoTransaction class (split into 3 classes). The data received from the PO are now made available in CalypsoPo instead of the previous parser system. 
@@ -37,7 +41,7 @@ Releases:
 * KEYP-154 : improved exceptions management, add many exception cases
 * KEYP-290 : fixed NPE when opening a secure session without reading with rev 2.4 PO
 * KEYP-292 : make CalypsoPo and CalypsoSam classes extendable
-* KEYP-225 : PoResource and SamResource classes are removed, their usage is replaced by SeResource<CalypsoPo/CalypsoSam> 
+* KEYP-225 : PoResource and SamResource classes are removed, their usage is replaced by SeResource<CalypsoPo/CalypsoSam>
 * updated with the new keyple-java-core API
 * various other refactorings and improvements
 * fixed many issues raised by Sonarqube

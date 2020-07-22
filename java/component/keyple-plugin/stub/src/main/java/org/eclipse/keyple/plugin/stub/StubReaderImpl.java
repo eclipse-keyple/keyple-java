@@ -19,13 +19,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.plugin.local.*;
-import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.SmartInsertionMonitoringJob;
-import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.SmartRemovalMonitoringJob;
-import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeInsertion;
-import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeProcessing;
-import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeRemoval;
-import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForStartDetect;
+import org.eclipse.keyple.core.seproxy.plugin.*;
+import org.eclipse.keyple.core.seproxy.plugin.SmartInsertionMonitoringJob;
+import org.eclipse.keyple.core.seproxy.plugin.SmartRemovalMonitoringJob;
+import org.eclipse.keyple.core.seproxy.plugin.WaitForSeInsertion;
+import org.eclipse.keyple.core.seproxy.plugin.WaitForSeProcessing;
+import org.eclipse.keyple.core.seproxy.plugin.WaitForSeRemoval;
+import org.eclipse.keyple.core.seproxy.plugin.WaitForStartDetect;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
@@ -141,7 +141,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
                 openPhysicalChannel();
             }
             // the request will be executed only if the protocol match the requestElement
-            String selectionMask = protocolsMap.get(protocolFlag);
+            String selectionMask = getProtocolsMap().get(protocolFlag);
             if (selectionMask == null) {
                 throw new KeypleReaderIOException("Target selector mask not found!", null);
             }

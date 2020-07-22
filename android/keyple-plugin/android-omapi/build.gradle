@@ -22,7 +22,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 29
         versionName project.version
-        testInstrumentationRunner " androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -113,10 +113,11 @@ jacocoAndroidUnitTestReport {
 
 sonarqube {
     properties {
-        property "sonar.projectKey", "eclipse_eyple-plugin_android-omapi"
+        property "sonar.projectKey", "eclipse_keyple-plugin_android-omapi"
         property "sonar.organization", "eclipse"
         property "sonar.host.url", "https://sonarcloud.io"
         property "sonar.login", System.getenv('SONAR_LOGIN')
+        property "sonar.branch.name", System.getenv('BRANCH_NAME')
         property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacocoTestDebugUnitTestReport/jacocoTestDebugUnitTestReport.xml"
     }
 }

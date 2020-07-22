@@ -17,9 +17,10 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 
 /**
+ * (package-private)<br>
  * Allow {@link ProxyReader}s and {@link ReaderPlugin}s to receive configuration parameters.
  */
-public interface ProxyElement {
+interface ProxyElement {
     /**
      * @return the unique name of the item
      */

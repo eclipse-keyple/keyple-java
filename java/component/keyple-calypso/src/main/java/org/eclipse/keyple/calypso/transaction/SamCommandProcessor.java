@@ -16,6 +16,9 @@ import java.util.Arrays;
 import java.util.List;
 import org.eclipse.keyple.calypso.KeyReference;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
+import org.eclipse.keyple.calypso.command.po.builder.storedvalue.SvDebitCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.storedvalue.SvReloadCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.storedvalue.SvUndebitCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
 import org.eclipse.keyple.calypso.command.sam.builder.security.*;
@@ -24,6 +27,8 @@ import org.eclipse.keyple.calypso.command.sam.parser.security.CardCipherPinRespP
 import org.eclipse.keyple.calypso.command.sam.parser.security.DigestAuthenticateRespPars;
 import org.eclipse.keyple.calypso.command.sam.parser.security.DigestCloseRespPars;
 import org.eclipse.keyple.calypso.command.sam.parser.security.SamGetChallengeRespPars;
+import org.eclipse.keyple.calypso.command.sam.parser.security.SvCheckRespPars;
+import org.eclipse.keyple.calypso.command.sam.parser.security.SvPrepareOperationRespPars;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronizedExchangesException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoSamIOException;
 import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
@@ -534,5 +539,179 @@ class SamCommandProcessor {
         cardCipherPinRespPars.checkStatus();
 
         return cardCipherPinRespPars.getCipheredData();
+    }
+
+    /**
+     * Generic method to get the complementary data from SvPrepareLoad/Debit/Undebit commands
+     * <p>
+     * Executes the SV Prepare SAM command to prepare the data needed to complete the PO SV command.
+     * <p>
+     * This data comprises:
+     * <ul>
+     * <li>The SAM identifier (4 bytes)
+     * <li>The SAM challenge (3 bytes)
+     * <li>The SAM transaction number (3 bytes)
+     * <li>The SAM part of the SV signature (5 or 10 bytes depending on PO mode)
+     * </ul>
+     *
+     * @param svPrepareCmdBuild the prepare command builder (can be prepareSvReload/Debit/Undebit)
+     * @return a byte array containing the complementary data
+     * @throws CalypsoSamIOException if the communication with the SAM has failed.
+     */
+    private byte[] getSvComplementaryData(
+            AbstractSamCommandBuilder<? extends AbstractSamResponseParser> svPrepareCmdBuild) {
+        List<AbstractSamCommandBuilder<? extends AbstractSamResponseParser>> samCommands =
+                new ArrayList<AbstractSamCommandBuilder<? extends AbstractSamResponseParser>>();
+
+        if (!isDiversificationDone) {
+            /* Build the SAM Select Diversifier command to provide the SAM with the PO S/N */
+            samCommands
+                    .add(new SelectDiversifierCmdBuild(samResource.getMatchingSe().getSamRevision(),
+                            poResource.getMatchingSe().getApplicationSerialNumberBytes()));
+            isDiversificationDone = true;
+        }
+
+        if (isDigesterInitialized) {
+            /* Get the pending SAM ApduRequest and add it to the current ApduRequest list */
+            samCommands.addAll(getPendingSamCommands(false));
+        }
+
+        int svPrepareOperationCmdIndex = samCommands.size();
+
+        samCommands.add(svPrepareCmdBuild);
+
+        // build a SAM SeRequest
+        SeRequest samSeRequest = new SeRequest(getApduRequests(samCommands));
+
+        // execute the command
+        SeResponse samSeResponse =
+                samReader.transmitSeRequest(samSeRequest, ChannelControl.KEEP_OPEN);
+
+        ApduResponse svPrepareResponse =
+                samSeResponse.getApduResponses().get(svPrepareOperationCmdIndex);
+
+        // create a parser
+        SvPrepareOperationRespPars svPrepareOperationRespPars =
+                (SvPrepareOperationRespPars) svPrepareCmdBuild
+                        .createResponseParser(svPrepareResponse);
+
+        svPrepareOperationRespPars.checkStatus();
+
+        byte[] samId = samResource.getMatchingSe().getSerialNumber();
+        byte[] prepareOperationData = svPrepareOperationRespPars.getApduResponse().getDataOut();
+
+        byte[] operationComplementaryData = new byte[samId.length + prepareOperationData.length];
+
+        System.arraycopy(samId, 0, operationComplementaryData, 0, samId.length);
+        System.arraycopy(prepareOperationData, 0, operationComplementaryData, samId.length,
+                prepareOperationData.length);
+
+        return operationComplementaryData;
+    }
+
+
+    /**
+     * Computes the cryptographic data required for the SvReload command.
+     * <p>
+     * Use the data from the SvGet command and the partial data from the SvReload command for this
+     * purpose.
+     * <p>
+     * The returned data will be used to finalize the PO SvReload command.
+     * 
+     * @param svReloadCmdBuild the SvDebit builder providing the SvReload partial data
+     * @param svGetHeader the SV Get command header
+     * @param svGetData the SV Get command response data
+     * @return the complementary security data to finalize the SvReload PO command (sam ID + SV
+     *         prepare load output)
+     * @throws CalypsoSamIOException if the communication with the SAM has failed.
+     */
+    byte[] getSvReloadComplementaryData(SvReloadCmdBuild svReloadCmdBuild, byte[] svGetHeader,
+            byte[] svGetData) {
+        // get the complementary data from the SAM
+        SvPrepareLoadCmdBuild svPrepareLoadCmdBuild =
+                new SvPrepareLoadCmdBuild(samResource.getMatchingSe().getSamRevision(), svGetHeader,
+                        svGetData, svReloadCmdBuild.getSvReloadData());
+
+        return getSvComplementaryData(svPrepareLoadCmdBuild);
+    }
+
+    /**
+     * Computes the cryptographic data required for the SvDebit command.
+     * <p>
+     * Use the data from the SvGet command and the partial data from the SvDebit command for this
+     * purpose.
+     * <p>
+     * The returned data will be used to finalize the PO SvDebit command.
+     *
+     * @param svGetHeader the SV Get command header
+     * @param svGetData the SV Get command response data
+     * @return the complementary security data to finalize the SvDebit PO command (sam ID + SV
+     *         prepare load output)
+     * @throws CalypsoSamIOException if the communication with the SAM has failed.
+     */
+    byte[] getSvDebitComplementaryData(SvDebitCmdBuild svDebitCmdBuild, byte[] svGetHeader,
+            byte[] svGetData) {
+        // get the complementary data from the SAM
+        SvPrepareDebitCmdBuild svPrepareDebitCmdBuild =
+                new SvPrepareDebitCmdBuild(samResource.getMatchingSe().getSamRevision(),
+                        svGetHeader, svGetData, svDebitCmdBuild.getSvDebitData());
+
+        return getSvComplementaryData(svPrepareDebitCmdBuild);
+    }
+
+    /**
+     * Computes the cryptographic data required for the SvUndebit command.
+     * <p>
+     * Use the data from the SvGet command and the partial data from the SvUndebit command for this
+     * purpose.
+     * <p>
+     * The returned data will be used to finalize the PO SvUndebit command.
+     *
+     * @param svGetHeader the SV Get command header
+     * @param svGetData the SV Get command response data
+     * @return the complementary security data to finalize the SvUndebit PO command (sam ID + SV
+     *         prepare load output)
+     * @throws CalypsoSamIOException if the communication with the SAM has failed.
+     */
+    public byte[] getSvUndebitComplementaryData(SvUndebitCmdBuild svUndebitCmdBuild,
+            byte[] svGetHeader, byte[] svGetData) {
+        // get the complementary data from the SAM
+        SvPrepareUndebitCmdBuild svPrepareUndebitCmdBuild =
+                new SvPrepareUndebitCmdBuild(samResource.getMatchingSe().getSamRevision(),
+                        svGetHeader, svGetData, svUndebitCmdBuild.getSvUndebitData());
+
+        return getSvComplementaryData(svPrepareUndebitCmdBuild);
+    }
+
+    /**
+     * Checks the status of the last SV operation
+     * <p>
+     * The PO signature is compared by the SAM with the one it has computed on its side.
+     * 
+     * @param svOperationResponseData the data of the SV operation performed
+     * @throws CalypsoSamIOException if the communication with the SAM has failed.
+     * @throws CalypsoSamCommandException if the SAM has responded with an error status
+     */
+    void checkSvStatus(byte[] svOperationResponseData) {
+        List<AbstractSamCommandBuilder<? extends AbstractSamResponseParser>> samCommands =
+                new ArrayList<AbstractSamCommandBuilder<? extends AbstractSamResponseParser>>();
+
+        SvCheckCmdBuild svCheckCmdBuilder = new SvCheckCmdBuild(
+                samResource.getMatchingSe().getSamRevision(), svOperationResponseData);
+        samCommands.add(svCheckCmdBuilder);
+
+        // build a SAM SeRequest
+        SeRequest samSeRequest = new SeRequest(getApduRequests(samCommands));
+
+        // execute the command
+        SeResponse samSeResponse =
+                samReader.transmitSeRequest(samSeRequest, ChannelControl.KEEP_OPEN);
+
+        ApduResponse svCheckResponse = samSeResponse.getApduResponses().get(0);
+
+        // create a parser
+        SvCheckRespPars svCheckRespPars = svCheckCmdBuilder.createResponseParser(svCheckResponse);
+
+        svCheckRespPars.checkStatus();
     }
 }

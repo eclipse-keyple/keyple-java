@@ -31,6 +31,7 @@ public class TagTest {
     public void getTagClass() {
         Tag tag;
         tag = new Tag(0x55, Tag.UNIVERSAL, Tag.TagType.PRIMITIVE, 2);
+        // TODO change these incomprehensible comparisons!
         Assert.assertEquals(Tag.UNIVERSAL, tag.getTagClass(), 2);
         tag = new Tag(0x55, Tag.APPLICATION, Tag.TagType.PRIMITIVE, 2);
         Assert.assertEquals(Tag.APPLICATION, tag.getTagClass(), 2);

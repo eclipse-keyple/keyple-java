@@ -17,6 +17,8 @@ import static org.eclipse.keyple.calypso.transaction.PoTransaction.PinTransmissi
 import static org.eclipse.keyple.calypso.transaction.PoTransaction.SessionSetting.*;
 import static org.eclipse.keyple.calypso.transaction.PoTransaction.SessionSetting.ModificationMode.ATOMIC;
 import static org.eclipse.keyple.calypso.transaction.PoTransaction.SessionSetting.ModificationMode.MULTIPLE;
+import static org.eclipse.keyple.calypso.transaction.PoTransaction.SvSettings.NegativeBalance.AUTHORIZED;
+import static org.eclipse.keyple.calypso.transaction.PoTransaction.SvSettings.NegativeBalance.FORBIDDEN;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.calypso.KeyReference;
@@ -228,5 +230,17 @@ public class PoSecuritySettingsTest {
                 TransmissionMode.CONTACTS);
     }
 
-    // TODO complete coverage
+    @Test
+    public void poSecuritySettings_negativeSvBalance() {
+        SeReader samReader = null;
+        CalypsoSam calypsoSam = createCalypsoSam();
+        SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
+        PoSecuritySettings poSecuritySettings =
+                new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)//
+                        .build();
+        assertThat(poSecuritySettings.getSvNegativeBalance()).isEqualTo(FORBIDDEN);
+        poSecuritySettings = new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)//
+                .svNegativeBalance(AUTHORIZED).build();
+        assertThat(poSecuritySettings.getSvNegativeBalance()).isEqualTo(AUTHORIZED);
+    }
 }

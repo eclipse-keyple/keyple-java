@@ -88,7 +88,54 @@ public final class ByteArrayUtil {
     }
 
     /**
-     * Convert three bytes from a byte array into an integer.
+     * Convert two bytes (unsigned) from a byte array into an integer.
+     * <p>
+     * The two bytes are expected to be in the MSB first order (aka network order).
+     * <p>
+     * Throw an exception if the buffer is null or not long enough to contain 2 bytes.
+     *
+     * @param bytes byte array
+     * @param offset offset from which the 2 bytes are
+     * @return the resulting int
+     * @throws IllegalArgumentException if the buffer has a bad length
+     */
+    public static int twoBytesToInt(byte[] bytes, int offset) {
+        if (bytes == null || bytes.length < offset + 2 || offset < 0) {
+            throw new IllegalArgumentException("Bad data for converting 2-byte integers.");
+        }
+        return (bytes[offset] & 0xFF) << 8 | (bytes[offset + 1] & 0xFF);
+    }
+
+    /**
+     * Convert two bytes (signed) from a byte array into an integer.
+     * <p>
+     * The two bytes are expected to be in the MSB first order (aka network order).
+     * <p>
+     * The number is also considered as signed. That is, if the MSB (first left bit) is 1, then the
+     * number is negative and the conversion is done accordingly with the usual binary arithmetic.
+     * <p>
+     * Throw an exception if the buffer is null or not long enough to contain 2 bytes.
+     *
+     * @param bytes byte array
+     * @param offset offset from which the 2 bytes are
+     * @return the resulting int
+     * @throws IllegalArgumentException if the buffer has a bad length
+     */
+    public static int twoBytesSignedToInt(byte[] bytes, int offset) {
+        if (bytes == null || bytes.length < offset + 2 || offset < 0) {
+            throw new IllegalArgumentException("Bad data for converting 2-byte integers.");
+        }
+        if (bytes[offset] >= 0) {
+            /* positive number */
+            return (bytes[offset] & 0xFF) << 8 | (bytes[offset + 1] & 0xFF);
+        } else {
+            /* negative number */
+            return 0xFFFF0000 | (bytes[offset] & 0xFF) << 8 | (bytes[offset + 1] & 0xFF);
+        }
+    }
+
+    /**
+     * Convert three bytes (unsigned) from a byte array into an integer.
      * <p>
      * The three bytes are expected to be in the MSB first order (aka network order).
      * <p>
@@ -105,5 +152,55 @@ public final class ByteArrayUtil {
         }
         return (bytes[offset] & 0xFF) << 16 | (bytes[offset + 1] & 0xFF) << 8
                 | (bytes[offset + 2] & 0xFF);
+    }
+
+    /**
+     * Convert three bytes (signed) from a byte array into an integer.
+     * <p>
+     * The three bytes are expected to be in the MSB first order (aka network order).
+     * <p>
+     * The number is also considered as signed. That is, if the MSB (first left bit) is 1, then the
+     * number is negative and the conversion is done accordingly with the usual binary arithmetic.
+     * <p>
+     * Throw an exception if the buffer is null or not long enough to contain all 3 bytes.
+     *
+     * @param bytes byte array containing a 3-byte signed number
+     * @param offset offset from which the 3 bytes are
+     * @return the resulting int
+     * @throws IllegalArgumentException if the buffer has a bad length
+     */
+    public static int threeBytesSignedToInt(byte[] bytes, int offset) {
+        if (bytes == null || bytes.length < offset + 3 || offset < 0) {
+            throw new IllegalArgumentException("Bad data for converting 3-byte integers.");
+        }
+        if (bytes[offset] >= 0) {
+            /* positive number */
+            return (bytes[offset] & 0xFF) << 16 | (bytes[offset + 1] & 0xFF) << 8
+                    | (bytes[offset + 2] & 0xFF);
+        } else {
+            /* negative number */
+            return 0xFF000000 | (bytes[offset] & 0xFF) << 16 | (bytes[offset + 1] & 0xFF) << 8
+                    | (bytes[offset + 2] & 0xFF);
+        }
+    }
+
+    /**
+     * Convert four bytes from a byte array into an integer.
+     * <p>
+     * The four bytes are expected to be in the MSB first order (aka network order).
+     * <p>
+     * Throw an exception if the buffer is null or not long enough to contain 4 bytes.
+     *
+     * @param bytes byte array
+     * @param offset offset from which the 4 bytes are
+     * @return the resulting int
+     * @throws IllegalArgumentException if the buffer has a bad length
+     */
+    public static int fourBytesToInt(byte[] bytes, int offset) {
+        if (bytes == null || bytes.length < offset + 4 || offset < 0) {
+            throw new IllegalArgumentException("Bad data for converting 4-byte integers.");
+        }
+        return (bytes[offset] & 0xFF) << 24 | (bytes[offset + 1] & 0xFF) << 16
+                | (bytes[offset + 2] & 0xFF) << 8 | (bytes[offset + 3] & 0xFF);
     }
 }

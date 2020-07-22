@@ -108,6 +108,6 @@ public class CloseSessionRespParsTest {
         CloseSessionRespPars parser = new CloseSessionRespPars(
                 new ApduResponse(ByteArrayUtil.fromHex("04 345678 FEDCBA98 9000h"), null), null);
         Assert.assertEquals("FEDCBA98", ByteArrayUtil.toHex(parser.getSignatureLo()));
-        Assert.assertEquals("04345678", ByteArrayUtil.toHex(parser.getPostponedData()));
+        Assert.assertEquals("345678", ByteArrayUtil.toHex(parser.getPostponedData()));
     }
 }
