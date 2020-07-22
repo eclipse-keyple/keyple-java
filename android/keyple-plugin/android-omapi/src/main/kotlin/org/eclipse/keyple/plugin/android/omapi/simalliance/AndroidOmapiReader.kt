@@ -16,7 +16,7 @@ import kotlin.experimental.or
 import org.eclipse.keyple.core.seproxy.SeSelector
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.seproxy.message.ApduResponse
-import org.eclipse.keyple.core.seproxy.plugin.local.AbstractLocalReader
+import org.eclipse.keyple.core.seproxy.plugin.AbstractLocalReader
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiReader
 import org.simalliance.openmobileapi.Channel
