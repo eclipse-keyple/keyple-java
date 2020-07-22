@@ -12,6 +12,8 @@
 package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.keyple.plugin.remotese.nativese.impl.BaseNativeSeTest.assertMetaDataMatches;
+
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,8 +40,7 @@ public class DefaultSelectionTest extends BaseNativeSeTest {
         assertMetaDataMatches(requestDto, responseDto);
         assertThat(responseDto.getAction())
                 .isEqualTo(KeypleMessageDto.Action.SET_DEFAULT_SELECTION.name());
-        assertThat(responseDto.getErrorCode()).isNull();
-        assertThat(responseDto.getErrorMessage()).isNull();
+
     }
 
 }

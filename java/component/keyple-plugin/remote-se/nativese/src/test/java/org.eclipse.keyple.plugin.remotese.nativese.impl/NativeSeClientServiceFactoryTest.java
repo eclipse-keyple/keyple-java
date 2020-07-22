@@ -44,7 +44,7 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
     KeypleClientSync syncClient;
     KeypleClientAsync asyncClient;
     KeypleUserDataFactory keypleUserDataFactory;
-    NativeSeClientServiceFactory.KeypleClientReaderEventFilter eventFilter;
+    KeypleClientReaderEventFilter eventFilter;
     MyKeypleUserData outputData;
     MyKeypleUserData inputData;
     MatchingSeImpl matchingSe;
@@ -67,7 +67,7 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
         asyncClient = Mockito.mock(KeypleClientAsync.class);
         keypleUserDataFactory = new MyKeypleUserDataFactory();
         eventFilter =
-                Mockito.mock(NativeSeClientServiceFactory.KeypleClientReaderEventFilter.class);
+                Mockito.mock(KeypleClientReaderEventFilter.class);
 
 
         doReturn(getASeResponse()).when(proxyReader).transmitSeRequest(any(SeRequest.class),
@@ -357,7 +357,7 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
 
 
     class MyEventFilter implements
-            NativeSeClientServiceFactory.KeypleClientReaderEventFilter<MyKeypleUserData> {
+            KeypleClientReaderEventFilter<MyKeypleUserData> {
         Boolean propagateEvent;
 
         MyEventFilter(Boolean propagateEvent) {

@@ -15,6 +15,7 @@ import java.util.UUID;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeypleExceptionFactory;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
@@ -37,14 +38,15 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
     private static final Logger logger = LoggerFactory.getLogger(NativeSeClientServiceImpl.class);
 
     private Boolean withReaderObservation;
-    private NativeSeClientServiceFactory.KeypleClientReaderEventFilter eventFilter;
+    private KeypleClientReaderEventFilter eventFilter;
 
     private static NativeSeClientServiceImpl uniqueInstance;
 
     // private constructor
     private NativeSeClientServiceImpl(Boolean withReaderObservation,
-            NativeSeClientServiceFactory.KeypleClientReaderEventFilter eventFilter) {
-        super();
+            KeypleClientReaderEventFilter eventFilter,
+            KeypleExceptionFactory... exceptionFactories) {
+        super(exceptionFactories);
         this.withReaderObservation = withReaderObservation;
         this.eventFilter = eventFilter;
     }
@@ -56,9 +58,10 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
      * @return a not null instance of the singleton
      */
     static NativeSeClientServiceImpl createInstance(boolean withReaderObservation,
-            NativeSeClientServiceFactory.KeypleClientReaderEventFilter eventFilter) {
-        uniqueInstance = new NativeSeClientServiceImpl(withReaderObservation, eventFilter);
-
+            KeypleClientReaderEventFilter eventFilter,
+            KeypleExceptionFactory... exceptionFactories) {
+        uniqueInstance = new NativeSeClientServiceImpl(withReaderObservation, eventFilter,
+                exceptionFactories);
         return uniqueInstance;
     }
 
@@ -118,8 +121,9 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
 
             // get response dto - send dto response to server
             receivedDto = node.sendRequest(responseDto);
-
         }
+
+        checkError(receivedDto);
 
         // return userOutputData
         return extractUserData(receivedDto, userOutputDataFactory);
@@ -166,6 +170,8 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
             // get response dto - send dto response to server
             receivedDto = node.sendRequest(responseDto);
         }
+
+        checkError(receivedDto);
 
         // extract userOutputData
         KeypleUserData userOutputData =

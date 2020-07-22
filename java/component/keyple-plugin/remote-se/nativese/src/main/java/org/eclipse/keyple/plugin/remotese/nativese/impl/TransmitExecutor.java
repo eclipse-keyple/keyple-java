@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
-import java.util.List;
+
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
@@ -22,7 +22,6 @@ import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
 
 /**
  * Execute locally a TRANSMIT KeypleMessageDto
@@ -74,22 +73,10 @@ class TransmitExecutor implements Executor {
 
         } catch (KeypleReaderIOException e) {
 
-            JsonObject body = new JsonObject();
-            if (e.getSeResponses() != null) {
-                body.add("seResponses", KeypleJsonParser.getParser().toJsonTree(e.getSeResponses(),
-                        new TypeToken<List<SeResponse>>() {}.getType()));
-            }
-            if (e.getSeResponse() != null) {
-                body.add("seResponse", KeypleJsonParser.getParser().toJsonTree(e.getSeResponse(),
-                        SeResponse.class));
-            }
-
             // if an exception occurs, send it into a keypleDto to the Master
             response = new KeypleMessageDto(keypleMessageDto)
                     .setAction(KeypleMessageDto.Action.ERROR.name())//
-                    .setErrorCode(KeypleMessageDto.ErrorCode.KeypleReaderIOException.getCode())//
-                    .setErrorMessage(e.getMessage())//
-                    .setBody(body.toString());
+                    .setBody(e.toJson());
         }
 
         return response;

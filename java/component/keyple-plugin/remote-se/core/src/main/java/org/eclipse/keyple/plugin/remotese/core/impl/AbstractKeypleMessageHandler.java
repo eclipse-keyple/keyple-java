@@ -11,6 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.core.impl;
 
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleExceptionFactory;
 import org.eclipse.keyple.plugin.remotese.core.*;
 
 /**
@@ -28,6 +30,8 @@ public abstract class AbstractKeypleMessageHandler {
      */
     protected AbstractKeypleNode node;
 
+    protected KeypleExceptionFactory[] exceptionFactories;
+
     /**
      * (protected)<br>
      * Is handler bound to async node ?
@@ -38,7 +42,9 @@ public abstract class AbstractKeypleMessageHandler {
      * (protected)<br>
      * Constructor.
      */
-    protected AbstractKeypleMessageHandler() {}
+    protected AbstractKeypleMessageHandler(KeypleExceptionFactory... exceptionFactories) {
+        this.exceptionFactories = exceptionFactories;
+    }
 
     /**
      * (protected)<br>
@@ -101,5 +107,26 @@ public abstract class AbstractKeypleMessageHandler {
     public void bindServerSyncNode() {
         node = new KeypleServerSyncNodeImpl(this, 20);
         isBoundToAsyncNode = false;
+    }
+
+
+
+    protected void checkError(KeypleMessageDto message) {
+        // throw exception if message is ERROR
+        if (message.getAction().equals(KeypleMessageDto.Action.ERROR)) {
+            for (KeypleExceptionFactory exceptionFactory : exceptionFactories) {
+                try {
+                    KeypleException exception = exceptionFactory.from(message.getBody());
+                    throw exception;
+                } catch (IllegalArgumentException e) {
+                    // factory didn't match the embedded exception
+                }
+            }
+
+            // throw an unknow error
+            // todo
+
+            //log stack
+        }
     }
 }

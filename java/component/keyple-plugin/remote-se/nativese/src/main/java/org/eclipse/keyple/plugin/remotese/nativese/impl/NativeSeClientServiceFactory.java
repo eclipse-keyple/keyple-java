@@ -12,13 +12,11 @@
 package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
 
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeypleExceptionFactory;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remotese.core.KeypleClientAsync;
+import org.eclipse.keyple.plugin.remotese.core.KeypleClientReaderEventFilter;
 import org.eclipse.keyple.plugin.remotese.core.KeypleClientSync;
-import org.eclipse.keyple.plugin.remotese.core.KeypleUserData;
-import org.eclipse.keyple.plugin.remotese.core.KeypleUserDataFactory;
-import org.eclipse.keyple.plugin.remotese.core.exception.KeypleDoNotPropagateEventException;
 import org.eclipse.keyple.plugin.remotese.nativese.NativeSeClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +36,8 @@ public class NativeSeClientServiceFactory {
      * 
      * @return next configuration step
      */
-    public NodeStep builder() {
-        return new Step();
+    public NodeStep builder(KeypleExceptionFactory... exceptionFactories) {
+        return new Step(exceptionFactories);
     }
 
     public interface BuilderStep {
@@ -88,49 +86,29 @@ public class NativeSeClientServiceFactory {
     }
 
 
-    public interface KeypleClientReaderEventFilter<T extends KeypleUserData> {
-        /**
-         * Configure the factory to retrieve the output
-         * 
-         * @return non nullable instance of the factory
-         */
-        KeypleUserDataFactory<T> getUserOutputDataFactory();
-
-        /**
-         * Execute any process before the event is sent to the server
-         * 
-         * @param event that will be propagated
-         * @return nullable data that will be sent to the server.
-         * @throws KeypleDoNotPropagateEventException if event should not be propagated to server
-         */
-        KeypleUserData beforePropagation(ReaderEvent event)
-                throws KeypleDoNotPropagateEventException;
-
-        /**
-         * Retrieve the output from the event global processing
-         * 
-         * @param userOutputData nullable instance of the
-         */
-        void afterPropagation(T userOutputData);
-
-    }
 
     public static class Step implements NodeStep, ReaderStep, BuilderStep {
 
-        private KeypleClientAsync asyncClient;
-        private KeypleClientSync syncClient;
+        private KeypleClientAsync asyncEndpoint;
+        private KeypleClientSync syncEndpoint;
         private Boolean withReaderObservation;
         private KeypleClientReaderEventFilter eventFilter;
 
+        KeypleExceptionFactory[] exceptionFactories;
+
+        Step(KeypleExceptionFactory... exceptionFactories) {
+            this.exceptionFactories = exceptionFactories;
+        }
+
         @Override
-        public ReaderStep withAsyncNode(KeypleClientAsync asyncClient) {
-            this.asyncClient = asyncClient;
+        public ReaderStep withAsyncNode(KeypleClientAsync endpoint) {
+            this.asyncEndpoint = endpoint;
             return this;
         }
 
         @Override
-        public ReaderStep withSyncNode(KeypleClientSync syncClient) {
-            this.syncClient = syncClient;
+        public ReaderStep withSyncNode(KeypleClientSync endpoint) {
+            this.syncEndpoint = endpoint;
             return this;
         }
 
@@ -153,21 +131,21 @@ public class NativeSeClientServiceFactory {
         @Override
         public NativeSeClientService getService() {
             // create the service
-            NativeSeClientServiceImpl service =
-                    NativeSeClientServiceImpl.createInstance(withReaderObservation, eventFilter);
+            NativeSeClientServiceImpl service = NativeSeClientServiceImpl
+                    .createInstance(withReaderObservation, eventFilter, exceptionFactories);
 
 
             // bind the service to the node
-            if (asyncClient != null) {
+            if (asyncEndpoint != null) {
                 logger.info(
                         "Create a new NativeSeClientServiceImpl with a async client and params withReaderObservation:{}",
                         withReaderObservation);
-                service.bindClientAsyncNode(asyncClient);
+                service.bindClientAsyncNode(asyncEndpoint);
             } else {
                 logger.info(
                         "Create a new NativeSeClientServiceImpl with a sync client and params withReaderObservation:{}",
                         withReaderObservation);
-                service.bindClientSyncNode(syncClient, null, null);
+                service.bindClientSyncNode(syncEndpoint, null, null);
             }
             return service;
         }

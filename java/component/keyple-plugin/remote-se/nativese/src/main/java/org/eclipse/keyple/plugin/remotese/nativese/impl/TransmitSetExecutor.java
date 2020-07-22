@@ -84,22 +84,10 @@ class TransmitSetExecutor implements Executor {
 
         } catch (KeypleReaderIOException e) {
 
-            JsonObject body = new JsonObject();
-            if (e.getSeResponses() != null) {
-                body.add("seResponses", KeypleJsonParser.getParser().toJsonTree(e.getSeResponses(),
-                        new TypeToken<List<SeResponse>>() {}.getType()));
-            }
-            if (e.getSeResponse() != null) {
-                body.add("seResponse", KeypleJsonParser.getParser().toJsonTree(e.getSeResponse(),
-                        SeResponse.class));
-            }
-
-            // if an exception occurs, send it into a keypleDto to the Master
+            // if an exception occurs, send it into a keypleDto
             response = new KeypleMessageDto(keypleMessageDto)
                     .setAction(KeypleMessageDto.Action.ERROR.name())//
-                    .setErrorCode(KeypleMessageDto.ErrorCode.KeypleReaderIOException.getCode())//
-                    .setErrorMessage(e.getMessage())//
-                    .setBody(body.toString());
+                    .setBody(e.toJson());
         }
 
         return response;

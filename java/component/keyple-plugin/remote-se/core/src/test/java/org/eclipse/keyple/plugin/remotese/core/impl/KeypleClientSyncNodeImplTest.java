@@ -118,8 +118,6 @@ public class KeypleClientSyncNodeImplTest extends AbstractKeypleSyncNode {
         assertThat(msg1.getNativeReaderName()).isNull();
         assertThat(msg1.getVirtualReaderName()).isNull();
         assertThat(msg1.getBody()).isEqualTo(body);
-        assertThat(msg1.getErrorCode()).isNull();
-        assertThat(msg1.getErrorMessage()).isNull();
         assertThat(msg1.getSessionId()).isNotEqualTo(msg1.getClientNodeId());
     }
 

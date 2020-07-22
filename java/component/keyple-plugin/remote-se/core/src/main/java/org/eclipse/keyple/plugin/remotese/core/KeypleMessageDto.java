@@ -31,8 +31,6 @@ public class KeypleMessageDto {
     private String nativeReaderName;
     private String virtualReaderName;
     private String body;
-    private String errorCode;
-    private String errorMessage;
 
     /**
      * Action enum (for internal use only).
@@ -46,8 +44,11 @@ public class KeypleMessageDto {
         CHECK_READER_EVENT, //
         READER_EVENT, //
         TRANSMIT, //
+        TRANSMIT_RESPONSE, //
         TRANSMIT_SET, //
+        TRANSMIT_SET_RESPONSE, //
         SET_DEFAULT_SELECTION, //
+        SET_DEFAULT_SELECTION_RESPONSE, //
         TERMINATE_SERVICE, //
         ERROR;
     }
@@ -113,8 +114,6 @@ public class KeypleMessageDto {
         nativeReaderName = from.getNativeReaderName();
         virtualReaderName = from.getVirtualReaderName();
         body = from.getBody();
-        errorCode = from.getErrorCode();
-        errorMessage = from.getErrorMessage();
     }
 
     /**
@@ -274,50 +273,6 @@ public class KeypleMessageDto {
      */
     public final KeypleMessageDto setBody(String body) {
         this.body = body;
-        return this;
-    }
-
-    /**
-     * Gets the error code.
-     *
-     * @return a null string in case of a success message.
-     * @since 1.0
-     */
-    public final String getErrorCode() {
-        return errorCode;
-    }
-
-    /**
-     * This setter method must only be used during the deserialization process.
-     *
-     * @param errorCode The error code to set.
-     * @return the object instance.
-     * @since 1.0
-     */
-    public final KeypleMessageDto setErrorCode(String errorCode) {
-        this.errorCode = errorCode;
-        return this;
-    }
-
-    /**
-     * Gets the error message.
-     *
-     * @return a null string in case of a success message.
-     * @since 1.0
-     */
-    public final String getErrorMessage() {
-        return errorMessage;
-    }
-
-    /**
-     * This setter method must only be used during the deserialization process.
-     *
-     * @param errorMessage The error message to set.
-     * @return the object instance.
-     * @since 1.0
-     */
-    public final KeypleMessageDto setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
         return this;
     }
 }

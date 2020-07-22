@@ -70,8 +70,6 @@ public class TransmitSetExecutorTest extends BaseNativeSeTest {
         KeypleMessageDto responseDto = new TransmitSetExecutor(proxyReader).execute(requestDto);
         assertMetaDataMatches(requestDto, responseDto);
         assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.TRANSMIT_SET.name());
-        assertThat(responseDto.getErrorCode()).isNull();
-        assertThat(responseDto.getErrorMessage()).isNull();
         assertThat(KeypleJsonParser.getParser().fromJson(responseDto.getBody(),
                 new TypeToken<List<SeResponse>>() {}.getType()))
                         .isEqualToComparingFieldByField(seResponses);
@@ -85,15 +83,13 @@ public class TransmitSetExecutorTest extends BaseNativeSeTest {
         KeypleMessageDto responseDto = new TransmitSetExecutor(proxyReader).execute(requestDto);
         assertMetaDataMatches(requestDto, responseDto);
         assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.ERROR.name());
-        assertThat(responseDto.getErrorCode())
-                .isEqualTo(KeypleMessageDto.ErrorCode.KeypleReaderIOException.getCode());
-        assertThat(responseDto.getErrorMessage()).isEqualTo(keypleIOException.getMessage());
 
         // check embedded seResponses
         JsonObject bodyResponse =
                 KeypleJsonParser.getParser().fromJson(responseDto.getBody(), JsonObject.class);
         assertThat(bodyResponse.has("seResponse")).isFalse();
         assertThat(bodyResponse.has("seResponses")).isFalse();
+        //todo
 
     }
 
@@ -106,10 +102,6 @@ public class TransmitSetExecutorTest extends BaseNativeSeTest {
         KeypleMessageDto responseDto = new TransmitSetExecutor(proxyReader).execute(requestDto);
         assertMetaDataMatches(requestDto, responseDto);
         assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.ERROR.name());
-        assertThat(responseDto.getErrorCode())
-                .isEqualTo(KeypleMessageDto.ErrorCode.KeypleReaderIOException.getCode());
-        assertThat(responseDto.getErrorMessage())
-                .isEqualTo(keypleIOExceptionWithSeResponse.getMessage());
 
         // check embedded seResponses
         JsonObject bodyResponse =
@@ -130,10 +122,6 @@ public class TransmitSetExecutorTest extends BaseNativeSeTest {
         KeypleMessageDto responseDto = new TransmitSetExecutor(proxyReader).execute(requestDto);
         assertMetaDataMatches(requestDto, responseDto);
         assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.ERROR.name());
-        assertThat(responseDto.getErrorCode())
-                .isEqualTo(KeypleMessageDto.ErrorCode.KeypleReaderIOException.getCode());
-        assertThat(responseDto.getErrorMessage())
-                .isEqualTo(keypleIOExceptionWithSeResponses.getMessage());
 
         // check embedded seResponses
         JsonObject bodyResponse =

@@ -29,7 +29,19 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 public class SampleFactory {
 
+    public static KeypleReaderIOException getIOExceptionWithResponse() {
+        KeypleReaderIOException ioException =
+                new KeypleReaderIOException("Keyple Reader Exception");
+        ioException.setSeResponse(getASeResponse());
+        return ioException;
+    }
 
+    public static KeypleReaderIOException getIOExceptionWithResponses() {
+        KeypleReaderIOException ioException =
+                new KeypleReaderIOException("Keyple Reader Exception");
+        ioException.setSeResponses(getCompleteResponseSet());
+        return ioException;
+    }
 
     public static KeypleReaderIOException getAStackedKeypleException() {
         return new KeypleReaderIOException("Keyple Reader Exception", new IOException("IO Error",

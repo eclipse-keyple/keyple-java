@@ -12,6 +12,7 @@
 package org.eclipse.keyple.core.util.json;
 
 
+import org.eclipse.keyple.core.command.SeCommand;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -27,6 +28,7 @@ public class KeypleJsonParser {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(SeProtocol.class, new GsonSeProtocolTypeAdapter());
         gsonBuilder.registerTypeAdapter(byte[].class, new HexArrayTypeAdapter());
+        gsonBuilder.registerTypeAdapter(SeCommand.class, new SeCommandTypeAdapter());
         // gsonBuilder.setPrettyPrinting(); disable pretty printing for inline json
         parser = gsonBuilder.create();
     }

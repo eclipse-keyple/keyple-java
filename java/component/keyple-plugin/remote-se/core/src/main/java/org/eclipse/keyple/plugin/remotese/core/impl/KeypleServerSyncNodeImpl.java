@@ -205,11 +205,13 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
     private KeypleMessageDto buildErrorMessage(String errorCode, String errorMessage,
             KeypleMessageDto originalMessage) {
 
+        JsonObject body = new JsonObject();
+        body.addProperty("code", errorCode);
+        body.addProperty("message", errorMessage);
+
         return new KeypleMessageDto(originalMessage)//
                 .setAction(KeypleMessageDto.Action.ERROR.name())//
-                .setBody(null)//
-                .setErrorCode(errorCode)//
-                .setErrorMessage(errorMessage);
+                .setBody(body.toString());//
     }
 
     /**
