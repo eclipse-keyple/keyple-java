@@ -510,10 +510,6 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                     super(selectionResponse, transmissionMode);
                 }
 
-                @Override
-                public String toJson() {
-                    return "{}";
-                }
             }
 
             return new GenericMatchingSe(seResponse, transmissionMode);

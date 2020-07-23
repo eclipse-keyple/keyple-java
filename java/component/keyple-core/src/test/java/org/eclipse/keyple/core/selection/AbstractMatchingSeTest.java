@@ -92,10 +92,6 @@ public class AbstractMatchingSeTest {
     }
 
     private static class TestMatchingSe extends AbstractMatchingSe {
-        @Override
-        public String toJson() {
-            return KeypleJsonParser.getParser().toJson(this);
-        }
 
         protected TestMatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode) {
             super(selectionResponse, transmissionMode);

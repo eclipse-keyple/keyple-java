@@ -14,7 +14,6 @@ package org.eclipse.keyple.plugin.remotese.nativese.impl;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleExceptionFactory;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
@@ -31,8 +30,8 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractNativeSeService.class);
 
-    public AbstractNativeSeService(KeypleExceptionFactory... exceptionFactories) {
-        super(exceptionFactories);
+    public AbstractNativeSeService() {
+        super();
     }
 
     /**

@@ -22,7 +22,9 @@ import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -50,6 +52,10 @@ public class SampleFactory {
 
     public static KeypleReaderIOException getASimpleKeypleException() {
         return new KeypleReaderIOException("Keyple Reader Exception");
+    }
+
+    public static KeypleReaderException getAReaderKeypleException() {
+        return new KeypleReaderNotFoundException("Keyple Reader Not Found Exception");
     }
 
     public static AbstractDefaultSelectionsRequest getSelectionRequest() {

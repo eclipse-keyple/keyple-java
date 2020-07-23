@@ -11,10 +11,10 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.nativese;
 
-import org.eclipse.keyple.plugin.remotese.core.KeypleUserData;
-import org.eclipse.keyple.plugin.remotese.core.KeypleUserDataFactory;
 import org.eclipse.keyple.plugin.remotese.nativese.impl.NativeSeClientServiceFactory;
 import org.eclipse.keyple.plugin.remotese.nativese.impl.NativeSeClientUtils;
+
+import java.lang.reflect.Type;
 
 /**
  * <b>Native SE Client Service</b> API.
@@ -42,12 +42,11 @@ public interface NativeSeClientService {
      *
      * @param parameters The service parameters (serviceId, ...) (see
      *        {@link RemoteServiceParameters} documentation for all possible parameters)
-     * @param userOutputDataFactory The factory to use to build the expected user output data.
      * @param <T> The generic type of the expected user output data.
      * @return a new instance of <b>T</b>.
      * @throws RuntimeException if an unexpected error occurs.
      * @since 1.0
      */
-    <T extends KeypleUserData> T executeRemoteService(RemoteServiceParameters parameters,
-            KeypleUserDataFactory<T> userOutputDataFactory);
+    <T> T executeRemoteService(RemoteServiceParameters parameters,
+            Type T);
 }

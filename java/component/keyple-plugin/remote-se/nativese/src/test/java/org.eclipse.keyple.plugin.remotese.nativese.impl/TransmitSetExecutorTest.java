@@ -89,7 +89,7 @@ public class TransmitSetExecutorTest extends BaseNativeSeTest {
                 KeypleJsonParser.getParser().fromJson(responseDto.getBody(), JsonObject.class);
         assertThat(bodyResponse.has("seResponse")).isFalse();
         assertThat(bodyResponse.has("seResponses")).isFalse();
-        //todo
+        // todo
 
     }
 

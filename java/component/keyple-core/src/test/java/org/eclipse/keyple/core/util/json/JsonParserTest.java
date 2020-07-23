@@ -79,19 +79,6 @@ public class JsonParserTest {
     /**
      * Test Serialization of Keyple Reader Exceptions
      */
-    @Test
-    public void testSimpleKeypleException() {
-        KeypleReaderIOException exception = SampleFactory.getASimpleKeypleException();
-        testSerializeDeserializeObj(exception, KeypleReaderIOException.class);
-
-    }
-
-    @Test
-    public void testStackedKeypleException() {
-        KeypleReaderIOException exception = SampleFactory.getAStackedKeypleException();
-        testSerializeDeserializeObj(exception, KeypleReaderIOException.class);
-
-    }
 
     @Test
     public void testReaderEvent() {

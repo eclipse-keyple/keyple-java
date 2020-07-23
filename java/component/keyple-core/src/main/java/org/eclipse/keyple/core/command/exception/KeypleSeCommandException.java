@@ -54,13 +54,4 @@ public abstract class KeypleSeCommandException extends KeypleException {
         return statusCode;
     }
 
-    public String toJson() {
-        Gson parser = KeypleJsonParser.getParser();
-        JsonObject json = new JsonObject();
-        json.add("command", parser.toJsonTree(command, SeCommand.class));
-        json.addProperty("statusCode", statusCode);
-        json.addProperty("message", getMessage());
-        json.addProperty("code", getErrorCode());
-        return json.toString();
-    }
 }

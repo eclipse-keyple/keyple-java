@@ -53,10 +53,6 @@ public class SeResourceTest extends CoreBaseTest {
      * Matching Se instantiation
      */
     private final class MatchingSe extends AbstractMatchingSe {
-        @Override
-        public String toJson() {
-            return KeypleJsonParser.getParser().toJson(this);
-        }
 
         MatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode) {
             super(selectionResponse, transmissionMode);

@@ -13,8 +13,12 @@ package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.google.gson.Gson;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -43,7 +47,6 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
     private static final Logger logger = LoggerFactory.getLogger(AbstractNativeSeServiceTest.class);
     KeypleClientSync syncClient;
     KeypleClientAsync asyncClient;
-    KeypleUserDataFactory keypleUserDataFactory;
     KeypleClientReaderEventFilter eventFilter;
     MyKeypleUserData outputData;
     MyKeypleUserData inputData;
@@ -52,6 +55,7 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
     ReaderEvent readerEvent;
     String pluginName = "mockPlugin";
     String serviceId = "serviceId";
+    Gson parser;
 
     @Before
     public void setUp() {
@@ -65,9 +69,7 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
         SeProxyService.getInstance().registerPlugin(mockFactory);
         syncClient = Mockito.mock(KeypleClientSync.class);
         asyncClient = Mockito.mock(KeypleClientAsync.class);
-        keypleUserDataFactory = new MyKeypleUserDataFactory();
-        eventFilter =
-                Mockito.mock(KeypleClientReaderEventFilter.class);
+        eventFilter = Mockito.mock(KeypleClientReaderEventFilter.class);
 
 
         doReturn(getASeResponse()).when(proxyReader).transmitSeRequest(any(SeRequest.class),
@@ -82,6 +84,7 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
                 observableProxyReaderName, //
                 ReaderEvent.EventType.SE_INSERTED, //
                 null);
+        parser = KeypleJsonParser.getParser();
     }
 
     @After
@@ -150,8 +153,8 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
                         .build();
 
         // test
-        KeypleUserData output =
-                nativeSeClientService.executeRemoteService(params, new MyKeypleUserDataFactory());
+        MyKeypleUserData output =
+                nativeSeClientService.executeRemoteService(params, MyKeypleUserData.class);
 
 
         // verify service is added as observer
@@ -170,8 +173,8 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
                 RemoteServiceParameters.builder(serviceId, proxyReader).build();
 
         // test
-        KeypleUserData output =
-                nativeSeClientService.executeRemoteService(params, new MyKeypleUserDataFactory());
+        MyKeypleUserData output =
+                nativeSeClientService.executeRemoteService(params, MyKeypleUserData.class);
 
         verify(observableProxyReader, times(1))
                 .addObserver((NativeSeClientServiceImpl) nativeSeClientService);
@@ -194,8 +197,8 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
                 .build();
 
         // test
-        KeypleUserData output =
-                nativeSeClientService.executeRemoteService(params, new MyKeypleUserDataFactory());
+        MyKeypleUserData output =
+                nativeSeClientService.executeRemoteService(params, MyKeypleUserData.class);
 
         // verify EXECUTE_REMOTE_SERVICE request
         assertThat(clientSyncMock.getRequests().size()).isEqualTo(2);
@@ -204,15 +207,15 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
                 .isEqualTo(KeypleMessageDto.Action.EXECUTE_REMOTE_SERVICE.name());
         assertThat(dtoRequest.getSessionId()).isNotEmpty();
         assertThat(dtoRequest.getNativeReaderName()).isEqualTo(nativeReaderName);
-        JsonObject body =
-                KeypleJsonParser.getParser().fromJson(dtoRequest.getBody(), JsonObject.class);
+        JsonObject body = parser.fromJson(dtoRequest.getBody(), JsonObject.class);
         assertThat(body.get("serviceId").getAsString()).isEqualTo(serviceId);
-        assertThat(body.get("userInputData").getAsString()).isEqualTo(inputData.toJson());
-        assertThat(body.get("initialSeContent").getAsString()).isEqualTo(matchingSe.toJson());
+        assertThat(parser.fromJson(body.get("userInputData"),MyKeypleUserData.class)).isEqualToComparingFieldByFieldRecursively(inputData);
+        assertThat(parser.fromJson(body.get("initialSeContent"),MatchingSeImpl.class)).isEqualToComparingFieldByFieldRecursively(matchingSe);
 
         // verify output
         assertThat(output).isNotNull();
         assertThat(output).isEqualToComparingFieldByField(outputData);
+
     }
 
     @Test
@@ -256,7 +259,8 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
                 KeypleJsonParser.getParser().fromJson(dtoRequest.getBody(), JsonObject.class);
         assertThat(KeypleJsonParser.getParser().fromJson(body.get("readerEvent").toString(),
                 ReaderEvent.class)).isEqualToComparingFieldByField(readerEvent);
-        assertThat(body.get("userInputData").getAsString()).isEqualTo(inputData.toJson());
+        assertThat(parser.fromJson(body.get("userInputData"),MyKeypleUserData.class))
+                .isEqualToComparingFieldByFieldRecursively(inputData);
 
         // output is verified in eventFilter
     }
@@ -300,27 +304,13 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
     }
 
 
-    public class MyKeypleUserData implements KeypleUserData {
+    public class MyKeypleUserData  {
         final String field;
         final Integer field2 = 2;
-
         MyKeypleUserData(String field) {
             this.field = field;
         }
-
-        @Override
-        public String toJson() {
-            return KeypleJsonParser.getParser().toJson(this);
-        }
     }
-
-    public class MyKeypleUserDataFactory implements KeypleUserDataFactory<MyKeypleUserData> {
-        @Override
-        public MyKeypleUserData getInstance(String data) {
-            return KeypleJsonParser.getParser().fromJson(data, MyKeypleUserData.class);
-        }
-    }
-
 
 
     public interface ObservableProxyReader extends ProxyReader, ObservableReader {
@@ -337,27 +327,11 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
         protected MatchingSeImpl(SeResponse selectionResponse, TransmissionMode transmissionMode) {
             super(selectionResponse, transmissionMode);
         }
-
-        @Override
-        public String toJson() {
-            return KeypleJsonParser.getParser().toJson(this);
-        }
-    }
-
-    public class MatchingSeImplFactory
-            implements AbstractMatchingSe.AbstractMatchingSeFactory<MatchingSeImpl> {
-        MatchingSeImplFactory() {}
-
-        @Override
-        public MatchingSeImpl fromJson(String json) {
-            return KeypleJsonParser.getParser().fromJson(json, MatchingSeImpl.class);
-        };
     }
 
 
 
-    class MyEventFilter implements
-            KeypleClientReaderEventFilter<MyKeypleUserData> {
+    class MyEventFilter implements KeypleClientReaderEventFilter<MyKeypleUserData> {
         Boolean propagateEvent;
 
         MyEventFilter(Boolean propagateEvent) {
@@ -365,12 +339,12 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
         }
 
         @Override
-        public KeypleUserDataFactory<MyKeypleUserData> getUserOutputDataFactory() {
-            return keypleUserDataFactory;
+        public Type getUserOutputType() {
+            return MyKeypleUserData.class;
         }
 
         @Override
-        public KeypleUserData beforePropagation(ReaderEvent event) {
+        public MyKeypleUserData beforePropagation(ReaderEvent event) {
             if (propagateEvent) {
                 return inputData;
             } else {
@@ -381,13 +355,13 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
         @Override
         public void afterPropagation(MyKeypleUserData userOutputData) {
             assertThat(userOutputData).isNotNull();
-            assertThat(userOutputData).isEqualToComparingFieldByField(outputData);
+            assertThat(userOutputData).isEqualToComparingFieldByFieldRecursively(outputData);
         }
     }
 
     public KeypleMessageDto terminateDto() {
         JsonObject body = new JsonObject();
-        body.addProperty("userOutputData", outputData.toJson());
+        body.add("userOutputData", parser.toJsonTree(outputData, MyKeypleUserData.class));
         return new KeypleMessageDto().setAction(KeypleMessageDto.Action.TERMINATE_SERVICE.name())
                 .setBody(body.toString());
 

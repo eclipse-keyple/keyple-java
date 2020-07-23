@@ -12,56 +12,64 @@
 package org.eclipse.keyple.core.seproxy.exception;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
+import com.google.gson.Gson;
 import org.eclipse.keyple.core.command.AbstractIso7816CommandBuilderTest;
 import org.eclipse.keyple.core.command.SeCommand;
 import org.eclipse.keyple.core.command.exception.KeypleSeCommandException;
+import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.core.util.json.SampleFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class KeypleExceptionFactoryImplTest {
+public class KeypleExceptionJsonParsingTest {
 
     private static final Logger logger =
-            LoggerFactory.getLogger(KeypleExceptionFactoryImplTest.class);
+            LoggerFactory.getLogger(KeypleExceptionJsonParsingTest.class);
 
-    KeypleException.KeypleExceptionFactory factory;
+    Gson parser;
 
     @Before
     public void setTup() {
-        factory = new KeypleExceptionFactoryImpl();
+        parser = KeypleJsonParser.getParser();
+    }
+
+    @Test
+    public void readerException() {
+        KeypleException source = SampleFactory.getAReaderKeypleException();
+        String json = parser.toJson(source, KeypleException.class);
+        logger.debug(json);
+        KeypleException target = parser.fromJson(json, KeypleException.class);
+        assertThat(target).isEqualToComparingFieldByFieldRecursively(source);
     }
 
     @Test
     public void ioException_withResponses() {
-        KeypleException source = SampleFactory.getIOExceptionWithResponses();
-        logger.info(source.toJson());
-        KeypleException target = factory.from(source.toJson());
-        assertThat(source).isEqualToComparingFieldByField(target);
-
+        KeypleReaderIOException source = SampleFactory.getIOExceptionWithResponses();
+        KeypleException target = parser.fromJson(parser.toJson(source,KeypleReaderIOException.class), KeypleException.class);
+        assertThat(target).isEqualToComparingFieldByFieldRecursively(source);
     }
 
     @Test
     public void ioException_withResponse() {
         KeypleException source = SampleFactory.getIOExceptionWithResponse();
-        logger.info(source.toJson());
-        KeypleException target = factory.from(source.toJson());
-        assertThat(source).isEqualToComparingFieldByField(target);
-
+        KeypleException target = parser.fromJson(parser.toJson(source), KeypleException.class);
+        assertThat(target).isEqualToComparingFieldByFieldRecursively(source);
     }
 
     @Test
     public void keypleSeCommandException() {
-        KeypleException source = new AKeypleSeCommandException("message",
+        KeypleSeCommandException source = new AKeypleSeCommandException("message",
                 AbstractIso7816CommandBuilderTest.CommandRef.COMMAND_1, 1);
-        logger.info(source.toJson());
-        KeypleException target = factory.from(source.toJson());
-        assertThat(source).isEqualToComparingFieldByField(target);
+        KeypleSeCommandException target = (KeypleSeCommandException) parser.fromJson(parser.toJson(source,KeypleSeCommandException.class), KeypleException.class);
+        assertThat(target).isEqualToComparingFieldByFieldRecursively(source);
+        assertThat(target.getCommand()).isEqualToComparingFieldByField(source.getCommand());
     }
 
 
-    class AKeypleSeCommandException extends KeypleSeCommandException {
+    static class AKeypleSeCommandException extends KeypleSeCommandException {
 
         /**
          * @param message the message to identify the exception context

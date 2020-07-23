@@ -14,13 +14,15 @@ package org.eclipse.keyple.plugin.remotese.core;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.plugin.remotese.core.exception.KeypleDoNotPropagateEventException;
 
-public interface KeypleClientReaderEventFilter<T extends KeypleUserData> {
+import java.lang.reflect.Type;
+
+public interface KeypleClientReaderEventFilter<T> {
     /**
-     * Configure the factory to retrieve the output
+     * Configure the Type of the output
      *
      * @return non nullable instance of the factory
      */
-    KeypleUserDataFactory<T> getUserOutputDataFactory();
+    Type getUserOutputType();//todo necessary?
 
     /**
      * Execute any process before the event is sent to the server
@@ -29,7 +31,7 @@ public interface KeypleClientReaderEventFilter<T extends KeypleUserData> {
      * @return nullable data that will be sent to the server.
      * @throws KeypleDoNotPropagateEventException if event should not be propagated to server
      */
-    KeypleUserData beforePropagation(ReaderEvent event) throws KeypleDoNotPropagateEventException;
+    Object beforePropagation(ReaderEvent event) throws KeypleDoNotPropagateEventException;
 
     /**
      * Retrieve the output from the event global processing

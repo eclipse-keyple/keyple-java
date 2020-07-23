@@ -76,7 +76,7 @@ class TransmitExecutor implements Executor {
             // if an exception occurs, send it into a keypleDto to the Master
             response = new KeypleMessageDto(keypleMessageDto)
                     .setAction(KeypleMessageDto.Action.ERROR.name())//
-                    .setBody(e.toJson());
+                    .setBody(KeypleJsonParser.getParser().toJson(e));
         }
 
         return response;

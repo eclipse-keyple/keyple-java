@@ -29,23 +29,6 @@ public abstract class AbstractMatchingSe {
     private TransmissionMode transmissionMode;
 
     /**
-     * serialize this object to a json string
-     * 
-     * @return not null json string
-     */
-    public abstract String toJson();
-
-    public interface AbstractMatchingSeFactory<T extends AbstractMatchingSe> {
-
-        /**
-         * create a new instance from a json serialized string
-         * 
-         * @param data not nullable json serialized string
-         */
-        T fromJson(String data);
-    }
-
-    /**
      * Constructor.
      * 
      * @param selectionResponse the response from the SE

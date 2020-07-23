@@ -63,13 +63,5 @@ public class KeypleReaderIOException extends KeypleReaderException {
         this.seResponse = seResponse;
     }
 
-    public String toJson() {
-        Gson gson = KeypleJsonParser.getParser();
-        JsonObject json = new JsonObject();
-        json.add("seResponse", gson.toJsonTree(getSeResponse(), SeResponse.class));
-        json.add("seResponses", gson.toJsonTree(getSeResponses(), List.class));
-        json.addProperty("message", getMessage());
-        json.addProperty("code", getErrorCode());
-        return json.toString();
-    }
+
 }

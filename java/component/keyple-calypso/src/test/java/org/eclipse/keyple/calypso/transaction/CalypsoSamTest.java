@@ -20,6 +20,7 @@ import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,15 +144,16 @@ public class CalypsoSamTest {
         shouldHaveThrown(IllegalArgumentException.class);
     }
 
+
     @Test
     public void json_fromJson() {
         SelectionStatus selectionStatus =
                 new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR1)), null, true);
         CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null),
                 TransmissionMode.CONTACTS);
-        CalypsoSam.CalypsoSamFactory factory = new CalypsoSam.CalypsoSamFactory();
-        String json = calypsoSam.toJson();
+        String json = KeypleJsonParser.getParser().toJson(calypsoSam);
         logger.debug(json);
-        Assertions.assertThat(factory.fromJson(json)).isEqualToComparingFieldByField(calypsoSam);
+        Assertions.assertThat(KeypleJsonParser.getParser().fromJson(json, CalypsoSam.class))
+                .isEqualToComparingFieldByFieldRecursively(calypsoSam);
     }
 }

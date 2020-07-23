@@ -14,6 +14,7 @@ package org.eclipse.keyple.core.util.json;
 import java.lang.reflect.Type;
 import org.eclipse.keyple.core.command.SeCommand;
 import com.google.gson.*;
+import org.eclipse.keyple.core.util.Assert;
 
 public class SeCommandTypeAdapter
         implements JsonSerializer<SeCommand>, JsonDeserializer<SeCommand> {
@@ -24,21 +25,23 @@ public class SeCommandTypeAdapter
 
         String className = jsonElement.getAsJsonObject().get("class").getAsString();
         String name = jsonElement.getAsJsonObject().get("name").getAsString();
-        return jsonDeserializationContext.deserialize(jsonElement, Class.forName(className));
+
         try {
             return (SeCommand) Enum.valueOf((Class<? extends Enum>) Class.forName(className), name);
         } catch (ClassNotFoundException e) {
             throw new JsonParseException(
                     "Can not parse jsonElement as a SeCommand " + jsonElement.toString());
         }
+
     }
 
     @Override
     public JsonElement serialize(SeCommand seCommand, Type type,
             JsonSerializationContext jsonSerializationContext) {
         JsonObject output = new JsonObject();
-        output.addProperty("name", seCommand.getName());
-        //output.addProperty("instructionByte", seCommand.getInstructionByte());
+        // output.addProperty("instructionByte", seCommand.getInstructionByte());
+        Assert.getInstance().isTrue(seCommand.getClass().isEnum(), "SeCommandAdapter works only with enum");
+        output.addProperty("name", ((Enum) seCommand).name());
         output.addProperty("class", seCommand.getClass().getName());
         return output;
     }

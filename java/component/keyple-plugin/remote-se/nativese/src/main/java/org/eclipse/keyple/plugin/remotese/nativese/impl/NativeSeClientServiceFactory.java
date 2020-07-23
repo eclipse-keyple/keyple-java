@@ -12,7 +12,6 @@
 package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
 
-import org.eclipse.keyple.core.seproxy.exception.KeypleExceptionFactory;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remotese.core.KeypleClientAsync;
 import org.eclipse.keyple.plugin.remotese.core.KeypleClientReaderEventFilter;
@@ -36,8 +35,8 @@ public class NativeSeClientServiceFactory {
      * 
      * @return next configuration step
      */
-    public NodeStep builder(KeypleExceptionFactory... exceptionFactories) {
-        return new Step(exceptionFactories);
+    public NodeStep builder() {
+        return new Step();
     }
 
     public interface BuilderStep {
@@ -94,11 +93,7 @@ public class NativeSeClientServiceFactory {
         private Boolean withReaderObservation;
         private KeypleClientReaderEventFilter eventFilter;
 
-        KeypleExceptionFactory[] exceptionFactories;
-
-        Step(KeypleExceptionFactory... exceptionFactories) {
-            this.exceptionFactories = exceptionFactories;
-        }
+        Step(){ }
 
         @Override
         public ReaderStep withAsyncNode(KeypleClientAsync endpoint) {
@@ -132,7 +127,7 @@ public class NativeSeClientServiceFactory {
         public NativeSeClientService getService() {
             // create the service
             NativeSeClientServiceImpl service = NativeSeClientServiceImpl
-                    .createInstance(withReaderObservation, eventFilter, exceptionFactories);
+                    .createInstance(withReaderObservation, eventFilter);
 
 
             // bind the service to the node

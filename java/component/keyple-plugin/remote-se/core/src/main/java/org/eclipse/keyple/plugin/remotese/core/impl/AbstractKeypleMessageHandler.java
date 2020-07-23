@@ -11,9 +11,12 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.core.impl;
 
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleExceptionFactory;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remotese.core.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract Keyple Message Handler.
@@ -24,13 +27,13 @@ import org.eclipse.keyple.plugin.remotese.core.*;
  */
 public abstract class AbstractKeypleMessageHandler {
 
+    private static final Logger logger = LoggerFactory.getLogger(AbstractKeypleMessageHandler.class);
+
     /**
      * (protected)<br>
      * The bounded node.
      */
     protected AbstractKeypleNode node;
-
-    protected KeypleExceptionFactory[] exceptionFactories;
 
     /**
      * (protected)<br>
@@ -42,9 +45,7 @@ public abstract class AbstractKeypleMessageHandler {
      * (protected)<br>
      * Constructor.
      */
-    protected AbstractKeypleMessageHandler(KeypleExceptionFactory... exceptionFactories) {
-        this.exceptionFactories = exceptionFactories;
-    }
+    protected AbstractKeypleMessageHandler() {}
 
     /**
      * (protected)<br>
@@ -109,24 +110,28 @@ public abstract class AbstractKeypleMessageHandler {
         isBoundToAsyncNode = false;
     }
 
-
-
+    /**
+     * If message contains an error, throws the embedded exception.
+     *
+     * @param message not null instance
+     */
     protected void checkError(KeypleMessageDto message) {
         // throw exception if message is ERROR
-        if (message.getAction().equals(KeypleMessageDto.Action.ERROR)) {
-            for (KeypleExceptionFactory exceptionFactory : exceptionFactories) {
+        if (message.getAction().equals(KeypleMessageDto.Action.ERROR.name())) {
+            Gson parser = KeypleJsonParser.getParser();
+            JsonObject body = parser.fromJson(message.getBody(), JsonObject.class);
+            if(body.has("code")){
+                String classname = body.get("code").getAsString();
                 try {
-                    KeypleException exception = exceptionFactory.from(message.getBody());
+                    RuntimeException exception = (RuntimeException) parser.fromJson(body, Class.forName(classname));
+                    logger.error("KeypleDto contains exception : {}", exception);
                     throw exception;
-                } catch (IllegalArgumentException e) {
-                    // factory didn't match the embedded exception
+                } catch (ClassNotFoundException e) {
+                    throw new IllegalArgumentException("Unable to parse exception from keypleDto " + message.toString());
                 }
+            }else{
+                throw new IllegalArgumentException("Unable to parse exception from keypleDto " + message.toString());
             }
-
-            // throw an unknow error
-            // todo
-
-            //log stack
         }
     }
 }

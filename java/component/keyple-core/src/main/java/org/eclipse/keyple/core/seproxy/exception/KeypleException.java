@@ -36,14 +36,16 @@ public abstract class KeypleException extends RuntimeException {
         super(message, cause);
     }
 
+    /*
     public String toJson() {
         JsonObject json = new JsonObject();
         json.addProperty("code", getErrorCode());
         json.addProperty("message", getMessage());
         return json.toString();
     };
+    */
 
-    protected String getErrorCode() {
+    public String getErrorCode() {
         return getClass().getName();
     };
 

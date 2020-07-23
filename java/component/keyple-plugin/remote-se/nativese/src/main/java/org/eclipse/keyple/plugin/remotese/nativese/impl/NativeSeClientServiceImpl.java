@@ -11,11 +11,13 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
+import java.lang.reflect.Type;
 import java.util.UUID;
+
+import com.google.gson.Gson;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleExceptionFactory;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
@@ -44,9 +46,8 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
 
     // private constructor
     private NativeSeClientServiceImpl(Boolean withReaderObservation,
-            KeypleClientReaderEventFilter eventFilter,
-            KeypleExceptionFactory... exceptionFactories) {
-        super(exceptionFactories);
+            KeypleClientReaderEventFilter eventFilter) {
+        super();
         this.withReaderObservation = withReaderObservation;
         this.eventFilter = eventFilter;
     }
@@ -58,10 +59,8 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
      * @return a not null instance of the singleton
      */
     static NativeSeClientServiceImpl createInstance(boolean withReaderObservation,
-            KeypleClientReaderEventFilter eventFilter,
-            KeypleExceptionFactory... exceptionFactories) {
-        uniqueInstance = new NativeSeClientServiceImpl(withReaderObservation, eventFilter,
-                exceptionFactories);
+            KeypleClientReaderEventFilter eventFilter) {
+        uniqueInstance = new NativeSeClientServiceImpl(withReaderObservation, eventFilter);
         return uniqueInstance;
     }
 
@@ -76,12 +75,12 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
 
 
     @Override
-    public <T extends KeypleUserData> T executeRemoteService(RemoteServiceParameters parameters,
-            KeypleUserDataFactory<T> userOutputDataFactory) {
+    public <T> T executeRemoteService(RemoteServiceParameters parameters,
+                                                             Type T) {
 
         // check params nullity
-        Assert.getInstance().notNull(parameters, "parameters");
-        Assert.getInstance().notNull(userOutputDataFactory, "userOutputDataFactory");
+        Assert.getInstance().notNull(parameters, "parameters").notNull(T,
+                "userOutputDataFactory");
 
         // get nativeReader
         ProxyReader nativeReader = (ProxyReader) parameters.getNativeReader();
@@ -126,7 +125,7 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
         checkError(receivedDto);
 
         // return userOutputData
-        return extractUserData(receivedDto, userOutputDataFactory);
+        return extractUserData(receivedDto, T);
     }
 
     @Override
@@ -143,7 +142,7 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
     public void update(ReaderEvent event) {
 
         // invoke beforeProgagation method to gather userData
-        KeypleUserData userData;
+        Object userData;
 
         try {
             userData = eventFilter.beforePropagation(event);
@@ -174,19 +173,20 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
         checkError(receivedDto);
 
         // extract userOutputData
-        KeypleUserData userOutputData =
-                extractUserData(receivedDto, eventFilter.getUserOutputDataFactory());
+        Object userOutputData =
+                extractUserData(receivedDto, eventFilter.getUserOutputType());
 
         // invoke callback
         eventFilter.afterPropagation(userOutputData);
     }
 
 
-    private <T extends KeypleUserData> T extractUserData(KeypleMessageDto keypleMessageDto,
-            KeypleUserDataFactory<T> userOutputDataFactory) {
+    private <T> T extractUserData(KeypleMessageDto keypleMessageDto,
+            Type T) {
+        Gson parser = KeypleJsonParser.getParser();
         JsonObject body =
-                KeypleJsonParser.getParser().fromJson(keypleMessageDto.getBody(), JsonObject.class);
-        return userOutputDataFactory.getInstance(body.get("userOutputData").getAsString());
+                parser.fromJson(keypleMessageDto.getBody(), JsonObject.class);
+        return parser.fromJson(body.get("userOutputData"), T);
     }
 
     /*
@@ -194,18 +194,21 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
      */
     private KeypleMessageDto buildRemoteServiceMessage(RemoteServiceParameters parameters) {
         final AbstractMatchingSe initialSeContent = parameters.getInitialSeContent();
-        final KeypleUserData userInputData = parameters.getUserInputData();
+        final Object userInputData = parameters.getUserInputData();
 
         JsonObject body = new JsonObject();
 
         body.addProperty("serviceId", parameters.getServiceId());
 
         if (userInputData != null) {
-            body.addProperty("userInputData", userInputData.toJson());
+            body.add("userInputData", KeypleJsonParser.getParser().toJsonTree(userInputData));
         }
         if (initialSeContent != null) {
-            body.addProperty("initialSeContent", initialSeContent.toJson());
+            body.add("initialSeContent", KeypleJsonParser.getParser().toJsonTree(initialSeContent));
         }
+
+        body.addProperty("isObservable", withReaderObservation
+                && (parameters.getNativeReader() instanceof ObservableReader));
 
         return new KeypleMessageDto()//
                 .setAction(KeypleMessageDto.Action.EXECUTE_REMOTE_SERVICE.name())//
@@ -215,12 +218,12 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
 
     }
 
-    private KeypleMessageDto buildEventMessage(KeypleUserData userInputData,
+    private KeypleMessageDto buildEventMessage(Object userInputData,
             ReaderEvent readerEvent) {
 
         JsonObject body = new JsonObject();
 
-        body.addProperty("userInputData", userInputData.toJson());
+        body.add("userInputData", KeypleJsonParser.getParser().toJsonTree(userInputData));
         body.add("readerEvent", KeypleJsonParser.getParser().toJsonTree(readerEvent));
 
         return new KeypleMessageDto()//

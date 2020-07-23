@@ -889,16 +889,4 @@ public class CalypsoPo extends AbstractMatchingSe {
         dest.clear();
         dest.putAll(src);
     }
-
-    @Override
-    public String toJson() {
-        return KeypleJsonParser.getParser().toJson(this);
-    }
-
-    public static class CalypsoPoFactory implements AbstractMatchingSeFactory<CalypsoPo> {
-        @Override
-        public CalypsoPo fromJson(String json) {
-            return KeypleJsonParser.getParser().fromJson(json, CalypsoPo.class);
-        }
-    }
 }
