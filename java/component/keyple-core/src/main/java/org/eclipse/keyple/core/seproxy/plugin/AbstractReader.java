@@ -43,17 +43,6 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
     private final String pluginName;
 
     /**
-     * (package-private)<br>
-     * This flag is used with transmit or transmitSet
-     * <p>
-     * It will be used by the notifySeProcessed method (AbstractObservableLocalReader) to determine
-     * if a request to close the physical channel has been already made and therefore to switch
-     * directly to the removal sequence for the observed readers.<br>
-     * TODO find a better way to manage this need
-     */
-    protected boolean forceClosing = true;
-
-    /**
      * Reader constructor
      * <p>
      * Initialize the time measurement
@@ -123,9 +112,6 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
             throw new IllegalArgumentException("The SeRequest list must not be null");
         }
 
-        /* sets the forceClosing flag */
-        forceClosing = channelControl == ChannelControl.KEEP_OPEN;
-
         List<SeResponse> seResponses;
 
         if (logger.isDebugEnabled()) {
@@ -192,9 +178,6 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
         if (seRequest == null) {
             throw new IllegalArgumentException("seRequest must not be null");
         }
-
-        /* sets the forceClosing flag */
-        forceClosing = channelControl == ChannelControl.KEEP_OPEN;
 
         SeResponse seResponse;
 
