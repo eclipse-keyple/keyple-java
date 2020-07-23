@@ -135,6 +135,15 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
                             .getActiveMatchingSe();
                 } catch (KeypleException e) {
                     logger.error("Exception: {}", e.getMessage());
+                    try {
+                        ((ObservableReader) SeProxyService.getInstance()
+                                .getPlugin(event.getPluginName()).getReader(event.getReaderName()))
+                                        .cancelSeChannel();
+                    } catch (KeypleReaderNotFoundException ex) {
+                        logger.error("Reader not found exception: {}", ex.getMessage());
+                    } catch (KeyplePluginNotFoundException ex) {
+                        logger.error("Plugin not found exception: {}", ex.getMessage());
+                    }
                 }
 
                 if (selectedSe != null) {
@@ -159,11 +168,10 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
         if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED
                 || event.getEventType() == ReaderEvent.EventType.SE_MATCHED) {
             // Informs the underlying layer of the end of the SE processing, in order to manage the
-            // removal sequence. <p>If closing has already been requested, this method will do
-            // nothing.
+            // removal sequence.
             try {
                 ((ObservableReader) SeProxyService.getInstance().getPlugin(event.getPluginName())
-                        .getReader(event.getReaderName())).notifySeProcessed();
+                        .getReader(event.getReaderName())).cancelSeChannel();
             } catch (KeypleReaderNotFoundException e) {
                 logger.error("Reader not found exception: {}", e.getMessage());
             } catch (KeyplePluginNotFoundException e) {
