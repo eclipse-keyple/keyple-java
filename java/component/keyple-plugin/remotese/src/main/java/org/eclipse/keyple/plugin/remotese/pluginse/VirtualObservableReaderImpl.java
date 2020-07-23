@@ -115,18 +115,13 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
     }
 
     @Override
-    public final void notifySeProcessed() {
-        if (forceClosing) {
-            try {
-                // close the physical channel thanks to CLOSE_AFTER flag
-                processSeRequest(null, CLOSE_AFTER);
-                logger.trace(
-                        "Explicit communication closing requested, starting removal sequence.");
-            } catch (KeypleReaderException e) {
-                logger.error("KeypleReaderException while terminating. {}", e.getMessage());
-            }
-        } else {
-            logger.trace("Explicit physical channel closing already requested.");
+    public final void cancelSeChannel() {
+        try {
+            // requests the closure of the physical channel with the CLOSE_AFTER flag
+            processSeRequest(null, CLOSE_AFTER);
+            logger.trace("Explicit communication closing requested, starting removal sequence.");
+        } catch (KeypleReaderException e) {
+            logger.error("KeypleReaderException while terminating. {}", e.getMessage());
         }
     }
 

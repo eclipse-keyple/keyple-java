@@ -173,7 +173,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         nativeReader.insertSe(StubReaderTest.hoplinkSE());
         // wait 0,5 second
         Thread.sleep(500);
-        nativeReader.notifySeProcessed();
+        nativeReader.cancelSeChannel();
 
         // remove SE
         nativeReader.removeSe();

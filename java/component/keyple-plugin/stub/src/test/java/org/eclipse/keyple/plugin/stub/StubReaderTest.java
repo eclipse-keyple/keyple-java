@@ -183,7 +183,7 @@ public class StubReaderTest extends BaseStubTest {
         Assert.assertEquals(0, insertLock.getCount()); // should be 0 because insertLock is
                                                        // countDown by obs
 
-        reader.notifySeProcessed();
+        reader.cancelSeChannel();
         reader.removeSe();
 
         // lock thread for 2 seconds max to wait for the event SE_REMOVED
@@ -268,7 +268,7 @@ public class StubReaderTest extends BaseStubTest {
                                                             // countDown by obs
         // Thread.sleep(1000);
 
-        reader.notifySeProcessed();
+        reader.cancelSeChannel();
         reader.removeSe();
 
         // lock thread for 2 seconds max to wait for the event SE_REMOVED
@@ -291,7 +291,7 @@ public class StubReaderTest extends BaseStubTest {
         Assert.assertEquals(0, secondInsertLock.getCount()); // should be 0 because insertLock is
                                                              // countDown by obs
 
-        reader.notifySeProcessed();
+        reader.cancelSeChannel();
 
         // Thread.sleep(1000);
         reader.removeSe();
@@ -369,7 +369,7 @@ public class StubReaderTest extends BaseStubTest {
         Assert.assertEquals(0, firstInsertLock.getCount()); // should be 0 because insertLock is
         // countDown by obs
 
-        reader.notifySeProcessed();
+        reader.cancelSeChannel();
         reader.removeSe();
 
         // lock thread for 2 seconds max to wait for the event SE_REMOVED
@@ -389,7 +389,7 @@ public class StubReaderTest extends BaseStubTest {
 
         Assert.assertEquals(0, secondInsertLock.getCount()); // should be 0 because insertLock is
         // countDown by obs
-        reader.notifySeProcessed();
+        reader.cancelSeChannel();
         reader.removeSe();
 
         // lock thread for 2 seconds max to wait for the event SE_REMOVED
@@ -686,7 +686,7 @@ public class StubReaderTest extends BaseStubTest {
                 if (ReaderEvent.EventType.SE_MATCHED == event.getEventType()) {
                     logger.info("SE_MATCHED event received");
                     logger.info("Notify SE processed after 0ms");
-                    reader.notifySeProcessed();
+                    reader.cancelSeChannel();
                     lock.countDown();
                 }
             }
