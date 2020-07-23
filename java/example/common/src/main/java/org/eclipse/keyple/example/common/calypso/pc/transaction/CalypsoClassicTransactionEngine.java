@@ -202,7 +202,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
             /*
              * A ratification command will be sent (CONTACTLESS_MODE).
              */
-            poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
+            poTransaction.processClosing(ChannelControl.KEEP_OPEN);
 
         } else {
             /*
@@ -260,7 +260,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
             /*
              * A ratification command will be sent (CONTACTLESS_MODE).
              */
-            poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
+            poTransaction.processClosing(ChannelControl.KEEP_OPEN);
         }
 
         logger.info("========= PO Calypso session ======= SUCCESS !!!!!!!!!!!!!!!!!!!!!!!!!!!!");
