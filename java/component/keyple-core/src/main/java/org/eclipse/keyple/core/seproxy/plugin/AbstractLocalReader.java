@@ -15,7 +15,6 @@ import java.util.*;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
@@ -556,28 +555,9 @@ public abstract class AbstractLocalReader extends AbstractReader {
                 }
                 requestIndex++;
                 if (lastRequestIndex == requestIndex
-                        && channelControl != ChannelControl.KEEP_OPEN) {
-
-                    // close logical channel unconditionally
-                    closeLogicalChannel();
-
-                    // OD : couldn't we move this to AbstractObservableLocalReader?
-
-                    if (!(this instanceof ObservableReader)
-                            || (((ObservableReader) this).countObservers() == 0)) {
-                        /*
-                         * Not observable/observed: close immediately the physical channel if
-                         * requested
-                         */
-                        closePhysicalChannel();
-                    }
-
-                    if (this instanceof AbstractObservableLocalReader) {
-                        /*
-                         * request the removal sequence when the reader is monitored by a thread
-                         */
-                        ((AbstractObservableLocalReader) this).startRemovalSequence();
-                    }
+                        && channelControl == ChannelControl.CLOSE_AFTER) {
+                    // close logical and physical channels unconditionally
+                    closeLogicalAndPhysicalChannels();
                 }
 
             }
@@ -610,23 +590,11 @@ public abstract class AbstractLocalReader extends AbstractReader {
             seResponse = processSeRequestLogical(seRequest);
         }
 
-        if (channelControl != ChannelControl.KEEP_OPEN) {
-            // close logical channel unconditionally
-            closeLogicalChannel();
+        if (channelControl == ChannelControl.CLOSE_AFTER) {
+            // close logical and physical channels unconditionally
+            closeLogicalAndPhysicalChannels();
 
-            // OD : couldn't we move this to AbstractObservableLocalReader?
-            if (!(this instanceof ObservableReader)
-                    || (((ObservableReader) this).countObservers() == 0)) {
-                /* Not observable/observed: close immediately the physical channel if requested */
-                closePhysicalChannel();
-            }
-
-            if (this instanceof AbstractObservableLocalReader) {
-                /*
-                 * request the removal sequence when the reader is monitored by a thread
-                 */
-                ((AbstractObservableLocalReader) this).startRemovalSequence();
-            }
+            terminateSeCommunication();
         }
 
         return seResponse;
@@ -891,4 +859,12 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     protected abstract byte[] transmitApdu(byte[] apduIn);
+
+    /**
+     * (package-private)<br>
+     * This method is called after the physical channel has been closed upon request of the
+     * application.<br>
+     * Unless it is extended by a child class, this method does nothing.
+     */
+    abstract void terminateSeCommunication();
 }

@@ -13,7 +13,6 @@ package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -249,31 +248,12 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
     /**
      * Allows the application to signal the end of processing and thus proceed with the removal
      * sequence, followed by a restart of the card search.
-     *
-     * <p>
-     * Do nothing if the closing of the physical channel has already been requested.
-     *
-     * <p>
-     * Send a request without APDU just to close the physical channel if it has not already been
-     * closed.
      */
     public final void notifySeProcessed() {
-        if (forceClosing) {
-            try {
-                // close the physical channel thanks to CLOSE_AFTER flag
-                processSeRequest(null, ChannelControl.CLOSE_AFTER);
-                if (logger.isTraceEnabled()) {
-                    logger.trace(
-                            "Explicit communication closing requested, starting removal sequence.");
-                }
-            } catch (KeypleReaderException e) {
-                logger.error("KeypleReaderException while terminating. {}", e.getMessage());
-            }
-        } else {
-            if (logger.isTraceEnabled()) {
-                logger.trace("Explicit physical channel closing already requested.");
-            }
+        if (logger.isTraceEnabled()) {
+            logger.trace("Start the SE removal sequence.");
         }
+        startRemovalSequence();
     }
 
     /**
@@ -386,6 +366,20 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
         setDefaultSelectionRequest(defaultSelectionsRequest, notificationMode);
         // initiates the SE detection
         startSeDetection(pollingMode);
+    }
+
+    /**
+     * This method is called when the application requests the closing of the physical channel.<br>
+     * Here, the reader state machine is switched to the WAIT_FOR_START_DETECTION state.
+     */
+    @Override
+    final void terminateSeCommunication() {
+        if (logger.isTraceEnabled()) {
+            logger.trace(
+                    "[{}] close the communication with SE. Go to the state \"wait for start detection\"",
+                    getName());
+        }
+        this.stateService.onEvent(InternalEvent.STOP_DETECT);
     }
 
     /**
