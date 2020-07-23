@@ -11,12 +11,11 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
-import static org.eclipse.keyple.core.seproxy.ChannelControl.CLOSE_AFTER;
+
 import java.util.*;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.ObservableReaderNotifier;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
@@ -116,18 +115,12 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
 
     @Override
     public final void notifySeProcessed() {
-        if (forceClosing) {
-            try {
-                // close the physical channel thanks to CLOSE_AFTER flag
-                processSeRequest(null, CLOSE_AFTER);
-                logger.trace(
-                        "Explicit communication closing requested, starting removal sequence.");
-            } catch (KeypleReaderException e) {
-                logger.error("KeypleReaderException while terminating. {}", e.getMessage());
-            }
-        } else {
-            logger.trace("Explicit physical channel closing already requested.");
+        if (logger.isTraceEnabled()) {
+            logger.trace("Start the SE removal sequence.");
         }
+        // TODO Check how to handle this
+        // Previously the removal sequence was triggered by the CLOSE_AFTER flag.
+        // startRemovalSequence();
     }
 
     @Override
