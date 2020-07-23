@@ -26,10 +26,10 @@ import org.slf4j.LoggerFactory;
 
 
 public class ObservableReaderNotificationEngine {
-    private final static Logger logger =
+    private static final Logger logger =
             LoggerFactory.getLogger(ObservableReaderNotificationEngine.class);
 
-    private SpecificPluginObserver pluginObserver;
+    private final SpecificPluginObserver pluginObserver;
 
 
     public ObservableReaderNotificationEngine() {
@@ -69,14 +69,14 @@ public class ObservableReaderNotificationEngine {
             switch (event.getEventType()) {
 
                 case SE_MATCHED:
-                    /**
+                    /*
                      * Informs the underlying layer of the end of the SE processing, in order to
                      * manage the removal sequence.
                      */
                     try {
                         ((ObservableReader) SeProxyService.getInstance()
                                 .getPlugin(event.getPluginName()).getReader(event.getReaderName()))
-                                        .notifySeProcessed();
+                                        .cancelSeChannel();
                     } catch (KeypleReaderNotFoundException e) {
                         e.printStackTrace();
                     } catch (KeyplePluginNotFoundException e) {
@@ -85,7 +85,7 @@ public class ObservableReaderNotificationEngine {
                     break;
 
                 case SE_INSERTED:
-                    /**
+                    /*
                      * end of the SE processing is automatically done
                      */
                     break;
