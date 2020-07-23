@@ -180,24 +180,20 @@ public interface ObservableReader extends SeReader {
 
     /**
      * Signal sent by the application to the reader to indicate the end of the application
-     * processing.
-     * <p>
-     * Depending on whether a request with the indication CLOSE_AFTER has been executed before or
-     * not, a closing message will be sent to the reader in order to proceed with the closing of the
-     * physical channel.
+     * processing.<br>
+     * The aim is to free the SE physical channel.
      * <p>
      * The action to be continued will be the one defined by the PollingMode used to start the SE
      * detection.
      * <p>
-     * The call of this method is mandatory only if the current transaction performed via an
-     * observed reader did not end with a call to an operation causing a physical channel closing
+     * The call of this method is mandatory if the current transaction performed via an observed
+     * reader did not end with a call to an operation causing a physical channel closing
      * (CLOSE_AFTER). The main objective here is to achieve the closing of the physical channel. A
      * typical use of this method is in handling exceptions (catch) that may occur during a
      * transaction that would prevent reaching the last operation closing the physical channel.
      * <p>
-     * The channel closing here refers to the application's intention to no longer communicate with
-     * the SE. This may take the form of an immediate physical channel closing in the case of an
-     * unobserved reader or a delayed closing upon removal of the SE (removal sequence).
+     * This method should not be called if the current transaction ended with a channel closing
+     * (CLOSE_AFTER).
      */
-    void notifySeProcessed();
+    void cancelSeChannel();
 }

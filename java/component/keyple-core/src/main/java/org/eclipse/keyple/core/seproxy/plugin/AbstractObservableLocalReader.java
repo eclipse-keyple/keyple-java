@@ -64,9 +64,8 @@ import org.slf4j.LoggerFactory;
  * <li>WAIT_FOR_SE_PROCESSING
  * <p>
  * Waiting for the end of processing by the application. The end signal is triggered either by a
- * transmission made with a CLOSE_AFTER parameter, or by an explicit call to the notifySeProcessed
- * method (if the latter is called when a "CLOSE" transmission has already been made, it will do
- * nothing, otherwise it will make a pseudo transmission intended only for closing channels).
+ * transmission made with a CLOSE_AFTER parameter, or by an explicit call to the cancelSeChannel
+ * method.
  * <p>
  * If the instruction given when defining the default selection request is to stop
  * (ObservableReader.PollingMode.SINGLESHOT) then the logical and physical channels are closed
@@ -251,28 +250,19 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      * sequence, followed by a restart of the card search.
      *
      * <p>
-     * Do nothing if the closing of the physical channel has already been requested.
-     *
-     * <p>
-     * Send a request without APDU just to close the physical channel if it has not already been
+     * Send a request without APDU just to close the physical channel when it has not already been
      * closed.
      */
-    public final void notifySeProcessed() {
-        if (forceClosing) {
-            try {
-                // close the physical channel thanks to CLOSE_AFTER flag
-                processSeRequest(null, ChannelControl.CLOSE_AFTER);
-                if (logger.isTraceEnabled()) {
-                    logger.trace(
-                            "Explicit communication closing requested, starting removal sequence.");
-                }
-            } catch (KeypleReaderException e) {
-                logger.error("KeypleReaderException while terminating. {}", e.getMessage());
-            }
-        } else {
+    public final void cancelSeChannel() {
+        try {
+            // close the physical channel thanks to CLOSE_AFTER flag
+            processSeRequest(null, ChannelControl.CLOSE_AFTER);
             if (logger.isTraceEnabled()) {
-                logger.trace("Explicit physical channel closing already requested.");
+                logger.trace(
+                        "Explicit communication closing requested, starting removal sequence.");
             }
+        } catch (KeypleReaderException e) {
+            logger.error("KeypleReaderException while terminating. {}", e.getMessage());
         }
     }
 
@@ -397,7 +387,8 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      * change to the WAIT_FOR_START_DETECTION or WAIT_FOR_SE_INSERTION state depending on what was
      * set when the detection was started.
      */
-    void startRemovalSequence() {
+    @Override
+    final void terminateSeCommunication() {
         if (logger.isTraceEnabled()) {
             logger.trace("[{}] start removal sequence of the reader", getName());
         }

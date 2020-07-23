@@ -561,25 +561,16 @@ public abstract class AbstractLocalReader extends AbstractReader {
                     // close logical channel unconditionally
                     closeLogicalChannel();
 
-                    // OD : couldn't we move this to AbstractObservableLocalReader?
-
+                    // not observable or no observers ?
                     if (!(this instanceof ObservableReader)
                             || (((ObservableReader) this).countObservers() == 0)) {
-                        /*
-                         * Not observable/observed: close immediately the physical channel if
-                         * requested
-                         */
+                        // close immediately the physical channel
                         closePhysicalChannel();
-                    }
-
-                    if (this instanceof AbstractObservableLocalReader) {
-                        /*
-                         * request the removal sequence when the reader is monitored by a thread
-                         */
-                        ((AbstractObservableLocalReader) this).startRemovalSequence();
+                    } else {
+                        // manage the end of communication in observed mode
+                        terminateSeCommunication();
                     }
                 }
-
             }
         }
         return responses;
@@ -625,7 +616,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
                 /*
                  * request the removal sequence when the reader is monitored by a thread
                  */
-                ((AbstractObservableLocalReader) this).startRemovalSequence();
+                ((AbstractObservableLocalReader) this).terminateSeCommunication();
             }
         }
 
@@ -891,4 +882,11 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
      */
     protected abstract byte[] transmitApdu(byte[] apduIn);
+
+    /**
+     * Method to be implemented by child classes in order to handle the needed actions when
+     * terminating the communication with a SE (closing of the physical channel, initiating a
+     * removal sequence, etc.)
+     */
+    abstract void terminateSeCommunication();
 }
