@@ -24,6 +24,7 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -205,25 +206,35 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
 
 
     @Test
-    public void notifySeProcessed_withForceClosing() throws Exception {
+    public void notifySeProcessed() throws Exception {
         AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
+        // set the starting state
+        r.switchState(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING);
+
         // keep open
         r.transmitSeRequest(SeRequestTest.getSeRequestSample(), ChannelControl.KEEP_OPEN);
-        // force closing
+
+        // initiate the SE removal sequence
         r.notifySeProcessed();
-        verify(r, times(1)).processSeRequest(null, ChannelControl.CLOSE_AFTER);
+
+        // assert currentState have changed
+        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
+                r.getCurrentMonitoringState());
     }
 
+    @Ignore
     @Test
-    public void notifySeProcessed_withoutForceClosing() throws Exception {
+    public void transmitSeRequest_withCloseAfter() throws Exception {
         AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
-        SeRequest request = SeRequestTest.getSeRequestSample();
-        // close after
-        r.transmitSeRequest(request, ChannelControl.CLOSE_AFTER);
-        r.notifySeProcessed();
+        // set the starting state
+        r.switchState(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING);
 
-        // force closing is not called (only the transmit)
-        verify(r, times(0)).processSeRequest(null, ChannelControl.CLOSE_AFTER);
+        // close after
+        r.transmitSeRequest(SeRequestTest.getSeRequestSample(), ChannelControl.CLOSE_AFTER);
+
+        // assert currentState have changed
+        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
+                r.getCurrentMonitoringState());
     }
 
 
@@ -306,8 +317,10 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
 
 
     public static AbstractObservableLocalReader getSpy(String pluginName, String readerName) {
-        AbstractObservableLocalReader r =
-                Mockito.spy(new BlankObservableLocalReader(pluginName, readerName));
+        BlankObservableLocalReader blankObservableLocalReader =
+                new BlankObservableLocalReader(pluginName, readerName);
+        blankObservableLocalReader.startSeDetection(ObservableReader.PollingMode.REPEATING);
+        AbstractObservableLocalReader r = Mockito.spy(blankObservableLocalReader);
         doReturn(SeResponseTest.getASeResponse()).when(r).processSeRequest(any(SeRequest.class),
                 any(ChannelControl.class));
         doReturn(getSeResponses()).when(r).processSeRequests(any(List.class),
