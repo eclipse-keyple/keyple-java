@@ -58,6 +58,11 @@ public class BlankAbstractLocalReader extends AbstractLocalReader {
     }
 
     @Override
+    void terminateSeCommunication() {
+
+    }
+
+    @Override
     public TransmissionMode getTransmissionMode() {
         return null;
     }
