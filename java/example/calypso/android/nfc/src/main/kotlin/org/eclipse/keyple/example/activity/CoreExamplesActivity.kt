@@ -305,7 +305,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                      * nothing.
                      */
                     try {
-                        (SeProxyService.getInstance().getPlugin(event.pluginName).getReader(event.readerName) as ObservableReader).notifySeProcessed()
+                        (SeProxyService.getInstance().getPlugin(event.pluginName).getReader(event.readerName) as ObservableReader).cancelSeChannel()
                     } catch (e: KeypleReaderNotFoundException) {
                         Timber.e(e)
                         addResultEvent("Error: ${e.message}")
