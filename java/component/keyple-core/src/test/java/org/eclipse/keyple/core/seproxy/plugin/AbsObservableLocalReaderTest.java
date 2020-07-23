@@ -189,7 +189,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
                 r.getCurrentMonitoringState());
 
         // SE has been processed
-        r.startRemovalSequence();
+        r.terminateSeCommunication();
 
         // assert currentState have changed
         Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
@@ -205,22 +205,21 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
 
 
     @Test
-    public void notifySeProcessed_withForceClosing() throws Exception {
+    public void communicationClosing_forced() throws Exception {
         AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
         // keep open
         r.transmitSeRequest(SeRequestTest.getSeRequestSample(), ChannelControl.KEEP_OPEN);
         // force closing
-        r.notifySeProcessed();
+        r.cancelSeChannel();
         verify(r, times(1)).processSeRequest(null, ChannelControl.CLOSE_AFTER);
     }
 
     @Test
-    public void notifySeProcessed_withoutForceClosing() throws Exception {
+    public void communicationClosing_standard() throws Exception {
         AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
         SeRequest request = SeRequestTest.getSeRequestSample();
         // close after
         r.transmitSeRequest(request, ChannelControl.CLOSE_AFTER);
-        r.notifySeProcessed();
 
         // force closing is not called (only the transmit)
         verify(r, times(0)).processSeRequest(null, ChannelControl.CLOSE_AFTER);
