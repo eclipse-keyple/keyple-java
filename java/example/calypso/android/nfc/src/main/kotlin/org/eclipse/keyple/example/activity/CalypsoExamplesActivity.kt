@@ -364,7 +364,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                      * nothing.
                      */
                     try {
-                        (SeProxyService.getInstance().getPlugin(event.pluginName).getReader(event.readerName) as ObservableReader).notifySeProcessed()
+                        (SeProxyService.getInstance().getPlugin(event.pluginName).getReader(event.readerName) as ObservableReader).cancelSeChannel()
                     } catch (e: KeypleReaderNotFoundException) {
                         Timber.e(e)
                         addResultEvent("Error: ${e.message}")
@@ -495,12 +495,12 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                         ReaderEvent.EventType.SE_MATCHED -> {
                             addResultEvent("Tag detected - SE MATCHED")
                             executeCommands(event.defaultSelectionsResponse)
-                            (reader as ObservableReader).notifySeProcessed()
+                            (reader as ObservableReader).cancelSeChannel()
                         }
 
                         ReaderEvent.EventType.SE_INSERTED -> {
                             addResultEvent("PO detected but AID didn't match with ${CalypsoClassicInfo.AID}")
-                            (reader as ObservableReader).notifySeProcessed()
+                            (reader as ObservableReader).cancelSeChannel()
                         }
 
                         ReaderEvent.EventType.SE_REMOVED -> {
