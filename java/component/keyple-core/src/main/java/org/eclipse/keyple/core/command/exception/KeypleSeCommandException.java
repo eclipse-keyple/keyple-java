@@ -13,9 +13,6 @@ package org.eclipse.keyple.core.command.exception;
 
 import org.eclipse.keyple.core.command.SeCommand;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 /**
  * The exception {@code KeypleSeCommandException} is the parent abstract class of all Keyple SE APDU

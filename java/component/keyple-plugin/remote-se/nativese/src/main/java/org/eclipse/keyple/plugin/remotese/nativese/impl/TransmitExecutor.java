@@ -69,7 +69,7 @@ class TransmitExecutor implements Executor {
 
             // prepare response body
             response = new KeypleMessageDto(keypleMessageDto)
-                    .setBody(KeypleJsonParser.getParser().toJson(seResponse, SeResponse.class));;
+                    .setBody(KeypleJsonParser.getParser().toJson(seResponse, SeResponse.class));
 
         } catch (KeypleReaderIOException e) {
 

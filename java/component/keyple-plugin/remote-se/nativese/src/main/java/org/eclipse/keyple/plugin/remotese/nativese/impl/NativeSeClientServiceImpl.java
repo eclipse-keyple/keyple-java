@@ -13,8 +13,6 @@ package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
 import java.lang.reflect.Type;
 import java.util.UUID;
-
-import com.google.gson.Gson;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -27,6 +25,7 @@ import org.eclipse.keyple.plugin.remotese.nativese.NativeSeClientService;
 import org.eclipse.keyple.plugin.remotese.nativese.RemoteServiceParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 /**
@@ -39,8 +38,8 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
 
     private static final Logger logger = LoggerFactory.getLogger(NativeSeClientServiceImpl.class);
 
-    private Boolean withReaderObservation;
-    private KeypleClientReaderEventFilter eventFilter;
+    private final Boolean withReaderObservation;
+    private final KeypleClientReaderEventFilter eventFilter;
 
     private static NativeSeClientServiceImpl uniqueInstance;
 
@@ -75,11 +74,10 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
 
 
     @Override
-    public <T> T executeRemoteService(RemoteServiceParameters parameters,
-                                                             Type T) {
+    public <T> T executeRemoteService(RemoteServiceParameters parameters, Class<T> typeOfT) {
 
         // check params nullity
-        Assert.getInstance().notNull(parameters, "parameters").notNull(T,
+        Assert.getInstance().notNull(parameters, "parameters").notNull(typeOfT,
                 "userOutputDataFactory");
 
         // get nativeReader
@@ -125,7 +123,7 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
         checkError(receivedDto);
 
         // return userOutputData
-        return extractUserData(receivedDto, T);
+        return extractUserData(receivedDto, typeOfT);
     }
 
     @Override
@@ -141,10 +139,10 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
     @Override
     public void update(ReaderEvent event) {
 
-        // invoke beforeProgagation method to gather userData
         Object userData;
 
         try {
+            // Gather userData from event filter
             userData = eventFilter.beforePropagation(event);
         } catch (KeypleDoNotPropagateEventException e) {
             // do not throw event
@@ -173,19 +171,16 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
         checkError(receivedDto);
 
         // extract userOutputData
-        Object userOutputData =
-                extractUserData(receivedDto, eventFilter.getUserOutputType());
+        Object userOutputData = extractUserData(receivedDto, eventFilter.getUserOutputType());
 
         // invoke callback
         eventFilter.afterPropagation(userOutputData);
     }
 
 
-    private <T> T extractUserData(KeypleMessageDto keypleMessageDto,
-            Type T) {
+    private <T> T extractUserData(KeypleMessageDto keypleMessageDto, Type T) {
         Gson parser = KeypleJsonParser.getParser();
-        JsonObject body =
-                parser.fromJson(keypleMessageDto.getBody(), JsonObject.class);
+        JsonObject body = parser.fromJson(keypleMessageDto.getBody(), JsonObject.class);
         return parser.fromJson(body.get("userOutputData"), T);
     }
 
@@ -218,8 +213,7 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
 
     }
 
-    private KeypleMessageDto buildEventMessage(Object userInputData,
-            ReaderEvent readerEvent) {
+    private KeypleMessageDto buildEventMessage(Object userInputData, ReaderEvent readerEvent) {
 
         JsonObject body = new JsonObject();
 

@@ -20,7 +20,6 @@ import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 
 /**
  * The CalypsoPo class gathers all the information about the current PO retrieved from the response

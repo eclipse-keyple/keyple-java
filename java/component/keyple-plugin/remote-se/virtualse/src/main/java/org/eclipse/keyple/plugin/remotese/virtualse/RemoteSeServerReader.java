@@ -11,10 +11,9 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.virtualse;
 
+import java.lang.reflect.Type;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.seproxy.SeReader;
-
-import java.lang.reflect.Type;
 
 /**
  * <b>Remote SE Server Reader</b> API.
@@ -38,12 +37,11 @@ public interface RemoteSeServerReader extends SeReader {
     /**
      * Gets the user input data if they are set.
      *
-     * @param T The type expected of user input data.
-     * @param <T> The generic type of the expected user input data.
+     * @param classOfT The type expected of user input data.
      * @return a nullable reference if there is no user input data.
      * @since 1.0
      */
-    <T> T getUserInputData(Type T);
+    <T> T getUserInputData(Class<T> classOfT);
 
     /**
      * Gets the initial SE content if is set.

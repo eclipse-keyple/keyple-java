@@ -13,9 +13,6 @@ package org.eclipse.keyple.core.seproxy.exception;
 
 import java.util.List;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 /**
  * The exception {@code KeypleReaderIOException} indicates that some IO operations with the reader

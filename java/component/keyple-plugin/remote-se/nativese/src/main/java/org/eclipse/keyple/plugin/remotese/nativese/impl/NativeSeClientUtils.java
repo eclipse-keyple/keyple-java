@@ -21,7 +21,7 @@ public class NativeSeClientUtils {
     /**
      * Retrieve the NativeSeClient if initiated
      * 
-     * @return the singleton instance of the service if instanciated, null instead
+     * @return the singleton instance of the service if instantiated, null instead
      */
     static public NativeSeClientService getService() {
         return NativeSeClientServiceImpl.getInstance();

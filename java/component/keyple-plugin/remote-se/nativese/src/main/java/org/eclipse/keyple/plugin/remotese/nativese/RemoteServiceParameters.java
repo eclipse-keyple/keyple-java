@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.nativese;
 
+
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.util.Assert;
@@ -23,8 +24,8 @@ import org.eclipse.keyple.core.util.Assert;
  * ticketing service to execute (Materialization, Validation, Control, ...). This field is free and
  * is for the user's use only.</li>
  * <li><b>nativeReader</b> : The native SE reader to manage by the server.</li>
- * <li><b>userInputData</b> (optional) : An object with the user input data if
- * you want to transmit data during the call to the remote ticketing service.</li>
+ * <li><b>userInputData</b> (optional) : An object with the user input data if you want to transmit
+ * data during the call to the remote ticketing service.</li>
  * <li><b>initialSeContent</b> (optional) : An initial SE content inside an
  * {@link AbstractMatchingSe} to send to the server ticketing service. For Calypso ticketing
  * application, this object will be a <b>CalypsoPo</b> or a <b>CalypsoSam</b>, depending on the
@@ -71,8 +72,8 @@ public class RemoteServiceParameters {
      */
     public static class Builder {
 
-        private String serviceId;
-        private SeReader nativeReader;
+        private final String serviceId;
+        private final SeReader nativeReader;
         private Object userInputData;
         private AbstractMatchingSe initialSeContent;
 
@@ -84,7 +85,7 @@ public class RemoteServiceParameters {
         /**
          * Add user input data to send to the server ticketing service.
          *
-         * @param userInputData The  object containing the user input data.
+         * @param userInputData The object containing the user input data.
          * @return the builder instance
          * @since 1.0
          */

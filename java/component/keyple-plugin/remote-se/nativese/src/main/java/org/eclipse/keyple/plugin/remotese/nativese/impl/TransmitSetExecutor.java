@@ -80,7 +80,7 @@ class TransmitSetExecutor implements Executor {
                     new TypeToken<ArrayList<SeResponse>>() {}.getType());
 
             // build response Dto
-            response = new KeypleMessageDto(keypleMessageDto).setBody(body);;
+            response = new KeypleMessageDto(keypleMessageDto).setBody(body);
 
         } catch (KeypleReaderIOException e) {
 

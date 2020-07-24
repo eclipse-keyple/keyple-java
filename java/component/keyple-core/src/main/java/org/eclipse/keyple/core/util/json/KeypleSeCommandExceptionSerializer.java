@@ -11,17 +11,13 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.util.json;
 
+import java.lang.reflect.Type;
+import org.eclipse.keyple.core.command.SeCommand;
+import org.eclipse.keyple.core.command.exception.KeypleSeCommandException;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import org.eclipse.keyple.core.command.SeCommand;
-import org.eclipse.keyple.core.command.exception.KeypleSeCommandException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
-
-import java.lang.reflect.Type;
-import java.util.List;
 
 public class KeypleSeCommandExceptionSerializer
         implements JsonSerializer<KeypleSeCommandException> {
@@ -30,7 +26,8 @@ public class KeypleSeCommandExceptionSerializer
     public JsonElement serialize(KeypleSeCommandException exception, Type type,
             JsonSerializationContext jsonSerializationContext) {
         JsonObject jsonObject = new JsonObject();
-        jsonObject.add("command", jsonSerializationContext.serialize(exception.getCommand(), SeCommand.class));
+        jsonObject.add("command",
+                jsonSerializationContext.serialize(exception.getCommand(), SeCommand.class));
         jsonObject.addProperty("statusCode", exception.getStatusCode());
         jsonObject.addProperty("message", exception.getMessage());
         jsonObject.addProperty("code", exception.getErrorCode());

@@ -13,12 +13,9 @@ package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.google.gson.Gson;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -38,6 +35,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 
@@ -209,8 +207,10 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
         assertThat(dtoRequest.getNativeReaderName()).isEqualTo(nativeReaderName);
         JsonObject body = parser.fromJson(dtoRequest.getBody(), JsonObject.class);
         assertThat(body.get("serviceId").getAsString()).isEqualTo(serviceId);
-        assertThat(parser.fromJson(body.get("userInputData"),MyKeypleUserData.class)).isEqualToComparingFieldByFieldRecursively(inputData);
-        assertThat(parser.fromJson(body.get("initialSeContent"),MatchingSeImpl.class)).isEqualToComparingFieldByFieldRecursively(matchingSe);
+        assertThat(parser.fromJson(body.get("userInputData"), MyKeypleUserData.class))
+                .isEqualToComparingFieldByFieldRecursively(inputData);
+        assertThat(parser.fromJson(body.get("initialSeContent"), MatchingSeImpl.class))
+                .isEqualToComparingFieldByFieldRecursively(matchingSe);
 
         // verify output
         assertThat(output).isNotNull();
@@ -259,7 +259,7 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
                 KeypleJsonParser.getParser().fromJson(dtoRequest.getBody(), JsonObject.class);
         assertThat(KeypleJsonParser.getParser().fromJson(body.get("readerEvent").toString(),
                 ReaderEvent.class)).isEqualToComparingFieldByField(readerEvent);
-        assertThat(parser.fromJson(body.get("userInputData"),MyKeypleUserData.class))
+        assertThat(parser.fromJson(body.get("userInputData"), MyKeypleUserData.class))
                 .isEqualToComparingFieldByFieldRecursively(inputData);
 
         // output is verified in eventFilter
@@ -304,9 +304,10 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
     }
 
 
-    public class MyKeypleUserData  {
+    public class MyKeypleUserData {
         final String field;
         final Integer field2 = 2;
+
         MyKeypleUserData(String field) {
             this.field = field;
         }

@@ -93,7 +93,7 @@ public class NativeSeClientServiceFactory {
         private Boolean withReaderObservation;
         private KeypleClientReaderEventFilter eventFilter;
 
-        Step(){ }
+        Step() {}
 
         @Override
         public ReaderStep withAsyncNode(KeypleClientAsync endpoint) {
@@ -126,8 +126,8 @@ public class NativeSeClientServiceFactory {
         @Override
         public NativeSeClientService getService() {
             // create the service
-            NativeSeClientServiceImpl service = NativeSeClientServiceImpl
-                    .createInstance(withReaderObservation, eventFilter);
+            NativeSeClientServiceImpl service =
+                    NativeSeClientServiceImpl.createInstance(withReaderObservation, eventFilter);
 
 
             // bind the service to the node

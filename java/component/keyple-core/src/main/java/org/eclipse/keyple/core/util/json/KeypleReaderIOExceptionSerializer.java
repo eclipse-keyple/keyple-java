@@ -11,24 +11,22 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.util.json;
 
-import com.google.gson.*;
-import netscape.javascript.JSObject;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
-
 import java.lang.reflect.Type;
 import java.util.List;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import com.google.gson.*;
 
-public class KeypleReaderIOExceptionSerializer
-        implements JsonSerializer<KeypleReaderIOException> {
+public class KeypleReaderIOExceptionSerializer implements JsonSerializer<KeypleReaderIOException> {
 
     @Override
     public JsonElement serialize(KeypleReaderIOException exception, Type type,
             JsonSerializationContext jsonSerializationContext) {
         JsonObject json = new JsonObject();
-        json.add("seResponse", jsonSerializationContext.serialize(exception.getSeResponse(), SeResponse.class));
-        json.add("seResponses", jsonSerializationContext.serialize(exception.getSeResponses(), List.class));
+        json.add("seResponse",
+                jsonSerializationContext.serialize(exception.getSeResponse(), SeResponse.class));
+        json.add("seResponses",
+                jsonSerializationContext.serialize(exception.getSeResponses(), List.class));
         json.addProperty("message", exception.getMessage());
         json.addProperty("code", exception.getErrorCode());
         return json;

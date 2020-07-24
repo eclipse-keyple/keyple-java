@@ -13,8 +13,8 @@ package org.eclipse.keyple.core.util.json;
 
 import java.lang.reflect.Type;
 import org.eclipse.keyple.core.command.SeCommand;
-import com.google.gson.*;
 import org.eclipse.keyple.core.util.Assert;
+import com.google.gson.*;
 
 public class SeCommandTypeAdapter
         implements JsonSerializer<SeCommand>, JsonDeserializer<SeCommand> {
@@ -40,7 +40,8 @@ public class SeCommandTypeAdapter
             JsonSerializationContext jsonSerializationContext) {
         JsonObject output = new JsonObject();
         // output.addProperty("instructionByte", seCommand.getInstructionByte());
-        Assert.getInstance().isTrue(seCommand.getClass().isEnum(), "SeCommandAdapter works only with enum");
+        Assert.getInstance().isTrue(seCommand.getClass().isEnum(),
+                "SeCommandAdapter works only with enum");
         output.addProperty("name", ((Enum) seCommand).name());
         output.addProperty("class", seCommand.getClass().getName());
         return output;

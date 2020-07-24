@@ -11,13 +11,9 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.util.json;
 
-import com.google.gson.*;
-import org.eclipse.keyple.core.command.SeCommand;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
+import com.google.gson.*;
 
 public class KeypleExceptionTypeAdapter
         implements JsonSerializer<KeypleException>, JsonDeserializer<KeypleException> {
@@ -26,7 +22,7 @@ public class KeypleExceptionTypeAdapter
     public KeypleException deserialize(JsonElement jsonElement, Type type,
             JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         String errorCode = jsonElement.getAsJsonObject().get("code").getAsString();
-        //String message = jsonElement.getAsJsonObject().get("message").getAsString();
+        // String message = jsonElement.getAsJsonObject().get("message").getAsString();
         try {
             Class exceptionClass = Class.forName(errorCode);
             return jsonDeserializationContext.deserialize(jsonElement, exceptionClass);

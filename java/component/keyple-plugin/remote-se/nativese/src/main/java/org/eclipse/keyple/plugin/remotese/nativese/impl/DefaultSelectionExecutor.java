@@ -78,11 +78,10 @@ class DefaultSelectionExecutor implements Executor {
         // invoke a different method if polling Mode was set
         if (hasPollingMode) {
             // this method has a different behaviour with the parameter pollingMode
-            ((ObservableReader) reader).setDefaultSelectionRequest(defaultSelectionsRequest,
-                    notificationMode, pollingMode);
+            reader.setDefaultSelectionRequest(defaultSelectionsRequest, notificationMode,
+                    pollingMode);
         } else {
-            ((ObservableReader) reader).setDefaultSelectionRequest(defaultSelectionsRequest,
-                    notificationMode);
+            reader.setDefaultSelectionRequest(defaultSelectionsRequest, notificationMode);
         }
 
         // no body in response

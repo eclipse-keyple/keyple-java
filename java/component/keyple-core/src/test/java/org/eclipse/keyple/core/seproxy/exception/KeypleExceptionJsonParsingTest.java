@@ -12,8 +12,6 @@
 package org.eclipse.keyple.core.seproxy.exception;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
-import com.google.gson.Gson;
 import org.eclipse.keyple.core.command.AbstractIso7816CommandBuilderTest;
 import org.eclipse.keyple.core.command.SeCommand;
 import org.eclipse.keyple.core.command.exception.KeypleSeCommandException;
@@ -23,6 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.gson.Gson;
 
 public class KeypleExceptionJsonParsingTest {
 
@@ -48,7 +47,8 @@ public class KeypleExceptionJsonParsingTest {
     @Test
     public void ioException_withResponses() {
         KeypleReaderIOException source = SampleFactory.getIOExceptionWithResponses();
-        KeypleException target = parser.fromJson(parser.toJson(source,KeypleReaderIOException.class), KeypleException.class);
+        KeypleException target = parser.fromJson(
+                parser.toJson(source, KeypleReaderIOException.class), KeypleException.class);
         assertThat(target).isEqualToComparingFieldByFieldRecursively(source);
     }
 
@@ -63,7 +63,8 @@ public class KeypleExceptionJsonParsingTest {
     public void keypleSeCommandException() {
         KeypleSeCommandException source = new AKeypleSeCommandException("message",
                 AbstractIso7816CommandBuilderTest.CommandRef.COMMAND_1, 1);
-        KeypleSeCommandException target = (KeypleSeCommandException) parser.fromJson(parser.toJson(source,KeypleSeCommandException.class), KeypleException.class);
+        KeypleSeCommandException target = (KeypleSeCommandException) parser.fromJson(
+                parser.toJson(source, KeypleSeCommandException.class), KeypleException.class);
         assertThat(target).isEqualToComparingFieldByFieldRecursively(source);
         assertThat(target.getCommand()).isEqualToComparingFieldByField(source.getCommand());
     }

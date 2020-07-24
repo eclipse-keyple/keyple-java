@@ -12,6 +12,8 @@
 package org.eclipse.keyple.core.util.json;
 
 
+import java.lang.reflect.Type;
+import java.util.Map;
 import org.eclipse.keyple.core.command.SeCommand;
 import org.eclipse.keyple.core.command.exception.KeypleSeCommandException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
@@ -19,9 +21,6 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-import java.lang.reflect.Type;
-import java.util.Map;
 
 /**
  * Json Parser for Keyple DTO and Keyple DTO body
@@ -46,20 +45,22 @@ public class KeypleJsonParser {
 
     public void addAdapters(Map<Type, Object> typeAdapters) {
         GsonBuilder gsonBuilder = initGsonBuilder();
-        for(Type typeAdapter : typeAdapters.keySet()){
+        for (Type typeAdapter : typeAdapters.keySet()) {
             gsonBuilder.registerTypeAdapter(typeAdapter, typeAdapters.get(typeAdapter));
         }
         parser = gsonBuilder.create();
     }
 
-    private GsonBuilder initGsonBuilder(){
+    private GsonBuilder initGsonBuilder() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(SeProtocol.class, new GsonSeProtocolTypeAdapter());
         gsonBuilder.registerTypeAdapter(byte[].class, new HexArrayTypeAdapter());
         gsonBuilder.registerTypeAdapter(SeCommand.class, new SeCommandTypeAdapter());
         gsonBuilder.registerTypeAdapter(KeypleException.class, new KeypleExceptionTypeAdapter());
-        gsonBuilder.registerTypeAdapter(KeypleReaderIOException.class, new KeypleReaderIOExceptionSerializer());
-        gsonBuilder.registerTypeAdapter(KeypleSeCommandException.class, new KeypleSeCommandExceptionSerializer());
+        gsonBuilder.registerTypeAdapter(KeypleReaderIOException.class,
+                new KeypleReaderIOExceptionSerializer());
+        gsonBuilder.registerTypeAdapter(KeypleSeCommandException.class,
+                new KeypleSeCommandExceptionSerializer());
         return gsonBuilder;
     }
 

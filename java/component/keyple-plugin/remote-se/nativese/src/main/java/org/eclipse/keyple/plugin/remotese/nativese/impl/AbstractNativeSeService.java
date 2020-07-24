@@ -64,7 +64,7 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
     }
 
     /**
-     * Execute a keypleMessageDto on the local nativeReader, returns the response embeeded on a
+     * Execute a keypleMessageDto on the local nativeReader, returns the response embedded on a
      * keypleMessageDto ready to be sent back.
      *
      * @param keypleMessageDto not nullable KeypleMessageDto
