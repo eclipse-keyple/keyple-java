@@ -23,11 +23,11 @@ import org.junit.Test;
 
 public class KeypleClientSyncNodeImplTest extends AbstractKeypleSyncNode {
 
-    public KeypleClientSyncPollingMock endpoint;
-    public KeypleClientSyncLongPollingMock endpointLongPolling;
-    public KeypleClientSyncErrorMock endpointError;
+    KeypleClientSyncPollingMock endpoint;
+    KeypleClientSyncLongPollingMock endpointLongPolling;
+    KeypleClientSyncErrorMock endpointError;
 
-    public class KeypleClientSyncPollingMock implements KeypleClientSync {
+    class KeypleClientSyncPollingMock implements KeypleClientSync {
 
         public List<KeypleMessageDto> messages = new ArrayList<KeypleMessageDto>();
 
@@ -38,7 +38,7 @@ public class KeypleClientSyncNodeImplTest extends AbstractKeypleSyncNode {
         }
     }
 
-    public class KeypleClientSyncLongPollingMock implements KeypleClientSync {
+    class KeypleClientSyncLongPollingMock implements KeypleClientSync {
 
         public List<KeypleMessageDto> messages = new ArrayList<KeypleMessageDto>();
 
@@ -54,7 +54,7 @@ public class KeypleClientSyncNodeImplTest extends AbstractKeypleSyncNode {
         }
     }
 
-    public class KeypleClientSyncErrorMock implements KeypleClientSync {
+    class KeypleClientSyncErrorMock implements KeypleClientSync {
 
         public List<KeypleMessageDto> messages = new ArrayList<KeypleMessageDto>();
         public int cpt = 0;
@@ -70,7 +70,7 @@ public class KeypleClientSyncNodeImplTest extends AbstractKeypleSyncNode {
         }
     }
 
-    public Callable<Boolean> endpointMessagesHasMinSize(final int size) {
+    Callable<Boolean> endpointMessagesHasMinSize(final int size) {
         return new Callable<Boolean>() {
             public Boolean call() {
                 return endpoint.messages.size() >= size;
@@ -78,7 +78,7 @@ public class KeypleClientSyncNodeImplTest extends AbstractKeypleSyncNode {
         };
     }
 
-    public Callable<Boolean> endpointLongPollingMessagesHasMinSize(final int size) {
+    Callable<Boolean> endpointLongPollingMessagesHasMinSize(final int size) {
         return new Callable<Boolean>() {
             public Boolean call() {
                 return endpointLongPolling.messages.size() >= size;
@@ -86,7 +86,7 @@ public class KeypleClientSyncNodeImplTest extends AbstractKeypleSyncNode {
         };
     }
 
-    public Callable<Boolean> endpointErrorMessagesHasMinSize(final int size) {
+    Callable<Boolean> endpointErrorMessagesHasMinSize(final int size) {
         return new Callable<Boolean>() {
             public Boolean call() {
                 return endpointError.messages.size() >= size;
@@ -94,7 +94,7 @@ public class KeypleClientSyncNodeImplTest extends AbstractKeypleSyncNode {
         };
     }
 
-    public Callable<Boolean> handlerErrorOccurred() {
+    Callable<Boolean> handlerErrorOccurred() {
         return new Callable<Boolean>() {
             public Boolean call() {
                 return handlerError.isError;
@@ -125,7 +125,7 @@ public class KeypleClientSyncNodeImplTest extends AbstractKeypleSyncNode {
 
     @Test
     public void constructor_whenPluginObservationStrategyIsProvided_shouldStartAPluginObserver() {
-        new KeypleClientSyncNodeImpl(endpoint, handler, pollingEventStrategy, null);
+        new KeypleClientSyncNodeImpl(handler, endpoint, pollingEventStrategy, null);
         await().atMost(5, TimeUnit.SECONDS).until(endpointMessagesHasMinSize(2));
         KeypleMessageDto msg1 = endpoint.messages.get(0);
         KeypleMessageDto msg2 = endpoint.messages.get(1);
@@ -135,7 +135,7 @@ public class KeypleClientSyncNodeImplTest extends AbstractKeypleSyncNode {
 
     @Test
     public void constructor_whenReaderObservationStrategyIsProvided_shouldStartAReaderObserver() {
-        new KeypleClientSyncNodeImpl(endpoint, handler, null, pollingEventStrategy);
+        new KeypleClientSyncNodeImpl(handler, endpoint, null, pollingEventStrategy);
         await().atMost(5, TimeUnit.SECONDS).until(endpointMessagesHasMinSize(2));
         KeypleMessageDto msg1 = endpoint.messages.get(0);
         KeypleMessageDto msg2 = endpoint.messages.get(1);
@@ -145,7 +145,7 @@ public class KeypleClientSyncNodeImplTest extends AbstractKeypleSyncNode {
 
     @Test
     public void constructor_whenPluginAndReaderObservationStrategyAreProvided_shouldStartAPluginAndReaderObservers() {
-        new KeypleClientSyncNodeImpl(endpoint, handler, pollingEventStrategy, pollingEventStrategy);
+        new KeypleClientSyncNodeImpl(handler, endpoint, pollingEventStrategy, pollingEventStrategy);
         await().atMost(5, TimeUnit.SECONDS).until(endpointMessagesHasMinSize(4));
         Set<KeypleMessageDto> messageTypes = new HashSet<KeypleMessageDto>();
         messageTypes.add(endpoint.messages.get(0));
@@ -157,7 +157,7 @@ public class KeypleClientSyncNodeImplTest extends AbstractKeypleSyncNode {
 
     @Test
     public void constructor_whenPollingObservationStrategyIsProvided_shouldSendAPollingDto() {
-        new KeypleClientSyncNodeImpl(endpoint, handler, pollingEventStrategy, null);
+        new KeypleClientSyncNodeImpl(handler, endpoint, pollingEventStrategy, null);
         await().atMost(5, TimeUnit.SECONDS).until(endpointMessagesHasMinSize(1));
         KeypleMessageDto msg = endpoint.messages.get(0);
         checkEventDto(msg, KeypleMessageDto.Action.CHECK_PLUGIN_EVENT, bodyPolling);
@@ -165,7 +165,7 @@ public class KeypleClientSyncNodeImplTest extends AbstractKeypleSyncNode {
 
     @Test
     public void constructor_whenLongPollingObservationStrategyIsProvided_shouldSendALongPollingDto() {
-        new KeypleClientSyncNodeImpl(endpointLongPolling, handler, longPollingEventStrategy, null);
+        new KeypleClientSyncNodeImpl(handler, endpointLongPolling, longPollingEventStrategy, null);
         await().atMost(5, TimeUnit.SECONDS).until(endpointLongPollingMessagesHasMinSize(1));
         KeypleMessageDto msg = endpointLongPolling.messages.get(0);
         checkEventDto(msg, KeypleMessageDto.Action.CHECK_PLUGIN_EVENT, bodyLongPolling);
@@ -173,7 +173,7 @@ public class KeypleClientSyncNodeImplTest extends AbstractKeypleSyncNode {
 
     @Test
     public void constructor_whenObservationStrategyIsProvided_shouldCallOnMessageMethodOnHandler() {
-        new KeypleClientSyncNodeImpl(endpoint, handler, pollingEventStrategy, null);
+        new KeypleClientSyncNodeImpl(handler, endpoint, pollingEventStrategy, null);
         await().atMost(5, TimeUnit.SECONDS).until(endpointMessagesHasMinSize(1));
         assertThat(handler.messages).isNotEmpty();
         assertThat(handler.messages.get(0)).isSameAs(response);
@@ -182,7 +182,7 @@ public class KeypleClientSyncNodeImplTest extends AbstractKeypleSyncNode {
 
     @Test
     public void constructor_whenObservationButHandlerInError_shouldInterruptObserverAndThrowException() {
-        new KeypleClientSyncNodeImpl(endpoint, handlerError, pollingEventStrategy, null);
+        new KeypleClientSyncNodeImpl(handlerError, endpoint, pollingEventStrategy, null);
         await().atMost(5, TimeUnit.SECONDS).until(handlerErrorOccurred());
         await().atMost(2, TimeUnit.SECONDS);
         assertThat(endpoint.messages).hasSize(1);
@@ -190,14 +190,14 @@ public class KeypleClientSyncNodeImplTest extends AbstractKeypleSyncNode {
 
     @Test
     public void constructor_whenObservationButEndpointInError_shouldRetryUntilNoError() {
-        new KeypleClientSyncNodeImpl(endpointError, handler, pollingEventStrategy, null);
+        new KeypleClientSyncNodeImpl(handler, endpointError, pollingEventStrategy, null);
         await().atMost(10, TimeUnit.SECONDS).until(endpointErrorMessagesHasMinSize(2));
         assertThat(endpointError.messages).hasSize(2);
     }
 
     @Test
     public void sendRequest_shouldCallEndpointAndReturnEndpointResponse() {
-        KeypleClientSyncNodeImpl node = new KeypleClientSyncNodeImpl(endpoint, handler, null, null);
+        KeypleClientSyncNodeImpl node = new KeypleClientSyncNodeImpl(handler, endpoint, null, null);
         KeypleMessageDto result = node.sendRequest(msg);
         assertThat(endpoint.messages).hasSize(1);
         assertThat(endpoint.messages.get(0)).isSameAs(msg);
@@ -209,7 +209,7 @@ public class KeypleClientSyncNodeImplTest extends AbstractKeypleSyncNode {
 
     @Test
     public void sendMessage_shouldCallEndpoint() {
-        KeypleClientSyncNodeImpl node = new KeypleClientSyncNodeImpl(endpoint, handler, null, null);
+        KeypleClientSyncNodeImpl node = new KeypleClientSyncNodeImpl(handler, endpoint, null, null);
         node.sendMessage(msg);
         assertThat(endpoint.messages).hasSize(1);
         assertThat(endpoint.messages.get(0)).isSameAs(msg);

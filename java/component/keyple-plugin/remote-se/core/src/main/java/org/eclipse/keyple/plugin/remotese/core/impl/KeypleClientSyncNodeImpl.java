@@ -14,6 +14,7 @@ package org.eclipse.keyple.plugin.remotese.core.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remotese.core.KeypleClientSync;
 import org.eclipse.keyple.plugin.remotese.core.KeypleClientSyncNode;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
@@ -41,16 +42,15 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
      * (package-private)<br>
      * Constructor.
      *
-     * @param endpoint The user client sync endpoint (must be not null).
      * @param handler The associated handler (must be not null).
+     * @param endpoint The user client sync endpoint (must be not null).
      * @param pluginObservationStrategy The server push event strategy associated to the plugin
      *        observation (null if must not be activate).<br>
      *        This parameter can be used only for <b>Remote SE Client Plugin</b> use case.
      * @param readerObservationStrategy The server push event strategy associated to the reader
      *        observation (null if must not be activate).<br>
-     *        This parameter can be used only for <b>Remote SE Client Plugin</b> use case.
      */
-    KeypleClientSyncNodeImpl(KeypleClientSync endpoint, AbstractKeypleMessageHandler handler,
+    KeypleClientSyncNodeImpl(AbstractKeypleMessageHandler handler, KeypleClientSync endpoint,
             ServerPushEventStrategy pluginObservationStrategy,
             ServerPushEventStrategy readerObservationStrategy) {
         super(handler);
@@ -82,13 +82,18 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
         if (responses == null || responses.isEmpty()) {
             return null;
         } else if (responses.size() == 1) {
-            return responses.get(0);
+            KeypleMessageDto response = responses.get(0);
+            Assert.getInstance()//
+                    .notNull(response, "msg")//
+                    .notEmpty(response.getSessionId(), "sessionId")//
+                    .notEmpty(response.getAction(), "action")//
+                    .notEmpty(response.getClientNodeId(), "clientNodeId")//
+                    .notEmpty(response.getServerNodeId(), "serverNodeId");
+            return response;
         } else {
-            String errorMessage =
+            throw new IllegalStateException(
                     "The list returned by the client endpoint should have contained a single element but contains "
-                            + responses.size() + " elements.";
-            logger.error(errorMessage);
-            throw new IllegalStateException(errorMessage);
+                            + responses.size() + " elements.");
         }
     }
 

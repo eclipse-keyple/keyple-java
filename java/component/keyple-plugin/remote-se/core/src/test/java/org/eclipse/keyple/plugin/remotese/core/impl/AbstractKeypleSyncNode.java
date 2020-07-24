@@ -19,16 +19,16 @@ import com.google.gson.JsonObject;
 
 public abstract class AbstractKeypleSyncNode {
 
-    public KeypleMessageHandlerMock handler;
-    public KeypleMessageHandlerErrorMock handlerError;
-    public KeypleMessageDto msg;
-    public KeypleMessageDto response;
-    public List<KeypleMessageDto> responses;
-    public ServerPushEventStrategy pollingEventStrategy;
-    public ServerPushEventStrategy longPollingEventStrategy;
-    public String bodyPolling;
-    public String bodyLongPolling;
-    public String bodyLongPollingLongTimeout;
+    KeypleMessageHandlerMock handler;
+    KeypleMessageHandlerErrorMock handlerError;
+    KeypleMessageDto msg;
+    KeypleMessageDto response;
+    List<KeypleMessageDto> responses;
+    ServerPushEventStrategy pollingEventStrategy;
+    ServerPushEventStrategy longPollingEventStrategy;
+    String bodyPolling;
+    String bodyLongPolling;
+    String bodyLongPollingLongTimeout;
 
     {
         msg = new KeypleMessageDto()//
@@ -37,6 +37,7 @@ public abstract class AbstractKeypleSyncNode {
                 .setClientNodeId("clientNodeId");
 
         response = new KeypleMessageDto(msg);
+        response.setServerNodeId("serverNodeId");
 
         responses = new ArrayList<KeypleMessageDto>();
         responses.add(response);
@@ -63,7 +64,7 @@ public abstract class AbstractKeypleSyncNode {
         bodyLongPollingLongTimeout = body.toString();
     }
 
-    public class KeypleMessageHandlerMock extends AbstractKeypleMessageHandler {
+    class KeypleMessageHandlerMock extends AbstractKeypleMessageHandler {
         public List<KeypleMessageDto> messages = new ArrayList<KeypleMessageDto>();
 
         @Override
@@ -72,7 +73,7 @@ public abstract class AbstractKeypleSyncNode {
         }
     }
 
-    public class KeypleMessageHandlerErrorMock extends AbstractKeypleMessageHandler {
+    class KeypleMessageHandlerErrorMock extends AbstractKeypleMessageHandler {
         public boolean isError = false;
 
         @Override
@@ -82,7 +83,7 @@ public abstract class AbstractKeypleSyncNode {
         }
     }
 
-    public Callable<Boolean> handlerErrorOccurred() {
+    Callable<Boolean> handlerErrorOccurred() {
         return new Callable<Boolean>() {
             public Boolean call() {
                 return handlerError.isError;
@@ -90,7 +91,7 @@ public abstract class AbstractKeypleSyncNode {
         };
     }
 
-    public void setUp() {
+    void setUp() {
         handler = new KeypleMessageHandlerMock();
         handlerError = new KeypleMessageHandlerErrorMock();
     }
