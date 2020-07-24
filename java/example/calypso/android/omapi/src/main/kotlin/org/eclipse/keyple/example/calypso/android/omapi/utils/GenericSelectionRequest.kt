@@ -25,11 +25,7 @@ class GenericSeSelectionRequest(seSelector: SeSelector) : AbstractSeSelectionReq
         class GenericMatchingSe(
             selectionResponse: SeResponse,
             transmissionMode: TransmissionMode
-        ) : AbstractMatchingSe(selectionResponse, transmissionMode){
-            override fun toJson(): String {
-                return "{}"//todo
-            }
-        }
+        ) : AbstractMatchingSe(selectionResponse, transmissionMode)
         return GenericMatchingSe(seResponse, transmissionMode)
     }
 }
