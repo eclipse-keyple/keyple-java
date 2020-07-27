@@ -21,7 +21,6 @@ import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
@@ -138,7 +137,7 @@ public class StoredValue_SimpleReload_Pcsc {
             poTransaction.prepareSvGet(SvSettings.Operation.RELOAD, SvSettings.Action.DO);
 
             // Execute the command
-            poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
+            poTransaction.processPoCommands();
 
             // Display the current SV status
             logger.info("Current SV status (SV Get for RELOAD):");
@@ -155,7 +154,8 @@ public class StoredValue_SimpleReload_Pcsc {
             poTransaction.prepareSvReload(2);
 
             // Execute the command and close the communication after
-            poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER);
+            poTransaction.prepareReleasePoChannel();
+            poTransaction.processPoCommands();
 
             logger.info("The balance of the PO has been recharged by 2 units");
         } else {

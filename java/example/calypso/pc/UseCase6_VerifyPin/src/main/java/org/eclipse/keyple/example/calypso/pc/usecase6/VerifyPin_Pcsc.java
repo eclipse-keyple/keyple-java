@@ -21,7 +21,6 @@ import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
@@ -156,7 +155,7 @@ public class VerifyPin_Pcsc {
             } catch (CalypsoPoPinException ex) {
                 logger.error("PIN Exception: {}", ex.getMessage());
             }
-            poTransaction.processCancel(ChannelControl.KEEP_OPEN);
+            poTransaction.processCancel();
             // log the current counter value (should be 2)
             logger.error("Remaining attempts #3: {}", calypsoPo.getPinAttemptRemaining());
 
@@ -169,7 +168,8 @@ public class VerifyPin_Pcsc {
             // log the current counter value (should be 2)
             logger.info("Remaining attempts #4: {}", calypsoPo.getPinAttemptRemaining());
             poTransaction.processVerifyPin(pinOk);
-            poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
+            poTransaction.prepareReleasePoChannel();
+            poTransaction.processClosing();
             // log the current counter value (should be 3)
             logger.info("Remaining attempts #5: {}", calypsoPo.getPinAttemptRemaining());
         } else {
