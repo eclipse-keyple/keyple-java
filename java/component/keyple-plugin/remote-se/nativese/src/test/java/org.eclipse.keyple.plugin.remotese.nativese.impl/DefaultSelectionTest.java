@@ -29,7 +29,7 @@ public class DefaultSelectionTest extends BaseNativeSeTest {
     @Before
     public void setUp() {
         this.init();
-        requestDto = getSetDefaultSelectionDto();
+        requestDto = getSetDefaultSelectionDto("aSessionId");
     }
 
     @Test

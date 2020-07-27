@@ -223,7 +223,6 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
         return new KeypleMessageDto()//
                 .setSessionId(generateSessionId())//
                 .setAction(KeypleMessageDto.Action.READER_EVENT.name())//
-                .setNativeReaderName(readerEvent.getReaderName())//
                 .setBody(body.toString());//
     }
 

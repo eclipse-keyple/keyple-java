@@ -43,7 +43,7 @@ import com.google.gson.JsonObject;
 public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractNativeSeServiceTest.class);
-    KeypleClientSync syncClient;
+    KeypleClientSync syncClientEndpoint;
     KeypleClientAsync asyncClient;
     KeypleClientReaderEventFilter eventFilter;
     MyKeypleUserData outputData;
@@ -65,7 +65,7 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
         doReturn(pluginName).when(readerPlugin).getName();
 
         SeProxyService.getInstance().registerPlugin(mockFactory);
-        syncClient = Mockito.mock(KeypleClientSync.class);
+        syncClientEndpoint = Mockito.mock(KeypleClientSync.class);
         asyncClient = Mockito.mock(KeypleClientAsync.class);
         eventFilter = Mockito.mock(KeypleClientReaderEventFilter.class);
 
@@ -94,7 +94,7 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
     public void buildService_withSyncNode_withoutObservation() {
         // test
         NativeSeClientService service = new NativeSeClientServiceFactory().builder()
-                .withSyncNode(syncClient).withoutReaderObservation().getService();
+                .withSyncNode(syncClientEndpoint).withoutReaderObservation().getService();
 
         assertThat(service).isNotNull();
         assertThat(service).isEqualTo(NativeSeClientUtils.getService());
@@ -113,18 +113,18 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void executeService_withNullParam_throwException() {
-        KeypleClientSyncMock clientSyncMock = new KeypleClientSyncMock(1);
+        syncClientEndpoint = new KeypleClientSyncMock(1);
         final NativeSeClientService nativeSeClientService = new NativeSeClientServiceFactory()
-                .builder().withSyncNode(clientSyncMock).withoutReaderObservation().getService();
+                .builder().withSyncNode(syncClientEndpoint).withoutReaderObservation().getService();
         // test
         nativeSeClientService.executeRemoteService(null, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void executeService_withNullOutputData_throwException() {
-        KeypleClientSyncMock clientSyncMock = new KeypleClientSyncMock(1);
+        syncClientEndpoint = new KeypleClientSyncMock(1);
         NativeSeClientService nativeSeClientService = new NativeSeClientServiceFactory().builder()
-                .withSyncNode(clientSyncMock).withoutReaderObservation().getService();
+                .withSyncNode(syncClientEndpoint).withoutReaderObservation().getService();
         RemoteServiceParameters params = RemoteServiceParameters.builder(serviceId, proxyReader)
                 .withUserInputData(inputData).build();
         // test
@@ -134,17 +134,17 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
     @Test(expected = IllegalArgumentException.class)
     public void executeService_activateObservation_withoutFilter_throwException() {
         // init
-        KeypleClientSyncMock clientSyncMock = new KeypleClientSyncMock(1);
-        new NativeSeClientServiceFactory().builder().withSyncNode(clientSyncMock)
+        syncClientEndpoint = new KeypleClientSyncMock(1);
+        new NativeSeClientServiceFactory().builder().withSyncNode(syncClientEndpoint)
                 .withReaderObservation(null).getService();
     }
 
     @Test
     public void executeService_activateObservation_withFilter_addObserver() {
         // init
-        KeypleClientSyncMock clientSyncMock = new KeypleClientSyncMock(1);
+        syncClientEndpoint = new KeypleClientSyncMock(1);
         NativeSeClientService nativeSeClientService = new NativeSeClientServiceFactory().builder()
-                .withSyncNode(clientSyncMock).withReaderObservation(eventFilter).getService();
+                .withSyncNode(syncClientEndpoint).withReaderObservation(eventFilter).getService();
 
         RemoteServiceParameters params =
                 RemoteServiceParameters.builder(serviceId, observableProxyReader)//
@@ -164,9 +164,9 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
     @Test(expected = IllegalArgumentException.class)
     public void executeService_activateObservation_onNotObservableReader_throwException() {
         // init
-        KeypleClientSyncMock clientSyncMock = new KeypleClientSyncMock(1);
+        syncClientEndpoint = new KeypleClientSyncMock(1);
         NativeSeClientService nativeSeClientService = new NativeSeClientServiceFactory().builder()
-                .withSyncNode(clientSyncMock).withReaderObservation(eventFilter).getService();
+                .withSyncNode(syncClientEndpoint).withReaderObservation(eventFilter).getService();
         RemoteServiceParameters params =
                 RemoteServiceParameters.builder(serviceId, proxyReader).build();
 
@@ -183,9 +183,9 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
     @Test
     public void executeService_withSyncNode() {
         // init
-        KeypleClientSyncMock clientSyncMock = new KeypleClientSyncMock(2);
+        syncClientEndpoint = new KeypleClientSyncMock(2);
         NativeSeClientService nativeSeClientService = new NativeSeClientServiceFactory().builder()//
-                .withSyncNode(clientSyncMock)//
+                .withSyncNode(syncClientEndpoint)//
                 .withoutReaderObservation()//
                 .getService();
 
@@ -199,8 +199,9 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
                 nativeSeClientService.executeRemoteService(params, MyKeypleUserData.class);
 
         // verify EXECUTE_REMOTE_SERVICE request
-        assertThat(clientSyncMock.getRequests().size()).isEqualTo(2);
-        KeypleMessageDto dtoRequest = clientSyncMock.getRequests().get(0);
+        assertThat(((KeypleClientSyncMock) syncClientEndpoint).getRequests().size()).isEqualTo(2);
+        KeypleMessageDto dtoRequest =
+                ((KeypleClientSyncMock) syncClientEndpoint).getRequests().get(0);
         assertThat(dtoRequest.getAction())
                 .isEqualTo(KeypleMessageDto.Action.EXECUTE_REMOTE_SERVICE.name());
         assertThat(dtoRequest.getSessionId()).isNotEmpty();
@@ -221,27 +222,27 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
     @Test
     public void onUpdate_doNotPropagateEvent() {
         // init
-        KeypleClientSyncMock clientSyncMock = new KeypleClientSyncMock(2);
+        syncClientEndpoint = new KeypleClientSyncMock(2);
         NativeSeClientServiceImpl nativeSeClientService =
                 (NativeSeClientServiceImpl) new NativeSeClientServiceFactory().builder()//
-                        .withSyncNode(clientSyncMock)//
+                        .withSyncNode(syncClientEndpoint)//
                         .withReaderObservation(new MyEventFilter(false))//
                         .getService();
 
         // test
         nativeSeClientService.update(readerEvent);
 
-        assertThat(clientSyncMock.getRequests().size()).isEqualTo(0);
+        assertThat(((KeypleClientSyncMock) syncClientEndpoint).getRequests().size()).isEqualTo(0);
     }
 
 
     @Test
     public void onUpdate_withSyncNode() {
         // init
-        KeypleClientSyncMock clientSyncMock = new KeypleClientSyncMock(2);
+        syncClientEndpoint = new KeypleClientSyncMock(2);
         NativeSeClientServiceImpl nativeSeClientService =
                 (NativeSeClientServiceImpl) new NativeSeClientServiceFactory().builder()//
-                        .withSyncNode(clientSyncMock)//
+                        .withSyncNode(syncClientEndpoint)//
                         .withReaderObservation(new MyEventFilter(true))//
                         .getService();
 
@@ -250,8 +251,9 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
         nativeSeClientService.update(readerEvent);
 
         // verify READER_EVENT dto
-        assertThat(clientSyncMock.getRequests().size()).isEqualTo(2);
-        KeypleMessageDto dtoRequest = clientSyncMock.getRequests().get(0);
+        assertThat(((KeypleClientSyncMock) syncClientEndpoint).getRequests().size()).isEqualTo(2);
+        KeypleMessageDto dtoRequest =
+                ((KeypleClientSyncMock) syncClientEndpoint).getRequests().get(0);
         assertThat(dtoRequest.getAction()).isEqualTo(KeypleMessageDto.Action.READER_EVENT.name());
         assertThat(dtoRequest.getSessionId()).isNotEmpty();
         assertThat(dtoRequest.getNativeReaderName()).isEqualTo(observableProxyReaderName);
@@ -289,10 +291,10 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
 
             List<KeypleMessageDto> responses = new ArrayList<KeypleMessageDto>();
             if (answerNumber == 1) {
-                responses.add(terminateDto());
+                responses.add(getTerminateDto(msg.getSessionId()));
             }
             if (answerNumber > 1) {
-                responses.add(getTransmitDto());
+                responses.add(getTransmitDto(msg.getSessionId()));
                 this.answerNumber--;
             }
             return responses;
@@ -332,7 +334,7 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
 
 
 
-    class MyEventFilter implements KeypleClientReaderEventFilter<MyKeypleUserData> {
+    class MyEventFilter implements KeypleClientReaderEventFilter {
         Boolean propagateEvent;
 
         MyEventFilter(Boolean propagateEvent) {
@@ -354,16 +356,19 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
         }
 
         @Override
-        public void afterPropagation(MyKeypleUserData userOutputData) {
+        public void afterPropagation(Object userOutputData) {
             assertThat(userOutputData).isNotNull();
             assertThat(userOutputData).isEqualToComparingFieldByFieldRecursively(outputData);
         }
     }
 
-    public KeypleMessageDto terminateDto() {
+    public KeypleMessageDto getTerminateDto(String sessionId) {
         JsonObject body = new JsonObject();
         body.add("userOutputData", parser.toJsonTree(outputData, MyKeypleUserData.class));
-        return new KeypleMessageDto().setAction(KeypleMessageDto.Action.TERMINATE_SERVICE.name())
+        return new KeypleMessageDto().setSessionId(sessionId)//
+                .setAction(KeypleMessageDto.Action.TERMINATE_SERVICE.name())//
+                .setServerNodeId("serverNodeId")//
+                .setClientNodeId("clientNodeId")//
                 .setBody(body.toString());
 
     }

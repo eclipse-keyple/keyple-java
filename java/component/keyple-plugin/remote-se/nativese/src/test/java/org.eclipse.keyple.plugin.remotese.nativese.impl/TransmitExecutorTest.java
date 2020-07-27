@@ -47,7 +47,7 @@ public class TransmitExecutorTest extends BaseNativeSeTest {
         keypleIOException = new KeypleReaderIOException("io exception test");
         keypleIOException.setSeResponse(seResponse);
         keypleIOException.setSeResponses(seResponses);
-        requestDto = getTransmitDto();
+        requestDto = getTransmitDto("aSessionId");
     }
 
     @Test
@@ -66,7 +66,7 @@ public class TransmitExecutorTest extends BaseNativeSeTest {
     public void transmit_returnsIoException() {
         doThrow(keypleIOException).when(proxyReader).transmitSeRequest(any(SeRequest.class),
                 any(ChannelControl.class));
-        KeypleMessageDto requestDto = getTransmitDto();
+        KeypleMessageDto requestDto = getTransmitDto("aSessionId");
         KeypleMessageDto responseDto = new TransmitExecutor(proxyReader).execute(requestDto);
         assertMetaDataMatches(requestDto, responseDto);
         assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.ERROR.name());

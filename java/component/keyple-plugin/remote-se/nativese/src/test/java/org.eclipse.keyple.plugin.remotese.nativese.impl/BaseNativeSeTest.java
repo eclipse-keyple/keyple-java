@@ -44,15 +44,19 @@ public abstract class BaseNativeSeTest {
     }
 
 
-    public static KeypleMessageDto getTransmitDto() {
+    public static KeypleMessageDto getTransmitDto(String sessionId) {
         JsonObject body = new JsonObject();
         body.addProperty("channelControl", ChannelControl.CLOSE_AFTER.name());
         body.addProperty("seRequest", KeypleJsonParser.getParser().toJson(getASeRequest()));
-        return new KeypleMessageDto().setAction(KeypleMessageDto.Action.TRANSMIT.name())
+        return new KeypleMessageDto()//
+                .setSessionId(sessionId)//
+                .setAction(KeypleMessageDto.Action.TRANSMIT.name())//
+                .setServerNodeId("serverNodeId")//
+                .setClientNodeId("clientNodeId")//
                 .setBody(body.toString());
     }
 
-    public static KeypleMessageDto getSetDefaultSelectionDto() {
+    public static KeypleMessageDto getSetDefaultSelectionDto(String sessionId) {
         JsonObject body = new JsonObject();
         body.add("defaultSelectionsRequest",
                 KeypleJsonParser.getParser()
@@ -62,18 +66,24 @@ public abstract class BaseNativeSeTest {
         body.addProperty("notificationMode", ObservableReader.NotificationMode.ALWAYS.name());
         body.addProperty("pollingMode", ObservableReader.PollingMode.REPEATING.name());
 
-        return new KeypleMessageDto()
-                .setAction(KeypleMessageDto.Action.SET_DEFAULT_SELECTION.name())
+        return new KeypleMessageDto().setSessionId(sessionId)//
+                .setAction(KeypleMessageDto.Action.SET_DEFAULT_SELECTION.name())//
+                .setServerNodeId("serverNodeId")//
+                .setClientNodeId("clientNodeId")//
                 .setBody(body.toString());
     }
 
-    public static KeypleMessageDto getTransmitSetDto() {
+    public static KeypleMessageDto getTransmitSetDto(String sessionId) {
         JsonObject body = new JsonObject();
         body.addProperty("channelControl", ChannelControl.CLOSE_AFTER.name());
         body.addProperty("seRequests",
                 KeypleJsonParser.getParser().toJson(Lists.newArrayList(getASeRequest())));
         body.addProperty("multiSeRequestProcessing", MultiSeRequestProcessing.FIRST_MATCH.name());
-        return new KeypleMessageDto().setAction(KeypleMessageDto.Action.TRANSMIT_SET.name())
+        return new KeypleMessageDto()//
+                .setSessionId(sessionId)//
+                .setAction(KeypleMessageDto.Action.TRANSMIT_SET.name())//
+                .setServerNodeId("serverNodeId")//
+                .setClientNodeId("clientNodeId")//
                 .setBody(body.toString());
     }
 

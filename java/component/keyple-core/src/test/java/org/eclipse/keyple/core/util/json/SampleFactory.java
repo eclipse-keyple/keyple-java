@@ -189,6 +189,18 @@ public class SampleFactory {
         return new SeResponse(true, true, new SelectionStatus(atr, apdu, true), apduResponses);
     }
 
+    public static class MyKeypleUserData {
+        private final String field;
+
+        MyKeypleUserData(String field) {
+            this.field = field;
+        }
+
+        public String getField() {
+            return field;
+        }
+    }
+
 
 
 }

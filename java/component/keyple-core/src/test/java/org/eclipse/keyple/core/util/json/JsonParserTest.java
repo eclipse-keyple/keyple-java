@@ -11,6 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.util.json;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import java.lang.reflect.Type;
 import java.util.List;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -24,7 +26,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.gson.Gson;
+import com.google.gson.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JsonParserTest {
@@ -87,6 +89,21 @@ public class JsonParserTest {
         testSerializeDeserializeObj(readerEvent, ReaderEvent.class);
     }
 
+
+    @Test
+    public void addCustomAdapter_serializeCustomObject_shouldUseCustomAdapter() {
+
+        MyKeypleUserDataMockAdapter adapter = new MyKeypleUserDataMockAdapter();
+        Gson parser = KeypleJsonParser.build()
+                .registerTypeAdapter(SampleFactory.MyKeypleUserData.class, adapter).getParser();
+        SampleFactory.MyKeypleUserData data = new SampleFactory.MyKeypleUserData("value");
+        String json = parser.toJson(data);
+        assertThat(json).contains(adapter.aDefinedJson);
+        SampleFactory.MyKeypleUserData target =
+                parser.fromJson(json, SampleFactory.MyKeypleUserData.class);
+        assertThat(target.getField()).isEqualTo(adapter.aDefinedResult);
+    }
+
     /*
      * Utility Method
      */
@@ -101,6 +118,26 @@ public class JsonParserTest {
         logger.debug("json 2 : {}", json2);
         assert json.equals(json2);
         return deserializeObj;
+    }
+
+    public class MyKeypleUserDataMockAdapter
+            implements JsonDeserializer<SampleFactory.MyKeypleUserData>,
+            JsonSerializer<SampleFactory.MyKeypleUserData> {
+
+        public String aDefinedJson = "aDefinedJson";
+        public String aDefinedResult = "aDefinedResult";
+
+        @Override
+        public JsonElement serialize(SampleFactory.MyKeypleUserData src, Type typeOfSrc,
+                JsonSerializationContext context) {
+            return new JsonPrimitive(aDefinedJson);
+        }
+
+        @Override
+        public SampleFactory.MyKeypleUserData deserialize(JsonElement json, Type typeOfT,
+                JsonDeserializationContext context) throws JsonParseException {
+            return new SampleFactory.MyKeypleUserData(aDefinedResult);
+        }
     }
 
 }

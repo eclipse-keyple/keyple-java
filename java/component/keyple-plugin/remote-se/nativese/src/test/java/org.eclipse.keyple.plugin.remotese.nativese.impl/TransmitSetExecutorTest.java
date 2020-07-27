@@ -45,6 +45,8 @@ public class TransmitSetExecutorTest extends BaseNativeSeTest {
     @Before
     public void setUp() {
         this.init();
+
+        requestDto = getTransmitSetDto("aSessionId");
         seResponse = getASeResponse();
         seResponses = Lists.newArrayList(seResponse);
 
@@ -58,7 +60,6 @@ public class TransmitSetExecutorTest extends BaseNativeSeTest {
                 new KeypleReaderIOException("io exception test with SeResponses");
         keypleIOExceptionWithSeResponses.setSeResponses(seResponses);
 
-        requestDto = getTransmitSetDto();
     }
 
     @Test
