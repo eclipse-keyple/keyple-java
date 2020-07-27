@@ -24,7 +24,6 @@ import org.eclipse.keyple.calypso.transaction.SamResourceManager;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
 import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -182,8 +181,8 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
              * Actual PO communication: send the prepared read order, then close the channel with
              * the PO
              */
-
-            poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER);
+            poTransaction.prepareReleasePoChannel();
+            poTransaction.processPoCommands();
 
             logger.info("{} The reading of the EventLog has succeeded.", nodeId);
 
@@ -247,7 +246,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
              * Prepare the reading order and keep the associated parser for later use once the
              * transaction has been processed.
              */
-            poTransaction.processPoCommandsInSession();
+            poTransaction.processPoCommands();
 
             /*
              * Retrieve the data read from the CalyspoPo updated during the transaction process
@@ -270,7 +269,8 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
             /*
              * A ratification command will be sent (CONTACTLESS_MODE).
              */
-            poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
+            poTransaction.prepareReleasePoChannel();
+            poTransaction.processClosing();
 
             logger.warn(
                     "==================================================================================");

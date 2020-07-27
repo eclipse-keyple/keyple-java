@@ -30,6 +30,7 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
@@ -180,7 +181,8 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
                 // Actual PO communication: send the prepared read order, then close the channel
                 // with the PO
                 try {
-                    poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER);
+                    poTransaction.prepareReleasePoChannel();
+                    poTransaction.processPoCommands();
 
                     logger.info("The reading of the EventLog has succeeded.");
 
@@ -219,8 +221,9 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
             // Informs the underlying layer of the end of the SE processing, in order to manage the
             // removal sequence.
             try {
-                ((ObservableReader) SeProxyService.getInstance().getPlugin(event.getPluginName())
-                        .getReader(event.getReaderName())).cancelSeChannel();
+                ((ProxyReader) SeProxyService.getInstance().getPlugin(event.getPluginName())
+                        .getReader(event.getReaderName())).transmitSeRequest(null,
+                                ChannelControl.CLOSE_AFTER);
             } catch (KeypleReaderNotFoundException e) {
                 logger.error("Reader not found! {}", e.getMessage());
             } catch (KeyplePluginNotFoundException e) {

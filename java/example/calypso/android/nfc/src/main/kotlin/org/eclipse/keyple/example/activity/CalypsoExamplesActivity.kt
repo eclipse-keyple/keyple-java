@@ -567,7 +567,8 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                  * with the PO
                  */
                 addActionEvent("processPoCommands")
-                poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER)
+                poTransaction.prepareReleasePoChannel()
+                poTransaction.processPoCommands()
                 addResultEvent("SUCCESS")
 
                 /*
