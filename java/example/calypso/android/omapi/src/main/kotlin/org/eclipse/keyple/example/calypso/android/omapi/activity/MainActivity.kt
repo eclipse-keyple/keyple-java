@@ -14,7 +14,7 @@ package org.eclipse.keyple.example.calypso.android.omapi.activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import java.util.SortedSet
+import java.util.concurrent.ConcurrentMap
 import kotlinx.android.synthetic.main.activity_main.calypsoExampleButton
 import kotlinx.android.synthetic.main.activity_main.connectOmapiTV
 import kotlinx.android.synthetic.main.activity_main.coreExamplesButton
@@ -33,7 +33,6 @@ import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException
 import org.eclipse.keyple.example.calypso.android.omapi.R
 import org.eclipse.keyple.plugin.android.omapi.PLUGIN_NAME
 import timber.log.Timber
-import java.util.concurrent.ConcurrentMap
 
 class MainActivity : BasicActivity(), View.OnClickListener {
 
