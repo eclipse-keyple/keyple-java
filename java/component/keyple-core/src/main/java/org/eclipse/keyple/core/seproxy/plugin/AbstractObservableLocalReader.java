@@ -13,7 +13,6 @@ package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -63,9 +62,8 @@ import org.slf4j.LoggerFactory;
  * there is no long processing in these methods, by making their execution asynchronous for example.
  * <li>WAIT_FOR_SE_PROCESSING
  * <p>
- * Waiting for the end of processing by the application. The end signal is triggered either by a
- * transmission made with a CLOSE_AFTER parameter, or by an explicit call to the cancelSeChannel
- * method.
+ * Waiting for the end of processing by the application. The end signal is triggered by a
+ * transmission made with a CLOSE_AFTER parameter.
  * <p>
  * If the instruction given when defining the default selection request is to stop
  * (ObservableReader.PollingMode.SINGLESHOT) then the logical and physical channels are closed
@@ -242,27 +240,6 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
     public final void clearObservers() {
         if (observers != null) {
             this.observers.clear();
-        }
-    }
-
-    /**
-     * Allows the application to signal the end of processing and thus proceed with the removal
-     * sequence, followed by a restart of the card search.
-     *
-     * <p>
-     * Send a request without APDU just to close the physical channel when it has not already been
-     * closed.
-     */
-    public final void cancelSeChannel() {
-        try {
-            // close the physical channel thanks to CLOSE_AFTER flag
-            processSeRequest(null, ChannelControl.CLOSE_AFTER);
-            if (logger.isTraceEnabled()) {
-                logger.trace(
-                        "Explicit communication closing requested, starting removal sequence.");
-            }
-        } catch (KeypleReaderException e) {
-            logger.error("KeypleReaderException while terminating. {}", e.getMessage());
         }
     }
 
