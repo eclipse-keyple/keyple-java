@@ -108,8 +108,9 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
     @Override
     public final List<SeResponse> transmitSeRequests(List<SeRequest> seRequests,
             MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl) {
-        if (seRequests == null) {
-            throw new IllegalArgumentException("The SeRequest list must not be null");
+        if (seRequests == null && channelControl == ChannelControl.KEEP_OPEN) {
+            throw new IllegalArgumentException(
+                    "The request list must not be null when the channel is to remain open.");
         }
 
         List<SeResponse> seResponses;
@@ -175,8 +176,9 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
      */
     @Override
     public final SeResponse transmitSeRequest(SeRequest seRequest, ChannelControl channelControl) {
-        if (seRequest == null) {
-            throw new IllegalArgumentException("seRequest must not be null");
+        if (seRequest == null && channelControl == ChannelControl.KEEP_OPEN) {
+            throw new IllegalArgumentException(
+                    "The request must not be null when the channel is to remain open.");
         }
 
         SeResponse seResponse;
