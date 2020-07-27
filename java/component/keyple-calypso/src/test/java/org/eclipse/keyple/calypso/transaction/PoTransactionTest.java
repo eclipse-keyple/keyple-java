@@ -630,7 +630,7 @@ public class PoTransactionTest {
         poTransaction.prepareReadRecordFile(FILE7, 1);
         poTransaction.prepareReadRecordFile(FILE8, 1);
         poTransaction.prepareReadRecordFile(FILE7, 3, 2, 29);
-        poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
+        poTransaction.processPoCommands();
         assertThat(calypsoPoRev31.getFileBySfi(FILE8).getData().getContent(1))
                 .isEqualTo(FILE8_REC1_29B_BYTES);
         assertThat(calypsoPoRev31.getFileBySfi(FILE7).getData().getContent(1))
@@ -641,50 +641,9 @@ public class PoTransactionTest {
                 .isEqualTo(FILE7_REC4_29B_BYTES);
     }
 
-    /* standard process Po commands: session open before */
-    @Test(expected = CalypsoPoTransactionIllegalStateException.class)
-    public void testProcessPoCommands_sessionOpen() {
-        CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
-        PoSecuritySettings poSecuritySettings =
-                new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)//
-                        .sessionDefaultKif(AccessLevel.SESSION_LVL_DEBIT, DEFAULT_KIF_DEBIT)//
-                        .sessionDefaultKeyRecordNumber(AccessLevel.SESSION_LVL_DEBIT,
-                                DEFAULT_KEY_RECORD_NUMBER_DEBIT)//
-                        .sessionModificationMode(
-                                PoTransaction.SessionSetting.ModificationMode.MULTIPLE)
-                        .build();
-
-        poTransaction = new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPoRev31),
-                poSecuritySettings);
-
-        samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
-        samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
-
-        poCommandsTestSet.put(PO_OPEN_SECURE_SESSION_SFI7_REC1_CMD,
-                PO_OPEN_SECURE_SESSION_SFI7_REC1_RSP);
-        poTransaction.prepareReadRecordFile(FILE7, 1);
-        poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
-
-        poTransaction.prepareReadRecordFile(FILE8, 1);
-        // PoTransaction while a session is open
-        // expected exception: a session is open
-        poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
-    }
-
-    /* No session open */
-    @Test(expected = CalypsoPoTransactionIllegalStateException.class)
-    public void testProcessPoCommandsInSession_noSessionOpen() {
-        CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
-        poTransaction = new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPoRev31));
-
-        poTransaction.prepareReadRecordFile(FILE8, 1);
-        // expected exception: no session is open
-        poTransaction.processPoCommandsInSession();
-    }
-
-    /* Standard processPoCommandsInSession */
+    /* Standard processPoCommands */
     @Test
-    public void testProcessPoCommandsInSession_nominalCase() {
+    public void testprocessPoCommands_nominalCase() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         PoSecuritySettings poSecuritySettings =
                 new PoSecuritySettings.PoSecuritySettingsBuilder(samResource) //
@@ -707,7 +666,7 @@ public class PoTransactionTest {
 
         poTransaction.prepareReadRecordFile(FILE8, 1);
         // PoTransaction after a session is open
-        poTransaction.processPoCommandsInSession();
+        poTransaction.processPoCommands();
         assertThat(calypsoPoRev31.getFileBySfi(FILE7).getData().getContent(1))
                 .isEqualTo(FILE7_REC1_29B_BYTES);
         assertThat(calypsoPoRev31.getFileBySfi(FILE8).getData().getContent(1))
@@ -721,8 +680,9 @@ public class PoTransactionTest {
         poTransaction = new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPoRev31));
 
         poTransaction.prepareReadRecordFile(FILE8, 1);
+        poTransaction.prepareReleasePoChannel();
         // expected exception: no session is open
-        poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
+        poTransaction.processClosing();
     }
 
     /* Standard processClosing - default ratification */
@@ -787,7 +747,8 @@ public class PoTransactionTest {
         poTransaction.prepareAppendRecord(FILE9, ByteArrayUtil.fromHex(FILE9_REC1_4B));
 
         // PoTransaction after a session is open
-        poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
+        poTransaction.prepareReleasePoChannel();
+        poTransaction.processClosing();
         assertThat(calypsoPoRev31.getFileBySfi(FILE10).getData().getContentAsCounterValue(1))
                 .isEqualTo(0x1122 - 100);
         assertThat(calypsoPoRev31.getFileBySfi(FILE11).getData().getContentAsCounterValue(1))
@@ -832,7 +793,8 @@ public class PoTransactionTest {
 
         // PoTransaction after a session is open
         // should raise a CalypsoPoCloseSecureSessionException
-        poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
+        poTransaction.prepareReleasePoChannel();
+        poTransaction.processClosing();
     }
 
     /* processClosing - SAM authentication fail on closing */
@@ -867,7 +829,8 @@ public class PoTransactionTest {
 
         // PoTransaction after a session is open
         // should raise a CalypsoSessionAuthenticationException
-        poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
+        poTransaction.prepareReleasePoChannel();
+        poTransaction.processClosing();
     }
 
 
@@ -903,7 +866,8 @@ public class PoTransactionTest {
 
         // PoTransaction after a session is open
         // should raise a CalypsoAuthenticationNotVerifiedException
-        poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
+        poTransaction.prepareReleasePoChannel();
+        poTransaction.processClosing();
     }
 
     /*
@@ -958,7 +922,8 @@ public class PoTransactionTest {
         poTransaction.prepareUpdateRecord(FILE8, (byte) 1, FILE8_REC1_4B_BYTES);
 
         // PoTransaction after a session is open
-        poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
+        poTransaction.prepareReleasePoChannel();
+        poTransaction.processClosing();
         assertThat(calypsoPoRev31.getFileBySfi(FILE8).getData().getContent(1))
                 .isEqualTo(FILE8_REC1_4B_BYTES);
     }
@@ -1005,7 +970,8 @@ public class PoTransactionTest {
 
         try {
             // PoTransaction after a session is open
-            poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
+            poTransaction.prepareReleasePoChannel();
+            poTransaction.processClosing();
         } catch (CalypsoAtomicTransactionException ex) {
             // expected exception: session buffer overflow
             return;
@@ -1070,7 +1036,8 @@ public class PoTransactionTest {
         poTransaction.prepareUpdateRecord(FILE8, (byte) 1, FILE8_REC1_4B_BYTES);
 
         // PoTransaction after a session is open
-        poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
+        poTransaction.prepareReleasePoChannel();
+        poTransaction.processClosing();
 
         assertThat(true).isTrue();
     }
@@ -1105,7 +1072,8 @@ public class PoTransactionTest {
         poTransaction.prepareReadRecordFile(FILE7, 1);
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
 
-        poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
+        poTransaction.prepareReleasePoChannel();
+        poTransaction.processClosing();
 
         assertThat(true).isTrue();
     }
@@ -1150,7 +1118,7 @@ public class PoTransactionTest {
         for (int i = 0; i < 4; i++) {
             poTransaction.prepareReadRecordFile(FILE8, 1);
         }
-        poTransaction.processPoCommandsInSession();
+        poTransaction.processPoCommands();
 
         // 5 x update (29 b) = 5 x (29 + 6) = 140 consumed in the session buffer
         for (int i = 0; i < 4; i++) {
@@ -1161,7 +1129,8 @@ public class PoTransactionTest {
 
         try {
             // PoTransaction after a session is open
-            poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
+            poTransaction.prepareReleasePoChannel();
+            poTransaction.processClosing();
         } catch (CalypsoAtomicTransactionException ex) {
             // expected exception: buffer overflow
             return;
@@ -1223,7 +1192,7 @@ public class PoTransactionTest {
         for (int i = 0; i < 4; i++) {
             poTransaction.prepareReadRecordFile(FILE8, 1);
         }
-        poTransaction.processPoCommandsInSession();
+        poTransaction.processPoCommands();
 
         // 24 x update (29 b) = 24 x (29 + 6) = 840 consumed in the session buffer
         // force multiple cycles
@@ -1234,7 +1203,8 @@ public class PoTransactionTest {
         poTransaction.prepareUpdateRecord(FILE8, (byte) 1, FILE8_REC1_5B_BYTES);
 
         // PoTransaction after a session is open
-        poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
+        poTransaction.prepareReleasePoChannel();
+        poTransaction.processClosing();
 
         assertThat(true).isTrue();
     }
@@ -1270,7 +1240,7 @@ public class PoTransactionTest {
         assertThat(calypsoPoRev31.getFileBySfi(FILE8).getData().getContent())
                 .isEqualTo(FILE8_REC1_29B_BYTES);
         assertThat(calypsoPoRev31.isDfRatified()).isTrue();
-        poTransaction.processCancel(ChannelControl.KEEP_OPEN);
+        poTransaction.processCancel();
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
     }
 
@@ -1301,12 +1271,13 @@ public class PoTransactionTest {
 
         poCommandsTestSet.put(PO_CHECK_PIN_CMD, PO_VERIFY_PIN_OK_RSP);
         poTransaction.prepareCheckPinStatus();
-        poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
+        poTransaction.processPoCommands();
         assertThat(calypsoPoRev31.getPinAttemptRemaining()).isEqualTo(3);
 
         poCommandsTestSet.put(PO_CHECK_PIN_CMD, PO_VERIFY_PIN_KO_RSP);
         poTransaction.prepareCheckPinStatus();
-        poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER);
+        poTransaction.prepareReleasePoChannel();
+        poTransaction.processPoCommands();
         assertThat(calypsoPoRev31.getPinAttemptRemaining()).isEqualTo(2);
     }
 
@@ -1345,7 +1316,7 @@ public class PoTransactionTest {
         poTransaction.prepareSelectFile(SelectFileControl.CURRENT_DF);
         poTransaction.prepareSelectFile(SelectFileControl.FIRST_EF);
         poTransaction.prepareSelectFile(SelectFileControl.NEXT_EF);
-        poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
+        poTransaction.processPoCommands();
         DirectoryHeader directoryHeader = calypsoPoRev31.getDirectoryHeader();
         FileHeader fileHeader1 = calypsoPoRev31.getFileByLid((short) 0x02).getHeader();
         FileHeader fileHeader2 = calypsoPoRev31.getFileByLid((short) 0x03).getHeader();
@@ -1399,7 +1370,7 @@ public class PoTransactionTest {
         poTransaction.prepareSelectFile(ByteArrayUtil.fromHex(LID_3F00_STR));
         poTransaction.prepareSelectFile(ByteArrayUtil.fromHex(LID_0002_STR));
         poTransaction.prepareSelectFile(ByteArrayUtil.fromHex(LID_0003_STR));
-        poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
+        poTransaction.processPoCommands();
 
         DirectoryHeader directoryHeader = calypsoPoRev31.getDirectoryHeader();
         ElementaryFile file1 = calypsoPoRev31.getFileByLid((short) 0x02);
@@ -1458,7 +1429,7 @@ public class PoTransactionTest {
                 PO_READ_REC_SFI7_REC1_6B_COUNTER_RSP);
 
         poTransaction.prepareReadCounterFile(FILE7, 2);
-        poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
+        poTransaction.processPoCommands();
         assertThat(calypsoPoRev31.getFileBySfi(FILE7).getData().getContentAsCounterValue(1))
                 .isEqualTo(ByteArrayUtil.threeBytesToInt(ByteArrayUtil.fromHex(FILE7_REC1_COUNTER1),
                         0));
@@ -1484,9 +1455,10 @@ public class PoTransactionTest {
 
         poTransaction.prepareSvGet(PoTransaction.SvSettings.Operation.RELOAD,
                 PoTransaction.SvSettings.Action.DO);
-        poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
+        poTransaction.processPoCommands();
         poTransaction.prepareSvReload(2);
-        poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER);
+        poTransaction.prepareReleasePoChannel();
+        poTransaction.processPoCommands();
         assertThat(calypsoPoRev31.getSvBalance()).isEqualTo(SV_BALANCE);
         assertThat(calypsoPoRev31.getSvLoadLogRecord()).isNotNull();
         try {
@@ -1515,9 +1487,10 @@ public class PoTransactionTest {
 
         poTransaction.prepareSvGet(PoTransaction.SvSettings.Operation.RELOAD,
                 PoTransaction.SvSettings.Action.DO);
-        poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
+        poTransaction.processPoCommands();
         poTransaction.prepareSvReload(2);
-        poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER);
+        poTransaction.prepareReleasePoChannel();
+        poTransaction.processPoCommands();
         assertThat(calypsoPoRev31.getSvBalance()).isEqualTo(SV_BALANCE);
         assertThat(calypsoPoRev31.getSvLoadLogRecord()).isNotNull();
         assertThat(calypsoPoRev31.getSvDebitLogLastRecord()).isNotNull();
@@ -1540,9 +1513,10 @@ public class PoTransactionTest {
 
         poTransaction.prepareSvGet(PoTransaction.SvSettings.Operation.DEBIT,
                 PoTransaction.SvSettings.Action.DO);
-        poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
+        poTransaction.processPoCommands();
         poTransaction.prepareSvDebit(2);
-        poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER);
+        poTransaction.prepareReleasePoChannel();
+        poTransaction.processPoCommands();
         assertThat(calypsoPoRev31.getSvBalance()).isEqualTo(SV_BALANCE);
         assertThat(calypsoPoRev31.getSvDebitLogLastRecord()).isNotNull();
     }
@@ -1564,9 +1538,10 @@ public class PoTransactionTest {
 
         poTransaction.prepareSvGet(PoTransaction.SvSettings.Operation.DEBIT,
                 PoTransaction.SvSettings.Action.UNDO);
-        poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
+        poTransaction.processPoCommands();
         poTransaction.prepareSvDebit(2);
-        poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER);
+        poTransaction.prepareReleasePoChannel();
+        poTransaction.processPoCommands();
         assertThat(calypsoPoRev31.getSvBalance()).isEqualTo(SV_BALANCE);
         assertThat(calypsoPoRev31.getSvDebitLogLastRecord()).isNotNull();
     }
@@ -1580,7 +1555,8 @@ public class PoTransactionTest {
         poCommandsTestSet.put(PO_READ_SV_DEBIT_LOG_FILE_CMD, PO_READ_SV_DEBIT_LOG_FILE_RSP);
 
         poTransaction.prepareSvReadAllLogs();
-        poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER);
+        poTransaction.prepareReleasePoChannel();
+        poTransaction.processPoCommands();
 
         assertThat(calypsoPoRev31.getSvLoadLogRecord()).isNotNull();
         assertThat(calypsoPoRev31.getSvDebitLogLastRecord()).isNotNull();
@@ -1599,7 +1575,8 @@ public class PoTransactionTest {
         poCommandsTestSet.put(PO_INVALIDATE_CMD, SW1SW2_OK_RSP);
 
         poTransaction.prepareInvalidate();
-        poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER);
+        poTransaction.prepareReleasePoChannel();
+        poTransaction.processPoCommands();
     }
 
     @Test(expected = CalypsoPoTransactionIllegalStateException.class)
@@ -1610,7 +1587,8 @@ public class PoTransactionTest {
         poCommandsTestSet.put(PO_INVALIDATE_CMD, SW1SW2_OK_RSP);
 
         poTransaction.prepareInvalidate();
-        poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER);
+        poTransaction.prepareReleasePoChannel();
+        poTransaction.processPoCommands();
     }
 
     @Test(expected = CalypsoPoTransactionIllegalStateException.class)
@@ -1621,7 +1599,8 @@ public class PoTransactionTest {
         poCommandsTestSet.put(PO_REHABILITATE_CMD, SW1SW2_OK_RSP);
 
         poTransaction.prepareRehabilitate();
-        poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER);
+        poTransaction.prepareReleasePoChannel();
+        poTransaction.processPoCommands();
     }
 
     @Test
@@ -1632,7 +1611,8 @@ public class PoTransactionTest {
         poCommandsTestSet.put(PO_REHABILITATE_CMD, SW1SW2_OK_RSP);
 
         poTransaction.prepareRehabilitate();
-        poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER);
+        poTransaction.prepareReleasePoChannel();
+        poTransaction.processPoCommands();
     }
 
     @Test(expected = CalypsoPoIOException.class)
@@ -1640,7 +1620,8 @@ public class PoTransactionTest {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
         poTransaction = new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPoRev31));
         poTransaction.prepareReadRecordFile(FILE7, 1);
-        poTransaction.processPoCommands(ChannelControl.KEEP_OPEN);
+        poTransaction.prepareReleasePoChannel();
+        poTransaction.processPoCommands();
     }
 
     @Test
