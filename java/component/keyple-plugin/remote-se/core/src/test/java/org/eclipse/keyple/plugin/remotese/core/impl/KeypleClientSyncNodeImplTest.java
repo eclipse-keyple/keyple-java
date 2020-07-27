@@ -21,6 +21,7 @@ import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 import org.junit.Before;
 import org.junit.Test;
 
+@SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
 public class KeypleClientSyncNodeImplTest extends AbstractKeypleSyncNode {
 
     KeypleClientSyncPollingMock endpoint;

@@ -17,6 +17,7 @@ import java.util.concurrent.Callable;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 import com.google.gson.JsonObject;
 
+@SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
 public abstract class AbstractKeypleSyncNode {
 
     KeypleMessageHandlerMock handler;
