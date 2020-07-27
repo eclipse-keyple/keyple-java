@@ -210,7 +210,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         // keep open
         r.transmitSeRequest(SeRequestTest.getSeRequestSample(), ChannelControl.KEEP_OPEN);
         // force closing
-        r.cancelSeChannel();
+        r.transmitSeRequest(null, ChannelControl.CLOSE_AFTER);
         verify(r, times(1)).processSeRequest(null, ChannelControl.CLOSE_AFTER);
     }
 

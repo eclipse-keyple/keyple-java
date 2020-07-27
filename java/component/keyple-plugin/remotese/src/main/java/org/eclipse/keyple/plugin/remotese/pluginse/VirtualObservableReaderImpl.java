@@ -11,12 +11,11 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
-import static org.eclipse.keyple.core.seproxy.ChannelControl.CLOSE_AFTER;
+
 import java.util.*;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.ObservableReaderNotifier;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
@@ -111,17 +110,6 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
     public final void clearObservers() {
         if (observers != null) {
             this.observers.clear();
-        }
-    }
-
-    @Override
-    public final void cancelSeChannel() {
-        try {
-            // requests the closure of the physical channel with the CLOSE_AFTER flag
-            processSeRequest(null, CLOSE_AFTER);
-            logger.trace("Explicit communication closing requested, starting removal sequence.");
-        } catch (KeypleReaderException e) {
-            logger.error("KeypleReaderException while terminating. {}", e.getMessage());
         }
     }
 
