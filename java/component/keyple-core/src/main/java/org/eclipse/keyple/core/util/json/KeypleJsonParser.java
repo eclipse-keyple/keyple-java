@@ -29,9 +29,9 @@ public class KeypleJsonParser {
     static private Gson parser;
 
     /**
-     * Get the singleton instance of the keyple gson parser.
-     * If not created yet, a default keyple gson parser instance is created
-
+     * Get the singleton instance of the keyple gson parser. If not created yet, a default keyple
+     * gson parser instance is created
+     * 
      * @return singleton instance of gson
      */
     static public Gson getParser() {
@@ -45,7 +45,9 @@ public class KeypleJsonParser {
     private KeypleJsonParser() {}
 
     /**
-     * Initialize and personalize the gson parser used in Keyple. If the singleton instance already existed, it will be overwritten when calling the method getParser.
+     * Initialize and personalize the gson parser used in Keyple. If the singleton instance already
+     * existed, it will be overwritten when calling the method getParser.
+     * 
      * @return builder instance
      */
     static public BuildStep build() {
@@ -56,12 +58,14 @@ public class KeypleJsonParser {
 
         /**
          * Build the keyple gson parser instance
+         * 
          * @return instance of gson
          */
         Gson getParser();
 
         /**
          * Register a new type adapter
+         * 
          * @param type non nullable instance of the type to be registered
          * @param adapter non nullable of the type adapter to be registered
          * @return builder step
@@ -80,8 +84,10 @@ public class KeypleJsonParser {
                     .registerTypeAdapter(byte[].class, new HexArrayTypeAdapter())
                     .registerTypeAdapter(SeCommand.class, new SeCommandTypeAdapter())
                     .registerTypeAdapter(KeypleException.class, new KeypleExceptionTypeAdapter())
-                    .registerTypeAdapter(KeypleReaderIOException.class, new KeypleReaderIOExceptionSerializer())
-                    .registerTypeAdapter(KeypleSeCommandException.class, new KeypleSeCommandExceptionSerializer());
+                    .registerTypeAdapter(KeypleReaderIOException.class,
+                            new KeypleReaderIOExceptionSerializer())
+                    .registerTypeAdapter(KeypleSeCommandException.class,
+                            new KeypleSeCommandExceptionSerializer());
         }
 
         @Override
