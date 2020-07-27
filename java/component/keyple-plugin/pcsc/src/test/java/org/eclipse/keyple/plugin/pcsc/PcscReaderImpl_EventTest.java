@@ -67,7 +67,6 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
         logger.info("[{}] Notifying the end of the card processing", reader.getName());
         logger.info("[{}] Waiting 10 seconds for the card removal...", reader.getName());
 
-        // reader.cancelSeChannel();
         remove.await(10, TimeUnit.SECONDS);
 
         Assert.assertEquals(0, remove.getCount());
