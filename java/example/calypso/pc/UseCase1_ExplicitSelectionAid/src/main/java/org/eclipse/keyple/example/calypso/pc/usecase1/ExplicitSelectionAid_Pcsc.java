@@ -21,7 +21,6 @@ import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
@@ -132,7 +131,8 @@ public class ExplicitSelectionAid_Pcsc {
 
             // Actual PO communication: send the prepared read order, then close the channel with
             // the PO
-            poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER);
+            poTransaction.prepareReleasePoChannel();
+            poTransaction.processPoCommands();
             logger.info("The reading of the EventLog has succeeded.");
 
             // Retrieve the data read from the CalyspoPo updated during the transaction process
