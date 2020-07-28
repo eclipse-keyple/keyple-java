@@ -13,6 +13,7 @@ package org.eclipse.keyple.calypso.transaction;
 
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 
 /**
@@ -72,6 +73,8 @@ public class SamSelector extends SeSelector {
 
         public SamSelectorBuilder() {
             super();
+            // set the ISO7816_3 protocol as the default one for SAMs
+            super.seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3);
             this.atrFilter(new AtrFilter(""));
         }
 
