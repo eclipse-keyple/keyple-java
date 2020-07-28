@@ -45,7 +45,7 @@ public final class PoSelector extends SeSelector {
      *
      * @since 0.9
      */
-    public static class PoSelectorBuilder extends SeSelector.SeSelectorBuilder {
+    public static final class PoSelectorBuilder extends SeSelector.SeSelectorBuilder {
         private InvalidatedPo invalidatedPo;
 
         private PoSelectorBuilder() {

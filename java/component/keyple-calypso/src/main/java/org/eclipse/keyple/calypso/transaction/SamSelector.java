@@ -66,7 +66,7 @@ public class SamSelector extends SeSelector {
      * 
      * @since 0.9
      */
-    public static class SamSelectorBuilder extends SeSelector.SeSelectorBuilder {
+    public static final class SamSelectorBuilder extends SeSelector.SeSelectorBuilder {
         private SamRevision samRevision;
         private String serialNumber;
         private byte[] unlockData;
