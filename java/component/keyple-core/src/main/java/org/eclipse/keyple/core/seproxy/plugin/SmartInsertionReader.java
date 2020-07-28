@@ -11,10 +11,9 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 
-public interface SmartInsertionReader extends ObservableReader {
+public interface SmartInsertionReader extends ObservableReaderNotifier {
     /**
      * Waits for a SE. Returns true if a SE is detected before the end of the provided timeout.
      * <p>

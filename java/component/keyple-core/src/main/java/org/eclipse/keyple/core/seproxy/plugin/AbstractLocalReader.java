@@ -429,7 +429,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * @return the Map containing the protocol definitions set by addSeProtocolSetting and
      *         setSeProtocolSetting
      */
-    protected Map<SeProtocol, String> getProtocolsMap() {
+    protected final Map<SeProtocol, String> getProtocolsMap() {
         return protocolsMap;
     }
 

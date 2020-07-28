@@ -42,6 +42,7 @@ Releases:
 * KEYP-290 : fixed NPE when opening a secure session without reading with rev 2.4 PO
 * KEYP-292 : make CalypsoPo and CalypsoSam classes extendable
 * KEYP-225 : PoResource and SamResource classes are removed, their usage is replaced by SeResource<CalypsoPo/CalypsoSam>
+* KEYP-306 : SE protocol is now optional when building PoSelector and SamSelector. Its default value is ISO_14443_4 and ISO7816_3 respectively.
 * updated with the new keyple-java-core API
 * various other refactorings and improvements
 * fixed many issues raised by Sonarqube

@@ -20,7 +20,6 @@ import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
 
@@ -43,7 +42,6 @@ public class SamSelectionRequestTest {
     @Test
     public void samSelectionRequest_parse() {
         SamSelector samSelector = SamSelector.builder()//
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)//
                 .samRevision(SamRevision.AUTO)//
                 .build();
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
@@ -58,7 +56,6 @@ public class SamSelectionRequestTest {
     @Test
     public void samSelectionRequest_unlock_ok() {
         SamSelector samSelector = SamSelector.builder()//
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)//
                 .samRevision(SamRevision.AUTO)//
                 .unlockData(UNLOCK_DATA).build();
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
@@ -75,7 +72,6 @@ public class SamSelectionRequestTest {
     @Test(expected = CalypsoSamCommandException.class)
     public void samSelectionRequest_unlock_ko() {
         SamSelector samSelector = SamSelector.builder()//
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)//
                 .samRevision(SamRevision.AUTO)//
                 .unlockData(UNLOCK_DATA).build();
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
