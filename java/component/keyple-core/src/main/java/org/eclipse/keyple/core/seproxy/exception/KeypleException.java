@@ -15,7 +15,7 @@ package org.eclipse.keyple.core.seproxy.exception;
  * The exception {@code KeypleException} is the parent abstract class of all Keyple checked
  * exceptions.
  */
-public abstract class KeypleException extends RuntimeException {
+public abstract class KeypleException extends java.lang.RuntimeException {
 
     /**
      * @param message the message to identify the exception context
@@ -34,14 +34,8 @@ public abstract class KeypleException extends RuntimeException {
         super(message, cause);
     }
 
-    /*
-     * public String toJson() { JsonObject json = new JsonObject(); json.addProperty("code",
-     * getErrorCode()); json.addProperty("message", getMessage()); return json.toString(); };
-     */
-
     public String getErrorCode() {
         return getClass().getName();
     };
-
 
 }

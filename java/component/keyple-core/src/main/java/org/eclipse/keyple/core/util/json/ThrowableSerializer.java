@@ -12,24 +12,20 @@
 package org.eclipse.keyple.core.util.json;
 
 import java.lang.reflect.Type;
-import java.util.List;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import com.google.gson.*;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 /**
- * Remove Stacktrace and SupressedExceptions fields from serialization
+ * Serialize only the message field for all Throwable
  */
-public class KeypleReaderIOExceptionSerializer implements JsonSerializer<KeypleReaderIOException> {
+public class ThrowableSerializer implements JsonSerializer<Throwable> {
 
     @Override
-    public JsonElement serialize(KeypleReaderIOException exception, Type type,
+    public JsonElement serialize(Throwable exception, Type type,
             JsonSerializationContext jsonSerializationContext) {
         JsonObject json = new JsonObject();
-        json.add("seResponse",
-                jsonSerializationContext.serialize(exception.getSeResponse(), SeResponse.class));
-        json.add("seResponses",
-                jsonSerializationContext.serialize(exception.getSeResponses(), List.class));
         json.addProperty("message", exception.getMessage());
         return json;
     }

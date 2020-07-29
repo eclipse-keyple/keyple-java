@@ -11,12 +11,12 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.core.impl;
 
+import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remotese.core.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+
 
 /**
  * Abstract Keyple Message Handler.
@@ -119,23 +119,9 @@ public abstract class AbstractKeypleMessageHandler {
     protected void checkError(KeypleMessageDto message) {
         // throw exception if message is ERROR
         if (message.getAction().equals(KeypleMessageDto.Action.ERROR.name())) {
-            Gson parser = KeypleJsonParser.getParser();
-            JsonObject body = parser.fromJson(message.getBody(), JsonObject.class);
-            if (body.has("code")) {
-                String classname = body.get("code").getAsString();
-                try {
-                    RuntimeException exception =
-                            (RuntimeException) parser.fromJson(body, Class.forName(classname));
-                    logger.error("KeypleDto contains exception : {}", exception.getMessage());
-                    throw exception;
-                } catch (ClassNotFoundException e) {
-                    throw new IllegalArgumentException(
-                            "Unable to parse exception from keypleDto " + message.toString());
-                }
-            } else {
-                throw new IllegalArgumentException(
-                        "Unable to parse exception from keypleDto " + message.toString());
-            }
+            BodyError body =
+                    KeypleJsonParser.getParser().fromJson(message.getBody(), BodyError.class);
+            throw body.getException();
         }
     }
 }

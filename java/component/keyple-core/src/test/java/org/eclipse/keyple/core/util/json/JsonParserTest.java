@@ -14,9 +14,13 @@ package org.eclipse.keyple.core.util.json;
 import static org.assertj.core.api.Assertions.assertThat;
 import java.lang.reflect.Type;
 import java.util.List;
+import org.eclipse.keyple.core.command.AbstractIso7816CommandBuilderTest;
+import org.eclipse.keyple.core.command.exception.KeypleSeCommandException;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
@@ -39,42 +43,42 @@ public class JsonParserTest {
      */
 
     @Test
-    public void testHoplinkSeRequestList() {
+    public void serialize_HoplinkSeRequestList() {
         List<SeRequest> seRequests = SampleFactory.getASeRequestList_ISO14443_4();
-        testSerializeDeserializeObj(seRequests, List.class);
+        assertSerialization_forList(seRequests, List.class);
     }
 
     @Test
-    public void testCompleteSeRequestList() {
+    public void serialize_CompleteSeRequestList() {
         List<SeRequest> seRequests = SampleFactory.getCompleteRequestList();
-        testSerializeDeserializeObj(seRequests, List.class);
+        assertSerialization_forList(seRequests, List.class);
     }
 
     @Test
-    public void testSeResponses() {
+    public void serialize_SeResponses() {
         List<SeResponse> seResponses = SampleFactory.getCompleteResponseSet();
-        testSerializeDeserializeObj(seResponses, List.class);
+        assertSerialization_forList(seResponses, List.class);
 
     }
 
     @Test
-    public void testSelectionByAidRequest() {
+    public void serialize_SelectionByAidRequest() {
         AbstractDefaultSelectionsRequest defaultSelectionsRequest =
                 SampleFactory.getSelectionRequest();
-        testSerializeDeserializeObj(defaultSelectionsRequest, DefaultSelectionsRequest.class);
+        assertSerialization(defaultSelectionsRequest, DefaultSelectionsRequest.class);
     }
 
     @Test
-    public void testSelectionByAtrRequest() {
+    public void serialize_SelectionByAtrRequest() {
         AbstractDefaultSelectionsRequest defaultSelectionsRequest =
                 SampleFactory.getSelectionRequest();
-        testSerializeDeserializeObj(defaultSelectionsRequest, DefaultSelectionsRequest.class);
+        assertSerialization(defaultSelectionsRequest, DefaultSelectionsRequest.class);
     }
 
     @Test
-    public void testNotificationMode() {
+    public void serialize_NotificationMode() {
         ObservableReader.NotificationMode notificationMode = SampleFactory.getNotificationMode();
-        testSerializeDeserializeObj(notificationMode, ObservableReader.NotificationMode.class);
+        assertSerialization(notificationMode, ObservableReader.NotificationMode.class);
     }
 
     /**
@@ -82,11 +86,11 @@ public class JsonParserTest {
      */
 
     @Test
-    public void testReaderEvent() {
+    public void serialize_ReaderEvent() {
         ReaderEvent readerEvent =
                 new ReaderEvent("PLUGIN", "READER", ReaderEvent.EventType.SE_INSERTED,
                         new DefaultSelectionsResponse(SampleFactory.getCompleteResponseSet()));
-        testSerializeDeserializeObj(readerEvent, ReaderEvent.class);
+        assertSerialization(readerEvent, ReaderEvent.class);
     }
 
 
@@ -94,8 +98,8 @@ public class JsonParserTest {
     public void addCustomAdapter_serializeCustomObject_shouldUseCustomAdapter() {
 
         MyKeypleUserDataMockAdapter adapter = new MyKeypleUserDataMockAdapter();
-        Gson parser = KeypleJsonParser.build()
-                .registerTypeAdapter(SampleFactory.MyKeypleUserData.class, adapter).getParser();
+        Gson parser = KeypleJsonParser.registerTypeAdapter(SampleFactory.MyKeypleUserData.class,
+                adapter, false);
         SampleFactory.MyKeypleUserData data = new SampleFactory.MyKeypleUserData("value");
         String json = parser.toJson(data);
         assertThat(json).contains(adapter.aDefinedJson);
@@ -104,20 +108,73 @@ public class JsonParserTest {
         assertThat(target.getField()).isEqualTo(adapter.aDefinedResult);
     }
 
+    @Test
+    public void serialize_readerException() {
+        KeypleReaderNotFoundException source =
+                (KeypleReaderNotFoundException) SampleFactory.getAReaderKeypleException();
+        assertSerialization_forException(new BodyError(source), BodyError.class);
+
+    }
+
+    @Test
+    public void serialize_ioException_withResponses() {
+        KeypleReaderIOException source = SampleFactory.getIOExceptionWithResponses();
+        assertSerialization_forException(new BodyError(source), BodyError.class);
+    }
+
+    @Test
+    public void serialize_ioException_withResponse() {
+        RuntimeException source = SampleFactory.getIOExceptionWithResponse();
+        assertSerialization_forException(new BodyError(source), BodyError.class);
+
+    }
+
+    @Test
+    public void serialize_keypleSeCommandException() {
+        KeypleSeCommandException source = new AKeypleSeCommandException("message",
+                AbstractIso7816CommandBuilderTest.CommandRef.COMMAND_1, 1);
+        assertSerialization_forException(new BodyError(source), BodyError.class);
+
+    }
+
+    @Test
+    public void serialize_IllegalArgumentException() {
+        RuntimeException source = new IllegalArgumentException("IAE message");
+        assertSerialization_forException(new BodyError(source), BodyError.class);
+    }
+
     /*
      * Utility Method
      */
 
-    public Object testSerializeDeserializeObj(Object obj, Class objectClass) {
+    static public void assertSerialization(Object source, Class objectClass) {
         Gson gson = KeypleJsonParser.getParser();
-        String json = gson.toJson(obj);
-        logger.debug("json 1 : {}", json);
-        Object deserializeObj = gson.fromJson(json, objectClass);
-        logger.debug("deserializeObj : {}", deserializeObj.toString());
-        String json2 = gson.toJson(deserializeObj);
-        logger.debug("json 2 : {}", json2);
-        assert json.equals(json2);
-        return deserializeObj;
+        String json = gson.toJson(source);
+        logger.debug("json : {}", json);
+        Object target = gson.fromJson(json, objectClass);
+        assertThat(source).isEqualToComparingFieldByFieldRecursively(target);
+    }
+
+    static public void assertSerialization_forList(Object source,
+            Class<? extends List> objectClass) {
+        Gson gson = KeypleJsonParser.getParser();
+        String json = gson.toJson(source);
+        logger.debug("json : {}", json);
+        List target = gson.fromJson(json, objectClass);
+        assertThat(target).hasSameElementsAs(target);
+    }
+
+    static public void assertSerialization_forException(Object source,
+            Class<? extends BodyError> objectClass) {
+        Gson gson = KeypleJsonParser.getParser();
+        String json = gson.toJson(source);
+        assertThat(json).doesNotContain("suppressedExceptions");
+        assertThat(json).doesNotContain("stackTrace");
+        logger.debug("json : {}", json);
+        BodyError target = gson.fromJson(json, objectClass);
+        logger.debug("deserialize exception className : {}",
+                target.getException().getClass().getName());
+        assertThat(target).isEqualToComparingFieldByFieldRecursively(target);
     }
 
     public class MyKeypleUserDataMockAdapter
@@ -137,6 +194,18 @@ public class JsonParserTest {
         public SampleFactory.MyKeypleUserData deserialize(JsonElement json, Type typeOfT,
                 JsonDeserializationContext context) throws JsonParseException {
             return new SampleFactory.MyKeypleUserData(aDefinedResult);
+        }
+    }
+
+    static class AKeypleSeCommandException extends KeypleSeCommandException {
+        /**
+         * @param message the message to identify the exception context
+         * @param command the command
+         * @param statusCode the status code (optional)
+         */
+        public AKeypleSeCommandException(String message,
+                AbstractIso7816CommandBuilderTest.CommandRef command, Integer statusCode) {
+            super(message, command, statusCode);
         }
     }
 

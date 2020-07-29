@@ -19,6 +19,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
+/**
+ * Force the command field to be serialized as a SeCommand.class
+ */
 public class KeypleSeCommandExceptionSerializer
         implements JsonSerializer<KeypleSeCommandException> {
 
@@ -30,7 +33,6 @@ public class KeypleSeCommandExceptionSerializer
                 jsonSerializationContext.serialize(exception.getCommand(), SeCommand.class));
         jsonObject.addProperty("statusCode", exception.getStatusCode());
         jsonObject.addProperty("message", exception.getMessage());
-        jsonObject.addProperty("code", exception.getErrorCode());
         return jsonObject;
     }
 }

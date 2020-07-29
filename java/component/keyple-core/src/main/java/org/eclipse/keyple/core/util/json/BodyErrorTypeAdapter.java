@@ -12,32 +12,36 @@
 package org.eclipse.keyple.core.util.json;
 
 import java.lang.reflect.Type;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import com.google.gson.*;
 
-public class KeypleExceptionTypeAdapter
-        implements JsonSerializer<KeypleException>, JsonDeserializer<KeypleException> {
+/**
+ * Serialize and Deserialize a {@link BodyError} that contains a RuntimeException
+ */
+public class BodyErrorTypeAdapter
+        implements JsonSerializer<BodyError>, JsonDeserializer<BodyError> {
 
     @Override
-    public KeypleException deserialize(JsonElement jsonElement, Type type,
+    public BodyError deserialize(JsonElement jsonElement, Type type,
             JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        String errorCode = jsonElement.getAsJsonObject().get("code").getAsString();
-        // String message = jsonElement.getAsJsonObject().get("message").getAsString();
+        String exceptionName = jsonElement.getAsJsonObject().get("code").getAsString();
+        JsonObject bodydException =
+                jsonElement.getAsJsonObject().get("exception").getAsJsonObject();
         try {
-            Class exceptionClass = Class.forName(errorCode);
-            return jsonDeserializationContext.deserialize(jsonElement, exceptionClass);
+            Class<RuntimeException> exceptionClass =
+                    (Class<RuntimeException>) Class.forName(exceptionName);
+            return new BodyError((java.lang.RuntimeException) jsonDeserializationContext
+                    .deserialize(bodydException, exceptionClass));
         } catch (Throwable e) {
             throw new JsonParseException(e);
         }
     }
 
     @Override
-    public JsonElement serialize(KeypleException exception, Type type,
+    public JsonElement serialize(BodyError bodyError, Type type,
             JsonSerializationContext jsonSerializationContext) {
         JsonObject output = new JsonObject();
-        output.addProperty("message", exception.getMessage());
-        // output.addProperty("instructionByte", seCommand.getInstructionByte());
-        output.addProperty("code", exception.getClass().getName());
+        output.addProperty("code", bodyError.getException().getClass().getName());
+        output.add("exception", jsonSerializationContext.serialize(bodyError.getException()));
         return output;
     }
 }

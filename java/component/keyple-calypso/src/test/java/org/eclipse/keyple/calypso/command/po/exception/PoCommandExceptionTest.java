@@ -13,8 +13,7 @@ package org.eclipse.keyple.calypso.command.po.exception;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
-import org.eclipse.keyple.core.command.exception.KeypleSeCommandException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
+import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,12 +36,12 @@ public class PoCommandExceptionTest {
     public void serializeException() {
         CalypsoPoAccessForbiddenException source =
                 new CalypsoPoAccessForbiddenException("message", CalypsoPoCommand.APPEND_RECORD, 1);
-        String json = parser.toJson(source, KeypleSeCommandException.class);
+        String json = parser.toJson(new BodyError(source));
         logger.debug(json);
-        KeypleSeCommandException target =
-                (KeypleSeCommandException) parser.fromJson(json, KeypleException.class);
+        assertThat(json).doesNotContain("stackTrace");
+        RuntimeException target = parser.fromJson(json, BodyError.class).getException();
         assertThat(target).isEqualToComparingFieldByFieldRecursively(source);
-        assertThat(target.getCommand()).isEqualToComparingFieldByField(source.getCommand());
+
     }
 
 }

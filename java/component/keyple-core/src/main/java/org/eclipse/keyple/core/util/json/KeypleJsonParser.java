@@ -12,10 +12,8 @@
 package org.eclipse.keyple.core.util.json;
 
 
-import java.lang.reflect.Type;
 import org.eclipse.keyple.core.command.SeCommand;
 import org.eclipse.keyple.core.command.exception.KeypleSeCommandException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import com.google.gson.Gson;
@@ -27,6 +25,7 @@ import com.google.gson.GsonBuilder;
 public class KeypleJsonParser {
 
     static private Gson parser;
+    static final GsonBuilder gsonBuilder = initGsonBuider();
 
     /**
      * Get the singleton instance of the keyple gson parser. If not created yet, a default keyple
@@ -34,75 +33,60 @@ public class KeypleJsonParser {
      * 
      * @return singleton instance of gson
      */
-    static public Gson getParser() {
+    public static Gson getParser() {
         if (parser == null) {
             // init parser with keyple default value
-            parser = new BuildStep().getParser();
+            parser = gsonBuilder.create();
         }
         return parser;
     }
 
     private KeypleJsonParser() {}
 
+
     /**
-     * Initialize and personalize the gson parser used in Keyple. If the singleton instance already
-     * existed, it will be overwritten when calling the method getParser.
+     * Initialize and personalize the gson parser used in Keyple.
      * 
      * @return builder instance
      */
-    static public BuildStep build() {
-        return new BuildStep();
+    private static GsonBuilder initGsonBuider() {
+        GsonBuilder init = new GsonBuilder();
+        // init keyple default adapter
+        init.registerTypeAdapter(SeProtocol.class, new GsonSeProtocolTypeAdapter())
+                .registerTypeAdapter(byte[].class, new HexArrayTypeAdapter())
+                .registerTypeAdapter(SeCommand.class, new SeCommandTypeAdapter())
+                .registerTypeAdapter(BodyError.class, new BodyErrorTypeAdapter())
+                .registerTypeHierarchyAdapter(Throwable.class, new ThrowableSerializer())
+                .registerTypeAdapter(KeypleReaderIOException.class,
+                        new KeypleReaderIOExceptionSerializer())
+
+                .registerTypeHierarchyAdapter(KeypleSeCommandException.class,
+                        new KeypleSeCommandExceptionSerializer());
+
+        return init;
     }
 
-    public interface GsonBuildStep {
 
-        /**
-         * Build the keyple gson parser instance
-         * 
-         * @return instance of gson
-         */
-        Gson getParser();
-
-        /**
-         * Register a new type adapter
-         * 
-         * @param type non nullable instance of the type to be registered
-         * @param adapter non nullable of the type adapter to be registered
-         * @return builder step
-         */
-        GsonBuildStep registerTypeAdapter(Type type, Object adapter);
+    /**
+     * Register a new type adapter
+     *
+     * @param matchingClass non nullable instance of the type to be registered
+     * @param adapter non nullable of the type adapter to be registered (should implement
+     *        {@link com.google.gson.JsonSerializer} and/or
+     *        {@link com.google.gson.JsonDeserializer})
+     * @param withSubclass apply this adapter to subclass of matchingClass also
+     * @return updated gson instance
+     */
+    public static Gson registerTypeAdapter(Class matchingClass, Object adapter,
+            Boolean withSubclass) {
+        // init custom types after allowing the user to overwrite keyple default adapter
+        if (withSubclass) {
+            gsonBuilder.registerTypeHierarchyAdapter(matchingClass, adapter);
+        } else {
+            gsonBuilder.registerTypeAdapter(matchingClass, adapter);
+        }
+        parser = gsonBuilder.create();
+        return parser;
     }
-
-    public static class BuildStep implements GsonBuildStep {
-
-        final GsonBuilder gsonBuilder;
-
-        private BuildStep() {
-            gsonBuilder = new GsonBuilder();
-            // init keyple default adapter
-            gsonBuilder.registerTypeAdapter(SeProtocol.class, new GsonSeProtocolTypeAdapter())
-                    .registerTypeAdapter(byte[].class, new HexArrayTypeAdapter())
-                    .registerTypeAdapter(SeCommand.class, new SeCommandTypeAdapter())
-                    .registerTypeAdapter(KeypleException.class, new KeypleExceptionTypeAdapter())
-                    .registerTypeAdapter(KeypleReaderIOException.class,
-                            new KeypleReaderIOExceptionSerializer())
-                    .registerTypeAdapter(KeypleSeCommandException.class,
-                            new KeypleSeCommandExceptionSerializer());
-        }
-
-        @Override
-        public Gson getParser() {
-            parser = gsonBuilder.create();
-            return parser;
-        }
-
-        @Override
-        public BuildStep registerTypeAdapter(Type type, Object adapter) {
-            // init custom types after allowing the user to overwrite keyple default adapter
-            gsonBuilder.registerTypeAdapter(type, adapter);
-            return this;
-        }
-    }
-
 
 }

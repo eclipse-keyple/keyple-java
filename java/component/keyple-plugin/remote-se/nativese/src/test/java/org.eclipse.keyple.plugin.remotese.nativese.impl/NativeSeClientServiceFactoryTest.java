@@ -13,7 +13,6 @@ package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
@@ -342,7 +341,7 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
         }
 
         @Override
-        public Type getUserOutputType() {
+        public Class<MyKeypleUserData> getUserOutputType() {
             return MyKeypleUserData.class;
         }
 

@@ -11,17 +11,17 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.core;
 
-import java.lang.reflect.Type;
+
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.plugin.remotese.core.exception.KeypleDoNotPropagateEventException;
 
-public interface KeypleClientReaderEventFilter {
+public interface KeypleClientReaderEventFilter<T> {
     /**
      * Configure the Type of the output
      *
      * @return non nullable instance of the factory
      */
-    Type getUserOutputType();
+    Class<T> getUserOutputType();
 
     /**
      * Execute any process before the event is sent to the server
@@ -37,6 +37,6 @@ public interface KeypleClientReaderEventFilter {
      *
      * @param userOutputData nullable instance of the
      */
-    void afterPropagation(Object userOutputData);
+    void afterPropagation(T userOutputData);
 
 }

@@ -11,7 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
-import java.lang.reflect.Type;
 import java.util.UUID;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -178,10 +177,10 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
     }
 
 
-    private <T> T extractUserData(KeypleMessageDto keypleMessageDto, Type T) {
+    private <T> T extractUserData(KeypleMessageDto keypleMessageDto, Class<T> classOfT) {
         Gson parser = KeypleJsonParser.getParser();
         JsonObject body = parser.fromJson(keypleMessageDto.getBody(), JsonObject.class);
-        return parser.fromJson(body.get("userOutputData"), T);
+        return parser.fromJson(body.get("userOutputData"), classOfT);
     }
 
     /*

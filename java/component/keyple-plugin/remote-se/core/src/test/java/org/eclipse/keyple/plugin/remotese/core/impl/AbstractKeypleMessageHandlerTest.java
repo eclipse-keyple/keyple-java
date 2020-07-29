@@ -12,6 +12,8 @@
 package org.eclipse.keyple.plugin.remotese.core.impl;
 
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 import org.junit.Before;
@@ -27,13 +29,12 @@ public class AbstractKeypleMessageHandlerTest {
             new KeypleMessageDto().setAction(KeypleMessageDto.Action.SET_DEFAULT_SELECTION.name());
 
     KeypleMessageDto responseWithKRIoExceptionException =
-            new KeypleMessageDto().setAction(KeypleMessageDto.Action.ERROR.name())
-                    .setBody(parser.toJson(new KeypleReaderIOException("keyple io reader")));
+            new KeypleMessageDto().setAction(KeypleMessageDto.Action.ERROR.name()).setBody(
+                    parser.toJson(new BodyError(new KeypleReaderIOException("keyple io reader"))));
 
-    KeypleMessageDto responseWithUnknownError =
-            new KeypleMessageDto().setAction(KeypleMessageDto.Action.ERROR.name())
-                    .setBody(parser.toJson(new MyRuntimeException("my runtime exception")));
-
+    KeypleMessageDto responseWithKRNotFounExceptionException = new KeypleMessageDto()
+            .setAction(KeypleMessageDto.Action.ERROR.name()).setBody(parser.toJson(
+                    new BodyError(new KeypleReaderNotFoundException("keyple reader not found"))));
 
     @Before
     public void setUp() {
@@ -48,22 +49,13 @@ public class AbstractKeypleMessageHandlerTest {
         handler.checkError(response);
     }
 
+    @Test(expected = KeypleReaderNotFoundException.class)
+    public void checkError_readerNotFound() {
+        handler.checkError(responseWithKRNotFounExceptionException);
+    }
+
     @Test(expected = KeypleReaderIOException.class)
     public void checkError_knownError_throwException() {
         handler.checkError(responseWithKRIoExceptionException);
     }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void checkError_unknownError_throwISE() {
-        handler.checkError(responseWithUnknownError);
-    }
-
-
-    class MyRuntimeException extends RuntimeException {
-
-        public MyRuntimeException(String message) {
-            super(message);
-        }
-    }
-
 }
