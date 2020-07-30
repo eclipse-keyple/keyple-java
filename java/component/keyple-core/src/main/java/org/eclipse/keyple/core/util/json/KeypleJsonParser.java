@@ -22,10 +22,10 @@ import com.google.gson.GsonBuilder;
 /**
  * Json Parser for Keyple DTO and Keyple DTO body
  */
-public class KeypleJsonParser {
+public final class KeypleJsonParser {
 
-    static private Gson parser;
-    static final GsonBuilder gsonBuilder = initGsonBuider();
+    private static volatile Gson parser;
+    private static final GsonBuilder gsonBuilder = initGsonBuider();
 
     /**
      * Get the singleton instance of the keyple gson parser. If not created yet, a default keyple
@@ -35,8 +35,12 @@ public class KeypleJsonParser {
      */
     public static Gson getParser() {
         if (parser == null) {
+            synchronized (KeypleJsonParser.class){
+                if (parser == null) {
+                    parser = gsonBuilder.create();
+                }
+            }
             // init parser with keyple default value
-            parser = gsonBuilder.create();
         }
         return parser;
     }
@@ -55,17 +59,15 @@ public class KeypleJsonParser {
         init.registerTypeAdapter(SeProtocol.class, new GsonSeProtocolTypeAdapter())
                 .registerTypeAdapter(byte[].class, new HexArrayTypeAdapter())
                 .registerTypeAdapter(SeCommand.class, new SeCommandTypeAdapter())
-                .registerTypeAdapter(BodyError.class, new BodyErrorTypeAdapter())
+                .registerTypeAdapter(BodyError.class, new BodyErrorSerializer())
                 .registerTypeHierarchyAdapter(Throwable.class, new ThrowableSerializer())
                 .registerTypeAdapter(KeypleReaderIOException.class,
                         new KeypleReaderIOExceptionSerializer())
-
                 .registerTypeHierarchyAdapter(KeypleSeCommandException.class,
                         new KeypleSeCommandExceptionSerializer());
 
         return init;
     }
-
 
     /**
      * Register a new type adapter
@@ -88,5 +90,4 @@ public class KeypleJsonParser {
         parser = gsonBuilder.create();
         return parser;
     }
-
 }
