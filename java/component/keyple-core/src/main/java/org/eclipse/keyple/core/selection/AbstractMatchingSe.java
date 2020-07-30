@@ -24,9 +24,9 @@ import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
  * they are available.
  */
 public abstract class AbstractMatchingSe {
-    private byte[] fciBytes;
-    private byte[] atrBytes;
-    private TransmissionMode transmissionMode;
+    private final byte[] fciBytes;
+    private final byte[] atrBytes;
+    private final TransmissionMode transmissionMode;
 
     /**
      * Constructor.
@@ -92,7 +92,4 @@ public abstract class AbstractMatchingSe {
         }
         throw new IllegalStateException("No ATR is available in this AbstractMatchingSe");
     }
-
-
-
 }
