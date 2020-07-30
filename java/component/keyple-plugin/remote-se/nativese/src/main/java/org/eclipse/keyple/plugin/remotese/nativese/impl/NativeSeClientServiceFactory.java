@@ -84,7 +84,7 @@ public class NativeSeClientServiceFactory {
         BuilderStep withoutReaderObservation();
     }
 
-    static class Step implements NodeStep, ReaderStep, BuilderStep {
+    private static class Step implements NodeStep, ReaderStep, BuilderStep {
 
         private KeypleClientAsync asyncEndpoint;
         private KeypleClientSync syncEndpoint;
