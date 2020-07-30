@@ -84,25 +84,25 @@ public class NativeSeClientServiceFactory {
         BuilderStep withoutReaderObservation();
     }
 
-
-
-    public static class Step implements NodeStep, ReaderStep, BuilderStep {
+    static class Step implements NodeStep, ReaderStep, BuilderStep {
 
         private KeypleClientAsync asyncEndpoint;
         private KeypleClientSync syncEndpoint;
         private Boolean withReaderObservation;
         private KeypleClientReaderEventFilter eventFilter;
 
-        Step() {}
+        private Step() {}
 
         @Override
         public ReaderStep withAsyncNode(KeypleClientAsync endpoint) {
+            Assert.getInstance().notNull(endpoint, "endpoint");
             this.asyncEndpoint = endpoint;
             return this;
         }
 
         @Override
         public ReaderStep withSyncNode(KeypleClientSync endpoint) {
+            Assert.getInstance().notNull(endpoint, "endpoint");
             this.syncEndpoint = endpoint;
             return this;
         }

@@ -73,10 +73,10 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
 
 
     @Override
-    public <T> T executeRemoteService(RemoteServiceParameters parameters, Class<T> typeOfT) {
+    public <T> T executeRemoteService(RemoteServiceParameters parameters, Class<T> classOfT) {
 
         // check params nullity
-        Assert.getInstance().notNull(parameters, "parameters").notNull(typeOfT,
+        Assert.getInstance().notNull(parameters, "parameters").notNull(classOfT,
                 "userOutputDataFactory");
 
         // get nativeReader
@@ -122,7 +122,7 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
         checkError(receivedDto);
 
         // return userOutputData
-        return extractUserData(receivedDto, typeOfT);
+        return extractUserData(receivedDto, classOfT);
     }
 
     @Override
@@ -170,7 +170,7 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
         checkError(receivedDto);
 
         // extract userOutputData
-        Object userOutputData = extractUserData(receivedDto, eventFilter.getUserOutputType());
+        Object userOutputData = extractUserData(receivedDto, eventFilter.getUserOutputDataClass());
 
         // invoke callback
         eventFilter.afterPropagation(userOutputData);

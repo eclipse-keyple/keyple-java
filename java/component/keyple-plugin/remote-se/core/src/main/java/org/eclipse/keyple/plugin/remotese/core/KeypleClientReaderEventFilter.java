@@ -21,7 +21,7 @@ public interface KeypleClientReaderEventFilter<T> {
      *
      * @return non nullable instance of the factory
      */
-    Class<T> getUserOutputType();
+    Class<T> getUserOutputDataClass();
 
     /**
      * Execute any process before the event is sent to the server

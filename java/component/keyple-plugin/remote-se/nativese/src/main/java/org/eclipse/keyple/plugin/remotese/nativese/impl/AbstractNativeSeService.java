@@ -30,10 +30,6 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractNativeSeService.class);
 
-    public AbstractNativeSeService() {
-        super();
-    }
-
     /**
      * Find a local reader among all plugins
      * 
@@ -84,12 +80,7 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
                 return new DefaultSelectionExecutor((ObservableReader) nativeReader)
                         .execute(keypleMessageDto);
             default:
-                return new KeypleMessageDto()
-                        .setAction(KeypleMessageDto.ErrorCode.UNKNOWN.getCode());// todo
-
+                throw new IllegalArgumentException("keypleMessageDto action value is illegal");
         }
-
     }
-
-
 }

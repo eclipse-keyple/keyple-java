@@ -341,7 +341,7 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
         }
 
         @Override
-        public Class<MyKeypleUserData> getUserOutputType() {
+        public Class<MyKeypleUserData> getUserOutputDataClass() {
             return MyKeypleUserData.class;
         }
 

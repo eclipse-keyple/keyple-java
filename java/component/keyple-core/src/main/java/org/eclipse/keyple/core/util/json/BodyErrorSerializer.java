@@ -17,8 +17,7 @@ import com.google.gson.*;
 /**
  * Serialize and Deserialize a {@link BodyError} that contains a RuntimeException
  */
-public class BodyErrorSerializer
-        implements JsonDeserializer<BodyError> {
+public class BodyErrorSerializer implements JsonDeserializer<BodyError> {
 
     @Override
     public BodyError deserialize(JsonElement jsonElement, Type type,
@@ -29,7 +28,7 @@ public class BodyErrorSerializer
         try {
             Class<RuntimeException> exceptionClass =
                     (Class<RuntimeException>) Class.forName(exceptionName);
-            return new BodyError((RuntimeException)jsonDeserializationContext
+            return new BodyError((RuntimeException) jsonDeserializationContext
                     .deserialize(bodydException, exceptionClass));
         } catch (Throwable e) {
             throw new JsonParseException(e);

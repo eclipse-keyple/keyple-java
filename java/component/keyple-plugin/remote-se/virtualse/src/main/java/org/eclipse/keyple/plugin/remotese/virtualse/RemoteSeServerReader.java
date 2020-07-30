@@ -46,8 +46,9 @@ public interface RemoteSeServerReader extends SeReader {
     /**
      * Gets the initial SE content if is set.
      *
+     * @param classOfT The type expected of initial se content
      * @return a nullable reference if there is no initial SE content.
      * @since 1.0
      */
-    <T extends AbstractMatchingSe> T getInitialSeContent();
+    <T extends AbstractMatchingSe> T getInitialSeContent(Class<T> classOfT);
 }

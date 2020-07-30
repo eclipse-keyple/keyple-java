@@ -35,7 +35,7 @@ public final class KeypleJsonParser {
      */
     public static Gson getParser() {
         if (parser == null) {
-            synchronized (KeypleJsonParser.class){
+            synchronized (KeypleJsonParser.class) {
                 if (parser == null) {
                     parser = gsonBuilder.create();
                 }

@@ -39,7 +39,6 @@ public class SeCommandTypeAdapter
     public JsonElement serialize(SeCommand seCommand, Type type,
             JsonSerializationContext jsonSerializationContext) {
         JsonObject output = new JsonObject();
-        // output.addProperty("instructionByte", seCommand.getInstructionByte());
         Assert.getInstance().isTrue(seCommand.getClass().isEnum(),
                 "SeCommandAdapter works only with enum");
         output.addProperty("name", ((Enum) seCommand).name());
