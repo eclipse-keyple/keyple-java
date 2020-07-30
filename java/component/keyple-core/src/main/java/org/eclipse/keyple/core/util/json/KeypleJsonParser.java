@@ -25,7 +25,7 @@ import com.google.gson.GsonBuilder;
 public final class KeypleJsonParser {
 
     private static volatile Gson parser;
-    private static GsonBuilder gsonBuilder;
+    private static final GsonBuilder gsonBuilder = initGsonBuider();
 
     /**
      * Get the singleton instance of the keyple gson parser. If not created yet, a default keyple
@@ -35,13 +35,8 @@ public final class KeypleJsonParser {
      */
     public static Gson getParser() {
         if (parser == null) {
-            synchronized (KeypleJsonParser.class) {
-                if (parser == null) {
-                    // init parser with keyple default value
-                    gsonBuilder = initGsonBuider();
-                    parser = gsonBuilder.create();
-                }
-            }
+            // init parser with keyple default value
+            parser = gsonBuilder.create();
         }
         return parser;
     }
