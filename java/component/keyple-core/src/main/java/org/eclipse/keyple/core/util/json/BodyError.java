@@ -16,8 +16,8 @@ package org.eclipse.keyple.core.util.json;
  */
 public class BodyError {
 
-    String code;
-    RuntimeException exception;
+    private final String code;
+    private final RuntimeException exception;
 
     public BodyError(RuntimeException exception) {
         this.exception = exception;
