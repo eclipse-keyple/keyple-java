@@ -107,7 +107,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
     /**
      * Close both logical and physical channels
      */
-    void closeLogicalAndPhysicalChannels() {
+    protected void closeLogicalAndPhysicalChannels() {
         closeLogicalChannel();
         try {
             closePhysicalChannel();
