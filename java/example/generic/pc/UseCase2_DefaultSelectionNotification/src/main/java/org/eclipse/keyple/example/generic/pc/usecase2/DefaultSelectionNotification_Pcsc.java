@@ -14,6 +14,7 @@ package org.eclipse.keyple.example.generic.pc.usecase2;
 
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
@@ -23,6 +24,7 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.generic.GenericSeSelectionRequest;
@@ -135,6 +137,15 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
                             .getActiveMatchingSe();
                 } catch (KeypleException e) {
                     logger.error("Exception: {}", e.getMessage());
+                    try {
+                        ((ProxyReader) SeProxyService.getInstance().getPlugin(event.getPluginName())
+                                .getReader(event.getReaderName())).transmitSeRequest(null,
+                                        ChannelControl.CLOSE_AFTER);
+                    } catch (KeypleReaderNotFoundException ex) {
+                        logger.error("Reader not found exception: {}", ex.getMessage());
+                    } catch (KeyplePluginNotFoundException ex) {
+                        logger.error("Plugin not found exception: {}", ex.getMessage());
+                    }
                 }
 
                 if (selectedSe != null) {
@@ -159,11 +170,11 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
         if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED
                 || event.getEventType() == ReaderEvent.EventType.SE_MATCHED) {
             // Informs the underlying layer of the end of the SE processing, in order to manage the
-            // removal sequence. <p>If closing has already been requested, this method will do
-            // nothing.
+            // removal sequence.
             try {
-                ((ObservableReader) SeProxyService.getInstance().getPlugin(event.getPluginName())
-                        .getReader(event.getReaderName())).notifySeProcessed();
+                ((ProxyReader) SeProxyService.getInstance().getPlugin(event.getPluginName())
+                        .getReader(event.getReaderName())).transmitSeRequest(null,
+                                ChannelControl.CLOSE_AFTER);
             } catch (KeypleReaderNotFoundException e) {
                 logger.error("Reader not found exception: {}", e.getMessage());
             } catch (KeyplePluginNotFoundException e) {

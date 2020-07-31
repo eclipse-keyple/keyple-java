@@ -22,7 +22,6 @@ import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
@@ -156,7 +155,7 @@ public class StoredValue_DebitInSession_Pcsc {
             poTransaction.prepareSvGet(SvSettings.Operation.DEBIT, SvSettings.Action.DO);
 
             // Execute the prepared command
-            poTransaction.processPoCommandsInSession();
+            poTransaction.processPoCommands();
 
             // Display the current SV status
             logger.info("Current SV status (SV Get for DEBIT):");
@@ -181,7 +180,8 @@ public class StoredValue_DebitInSession_Pcsc {
 
             // Execute the 2 prepared commands, close the secure session, verify the SV signature
             // and close the communication after
-            poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
+            poTransaction.prepareReleasePoChannel();
+            poTransaction.processClosing();
         } else {
             logger.error("The PO selection failed");
         }

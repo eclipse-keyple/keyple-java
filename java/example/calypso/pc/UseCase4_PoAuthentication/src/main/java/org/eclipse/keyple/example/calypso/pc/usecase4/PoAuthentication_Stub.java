@@ -21,7 +21,6 @@ import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -195,7 +194,7 @@ public class PoAuthentication_Stub {
             poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_ContractList,
                     CalypsoClassicInfo.RECORD_NUMBER_1);
 
-            poTransaction.processPoCommandsInSession();
+            poTransaction.processPoCommands();
 
             // Get the ContractList data
             ElementaryFile efContractList =
@@ -214,7 +213,8 @@ public class PoAuthentication_Stub {
                     "========= PO Calypso session ======= Closing ============================");
 
             // A ratification command will be sent (CONTACTLESS_MODE).
-            poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
+            poTransaction.prepareReleasePoChannel();
+            poTransaction.processClosing();
 
             logger.info("The Calypso session ended successfully.");
 

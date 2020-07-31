@@ -18,7 +18,7 @@ import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
-import java.util.SortedSet
+import java.util.concurrent.ConcurrentMap
 import kotlinx.android.synthetic.main.activity_core_examples.drawerLayout
 import kotlinx.android.synthetic.main.activity_core_examples.eventRecyclerView
 import kotlinx.android.synthetic.main.activity_core_examples.navigationView
@@ -31,7 +31,6 @@ import org.eclipse.keyple.example.calypso.android.omapi.model.ChoiceEventModel
 import org.eclipse.keyple.example.calypso.android.omapi.model.EventModel
 import org.eclipse.keyple.plugin.android.omapi.PLUGIN_NAME
 import timber.log.Timber
-import java.util.concurrent.ConcurrentMap
 
 abstract class ExamplesActivity : BasicActivity(), NavigationView.OnNavigationItemSelectedListener {
 
