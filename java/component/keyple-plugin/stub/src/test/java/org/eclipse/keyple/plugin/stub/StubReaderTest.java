@@ -1409,6 +1409,7 @@ public class StubReaderTest extends BaseStubTest {
             @Override
             protected AbstractMatchingSe parse(SeResponse seResponse) {
                 class GenericMatchingSe extends AbstractMatchingSe {
+
                     public GenericMatchingSe(SeResponse selectionResponse,
                             TransmissionMode transmissionMode) {
                         super(selectionResponse, transmissionMode);

@@ -50,4 +50,5 @@ public abstract class KeypleSeCommandException extends KeypleException {
     public Integer getStatusCode() {
         return statusCode;
     }
+
 }

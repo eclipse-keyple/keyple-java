@@ -52,6 +52,7 @@ public class SeResourceTest extends CoreBaseTest {
      * Matching Se instantiation
      */
     private final class MatchingSe extends AbstractMatchingSe {
+
         MatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode) {
             super(selectionResponse, transmissionMode);
         }

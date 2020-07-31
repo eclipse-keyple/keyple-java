@@ -91,6 +91,7 @@ public class AbstractMatchingSeTest {
     }
 
     private static class TestMatchingSe extends AbstractMatchingSe {
+
         protected TestMatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode) {
             super(selectionResponse, transmissionMode);
         }

@@ -27,6 +27,8 @@ import org.slf4j.LoggerFactory;
  *
  * @since 1.0
  */
+// todo
+@SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
 public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
         implements KeypleClientAsyncNode {
 

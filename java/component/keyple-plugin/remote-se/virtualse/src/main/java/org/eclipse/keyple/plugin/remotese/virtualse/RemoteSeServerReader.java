@@ -11,10 +11,9 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.virtualse;
 
+
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.plugin.remotese.core.KeypleUserData;
-import org.eclipse.keyple.plugin.remotese.core.KeypleUserDataFactory;
 
 /**
  * <b>Remote SE Server Reader</b> API.
@@ -38,18 +37,18 @@ public interface RemoteSeServerReader extends SeReader {
     /**
      * Gets the user input data if they are set.
      *
-     * @param userInputDataFactory The factory to use to build the expected user input data.
-     * @param <T> The generic type of the expected user input data.
+     * @param classOfT The type expected of user input data.
      * @return a nullable reference if there is no user input data.
      * @since 1.0
      */
-    <T extends KeypleUserData> T getUserInputData(KeypleUserDataFactory<T> userInputDataFactory);
+    <T> T getUserInputData(Class<T> classOfT);
 
     /**
      * Gets the initial SE content if is set.
      *
+     * @param classOfT The type expected of initial se content
      * @return a nullable reference if there is no initial SE content.
      * @since 1.0
      */
-    AbstractMatchingSe getInitialSeContent();
+    <T extends AbstractMatchingSe> T getInitialSeContent(Class<T> classOfT);
 }

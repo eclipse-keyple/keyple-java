@@ -233,9 +233,8 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
         assertThat(msg.getServerNodeId()).isEqualTo(originalMessage.getServerNodeId());
         assertThat(msg.getNativeReaderName()).isEqualTo(originalMessage.getNativeReaderName());
         assertThat(msg.getVirtualReaderName()).isEqualTo(originalMessage.getVirtualReaderName());
-        assertThat(msg.getBody()).isNull();
-        assertThat(msg.getErrorCode()).isEqualTo(errorCode);
-        assertThat(msg.getErrorMessage()).isNotEmpty();
+        assertThat(msg.getBody()).isNotNull();
+        assertThat(msg.getBody()).contains(errorCode);
     }
 
     @Test(expected = IllegalArgumentException.class)

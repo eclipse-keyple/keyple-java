@@ -175,7 +175,9 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
     api "org.slf4j:slf4j-api:${slf4japi_version}"
-    
+
+
+
     /*
     * Test
     */

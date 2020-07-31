@@ -509,7 +509,9 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                         TransmissionMode transmissionMode) {
                     super(selectionResponse, transmissionMode);
                 }
+
             }
+
             return new GenericMatchingSe(seResponse, transmissionMode);
         }
     }

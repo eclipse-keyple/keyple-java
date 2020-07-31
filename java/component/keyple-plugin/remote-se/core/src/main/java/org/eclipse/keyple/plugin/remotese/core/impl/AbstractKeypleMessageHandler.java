@@ -11,7 +11,12 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.core.impl;
 
+import org.eclipse.keyple.core.util.json.BodyError;
+import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remotese.core.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * Abstract Keyple Message Handler.
@@ -21,6 +26,9 @@ import org.eclipse.keyple.plugin.remotese.core.*;
  * @since 1.0
  */
 public abstract class AbstractKeypleMessageHandler {
+
+    private static final Logger logger =
+            LoggerFactory.getLogger(AbstractKeypleMessageHandler.class);
 
     /**
      * (protected)<br>
@@ -101,5 +109,19 @@ public abstract class AbstractKeypleMessageHandler {
     public void bindServerSyncNode() {
         node = new KeypleServerSyncNodeImpl(this, 20);
         isBoundToAsyncNode = false;
+    }
+
+    /**
+     * If message contains an error, throws the embedded exception.
+     *
+     * @param message not null instance
+     */
+    protected void checkError(KeypleMessageDto message) {
+        // throw exception if message is ERROR
+        if (message.getAction().equals(KeypleMessageDto.Action.ERROR.name())) {
+            BodyError body =
+                    KeypleJsonParser.getParser().fromJson(message.getBody(), BodyError.class);
+            throw body.getException();
+        }
     }
 }

@@ -9,25 +9,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.plugin.remotese.core;
+package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
-import java.util.Map;
+import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 
 /**
- * <b>Keyple User Data</b> API to be implemented by the user.
- * <p>
- * This interface must be implemented by a user personal object that you want to exchange between
- * client and server using Keyple services.
- *
- * @since 1.0
+ * Internal interface for Dto Executor
  */
-public interface KeypleUserData {
+interface Executor {
 
-    /**
-     * Converts the object content to a Map of key-values pair strings.
-     *
-     * @return a not null reference.
-     * @since 1.0
-     */
-    Map<String, String> toMap();
+    KeypleMessageDto execute(KeypleMessageDto keypleMessageDto);
 }

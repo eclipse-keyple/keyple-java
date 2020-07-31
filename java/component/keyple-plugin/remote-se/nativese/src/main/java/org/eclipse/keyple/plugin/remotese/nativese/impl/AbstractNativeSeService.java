@@ -13,8 +13,10 @@ package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.seproxy.message.ProxyReader;
+import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remotese.core.impl.AbstractKeypleMessageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,11 +34,11 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
      * Find a local reader among all plugins
      * 
      * @param nativeReaderName name of the reader to be found
-     * @return Se Reader found
+     * @return a not null instance
      * @throws KeypleReaderNotFoundException if no reader is found with this name
      * @since 1.0
      */
-    protected SeReader findLocalReader(String nativeReaderName) {
+    protected ProxyReader findLocalReader(String nativeReaderName) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("Find local reader by name '{}' in {} plugin(s)", nativeReaderName,
@@ -49,7 +51,7 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
                     logger.trace("Local reader found '{}' in plugin {}", nativeReaderName,
                             plugin.getName());
                 }
-                return plugin.getReader(nativeReaderName);
+                return (ProxyReader) plugin.getReader(nativeReaderName);
             } catch (KeypleReaderNotFoundException e) {
                 // reader has not been found in this plugin, continue
             }
@@ -57,5 +59,28 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
         throw new KeypleReaderNotFoundException(nativeReaderName);
     }
 
+    /**
+     * Execute a keypleMessageDto on the local nativeReader, returns the response embedded on a
+     * keypleMessageDto ready to be sent back.
+     *
+     * @param keypleMessageDto not nullable KeypleMessageDto
+     * @return a not null instance of the keypleMessageDto response
+     * @since 1.0
+     *
+     */
+    protected KeypleMessageDto executeLocally(ProxyReader nativeReader,
+            KeypleMessageDto keypleMessageDto) {
 
+        switch (KeypleMessageDto.Action.valueOf(keypleMessageDto.getAction())) {
+            case TRANSMIT:
+                return new TransmitExecutor(nativeReader).execute(keypleMessageDto);
+            case TRANSMIT_SET:
+                return new TransmitSetExecutor(nativeReader).execute(keypleMessageDto);
+            case SET_DEFAULT_SELECTION:
+                return new DefaultSelectionExecutor((ObservableReader) nativeReader)
+                        .execute(keypleMessageDto);
+            default:
+                throw new IllegalArgumentException("keypleMessageDto action value is illegal");
+        }
+    }
 }

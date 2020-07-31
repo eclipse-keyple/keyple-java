@@ -25,13 +25,19 @@ import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CalypsoPoTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(CalypsoPoTest.class);
+
     public static final String ATR_VALUE = "3B8F8001805A08030400020011223344829000F3";
     public static final String ATR_VALUE_2 = "3B8F8001805A08030400020011223344829000";
     /*
@@ -535,5 +541,38 @@ public class CalypsoPoTest {
         assertThat(allDebitLogs.get(0).getSamId()).isEqualTo(0xAABBCC01);
         assertThat(allDebitLogs.get(1).getSamId()).isEqualTo(0xAABBCC02);
         assertThat(allDebitLogs.get(2).getSamId()).isEqualTo(0xAABBCC03);
+    }
+
+
+    @Test
+    public void json_fromJson_shouldReturnCopy() {
+        loadPo();
+        String json = KeypleJsonParser.getParser().toJson(po);
+        logger.debug(json);
+        CalypsoPo target = KeypleJsonParser.getParser().fromJson(json, CalypsoPo.class);
+        assertThat(target).isEqualToComparingFieldByFieldRecursively(po);
+    }
+
+
+    void loadPo() {
+        byte[] svLoadRecordData =
+                ByteArrayUtil.fromHex("000000780000001A0000020000AABBCCDD0000DB007000000000000000");
+        byte[] svDebitRecordData1 =
+                ByteArrayUtil.fromHex("FFFE0000000079AABBCC010000DA000018006F00000000000000000000");
+        byte[] svDebitRecordData2 =
+                ByteArrayUtil.fromHex("FFFE0000000079AABBCC020000DA000018006F00000000000000000000");
+        byte[] svDebitRecordData3 =
+                ByteArrayUtil.fromHex("FFFE0000000079AABBCC030000DA000018006F00000000000000000000");
+        po.setContent(CalypsoPoUtils.SV_RELOAD_LOG_FILE_SFI, 1, svLoadRecordData);
+        po.setContent(CalypsoPoUtils.SV_DEBIT_LOG_FILE_SFI, 1, svDebitRecordData1);
+        po.setContent(CalypsoPoUtils.SV_DEBIT_LOG_FILE_SFI, 2, svDebitRecordData2);
+        po.setContent(CalypsoPoUtils.SV_DEBIT_LOG_FILE_SFI, 3, svDebitRecordData3);
+        byte[] svGetReloadData = ByteArrayUtil
+                .fromHex("79007013DE31022200001A000000780000001A0000020000AABBCCDD0000DB00709000");
+        byte[] svGetDebitData = ByteArrayUtil
+                .fromHex("79007013DE31A75F00001AFFFE0000000079AABBCCDD0000DA000018006F");
+        po.setSvData(123, 456, new SvLoadLogRecord(svGetReloadData, 11),
+                new SvDebitLogRecord(svGetDebitData, 11));
+        po.setPinAttemptRemaining(0);
     }
 }

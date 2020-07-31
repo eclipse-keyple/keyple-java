@@ -126,4 +126,5 @@ public class CalypsoSam extends AbstractMatchingSe {
     public final byte getSoftwareRevision() {
         return softwareRevision;
     }
+
 }

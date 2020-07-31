@@ -21,6 +21,7 @@ import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 import org.junit.Before;
 import org.junit.Test;
 
+@SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
 public class KeypleClientSyncNodeImplTest extends AbstractKeypleSyncNode {
 
     KeypleClientSyncPollingMock endpoint;
@@ -118,8 +119,6 @@ public class KeypleClientSyncNodeImplTest extends AbstractKeypleSyncNode {
         assertThat(msg1.getNativeReaderName()).isNull();
         assertThat(msg1.getVirtualReaderName()).isNull();
         assertThat(msg1.getBody()).isEqualTo(body);
-        assertThat(msg1.getErrorCode()).isNull();
-        assertThat(msg1.getErrorMessage()).isNull();
         assertThat(msg1.getSessionId()).isNotEqualTo(msg1.getClientNodeId());
     }
 

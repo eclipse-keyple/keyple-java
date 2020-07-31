@@ -11,14 +11,13 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.virtualse;
 
-import java.util.SortedSet;
+import java.util.concurrent.ConcurrentMap;
 import org.eclipse.keyple.core.seproxy.PluginFactory;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.plugin.remotese.core.KeypleUserData;
 
 /**
  * <b>Remote SE Server Plugin</b> API.
@@ -78,7 +77,7 @@ public interface RemoteSeServerPlugin extends ObservablePlugin {
      * @since 1.0
      */
     @Override
-    SortedSet<SeReader> getReaders();
+    ConcurrentMap<String, SeReader> getReaders();
 
     /**
      * {@inheritDoc}
@@ -94,8 +93,8 @@ public interface RemoteSeServerPlugin extends ObservablePlugin {
      * name and returns to the client the user output data provided.
      *
      * @param virtualReaderName The virtual reader name.
-     * @param userOutputData The {@link KeypleUserData} object containing user output data.
+     * @param userOutputData The object containing user output data.
      * @since 1.0
      */
-    void terminateService(String virtualReaderName, KeypleUserData userOutputData);
+    void terminateService(String virtualReaderName, Object userOutputData);
 }
