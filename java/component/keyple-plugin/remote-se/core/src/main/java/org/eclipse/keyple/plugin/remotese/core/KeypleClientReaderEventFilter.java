@@ -19,8 +19,8 @@ import org.eclipse.keyple.plugin.remotese.core.exception.KeypleDoNotPropagateEve
 public abstract class KeypleClientReaderEventFilter<T> {
 
     /**
-     * Return the class of the userOutputData T. Can be overwritten if needed.
-     * This method is used internally to deserialize the userOutputData T.
+     * Return the class of the userOutputData T. Can be overwritten if needed. This method is used
+     * internally to deserialize the userOutputData T.
      *
      * @return non nullable instance of the factory
      */
