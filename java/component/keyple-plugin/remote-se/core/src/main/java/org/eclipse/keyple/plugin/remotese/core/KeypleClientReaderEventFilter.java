@@ -12,16 +12,22 @@
 package org.eclipse.keyple.plugin.remotese.core;
 
 
+import java.lang.reflect.ParameterizedType;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.plugin.remotese.core.exception.KeypleDoNotPropagateEventException;
 
-public interface KeypleClientReaderEventFilter<T> {
+public abstract class KeypleClientReaderEventFilter<T> {
+
     /**
-     * Configure the Type of the output
+     * Return the class of the userOutputData T. Can be overwritten if needed.
+     * This method is used internally to deserialize the userOutputData T.
      *
      * @return non nullable instance of the factory
      */
-    Class<T> getUserOutputDataClass();
+    public Class<T> getUserOutputDataClass() {
+        return (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass())
+                .getActualTypeArguments()[0];
+    }
 
     /**
      * Execute any process before the event is sent to the server
@@ -30,13 +36,14 @@ public interface KeypleClientReaderEventFilter<T> {
      * @return nullable data that will be sent to the server.
      * @throws KeypleDoNotPropagateEventException if event should not be propagated to server
      */
-    Object beforePropagation(ReaderEvent event) throws KeypleDoNotPropagateEventException;
+    public abstract Object beforePropagation(ReaderEvent event)
+            throws KeypleDoNotPropagateEventException;
 
     /**
      * Retrieve the output from the event global processing
      *
      * @param userOutputData nullable instance of the
      */
-    void afterPropagation(T userOutputData);
+    public abstract void afterPropagation(T userOutputData);
 
 }

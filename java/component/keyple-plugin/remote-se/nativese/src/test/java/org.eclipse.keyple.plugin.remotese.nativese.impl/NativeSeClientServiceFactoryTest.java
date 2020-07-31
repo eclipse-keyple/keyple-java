@@ -16,13 +16,21 @@ import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
-import org.eclipse.keyple.core.seproxy.*;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
+import org.eclipse.keyple.core.seproxy.PluginFactory;
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.message.*;
+import org.eclipse.keyple.core.seproxy.message.ProxyReader;
+import org.eclipse.keyple.core.seproxy.message.SeRequest;
+import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
-import org.eclipse.keyple.plugin.remotese.core.*;
+import org.eclipse.keyple.plugin.remotese.core.KeypleClientAsync;
+import org.eclipse.keyple.plugin.remotese.core.KeypleClientReaderEventFilter;
+import org.eclipse.keyple.plugin.remotese.core.KeypleClientSync;
+import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remotese.core.exception.KeypleDoNotPropagateEventException;
 import org.eclipse.keyple.plugin.remotese.nativese.NativeSeClientService;
 import org.eclipse.keyple.plugin.remotese.nativese.RemoteServiceParameters;
@@ -333,7 +341,7 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
 
 
 
-    class MyEventFilter implements KeypleClientReaderEventFilter {
+    class MyEventFilter extends KeypleClientReaderEventFilter<MyKeypleUserData> {
         Boolean propagateEvent;
 
         MyEventFilter(Boolean propagateEvent) {
@@ -341,12 +349,7 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
         }
 
         @Override
-        public Class<MyKeypleUserData> getUserOutputDataClass() {
-            return MyKeypleUserData.class;
-        }
-
-        @Override
-        public MyKeypleUserData beforePropagation(ReaderEvent event) {
+        public Object beforePropagation(ReaderEvent event) {
             if (propagateEvent) {
                 return inputData;
             } else {
@@ -355,7 +358,7 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
         }
 
         @Override
-        public void afterPropagation(Object userOutputData) {
+        public void afterPropagation(MyKeypleUserData userOutputData) {
             assertThat(userOutputData).isNotNull();
             assertThat(userOutputData).isEqualToComparingFieldByFieldRecursively(outputData);
         }
