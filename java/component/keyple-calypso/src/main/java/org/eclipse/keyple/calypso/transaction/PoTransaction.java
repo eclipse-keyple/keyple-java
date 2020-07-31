@@ -107,8 +107,8 @@ public class PoTransaction {
     private final PoCommandManager poCommandManager;
     /** The current Store Value action */
     private SvSettings.Action svAction;
-    /** This flag is true when the PO channel is to be closed */
-    private boolean closePoChannel;
+    /** The {@link ChannelControl} action */
+    private ChannelControl channelControl;
 
     /**
      * PoTransaction with PO and SAM readers.
@@ -148,7 +148,7 @@ public class PoTransaction {
 
         poCommandManager = new PoCommandManager();
 
-        closePoChannel = false;
+        channelControl = ChannelControl.KEEP_OPEN;
     }
 
     /**
@@ -953,7 +953,7 @@ public class PoTransaction {
         if (sessionState == SessionState.SESSION_OPEN) {
             processPoCommandsInSession();
         } else {
-            processPoCommandsOutOfSession(getAndResetChannelControl());
+            processPoCommandsOutOfSession(channelControl);
         }
     }
 
@@ -1049,7 +1049,7 @@ public class PoTransaction {
 
         // Finally, close the session as requested
         processAtomicClosing(poAtomicCommands, poSecuritySettings.getRatificationMode(),
-                getAndResetChannelControl());
+                channelControl);
 
         // sets the flag indicating that the commands have been executed
         poCommandManager.notifyCommandsProcessed();
@@ -1079,7 +1079,7 @@ public class PoTransaction {
         // Transfer PO commands
         SeRequest poSeRequest = new SeRequest(poApduRequests);
 
-        SeResponse poSeResponse = safePoTransmit(poSeRequest, getAndResetChannelControl());
+        SeResponse poSeResponse = safePoTransmit(poSeRequest, channelControl);
 
         closeSessionCmdBuild.createResponseParser(poSeResponse.getApduResponses().get(0))
                 .checkStatus();
@@ -1150,8 +1150,7 @@ public class PoTransaction {
         }
 
         // transmit and receive data with the PO
-        processAtomicPoCommands(poCommandManager.getPoCommandBuilders(),
-                getAndResetChannelControl());
+        processAtomicPoCommands(poCommandManager.getPoCommandBuilders(), channelControl);
 
         // sets the flag indicating that the commands have been executed
         poCommandManager.notifyCommandsProcessed();
@@ -1305,22 +1304,6 @@ public class PoTransaction {
     }
 
     /**
-     * Returns the {@link ChannelControl} value to be used for the current process command.<br>
-     * The value is KEEP_OPEN by default and CLOSE_AFTER if prepareReleasePoChannel was called
-     * before.<br>
-     * After calling this method, the flag is disarmed and the returned value becomes KEEP_OPEN
-     * again, until the next call to prepareReleasePoChannel.
-     * 
-     * @return the {@link ChannelControl} value
-     */
-    private ChannelControl getAndResetChannelControl() {
-        ChannelControl channelControl;
-        channelControl = closePoChannel ? ChannelControl.CLOSE_AFTER : ChannelControl.KEEP_OPEN;
-        closePoChannel = false;
-        return channelControl;
-    }
-
-    /**
      * Prepare to close the PO channel.<br>
      * If this command is called before a "process" command (except for processOpening) then the
      * last transmission to the PO will be associated with the indication CLOSE_AFTER in order to
@@ -1331,7 +1314,7 @@ public class PoTransaction {
      * must be made to effectively close the channel.
      */
     public final void prepareReleasePoChannel() {
-        closePoChannel = true;
+        channelControl = ChannelControl.CLOSE_AFTER;
     }
 
     /**
