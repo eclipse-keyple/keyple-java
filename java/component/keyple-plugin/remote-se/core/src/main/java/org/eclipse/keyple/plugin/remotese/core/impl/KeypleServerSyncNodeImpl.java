@@ -262,7 +262,7 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
      * {@inheritDoc}
      */
     @Override
-    public KeypleMessageDto sendRequest(KeypleMessageDto msg) {
+    KeypleMessageDto sendRequest(KeypleMessageDto msg) {
 
         KeypleMessageDto response;
 
@@ -291,7 +291,7 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
      * {@inheritDoc}
      */
     @Override
-    public void sendMessage(KeypleMessageDto msg) {
+    void sendMessage(KeypleMessageDto msg) {
 
         KeypleMessageDto.Action action = KeypleMessageDto.Action.valueOf(msg.getAction());
         switch (action) {

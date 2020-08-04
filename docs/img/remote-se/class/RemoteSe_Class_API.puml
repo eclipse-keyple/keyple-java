@@ -1,7 +1,7 @@
 @startuml
 title
     Keyple Plugin Remote SE
-    Public API (22/07/2020)
+    Public API (28/07/2020)
 end title
 
 ' == THEME ==
@@ -78,12 +78,12 @@ package org.eclipse.keyple.plugin.remotese {
         ' Remote Handlers
             +interface "<< <back:#82E0AA>ObservablePlugin</back> >>\nRemoteSeServerPlugin" as RemoteSeServerPlugin {
                 +RemoteSeServerReader getReader (String name)
-                +void terminateService (\n    String virtualReaderName,\n    KeypleUserData userOutputData,\n    boolean unregisterVirtualReader)
+                +void terminateService (\n    String virtualReaderName,\n    Object userOutputData,\n    boolean unregisterVirtualReader)
             }
             ' Remote Readers
             +interface "<< <back:#D0ECE7>SeReader</back> >>\nRemoteSeServerReader" as RemoteSeServerReader {
                 +String getServiceId ()
-                +<T extends KeypleUserData> T getUserInputData (\n    KeypleUserDataFactory<T> userInputDataFactory)
+                +<T> T getUserInputData (Class<T> classOfT)
                 +<T extends AbstractMatchingSe> T getInitialSeContent (\n    Class<T> classOfMatchingSe)
             }
             +interface "<< <back:#FDEBD0>ObservableReader</back> >>\nRemoteSeServerObservableReader" as RemoteSeServerObservableReader extends RemoteSeServerReader {
@@ -198,15 +198,9 @@ package org.eclipse.keyple.plugin.remotese {
             + String virtualReaderName
             + String body
         }
-        +interface KeypleUserDataFactory<T extends KeypleUserData> {
-            +T getInstance (String json)
-        }
-        +interface KeypleUserData {
-            +String toJson()
-        }
-        +interface KeypleClientReaderEventFilter<T extends KeypleUserData> {
-            +KeypleUserDataFactory<T> getUserOutputDataFactory ()
-            +KeypleUserData beforePropagation (ReaderEvent event)
+        +abstract KeypleClientReaderEventFilter<T> {
+            +Class<T> getUserOutputDataClass ()
+            +Object beforePropagation (ReaderEvent event)
             +void afterPropagation (T userOutputData)
         }
 
@@ -243,13 +237,13 @@ package org.eclipse.keyple.plugin.remotese {
     package nativese {
 
             +interface NativeSeClientService {
-                +<T extends KeypleUserData> T executeRemoteService (\n    RemoteServiceParameters parameters,\n    KeypleUserDataFactory<T> userOutputDataFactory)
+                +<T> T executeRemoteService (\n    RemoteServiceParameters parameters,\n    Class<T> classOfT)
             }
             +class RemoteServiceParameters {
                 +{static} Builder builder (String serviceId, SeReader nativeReader)
             }
             +class "Builder" as RemoteServiceParametersBuilder {
-                +Builder withUserInputData (KeypleUserData userInputData)
+                +Builder withUserInputData (Object userInputData)
                 +Builder withInitialSeContent (AbstractMatchingSe matchingSe)
                 +RemoteServiceParameters build ()
             }
@@ -342,8 +336,6 @@ KeypleClientSyncNode --> KeypleClientSync #C_LINK : use >
 KeypleClientAsyncNode --> KeypleClientAsync #C_LINK : use >
 KeypleServerAsyncNode -up-> KeypleServerAsync #C_LINK : use >
 
-KeypleUserDataFactory --> KeypleUserData #C_LINK : create >
-
 NativeSeClientService ..> RemoteServiceParameters #C_USE : use >
 RemoteServiceParameters +-- RemoteServiceParametersBuilder #C_LINK
 
@@ -374,8 +366,7 @@ NativeSePoolServerServiceFactoryBuilderStep -[hidden]- NativeSePoolServerUtils
 
 KeypleClientAsync -[hidden]- KeypleServerAsync
 KeypleServerAsyncNode -[hidden]- KeypleMessageDto
-KeypleMessageDto -[hidden]- KeypleUserDataFactory
-KeypleUserData -[hidden]- KeypleClientReaderEventFilter
+KeypleMessageDto -[hidden]- KeypleClientReaderEventFilter
 KeypleClientReaderEventFilter -[hidden]- KeypleClientSyncNode
 KeypleClientSync -[hidden]- KeypleServerSyncNode
 
@@ -456,8 +447,6 @@ KeypleClientAsyncNode <<red>>
 KeypleServerAsyncNode <<red>>
 
 KeypleMessageDto <<grey>>
-KeypleUserDataFactory <<grey>>
-KeypleUserData <<grey>>
 KeypleClientReaderEventFilter <<grey>>
 
 @enduml

@@ -47,19 +47,19 @@ public abstract class AbstractKeypleNode {
     }
 
     /**
+     * (package-private)<br>
      * Send a request and return a response.
      *
      * @param msg The message to send (must be not null).
      * @return null if there is no response.
-     * @since 1.0
      */
-    public abstract KeypleMessageDto sendRequest(KeypleMessageDto msg);
+    abstract KeypleMessageDto sendRequest(KeypleMessageDto msg);
 
     /**
+     * (package-private)<br>
      * Send a message.
      *
      * @param msg The message to send (must be not null).
-     * @since 1.0
      */
-    public abstract void sendMessage(KeypleMessageDto msg);
+    abstract void sendMessage(KeypleMessageDto msg);
 }

@@ -31,6 +31,8 @@ package org.eclipse.keyple.plugin.remotese.core;
  * </ul>
  * </li>
  * <li>Call the method {@link KeypleServerAsyncNode#onMessage(KeypleMessageDto)} on the node.</li>
+ * <li>Call the method {@link KeypleServerAsyncNode#onClose(String)} on the node after the session
+ * closing.</li>
  * </ul>
  * <p>
  * This endpoint must interact with a {@link KeypleServerAsyncNode} locally and with a

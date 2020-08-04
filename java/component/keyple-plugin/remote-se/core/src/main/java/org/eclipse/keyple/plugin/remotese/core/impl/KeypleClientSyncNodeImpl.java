@@ -75,7 +75,7 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
      * {@inheritDoc}
      */
     @Override
-    public KeypleMessageDto sendRequest(KeypleMessageDto msg) {
+    KeypleMessageDto sendRequest(KeypleMessageDto msg) {
 
         List<KeypleMessageDto> responses = endpoint.sendRequest(msg);
 
@@ -101,7 +101,7 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
      * {@inheritDoc}
      */
     @Override
-    public void sendMessage(KeypleMessageDto msg) {
+    void sendMessage(KeypleMessageDto msg) {
         endpoint.sendRequest(msg);
     }
 
