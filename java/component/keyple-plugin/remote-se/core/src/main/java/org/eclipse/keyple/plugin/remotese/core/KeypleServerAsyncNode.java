@@ -50,6 +50,15 @@ public interface KeypleServerAsyncNode {
     void onMessage(KeypleMessageDto msg);
 
     /**
+     * This method should be called by the {@link KeypleServerAsync} endpoint following the closing
+     * of a communication session with the client.
+     *
+     * @param sessionId The session id registered during the session opening process.
+     * @since 1.0
+     */
+    void onClose(String sessionId);
+
+    /**
      * This method must be called by the {@link KeypleServerAsync} endpoint if a technical error
      * occurs when sending a message to the client.
      *

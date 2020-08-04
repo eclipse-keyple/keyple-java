@@ -112,6 +112,7 @@ public abstract class AbstractKeypleMessageHandler {
     }
 
     /**
+     * (protected)<br>
      * If message contains an error, throws the embedded exception.
      *
      * @param message not null instance
@@ -123,5 +124,26 @@ public abstract class AbstractKeypleMessageHandler {
                     KeypleJsonParser.getParser().fromJson(message.getBody(), BodyError.class);
             throw body.getException();
         }
+    }
+
+    /**
+     * (protected)<br>
+     * Send a request on the node and return a response.
+     *
+     * @param msg The message to send (must be not null).
+     * @return null if there is no response.
+     */
+    protected KeypleMessageDto sendRequest(KeypleMessageDto msg) {
+        return node.sendRequest(msg);
+    }
+
+    /**
+     * (protected)<br>
+     * Send a message on the node.
+     *
+     * @param msg The message to send (must be not null).
+     */
+    protected void sendMessage(KeypleMessageDto msg) {
+        node.sendMessage(msg);
     }
 }

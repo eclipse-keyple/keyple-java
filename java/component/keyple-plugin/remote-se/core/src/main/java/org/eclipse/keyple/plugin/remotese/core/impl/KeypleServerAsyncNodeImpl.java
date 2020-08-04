@@ -11,30 +11,30 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.core.impl;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import org.eclipse.keyple.core.util.Assert;
-import org.eclipse.keyple.plugin.remotese.core.KeypleClientAsync;
-import org.eclipse.keyple.plugin.remotese.core.KeypleClientAsyncNode;
-import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remotese.core.*;
+import org.eclipse.keyple.plugin.remotese.core.exception.KeypleClosedSessionException;
 import org.eclipse.keyple.plugin.remotese.core.exception.KeypleTimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Keyple Client Async Node implementation.
+ * Keyple Server Async Node implementation.
  * <p>
  * This is an internal class an must not be used by the user.
  *
  * @since 1.0
  */
-// todo
+// TODO remove this annotation as soon as possible
 @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
-public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
-        implements KeypleClientAsyncNode {
+public final class KeypleServerAsyncNodeImpl extends AbstractKeypleNode
+        implements KeypleServerAsyncNode {
 
-    private static final Logger logger = LoggerFactory.getLogger(KeypleClientAsyncNodeImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(KeypleServerAsyncNodeImpl.class);
 
-    private final KeypleClientAsync endpoint;
+    private final KeypleServerAsync endpoint;
     private final Map<String, SessionManager> sessionManagers;
 
     // Timeout used during awaiting (in milliseconds)
@@ -45,10 +45,10 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
      * Constructor.
      *
      * @param handler The associated handler (must be not null).
-     * @param endpoint The user client async endpoint (must be not null).
+     * @param endpoint The user server async endpoint (must be not null).
      * @param timeoutInSecond The default timeout (in seconds) to use.
      */
-    KeypleClientAsyncNodeImpl(AbstractKeypleMessageHandler handler, KeypleClientAsync endpoint,
+    KeypleServerAsyncNodeImpl(AbstractKeypleMessageHandler handler, KeypleServerAsync endpoint,
             int timeoutInSecond) {
         super(handler);
         this.endpoint = endpoint;
@@ -57,51 +57,12 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
     }
 
     /**
-     * (For internal use only)<br>
-     * Create a new session manager, register it using the provided session id, then try to open the
-     * session on the endpoint.
-     *
-     * @param sessionId The session id (must be not empty).
-     * @throws RuntimeException if an error occurs.
-     * @since 1.0
-     */
-    public void openSession(String sessionId) {
-        SessionManager manager = new SessionManager(sessionId);
-        sessionManagers.put(sessionId, manager);
-        try {
-            manager.openSession();
-        } catch (RuntimeException e) {
-            closeSessionSilently(sessionId);
-            throw e;
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onOpen(String sessionId) {
-        Assert.getInstance().notEmpty(sessionId, "sessionId");
-        SessionManager manager = sessionManagers.get(sessionId);
-        if (manager != null) {
-            manager.onOpen();
-        } else {
-            logSessionNotFound(sessionId);
-        }
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     KeypleMessageDto sendRequest(KeypleMessageDto msg) {
-        SessionManager manager = sessionManagers.get(msg.getSessionId());
-        try {
-            return manager.sendRequest(msg);
-        } catch (RuntimeException e) {
-            closeSessionSilently(msg.getSessionId());
-            throw e;
-        }
+        SessionManager manager = getManagerForHandler(msg.getSessionId());
+        return manager.sendRequest(msg);
     }
 
     /**
@@ -109,13 +70,25 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
      */
     @Override
     void sendMessage(KeypleMessageDto msg) {
-        SessionManager manager = sessionManagers.get(msg.getSessionId());
-        try {
-            manager.sendMessage(msg);
-        } catch (RuntimeException e) {
-            closeSessionSilently(msg.getSessionId());
-            throw e;
+        SessionManager manager = getManagerForHandler(msg.getSessionId());
+        manager.sendMessage(msg);
+    }
+
+    /**
+     * (private)<br>
+     * Check if the session is active and get the associated session manager.
+     *
+     * @param sessionId The session id (must be not empty).
+     * @return a not null reference.
+     * @throws KeypleClosedSessionException if the session is not found.
+     */
+    private SessionManager getManagerForHandler(String sessionId) {
+        SessionManager manager = sessionManagers.get(sessionId);
+        if (manager == null) {
+            throw new KeypleClosedSessionException(
+                    "The node's session [" + sessionId + "] is closed.");
         }
+        return manager;
     }
 
     /**
@@ -128,68 +101,15 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
                 .notNull(msg, "msg")//
                 .notEmpty(msg.getSessionId(), "sessionId")//
                 .notEmpty(msg.getAction(), "action")//
-                .notEmpty(msg.getClientNodeId(), "clientNodeId")//
-                .notEmpty(msg.getServerNodeId(), "serverNodeId");
+                .notEmpty(msg.getClientNodeId(), "clientNodeId");
 
+        // Get or create a new session manager
         SessionManager manager = sessionManagers.get(msg.getSessionId());
-        if (manager != null) {
-            KeypleMessageDto.Action action = KeypleMessageDto.Action.valueOf(msg.getAction());
-            switch (action) {
-                case PLUGIN_EVENT:
-                case READER_EVENT:
-                    manager.onEvent(msg);
-                    break;
-                default:
-                    manager.onResponse(msg);
-            }
-        } else {
-            logSessionNotFound(msg.getSessionId());
+        if (manager == null) {
+            manager = new SessionManager(msg.getSessionId());
+            sessionManagers.put(msg.getSessionId(), manager);
         }
-    }
-
-    /**
-     * (For internal use only)<br>
-     * Close the session having the provided session id.
-     *
-     * @param sessionId The session id (must be not empty).
-     * @since 1.0
-     */
-    public void closeSession(String sessionId) {
-        SessionManager manager = sessionManagers.get(sessionId);
-        try {
-            manager.closeSession();
-        } finally {
-            sessionManagers.remove(sessionId);
-        }
-    }
-
-    /**
-     * (private)<br>
-     * Close the session silently (without throwing exceptions)
-     *
-     * @param sessionId The session id (must be not empty).
-     */
-    private void closeSessionSilently(String sessionId) {
-        try {
-            closeSession(sessionId);
-        } catch (RuntimeException e) {
-            logger.error("Error during the silent closing of node's session [{}] : {}", sessionId,
-                    e.getMessage(), e);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onClose(String sessionId) {
-        Assert.getInstance().notEmpty(sessionId, "sessionId");
-        SessionManager manager = sessionManagers.get(sessionId);
-        if (manager != null) {
-            manager.onClose();
-        } else {
-            logSessionNotFound(sessionId);
-        }
+        manager.onMessage(msg);
     }
 
     /**
@@ -199,22 +119,18 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
     public void onError(String sessionId, Throwable error) {
         Assert.getInstance().notEmpty(sessionId, "sessionId").notNull(error, "error");
         SessionManager manager = sessionManagers.get(sessionId);
-        if (manager != null) {
-            manager.onError(error);
-        } else {
-            logSessionNotFound(sessionId);
-        }
+        Assert.getInstance().notNull(manager, "sessionId");
+        manager.onError(error);
     }
 
     /**
-     * (private)<br>
-     * Log a session not found message.
-     *
-     * @param sessionId The session id (must be not empty).
+     * {@inheritDoc}
      */
-    private void logSessionNotFound(String sessionId) {
-        logger.warn("The node's session [{}] is not found. It was maybe closed due to a timeout.",
-                sessionId);
+    @Override
+    public void onClose(String sessionId) {
+        Assert.getInstance().notEmpty(sessionId, "sessionId");
+        SessionManager manager = sessionManagers.remove(sessionId);
+        Assert.getInstance().notNull(manager, "sessionId");
     }
 
     /**
@@ -223,15 +139,12 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
      */
     private enum SessionManagerState {
         INITIALIZED, //
-        OPEN_SESSION_BEGIN, //
-        OPEN_SESSION_END, //
+        ON_MESSAGE, //
         SEND_REQUEST_BEGIN, //
         SEND_REQUEST_END, //
         SEND_MESSAGE, //
         ENDPOINT_ERROR_RECEIVED, //
-        ABORTED_SESSION, //
-        CLOSE_SESSION_BEGIN, //
-        CLOSE_SESSION_END;
+        ABORTED_SESSION;
     }
 
     /**
@@ -336,28 +249,25 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
 
         /**
          * (private)<br>
-         * Called by the handler to open the session by calling the endpoint and awaiting the
-         * result.
-         *
-         * @throws KeypleTimeoutException if a timeout occurs.
-         * @throws RuntimeException if an error occurs.
-         */
-        private synchronized void openSession() {
-            state = SessionManagerState.OPEN_SESSION_BEGIN;
-            endpoint.openSession(sessionId);
-            waitForState(SessionManagerState.OPEN_SESSION_END);
-        }
-
-        /**
-         * (private)<br>
          * Called by the endpoint and notify the awaiting thread if necessary.
          *
+         * @param msg The message received from the endpoint.
          * @throws IllegalStateException in case of bad use.
          */
-        private synchronized void onOpen() {
-            checkState(SessionManagerState.OPEN_SESSION_BEGIN);
-            state = SessionManagerState.OPEN_SESSION_END;
-            notify();
+        private synchronized void onMessage(KeypleMessageDto msg) {
+            checkState(SessionManagerState.INITIALIZED, //
+                    SessionManagerState.ON_MESSAGE, //
+                    SessionManagerState.SEND_REQUEST_BEGIN, //
+                    SessionManagerState.SEND_REQUEST_END, //
+                    SessionManagerState.SEND_MESSAGE);
+            if (state == SessionManagerState.SEND_REQUEST_BEGIN) {
+                response = msg;
+                state = SessionManagerState.SEND_REQUEST_END;
+                notify();
+            } else {
+                state = SessionManagerState.ON_MESSAGE;
+                handler.onMessage(msg);
+            }
         }
 
         /**
@@ -367,7 +277,7 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
          * @param msg The message to send.
          * @return The response.
          * @throws KeypleTimeoutException if a timeout occurs.
-         * @throws RuntimeException if an error occurs.
+         * @throws RuntimeException if an endpoint error occurs.
          */
         private synchronized KeypleMessageDto sendRequest(KeypleMessageDto msg) {
             checkIfEndpointErrorOccurred();
@@ -380,34 +290,10 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
 
         /**
          * (private)<br>
-         * Called by the endpoint and notify the awaiting thread if necessary.
-         *
-         * @param msg The response received from the endpoint.
-         * @throws IllegalStateException in case of bad use.
-         */
-        private synchronized void onResponse(KeypleMessageDto msg) {
-            checkState(SessionManagerState.SEND_REQUEST_BEGIN);
-            response = msg;
-            state = SessionManagerState.SEND_REQUEST_END;
-            notify();
-        }
-
-        /**
-         * (private)<br>
-         * Called by the endpoint to transmit an event to the handler.
-         *
-         * @param msg The event received from the endpoint.
-         */
-        private void onEvent(KeypleMessageDto msg) {
-            handler.onMessage(msg);
-        }
-
-        /**
-         * (private)<br>
          * Called by the handler to send a message to the endpoint.
          *
          * @param msg The message to send.
-         * @throws RuntimeException if an error occurs.
+         * @throws RuntimeException if an endpoint error occurs.
          */
         private synchronized void sendMessage(KeypleMessageDto msg) {
             checkIfEndpointErrorOccurred();
@@ -418,43 +304,13 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
 
         /**
          * (private)<br>
-         * Called by the handler or by the node to close the current session by calling the endpoint
-         * and awaiting the result.
-         *
-         * @throws KeypleTimeoutException if a timeout occurs.
-         * @throws RuntimeException if an error occurs.
-         */
-        private synchronized void closeSession() {
-            checkIfEndpointErrorOccurred();
-            state = SessionManagerState.CLOSE_SESSION_BEGIN;
-            endpoint.closeSession(sessionId);
-            waitForState(SessionManagerState.CLOSE_SESSION_END);
-        }
-
-        /**
-         * (private)<br>
-         * Called by the endpoint and notify the awaiting thread if necessary.<br>
-         *
-         * @throws IllegalStateException in case of bad use.
-         */
-        private synchronized void onClose() {
-            checkState(SessionManagerState.CLOSE_SESSION_BEGIN);
-            state = SessionManagerState.CLOSE_SESSION_END;
-            notify();
-        }
-
-        /**
-         * (private)<br>
          * Called by the endpoint in case of endpoint error and notify the awaiting thread if
          * necessary.
          *
          * @throws IllegalStateException in case of bad use.
          */
         private synchronized void onError(Throwable e) {
-            checkState(SessionManagerState.OPEN_SESSION_BEGIN, //
-                    SessionManagerState.SEND_REQUEST_BEGIN, //
-                    SessionManagerState.SEND_MESSAGE, //
-                    SessionManagerState.CLOSE_SESSION_BEGIN);
+            checkState(SessionManagerState.SEND_REQUEST_BEGIN, SessionManagerState.SEND_MESSAGE);
             error = e;
             state = SessionManagerState.ENDPOINT_ERROR_RECEIVED;
             notify();

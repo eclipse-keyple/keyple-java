@@ -14,14 +14,15 @@ package org.eclipse.keyple.plugin.remotese.core.exception;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 
 /**
- * The exception {@code KeypleTimeoutException} indicates that a communication timeout occurs.
+ * The exception {@code KeypleClosedSessionException} indicates that a session was closed, usually
+ * when using asynchronous nodes.
  */
-public class KeypleTimeoutException extends KeypleException {
+public class KeypleClosedSessionException extends KeypleException {
 
     /**
      * @param message the message to identify the exception context
      */
-    public KeypleTimeoutException(String message) {
+    public KeypleClosedSessionException(String message) {
         super(message);
     }
 }

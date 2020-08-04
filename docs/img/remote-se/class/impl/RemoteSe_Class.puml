@@ -1,6 +1,6 @@
 @startuml
 title
-    Keyple Plugin Remote SE (22/07/2020)
+    Keyple Plugin Remote SE (28/07/2020)
 end title
 
 ' == THEME ==
@@ -112,15 +112,9 @@ package org.eclipse.keyple.plugin.remotese {
                 + String virtualReaderName
                 + String body
             }
-            +interface KeypleUserDataFactory<T extends KeypleUserData> {
-                +T getInstance(String json)
-            }
-            +interface KeypleUserData {
-                +String toJson()
-            }
-            +interface KeypleClientReaderEventFilter<T extends KeypleUserData> {
-                +KeypleUserDataFactory<T> getUserOutputDataFactory ()
-                +KeypleUserData beforePropagation (ReaderEvent event)
+            +abstract KeypleClientReaderEventFilter<T> {
+                +Class<T> getUserOutputDataClass ()
+                +Object beforePropagation (ReaderEvent event)
                 +void afterPropagation (T userOutputData)
             }
 
@@ -137,40 +131,42 @@ package org.eclipse.keyple.plugin.remotese {
                 + void bindClientSyncNode (KeypleClientSync endpoint,\n ServerPushEventStrategy pluginObservationStrategy,\n ServerPushEventStrategy readerObservationStrategy)
                 + void bindServerSyncNode ()
                 # {abstract} **abstract** void onMessage (KeypleMessageDto msg)
+                # KeypleMessageDto sendRequest (KeypleMessageDto msg)
+                # void sendMessage (KeypleMessageDto msg)
             }
 
             ' Node
             +abstract AbstractKeypleNode {
                 # String nodeId
                 ~ AbstractKeypleNode (AbstractKeypleMessageHandler handler)
-                + {abstract} **abstract** KeypleMessageDto sendRequest (KeypleMessageDto msg)
-                + {abstract} **abstract** void sendMessage (KeypleMessageDto msg)
+                ~ {abstract} **abstract** KeypleMessageDto sendRequest (KeypleMessageDto msg)
+                ~ {abstract} **abstract** void sendMessage (KeypleMessageDto msg)
             }
             ' Async Node
             +class "**final** KeypleClientAsyncNodeImpl" as KeypleClientAsyncNodeImpl extends AbstractKeypleNode implements KeypleClientAsyncNode {
                 ~ KeypleClientAsyncNodeImpl (\n AbstractKeypleMessageHandler handler,\n KeypleClientAsync endpoint)
                 + void openSession (String sessionId)
-                + KeypleMessageDto sendRequest (KeypleMessageDto msg)
-                + void sendMessage (KeypleMessageDto msg)
+                ~ KeypleMessageDto sendRequest (KeypleMessageDto msg)
+                ~ void sendMessage (KeypleMessageDto msg)
                 + void closeSession (String sessionId)
             }
             +class "**final** KeypleServerAsyncNodeImpl" as KeypleServerAsyncNodeImpl extends AbstractKeypleNode implements KeypleServerAsyncNode {
                 ~ KeypleServerAsyncNodeImpl (\n AbstractKeypleMessageHandler handler,\n KeypleServerAsync endpoint)
-                + KeypleMessageDto sendRequest (KeypleMessageDto msg)
-                + void sendMessage (KeypleMessageDto msg)
+                ~ KeypleMessageDto sendRequest (KeypleMessageDto msg)
+                ~ void sendMessage (KeypleMessageDto msg)
             }
             ' Sync Node
             +class "**final** KeypleClientSyncNodeImpl" as KeypleClientSyncNodeImpl extends AbstractKeypleNode implements KeypleClientSyncNode {
                 ~ KeypleClientSyncNodeImpl (\n AbstractKeypleMessageHandler handler,\n KeypleClientSync endpoint,\n ServerPushEventStrategy pluginObservationStrategy,\n ServerPushEventStrategy readerObservationStrategy)
-                + KeypleMessageDto sendRequest (KeypleMessageDto msg)
-                + void sendMessage (KeypleMessageDto msg)
+                ~ KeypleMessageDto sendRequest (KeypleMessageDto msg)
+                ~ void sendMessage (KeypleMessageDto msg)
             }
             +class "**final** KeypleServerSyncNodeImpl" as KeypleServerSyncNodeImpl extends AbstractKeypleNode implements KeypleServerSyncNode {
                 - Map<String, Object> : clientRequesterById
                 - Map<Object, KeypleMessageDto> : clientAdditionalMessageByRequester
                 ~ KeypleServerSyncNodeImpl (\n AbstractKeypleMessageHandler handler)
-                + KeypleMessageDto sendRequest (KeypleMessageDto msg)
-                + void sendMessage (KeypleMessageDto msg)
+                ~ KeypleMessageDto sendRequest (KeypleMessageDto msg)
+                ~ void sendMessage (KeypleMessageDto msg)
             }
 
             ' Server Push Event Strategy
@@ -198,7 +194,7 @@ package org.eclipse.keyple.plugin.remotese {
             +interface NativeSePoolServerService {
             }
             +interface NativeSeClientService {
-                +<T extends KeypleUserData> T executeRemoteService (\n    RemoteServiceParameters parameters,\n    KeypleUserDataFactory<T> userOutputDataFactory)
+                +<T> T executeRemoteService (\n    RemoteServiceParameters parameters,\n    Class<T> classOfT)
             }
             +class RemoteServiceParameters {
                 +{static} Builder builder (String serviceId, SeReader nativeReader)
@@ -283,13 +279,13 @@ package org.eclipse.keyple.plugin.remotese {
             }
             +interface "<< <back:#82E0AA>ObservablePlugin</back> >>\nRemoteSeServerPlugin" as RemoteSeServerPlugin {
                 +RemoteSeServerReader getReader (String name)
-                +void terminateService (String virtualReaderName,\n KeypleUserData userOutputData)
+                +void terminateService (String virtualReaderName,\n Object userOutputData)
             }
 
             ' Remote Readers
             +interface "<< <back:#D0ECE7>SeReader</back> >>\nRemoteSeServerReader" as RemoteSeServerReader {
                 +String getServiceId ()
-                +<T extends KeypleUserData> T getUserInputData (\n    KeypleUserDataFactory<T> userInputDataFactory)
+                +<T> T getUserInputData (\n    Class<T> classOfT)
                 +<T extends AbstractMatchingSe> T getInitialSeContent (\n    Class<T> classOfMatchingSe)
             }
             +interface "<< <back:#FDEBD0>ObservableReader</back> >>\nRemoteSeServerObservableReader" as RemoteSeServerObservableReader extends RemoteSeServerReader {
@@ -391,15 +387,13 @@ NativeSeClientService -right-> RemoteServiceParameters #C_LINK : use >
 RemoteServiceParameters +-right- RemoteServiceParametersBuilder #C_LINK
 ServerPushEventStrategy +-right- Type #C_LINK
 ServerPushEventStrategy *-right-> "type" Type #C_LINK
-KeypleUserDataFactory -right-> KeypleUserData #C_LINK : create >
 
 ' == LAYOUT ==
 
 ObservableReader -[hidden]- AbstractKeypleMessageHandler
 KeypleServerSyncNodeImpl -[hidden]- KeypleMessageDto
-KeypleMessageDto -[hidden]- KeypleUserData
-KeypleUserData -[hidden]right- KeypleClientReaderEventFilter
-KeypleUserData -[hidden]- NativeSeClientService
+KeypleMessageDto -[hidden]- KeypleClientReaderEventFilter
+KeypleClientReaderEventFilter -[hidden]- NativeSeClientService
 NativeSeClientService -[hidden]- AbstractNativeSeService
 
 NativeSeServerServiceImpl -[hidden]- NativeSeServerServiceFactory
