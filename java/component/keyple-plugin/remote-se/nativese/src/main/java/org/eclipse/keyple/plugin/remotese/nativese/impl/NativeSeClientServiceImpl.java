@@ -92,7 +92,7 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
         KeypleMessageDto remoteServiceDto = buildRemoteServiceMessage(parameters);
 
         // send keypleMessageDto through the node
-        KeypleMessageDto receivedDto = node.sendRequest(remoteServiceDto);
+        KeypleMessageDto receivedDto = sendRequest(remoteServiceDto);
 
         // start observation if needed
         if (withReaderObservation) {
@@ -117,7 +117,7 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
             KeypleMessageDto responseDto = executeLocally(nativeReader, receivedDto);
 
             // get response dto - send dto response to server
-            receivedDto = node.sendRequest(responseDto);
+            receivedDto = sendRequest(responseDto);
         }
 
         checkError(receivedDto);
@@ -153,7 +153,7 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
         KeypleMessageDto eventMessageDto = buildEventMessage(userData, event);
 
         // send keypleMessageDto through the node
-        KeypleMessageDto receivedDto = node.sendRequest(eventMessageDto);
+        KeypleMessageDto receivedDto = sendRequest(eventMessageDto);
 
         // execute KeypleMessage(s) locally
         while (!receivedDto.getAction().equals(KeypleMessageDto.Action.TERMINATE_SERVICE.name())
@@ -165,7 +165,7 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
             KeypleMessageDto responseDto = executeLocally(nativeReader, receivedDto);
 
             // get response dto - send dto response to server
-            receivedDto = node.sendRequest(responseDto);
+            receivedDto = sendRequest(responseDto);
         }
 
         checkError(receivedDto);
