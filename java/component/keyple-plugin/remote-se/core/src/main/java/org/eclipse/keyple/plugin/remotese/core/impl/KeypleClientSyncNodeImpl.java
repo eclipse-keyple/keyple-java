@@ -35,8 +35,6 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
     private static final Logger logger = LoggerFactory.getLogger(KeypleClientSyncNodeImpl.class);
 
     private final KeypleClientSync endpoint;
-    private final EventObserver pluginEventObserver;
-    private final EventObserver readerEventObserver;
 
     /**
      * (package-private)<br>
@@ -53,22 +51,28 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
     KeypleClientSyncNodeImpl(AbstractKeypleMessageHandler handler, KeypleClientSync endpoint,
             ServerPushEventStrategy pluginObservationStrategy,
             ServerPushEventStrategy readerObservationStrategy) {
-        super(handler);
+
+        super(handler, 0);
         this.endpoint = endpoint;
+
         if (pluginObservationStrategy != null) {
-            this.pluginEventObserver = new EventObserver(pluginObservationStrategy,
+            EventObserver pluginEventObserver = new EventObserver(pluginObservationStrategy,
                     KeypleMessageDto.Action.CHECK_PLUGIN_EVENT);
-            this.pluginEventObserver.start();
-        } else {
-            this.pluginEventObserver = null;
+            pluginEventObserver.start();
         }
         if (readerObservationStrategy != null) {
-            this.readerEventObserver = new EventObserver(readerObservationStrategy,
+            EventObserver readerEventObserver = new EventObserver(readerObservationStrategy,
                     KeypleMessageDto.Action.CHECK_READER_EVENT);
-            this.readerEventObserver.start();
-        } else {
-            this.readerEventObserver = null;
+            readerEventObserver.start();
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    void openSession(String sessionId) {
+        // NOP
     }
 
     /**
@@ -106,6 +110,14 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    void closeSession(String sessionId) {
+        // NOP
+    }
+
+    /**
      * (private)<br>
      * Event Observer inner class.<br>
      * This class can be used only for <b>Remote SE Client Plugin</b> use case.
@@ -115,7 +127,7 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
         private final ServerPushEventStrategy strategy;
         private final KeypleMessageDto.Action action;
         private final KeypleMessageDto msg;
-        private Thread thread;
+        private final Thread thread;
 
         /**
          * (private)<br>

@@ -21,7 +21,7 @@ package org.eclipse.keyple.plugin.remotese.core.impl;
  */
 public class ServerPushEventStrategy {
 
-    private Type type;
+    private final Type type;
     private int duration;
 
     /**
@@ -38,7 +38,7 @@ public class ServerPushEventStrategy {
      * The strategy type enum.
      */
     public enum Type {
-        POLLING, LONG_POLLING;
+        POLLING, LONG_POLLING
     }
 
     /**

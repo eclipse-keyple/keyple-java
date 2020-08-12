@@ -1,6 +1,6 @@
 @startuml
 title
-    Keyple Plugin Remote SE (28/07/2020)
+    Keyple Plugin Remote SE (12/08/2020)
 end title
 
 ' == THEME ==
@@ -124,49 +124,58 @@ package org.eclipse.keyple.plugin.remotese {
 
             ' Handler
             +abstract AbstractKeypleMessageHandler {
-                # boolean isBoundToAsyncNode
                 # AbstractKeypleMessageHandler ()
                 + void bindClientAsyncNode (KeypleClientAsync endpoint)
                 + void bindServerAsyncNode (KeypleServerAsync endpoint)
                 + void bindClientSyncNode (KeypleClientSync endpoint,\n ServerPushEventStrategy pluginObservationStrategy,\n ServerPushEventStrategy readerObservationStrategy)
                 + void bindServerSyncNode ()
                 # {abstract} **abstract** void onMessage (KeypleMessageDto msg)
+                # void openSession (String sessionId)
                 # KeypleMessageDto sendRequest (KeypleMessageDto msg)
                 # void sendMessage (KeypleMessageDto msg)
+                # void closeSession (String sessionId)
             }
 
             ' Node
             +abstract AbstractKeypleNode {
                 # String nodeId
                 ~ AbstractKeypleNode (AbstractKeypleMessageHandler handler)
+                ~ {abstract} **abstract** void openSession (String sessionId)
                 ~ {abstract} **abstract** KeypleMessageDto sendRequest (KeypleMessageDto msg)
                 ~ {abstract} **abstract** void sendMessage (KeypleMessageDto msg)
+                ~ {abstract} **abstract** void closeSession (String sessionId)
             }
             ' Async Node
             +class "**final** KeypleClientAsyncNodeImpl" as KeypleClientAsyncNodeImpl extends AbstractKeypleNode implements KeypleClientAsyncNode {
                 ~ KeypleClientAsyncNodeImpl (\n AbstractKeypleMessageHandler handler,\n KeypleClientAsync endpoint)
-                + void openSession (String sessionId)
+                ~ void openSession (String sessionId)
                 ~ KeypleMessageDto sendRequest (KeypleMessageDto msg)
                 ~ void sendMessage (KeypleMessageDto msg)
-                + void closeSession (String sessionId)
+                ~ void closeSession (String sessionId)
             }
             +class "**final** KeypleServerAsyncNodeImpl" as KeypleServerAsyncNodeImpl extends AbstractKeypleNode implements KeypleServerAsyncNode {
                 ~ KeypleServerAsyncNodeImpl (\n AbstractKeypleMessageHandler handler,\n KeypleServerAsync endpoint)
+                ~ void openSession (String sessionId)
                 ~ KeypleMessageDto sendRequest (KeypleMessageDto msg)
                 ~ void sendMessage (KeypleMessageDto msg)
+                ~ void closeSession (String sessionId)
             }
             ' Sync Node
             +class "**final** KeypleClientSyncNodeImpl" as KeypleClientSyncNodeImpl extends AbstractKeypleNode implements KeypleClientSyncNode {
                 ~ KeypleClientSyncNodeImpl (\n AbstractKeypleMessageHandler handler,\n KeypleClientSync endpoint,\n ServerPushEventStrategy pluginObservationStrategy,\n ServerPushEventStrategy readerObservationStrategy)
+                ~ void openSession (String sessionId)
                 ~ KeypleMessageDto sendRequest (KeypleMessageDto msg)
                 ~ void sendMessage (KeypleMessageDto msg)
+                ~ void closeSession (String sessionId)
             }
             +class "**final** KeypleServerSyncNodeImpl" as KeypleServerSyncNodeImpl extends AbstractKeypleNode implements KeypleServerSyncNode {
                 - Map<String, Object> : clientRequesterById
                 - Map<Object, KeypleMessageDto> : clientAdditionalMessageByRequester
                 ~ KeypleServerSyncNodeImpl (\n AbstractKeypleMessageHandler handler)
+                ~ void openSession (String sessionId)
                 ~ KeypleMessageDto sendRequest (KeypleMessageDto msg)
                 ~ void sendMessage (KeypleMessageDto msg)
+                ~ void closeSession (String sessionId)
             }
 
             ' Server Push Event Strategy

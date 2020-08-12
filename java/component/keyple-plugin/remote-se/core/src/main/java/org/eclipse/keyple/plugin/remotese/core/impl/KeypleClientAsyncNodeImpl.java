@@ -16,6 +16,7 @@ import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remotese.core.KeypleClientAsync;
 import org.eclipse.keyple.plugin.remotese.core.KeypleClientAsyncNode;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remotese.core.exception.KeypleRemoteCommunicationException;
 import org.eclipse.keyple.plugin.remotese.core.exception.KeypleTimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +28,6 @@ import org.slf4j.LoggerFactory;
  *
  * @since 1.0
  */
-// todo
-@SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
 public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
         implements KeypleClientAsyncNode {
 
@@ -36,9 +35,6 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
 
     private final KeypleClientAsync endpoint;
     private final Map<String, SessionManager> sessionManagers;
-
-    // Timeout used during awaiting (in milliseconds)
-    private final int timeout;
 
     /**
      * (package-private)<br>
@@ -50,22 +46,16 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
      */
     KeypleClientAsyncNodeImpl(AbstractKeypleMessageHandler handler, KeypleClientAsync endpoint,
             int timeoutInSecond) {
-        super(handler);
+        super(handler, timeoutInSecond);
         this.endpoint = endpoint;
-        this.timeout = timeoutInSecond * 1000;
         this.sessionManagers = new HashMap<String, SessionManager>();
     }
 
     /**
-     * (For internal use only)<br>
-     * Create a new session manager, register it using the provided session id, then try to open the
-     * session on the endpoint.
-     *
-     * @param sessionId The session id (must be not empty).
-     * @throws RuntimeException if an error occurs.
-     * @since 1.0
+     * {@inheritDoc}
      */
-    public void openSession(String sessionId) {
+    @Override
+    void openSession(String sessionId) {
         SessionManager manager = new SessionManager(sessionId);
         sessionManagers.put(sessionId, manager);
         try {
@@ -82,11 +72,9 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
     @Override
     public void onOpen(String sessionId) {
         Assert.getInstance().notEmpty(sessionId, "sessionId");
-        SessionManager manager = sessionManagers.get(sessionId);
+        SessionManager manager = getManagerForEndpoint(sessionId);
         if (manager != null) {
             manager.onOpen();
-        } else {
-            logSessionNotFound(sessionId);
         }
     }
 
@@ -131,7 +119,7 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
                 .notEmpty(msg.getClientNodeId(), "clientNodeId")//
                 .notEmpty(msg.getServerNodeId(), "serverNodeId");
 
-        SessionManager manager = sessionManagers.get(msg.getSessionId());
+        SessionManager manager = getManagerForEndpoint(msg.getSessionId());
         if (manager != null) {
             KeypleMessageDto.Action action = KeypleMessageDto.Action.valueOf(msg.getAction());
             switch (action) {
@@ -142,19 +130,14 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
                 default:
                     manager.onResponse(msg);
             }
-        } else {
-            logSessionNotFound(msg.getSessionId());
         }
     }
 
     /**
-     * (For internal use only)<br>
-     * Close the session having the provided session id.
-     *
-     * @param sessionId The session id (must be not empty).
-     * @since 1.0
+     * {@inheritDoc}
      */
-    public void closeSession(String sessionId) {
+    @Override
+    void closeSession(String sessionId) {
         SessionManager manager = sessionManagers.get(sessionId);
         try {
             manager.closeSession();
@@ -184,11 +167,9 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
     @Override
     public void onClose(String sessionId) {
         Assert.getInstance().notEmpty(sessionId, "sessionId");
-        SessionManager manager = sessionManagers.get(sessionId);
+        SessionManager manager = getManagerForEndpoint(sessionId);
         if (manager != null) {
             manager.onClose();
-        } else {
-            logSessionNotFound(sessionId);
         }
     }
 
@@ -198,40 +179,28 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
     @Override
     public void onError(String sessionId, Throwable error) {
         Assert.getInstance().notEmpty(sessionId, "sessionId").notNull(error, "error");
-        SessionManager manager = sessionManagers.get(sessionId);
+        SessionManager manager = getManagerForEndpoint(sessionId);
         if (manager != null) {
             manager.onError(error);
-        } else {
-            logSessionNotFound(sessionId);
         }
     }
 
     /**
      * (private)<br>
-     * Log a session not found message.
+     * Get the manager associated to the provided session id and log a session not found message if
+     * manager does not exists.
      *
      * @param sessionId The session id (must be not empty).
+     * @return a nullable reference.
      */
-    private void logSessionNotFound(String sessionId) {
-        logger.warn("The node's session [{}] is not found. It was maybe closed due to a timeout.",
-                sessionId);
-    }
-
-    /**
-     * (private)<br>
-     * The session manager state enum
-     */
-    private enum SessionManagerState {
-        INITIALIZED, //
-        OPEN_SESSION_BEGIN, //
-        OPEN_SESSION_END, //
-        SEND_REQUEST_BEGIN, //
-        SEND_REQUEST_END, //
-        SEND_MESSAGE, //
-        ENDPOINT_ERROR_RECEIVED, //
-        ABORTED_SESSION, //
-        CLOSE_SESSION_BEGIN, //
-        CLOSE_SESSION_END;
+    private SessionManager getManagerForEndpoint(String sessionId) {
+        SessionManager manager = sessionManagers.get(sessionId);
+        if (manager == null) {
+            logger.warn(
+                    "The node's session [{}] is not found. It was maybe closed due to a timeout.",
+                    sessionId);
+        }
+        return manager;
     }
 
     /**
@@ -239,13 +208,7 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
      * The inner session manager class.<br>
      * There is one manager by session id.
      */
-    private class SessionManager {
-
-        private final String sessionId;
-
-        private volatile SessionManagerState state;
-        private volatile KeypleMessageDto response;
-        private volatile Throwable error;
+    private class SessionManager extends AbstractSessionManager {
 
         /**
          * (private)<br>
@@ -254,84 +217,18 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
          * @param sessionId The session id to manage.
          */
         private SessionManager(String sessionId) {
-            this.sessionId = sessionId;
-            this.state = SessionManagerState.INITIALIZED;
-            this.response = null;
-            this.error = null;
+            super(sessionId);
         }
 
         /**
-         * (private)<br>
-         * Check if the current state is equal to the target state, else wait until a timeout or to
-         * be wake up by another thread.<br>
-         *
-         * @param targetState The target state.
-         * @throws KeypleTimeoutException if a timeout occurs.
-         * @throws RuntimeException if an error was received from the endpoint.
+         * {@inheritDoc}
          */
-        private void waitForState(SessionManagerState targetState) {
-            if (state == targetState) {
-                return;
-            }
-            checkIfEndpointErrorOccurred();
-            try {
-                wait(timeout);
-                if (state == targetState) {
-                    return;
-                }
-                checkIfEndpointErrorOccurred();
-                timeoutOccurred();
-            } catch (InterruptedException e) {
-                logger.error(
-                        "Unexpected interruption of the task associated with the node's session {}",
-                        sessionId, e);
-                Thread.currentThread().interrupt();
-            }
-        }
-
-        /**
-         * (private)<br>
-         * Check if the current state is one of the provided target states.
-         *
-         * @param targetStates The target states to test.
-         * @throws IllegalStateException if the current state does not match any of the states
-         *         provided.
-         */
-        private void checkState(SessionManagerState... targetStates) {
-            for (SessionManagerState targetState : targetStates) {
-                if (state == targetState) {
-                    return;
-                }
-            }
-            throw new IllegalStateException("The status of the node's session manager [" + sessionId
-                    + "] should have been one of " + targetStates + ", but is currently " + state);
-        }
-
-        /**
-         * (private)<br>
-         * Check if an error was received from the endpoint, regardless to the current state, and
-         * then request the cancelling of the session and throws an exception.
-         *
-         * @throws RuntimeException With the original cause if an error exists.
-         */
-        private void checkIfEndpointErrorOccurred() {
-            if (state == SessionManagerState.ENDPOINT_ERROR_RECEIVED) {
+        @Override
+        protected void checkIfExternalErrorOccurred() {
+            if (state == SessionManagerState.EXTERNAL_ERROR_OCCURED) {
                 state = SessionManagerState.ABORTED_SESSION;
-                throw new RuntimeException(error);
+                throw new KeypleRemoteCommunicationException(error.getMessage(), error);
             }
-        }
-
-        /**
-         * (private)<br>
-         * The timeout case : request the cancelling of the session and throws an exception.
-         *
-         * @throws KeypleTimeoutException
-         */
-        private void timeoutOccurred() {
-            state = SessionManagerState.ABORTED_SESSION;
-            throw new KeypleTimeoutException(
-                    "Timeout occurs for the task associated with the node's session [" + sessionId
-                            + "]");
         }
 
         /**
@@ -370,7 +267,7 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
          * @throws RuntimeException if an error occurs.
          */
         private synchronized KeypleMessageDto sendRequest(KeypleMessageDto msg) {
-            checkIfEndpointErrorOccurred();
+            checkIfExternalErrorOccurred();
             state = SessionManagerState.SEND_REQUEST_BEGIN;
             response = null;
             endpoint.sendMessage(msg);
@@ -410,10 +307,10 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
          * @throws RuntimeException if an error occurs.
          */
         private synchronized void sendMessage(KeypleMessageDto msg) {
-            checkIfEndpointErrorOccurred();
+            checkIfExternalErrorOccurred();
             state = SessionManagerState.SEND_MESSAGE;
             endpoint.sendMessage(msg);
-            checkIfEndpointErrorOccurred();
+            checkIfExternalErrorOccurred();
         }
 
         /**
@@ -425,7 +322,7 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
          * @throws RuntimeException if an error occurs.
          */
         private synchronized void closeSession() {
-            checkIfEndpointErrorOccurred();
+            checkIfExternalErrorOccurred();
             state = SessionManagerState.CLOSE_SESSION_BEGIN;
             endpoint.closeSession(sessionId);
             waitForState(SessionManagerState.CLOSE_SESSION_END);
@@ -456,7 +353,7 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
                     SessionManagerState.SEND_MESSAGE, //
                     SessionManagerState.CLOSE_SESSION_BEGIN);
             error = e;
-            state = SessionManagerState.ENDPOINT_ERROR_RECEIVED;
+            state = SessionManagerState.EXTERNAL_ERROR_OCCURED;
             notify();
         }
     }
