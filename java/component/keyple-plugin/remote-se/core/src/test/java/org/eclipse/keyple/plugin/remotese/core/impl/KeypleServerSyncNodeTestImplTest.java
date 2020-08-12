@@ -13,15 +13,18 @@ package org.eclipse.keyple.plugin.remotese.core.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
+import static org.mockito.Mockito.*;
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remotese.core.exception.KeypleTimeoutException;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
-public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
+@RunWith(MockitoJUnitRunner.class)
+public class KeypleServerSyncNodeTestImplTest extends AbstractKeypleSyncNodeTest {
 
     static final String sessionId1 = "sessionId1";
     static final String pluginSessionId = "pluginSessionId";
@@ -98,40 +101,23 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
                 .setClientNodeId(clientNodeId);
     }
 
-    KeypleMessageDto buildMinimalMessage(String sessionId, String clientNodeId) {
+    KeypleMessageDto buildMinimalMessage() {
         return new KeypleMessageDto()//
-                .setSessionId(sessionId)//
+                .setSessionId(sessionId1)//
                 .setAction(KeypleMessageDto.Action.EXECUTE_REMOTE_SERVICE.name())//
-                .setClientNodeId(clientNodeId);
-    }
-
-    Callable<Boolean> threadHasStateTimedWaiting(final Thread thread) {
-        return new Callable<Boolean>() {
-            public Boolean call() {
-                return thread.getState() == Thread.State.TIMED_WAITING;
-            }
-        };
-    }
-
-    Callable<Boolean> threadHasStateTerminated(final Thread thread) {
-        return new Callable<Boolean>() {
-            public Boolean call() {
-                return thread.getState() == Thread.State.TERMINATED;
-            }
-        };
+                .setClientNodeId(clientNodeId1);
     }
 
     class MessageScheduler extends Thread {
 
-        boolean isError;
-        KeypleMessageDto response;
-        List<KeypleMessageDto> responses;
         Thread ownerThread;
         KeypleMessageDto msg;
         int mode;
+        KeypleMessageDto response;
+        List<KeypleMessageDto> responses;
 
         MessageScheduler(final KeypleMessageDto msg, final int mode) {
-            ownerThread = Thread.currentThread();
+            this.ownerThread = Thread.currentThread();
             this.msg = msg;
             this.mode = mode;
         }
@@ -139,20 +125,16 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
         @Override
         public void run() {
             await().atMost(5, TimeUnit.SECONDS).until(threadHasStateTimedWaiting(ownerThread));
-            try {
-                switch (mode) {
-                    case 1:
-                        responses = node.onRequest(msg);
-                        break;
-                    case 2:
-                        response = node.sendRequest(msg);
-                        break;
-                    case 3:
-                        node.sendMessage(msg);
-                        break;
-                }
-            } catch (Exception e) {
-                isError = true;
+            switch (mode) {
+                case 1:
+                    responses = node.onRequest(msg);
+                    break;
+                case 2:
+                    response = node.sendRequest(msg);
+                    break;
+                case 3:
+                    node.sendMessage(msg);
+                    break;
             }
         }
     }
@@ -169,17 +151,15 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
         return t;
     }
 
-    MessageScheduler scheduleSendMessage(final KeypleMessageDto msg) {
+    void scheduleSendMessage(final KeypleMessageDto msg) {
         MessageScheduler t = new MessageScheduler(msg, 3);
         t.start();
-        return t;
     }
 
     class ClientMessageSender extends Thread {
 
-        boolean isError;
-        List<KeypleMessageDto> responses;
         KeypleMessageDto msg;
+        List<KeypleMessageDto> responses;
 
         ClientMessageSender(final KeypleMessageDto msg) {
             this.msg = msg;
@@ -187,15 +167,11 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
 
         @Override
         public void run() {
-            try {
-                responses = node.onRequest(msg);
-            } catch (Exception e) {
-                isError = true;
-            }
+            responses = node.onRequest(msg);
         }
     }
 
-    ClientMessageSender callOnRequestAsync(final KeypleMessageDto msg) {
+    ClientMessageSender callOnRequestFromAnotherThread(final KeypleMessageDto msg) {
         ClientMessageSender t = new ClientMessageSender(msg);
         t.start();
         return t;
@@ -207,36 +183,6 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
         node = new KeypleServerSyncNodeImpl(handler, 10);
     }
 
-    public void checkTimeoutMessage(List<KeypleMessageDto> messages, boolean isClientTimeout,
-            KeypleMessageDto originalMessage) {
-        if (isClientTimeout) {
-            checkErrorMessage(messages, originalMessage,
-                    KeypleMessageDto.ErrorCode.TIMEOUT_CLIENT_TASK.getCode());
-        } else {
-            checkErrorMessage(messages, originalMessage,
-                    KeypleMessageDto.ErrorCode.TIMEOUT_SERVER_TASK.getCode());
-        }
-    }
-
-    public void checkUnknownErrorMessage(List<KeypleMessageDto> messages,
-            KeypleMessageDto originalMessage) {
-        checkErrorMessage(messages, originalMessage, KeypleMessageDto.ErrorCode.UNKNOWN.getCode());
-    }
-
-    public void checkErrorMessage(List<KeypleMessageDto> messages, KeypleMessageDto originalMessage,
-            String errorCode) {
-        assertThat(messages).hasSize(1);
-        KeypleMessageDto msg = messages.get(0);
-        assertThat(msg.getSessionId()).isEqualTo(originalMessage.getSessionId());
-        assertThat(msg.getAction()).isEqualTo(KeypleMessageDto.Action.ERROR.name());
-        assertThat(msg.getClientNodeId()).isEqualTo(originalMessage.getClientNodeId());
-        assertThat(msg.getServerNodeId()).isEqualTo(originalMessage.getServerNodeId());
-        assertThat(msg.getNativeReaderName()).isEqualTo(originalMessage.getNativeReaderName());
-        assertThat(msg.getVirtualReaderName()).isEqualTo(originalMessage.getVirtualReaderName());
-        assertThat(msg.getBody()).isNotNull();
-        assertThat(msg.getBody()).contains(errorCode);
-    }
-
     @Test(expected = IllegalArgumentException.class)
     public void onRequest_whenRequestIsNull_shouldThrowIllegalArgumentException() {
         node.onRequest(null);
@@ -244,44 +190,44 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
 
     @Test(expected = IllegalArgumentException.class)
     public void onRequest_whenSessionIdIsNull_shouldThrowIllegalArgumentException() {
-        KeypleMessageDto msg = buildMinimalMessage(sessionId1, clientNodeId1).setSessionId(null);
+        KeypleMessageDto msg = buildMinimalMessage().setSessionId(null);
         node.onRequest(msg);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void onRequest_whenSessionIdIsEmpty_shouldThrowIllegalArgumentException() {
-        KeypleMessageDto msg = buildMinimalMessage(sessionId1, clientNodeId1).setSessionId("");
+        KeypleMessageDto msg = buildMinimalMessage().setSessionId("");
         node.onRequest(msg);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void onRequest_whenActionIsNull_shouldThrowIllegalArgumentException() {
-        KeypleMessageDto msg = buildMinimalMessage(sessionId1, clientNodeId1).setAction(null);
+        KeypleMessageDto msg = buildMinimalMessage().setAction(null);
         node.onRequest(msg);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void onRequest_whenActionIsEmpty_shouldThrowIllegalArgumentException() {
-        KeypleMessageDto msg = buildMinimalMessage(sessionId1, clientNodeId1).setAction("");
+        KeypleMessageDto msg = buildMinimalMessage().setAction("");
         node.onRequest(msg);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void onRequest_whenActionIsUnknown_shouldThrowIllegalArgumentException() {
-        KeypleMessageDto msg = buildMinimalMessage(sessionId1, clientNodeId1).setAction("TEST");
+        KeypleMessageDto msg = buildMinimalMessage().setAction("TEST");
         node.onRequest(msg);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void onRequest_whenActionIsCheckPluginEventAndBodyIsNull_shouldThrowIllegalArgumentException() {
-        KeypleMessageDto msg = buildMinimalMessage(sessionId1, clientNodeId1)
-                .setAction(KeypleMessageDto.Action.CHECK_PLUGIN_EVENT.name());
+        KeypleMessageDto msg =
+                buildMinimalMessage().setAction(KeypleMessageDto.Action.CHECK_PLUGIN_EVENT.name());
         node.onRequest(msg);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void onRequest_whenActionIsCheckPluginEventAndBodyIsMalformed_shouldThrowIllegalArgumentException() {
-        KeypleMessageDto msg = buildMinimalMessage(sessionId1, clientNodeId1)
+        KeypleMessageDto msg = buildMinimalMessage()
                 .setAction(KeypleMessageDto.Action.CHECK_PLUGIN_EVENT.name()).setBody("TEST");
         node.onRequest(msg);
     }
@@ -290,7 +236,7 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
     public void onRequest_whenActionIsCheckPluginEventUsingPollingAndNoEventForClientNodeId_shouldReturnEmptyList() {
         node.sendMessage(pluginEvent1Client2);
         List<KeypleMessageDto> events = node.onRequest(pluginCheckPollingClient1);
-        assertThat(events.isEmpty());
+        assertThat(events).isEmpty();
     }
 
     @Test
@@ -300,7 +246,7 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
         List<KeypleMessageDto> events = node.onRequest(pluginCheckPollingClient1);
         assertThat(events).containsExactly(pluginEvent1Client1);
         events = node.onRequest(pluginCheckPollingClient1);
-        assertThat(events.isEmpty());
+        assertThat(events).isEmpty();
     }
 
     @Test
@@ -311,14 +257,14 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
         List<KeypleMessageDto> events = node.onRequest(pluginCheckPollingClient1);
         assertThat(events).containsExactly(pluginEvent1Client1, pluginEvent2Client1);
         events = node.onRequest(pluginCheckPollingClient1);
-        assertThat(events.isEmpty());
+        assertThat(events).isEmpty();
     }
 
     @Test
     public void onRequest_whenActionIsCheckPluginEventUsingLongPollingAndNoEventAndTimeout_shouldReturnEmptyList() {
         node.sendMessage(pluginEvent1Client2);
         List<KeypleMessageDto> events = node.onRequest(pluginCheckLongPollingClient1);
-        assertThat(events.isEmpty());
+        assertThat(events).isEmpty();
     }
 
     @Test
@@ -328,7 +274,7 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
         List<KeypleMessageDto> events = node.onRequest(pluginCheckLongPollingClient1);
         assertThat(events).containsExactly(pluginEvent1Client1);
         events = node.onRequest(pluginCheckLongPollingClient1);
-        assertThat(events.isEmpty());
+        assertThat(events).isEmpty();
     }
 
     @Test
@@ -341,14 +287,14 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
 
     @Test(expected = IllegalArgumentException.class)
     public void onRequest_whenActionIsCheckReaderEventAndBodyIsNull_shouldThrowIllegalArgumentException() {
-        KeypleMessageDto msg = buildMinimalMessage(sessionId1, clientNodeId1)
-                .setAction(KeypleMessageDto.Action.CHECK_READER_EVENT.name());
+        KeypleMessageDto msg =
+                buildMinimalMessage().setAction(KeypleMessageDto.Action.CHECK_READER_EVENT.name());
         node.onRequest(msg);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void onRequest_whenActionIsCheckReaderEventAndBodyIsMalformed_shouldThrowIllegalArgumentException() {
-        KeypleMessageDto msg = buildMinimalMessage(sessionId1, clientNodeId1)
+        KeypleMessageDto msg = buildMinimalMessage()
                 .setAction(KeypleMessageDto.Action.CHECK_READER_EVENT.name()).setBody("TEST");
         node.onRequest(msg);
     }
@@ -357,7 +303,7 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
     public void onRequest_whenActionIsCheckReaderEventUsingPollingAndNoEventForClientNodeId_shouldReturnEmptyList() {
         node.sendMessage(readerEvent1Client2);
         List<KeypleMessageDto> events = node.onRequest(readerCheckPollingClient1);
-        assertThat(events.isEmpty());
+        assertThat(events).isEmpty();
     }
 
     @Test
@@ -367,7 +313,7 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
         List<KeypleMessageDto> events = node.onRequest(readerCheckPollingClient1);
         assertThat(events).containsExactly(readerEvent1Client1);
         events = node.onRequest(readerCheckPollingClient1);
-        assertThat(events.isEmpty());
+        assertThat(events).isEmpty();
     }
 
     @Test
@@ -378,14 +324,14 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
         List<KeypleMessageDto> events = node.onRequest(readerCheckPollingClient1);
         assertThat(events).containsExactly(readerEvent1Client1, readerEvent2Client1);
         events = node.onRequest(readerCheckPollingClient1);
-        assertThat(events.isEmpty());
+        assertThat(events).isEmpty();
     }
 
     @Test
     public void onRequest_whenActionIsCheckReaderEventUsingLongPollingAndNoEventAndTimeout_shouldReturnEmptyList() {
         node.sendMessage(readerEvent1Client2);
         List<KeypleMessageDto> events = node.onRequest(readerCheckLongPollingClient1);
-        assertThat(events.isEmpty());
+        assertThat(events).isEmpty();
     }
 
     @Test
@@ -395,7 +341,7 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
         List<KeypleMessageDto> events = node.onRequest(readerCheckLongPollingClient1);
         assertThat(events).containsExactly(readerEvent1Client1);
         events = node.onRequest(readerCheckLongPollingClient1);
-        assertThat(events.isEmpty());
+        assertThat(events).isEmpty();
     }
 
     @Test
@@ -410,27 +356,24 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
     public void onRequest_whenActionIsTxAndNoPendingServerTaskAndNoServerTimeout_shouldTransmitMessageToHandlerAndAwaitAResponse() {
         scheduleSendMessage(msg2);
         List<KeypleMessageDto> responses = node.onRequest(msg);
-        assertThat(handler.messages).containsExactly(msg);
+        verify(handler).onMessage(msg);
+        verifyNoMoreInteractions(handler);
         assertThat(responses).containsExactly(msg2);
     }
 
-    @Test
-    public void onRequest_whenActionIsTxAndNoPendingServerTaskAndNoServerTimeoutAndClientTimeout_shouldTransmitMessageToHandlerAndReturnClientTimeoutMessage() {
+    @Test(expected = KeypleTimeoutException.class)
+    public void onRequest_whenActionIsTxAndNoPendingServerTaskAndNoServerTimeoutAndClientTimeout_shouldTransmitMessageToHandlerAndThrowKTE() {
         node = new KeypleServerSyncNodeImpl(handler, 1);
-        List<KeypleMessageDto> responses = node.onRequest(msg);
-        assertThat(handler.messages).containsExactly(msg);
-        checkTimeoutMessage(responses, true, msg);
+        node.onRequest(msg);
     }
 
-    @Test
-    public void onRequest_whenActionIsTxAndNoPendingServerTaskAndServerTimeout_shouldReturnServerTimeoutMessage() {
+    @Test(expected = KeypleTimeoutException.class)
+    public void onRequest_whenActionIsTxAndNoPendingServerTaskAndServerTimeout_shouldThrowKTE() {
         node = new KeypleServerSyncNodeImpl(handler, 1);
         Thread serverTask = scheduleSendRequest(msg2);
         node.onRequest(msg);
         await().atMost(5, TimeUnit.SECONDS).until(threadHasStateTerminated(serverTask));
-        List<KeypleMessageDto> responses = node.onRequest(msg3);
-        assertThat(handler.messages).containsExactly(msg);
-        checkTimeoutMessage(responses, false, msg3);
+        node.onRequest(msg3);
     }
 
     @Test
@@ -439,27 +382,27 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
         node.onRequest(msg);
         scheduleSendMessage(msg4);
         List<KeypleMessageDto> responses = node.onRequest(msg3);
-        assertThat(handler.messages).containsExactly(msg);
+        verify(handler).onMessage(msg);
+        verifyNoMoreInteractions(handler);
         assertThat(serverTask1.response).isSameAs(msg3);
         assertThat(serverTask1.response).isEqualToComparingFieldByField(msg3);
         assertThat(responses).containsExactly(msg4);
     }
 
-    @Test
-    public void onRequest_whenActionIsTxAndPendingServerTaskAndClientTimeout_shouldTransmitMessageToPendingTaskAndReturnClientTimeout() {
+    @Test(expected = KeypleTimeoutException.class)
+    public void onRequest_whenActionIsTxAndPendingServerTaskAndClientTimeout_shouldTransmitMessageToPendingTaskAndThrowKTE() {
         node = new KeypleServerSyncNodeImpl(handler, 1);
         scheduleSendRequest(msg2);
         node.onRequest(msg);
-        List<KeypleMessageDto> responses = node.onRequest(msg3);
-        assertThat(handler.messages).containsExactly(msg);
-        checkTimeoutMessage(responses, true, msg3);
+        verify(handler).onMessage(msg);
+        verifyNoMoreInteractions(handler);
+        node.onRequest(msg3);
     }
 
-    @Test
-    public void onRequest_whenActionIsTxHandlerInError_shouldReturnUnknownError() {
-        node = new KeypleServerSyncNodeImpl(handlerError, 1);
-        List<KeypleMessageDto> responses = node.onRequest(msg);
-        checkUnknownErrorMessage(responses, msg);
+    @Test(expected = RuntimeException.class)
+    public void onRequest_whenActionIsTxHandlerInError_shouldThrowError() {
+        setHandlerError();
+        node.onRequest(msg);
     }
 
     @Test(expected = KeypleTimeoutException.class)
@@ -469,8 +412,8 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
         node.sendRequest(msg2);
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void sendRequest_whenNoPendingClientTaskNoClientTimeout_shouldThrowIllegalStateException() {
+    @Test(expected = NullPointerException.class)
+    public void sendRequest_whenNoPendingClientTaskNoClientTimeout_shouldNPE() {
         node = new KeypleServerSyncNodeImpl(handler, 1);
         node.sendRequest(msg);
     }
@@ -478,19 +421,20 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
     @Test(expected = KeypleTimeoutException.class)
     public void sendRequest_whenPendingClientTaskAndServerTimeout_shouldTransmitMessageToPendingTaskAndThrowKeypleTimeoutException() {
         node = new KeypleServerSyncNodeImpl(handler, 1);
-        Thread clientTask = callOnRequestAsync(msg);
+        Thread clientTask = callOnRequestFromAnotherThread(msg);
         await().atMost(5, TimeUnit.SECONDS).until(threadHasStateTimedWaiting(clientTask));
         node.sendRequest(msg2);
     }
 
     @Test
     public void sendRequest_whenPendingClientTaskAndNoServerTimeout_shouldTransmitMessageToPendingTaskAndAwaitAResponse() {
-        ClientMessageSender clientTask1 = callOnRequestAsync(msg);
+        ClientMessageSender clientTask1 = callOnRequestFromAnotherThread(msg);
         await().atMost(5, TimeUnit.SECONDS).until(threadHasStateTimedWaiting(clientTask1));
         MessageScheduler clientTask2 = scheduleOnRequest(msg3);
         KeypleMessageDto response = node.sendRequest(msg2);
         node.sendMessage(msg4);
-        assertThat(handler.messages).containsExactly(msg);
+        verify(handler).onMessage(msg);
+        verifyNoMoreInteractions(handler);
         assertThat(clientTask1.responses).containsExactly(msg2);
         assertThat(response).isSameAs(msg3);
         assertThat(clientTask2.responses).containsExactly(msg4);
@@ -518,7 +462,7 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
 
     @Test
     public void sendMessage_whenActionIsPluginEventAndLongPollingAndClientTask_shouldTransmitEventToClientTask() {
-        Thread clientTask = callOnRequestAsync(pluginCheckLongPollingClient1);
+        Thread clientTask = callOnRequestFromAnotherThread(pluginCheckLongPollingClient1);
         await().atMost(5, TimeUnit.SECONDS).until(threadHasStateTimedWaiting(clientTask));
         node.sendMessage(pluginEvent1Client1);
         await().atMost(5, TimeUnit.SECONDS).until(threadHasStateTerminated(clientTask));
@@ -549,7 +493,7 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
 
     @Test
     public void sendMessage_whenActionIsReaderEventAndLongPollingAndClientTask_shouldTransmitEventToClientTask() {
-        Thread clientTask = callOnRequestAsync(readerCheckLongPollingClient1);
+        Thread clientTask = callOnRequestFromAnotherThread(readerCheckLongPollingClient1);
         await().atMost(5, TimeUnit.SECONDS).until(threadHasStateTimedWaiting(clientTask));
         node.sendMessage(readerEvent1Client1);
         await().atMost(5, TimeUnit.SECONDS).until(threadHasStateTerminated(clientTask));
@@ -564,14 +508,14 @@ public class KeypleServerSyncNodeImplTest extends AbstractKeypleSyncNode {
         node.sendMessage(msg2);
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void sendMessage_whenNoPendingClientTaskAndNoClientTimeout_shouldThrowIllegalStateException() {
+    @Test(expected = NullPointerException.class)
+    public void sendMessage_whenNoPendingClientTaskAndNoClientTimeout_shouldThrowNPE() {
         node.sendMessage(msg);
     }
 
     @Test
     public void sendMessage_whenPendingClientTask_shouldTransmitMessageToPendingTaskAndReturn() {
-        ClientMessageSender clientTask = callOnRequestAsync(msg);
+        ClientMessageSender clientTask = callOnRequestFromAnotherThread(msg);
         await().atMost(5, TimeUnit.SECONDS).until(threadHasStateTimedWaiting(clientTask));
         node.sendMessage(msg2);
         await().atMost(5, TimeUnit.SECONDS).until(threadHasStateTerminated(clientTask));

@@ -11,8 +11,13 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.core.impl;
 
+import java.util.Arrays;
 import java.util.UUID;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remotese.core.exception.KeypleRemoteCommunicationException;
+import org.eclipse.keyple.plugin.remotese.core.exception.KeypleTimeoutException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract Keyple Node.
@@ -22,6 +27,8 @@ import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
  * @since 1.0
  */
 public abstract class AbstractKeypleNode {
+
+    private static final Logger logger = LoggerFactory.getLogger(AbstractKeypleNode.class);
 
     /**
      * (protected)<br>
@@ -36,15 +43,31 @@ public abstract class AbstractKeypleNode {
     protected final AbstractKeypleMessageHandler handler;
 
     /**
+     * (private)<br>
+     * Timeout used during awaiting (in milliseconds)
+     */
+    private final int timeout;
+
+    /**
      * (package-private)<br>
      * Constructor.
      *
      * @param handler The associated handler (must be not null).
+     * @param timeoutInSecond The default timeout (in seconds) to use.
      */
-    AbstractKeypleNode(AbstractKeypleMessageHandler handler) {
+    AbstractKeypleNode(AbstractKeypleMessageHandler handler, int timeoutInSecond) {
         this.nodeId = UUID.randomUUID().toString();
         this.handler = handler;
+        this.timeout = timeoutInSecond * 1000;
     }
+
+    /**
+     * (package-private)<br>
+     * Open a new session on the endpoint.
+     *
+     * @param sessionId The session id (must be not empty).
+     */
+    abstract void openSession(String sessionId);
 
     /**
      * (package-private)<br>
@@ -62,4 +85,132 @@ public abstract class AbstractKeypleNode {
      * @param msg The message to send (must be not null).
      */
     abstract void sendMessage(KeypleMessageDto msg);
+
+    /**
+     * (package-private)<br>
+     * Close the session having the provided session id.
+     *
+     * @param sessionId The session id (must be not empty).
+     */
+    abstract void closeSession(String sessionId);
+
+    /**
+     * (protected)<br>
+     * The session manager state enum.
+     */
+    protected enum SessionManagerState {
+        INITIALIZED, //
+        OPEN_SESSION_BEGIN, //
+        OPEN_SESSION_END, //
+        ON_REQUEST, //
+        ON_MESSAGE, //
+        SEND_REQUEST_BEGIN, //
+        SEND_REQUEST_END, //
+        SEND_MESSAGE, //
+        EXTERNAL_ERROR_OCCURED, //
+        CLOSE_SESSION_BEGIN, //
+        CLOSE_SESSION_END, //
+        ABORTED_SESSION
+    }
+
+    /**
+     * (protected)<br>
+     * The inner session manager abstract class.<br>
+     * There is one manager by session id.
+     */
+    protected abstract class AbstractSessionManager {
+
+        protected final String sessionId;
+
+        protected volatile SessionManagerState state;
+        protected volatile KeypleMessageDto response;
+        protected volatile Throwable error;
+
+        /**
+         * (protected)<br>
+         * Constructor
+         *
+         * @param sessionId The session id to manage.
+         */
+        protected AbstractSessionManager(String sessionId) {
+            this.sessionId = sessionId;
+            this.state = SessionManagerState.INITIALIZED;
+            this.response = null;
+            this.error = null;
+        }
+
+        /**
+         * (protected)<br>
+         * Check if the current state is equal to the target state, else wait until a timeout or to
+         * be wake up by another thread.<br>
+         *
+         * @param targetStates The target states.
+         * @throws KeypleTimeoutException if a timeout occurs.
+         */
+        protected void waitForState(SessionManagerState... targetStates) {
+            for (SessionManagerState targetState : targetStates) {
+                if (state == targetState) {
+                    return;
+                }
+            }
+            checkIfExternalErrorOccurred();
+            try {
+                wait(timeout);
+                for (SessionManagerState targetState : targetStates) {
+                    if (state == targetState) {
+                        return;
+                    }
+                }
+                checkIfExternalErrorOccurred();
+                timeoutOccurred();
+            } catch (InterruptedException e) {
+                logger.error(
+                        "Unexpected interruption of the task associated with the node's session {}",
+                        sessionId, e);
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        /**
+         * (protected)<br>
+         * Check if an external error was received from the endpoint or the handler, regardless to
+         * the current state, and then request the cancelling of the session and throws an
+         * exception.
+         *
+         * @throws KeypleRemoteCommunicationException with the original cause if an error exists.
+         */
+        protected abstract void checkIfExternalErrorOccurred();
+
+        /**
+         * (protected)<br>
+         * Check if the current state is one of the provided target states.
+         *
+         * @param targetStates The target states to test.
+         * @throws IllegalStateException if the current state does not match any of the states
+         *         provided.
+         */
+        protected void checkState(SessionManagerState... targetStates) {
+            for (SessionManagerState targetState : targetStates) {
+                if (state == targetState) {
+                    return;
+                }
+            }
+            throw new IllegalStateException("The status of the node's session manager [" + sessionId
+                    + "] should have been one of " + Arrays.toString(targetStates)
+                    + ", but is currently " + state);
+        }
+
+        /**
+         * (private)<br>
+         * The timeout case : request the cancelling of the session and throws an exception.
+         *
+         * @throws KeypleTimeoutException The thrown exception.
+         */
+        private void timeoutOccurred() {
+            state = SessionManagerState.ABORTED_SESSION;
+            throw new KeypleTimeoutException(
+                    "Timeout occurs for the task associated with the node's session [" + sessionId
+                            + "]");
+        }
+    }
 }

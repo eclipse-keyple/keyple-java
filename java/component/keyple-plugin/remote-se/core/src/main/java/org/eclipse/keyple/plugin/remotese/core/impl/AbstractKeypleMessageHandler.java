@@ -38,12 +38,6 @@ public abstract class AbstractKeypleMessageHandler {
 
     /**
      * (protected)<br>
-     * Is handler bound to async node ?
-     */
-    protected boolean isBoundToAsyncNode;
-
-    /**
-     * (protected)<br>
      * Constructor.
      */
     protected AbstractKeypleMessageHandler() {}
@@ -66,7 +60,6 @@ public abstract class AbstractKeypleMessageHandler {
      */
     public void bindClientAsyncNode(KeypleClientAsync endpoint) {
         node = new KeypleClientAsyncNodeImpl(this, endpoint, 20);
-        isBoundToAsyncNode = true;
     }
 
     /**
@@ -77,8 +70,7 @@ public abstract class AbstractKeypleMessageHandler {
      * @since 1.0
      */
     public void bindServerAsyncNode(KeypleServerAsync endpoint) {
-        // TODO KEYP-296
-        isBoundToAsyncNode = true;
+        node = new KeypleServerAsyncNodeImpl(this, endpoint, 20);
     }
 
     /**
@@ -97,7 +89,6 @@ public abstract class AbstractKeypleMessageHandler {
             ServerPushEventStrategy readerObservationStrategy) {
         node = new KeypleClientSyncNodeImpl(this, endpoint, pluginObservationStrategy,
                 readerObservationStrategy);
-        isBoundToAsyncNode = false;
     }
 
     /**
@@ -108,7 +99,6 @@ public abstract class AbstractKeypleMessageHandler {
      */
     public void bindServerSyncNode() {
         node = new KeypleServerSyncNodeImpl(this, 20);
-        isBoundToAsyncNode = false;
     }
 
     /**
@@ -124,6 +114,16 @@ public abstract class AbstractKeypleMessageHandler {
                     KeypleJsonParser.getParser().fromJson(message.getBody(), BodyError.class);
             throw body.getException();
         }
+    }
+
+    /**
+     * (protected)<br>
+     * Open a new session on the node.
+     *
+     * @param sessionId The session id (must be not empty).
+     */
+    protected void openSession(String sessionId) {
+        node.openSession(sessionId);
     }
 
     /**
@@ -145,5 +145,15 @@ public abstract class AbstractKeypleMessageHandler {
      */
     protected void sendMessage(KeypleMessageDto msg) {
         node.sendMessage(msg);
+    }
+
+    /**
+     * (protected)<br>
+     * Close on the node the session having the provided session id.
+     *
+     * @param sessionId The session id (must be not empty).
+     */
+    protected void closeSession(String sessionId) {
+        node.closeSession(sessionId);
     }
 }

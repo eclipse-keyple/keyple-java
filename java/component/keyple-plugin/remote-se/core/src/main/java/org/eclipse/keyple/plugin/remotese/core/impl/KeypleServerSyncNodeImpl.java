@@ -12,7 +12,6 @@
 package org.eclipse.keyple.plugin.remotese.core.impl;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remotese.core.KeypleServerSyncNode;
@@ -34,25 +33,10 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
 
     private static final Logger logger = LoggerFactory.getLogger(KeypleServerSyncNodeImpl.class);
 
-    // Client elements associated to a session id.
-    private final Map<String, Thread> clientTasks;
-    private final Map<Thread, KeypleMessageDto> clientSendbox;
-    private final Map<String, Long> clientTimeouts;
-
-    // Server elements associated to a session id.
-    private final Map<String, Thread> serverTasks;
-    private final Map<Thread, KeypleMessageDto> serverSendbox;
-    private final Map<String, Long> serverTimeouts;
-
-    // Plugin & Reader server push event managers
-    private final ServerPushEventManager pluginManager;
-    private final ServerPushEventManager readerManager;
-
-    // JSON Parser
+    private final Map<String, SessionManager> sessionManagers;
+    private final Map<String, ServerPushEventManager> pluginManagers;
+    private final Map<String, ServerPushEventManager> readerManagers;
     private final JsonParser jsonParser;
-
-    // Timeout used during awaiting (in milliseconds)
-    private final int timeout;
 
     /**
      * (package-private)<br>
@@ -62,17 +46,19 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
      * @param timeoutInSecond The default timeout (in seconds) to use.
      */
     KeypleServerSyncNodeImpl(AbstractKeypleMessageHandler handler, int timeoutInSecond) {
-        super(handler);
-        clientTasks = new ConcurrentHashMap<String, Thread>();
-        clientSendbox = new ConcurrentHashMap<Thread, KeypleMessageDto>();
-        clientTimeouts = new ConcurrentTimeoutHashMap();
-        serverTasks = new ConcurrentHashMap<String, Thread>();
-        serverSendbox = new ConcurrentHashMap<Thread, KeypleMessageDto>();
-        serverTimeouts = new ConcurrentTimeoutHashMap();
-        pluginManager = new ServerPushEventManager();
-        readerManager = new ServerPushEventManager();
+        super(handler, timeoutInSecond);
         jsonParser = new JsonParser();
-        timeout = timeoutInSecond * 1000;
+        this.sessionManagers = new HashMap<String, SessionManager>();
+        this.pluginManagers = new HashMap<String, ServerPushEventManager>();
+        this.readerManagers = new HashMap<String, ServerPushEventManager>();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    void openSession(String sessionId) {
+        throw new UnsupportedOperationException("openSession");
     }
 
     /**
@@ -89,173 +75,51 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
                 .notEmpty(msg.getClientNodeId(), "clientNodeId");
 
         List<KeypleMessageDto> responses;
-        try {
-            KeypleMessageDto.Action action = KeypleMessageDto.Action.valueOf(msg.getAction());
-            switch (action) {
-                case CHECK_PLUGIN_EVENT:
-                    responses = pluginManager.checkEvents(msg);
-                    break;
-                case CHECK_READER_EVENT:
-                    responses = readerManager.checkEvents(msg);
-                    break;
-                default:
-                    responses = processOnRequest(msg);
-            }
-        } catch (IllegalArgumentException e) {
-            throw e;
-        } catch (Exception e) {
-            responses =
-                    Arrays.asList(buildErrorMessage(KeypleMessageDto.ErrorCode.UNKNOWN.getCode(),
-                            e.getMessage(), msg));
+        KeypleMessageDto.Action action = KeypleMessageDto.Action.valueOf(msg.getAction());
+        switch (action) {
+            case CHECK_PLUGIN_EVENT:
+                responses = checkEvents(msg, pluginManagers);
+                break;
+            case CHECK_READER_EVENT:
+                responses = checkEvents(msg, readerManagers);
+                break;
+            default:
+                responses = processOnRequest(msg);
         }
         return responses != null ? responses : new ArrayList<KeypleMessageDto>(0);
     }
 
     /**
      * (private)<br>
-     * Processes onRequest for standard transaction call.
+     * Check on client request if some events are present in the associated sendbox.
+     *
+     * @param msg The client message containing all client info (node id, strategy, ...)
+     * @param eventManagers The event managers map.
+     * @return a null list or a not empty list
+     */
+    private List<KeypleMessageDto> checkEvents(KeypleMessageDto msg,
+            Map<String, ServerPushEventManager> eventManagers) {
+        ServerPushEventManager manager = getEventManager(msg, eventManagers);
+        return manager.checkEvents(msg);
+    }
+
+    /**
+     * (private)<br>
+     * Processes onRequest for standard transaction call.<br>
+     * Create a new session manager if needed.
      *
      * @param msg The message to process (must be not null).
      * @return a nullable list or which contains at most one element.
+     * @throws KeypleTimeoutException if a timeout occurs.
      */
     private List<KeypleMessageDto> processOnRequest(KeypleMessageDto msg) {
-
-        KeypleMessageDto response;
-
-        // Register the current client task
-        clientTasks.put(msg.getSessionId(), Thread.currentThread());
-        try {
-            // Gets the pending server task if it exists
-            Thread pendingServerTask = serverTasks.get(msg.getSessionId());
-            if (pendingServerTask == null) {
-                // If none, then check if a server timeout occurred
-                if (serverTimeouts.remove(msg.getSessionId()) != null) {
-                    String errorMessage =
-                            "Timeout occurs for the server task associated to the session id "
-                                    + msg.getSessionId();
-                    response = buildErrorMessage(
-                            KeypleMessageDto.ErrorCode.TIMEOUT_SERVER_TASK.getCode(), errorMessage,
-                            msg);
-                } else {
-                    // The message is a client request
-                    response = processOnRequestAsClientRequest(msg);
-                }
-            } else {
-                // The message is a client response
-                response = processOnRequestAsClientResponse(msg, pendingServerTask);
-            }
-        } finally {
-            // Unregister the current client task
-            clientTasks.remove(msg.getSessionId());
+        SessionManager manager = sessionManagers.get(msg.getSessionId());
+        if (manager == null) {
+            manager = new SessionManager(msg.getSessionId());
+            sessionManagers.put(msg.getSessionId(), manager);
         }
-        return response != null ? Arrays.asList(response) : null;
-    }
-
-    /**
-     * (private)<br>
-     * Processes onRequest as a client request.
-     *
-     * @param msg The client request (must be not null).
-     * @return the next server message to transmit to the client or null if there is nothing to
-     *         return.
-     */
-    private KeypleMessageDto processOnRequestAsClientRequest(KeypleMessageDto msg) {
-
-        // Transmits the message to the handler
-        handler.onMessage(msg);
-
-        // Checks whether a response has already been provided
-        KeypleMessageDto response = clientSendbox.remove(Thread.currentThread());
-        if (response == null) {
-            // If none, then await the response
-            response = awaitMessage(msg, clientSendbox, clientTimeouts, true);
-        }
-        return response;
-    }
-
-    /**
-     * (private)<br>
-     * Processes onRequest as a client response.
-     *
-     * @param msg The client response (must be not null).
-     * @return a not null reference to the next server message to transmit to the client.
-     */
-    private KeypleMessageDto processOnRequestAsClientResponse(KeypleMessageDto msg,
-            Thread pendingServerTask) {
-
-        // Post the message for the server task
-        serverSendbox.put(pendingServerTask, msg);
-
-        // Wake up the server task
-        pendingServerTask.interrupt();
-
-        // Then await the response as a server new request
-        return awaitMessage(msg, clientSendbox, clientTimeouts, true);
-    }
-
-    /**
-     * (private)<br>
-     * Builds an error message by copying all main fields from the original message.
-     *
-     * @param errorCode The error code.
-     * @param errorMessage The error message.
-     * @param originalMessage The original message (must be not null)
-     * @return a not null reference
-     */
-    private KeypleMessageDto buildErrorMessage(String errorCode, String errorMessage,
-            KeypleMessageDto originalMessage) {
-
-        JsonObject body = new JsonObject();
-        body.addProperty("code", errorCode);
-        body.addProperty("message", errorMessage);
-
-        return new KeypleMessageDto(originalMessage)//
-                .setAction(KeypleMessageDto.Action.ERROR.name())//
-                .setBody(body.toString());//
-    }
-
-    /**
-     * (private)<br>
-     * Await a new message using sleep strategy until at most for a timeout duration.
-     *
-     * @param originalMessage The original message (must be not null).
-     * @param sendbox The sendbox to check.
-     * @param timeouts The timeouts register.
-     * @param isForClient Who is awaiting ? Client or Server ?
-     * @return a not null reference
-     * @throws KeypleTimeoutException if timeout occurs when server is awaiting.
-     */
-    private KeypleMessageDto awaitMessage(KeypleMessageDto originalMessage,
-            Map<Thread, KeypleMessageDto> sendbox, Map<String, Long> timeouts,
-            boolean isForClient) {
-
-        KeypleMessageDto message;
-        try {
-            // Putting on standby
-            Thread.sleep(timeout);
-
-            // The maximum waiting time has been reached
-            timeouts.put(originalMessage.getSessionId(), new Date().getTime());
-            if (isForClient) {
-                String errorMessage =
-                        "Timeout occurs for the client task associated to the session id "
-                                + originalMessage.getSessionId();
-                logger.error(errorMessage);
-                message =
-                        buildErrorMessage(KeypleMessageDto.ErrorCode.TIMEOUT_CLIENT_TASK.getCode(),
-                                errorMessage, originalMessage);
-            } else {
-                String errorMessage =
-                        "Timeout occurs for the server task associated to the session id "
-                                + originalMessage.getSessionId();
-                logger.error(errorMessage);
-                throw new KeypleTimeoutException(errorMessage);
-            }
-        } catch (InterruptedException e) {
-            // A message has just been posted
-            message = sendbox.remove(Thread.currentThread());
-        }
-        return message;
+        KeypleMessageDto response = manager.onRequest(msg);
+        return response != null ? Collections.singletonList(response) : null;
     }
 
     /**
@@ -263,28 +127,13 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
      */
     @Override
     KeypleMessageDto sendRequest(KeypleMessageDto msg) {
-
-        KeypleMessageDto response;
-
-        // Register the current server task
-        serverTasks.put(msg.getSessionId(), Thread.currentThread());
+        SessionManager manager = sessionManagers.get(msg.getSessionId());
         try {
-            // Gets the pending client task
-            Thread pendingClientTask = getPendingClientTask(msg.getSessionId());
-
-            // Post the message for the client task
-            clientSendbox.put(pendingClientTask, msg);
-
-            // Wake up the client task
-            pendingClientTask.interrupt();
-
-            // Then await the response
-            response = awaitMessage(msg, serverSendbox, serverTimeouts, false);
-        } finally {
-            // Unregister the current server task
-            serverTasks.remove(msg.getSessionId());
+            return manager.sendRequest(msg);
+        } catch (RuntimeException e) {
+            sessionManagers.remove(msg.getSessionId());
+            throw e;
         }
-        return response;
     }
 
     /**
@@ -292,14 +141,13 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
      */
     @Override
     void sendMessage(KeypleMessageDto msg) {
-
         KeypleMessageDto.Action action = KeypleMessageDto.Action.valueOf(msg.getAction());
         switch (action) {
             case PLUGIN_EVENT:
-                pluginManager.postEvent(msg);
+                postEvent(msg, pluginManagers);
                 break;
             case READER_EVENT:
-                readerManager.postEvent(msg);
+                postEvent(msg, readerManagers);
                 break;
             default:
                 processSendMessage(msg);
@@ -307,83 +155,144 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    void closeSession(String sessionId) {
+        throw new UnsupportedOperationException("closeSession");
+    }
+
+    /**
      * (private)<br>
-     * Processes sendMessage for standard transaction call.
+     * Post an event into the sendbox, analyse the client strategy, and eventually try to wake up
+     * the pending client task in case of long polling strategy.
+     *
+     * @param msg The message containing the event to post (must be not null).
+     * @param eventManagers The event managers map.
+     */
+    private void postEvent(KeypleMessageDto msg,
+            Map<String, ServerPushEventManager> eventManagers) {
+        ServerPushEventManager manager = getEventManager(msg, eventManagers);
+        manager.postEvent(msg);
+    }
+
+    /**
+     * (private)<br>
+     * Get or create an event manager associated to a client node id.
+     *
+     * @param msg The message containing the client's information
+     * @param eventManagers The event managers map.
+     * @return a not null reference.
+     */
+    private ServerPushEventManager getEventManager(KeypleMessageDto msg,
+            Map<String, ServerPushEventManager> eventManagers) {
+        ServerPushEventManager manager = eventManagers.get(msg.getClientNodeId());
+        if (manager == null) {
+            manager = new ServerPushEventManager(msg.getClientNodeId());
+            eventManagers.put(msg.getClientNodeId(), manager);
+        }
+        return manager;
+    }
+
+    /**
+     * (private)<br>
+     * Processes sendMessage for standard transaction call.<br>
+     * Note that the associated session is also closed.
      *
      * @param msg The message to process (must be not null).
      */
     private void processSendMessage(KeypleMessageDto msg) {
-
-        // Gets the pending client task
-        Thread pendingClientTask = getPendingClientTask(msg.getSessionId());
-
-        // Post the message for the client task
-        clientSendbox.put(pendingClientTask, msg);
-
-        // Wake up the client task
-        pendingClientTask.interrupt();
-    }
-
-    /**
-     * (private)<br>
-     * Get the pending client task from the session id of the message.
-     *
-     * @param sessionId The session id (must be not empty).
-     * @return a not null reference.
-     * @throws KeypleTimeoutException if client task could not be found due to a client timeout.
-     * @throws IllegalStateException in case of use in a bad context or if the client timeout is too
-     *         old and was unregistered.
-     */
-    private Thread getPendingClientTask(String sessionId) {
-
-        Thread pendingClientTask = clientTasks.get(sessionId);
-        if (pendingClientTask == null) {
-            // If none, then check if a client timeout occurred
-            String errorMessage = "There is no pending client task for session id " + sessionId;
-            if (clientTimeouts.remove(sessionId) != null) {
-                throw new KeypleTimeoutException(errorMessage + " due to a client timeout.");
-            } else {
-                throw new IllegalStateException(
-                        errorMessage + " (may possibly be due to a client timeout).");
-            }
+        SessionManager manager = sessionManagers.get(msg.getSessionId());
+        try {
+            manager.sendMessage(msg);
+        } finally {
+            sessionManagers.remove(msg.getSessionId());
         }
-        return pendingClientTask;
     }
 
     /**
      * (private)<br>
-     * This inner class is a {@link ConcurrentHashMap} of timestamps by session id in which items
-     * that are too old are automatically removed.<br>
-     * This prevents memory leaks.<br>
-     * The cleaning is done when a new item is added.
+     * The inner session manager class.<br>
+     * There is one manager by session id.
      */
-    private class ConcurrentTimeoutHashMap extends ConcurrentHashMap<String, Long> {
+    private class SessionManager extends AbstractSessionManager {
 
-        private long dateOfLastClean = 0L;
+        /**
+         * (private)<br>
+         * Constructor
+         *
+         * @param sessionId The session id to manage.
+         */
+        private SessionManager(String sessionId) {
+            super(sessionId);
+        }
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public Long put(String key, Long value) {
+        protected void checkIfExternalErrorOccurred() {
+            // NOP
+        }
 
-            // Put the entry
-            Long previousValue = super.put(key, value);
-
-            // Remove old entries
-            long now = new Date().getTime();
-            long limitDate = now - timeout;
-            if (dateOfLastClean < limitDate) {
-                dateOfLastClean = now;
-                Iterator<Map.Entry<String, Long>> iterator = entrySet().iterator();
-                while (iterator.hasNext()) {
-                    Map.Entry<String, Long> entry = iterator.next();
-                    if (entry.getValue().longValue() < limitDate) {
-                        iterator.remove();
-                    }
-                }
+        /**
+         * (private)<br>
+         * Called by the endpoint when a new client request is received.
+         *
+         * @param msg The message to process.
+         * @return a not null reference on a message to return to the client.
+         * @throws KeypleTimeoutException if a timeout occurs.
+         */
+        private synchronized KeypleMessageDto onRequest(KeypleMessageDto msg) {
+            checkState(SessionManagerState.INITIALIZED, SessionManagerState.SEND_REQUEST_BEGIN);
+            if (state == SessionManagerState.INITIALIZED) {
+                // Process the message as a client request
+                state = SessionManagerState.ON_REQUEST;
+                handler.onMessage(msg);
+            } else {
+                // State is SEND_REQUEST_BEGIN
+                // Process the message as a client response
+                postMessageAndNotify(msg, SessionManagerState.SEND_REQUEST_END);
             }
-            return previousValue;
+            waitForState(SessionManagerState.SEND_MESSAGE, SessionManagerState.SEND_REQUEST_BEGIN);
+            return response;
+        }
+
+        /**
+         * (private)<br>
+         * Called by the handler to send a request to the endpoint and await a response.
+         *
+         * @param msg The message to send.
+         * @return The response.
+         * @throws KeypleTimeoutException if a timeout occurs.
+         */
+        private synchronized KeypleMessageDto sendRequest(KeypleMessageDto msg) {
+            postMessageAndNotify(msg, SessionManagerState.SEND_REQUEST_BEGIN);
+            waitForState(SessionManagerState.SEND_REQUEST_END);
+            return response;
+        }
+
+        /**
+         * (private)<br>
+         * Called by the handler to send a message to the endpoint.
+         *
+         * @param msg The message to send.
+         */
+        private synchronized void sendMessage(KeypleMessageDto msg) {
+            postMessageAndNotify(msg, SessionManagerState.SEND_MESSAGE);
+        }
+
+        /**
+         * (private)<br>
+         * Post a message and try to wake up the waiting task.
+         *
+         * @param msg The message to post.
+         * @param targetState The new state to set before to notify the waiting task.
+         */
+        private void postMessageAndNotify(KeypleMessageDto msg, SessionManagerState targetState) {
+            response = msg;
+            state = targetState;
+            notify();
         }
     }
 
@@ -393,76 +302,71 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
      */
     private class ServerPushEventManager {
 
-        // Plugin event elements associated to a client node id.
-        private final Map<String, List<KeypleMessageDto>> eventsSendbox;
-        private final Map<String, ServerPushEventStrategy> strategies;
-        private final Map<String, Thread> longPollingClientTasks;
+        private final String clientNodeId;
+
+        private volatile List<KeypleMessageDto> events;
+        private ServerPushEventStrategy strategy;
 
         /**
          * (private)<br>
          * Constructor
+         *
+         * @param clientNodeId The client node id to manage.
          */
-        private ServerPushEventManager() {
-            eventsSendbox = new ConcurrentHashMap<String, List<KeypleMessageDto>>();
-            strategies = new ConcurrentHashMap<String, ServerPushEventStrategy>();
-            longPollingClientTasks = new ConcurrentHashMap<String, Thread>();
+        private ServerPushEventManager(String clientNodeId) {
+            this.clientNodeId = clientNodeId;
+            this.events = null;
+            this.strategy = null;
         }
 
         /**
          * (private)<br>
          * Post an event into the sendbox, analyse the client strategy, and eventually try to wake
-         * up the pending client task in case of long polling strategy.<br>
-         * Each sendbox is associated to a client node id.
+         * up the pending client task in case of long polling strategy.
          *
          * @param msg The message containing the event to post (must be not null).
          */
-        private void postEvent(KeypleMessageDto msg) {
+        private synchronized void postEvent(KeypleMessageDto msg) {
 
             // Post the event
-            List<KeypleMessageDto> events = eventsSendbox.get(msg.getClientNodeId());
             if (events == null) {
                 events = new ArrayList<KeypleMessageDto>(1);
-                eventsSendbox.put(msg.getClientNodeId(), events);
             }
             events.add(msg);
 
             // Gets the client's strategy
-            ServerPushEventStrategy strategy = strategies.get(msg.getClientNodeId());
-
             // If strategy is long polling, then try to wake up the associated awaiting task.
             if (strategy != null
                     && strategy.getType() == ServerPushEventStrategy.Type.LONG_POLLING) {
-                Thread pendingClientTask = longPollingClientTasks.get(msg.getClientNodeId());
-                if (pendingClientTask != null) {
-                    pendingClientTask.interrupt();
-                }
+                notify();
             }
         }
 
         /**
          * (private)<br>
-         * Check on client request if some events are present in the associated sendbox using the
-         * client node id.
+         * Check on client request if some events are present in the associated sendbox.
          *
          * @param msg The client message containing all client info (node id, strategy, ...)
-         * @return a nullable list
+         * @return a null list or a not empty list
          */
-        private List<KeypleMessageDto> checkEvents(KeypleMessageDto msg) {
+        private synchronized List<KeypleMessageDto> checkEvents(KeypleMessageDto msg) {
+            try {
+                // We're checking to see if any events are already present
+                if (events != null) {
+                    return events;
+                }
 
-            // We're checking to see if any events are already present
-            List<KeypleMessageDto> events = eventsSendbox.remove(msg.getClientNodeId());
-            if (events != null) {
+                // If none, then gets the client's strategy
+                ServerPushEventStrategy strategy = getStrategy(msg);
+
+                // If is a long polling strategy, then await for an event notification.
+                if (strategy.getType() == ServerPushEventStrategy.Type.LONG_POLLING) {
+                    waitAtMost(strategy.getDuration());
+                }
                 return events;
+            } finally {
+                events = null;
             }
-
-            // If none, then gets the client's strategy
-            ServerPushEventStrategy strategy = getStrategy(msg);
-
-            // If is a long polling strategy, then await for an event notification.
-            if (strategy.getType() == ServerPushEventStrategy.Type.LONG_POLLING) {
-                events = awaitEvent(msg.getClientNodeId(), strategy.getDuration());
-            }
-            return events;
         }
 
         /**
@@ -476,7 +380,6 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
         private ServerPushEventStrategy getStrategy(KeypleMessageDto msg) {
 
             // Gets the client registered strategy if exists.
-            ServerPushEventStrategy strategy = strategies.get(msg.getClientNodeId());
             if (strategy == null) {
 
                 // Register the client's strategy
@@ -499,35 +402,24 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
                         throw new IllegalArgumentException("long polling duration", e);
                     }
                 }
-
-                strategies.put(msg.getClientNodeId(), strategy);
             }
             return strategy;
         }
 
         /**
          * (private)<br>
-         * Await an event in case of long polling strategy at most for a max awaiting time.
+         * Wait a most the provided max awaiting time.
          *
-         * @param clientNodeId The client node id.
          * @param maxAwaitingTime The max awaiting time.
-         * @return a nullable list
          */
-        private List<KeypleMessageDto> awaitEvent(String clientNodeId, int maxAwaitingTime) {
-
-            List<KeypleMessageDto> events = null;
+        private void waitAtMost(int maxAwaitingTime) {
             try {
-                // Register the current client task
-                longPollingClientTasks.put(clientNodeId, Thread.currentThread());
-                // Then await an event
-                Thread.sleep(maxAwaitingTime);
+                wait(maxAwaitingTime);
             } catch (InterruptedException e) {
-                events = eventsSendbox.remove(clientNodeId);
-            } finally {
-                // Unregister the current client task
-                longPollingClientTasks.remove(clientNodeId);
+                logger.error("Unexpected interruption of the task associated with the node's id {}",
+                        clientNodeId, e);
+                Thread.currentThread().interrupt();
             }
-            return events;
         }
     }
 }

@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remotese.core.KeypleServerAsync;
 import org.eclipse.keyple.plugin.remotese.core.exception.KeypleClosedSessionException;
+import org.eclipse.keyple.plugin.remotese.core.exception.KeypleRemoteCommunicationException;
 import org.eclipse.keyple.plugin.remotese.core.exception.KeypleTimeoutException;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,22 +28,17 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
 @RunWith(MockitoJUnitRunner.class)
-public class KeypleServerAsyncNodeImplTest extends AbstractKeypleAsyncNode {
-
-    static final String sessionId = "sessionId";
-    static final String sessionIdUnknown = "sessionIdUnknown";
-    static final Exception error = new Exception();
+public class KeypleServerAsyncNodeTestImplTest extends AbstractKeypleAsyncNodeTest {
 
     KeypleServerAsync endpoint;
     KeypleServerAsyncNodeImpl node;
 
     class MessageScheduler extends Thread {
 
-        public boolean isError;
-        private Thread ownerThread;
-        private String sessionId;
-        private KeypleMessageDto msg;
-        private int mode;
+        Thread ownerThread;
+        String sessionId;
+        KeypleMessageDto msg;
+        int mode;
 
         MessageScheduler(final String sessionId, final KeypleMessageDto msg, final int mode) {
             this.ownerThread = Thread.currentThread();
@@ -54,55 +50,49 @@ public class KeypleServerAsyncNodeImplTest extends AbstractKeypleAsyncNode {
         @Override
         public void run() {
             await().atMost(5, TimeUnit.SECONDS).until(threadHasStateTimedWaiting(ownerThread));
-            try {
-                switch (mode) {
-                    case 2:
-                        node.onMessage(msg);
-                        break;
-                    case 4:
-                        node.onError(sessionId, error);
-                        break;
-                }
-            } catch (Exception e) {
-                isError = true;
+            switch (mode) {
+                case 2:
+                    node.onMessage(msg);
+                    break;
+                case 4:
+                    node.onError(sessionId, error);
+                    break;
             }
         }
     }
 
-    MessageScheduler scheduleOnMessage(String sessionId, KeypleMessageDto message) {
+    void scheduleOnMessage(KeypleMessageDto message) {
         MessageScheduler t = new MessageScheduler(sessionId, message, 2);
         t.start();
-        return t;
     }
 
-    MessageScheduler scheduleOnError(String sessionId) {
+    void scheduleOnError() {
         MessageScheduler t = new MessageScheduler(sessionId, null, 4);
         t.start();
-        return t;
     }
 
-    void setEndpointAnswer() {
-        doAnswer(new Answer() {
+    void doEndpointToReturnAnswer() {
+        doAnswer(new Answer<Object>() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 node.onMessage(response);
                 return null;
             }
         }).when(endpoint).sendMessage(msg);
     }
 
-    void setEndpointErrorAnswer() {
-        doAnswer(new Answer() {
+    void doEndpointToCallOnError() {
+        doAnswer(new Answer<Object>() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 node.onError(sessionId, error);
                 return null;
             }
         }).when(endpoint).sendMessage(msg);
     }
 
-    void setEndpointError() {
-        doThrow(new RuntimeException()).when(endpoint).sendMessage(msg);
+    void doEndpointToThrowException() {
+        doThrow(new KeypleRemoteCommunicationException("TEST")).when(endpoint).sendMessage(msg);
     }
 
     void initSession() {
@@ -116,9 +106,19 @@ public class KeypleServerAsyncNodeImplTest extends AbstractKeypleAsyncNode {
         node = new KeypleServerAsyncNodeImpl(handler, endpoint, 1);
     }
 
+    @Test(expected = UnsupportedOperationException.class)
+    public void openSession_shouldThrowUOE() {
+        node.openSession(sessionId);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void closeSession_shouldThrowUOE() {
+        node.closeSession(sessionId);
+    }
+
     @Test
     public void sendRequest_whenOk_shouldCallEndpointAndReturnResponse() {
-        setEndpointAnswer();
+        doEndpointToReturnAnswer();
         initSession();
         KeypleMessageDto result = node.sendRequest(msg);
         verify(endpoint).sendMessage(msg);
@@ -135,7 +135,7 @@ public class KeypleServerAsyncNodeImplTest extends AbstractKeypleAsyncNode {
 
     @Test(expected = RuntimeException.class)
     public void sendRequest_whenEndpointError_shouldThrowEndpointError() {
-        setEndpointError();
+        doEndpointToThrowException();
         initSession();
         node.sendRequest(msg);
     }
@@ -155,7 +155,7 @@ public class KeypleServerAsyncNodeImplTest extends AbstractKeypleAsyncNode {
 
     @Test(expected = RuntimeException.class)
     public void sendMessage_whenEndpointError_shouldThrowEndpointError() {
-        setEndpointError();
+        doEndpointToThrowException();
         initSession();
         node.sendMessage(msg);
     }
@@ -230,7 +230,7 @@ public class KeypleServerAsyncNodeImplTest extends AbstractKeypleAsyncNode {
 
     @Test
     public void onMessage_whenIsAResponseInThread1_shouldEndSendRequest() {
-        setEndpointAnswer();
+        doEndpointToReturnAnswer();
         initSession();
         KeypleMessageDto result = node.sendRequest(msg);
         verify(endpoint).sendMessage(msg);
@@ -242,7 +242,7 @@ public class KeypleServerAsyncNodeImplTest extends AbstractKeypleAsyncNode {
     @Test
     public void onMessage_whenIsAResponseInThread2_shouldEndSendRequestOnThread1() {
         initSession();
-        scheduleOnMessage(sessionId, response);
+        scheduleOnMessage(response);
         KeypleMessageDto result = node.sendRequest(msg);
         verify(endpoint).sendMessage(msg);
         verifyNoMoreInteractions(endpoint);
@@ -305,7 +305,7 @@ public class KeypleServerAsyncNodeImplTest extends AbstractKeypleAsyncNode {
 
     @Test
     public void onError_whenOccursDuringSendRequestInThread1_shouldEndSendRequestWithErrorInsideARuntimeException() {
-        setEndpointErrorAnswer();
+        doEndpointToCallOnError();
         initSession();
         try {
             node.sendRequest(msg);
@@ -323,7 +323,7 @@ public class KeypleServerAsyncNodeImplTest extends AbstractKeypleAsyncNode {
     @Test
     public void onError_whenOccursDuringSendRequestInThread2_shouldEndSendRequestWithErrorInsideARuntimeException() {
         initSession();
-        scheduleOnError(sessionId);
+        scheduleOnError();
         try {
             node.sendRequest(msg);
             shouldHaveThrown(RuntimeException.class);
@@ -339,7 +339,7 @@ public class KeypleServerAsyncNodeImplTest extends AbstractKeypleAsyncNode {
 
     @Test
     public void onError_whenOccursDuringSendMessageInThread1_shouldEndSendMessageWithErrorInsideARuntimeException() {
-        setEndpointErrorAnswer();
+        doEndpointToCallOnError();
         initSession();
         try {
             node.sendMessage(msg);
@@ -357,7 +357,7 @@ public class KeypleServerAsyncNodeImplTest extends AbstractKeypleAsyncNode {
     @Test
     public void onError_whenOccursDuringSendMessageInThread2_shouldPostponedErrorWithErrorInsideARuntimeException() {
         initSession();
-        scheduleOnError(sessionId);
+        scheduleOnError();
         node.sendMessage(msg);
         try {
             node.sendRequest(msg);

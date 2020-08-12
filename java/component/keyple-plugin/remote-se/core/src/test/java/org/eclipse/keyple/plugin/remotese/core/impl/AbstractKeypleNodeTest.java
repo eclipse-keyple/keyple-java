@@ -16,33 +16,34 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import java.util.concurrent.Callable;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remotese.core.exception.KeypleRemoteCommunicationException;
 
-public abstract class AbstractKeypleAsyncNode {
+public abstract class AbstractKeypleNodeTest {
+
+    static final String sessionId = "sessionId";
 
     AbstractKeypleMessageHandler handler;
+
     KeypleMessageDto msg;
     KeypleMessageDto response;
-    KeypleMessageDto pluginEvent;
-    KeypleMessageDto readerEvent;
 
     {
         msg = new KeypleMessageDto()//
-                .setSessionId("sessionId")//
+                .setSessionId(sessionId)//
                 .setAction(KeypleMessageDto.Action.EXECUTE_REMOTE_SERVICE.name())//
                 .setClientNodeId("clientNodeId")//
                 .setServerNodeId("serverNodeId");
 
         response = new KeypleMessageDto(msg);
-
-        pluginEvent =
-                new KeypleMessageDto(msg).setAction(KeypleMessageDto.Action.PLUGIN_EVENT.name());
-
-        readerEvent =
-                new KeypleMessageDto(msg).setAction(KeypleMessageDto.Action.READER_EVENT.name());
     }
 
     void setUp() {
         handler = mock(AbstractKeypleMessageHandler.class);
+    }
+
+    void setHandlerError() {
+        doThrow(new KeypleRemoteCommunicationException("TEST")).when(handler)
+                .onMessage(any(KeypleMessageDto.class));
     }
 
     Callable<Boolean> threadHasStateTimedWaiting(final Thread thread) {
@@ -53,8 +54,11 @@ public abstract class AbstractKeypleAsyncNode {
         };
     }
 
-    void setHandlerError() {
-        doThrow(new RuntimeException()).when(handler).onMessage(any(KeypleMessageDto.class));
+    Callable<Boolean> threadHasStateTerminated(final Thread thread) {
+        return new Callable<Boolean>() {
+            public Boolean call() {
+                return thread.getState() == Thread.State.TERMINATED;
+            }
+        };
     }
-
 }
