@@ -22,15 +22,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Abstract class for NativeSeSeService. This is an internal class an must not be used by the user.
- * 
- * @since 1.0
+ * (package-private)<br>
+ * Abstract class for all Native SE Services.
  */
 abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractNativeSeService.class);
 
     /**
+     * (protected)<br>
      * Find a local reader among all plugins
      * 
      * @param nativeReaderName name of the reader to be found
@@ -60,6 +60,7 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
     }
 
     /**
+     * (protected)<br>
      * Execute a keypleMessageDto on the local nativeReader, returns the response embedded on a
      * keypleMessageDto ready to be sent back.
      *

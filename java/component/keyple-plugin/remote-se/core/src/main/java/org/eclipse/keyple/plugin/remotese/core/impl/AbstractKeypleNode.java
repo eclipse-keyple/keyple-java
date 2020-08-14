@@ -62,37 +62,52 @@ public abstract class AbstractKeypleNode {
     }
 
     /**
-     * (package-private)<br>
-     * Open a new session on the endpoint.
+     * Open a new session on the endpoint (for internal use only).
      *
      * @param sessionId The session id (must be not empty).
+     * @since 1.0
      */
-    abstract void openSession(String sessionId);
+    public abstract void openSession(String sessionId);
 
     /**
-     * (package-private)<br>
-     * Send a request and return a response.
+     * Send a request and return a response (for internal use only).
      *
      * @param msg The message to send (must be not null).
      * @return null if there is no response.
+     * @since 1.0
      */
-    abstract KeypleMessageDto sendRequest(KeypleMessageDto msg);
+    public abstract KeypleMessageDto sendRequest(KeypleMessageDto msg);
 
     /**
-     * (package-private)<br>
-     * Send a message.
+     * Send a message (for internal use only).
      *
      * @param msg The message to send (must be not null).
+     * @since 1.0
      */
-    abstract void sendMessage(KeypleMessageDto msg);
+    public abstract void sendMessage(KeypleMessageDto msg);
 
     /**
-     * (package-private)<br>
-     * Close the session having the provided session id.
+     * Close the session having the provided session id (for internal use only).
      *
      * @param sessionId The session id (must be not empty).
+     * @since 1.0
      */
-    abstract void closeSession(String sessionId);
+    public abstract void closeSession(String sessionId);
+
+    /**
+     * Close the session silently (without throwing exceptions)
+     *
+     * @param sessionId The session id (must be not empty).
+     * @since 1.0
+     */
+    public void closeSessionSilently(String sessionId) {
+        try {
+            closeSession(sessionId);
+        } catch (RuntimeException e) {
+            logger.error("Error during the silent closing of node's session [{}] : {}", sessionId,
+                    e.getMessage(), e);
+        }
+    }
 
     /**
      * (protected)<br>
@@ -107,7 +122,7 @@ public abstract class AbstractKeypleNode {
         SEND_REQUEST_BEGIN, //
         SEND_REQUEST_END, //
         SEND_MESSAGE, //
-        EXTERNAL_ERROR_OCCURED, //
+        EXTERNAL_ERROR_OCCURRED, //
         CLOSE_SESSION_BEGIN, //
         CLOSE_SESSION_END, //
         ABORTED_SESSION

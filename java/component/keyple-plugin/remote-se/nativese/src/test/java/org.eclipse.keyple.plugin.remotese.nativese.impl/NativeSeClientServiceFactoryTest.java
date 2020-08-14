@@ -341,7 +341,8 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
 
 
 
-    class MyEventFilter extends KeypleClientReaderEventFilter<MyKeypleUserData> {
+    class MyEventFilter implements KeypleClientReaderEventFilter {
+
         Boolean propagateEvent;
 
         MyEventFilter(Boolean propagateEvent) {
@@ -358,7 +359,12 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
         }
 
         @Override
-        public void afterPropagation(MyKeypleUserData userOutputData) {
+        public Class<? extends Object> getUserOutputDataClass() {
+            return MyKeypleUserData.class;
+        }
+
+        @Override
+        public void afterPropagation(Object userOutputData) {
             assertThat(userOutputData).isNotNull();
             assertThat(userOutputData).isEqualToComparingFieldByFieldRecursively(outputData);
         }

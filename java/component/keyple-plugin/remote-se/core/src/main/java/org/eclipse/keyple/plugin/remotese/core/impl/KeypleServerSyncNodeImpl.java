@@ -57,7 +57,7 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
      * {@inheritDoc}
      */
     @Override
-    void openSession(String sessionId) {
+    public void openSession(String sessionId) {
         throw new UnsupportedOperationException("openSession");
     }
 
@@ -126,7 +126,8 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
      * {@inheritDoc}
      */
     @Override
-    KeypleMessageDto sendRequest(KeypleMessageDto msg) {
+    public KeypleMessageDto sendRequest(KeypleMessageDto msg) {
+        msg.setServerNodeId(nodeId);
         SessionManager manager = sessionManagers.get(msg.getSessionId());
         try {
             return manager.sendRequest(msg);
@@ -140,7 +141,8 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
      * {@inheritDoc}
      */
     @Override
-    void sendMessage(KeypleMessageDto msg) {
+    public void sendMessage(KeypleMessageDto msg) {
+        msg.setServerNodeId(nodeId);
         KeypleMessageDto.Action action = KeypleMessageDto.Action.valueOf(msg.getAction());
         switch (action) {
             case PLUGIN_EVENT:
@@ -158,7 +160,7 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
      * {@inheritDoc}
      */
     @Override
-    void closeSession(String sessionId) {
+    public void closeSession(String sessionId) {
         throw new UnsupportedOperationException("closeSession");
     }
 

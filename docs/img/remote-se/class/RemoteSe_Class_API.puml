@@ -1,7 +1,7 @@
 @startuml
 title
     Keyple Plugin Remote SE
-    Public API (28/07/2020)
+    Public API (14/08/2020)
 end title
 
 ' == THEME ==
@@ -198,10 +198,10 @@ package org.eclipse.keyple.plugin.remotese {
             + String virtualReaderName
             + String body
         }
-        +abstract KeypleClientReaderEventFilter<T> {
-            +Class<T> getUserOutputDataClass ()
+        +interface KeypleClientReaderEventFilter {
             +Object beforePropagation (ReaderEvent event)
-            +void afterPropagation (T userOutputData)
+            +Class<? extends Object> getUserOutputDataClass ()
+            +void afterPropagation (Object userOutputData)
         }
 
         ' Nodes & Senders

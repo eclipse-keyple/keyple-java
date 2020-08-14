@@ -535,11 +535,6 @@ public class KeypleClientAsyncNodeTestImplTest extends AbstractKeypleAsyncNodeTe
         } catch (RuntimeException e) {
             assertThat(e).hasCause(error);
         }
-        try {
-            node.closeSession(sessionId);
-            shouldHaveThrown(NullPointerException.class);
-        } catch (NullPointerException e) {
-        }
     }
 
     @Test
@@ -551,11 +546,6 @@ public class KeypleClientAsyncNodeTestImplTest extends AbstractKeypleAsyncNodeTe
             shouldHaveThrown(RuntimeException.class);
         } catch (RuntimeException e) {
             assertThat(e).hasCause(error);
-        }
-        try {
-            node.closeSession(sessionId);
-            shouldHaveThrown(NullPointerException.class);
-        } catch (NullPointerException e) {
         }
     }
 
@@ -570,11 +560,6 @@ public class KeypleClientAsyncNodeTestImplTest extends AbstractKeypleAsyncNodeTe
         } catch (RuntimeException e) {
             assertThat(e).hasCause(error);
         }
-        try {
-            node.closeSession(sessionId);
-            shouldHaveThrown(NullPointerException.class);
-        } catch (NullPointerException e) {
-        }
     }
 
     @Test
@@ -588,11 +573,6 @@ public class KeypleClientAsyncNodeTestImplTest extends AbstractKeypleAsyncNodeTe
         } catch (RuntimeException e) {
             assertThat(e).hasCause(error);
         }
-        try {
-            node.closeSession(sessionId);
-            shouldHaveThrown(NullPointerException.class);
-        } catch (NullPointerException e) {
-        }
     }
 
     @Test
@@ -605,11 +585,6 @@ public class KeypleClientAsyncNodeTestImplTest extends AbstractKeypleAsyncNodeTe
             shouldHaveThrown(RuntimeException.class);
         } catch (RuntimeException e) {
             assertThat(e).hasCause(error);
-        }
-        try {
-            node.closeSession(sessionId);
-            shouldHaveThrown(NullPointerException.class);
-        } catch (NullPointerException e) {
         }
     }
 

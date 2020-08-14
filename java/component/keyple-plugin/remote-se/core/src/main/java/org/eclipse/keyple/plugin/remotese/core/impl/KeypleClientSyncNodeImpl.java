@@ -71,7 +71,7 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
      * {@inheritDoc}
      */
     @Override
-    void openSession(String sessionId) {
+    public void openSession(String sessionId) {
         // NOP
     }
 
@@ -79,8 +79,9 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
      * {@inheritDoc}
      */
     @Override
-    KeypleMessageDto sendRequest(KeypleMessageDto msg) {
+    public KeypleMessageDto sendRequest(KeypleMessageDto msg) {
 
+        msg.setClientNodeId(nodeId);
         List<KeypleMessageDto> responses = endpoint.sendRequest(msg);
 
         if (responses == null || responses.isEmpty()) {
@@ -105,7 +106,8 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
      * {@inheritDoc}
      */
     @Override
-    void sendMessage(KeypleMessageDto msg) {
+    public void sendMessage(KeypleMessageDto msg) {
+        msg.setClientNodeId(nodeId);
         endpoint.sendRequest(msg);
     }
 
@@ -113,7 +115,7 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
      * {@inheritDoc}
      */
     @Override
-    void closeSession(String sessionId) {
+    public void closeSession(String sessionId) {
         // NOP
     }
 

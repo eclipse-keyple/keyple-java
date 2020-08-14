@@ -55,15 +55,10 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
      * {@inheritDoc}
      */
     @Override
-    void openSession(String sessionId) {
+    public void openSession(String sessionId) {
         SessionManager manager = new SessionManager(sessionId);
         sessionManagers.put(sessionId, manager);
-        try {
-            manager.openSession();
-        } catch (RuntimeException e) {
-            closeSessionSilently(sessionId);
-            throw e;
-        }
+        manager.openSession();
     }
 
     /**
@@ -82,28 +77,20 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
      * {@inheritDoc}
      */
     @Override
-    KeypleMessageDto sendRequest(KeypleMessageDto msg) {
+    public KeypleMessageDto sendRequest(KeypleMessageDto msg) {
+        msg.setClientNodeId(nodeId);
         SessionManager manager = sessionManagers.get(msg.getSessionId());
-        try {
-            return manager.sendRequest(msg);
-        } catch (RuntimeException e) {
-            closeSessionSilently(msg.getSessionId());
-            throw e;
-        }
+        return manager.sendRequest(msg);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    void sendMessage(KeypleMessageDto msg) {
+    public void sendMessage(KeypleMessageDto msg) {
+        msg.setClientNodeId(nodeId);
         SessionManager manager = sessionManagers.get(msg.getSessionId());
-        try {
-            manager.sendMessage(msg);
-        } catch (RuntimeException e) {
-            closeSessionSilently(msg.getSessionId());
-            throw e;
-        }
+        manager.sendMessage(msg);
     }
 
     /**
@@ -137,27 +124,12 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
      * {@inheritDoc}
      */
     @Override
-    void closeSession(String sessionId) {
+    public void closeSession(String sessionId) {
         SessionManager manager = sessionManagers.get(sessionId);
         try {
             manager.closeSession();
         } finally {
             sessionManagers.remove(sessionId);
-        }
-    }
-
-    /**
-     * (private)<br>
-     * Close the session silently (without throwing exceptions)
-     *
-     * @param sessionId The session id (must be not empty).
-     */
-    private void closeSessionSilently(String sessionId) {
-        try {
-            closeSession(sessionId);
-        } catch (RuntimeException e) {
-            logger.error("Error during the silent closing of node's session [{}] : {}", sessionId,
-                    e.getMessage(), e);
         }
     }
 
@@ -225,7 +197,7 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
          */
         @Override
         protected void checkIfExternalErrorOccurred() {
-            if (state == SessionManagerState.EXTERNAL_ERROR_OCCURED) {
+            if (state == SessionManagerState.EXTERNAL_ERROR_OCCURRED) {
                 state = SessionManagerState.ABORTED_SESSION;
                 throw new KeypleRemoteCommunicationException(error.getMessage(), error);
             }
@@ -353,7 +325,7 @@ public final class KeypleClientAsyncNodeImpl extends AbstractKeypleNode
                     SessionManagerState.SEND_MESSAGE, //
                     SessionManagerState.CLOSE_SESSION_BEGIN);
             error = e;
-            state = SessionManagerState.EXTERNAL_ERROR_OCCURED;
+            state = SessionManagerState.EXTERNAL_ERROR_OCCURRED;
             notify();
         }
     }
