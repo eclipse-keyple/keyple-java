@@ -11,22 +11,55 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
+import org.eclipse.keyple.plugin.remotese.core.KeypleClientAsyncNode;
 import org.eclipse.keyple.plugin.remotese.nativese.NativeSeClientService;
 
 /**
- * Utils class to retrieve the client NativeSeService
+ * Utility class associated to a {@link NativeSeClientService}
+ *
+ * @since 1.0
  */
 public class NativeSeClientUtils {
 
     /**
-     * Retrieve the NativeSeClient if initiated
+     * Get the Native SE Client Service
      * 
-     * @return the singleton instance of the service if instantiated, null instead
+     * @return a not null reference
+     * @throws IllegalStateException if the service is not initialized.
+     * @since 1.0
      */
-    static public NativeSeClientService getService() {
-        return NativeSeClientServiceImpl.getInstance();
+    public static NativeSeClientService getService() {
+        return getNativeSeClientService();
     }
 
+    /**
+     * Get the async node associated to the Native SE Client Service.
+     *
+     * @return a not null reference
+     * @throws IllegalStateException if the service is not initialized or is not bounded to an async
+     *         node.
+     * @since 1.0
+     */
+    public static KeypleClientAsyncNode getAsyncNode() {
+        NativeSeClientServiceImpl service = getNativeSeClientService();
+        if (service.getNode() instanceof KeypleClientAsyncNode) {
+            return (KeypleClientAsyncNode) service.getNode();
+        }
+        throw new IllegalStateException("The Native SE Service is not bounded to an async node");
+    }
 
-    // TODO: get asyncNode
+    /**
+     * (private)<br>
+     * Get the Native SE Client Service implementation
+     *
+     * @return a not null reference
+     * @throws IllegalStateException if the service is not initialized.
+     */
+    private static NativeSeClientServiceImpl getNativeSeClientService() {
+        NativeSeClientServiceImpl service = NativeSeClientServiceImpl.getInstance();
+        if (service == null) {
+            throw new IllegalStateException("The Native SE Client Service is not initialized");
+        }
+        return service;
+    }
 }

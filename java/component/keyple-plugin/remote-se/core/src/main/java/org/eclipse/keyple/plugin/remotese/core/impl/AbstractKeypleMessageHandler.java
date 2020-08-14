@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.core.impl;
 
+import java.util.UUID;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remotese.core.*;
@@ -102,13 +103,22 @@ public abstract class AbstractKeypleMessageHandler {
     }
 
     /**
+     * Gets the associated node.
+     *
+     * @return a not null reference.
+     * @since 1.0
+     */
+    public AbstractKeypleNode getNode() {
+        return node;
+    }
+
+    /**
      * (protected)<br>
      * If message contains an error, throws the embedded exception.
      *
      * @param message not null instance
      */
     protected void checkError(KeypleMessageDto message) {
-        // throw exception if message is ERROR
         if (message.getAction().equals(KeypleMessageDto.Action.ERROR.name())) {
             BodyError body =
                     KeypleJsonParser.getParser().fromJson(message.getBody(), BodyError.class);
@@ -118,42 +128,11 @@ public abstract class AbstractKeypleMessageHandler {
 
     /**
      * (protected)<br>
-     * Open a new session on the node.
+     * Generate a unique session Id.
      *
-     * @param sessionId The session id (must be not empty).
+     * @return A not empty value.
      */
-    protected void openSession(String sessionId) {
-        node.openSession(sessionId);
-    }
-
-    /**
-     * (protected)<br>
-     * Send a request on the node and return a response.
-     *
-     * @param msg The message to send (must be not null).
-     * @return null if there is no response.
-     */
-    protected KeypleMessageDto sendRequest(KeypleMessageDto msg) {
-        return node.sendRequest(msg);
-    }
-
-    /**
-     * (protected)<br>
-     * Send a message on the node.
-     *
-     * @param msg The message to send (must be not null).
-     */
-    protected void sendMessage(KeypleMessageDto msg) {
-        node.sendMessage(msg);
-    }
-
-    /**
-     * (protected)<br>
-     * Close on the node the session having the provided session id.
-     *
-     * @param sessionId The session id (must be not empty).
-     */
-    protected void closeSession(String sessionId) {
-        node.closeSession(sessionId);
+    protected String generateSessionId() {
+        return UUID.randomUUID().toString();
     }
 }

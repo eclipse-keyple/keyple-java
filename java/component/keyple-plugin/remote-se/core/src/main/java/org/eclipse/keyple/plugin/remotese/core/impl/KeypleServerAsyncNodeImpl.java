@@ -55,7 +55,7 @@ public final class KeypleServerAsyncNodeImpl extends AbstractKeypleNode
      * {@inheritDoc}
      */
     @Override
-    void openSession(String sessionId) {
+    public void openSession(String sessionId) {
         throw new UnsupportedOperationException("openSession");
     }
 
@@ -63,7 +63,8 @@ public final class KeypleServerAsyncNodeImpl extends AbstractKeypleNode
      * {@inheritDoc}
      */
     @Override
-    KeypleMessageDto sendRequest(KeypleMessageDto msg) {
+    public KeypleMessageDto sendRequest(KeypleMessageDto msg) {
+        msg.setServerNodeId(nodeId);
         SessionManager manager = getManagerForHandler(msg.getSessionId());
         return manager.sendRequest(msg);
     }
@@ -72,7 +73,8 @@ public final class KeypleServerAsyncNodeImpl extends AbstractKeypleNode
      * {@inheritDoc}
      */
     @Override
-    void sendMessage(KeypleMessageDto msg) {
+    public void sendMessage(KeypleMessageDto msg) {
+        msg.setServerNodeId(nodeId);
         SessionManager manager = getManagerForHandler(msg.getSessionId());
         manager.sendMessage(msg);
     }
@@ -81,7 +83,7 @@ public final class KeypleServerAsyncNodeImpl extends AbstractKeypleNode
      * {@inheritDoc}
      */
     @Override
-    void closeSession(String sessionId) {
+    public void closeSession(String sessionId) {
         throw new UnsupportedOperationException("closeSession");
     }
 
@@ -166,7 +168,7 @@ public final class KeypleServerAsyncNodeImpl extends AbstractKeypleNode
          */
         @Override
         protected void checkIfExternalErrorOccurred() {
-            if (state == SessionManagerState.EXTERNAL_ERROR_OCCURED) {
+            if (state == SessionManagerState.EXTERNAL_ERROR_OCCURRED) {
                 state = SessionManagerState.ABORTED_SESSION;
                 throw new KeypleRemoteCommunicationException(error.getMessage(), error);
             }
@@ -237,7 +239,7 @@ public final class KeypleServerAsyncNodeImpl extends AbstractKeypleNode
         private synchronized void onError(Throwable e) {
             checkState(SessionManagerState.SEND_REQUEST_BEGIN, SessionManagerState.SEND_MESSAGE);
             error = e;
-            state = SessionManagerState.EXTERNAL_ERROR_OCCURED;
+            state = SessionManagerState.EXTERNAL_ERROR_OCCURRED;
             notify();
         }
     }

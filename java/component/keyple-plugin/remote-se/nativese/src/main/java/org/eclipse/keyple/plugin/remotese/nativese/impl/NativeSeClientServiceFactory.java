@@ -11,7 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
-
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remotese.core.KeypleClientAsync;
 import org.eclipse.keyple.plugin.remotese.core.KeypleClientReaderEventFilter;
@@ -21,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Use this factory to create a NativeSeClientService
+ * This factory must be used to initialize a {@link NativeSeClientService}
  *
  * @since 1.0
  */
@@ -65,7 +64,6 @@ public class NativeSeClientServiceFactory {
          */
         ReaderStep withSyncNode(KeypleClientSync syncClient);
     }
-
 
     public interface ReaderStep {
         /**
@@ -115,9 +113,7 @@ public class NativeSeClientServiceFactory {
 
         @Override
         public BuilderStep withReaderObservation(KeypleClientReaderEventFilter eventFilter) {
-            // check params nullity
             Assert.getInstance().notNull(eventFilter, "eventFilter");
-
             this.withReaderObservation = true;
             this.eventFilter = eventFilter;
             return this;
@@ -125,10 +121,10 @@ public class NativeSeClientServiceFactory {
 
         @Override
         public NativeSeClientService getService() {
+
             // create the service
             NativeSeClientServiceImpl service =
                     NativeSeClientServiceImpl.createInstance(withReaderObservation, eventFilter);
-
 
             // bind the service to the node
             if (asyncEndpoint != null) {
