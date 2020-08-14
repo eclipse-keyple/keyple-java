@@ -27,7 +27,6 @@ import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
 import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
@@ -202,7 +201,8 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
             /*
              * A ratification command will be sent (CONTACTLESS_MODE).
              */
-            poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
+            poTransaction.prepareReleasePoChannel();
+            poTransaction.processClosing();
 
         } else {
             /*
@@ -225,7 +225,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
             poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_Contracts,
                     CalypsoClassicInfo.RECORD_NUMBER_1, 4, 29);
             /* proceed with the sending of commands, don't close the channel */
-            poTransaction.processPoCommandsInSession();
+            poTransaction.processPoCommands();
 
             ElementaryFile efContracts = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_Contracts);
 
@@ -260,7 +260,8 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
             /*
              * A ratification command will be sent (CONTACTLESS_MODE).
              */
-            poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
+            poTransaction.prepareReleasePoChannel();
+            poTransaction.processClosing();
         }
 
         logger.info("========= PO Calypso session ======= SUCCESS !!!!!!!!!!!!!!!!!!!!!!!!!!!!");

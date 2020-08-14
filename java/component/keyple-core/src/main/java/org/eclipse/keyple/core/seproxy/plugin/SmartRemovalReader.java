@@ -11,13 +11,12 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 
 /**
  * Interface implemented by the readers able to handle natively the SE removal process.
  */
-public interface SmartRemovalReader extends ObservableReader {
+public interface SmartRemovalReader extends ObservableReaderNotifier {
     /**
      * Wait until the SE disappears.
      * <p>

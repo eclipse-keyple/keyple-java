@@ -12,6 +12,7 @@
 package org.eclipse.keyple.calypso.transaction;
 
 import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 
 /**
@@ -44,11 +45,13 @@ public final class PoSelector extends SeSelector {
      *
      * @since 0.9
      */
-    public static class PoSelectorBuilder extends SeSelector.SeSelectorBuilder {
+    public static final class PoSelectorBuilder extends SeSelector.SeSelectorBuilder {
         private InvalidatedPo invalidatedPo;
 
         private PoSelectorBuilder() {
             super();
+            // set the ISO14443_4 protocol as the default one for POs
+            super.seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4);
         }
 
         /**

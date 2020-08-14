@@ -39,6 +39,7 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException
+import org.eclipse.keyple.core.seproxy.message.ProxyReader
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.example.calypso.android.nfc.R
@@ -364,7 +365,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                      * nothing.
                      */
                     try {
-                        (SeProxyService.getInstance().getPlugin(event.pluginName).getReader(event.readerName) as ObservableReader).notifySeProcessed()
+                        (SeProxyService.getInstance().getPlugin(event.pluginName).getReader(event.readerName) as ProxyReader).transmitSeRequest(null, ChannelControl.CLOSE_AFTER)
                     } catch (e: KeypleReaderNotFoundException) {
                         Timber.e(e)
                         addResultEvent("Error: ${e.message}")
@@ -495,12 +496,12 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                         ReaderEvent.EventType.SE_MATCHED -> {
                             addResultEvent("Tag detected - SE MATCHED")
                             executeCommands(event.defaultSelectionsResponse)
-                            (reader as ObservableReader).notifySeProcessed()
+                            (reader as ProxyReader).transmitSeRequest(null, ChannelControl.CLOSE_AFTER)
                         }
 
                         ReaderEvent.EventType.SE_INSERTED -> {
                             addResultEvent("PO detected but AID didn't match with ${CalypsoClassicInfo.AID}")
-                            (reader as ObservableReader).notifySeProcessed()
+                            (reader as ProxyReader).transmitSeRequest(null, ChannelControl.CLOSE_AFTER)
                         }
 
                         ReaderEvent.EventType.SE_REMOVED -> {
@@ -567,7 +568,8 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                  * with the PO
                  */
                 addActionEvent("processPoCommands")
-                poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER)
+                poTransaction.prepareReleasePoChannel()
+                poTransaction.processPoCommands()
                 addResultEvent("SUCCESS")
 
                 /*

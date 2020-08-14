@@ -103,9 +103,12 @@ public class PoTransaction {
     private SessionSetting.AccessLevel currentAccessLevel;
     /** modifications counter management */
     private int modificationsCounter;
-
+    /** The object for managing PO commands */
     private final PoCommandManager poCommandManager;
+    /** The current Store Value action */
     private SvSettings.Action svAction;
+    /** The {@link ChannelControl} action */
+    private ChannelControl channelControl;
 
     /**
      * PoTransaction with PO and SAM readers.
@@ -144,6 +147,8 @@ public class PoTransaction {
         sessionState = SessionState.SESSION_UNINITIALIZED;
 
         poCommandManager = new PoCommandManager();
+
+        channelControl = ChannelControl.KEEP_OPEN;
     }
 
     /**
@@ -186,7 +191,7 @@ public class PoTransaction {
     private void processAtomicOpening(PoTransaction.SessionSetting.AccessLevel accessLevel,
             List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poCommands) {
 
-        /** This method should be called only if no session was previously open */
+        // This method should be called only if no session was previously open
         checkSessionIsNotOpen();
 
         if (poSecuritySettings == null) {
@@ -239,7 +244,6 @@ public class PoTransaction {
 
         // Transmit the commands to the PO
         SeResponse poSeResponse = safePoTransmit(poSeRequest, ChannelControl.KEEP_OPEN);
-
 
         // Retrieve and check the ApduResponses
         List<ApduResponse> poApduResponses = poSeResponse.getApduResponses();
@@ -371,7 +375,8 @@ public class PoTransaction {
      * command cache. The SAM command cache is emptied.</li>
      * <li>The SAM certificate is retrieved from the Digest Close response. The terminal signature
      * is identified.</li>
-     * <li>Then, on the PO reader, a SeRequest is transmitted with the provided channelControl, and
+     * <li>Then, on the PO reader, a SeRequest is transmitted with a {@link ChannelControl} set to
+     * CLOSE_AFTER or KEEP_OPEN depending on whether or not prepareReleasePoChannel was called, and
      * apduRequests including the new PO commands to send in the session, a Close Session command
      * (defined with the SAM certificate), and optionally a ratificationCommand.
      * <ul>
@@ -776,8 +781,9 @@ public class PoTransaction {
      * <li>According to the PO responses of Open Session and the PO commands sent inside the
      * session, a "cache" of SAM commands is filled with the corresponding Digest Init &amp; Digest
      * Update commands.</li>
-     * <li>All parsers keept by the prepare command methods are updated with the Apdu responses from
-     * the PO and made available with the getCommandParser method.</li>
+     * <li>The result of the commands is placed in CalypsoPo.</li>
+     * <li>Any call to prepareReleasePoChannel before this command will be ignored but will remain
+     * active for the next process command.</li>
      * </ul>
      *
      * @param accessLevel access level of the session (personalization, load or debit).
@@ -838,8 +844,7 @@ public class PoTransaction {
      * <ul>
      * <li>On the PO reader, generates a SeRequest with channelControl set to the provided value and
      * ApduRequests containing the PO commands.</li>
-     * <li>All parsers keept by the prepare command methods are updated with the Apdu responses from
-     * the PO and made available with the getCommandParser method.</li>
+     * <li>The result of the commands is placed in CalypsoPo.</li>
      * </ul>
      *
      * @param channelControl indicates if the SE channel of the PO reader must be closed after the
@@ -848,10 +853,7 @@ public class PoTransaction {
      *         errors)
      * @throws CalypsoPoCommandException if a response from the PO was unexpected
      */
-    public final void processPoCommands(ChannelControl channelControl) {
-
-        // This method should be called only if no session was previously open
-        checkSessionIsNotOpen();
+    private void processPoCommandsOutOfSession(ChannelControl channelControl) {
 
         // PO commands sent outside a Secure Session. No modifications buffer limitation.
         processAtomicPoCommands(poCommandManager.getPoCommandBuilders(), channelControl);
@@ -872,8 +874,7 @@ public class PoTransaction {
      * ApduRequests containing the PO commands.</li>
      * <li>In case the secure session is active, the "cache" of SAM commands is completed with the
      * corresponding Digest Update commands.</li>
-     * <li>All parsers keept by the prepare command methods are updated with the Apdu responses from
-     * the PO and made available with the getCommandParser method.</li>
+     * <li>The result of the commands is placed in CalypsoPo.</li>
      * </ul>
      *
      * @throws CalypsoPoTransactionException if a functional error occurs (including PO and SAM IO
@@ -881,10 +882,7 @@ public class PoTransaction {
      * @throws CalypsoPoCommandException if a response from the PO was unexpected
      * @throws CalypsoSamCommandException if a response from the SAM was unexpected
      */
-    public final void processPoCommandsInSession() {
-
-        /** This method should be called only if a session was previously open */
-        checkSessionIsOpen();
+    private void processPoCommandsInSession() {
 
         // A session is open, we have to care about the PO modifications buffer
         List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> poAtomicBuilders =
@@ -937,12 +935,34 @@ public class PoTransaction {
     }
 
     /**
+     * Process all prepared PO commands outside or in a Secure Session.
+     * <ul>
+     * <li>In case the secure session is active, the "cache" of SAM commands is completed with the
+     * corresponding Digest Update commands. Also, the PO channel is kept open.</li>
+     * <li>Outside of a secure session, the PO channel is closed depending on whether or not
+     * prepareReleasePoChannel has been called.</li>
+     * <li>The result of the commands is placed in CalypsoPo.</li>
+     * </ul>
+     *
+     * @throws CalypsoPoTransactionException if a functional error occurs (including PO and SAM IO
+     *         errors)
+     * @throws CalypsoPoCommandException if a response from the PO was unexpected
+     * @throws CalypsoSamCommandException if a response from the SAM was unexpected
+     */
+    public final void processPoCommands() {
+        if (sessionState == SessionState.SESSION_OPEN) {
+            processPoCommandsInSession();
+        } else {
+            processPoCommandsOutOfSession(channelControl);
+        }
+    }
+
+    /**
      * Sends the currently prepared commands list (may be empty) and closes the Secure Session.
      * <ul>
      * <li>The ratification is handled according to the communication mode.</li>
      * <li>The logical channel can be left open or closed.</li>
-     * <li>All parsers keept by the prepare command methods are updated with the Apdu responses from
-     * the PO and made available with the getCommandParser method.</li>
+     * <li>The result of the commands is placed in CalypsoPo.</li>
      * </ul>
      *
      * <p>
@@ -953,14 +973,12 @@ public class PoTransaction {
      * command will be sent to the PO and ratification will be requested in the Close Session
      * command
      * 
-     * @param channelControl indicates if the SE channel of the PO reader must be closed after the
-     *        last command
      * @throws CalypsoPoTransactionException if a functional error occurs (including PO and SAM IO
      *         errors)
      * @throws CalypsoPoCommandException if a response from the PO was unexpected
      * @throws CalypsoSamCommandException if a response from the SAM was unexpected
      */
-    public final void processClosing(ChannelControl channelControl) {
+    public final void processClosing() {
         checkSessionIsOpen();
 
         boolean atLeastOneReadCommand = false;
@@ -1044,13 +1062,11 @@ public class PoTransaction {
      * <p>
      * Clean up internal data and status.
      * 
-     * @param channelControl indicates if the SE channel of the PO reader must be closed after the
-     *        abort session command
      * @throws CalypsoPoTransactionException if a functional error occurs (including PO and SAM IO
      *         errors)
      * @throws CalypsoPoCommandException if a response from the PO was unexpected
      */
-    public final void processCancel(ChannelControl channelControl) {
+    public final void processCancel() {
         // PO ApduRequest List to hold Close Secure Session command
         List<ApduRequest> poApduRequests = new ArrayList<ApduRequest>();
 
@@ -1085,7 +1101,8 @@ public class PoTransaction {
      * If the execution is done out of session but an encrypted transmission is requested, then
      * PoTransaction must be constructed with {@link PoSecuritySettings}<br>
      * If PoTransaction is constructed without {@link PoSecuritySettings} the transmission in done
-     * in plain.
+     * in plain.<br>
+     * The PO channel is closed if prepareReleasePoChannel is called before this command.
      *
      * @param pin the PIN code value (4-byte long byte array)
      * @throws CalypsoPoTransactionException if a functional error occurs (including PO and SAM IO
@@ -1133,7 +1150,7 @@ public class PoTransaction {
         }
 
         // transmit and receive data with the PO
-        processAtomicPoCommands(poCommandManager.getPoCommandBuilders(), ChannelControl.KEEP_OPEN);
+        processAtomicPoCommands(poCommandManager.getPoCommandBuilders(), channelControl);
 
         // sets the flag indicating that the commands have been executed
         poCommandManager.notifyCommandsProcessed();
@@ -1284,6 +1301,20 @@ public class PoTransaction {
                     modificationsCounter, calypsoPo.getModificationsCounter());
         }
         modificationsCounter = calypsoPo.getModificationsCounter();
+    }
+
+    /**
+     * Prepare to close the PO channel.<br>
+     * If this command is called before a "process" command (except for processOpening) then the
+     * last transmission to the PO will be associated with the indication CLOSE_AFTER in order to
+     * close the PO channel.<br>
+     * Important: this command must imperatively be called at the end of any transaction, whether it
+     * ended normally or not.<br>
+     * In case the transaction was interrupted (exception), an additional call to processPoCommands
+     * must be made to effectively close the channel.
+     */
+    public final void prepareReleasePoChannel() {
+        channelControl = ChannelControl.CLOSE_AFTER;
     }
 
     /**

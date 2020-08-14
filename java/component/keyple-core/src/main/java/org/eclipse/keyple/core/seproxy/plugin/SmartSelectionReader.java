@@ -11,16 +11,16 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 
 /**
  * Interface implemented by readers able to handle natively the SE selection process (e.g. Android
  * OMAPI readers).
  */
-public interface SmartSelectionReader extends SeReader {
+public interface SmartSelectionReader extends ProxyReader {
 
     /**
      * Opens a logical channel for the provided AID

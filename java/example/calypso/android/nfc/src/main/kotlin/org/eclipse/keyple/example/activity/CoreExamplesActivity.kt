@@ -34,6 +34,7 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException
+import org.eclipse.keyple.core.seproxy.message.ProxyReader
 import org.eclipse.keyple.core.seproxy.message.SeResponse
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode
@@ -305,7 +306,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                      * nothing.
                      */
                     try {
-                        (SeProxyService.getInstance().getPlugin(event.pluginName).getReader(event.readerName) as ObservableReader).notifySeProcessed()
+                        (SeProxyService.getInstance().getPlugin(event.pluginName).getReader(event.readerName) as ProxyReader).transmitSeRequest(null, ChannelControl.CLOSE_AFTER)
                     } catch (e: KeypleReaderNotFoundException) {
                         Timber.e(e)
                         addResultEvent("Error: ${e.message}")

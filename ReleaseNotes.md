@@ -17,6 +17,8 @@ Releases:
  - [keyple-android-plugin-android-omapi 0.9a](#keyple-android-plugin-android-omapi-09a)
 
 ### keyple-java-core 0.9a
+* KEYP-314 : reviewed the channel control management: notifySeProcessed is removed
+* KEYP-312 : restricting access to methods of the reader API that are not used by the plugins.
 * KEYP-108, 213 : improved plugin lifecycle management (SeProxyService, PluginFactory)
 * KEYP-145 : improved command builders and parsers to manage erroneous status word with dedicated exceptions
 * KEYP-154,295 : improved exceptions management, all exceptions are now runtime exceptions
@@ -29,8 +31,10 @@ Releases:
 * fixed many issues raised by Sonarqube
  
 ### keyple-java-calypso 0.9a
-* KEYP-312 : restricting access to methods of the reader API that are not used by the plugins.
+* KEYP-314 : simplified the channel control management: a new prepareReleasePoChannel command is added to PoTransaction 
+* KEYP-306 : added a default value to SeProtocol in PoSelector and SamSelector (specifying it is now optional)
 * KEYP-311 : added the possibility to unlock the SAM when it is selected
+* KEYP-62 : added Invalidate and Rehabilitate commands
 * KEYP-96 : added Stored Value management commands
 * KEYP-23 : added PIN management commands
 * KEYP-101 : enhanced CalypsoPo with card data (updated during the transaction)
@@ -42,6 +46,7 @@ Releases:
 * KEYP-290 : fixed NPE when opening a secure session without reading with rev 2.4 PO
 * KEYP-292 : make CalypsoPo and CalypsoSam classes extendable
 * KEYP-225 : PoResource and SamResource classes are removed, their usage is replaced by SeResource<CalypsoPo/CalypsoSam>
+* KEYP-306 : SE protocol is now optional when building PoSelector and SamSelector. Its default value is ISO_14443_4 and ISO7816_3 respectively.
 * updated with the new keyple-java-core API
 * various other refactorings and improvements
 * fixed many issues raised by Sonarqube

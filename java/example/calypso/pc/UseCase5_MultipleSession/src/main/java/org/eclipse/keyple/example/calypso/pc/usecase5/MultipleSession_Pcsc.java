@@ -21,7 +21,6 @@ import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
@@ -179,7 +178,7 @@ public class MultipleSession_Pcsc {
             }
 
             // proceed with the sending of commands, don't close the channel
-            poTransaction.processPoCommandsInSession();
+            poTransaction.processPoCommands();
 
             // Close the Secure Session.
 
@@ -187,7 +186,7 @@ public class MultipleSession_Pcsc {
                     "========= PO Calypso session ======= Closing ============================");
 
             // A ratification command will be sent (CONTACTLESS_MODE).
-            poTransaction.processClosing(ChannelControl.KEEP_OPEN);
+            poTransaction.processClosing();
 
             logger.info("= #### End of the Calypso PO processing.");
         } else {
