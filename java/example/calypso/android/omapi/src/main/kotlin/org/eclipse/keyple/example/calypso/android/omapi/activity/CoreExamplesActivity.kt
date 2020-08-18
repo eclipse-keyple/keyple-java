@@ -211,8 +211,10 @@ class CoreExamplesActivity : ExamplesActivity() {
                      * New selection: get the next application occurrence matching the same AID, close the
                      * physical channel after
                      */
-                    seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
-                            ChannelControl.CLOSE_AFTER)
+                    seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH)
+
+                    /* Close the channel after the selection */
+                    seSelection.prepareReleaseSeChannel()
 
                     seSelection.prepareSelection(GenericSeSelectionRequest(
                             SeSelector.builder()
