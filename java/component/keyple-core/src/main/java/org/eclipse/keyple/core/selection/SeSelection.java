@@ -28,7 +28,9 @@ import org.slf4j.LoggerFactory;
 /**
  * The SeSelection class handles the SE selection process.
  * <p>
- * It provides a way to do explicit SE selection or to post process a default SE selection.
+ * It provides a way to do explicit SE selection or to post process a default SE selection. <br>
+ * The channel is kept open by default, but can be closed when the selection has failed (see
+ * PrepareReleaseSeChannel).
  */
 public final class SeSelection {
     private static final Logger logger = LoggerFactory.getLogger(SeSelection.class);
@@ -40,25 +42,22 @@ public final class SeSelection {
     private final List<AbstractSeSelectionRequest<? extends AbstractApduCommandBuilder>> seSelectionRequests =
             new ArrayList<AbstractSeSelectionRequest<? extends AbstractApduCommandBuilder>>();
     private final MultiSeRequestProcessing multiSeRequestProcessing;
-    private final ChannelControl channelControl;
+    private ChannelControl channelControl = ChannelControl.KEEP_OPEN;
 
     /**
      * Constructor.
      * 
      * @param multiSeRequestProcessing the multi se processing mode
-     * @param channelControl indicates if the channel has to be closed at the end of the processing
      */
-    public SeSelection(MultiSeRequestProcessing multiSeRequestProcessing,
-            ChannelControl channelControl) {
+    public SeSelection(MultiSeRequestProcessing multiSeRequestProcessing) {
         this.multiSeRequestProcessing = multiSeRequestProcessing;
-        this.channelControl = channelControl;
     }
 
     /**
      * Alternate constructor for standard usages.
      */
     public SeSelection() {
-        this(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+        this(MultiSeRequestProcessing.FIRST_MATCH);
     }
 
     /**
@@ -78,6 +77,17 @@ public final class SeSelection {
         seSelectionRequests.add(seSelectionRequest);
         /* return the selection index (starting at 0) */
         return seSelectionRequests.size() - 1;
+    }
+
+    /**
+     * Prepare to close the SE channel.<br>
+     * If this command is called before a "process" selection command then the last transmission to
+     * the PO will be associated with the indication CLOSE_AFTER in order to close the SE
+     * channel.<br>
+     * This makes it possible to chain several selections on the same SE if necessary.
+     */
+    public final void prepareReleaseSeChannel() {
+        channelControl = ChannelControl.CLOSE_AFTER;
     }
 
     /**
