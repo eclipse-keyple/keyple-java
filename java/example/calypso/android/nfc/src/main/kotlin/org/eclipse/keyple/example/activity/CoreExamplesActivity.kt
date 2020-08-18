@@ -93,7 +93,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             val seAidPrefix = CalypsoClassicInfo.AID_PREFIX
 
             /* First selection case */
-            seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+            seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH)
 
             /* AID based selection (1st selection, later indexed 0) */
             seSelection.prepareSelection(
@@ -114,7 +114,10 @@ class CoreExamplesActivity : AbstractExampleActivity() {
               * New selection: get the next application occurrence matching the same AID, close the
               * physical channel after
               */
-            seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER)
+            seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH)
+
+            /* Close the channel after the selection */
+            seSelection.prepareReleaseSeChannel()
 
             /* next selection (2nd selection, later indexed 1) */
             seSelection.prepareSelection(
@@ -161,7 +164,10 @@ class CoreExamplesActivity : AbstractExampleActivity() {
 
         if (reader.isSePresent) {
             /* CLOSE_AFTER to force selection of all applications*/
-            seSelection = SeSelection(MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER)
+            seSelection = SeSelection(MultiSeRequestProcessing.PROCESS_ALL)
+
+            /* Close the channel after the selection */
+            seSelection.prepareReleaseSeChannel()
 
             /* operate SE selection (change the AID here to adapt it to the SE used for the test) */
             val seAidPrefix = CalypsoClassicInfo.AID_PREFIX
