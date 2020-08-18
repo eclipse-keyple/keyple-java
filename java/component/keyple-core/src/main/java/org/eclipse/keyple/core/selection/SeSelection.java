@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * The SeSelection class handles the SE selection process.
  * <p>
  * It provides a way to do explicit SE selection or to post process a default SE selection. <br>
- * The channel is kept open by default, but can be closed when the selection has failed (see
+ * The channel is kept open by default, but can be closed after each selection cases (see
  * PrepareReleaseSeChannel).
  */
 public final class SeSelection {

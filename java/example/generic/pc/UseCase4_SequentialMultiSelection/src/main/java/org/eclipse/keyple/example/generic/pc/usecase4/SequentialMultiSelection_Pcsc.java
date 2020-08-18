@@ -108,7 +108,7 @@ public class SequentialMultiSelection_Pcsc {
                             .build())
                     .build()));
 
-            // close the channel if the selection fails
+            // close the channel after the selection
             seSelection.prepareReleaseSeChannel();
 
             // Do the selection and display the result

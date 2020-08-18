@@ -89,7 +89,7 @@ public class GroupedMultiSelection_Pcsc {
                             .build())
                     .build()));
 
-            // close the channel if the selection fails
+            // close the channel after the selection
             seSelection.prepareReleaseSeChannel();
 
             // Actual SE communication: operate through a single request the SE selection
