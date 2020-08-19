@@ -103,10 +103,9 @@ class CoreExamplesActivity : ExamplesActivity() {
     private fun groupedMultiSelection() {
         addHeaderEvent("UseCase Generic #3: AID based grouped explicit multiple selection")
 
-        /* CLOSE_AFTER in order to secure selection of all applications */
         val seSelection = SeSelection(MultiSeRequestProcessing.PROCESS_ALL)
 
-        /* Close the channel after the selection */
+        /* Close the channel after the selection in order to secure the selection of all applications */
         seSelection.prepareReleaseSeChannel()
 
         /* operate SE selection (change the AID here to adapt it to the SE used for the test) */
