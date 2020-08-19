@@ -23,9 +23,7 @@ import org.eclipse.keyple.core.command.AbstractApduCommandBuilder
 import org.eclipse.keyple.core.selection.AbstractMatchingSe
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest
 import org.eclipse.keyple.core.selection.SeSelection
-import org.eclipse.keyple.core.seproxy.ChannelControl
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
-import org.eclipse.keyple.core.seproxy.SeProxyService
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.SeSelector
 import org.eclipse.keyple.core.seproxy.SeSelector.AidSelector
@@ -34,7 +32,6 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException
-import org.eclipse.keyple.core.seproxy.message.ProxyReader
 import org.eclipse.keyple.core.seproxy.message.SeResponse
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode
@@ -163,10 +160,9 @@ class CoreExamplesActivity : AbstractExampleActivity() {
         useCase = null
 
         if (reader.isSePresent) {
-            /* CLOSE_AFTER to force selection of all applications*/
             seSelection = SeSelection(MultiSeRequestProcessing.PROCESS_ALL)
 
-            /* Close the channel after the selection */
+            /* Close the channel after the selection to force the selection of all applications */
             seSelection.prepareReleaseSeChannel()
 
             /* operate SE selection (change the AID here to adapt it to the SE used for the test) */
@@ -306,13 +302,14 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                     eventRecyclerView.smoothScrollToPosition(events.size - 1)
                 }
                 if (event?.eventType == ReaderEvent.EventType.SE_INSERTED || event?.eventType == ReaderEvent.EventType.SE_MATCHED) {
+                    // TODO make this conditional on the abnormal termination (exception)
                     /*
                      * Informs the underlying layer of the end of the SE processing, in order to manage the
                      * removal sequence. <p>If closing has already been requested, this method will do
                      * nothing.
                      */
                     try {
-                        (SeProxyService.getInstance().getPlugin(event.pluginName).getReader(event.readerName) as ProxyReader).transmitSeRequest(null, ChannelControl.CLOSE_AFTER)
+                        (event.reader as ObservableReader).finalizeSeProcessing()
                     } catch (e: KeypleReaderNotFoundException) {
                         Timber.e(e)
                         addResultEvent("Error: ${e.message}")

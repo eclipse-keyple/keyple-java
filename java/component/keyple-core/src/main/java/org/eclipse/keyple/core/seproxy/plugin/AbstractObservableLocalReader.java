@@ -18,6 +18,7 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
@@ -578,5 +579,15 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
      */
     protected void onEvent(InternalEvent event) {
         this.stateService.onEvent(event);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final void finalizeSeProcessing() {
+        if (isPhysicalChannelOpen()) {
+            transmitSeRequest(null, ChannelControl.CLOSE_AFTER);
+        }
     }
 }

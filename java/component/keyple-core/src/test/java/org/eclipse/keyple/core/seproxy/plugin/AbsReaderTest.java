@@ -18,9 +18,9 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.core.CoreBaseTest;
-import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeRequestTest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
@@ -56,13 +56,6 @@ public class AbsReaderTest extends CoreBaseTest {
         AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
         Assert.assertEquals(PLUGIN_NAME, r.getPluginName());
         Assert.assertEquals(READER_NAME, r.getName());
-    }
-
-    @Test
-    public void testCompareTo() throws Exception {
-        AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
-        AbstractReader r2 = getSpy(PLUGIN_NAME, READER_NAME);
-        Assert.assertEquals(0, r.compareTo(r2));
     }
 
     /*

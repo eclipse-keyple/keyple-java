@@ -28,7 +28,6 @@ import org.eclipse.keyple.calypso.transaction.PoSelector.InvalidatedPo
 import org.eclipse.keyple.calypso.transaction.PoTransaction
 import org.eclipse.keyple.core.selection.SeResource
 import org.eclipse.keyple.core.selection.SeSelection
-import org.eclipse.keyple.core.seproxy.ChannelControl
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
 import org.eclipse.keyple.core.seproxy.SeProxyService
 import org.eclipse.keyple.core.seproxy.SeReader
@@ -39,7 +38,6 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException
-import org.eclipse.keyple.core.seproxy.message.ProxyReader
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.example.calypso.android.nfc.R
@@ -226,13 +224,12 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
         addHeaderEvent("UseCase Generic #3: AID based grouped explicit multiple selection")
         addHeaderEvent("SE Reader  NAME = ${reader.name}")
 
-        /* CLOSE_AFTER to force selection of all applications*/
         seSelection = SeSelection(MultiSeRequestProcessing.PROCESS_ALL)
 
         /* operate SE selection (change the AID here to adapt it to the SE used for the test) */
         val seAidPrefix = CalypsoClassicInfo.AID_PREFIX
 
-        /* Close the channel after the selection */
+        /* Close the channel after the selection to force the selection of all applications */
         seSelection.prepareReleaseSeChannel()
 
         useCase = null
@@ -365,13 +362,14 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                     eventRecyclerView.smoothScrollToPosition(events.size - 1)
                 }
                 if (event?.eventType == ReaderEvent.EventType.SE_INSERTED || event?.eventType == ReaderEvent.EventType.SE_MATCHED) {
+                    // TODO make this conditional on the abnormal termination (exception)
                     /*
                      * Informs the underlying layer of the end of the SE processing, in order to manage the
                      * removal sequence. <p>If closing has already been requested, this method will do
                      * nothing.
                      */
                     try {
-                        (SeProxyService.getInstance().getPlugin(event.pluginName).getReader(event.readerName) as ProxyReader).transmitSeRequest(null, ChannelControl.CLOSE_AFTER)
+                        (event.reader as ObservableReader).finalizeSeProcessing()
                     } catch (e: KeypleReaderNotFoundException) {
                         Timber.e(e)
                         addResultEvent("Error: ${e.message}")
@@ -505,12 +503,12 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                         ReaderEvent.EventType.SE_MATCHED -> {
                             addResultEvent("Tag detected - SE MATCHED")
                             executeCommands(event.defaultSelectionsResponse)
-                            (reader as ProxyReader).transmitSeRequest(null, ChannelControl.CLOSE_AFTER)
+                            reader.finalizeSeProcessing()
                         }
 
                         ReaderEvent.EventType.SE_INSERTED -> {
                             addResultEvent("PO detected but AID didn't match with ${CalypsoClassicInfo.AID}")
-                            (reader as ProxyReader).transmitSeRequest(null, ChannelControl.CLOSE_AFTER)
+                            reader.finalizeSeProcessing()
                         }
 
                         ReaderEvent.EventType.SE_REMOVED -> {

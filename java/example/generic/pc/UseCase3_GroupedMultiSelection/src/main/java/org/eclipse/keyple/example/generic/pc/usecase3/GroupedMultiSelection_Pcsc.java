@@ -53,7 +53,6 @@ public class GroupedMultiSelection_Pcsc {
         // Check if a SE is present in the reader
         if (seReader.isSePresent()) {
 
-            // CLOSE_AFTER to force selection of all applications
             SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.PROCESS_ALL);
 
             // operate SE selection (change the AID here to adapt it to the SE used for the test)
@@ -89,7 +88,7 @@ public class GroupedMultiSelection_Pcsc {
                             .build())
                     .build()));
 
-            // close the channel after the selection
+            // close the channel after the selection to force the selection of all applications
             seSelection.prepareReleaseSeChannel();
 
             // Actual SE communication: operate through a single request the SE selection

@@ -83,18 +83,6 @@ public abstract class AbstractPlugin extends AbstractSeProxyComponent implements
             throws KeypleReaderIOException;
 
     /**
-     * Compare the name of the current ReaderPlugin to the name of the ReaderPlugin provided in
-     * argument
-     *
-     * @param plugin a {@link ReaderPlugin} object
-     * @return true if the names match (The method is needed for the SortedSet lists)
-     */
-    @Override
-    public final int compareTo(ReaderPlugin plugin) {
-        return this.getName().compareTo(plugin.getName());
-    }
-
-    /**
      * Gets a specific reader designated by its name in the current readers list
      *
      * @param name of the reader
