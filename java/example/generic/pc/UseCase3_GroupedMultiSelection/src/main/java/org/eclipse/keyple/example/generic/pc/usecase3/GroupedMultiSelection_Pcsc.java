@@ -19,7 +19,6 @@ import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
@@ -54,7 +53,6 @@ public class GroupedMultiSelection_Pcsc {
         // Check if a SE is present in the reader
         if (seReader.isSePresent()) {
 
-            // CLOSE_AFTER to force selection of all applications
             SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.PROCESS_ALL);
 
             // operate SE selection (change the AID here to adapt it to the SE used for the test)
@@ -90,7 +88,7 @@ public class GroupedMultiSelection_Pcsc {
                             .build())
                     .build()));
 
-            // close the channel after the selection
+            // close the channel after the selection to force the selection of all applications
             seSelection.prepareReleaseSeChannel();
 
             // Actual SE communication: operate through a single request the SE selection

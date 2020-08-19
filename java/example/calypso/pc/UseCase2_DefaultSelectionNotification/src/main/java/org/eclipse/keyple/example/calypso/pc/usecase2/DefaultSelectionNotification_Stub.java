@@ -31,8 +31,6 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
@@ -178,6 +176,7 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
     public void update(ReaderEvent event) {
         switch (event.getEventType()) {
             case SE_MATCHED:
+                boolean transactionComplete = false;
                 CalypsoPo calypsoPo = null;
                 SeReader poReader = null;
                 try {
@@ -234,6 +233,7 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
                     // Log the result
                     logger.info("EventLog file data: {}", eventLog);
 
+                    transactionComplete = true;
                 } catch (CalypsoPoTransactionException e) {
                     logger.error("CalypsoPoTransactionException: {}", e.getMessage());
                 } catch (CalypsoPoCommandException e) {
@@ -241,6 +241,18 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
                             e.getCommand(),
                             Integer.toHexString(e.getStatusCode() & 0xFFFF).toUpperCase(),
                             e.getMessage());
+                }
+                if (!transactionComplete) {
+                    // Informs the underlying layer of the end of the SE processing, in order to
+                    // manage the
+                    // removal sequence.
+                    try {
+                        ((ObservableReader) (event.getReader())).finalizeSeProcessing();
+                    } catch (KeypleReaderNotFoundException e) {
+                        logger.error("Reader not found! {}", e.getMessage());
+                    } catch (KeyplePluginNotFoundException e) {
+                        logger.error("Plugin not found! {}", e.getMessage());
+                    }
                 }
                 logger.info("= #### End of the Calypso PO processing.");
                 break;
@@ -253,21 +265,6 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
                 break;
             default:
                 break;
-        }
-
-        if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED
-                || event.getEventType() == ReaderEvent.EventType.SE_MATCHED) {
-            // Informs the underlying layer of the end of the SE processing, in order to manage the
-            // removal sequence.
-            try {
-                ((ProxyReader) SeProxyService.getInstance().getPlugin(event.getPluginName())
-                        .getReader(event.getReaderName())).transmitSeRequest(null,
-                                ChannelControl.CLOSE_AFTER);
-            } catch (KeypleReaderNotFoundException e) {
-                logger.error("Reader not found! {}", e.getMessage());
-            } catch (KeyplePluginNotFoundException e) {
-                logger.error("Plugin not found! {}", e.getMessage());
-            }
         }
     }
 

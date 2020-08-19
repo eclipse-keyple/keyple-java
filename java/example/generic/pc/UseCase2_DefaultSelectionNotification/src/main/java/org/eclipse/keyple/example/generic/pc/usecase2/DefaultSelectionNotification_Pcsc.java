@@ -23,8 +23,6 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.generic.GenericSeSelectionRequest;
@@ -138,9 +136,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
                 } catch (KeypleException e) {
                     logger.error("Exception: {}", e.getMessage());
                     try {
-                        ((ProxyReader) SeProxyService.getInstance().getPlugin(event.getPluginName())
-                                .getReader(event.getReaderName())).transmitSeRequest(null,
-                                        ChannelControl.CLOSE_AFTER);
+                        ((ObservableReader) (event.getReader())).finalizeSeProcessing();
                     } catch (KeypleReaderNotFoundException ex) {
                         logger.error("Reader not found exception: {}", ex.getMessage());
                     } catch (KeyplePluginNotFoundException ex) {
@@ -172,9 +168,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
             // Informs the underlying layer of the end of the SE processing, in order to manage the
             // removal sequence.
             try {
-                ((ProxyReader) SeProxyService.getInstance().getPlugin(event.getPluginName())
-                        .getReader(event.getReaderName())).transmitSeRequest(null,
-                                ChannelControl.CLOSE_AFTER);
+                ((ObservableReader) (event.getReader())).finalizeSeProcessing();
             } catch (KeypleReaderNotFoundException e) {
                 logger.error("Reader not found exception: {}", e.getMessage());
             } catch (KeyplePluginNotFoundException e) {
