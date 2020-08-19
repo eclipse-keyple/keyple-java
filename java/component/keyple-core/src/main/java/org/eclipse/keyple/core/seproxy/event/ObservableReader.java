@@ -179,7 +179,7 @@ public interface ObservableReader extends SeReader {
             NotificationMode notificationMode, PollingMode pollingMode);
 
     /**
-     * Termine le traitement du SE, en particulier <br>
+     * Terminates the processing of the SE, in particular after an interruption by exception<br>
      * Do nothing if the channel is already closed.<br>
      * Channel closing is nominally managed by using the CLOSE_AFTER flag during the last
      * transmission with the SE. However, there are cases where exchanges with the SE are
