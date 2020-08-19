@@ -13,7 +13,7 @@ package org.eclipse.keyple.plugin.android.omapi.simalliance
 
 import io.mockk.every
 import io.mockk.mockk
-import org.eclipse.keyple.core.seproxy.ChannelControl
+import org.eclipse.keyple.core.seproxy.message.ChannelControl
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
 import org.eclipse.keyple.core.seproxy.SeSelector
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException

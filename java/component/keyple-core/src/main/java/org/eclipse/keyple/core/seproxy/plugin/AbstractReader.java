@@ -12,10 +12,10 @@
 package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;

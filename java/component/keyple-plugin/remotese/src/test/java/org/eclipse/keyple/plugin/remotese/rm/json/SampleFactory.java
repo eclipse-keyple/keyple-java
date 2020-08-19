@@ -14,13 +14,13 @@ package org.eclipse.keyple.plugin.remotese.rm.json;
 
 import java.io.IOException;
 import java.util.*;
-import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
+import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 

@@ -12,8 +12,8 @@
 package org.eclipse.keyple.core.seproxy.event;
 
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 
 /**

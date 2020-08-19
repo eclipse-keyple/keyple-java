@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.android.omapi
 import io.mockk.MockKAnnotations
 import io.mockk.unmockkAll
 import java.io.IOException
-import org.eclipse.keyple.core.seproxy.ChannelControl
+import org.eclipse.keyple.core.seproxy.message.ChannelControl
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
 import org.eclipse.keyple.core.seproxy.SeSelector
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException

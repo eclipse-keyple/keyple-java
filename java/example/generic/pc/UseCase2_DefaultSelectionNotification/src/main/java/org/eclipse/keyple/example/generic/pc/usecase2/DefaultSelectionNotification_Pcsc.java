@@ -14,7 +14,6 @@ package org.eclipse.keyple.example.generic.pc.usecase2;
 
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
@@ -24,6 +23,7 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.example.common.ReaderUtilities;

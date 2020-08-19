@@ -29,12 +29,12 @@ import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionIlle
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoSessionAuthenticationException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoUnauthorizedKvcException;
 import org.eclipse.keyple.core.selection.SeResource;
-import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;

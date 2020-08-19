@@ -28,7 +28,7 @@ import org.eclipse.keyple.calypso.transaction.PoSelector.InvalidatedPo
 import org.eclipse.keyple.calypso.transaction.PoTransaction
 import org.eclipse.keyple.core.selection.SeResource
 import org.eclipse.keyple.core.selection.SeSelection
-import org.eclipse.keyple.core.seproxy.ChannelControl
+import org.eclipse.keyple.core.seproxy.message.ChannelControl
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
 import org.eclipse.keyple.core.seproxy.SeProxyService
 import org.eclipse.keyple.core.seproxy.SeReader

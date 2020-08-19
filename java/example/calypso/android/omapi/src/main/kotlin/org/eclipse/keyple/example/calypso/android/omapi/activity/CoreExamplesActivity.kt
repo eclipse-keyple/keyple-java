@@ -15,7 +15,7 @@ import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_core_examples.eventRecyclerView
 import kotlinx.android.synthetic.main.activity_core_examples.toolbar
 import org.eclipse.keyple.core.selection.SeSelection
-import org.eclipse.keyple.core.seproxy.ChannelControl
+import org.eclipse.keyple.core.seproxy.message.ChannelControl
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.SeSelector

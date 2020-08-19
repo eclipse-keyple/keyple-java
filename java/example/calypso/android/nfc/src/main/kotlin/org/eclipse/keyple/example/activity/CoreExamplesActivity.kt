@@ -23,7 +23,7 @@ import org.eclipse.keyple.core.command.AbstractApduCommandBuilder
 import org.eclipse.keyple.core.selection.AbstractMatchingSe
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest
 import org.eclipse.keyple.core.selection.SeSelection
-import org.eclipse.keyple.core.seproxy.ChannelControl
+import org.eclipse.keyple.core.seproxy.message.ChannelControl
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
 import org.eclipse.keyple.core.seproxy.SeProxyService
 import org.eclipse.keyple.core.seproxy.SeReader

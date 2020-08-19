@@ -24,6 +24,7 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;

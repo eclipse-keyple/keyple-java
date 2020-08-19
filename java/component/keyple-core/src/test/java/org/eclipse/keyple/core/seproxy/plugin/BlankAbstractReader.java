@@ -13,8 +13,8 @@ package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.List;
 import java.util.Map;
-import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
