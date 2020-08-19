@@ -13,7 +13,6 @@ package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.List;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
@@ -70,17 +69,6 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
      */
     public final String getPluginName() {
         return pluginName;
-    }
-
-    /**
-     * Compare the name of the current SeReader to the name of the SeReader provided in argument
-     *
-     * @param seReader a SeReader object
-     * @return 0 if the names match (The method is needed for the SortedSet lists)
-     */
-    @Override
-    public final int compareTo(SeReader seReader) {
-        return this.getName().compareTo(seReader.getName());
     }
 
     /**
