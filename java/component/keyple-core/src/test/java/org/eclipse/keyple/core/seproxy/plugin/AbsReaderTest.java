@@ -58,13 +58,6 @@ public class AbsReaderTest extends CoreBaseTest {
         Assert.assertEquals(READER_NAME, r.getName());
     }
 
-    @Test
-    public void testCompareTo() throws Exception {
-        AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
-        AbstractReader r2 = getSpy(PLUGIN_NAME, READER_NAME);
-        Assert.assertEquals(0, r.compareTo(r2));
-    }
-
     /*
      * TransmitSet "ts_"
      */
