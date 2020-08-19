@@ -16,8 +16,6 @@ import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.SamResourceManager;
 import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.seproxy.ChannelControl;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -73,8 +71,7 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
                     logger.info("{} Configure SeSelection", nodeId);
 
                     /* set default selection request */
-                    final SeSelection seSelection = new SeSelection(
-                            MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+                    final SeSelection seSelection = new SeSelection();
 
                     /*
                      * Setting of an AID based selection of a Calypso REV3 PO

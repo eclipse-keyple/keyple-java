@@ -104,8 +104,10 @@ class CoreExamplesActivity : ExamplesActivity() {
         addHeaderEvent("UseCase Generic #3: AID based grouped explicit multiple selection")
 
         /* CLOSE_AFTER in order to secure selection of all applications */
-        val seSelection = SeSelection(MultiSeRequestProcessing.PROCESS_ALL,
-                ChannelControl.CLOSE_AFTER)
+        val seSelection = SeSelection(MultiSeRequestProcessing.PROCESS_ALL)
+
+        /* Close the channel after the selection */
+        seSelection.prepareReleaseSeChannel()
 
         /* operate SE selection (change the AID here to adapt it to the SE used for the test) */
         val seAidPrefix = "A000000404012509"
@@ -188,8 +190,7 @@ class CoreExamplesActivity : ExamplesActivity() {
             readers.values.forEach { seReader: SeReader ->
                 if (seReader.isSePresent) {
 
-                    var seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
-                            ChannelControl.KEEP_OPEN)
+                    var seSelection = SeSelection()
 
                     /*
                      * AID based selection: get the first application occurrence matching the AID, keep the
@@ -210,8 +211,10 @@ class CoreExamplesActivity : ExamplesActivity() {
                      * New selection: get the next application occurrence matching the same AID, close the
                      * physical channel after
                      */
-                    seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
-                            ChannelControl.CLOSE_AFTER)
+                    seSelection = SeSelection()
+
+                    /* Close the channel after the selection */
+                    seSelection.prepareReleaseSeChannel()
 
                     seSelection.prepareSelection(GenericSeSelectionRequest(
                             SeSelector.builder()

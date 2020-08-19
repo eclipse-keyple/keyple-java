@@ -618,8 +618,7 @@ public class StubReaderTest extends BaseStubTest {
 
                 Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
 
-                SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
-                        ChannelControl.KEEP_OPEN);
+                SeSelection seSelection = new SeSelection();
 
                 PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
                         PoSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME)

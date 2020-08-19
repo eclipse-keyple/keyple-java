@@ -165,7 +165,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
             val seAidPrefix = CalypsoClassicInfo.AID_PREFIX
 
             /* First selection case */
-            seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+            seSelection = SeSelection()
 
             /* AID based selection (1st selection, later indexed 0) */
             val selectionRequest1st = PoSelectionRequest(PoSelector.builder().seProtocol(
@@ -184,7 +184,10 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
               * New selection: get the next application occurrence matching the same AID, close the
               * physical channel after
               */
-            seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER)
+            seSelection = SeSelection()
+
+            /* Close the channel after the selection */
+            seSelection.prepareReleaseSeChannel()
 
             val selectionRequest2nd = PoSelectionRequest(PoSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4).aidSelector(
                     AidSelector.builder().aidToSelect(seAidPrefix).fileOccurrence(
@@ -224,10 +227,13 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
         addHeaderEvent("SE Reader  NAME = ${reader.name}")
 
         /* CLOSE_AFTER to force selection of all applications*/
-        seSelection = SeSelection(MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER)
+        seSelection = SeSelection(MultiSeRequestProcessing.PROCESS_ALL)
 
         /* operate SE selection (change the AID here to adapt it to the SE used for the test) */
         val seAidPrefix = CalypsoClassicInfo.AID_PREFIX
+
+        /* Close the channel after the selection */
+        seSelection.prepareReleaseSeChannel()
 
         useCase = null
 
@@ -386,7 +392,10 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
         /*
         * Prepare a a new Calypso PO selection
         */
-        seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER)
+        seSelection = SeSelection()
+
+        /* Close the channel after the selection */
+        seSelection.prepareReleaseSeChannel()
 
         val aid = CalypsoClassicInfo.AID
 
