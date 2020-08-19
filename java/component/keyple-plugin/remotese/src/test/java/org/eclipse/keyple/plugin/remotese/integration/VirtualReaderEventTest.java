@@ -394,7 +394,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         nativeReader.insertSe(hoplinkSE());
 
         logger.info("Prepare SE Selection");
-        SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH);
+        SeSelection seSelection = new SeSelection();
         GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
                 SeSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
                         .atrFilter(new SeSelector.AtrFilter("3B.*")).build());
@@ -433,7 +433,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
                 Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
                 logger.info("Prepare SE Selection");
-                SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH);
+                SeSelection seSelection = new SeSelection();
                 GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
                         SeSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
                                 .atrFilter(new SeSelector.AtrFilter("3B.*")).build());

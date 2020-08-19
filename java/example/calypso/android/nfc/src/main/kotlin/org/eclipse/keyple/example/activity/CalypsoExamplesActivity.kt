@@ -165,7 +165,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
             val seAidPrefix = CalypsoClassicInfo.AID_PREFIX
 
             /* First selection case */
-            seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH)
+            seSelection = SeSelection()
 
             /* AID based selection (1st selection, later indexed 0) */
             val selectionRequest1st = PoSelectionRequest(PoSelector.builder().seProtocol(
@@ -184,7 +184,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
               * New selection: get the next application occurrence matching the same AID, close the
               * physical channel after
               */
-            seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH)
+            seSelection = SeSelection()
 
             /* Close the channel after the selection */
             seSelection.prepareReleaseSeChannel()
@@ -392,7 +392,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
         /*
         * Prepare a a new Calypso PO selection
         */
-        seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH)
+        seSelection = SeSelection()
 
         /* Close the channel after the selection */
         seSelection.prepareReleaseSeChannel()

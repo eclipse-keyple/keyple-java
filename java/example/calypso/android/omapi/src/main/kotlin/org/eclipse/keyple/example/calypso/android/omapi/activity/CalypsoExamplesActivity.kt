@@ -178,7 +178,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                     /*
                      * Prepare a Calypso PO selection
                      */
-                    val seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH)
+                    val seSelection = SeSelection()
 
                     /*
                      * Setting of an AID based selection of a Calypso REV3 PO

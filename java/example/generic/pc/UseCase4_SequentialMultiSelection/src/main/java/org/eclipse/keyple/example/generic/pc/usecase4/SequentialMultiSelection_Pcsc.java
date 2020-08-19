@@ -79,7 +79,7 @@ public class SequentialMultiSelection_Pcsc {
             String seAidPrefix = "315449432E494341";
 
             // First selection case
-            seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH);
+            seSelection = new SeSelection();
 
             // AID based selection: get the first application occurrence matching the AID, keep the
             // physical channel open
@@ -97,7 +97,7 @@ public class SequentialMultiSelection_Pcsc {
 
             // New selection: get the next application occurrence matching the same AID, close the
             // physical channel after
-            seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH);
+            seSelection = new SeSelection();
 
             seSelection.prepareSelection(new GenericSeSelectionRequest(SeSelector.builder()
                     .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)

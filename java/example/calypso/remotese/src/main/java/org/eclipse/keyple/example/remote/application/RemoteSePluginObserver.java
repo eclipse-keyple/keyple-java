@@ -73,7 +73,7 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
 
                     /* set default selection request */
                     final SeSelection seSelection =
-                            new SeSelection(MultiSeRequestProcessing.FIRST_MATCH);
+                            new SeSelection();
 
                     /*
                      * Setting of an AID based selection of a Calypso REV3 PO

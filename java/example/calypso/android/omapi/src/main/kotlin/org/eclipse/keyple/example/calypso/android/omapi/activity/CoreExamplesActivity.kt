@@ -190,7 +190,7 @@ class CoreExamplesActivity : ExamplesActivity() {
             readers.values.forEach { seReader: SeReader ->
                 if (seReader.isSePresent) {
 
-                    var seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH)
+                    var seSelection = SeSelection()
 
                     /*
                      * AID based selection: get the first application occurrence matching the AID, keep the
@@ -211,7 +211,7 @@ class CoreExamplesActivity : ExamplesActivity() {
                      * New selection: get the next application occurrence matching the same AID, close the
                      * physical channel after
                      */
-                    seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH)
+                    seSelection = SeSelection()
 
                     /* Close the channel after the selection */
                     seSelection.prepareReleaseSeChannel()
