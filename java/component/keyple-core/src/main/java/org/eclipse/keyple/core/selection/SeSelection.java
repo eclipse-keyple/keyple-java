@@ -81,7 +81,7 @@ public final class SeSelection {
 
     /**
      * Prepare to close the SE channel.<br>
-     * If this command is called before a "process" selection command then the last tranpmission to
+     * If this command is called before a "process" selection command then the last transmission to
      * the PO will be associated with the indication CLOSE_AFTER in order to close the SE
      * channel.<br>
      * This makes it possible to chain several selections on the same SE if necessary.
