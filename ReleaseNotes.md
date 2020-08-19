@@ -17,6 +17,11 @@ Releases:
  - [keyple-android-plugin-android-omapi 0.9a](#keyple-android-plugin-android-omapi-09a)
 
 ### keyple-java-core 0.9a
+* KEYP-320 : ReaderPlugin and SeReader no longer implement the Comparable interface
+* KEYP-319 : added a method finalizeSeProcessing to ObservableReader to handle abnormal transaction terminations
+* KEYP-318 : added a direct access to the plugin and reader that generated a ReaderEvent
+* KEYP-317 : changed ChannelControl access
+* KEYP-316 : added a new method (prepareReleaseSeChannel) to control the channel during selection
 * KEYP-314 : reviewed the channel control management: notifySeProcessed is removed
 * KEYP-312 : restricting access to methods of the reader API that are not used by the plugins.
 * KEYP-108, 213 : improved plugin lifecycle management (SeProxyService, PluginFactory)
