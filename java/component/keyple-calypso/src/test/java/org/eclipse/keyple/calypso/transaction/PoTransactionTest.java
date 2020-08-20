@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import org.eclipse.keyple.calypso.SelectFileControl;
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoAtomicTransactionException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoAuthenticationNotVerifiedException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoCloseSecureSessionException;
@@ -87,6 +88,7 @@ public class PoTransactionTest {
     private static final byte FILE11 = (byte) 0x11;
 
     private static final String SW1SW2_OK = "9000";
+    private static final String SW1SW2_KO = "6700";
     private static final String SAM_CHALLENGE = "C1C2C3C4";
     private static final String PO_CHALLENGE = "C1C2C3C4C5C6C7C8";
     private static final String PO_DIVERSIFIER = "0000000011223344";
@@ -761,7 +763,7 @@ public class PoTransactionTest {
                 .isEqualTo(ByteArrayUtil.fromHex(FILE9_REC1_4B));
     }
 
-    /* processClosing - PO fail on closing */
+    /* processClosing - PO fail on closing #1 Close Session is failing */
     @Test(expected = CalypsoPoCloseSecureSessionException.class)
     public void testProcessClosing_poCloseFail() {
         CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
@@ -781,10 +783,12 @@ public class PoTransactionTest {
 
         samCommandsTestSet.put(SAM_DIGEST_UPDATE_READ_REC_SFI7_REC1_CMD, SW1SW2_OK_RSP);
         samCommandsTestSet.put(SAM_DIGEST_UPDATE_RSP_OK_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_APPEND_REC_SFI9_REC1_4B_CMD, SW1SW2_OK_RSP);
         samCommandsTestSet.put(SAM_DIGEST_CLOSE_CMD, SAM_DIGEST_CLOSE_RSP);
 
         poCommandsTestSet.put(PO_OPEN_SECURE_SESSION_CMD, PO_OPEN_SECURE_SESSION_RSP);
         poCommandsTestSet.put(PO_READ_REC_SFI7_REC1_CMD, PO_READ_REC_SFI7_REC1_RSP);
+        poCommandsTestSet.put(PO_APPEND_REC_SFI9_REC1_4B_CMD, SW1SW2_OK_RSP);
         poCommandsTestSet.put(PO_CLOSE_SECURE_SESSION_CMD, PO_CLOSE_SECURE_SESSION_FAILED_RSP);
 
         poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
@@ -792,8 +796,48 @@ public class PoTransactionTest {
         poTransaction.prepareReadRecordFile(FILE7, 1);
 
         // PoTransaction after a session is open
-        // should raise a CalypsoPoCloseSecureSessionException
+        // should raise a CalypsoPoCloseSecureSessionException due to the Close Session failure
         poTransaction.prepareReleasePoChannel();
+        poTransaction.prepareAppendRecord(FILE9, ByteArrayUtil.fromHex(FILE9_REC1_4B));
+        poTransaction.processClosing();
+    }
+
+    /* processClosing - PO fail on closing #2 Command is failing */
+    @Test(expected = CalypsoPoCommandException.class)
+    public void testProcessClosing_poCommandFail() {
+        CalypsoPo calypsoPoRev31 = createCalypsoPo(FCI_REV31);
+        PoSecuritySettings poSecuritySettings =
+                new PoSecuritySettings.PoSecuritySettingsBuilder(samResource) //
+                        .sessionDefaultKif(AccessLevel.SESSION_LVL_DEBIT, DEFAULT_KIF_DEBIT) //
+                        .sessionDefaultKeyRecordNumber(AccessLevel.SESSION_LVL_DEBIT,
+                                DEFAULT_KEY_RECORD_NUMBER_DEBIT)
+                        .build();
+
+        poTransaction = new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPoRev31),
+                poSecuritySettings);
+
+        samCommandsTestSet.put(SAM_SELECT_DIVERSIFIER_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_GET_CHALLENGE_CMD, SAM_GET_CHALLENGE_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_INIT_OPEN_SECURE_SESSION_CMD, SW1SW2_OK_RSP);
+
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_READ_REC_SFI7_REC1_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_RSP_OK_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_UPDATE_APPEND_REC_SFI9_REC1_4B_CMD, SW1SW2_OK_RSP);
+        samCommandsTestSet.put(SAM_DIGEST_CLOSE_CMD, SAM_DIGEST_CLOSE_RSP);
+
+        poCommandsTestSet.put(PO_OPEN_SECURE_SESSION_CMD, PO_OPEN_SECURE_SESSION_RSP);
+        poCommandsTestSet.put(PO_READ_REC_SFI7_REC1_CMD, PO_READ_REC_SFI7_REC1_RSP);
+        poCommandsTestSet.put(PO_APPEND_REC_SFI9_REC1_4B_CMD, SW1SW2_KO);
+        poCommandsTestSet.put(PO_CLOSE_SECURE_SESSION_CMD, PO_CLOSE_SECURE_SESSION_RSP);
+
+        poTransaction.processOpening(AccessLevel.SESSION_LVL_DEBIT);
+
+        poTransaction.prepareReadRecordFile(FILE7, 1);
+
+        // PoTransaction after a session is open
+        // should raise a CalypsoPoCommandException due to the append record failure
+        poTransaction.prepareReleasePoChannel();
+        poTransaction.prepareAppendRecord(FILE9, ByteArrayUtil.fromHex(FILE9_REC1_4B));
         poTransaction.processClosing();
     }
 

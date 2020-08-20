@@ -22,6 +22,7 @@ import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.builder.*;
 import org.eclipse.keyple.calypso.command.po.builder.security.AbstractOpenSessionCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.security.CloseSessionCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.security.PoGetChallengeCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.security.VerifyPinCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.storedvalue.SvGetCmdBuild;
@@ -35,6 +36,7 @@ import org.eclipse.keyple.calypso.command.po.parser.SelectFileRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.UpdateRecordRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.WriteRecordRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.AbstractOpenSessionRespPars;
+import org.eclipse.keyple.calypso.command.po.parser.security.CloseSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.PoGetChallengeRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.VerifyPinRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.storedvalue.SvGetRespPars;
@@ -123,7 +125,7 @@ final class CalypsoPoUtils {
     }
 
     /**
-     * Updated the {@link CalypsoPo} object with the response to a Open Secure Session command
+     * Updates the {@link CalypsoPo} object with the response to a Open Secure Session command
      * received from the PO <br>
      * The ratification status and the data read at the time of the session opening are added to the
      * CalypsoPo.
@@ -153,7 +155,26 @@ final class CalypsoPoUtils {
     }
 
     /**
-     * Updated the {@link CalypsoPo} object with the response to a Read Records command received
+     * Checks the response to a Close Session command
+     *
+     * @param calypsoPo the {@link CalypsoPo} object to update
+     * @param closeSessionCmdBuild the Close Session command builder
+     * @param apduResponse the response received
+     * @return the created response parser
+     * @throws CalypsoPoCommandException if a response from the PO was unexpected
+     */
+    private static CloseSessionRespPars updateCalypsoPoCloseSession(CalypsoPo calypsoPo,
+            CloseSessionCmdBuild closeSessionCmdBuild, ApduResponse apduResponse) {
+        CloseSessionRespPars closeSessionRespPars =
+                closeSessionCmdBuild.createResponseParser(apduResponse);
+
+        closeSessionRespPars.checkStatus();
+
+        return closeSessionRespPars;
+    }
+
+    /**
+     * Updates the {@link CalypsoPo} object with the response to a Read Records command received
      * from the PO <br>
      * The records read are added to the {@link CalypsoPo} file structure
      *
@@ -180,7 +201,7 @@ final class CalypsoPoUtils {
     }
 
     /**
-     * Updated the {@link CalypsoPo} object with the response to a Select File command received from
+     * Updates the {@link CalypsoPo} object with the response to a Select File command received from
      * the PO <br>
      * Depending on the content of the response, either a {@link FileHeader} is added or the
      * {@link DirectoryHeader} is updated
@@ -218,7 +239,7 @@ final class CalypsoPoUtils {
     }
 
     /**
-     * Updated the {@link CalypsoPo} object with the response to a Update Record command sent and
+     * Updates the {@link CalypsoPo} object with the response to a Update Record command sent and
      * received from the PO <br>
      * The records read are added to the {@link CalypsoPo} file structure
      *
@@ -241,7 +262,7 @@ final class CalypsoPoUtils {
     }
 
     /**
-     * Updated the {@link CalypsoPo} object with the response to a Write Record command sent and
+     * Updates the {@link CalypsoPo} object with the response to a Write Record command sent and
      * received from the PO <br>
      * The records read are added to the {@link CalypsoPo} file structure using the dedicated
      * {@link CalypsoPo#fillContent } method.
@@ -265,7 +286,7 @@ final class CalypsoPoUtils {
     }
 
     /**
-     * Updated the {@link CalypsoPo} object with the response to a Read Records command received
+     * Updates the {@link CalypsoPo} object with the response to a Read Records command received
      * from the PO <br>
      * The records read are added to the {@link CalypsoPo} file structure
      *
@@ -288,7 +309,7 @@ final class CalypsoPoUtils {
     }
 
     /**
-     * Updated the {@link CalypsoPo} object with the response to a Decrease command received from
+     * Updates the {@link CalypsoPo} object with the response to a Decrease command received from
      * the PO <br>
      * The counter value is updated in the {@link CalypsoPo} file structure
      *
@@ -310,7 +331,7 @@ final class CalypsoPoUtils {
     }
 
     /**
-     * Updated the {@link CalypsoPo} object with the response to an Increase command received from
+     * Updates the {@link CalypsoPo} object with the response to an Increase command received from
      * the PO <br>
      * The counter value is updated in the {@link CalypsoPo} file structure
      *
@@ -353,7 +374,7 @@ final class CalypsoPoUtils {
     }
 
     /**
-     * Updated the {@link CalypsoPo} object with the response to an Verify Pin command received from
+     * Updates the {@link CalypsoPo} object with the response to an Verify Pin command received from
      * the PO <br>
      * The PIN attempt counter value is stored in the {@link CalypsoPo}<br>
      * CalypsoPoPinException are filtered when the initial command targets the reading of the
@@ -385,7 +406,7 @@ final class CalypsoPoUtils {
     }
 
     /**
-     * Updated the {@link CalypsoPo} object with the response to an SV Get command received from the
+     * Updates the {@link CalypsoPo} object with the response to an SV Get command received from the
      * PO <br>
      * The SV Data values (KVC, command header, response data) are stored in {@link CalypsoPoUtils}
      * and made available through a dedicated getters for later use<br>
@@ -613,6 +634,9 @@ final class CalypsoPoUtils {
             case OPEN_SESSION_32:
                 return updateCalypsoPoOpenSession(calypsoPo,
                         (AbstractOpenSessionCmdBuild) commandBuilder, apduResponse);
+            case CLOSE_SESSION:
+                return updateCalypsoPoCloseSession(calypsoPo, (CloseSessionCmdBuild) commandBuilder,
+                        apduResponse);
             case GET_CHALLENGE:
                 return updateCalypsoPoGetChallenge((PoGetChallengeCmdBuild) commandBuilder,
                         apduResponse);
