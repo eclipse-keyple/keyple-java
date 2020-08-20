@@ -41,6 +41,7 @@ import org.eclipse.keyple.calypso.command.po.builder.storedvalue.SvReloadCmdBuil
 import org.eclipse.keyple.calypso.command.po.builder.storedvalue.SvUndebitCmdBuild;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoPinException;
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoSecurityDataException;
 import org.eclipse.keyple.calypso.command.po.parser.security.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.CloseSessionRespPars;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException;
@@ -116,7 +117,7 @@ public class PoTransaction {
      * <li>Logical channels with PO &amp; SAM could already be established or not.</li>
      * <li>A list of SAM parameters is provided as en EnumMap.</li>
      * </ul>
-     * 
+     *
      * @param poResource the PO resource (combination of {@link SeReader} and {@link CalypsoPo})
      * @param poSecuritySettings a list of security settings ({@link PoSecuritySettings}) used in
      */
@@ -404,7 +405,7 @@ public class PoTransaction {
      *
      * The method is marked as deprecated because the advanced variant defined below must be used at
      * the application level.
-     * 
+     *
      * @param poModificationCommands a list of commands that can modify the PO memory content
      * @param poAnticipatedResponses a list of anticipated PO responses to the modification commands
      * @param ratificationMode the ratification mode tells if the session is closed ratified or not
@@ -487,16 +488,21 @@ public class PoTransaction {
 
         List<ApduResponse> poApduResponses = poSeResponse.getApduResponses();
 
-        // before last if ratification, otherwise last one
-        CloseSessionRespPars poCloseSessionPars =
-                closeSessionCmdBuild.createResponseParser(poApduResponses.get(closeCommandIndex));
+        // Check the commands executed before closing the secure session (only responses to these
+        // commands
+        // will be taken into account)
+        CalypsoPoUtils.updateCalypsoPo(calypsoPo, poModificationCommands, poApduResponses);
+
+        // Check the PO's response to Close Secure Session
+        CloseSessionRespPars poCloseSessionPars;
         try {
-            poCloseSessionPars.checkStatus();
-        } catch (CalypsoPoCommandException ex) {
-            throw new CalypsoPoCloseSecureSessionException(
-                    "Close Secure Session failed on PO side.", ex);
+            poCloseSessionPars = (CloseSessionRespPars) CalypsoPoUtils.updateCalypsoPo(calypsoPo,
+                    closeSessionCmdBuild, poApduResponses.get(closeCommandIndex));
+        } catch (CalypsoPoSecurityDataException ex) {
+            throw new CalypsoPoCloseSecureSessionException("Invalid PO session", ex);
         }
 
+        // Check the PO signature
         try {
             samCommandProcessor.authenticatePoSignature(poCloseSessionPars.getSignatureLo());
         } catch (CalypsoSamIOException ex) {
@@ -515,16 +521,14 @@ public class PoTransaction {
         sessionState = SessionState.SESSION_CLOSED;
 
         if (ratificationCommandResponseReceived) { // NOSONAR: boolean change in catch
-                                                   // is not taken into account by
-                                                   // Sonar
+            // is not taken into account by
+            // Sonar
             // Remove the ratification response
             poApduResponses.remove(poApduResponses.size() - 1);
         }
 
         // Remove Close Secure Session response and create a new SeResponse
         poApduResponses.remove(poApduResponses.size() - 1);
-
-        CalypsoPoUtils.updateCalypsoPo(calypsoPo, poModificationCommands, poApduResponses);
     }
 
     /**
@@ -678,7 +682,7 @@ public class PoTransaction {
 
     /**
      * Gets the value of the designated counter
-     * 
+     *
      * @param sfi the SFI of the EF containing the counter
      * @param counter the number of the counter
      * @return the value of the counter
@@ -696,7 +700,7 @@ public class PoTransaction {
 
     /**
      * Create an anticipated response to an Increase/Decrease command
-     * 
+     *
      * @param newCounterValue the anticipated counter value
      * @return an {@link ApduResponse} containing the expected bytes
      */
@@ -720,7 +724,7 @@ public class PoTransaction {
      * Get the anticipated response to the command sent in processClosing.<br>
      * These commands are supposed to be "modifying commands" i.e.
      * Increase/Decrease/UpdateRecord/WriteRecord ou AppendRecord.
-     * 
+     *
      * @param poCommands the list of PO commands sent
      * @return the list of the anticipated responses.
      * @throws CalypsoPoTransactionIllegalStateException if the anticipation process failed
@@ -972,7 +976,7 @@ public class PoTransaction {
      * Session command. On the contrary, if the communication mode is CONTACTS, no ratification
      * command will be sent to the PO and ratification will be requested in the Close Session
      * command
-     * 
+     *
      * @throws CalypsoPoTransactionException if a functional error occurs (including PO and SAM IO
      *         errors)
      * @throws CalypsoPoCommandException if a response from the PO was unexpected
@@ -1061,7 +1065,7 @@ public class PoTransaction {
      * Send the appropriate command to the PO
      * <p>
      * Clean up internal data and status.
-     * 
+     *
      * @throws CalypsoPoTransactionException if a functional error occurs (including PO and SAM IO
      *         errors)
      * @throws CalypsoPoCommandException if a response from the PO was unexpected
@@ -1159,7 +1163,7 @@ public class PoTransaction {
     /**
      * ProcessVerifyPin variant with the PIN supplied as an ASCII string.<br>
      * E.g. "1234" will be transmited as { 0x31,032,0x33,0x34 }
-     * 
+     *
      * @param pin an ASCII string (4-character long)
      */
     public final void processVerifyPin(String pin) {
@@ -1176,7 +1180,7 @@ public class PoTransaction {
 
     /**
      * Checks if a Secure Session is open, raises an exception if not
-     * 
+     *
      * @throws CalypsoPoTransactionIllegalStateException if no session is open
      */
     private void checkSessionIsOpen() {
@@ -1202,7 +1206,7 @@ public class PoTransaction {
     /**
      * Checks if the number of responses matches the number of commands.<br>
      * Throw a {@link CalypsoDesynchronizedExchangesException} if not.
-     * 
+     *
      * @param commandsNumber the number of commands
      * @param responsesNumber the number of responses
      * @throws CalypsoDesynchronizedExchangesException if the test failed
@@ -1221,7 +1225,7 @@ public class PoTransaction {
      * Returns false if the command does not affect the session buffer.<br>
      * Sets the overflow flag and the neededSessionBufferSpace value according to the
      * characteristics of the command in other cases.
-     * 
+     *
      * @param builder the command builder
      * @param overflow flag set to true if the command overflowed the buffer
      * @param neededSessionBufferSpace updated with the size of the buffer consumed by the command
@@ -1260,7 +1264,7 @@ public class PoTransaction {
      * If it is compatible, the requirement is subtracted from the current level and the method
      * returns false. If this is not the case, the method returns true and the current level is left
      * unchanged.
-     * 
+     *
      * @param sessionBufferSizeConsumed session buffer requirement
      * @return true or false
      */
@@ -1538,9 +1542,9 @@ public class PoTransaction {
      * Builds a VerifyPin command without PIN presentation in order to get the attempt counter.<br>
      * The PIN status will made available in CalypsoPo after the execution of process command.<br>
      * Adds it to the list of commands to be sent with the next process command.
-     * 
+     *
      * See {@link CalypsoPo#isPinBlocked} and {@link CalypsoPo#getPinAttemptRemaining} methods.
-     * 
+     *
      * @throws CalypsoPoTransactionIllegalStateException if the PIN feature is not available for
      *         this PO.
      */
@@ -1752,7 +1756,7 @@ public class PoTransaction {
      * Prepare the invalidation of the PO<br>
      * This command is usually executed within a secure session with the SESSION_LVL_DEBIT key
      * (depends on the access rights given to this command in the file structure of the PO).
-     * 
+     *
      * @throws CalypsoPoTransactionIllegalStateException if the PO is already invalidated
      */
     public final void prepareInvalidate() {
@@ -1766,7 +1770,7 @@ public class PoTransaction {
      * Prepare the rehabilitation of the PO<br>
      * This command is usually executed within a secure session with the SESSION_LVL_PERSO key
      * (depends on the access rights given to this command in the file structure of the PO).
-     * 
+     *
      * @throws CalypsoPoTransactionIllegalStateException if the PO is not invalidated
      */
     public final void prepareRehabilitate() {
