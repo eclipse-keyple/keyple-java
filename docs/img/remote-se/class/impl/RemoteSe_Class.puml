@@ -1,6 +1,6 @@
 @startuml
 title
-    Keyple Plugin Remote SE (14/08/2020)
+    Keyple Plugin Remote SE (19/08/2020)
 end title
 
 ' == THEME ==
@@ -62,6 +62,18 @@ package org.eclipse.keyple.core.seproxy {
         +interface ObservableReader extends SeReader {
         }
         +interface ReaderObserver {
+        }
+    }
+
+    package message {
+        +interface ProxyReader extends SeReader {
+        }
+    }
+
+    package plugin {
+        +abstract AbstractReader implements ProxyReader {
+        }
+        +interface ObservableReaderNotifier extends ObservableReader {
         }
     }
 }
@@ -331,25 +343,36 @@ package org.eclipse.keyple.plugin.remotese {
                 ~ RemoteSeClientPluginImpl (String name,\n ServerPushEventStrategy readerObservationStrategy)
             }
             ' Virtual Readers
-            ~abstract "<< <back:#D0ECE7>SeReader</back> >>\nAbstractVirtualReader" as AbstractVirtualReader {
-                ~ AbstractVirtualReader (String name,\n AbstractKeypleNode node)
-                ~ void onMessage (KeypleMessageDto msg)
+            ~abstract "<< <back:#D0ECE7>AbstractReader</back> >>\nAbstractVirtualReader" as AbstractVirtualReader {
+                # String nativeReaderName
+                - String sessionId
+                __
+                ~ AbstractVirtualReader (String pluginName,\n String name,\n String nativeReaderName,\n AbstractKeypleNode node,\n String sessionId)
+                ..
+                ~ String getSessionId ()
+                ~ void setSessionId (String sessionId)
             }
             ~class "**final** VirtualReader" as VirtualReader extends AbstractVirtualReader {
-                ~ VirtualReader (String name,\n AbstractKeypleNode node)
+                ~ VirtualReader (String name,\n AbstractKeypleNode node,\n String sessionId)
             }
-            ~class "<< <back:#FDEBD0>ObservableReader</back> >>\n**final** VirtualObservableReader" as VirtualObservableReader extends AbstractVirtualReader {
-                ~ VirtualObservableReader (String name,\n AbstractKeypleNode node)
+            ~class "<< <back:#FDEBD0>ObservableReaderNotifier</back> >>\n**final** VirtualObservableReader" as VirtualObservableReader extends AbstractVirtualReader {
+                __
+                ~ VirtualObservableReader (String name,\n AbstractKeypleNode node,\n String sessionId)
+                ..
+                ~ void onEvent (KeypleMessageDto msg)
             }
             ' Server Readers
-            ~abstract AbstractServerVirtualReader implements RemoteSeServerReader {
-                ~ AbstractServerVirtualReader (\n AbstractVirtualReader reader,\n String serviceId,\n String clientNodeId,\n AbstractMatchingSe matchingSe,\n Object userInputData)
+            ~abstract "<< <back:#D0ECE7>ProxyReader</back> >>\nAbstractServerVirtualReader" as AbstractServerVirtualReader implements RemoteSeServerReader {
+                ~ AbstractServerVirtualReader (\n AbstractVirtualReader reader,\n String serviceId,\n AbstractMatchingSe matchingSe,\n Object userInputData)
             }
             ~class "**final** ServerVirtualReader" as ServerVirtualReader extends AbstractServerVirtualReader {
-                ~ ServerVirtualReader (\n AbstractVirtualReader reader,\n String serviceId,\n String clientNodeId,\n AbstractMatchingSe matchingSe,\n Object userInputData)
+                ~ ServerVirtualReader (\n AbstractVirtualReader reader,\n String serviceId,\n AbstractMatchingSe matchingSe,\n Object userInputData)
             }
-            ~class "**final** ServerVirtualObservableReader" as ServerVirtualObservableReader extends AbstractServerVirtualReader implements RemoteSeServerObservableReader {
-                ~ ServerVirtualObservableReader (\n AbstractVirtualReader reader,\n String serviceId,\n String clientNodeId,\n AbstractMatchingSe matchingSe,\n Object userInputData)
+            ~class "<< <back:#FDEBD0>ObservableReaderNotifier</back> >>\n**final** ServerVirtualObservableReader" as ServerVirtualObservableReader extends AbstractServerVirtualReader implements RemoteSeServerObservableReader {
+                __
+                ~ ServerVirtualObservableReader (\n AbstractVirtualReader reader,\n String serviceId,\n AbstractMatchingSe matchingSe,\n Object userInputData)
+                ..
+                ~ void onEvent (KeypleMessageDto msg)
             }
 
         }
@@ -377,7 +400,7 @@ ServerPushEventStrategy *-right-> "type" Type #C_LINK
 
 ' == LAYOUT ==
 
-ObservableReader -[hidden]- AbstractKeypleMessageHandler
+ObservableReaderNotifier -[hidden]- AbstractKeypleMessageHandler
 KeypleServerSyncNodeImpl -[hidden]- KeypleMessageDto
 KeypleMessageDto -[hidden]- KeypleClientReaderEventFilter
 KeypleClientReaderEventFilter -[hidden]- NativeSeClientService
@@ -410,8 +433,11 @@ abstract PluginFactory <<grey>> #F5B7B1
 interface ReaderPlugin <<grey>> #D2B4DE
 interface ReaderPoolPlugin <<grey>> #AED6F1
 interface SeReader <<grey>> #D0ECE7
+interface ProxyReader <<grey>> #D0ECE7
+abstract AbstractReader <<grey>> #D0ECE7
 interface ObservablePlugin <<grey>> #82E0AA
 interface ObservableReader <<grey>> #FDEBD0
+interface ObservableReaderNotifier <<grey>> #FDEBD0
 interface ReaderObserver <<grey>> #E59866
 
 abstract AbstractKeypleMessageHandler <<blue>>

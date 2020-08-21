@@ -11,73 +11,286 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
-import org.eclipse.keyple.core.seproxy.PluginFactory;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
+import static org.mockito.Mockito.doThrow;
+import java.util.List;
+import org.assertj.core.util.Lists;
+import org.eclipse.keyple.core.seproxy.*;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
+import org.eclipse.keyple.core.seproxy.message.SeRequest;
+import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.util.json.KeypleJsonParser;
+import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AbstractNativeSeServiceTest {
-
+public class AbstractNativeSeServiceTest extends BaseNativeSeTest {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractNativeSeServiceTest.class);
 
+    final String pluginName = "pluginName";
 
-    /**
-     * Find local reader among plugin no plugin
-     * 
-     * @throws Exception
-     */
+    final SeResponse seResponse;
+    final List<SeResponse> seResponses;
+    final KeypleReaderIOException keypleReaderIOException;
+    final KeypleReaderIOException keypleReaderIOExceptionWithSeResponse;
+    final KeypleReaderIOException keypleReaderIOExceptionWithSeResponses;
+
+    AbstractNativeSeService service;
+
+    {
+        seResponse = getASeResponse();
+        seResponses = Lists.newArrayList(seResponse);
+
+        keypleReaderIOException = new KeypleReaderIOException("io exception test");
+        keypleReaderIOException.setSeResponse(seResponse);
+        keypleReaderIOException.setSeResponses(seResponses);
+
+        keypleReaderIOExceptionWithSeResponse =
+                new KeypleReaderIOException("io exception test with SeResponse");
+        keypleReaderIOExceptionWithSeResponse.setSeResponse(seResponse);
+
+        keypleReaderIOExceptionWithSeResponses =
+                new KeypleReaderIOException("io exception test with SeResponses");
+        keypleReaderIOExceptionWithSeResponses.setSeResponses(seResponses);
+    }
+
+    @Before
+    public void setUp() {
+
+        init();
+
+        // Service
+        service = Mockito.spy(AbstractNativeSeService.class);
+
+        // Plugin factory
+        PluginFactory pluginFactoryMocked = Mockito.mock(PluginFactory.class);
+        ReaderPlugin pluginMocked = Mockito.mock(ReaderPlugin.class);
+        // ProxyReader mockReader = Mockito.mock(ProxyReader.class);
+        doReturn(pluginMocked).when(pluginFactoryMocked).getPlugin();
+        doReturn(pluginName).when(pluginFactoryMocked).getPluginName();
+        doReturn(pluginName).when(pluginMocked).getName();
+        doReturn(readerMocked).when(pluginMocked).getReader(readerName);
+        doThrow(KeypleReaderNotFoundException.class).when(pluginMocked)
+                .getReader(readerNameUnknown);
+
+        // Se Proxy Service
+        SeProxyService.getInstance().registerPlugin(pluginFactoryMocked);
+    }
+
     @Test(expected = KeypleReaderNotFoundException.class)
     public void findLocalReader_notFound() throws Exception {
-        // init
-        AbstractNativeSeService abstractNativeSeService =
-                Mockito.spy(AbstractNativeSeService.class);
-        // execute
-        abstractNativeSeService.findLocalReader("test");
-        // should throw exception
+        service.findLocalReader(readerNameUnknown);
     }
 
-    /**
-     * Find local reader among plugin : reader found
-     * 
-     * @throws Exception
-     */
     @Test
     public void findLocalReader_Found() throws Exception {
-        // init
-        AbstractNativeSeService abstractNativeSeService =
-                Mockito.spy(AbstractNativeSeService.class);
-        SeProxyService.getInstance().registerPlugin(mockPluginFactory());
         // execute
-        ProxyReader seReader = abstractNativeSeService.findLocalReader("test");
+        ProxyReader seReader = service.findLocalReader(readerName);
         // results
         Assert.assertNotNull(seReader);
-        SeProxyService.getInstance().unregisterPlugin("mockPlugin");
+        SeProxyService.getInstance().unregisterPlugin(pluginName);
+    }
+
+    @Test
+    public void transmit_returnsSeResponseDto() {
+        // init
+        doReturn(seResponse).when(readerMocked).transmitSeRequest(any(SeRequest.class),
+                any(ChannelControl.class));
+        KeypleMessageDto requestDto = getTransmitDto("aSessionId");
+        // execute
+        KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
+        // results
+        assertMetaDataMatches(requestDto, responseDto);
+        assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.TRANSMIT.name());
+        assertThat(KeypleJsonParser.getParser().fromJson(responseDto.getBody(), SeResponse.class))
+                .isEqualToComparingFieldByField(seResponse);
+    }
+
+    @Test
+    public void transmit_returnsIoException() {
+        // init
+        doThrow(keypleReaderIOException).when(readerMocked).transmitSeRequest(any(SeRequest.class),
+                any(ChannelControl.class));
+        KeypleMessageDto requestDto = getTransmitDto("aSessionId");
+        // execute
+        KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
+        // results
+        assertMetaDataMatches(requestDto, responseDto);
+        assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.ERROR.name());
+        // check embedded seResponses
+        JsonObject bodyResponse =
+                KeypleJsonParser.getParser().fromJson(responseDto.getBody(), JsonObject.class);
+        SeResponse seResponseInException = KeypleJsonParser.getParser()
+                .fromJson(bodyResponse.get("seResponse").getAsJsonObject(), SeResponse.class);
+        List<SeResponse> seResponsesInException = KeypleJsonParser.getParser().fromJson(
+                bodyResponse.get("seResponses"), new TypeToken<List<SeResponse>>() {}.getType());
+        assertThat(seResponseInException).isEqualToComparingFieldByField(seResponse);
+        assertThat(seResponsesInException).hasSameElementsAs(seResponses);
     }
 
 
-    /*
-     * helpers
-     */
 
-    public static PluginFactory mockPluginFactory() {
-        PluginFactory mockFactory = Mockito.mock(PluginFactory.class);
-        ReaderPlugin mockPlugin = Mockito.mock(ReaderPlugin.class);
-        ProxyReader mockReader = Mockito.mock(ProxyReader.class);
-        doReturn(mockPlugin).when(mockFactory).getPlugin();
-        doReturn("mockPlugin").when(mockFactory).getPluginName();
-        doReturn("mockPlugin").when(mockPlugin).getName();
-        doReturn(mockReader).when(mockPlugin).getReader("test");
-        return mockFactory;
+    @Test
+    public void transmitSet_returnsSeResponseDto() {
+        // init
+        doReturn(seResponses).when(readerMocked).transmitSeRequests(//
+                any(List.class), //
+                any(MultiSeRequestProcessing.class), //
+                any(ChannelControl.class));
+        // execute
+        KeypleMessageDto requestDto = getTransmitSetDto("aSessionId");
+        KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
+        // results
+        assertMetaDataMatches(requestDto, responseDto);
+        assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.TRANSMIT_SET.name());
+        assertThat(KeypleJsonParser.getParser().fromJson(responseDto.getBody(),
+                new TypeToken<List<SeResponse>>() {}.getType()))
+                        .isEqualToComparingFieldByField(seResponses);
     }
+
+    @Test
+    public void transmitSet_returnsIoException() {
+        // init
+        doThrow(keypleReaderIOException).when(readerMocked).transmitSeRequests(any(List.class), //
+                any(MultiSeRequestProcessing.class), //
+                any(ChannelControl.class));
+        KeypleMessageDto requestDto = getTransmitSetDto("aSessionId");
+        // execute
+        KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
+        // results
+        assertMetaDataMatches(requestDto, responseDto);
+        assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.ERROR.name());
+
+        // check embedded seResponses
+        JsonObject bodyResponse =
+                KeypleJsonParser.getParser().fromJson(responseDto.getBody(), JsonObject.class);
+        assertThat(bodyResponse.has("seResponse")).isTrue();
+        assertThat(bodyResponse.has("seResponses")).isTrue();
+        // todo
+
+    }
+
+    @Test
+    public void transmitSet_returnsIoException_withSeResponse() {
+        // init
+        doThrow(keypleReaderIOExceptionWithSeResponse).when(readerMocked).transmitSeRequests(
+                any(List.class), //
+                any(MultiSeRequestProcessing.class), //
+                any(ChannelControl.class));
+        KeypleMessageDto requestDto = getTransmitSetDto("aSessionId");
+        // execute
+        KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
+        // results
+        assertMetaDataMatches(requestDto, responseDto);
+        assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.ERROR.name());
+
+        // check embedded seResponses
+        JsonObject bodyResponse =
+                KeypleJsonParser.getParser().fromJson(responseDto.getBody(), JsonObject.class);
+        SeResponse seResponseInException = KeypleJsonParser.getParser()
+                .fromJson(bodyResponse.get("seResponse").getAsJsonObject(), SeResponse.class);
+        assertThat(seResponseInException).isEqualToComparingFieldByField(seResponse);
+        assertThat(bodyResponse.has("seResponses")).isFalse();
+
+    }
+
+    @Test
+    public void transmitSet_returnsIoException_withSeResponses() {
+        // init
+        doThrow(keypleReaderIOExceptionWithSeResponses).when(readerMocked).transmitSeRequests(
+                any(List.class), //
+                any(MultiSeRequestProcessing.class), //
+                any(ChannelControl.class));
+        KeypleMessageDto requestDto = getTransmitSetDto("aSessionId");
+        // execute
+        KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
+        // results
+        assertMetaDataMatches(requestDto, responseDto);
+        assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.ERROR.name());
+
+        // check embedded seResponses
+        JsonObject bodyResponse =
+                KeypleJsonParser.getParser().fromJson(responseDto.getBody(), JsonObject.class);
+        List<SeResponse> seResponsesInException = KeypleJsonParser.getParser().fromJson(
+                bodyResponse.get("seResponses"), new TypeToken<List<SeResponse>>() {}.getType());
+        assertThat(seResponsesInException).hasSameElementsAs(seResponses);
+        assertThat(bodyResponse.has("seResponse")).isFalse();
+    }
+
+    @Test
+    public void setDefaultSelection() {
+        // init
+        KeypleMessageDto requestDto = getSetDefaultSelectionDto("aSessionId");
+        // execute
+        KeypleMessageDto responseDto = service.executeLocally(observableReaderMocked, requestDto);
+        // results
+        assertMetaDataMatches(requestDto, responseDto);
+        assertThat(responseDto.getAction())
+                .isEqualTo(KeypleMessageDto.Action.SET_DEFAULT_SELECTION.name());
+
+    }
+
+    @Test
+    public void isSePresent() {
+        // init
+        KeypleMessageDto requestDto = getIsSePresentDto("aSessionId");
+        // execute
+        KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
+        // results
+        assertMetaDataMatches(requestDto, responseDto);
+        assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.IS_SE_PRESENT.name());
+    }
+
+    @Test
+    public void addSeProtocolSetting() {
+        // init
+        KeypleMessageDto requestDto = getAddSeProtocolSettingDto("aSessionId");
+        // execute
+        KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
+        // results
+        assertMetaDataMatches(requestDto, responseDto);
+        assertThat(responseDto.getAction())
+                .isEqualTo(KeypleMessageDto.Action.ADD_SE_PROTOCOL_SETTING.name());
+    }
+
+    @Ignore // FIXME resolve Map<SeProtocol, String> Json serialization/deserialization
+    @Test
+    public void setSeProtocolSetting() {
+        // init
+        KeypleMessageDto requestDto = getSetSeProtocolSettingDto("aSessionId");
+        // execute
+        KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
+        // results
+        assertMetaDataMatches(requestDto, responseDto);
+        assertThat(responseDto.getAction())
+                .isEqualTo(KeypleMessageDto.Action.SET_SE_PROTOCOL_SETTING.name());
+    }
+
+    @Test
+    public void getTransmissionMode() {
+        // init
+        KeypleMessageDto requestDto = getGetTransmissionModeDto("aSessionId");
+        // execute
+        KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
+        // results
+        assertMetaDataMatches(requestDto, responseDto);
+        assertThat(responseDto.getAction())
+                .isEqualTo(KeypleMessageDto.Action.GET_TRANSMISSION_MODE.name());
+    }
+
 }
