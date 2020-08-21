@@ -12,7 +12,6 @@
 package org.eclipse.keyple.example.common.generic;
 
 import java.util.Collection;
-import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -22,7 +21,6 @@ import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,9 +74,7 @@ public class ObservableReaderNotificationEngine {
                      * manage the removal sequence.
                      */
                     try {
-                        ((ProxyReader) SeProxyService.getInstance().getPlugin(event.getPluginName())
-                                .getReader(event.getReaderName())).transmitSeRequest(null,
-                                        ChannelControl.CLOSE_AFTER);
+                        ((ObservableReader) (event.getReader())).finalizeSeProcessing();
                     } catch (KeypleReaderNotFoundException e) {
                         e.printStackTrace();
                     } catch (KeyplePluginNotFoundException e) {

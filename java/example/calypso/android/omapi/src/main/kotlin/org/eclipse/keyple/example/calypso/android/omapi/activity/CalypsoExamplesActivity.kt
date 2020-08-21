@@ -19,7 +19,6 @@ import org.eclipse.keyple.calypso.transaction.PoSelectionRequest
 import org.eclipse.keyple.calypso.transaction.PoSelector
 import org.eclipse.keyple.calypso.transaction.PoSelector.InvalidatedPo
 import org.eclipse.keyple.core.selection.SeSelection
-import org.eclipse.keyple.core.seproxy.ChannelControl
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.SeSelector.AidSelector
@@ -179,8 +178,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                     /*
                      * Prepare a Calypso PO selection
                      */
-                    val seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
-                            ChannelControl.KEEP_OPEN)
+                    val seSelection = SeSelection()
 
                     /*
                      * Setting of an AID based selection of a Calypso REV3 PO

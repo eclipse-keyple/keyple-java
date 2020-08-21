@@ -11,6 +11,9 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.event;
 
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 
 /**
@@ -92,20 +95,45 @@ public final class ReaderEvent {
         this.defaultResponses = (DefaultSelectionsResponse) defaultSelectionsResponse;
     }
 
-
+    /**
+     * @return the name of the plugin from which the reader that generated the event comes from
+     */
     public String getPluginName() {
         return pluginName;
     }
 
+    /**
+     * @return the name of the reader that generated the event comes from
+     */
     public String getReaderName() {
         return readerName;
     }
 
+    /**
+     * @return the type of event
+     */
     public EventType getEventType() {
         return eventType;
     }
 
+    /**
+     * @return the default selection response (when the event is SE_INSERTED or SE_MATCHED)
+     */
     public AbstractDefaultSelectionsResponse getDefaultSelectionsResponse() {
         return defaultResponses;
+    }
+
+    /**
+     * @return the plugin from which the reader that generated the event comes from
+     */
+    public ReaderPlugin getPlugin() {
+        return SeProxyService.getInstance().getPlugin(pluginName);
+    }
+
+    /**
+     * @return the reader that generated the event comes from
+     */
+    public SeReader getReader() {
+        return getPlugin().getReader(readerName);
     }
 }

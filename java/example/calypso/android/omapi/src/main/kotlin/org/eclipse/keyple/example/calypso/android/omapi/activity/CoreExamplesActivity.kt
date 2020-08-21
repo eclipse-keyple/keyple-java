@@ -15,7 +15,7 @@ import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_core_examples.eventRecyclerView
 import kotlinx.android.synthetic.main.activity_core_examples.toolbar
 import org.eclipse.keyple.core.selection.SeSelection
-import org.eclipse.keyple.core.seproxy.ChannelControl
+import org.eclipse.keyple.core.seproxy.message.ChannelControl
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.SeSelector
@@ -103,9 +103,10 @@ class CoreExamplesActivity : ExamplesActivity() {
     private fun groupedMultiSelection() {
         addHeaderEvent("UseCase Generic #3: AID based grouped explicit multiple selection")
 
-        /* CLOSE_AFTER in order to secure selection of all applications */
-        val seSelection = SeSelection(MultiSeRequestProcessing.PROCESS_ALL,
-                ChannelControl.CLOSE_AFTER)
+        val seSelection = SeSelection(MultiSeRequestProcessing.PROCESS_ALL)
+
+        /* Close the channel after the selection in order to secure the selection of all applications */
+        seSelection.prepareReleaseSeChannel()
 
         /* operate SE selection (change the AID here to adapt it to the SE used for the test) */
         val seAidPrefix = "A000000404012509"
@@ -188,8 +189,7 @@ class CoreExamplesActivity : ExamplesActivity() {
             readers.values.forEach { seReader: SeReader ->
                 if (seReader.isSePresent) {
 
-                    var seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
-                            ChannelControl.KEEP_OPEN)
+                    var seSelection = SeSelection()
 
                     /*
                      * AID based selection: get the first application occurrence matching the AID, keep the
@@ -210,8 +210,10 @@ class CoreExamplesActivity : ExamplesActivity() {
                      * New selection: get the next application occurrence matching the same AID, close the
                      * physical channel after
                      */
-                    seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
-                            ChannelControl.CLOSE_AFTER)
+                    seSelection = SeSelection()
+
+                    /* Close the channel after the selection */
+                    seSelection.prepareReleaseSeChannel()
 
                     seSelection.prepareSelection(GenericSeSelectionRequest(
                             SeSelector.builder()

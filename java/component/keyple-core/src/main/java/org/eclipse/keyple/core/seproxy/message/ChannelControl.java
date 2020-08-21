@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy;
+package org.eclipse.keyple.core.seproxy.message;
 
 /**
  * indicates the action to be operated on the physical channel at the end of the request

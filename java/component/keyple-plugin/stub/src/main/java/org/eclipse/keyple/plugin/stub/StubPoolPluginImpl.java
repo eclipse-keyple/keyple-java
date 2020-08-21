@@ -13,7 +13,6 @@ package org.eclipse.keyple.plugin.stub;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.*;
@@ -184,14 +183,6 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
     @Override
     public SeReader getReader(String name) {
         return stubPlugin.getReader(name);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int compareTo(ReaderPlugin o) {
-        return stubPlugin.compareTo(o);
     }
 
     /**

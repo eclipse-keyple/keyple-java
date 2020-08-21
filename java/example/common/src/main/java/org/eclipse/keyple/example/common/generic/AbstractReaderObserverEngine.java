@@ -12,15 +12,12 @@
 package org.eclipse.keyple.example.common.generic;
 
 
-import org.eclipse.keyple.core.seproxy.ChannelControl;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,19 +52,21 @@ public abstract class AbstractReaderObserverEngine implements ObservableReader.R
             @Override
             public void run() {
                 currentlyProcessingSe = true;
-                processSeInserted(); // optional, to process alternative AID selection
-                /*
-                 * Informs the underlying layer of the end of the SE processing, in order to manage
-                 * the removal sequence.
-                 */
                 try {
-                    ((ProxyReader) SeProxyService.getInstance().getPlugin(event.getPluginName())
-                            .getReader(event.getReaderName())).transmitSeRequest(null,
-                                    ChannelControl.CLOSE_AFTER);
-                } catch (KeypleReaderNotFoundException e) {
-                    logger.error("Reader not found exception: {}", e.getMessage());
-                } catch (KeyplePluginNotFoundException e) {
-                    logger.error("Plugin not found exception: {}", e.getMessage());
+                    processSeInserted(); // optional, to process alternative AID selection
+                } catch (KeypleException e) {
+                    logger.error("Keyple exception: {}", e.getMessage());
+                    /*
+                     * Informs the underlying layer of the end of the SE processing, in order to
+                     * manage the removal sequence.
+                     */
+                    try {
+                        ((ObservableReader) (event.getReader())).finalizeSeProcessing();
+                    } catch (KeypleReaderNotFoundException ex) {
+                        logger.error("Reader not found exception: {}", ex.getMessage());
+                    } catch (KeyplePluginNotFoundException ex) {
+                        logger.error("Plugin not found exception: {}", ex.getMessage());
+                    }
                 }
                 currentlyProcessingSe = false;
             }
@@ -90,9 +89,7 @@ public abstract class AbstractReaderObserverEngine implements ObservableReader.R
                      * manage the removal sequence.
                      */
                     try {
-                        ((ProxyReader) SeProxyService.getInstance().getPlugin(event.getPluginName())
-                                .getReader(event.getReaderName())).transmitSeRequest(null,
-                                        ChannelControl.CLOSE_AFTER);
+                        ((ObservableReader) (event.getReader())).finalizeSeProcessing();
                     } catch (KeypleReaderNotFoundException ex) {
                         logger.error("Reader not found exception: {}", ex.getMessage());
                     } catch (KeyplePluginNotFoundException ex) {

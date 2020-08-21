@@ -20,7 +20,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 /**
  * Card readers plugin interface.
  */
-public interface ReaderPlugin extends ProxyElement, Comparable<ReaderPlugin> {
+public interface ReaderPlugin extends ProxyElement {
 
     /**
      * Gets the list of names of all readers

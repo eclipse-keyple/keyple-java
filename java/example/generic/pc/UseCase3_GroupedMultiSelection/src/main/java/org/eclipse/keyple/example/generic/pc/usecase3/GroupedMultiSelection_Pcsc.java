@@ -15,7 +15,6 @@ import java.util.Map;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -54,9 +53,7 @@ public class GroupedMultiSelection_Pcsc {
         // Check if a SE is present in the reader
         if (seReader.isSePresent()) {
 
-            // CLOSE_AFTER to force selection of all applications
-            SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.PROCESS_ALL,
-                    ChannelControl.CLOSE_AFTER);
+            SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.PROCESS_ALL);
 
             // operate SE selection (change the AID here to adapt it to the SE used for the test)
             String seAidPrefix = "A000000404012509";
@@ -90,8 +87,11 @@ public class GroupedMultiSelection_Pcsc {
                                     SeSelector.AidSelector.FileControlInformation.FCI)
                             .build())
                     .build()));
-            // Actual SE communication: operate through a single request the SE selection
 
+            // close the channel after the selection to force the selection of all applications
+            seSelection.prepareReleaseSeChannel();
+
+            // Actual SE communication: operate through a single request the SE selection
             SelectionsResult selectionsResult = seSelection.processExplicitSelection(seReader);
 
             if (selectionsResult.getMatchingSelections().size() > 0) {

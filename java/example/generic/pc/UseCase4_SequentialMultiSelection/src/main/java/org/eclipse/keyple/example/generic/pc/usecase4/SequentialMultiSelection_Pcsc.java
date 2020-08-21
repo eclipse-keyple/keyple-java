@@ -15,8 +15,6 @@ package org.eclipse.keyple.example.generic.pc.usecase4;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.ChannelControl;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
@@ -80,8 +78,7 @@ public class SequentialMultiSelection_Pcsc {
             String seAidPrefix = "315449432E494341";
 
             // First selection case
-            seSelection =
-                    new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+            seSelection = new SeSelection();
 
             // AID based selection: get the first application occurrence matching the AID, keep the
             // physical channel open
@@ -99,8 +96,7 @@ public class SequentialMultiSelection_Pcsc {
 
             // New selection: get the next application occurrence matching the same AID, close the
             // physical channel after
-            seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
-                    ChannelControl.CLOSE_AFTER);
+            seSelection = new SeSelection();
 
             seSelection.prepareSelection(new GenericSeSelectionRequest(SeSelector.builder()
                     .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
@@ -110,6 +106,9 @@ public class SequentialMultiSelection_Pcsc {
                                     SeSelector.AidSelector.FileControlInformation.FCI)
                             .build())
                     .build()));
+
+            // close the channel after the selection
+            seSelection.prepareReleaseSeChannel();
 
             // Do the selection and display the result
             doAndAnalyseSelection(seReader, seSelection, 2);
