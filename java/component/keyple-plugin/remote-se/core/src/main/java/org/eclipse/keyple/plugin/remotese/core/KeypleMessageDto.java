@@ -49,6 +49,10 @@ public class KeypleMessageDto {
         TRANSMIT_SET_RESPONSE, //
         SET_DEFAULT_SELECTION, //
         SET_DEFAULT_SELECTION_RESPONSE, //
+        IS_SE_PRESENT, //
+        ADD_SE_PROTOCOL_SETTING, //
+        SET_SE_PROTOCOL_SETTING, //
+        GET_TRANSMISSION_MODE, //
         TERMINATE_SERVICE, //
         ERROR;
     }

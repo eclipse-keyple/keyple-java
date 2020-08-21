@@ -13,34 +13,36 @@ package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import org.assertj.core.util.Lists;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.message.*;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 import org.mockito.Mockito;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 public abstract class BaseNativeSeTest {
 
-    ProxyReader proxyReader;
-    NativeSeClientServiceFactoryTest.ObservableProxyReader observableProxyReader;
-    String nativeReaderName = "nativeReaderName";
-    String observableProxyReaderName = "observableProxyReaderName";
+    final String readerName = "readerName";
+    final String readerNameUnknown = "readerNameUnknown";
+    final String observableReaderName = "observableReaderName";
+
+    ProxyReader readerMocked;
+    NativeSeClientServiceFactoryTest.ObservableProxyReader observableReaderMocked;
 
     public void init() {
-        proxyReader = Mockito.mock(ProxyReader.class);
-        observableProxyReader =
+        readerMocked = Mockito.mock(ProxyReader.class);
+        observableReaderMocked =
                 Mockito.mock(NativeSeClientServiceFactoryTest.ObservableProxyReader.class);
-        doReturn(nativeReaderName).when(proxyReader).getName();
-        doReturn(observableProxyReaderName).when(observableProxyReader).getName();
+        doReturn(readerName).when(readerMocked).getName();
     }
 
 
@@ -87,12 +89,76 @@ public abstract class BaseNativeSeTest {
                 .setBody(body.toString());
     }
 
+    public static KeypleMessageDto getIsSePresentDto(String sessionId) {
+        return new KeypleMessageDto()//
+                .setSessionId(sessionId)//
+                .setAction(KeypleMessageDto.Action.IS_SE_PRESENT.name())//
+                .setServerNodeId("serverNodeId")//
+                .setClientNodeId("clientNodeId")//
+                .setBody(null);
+    }
+
+    public static KeypleMessageDto getAddSeProtocolSettingDto(String sessionId) {
+        JsonObject body = new JsonObject();
+        body.addProperty("seProtocol", KeypleJsonParser.getParser().toJson(new SeProtocol() {
+            @Override
+            public String getName() {
+                return SeCommonProtocols.PROTOCOL_ISO14443_4.name();
+            }
+
+            @Override
+            public TransmissionMode getTransmissionMode() {
+                return TransmissionMode.CONTACTS;
+            }
+        }, SeProtocol.class));
+        body.addProperty("protocolRule", "protocolRule");
+        return new KeypleMessageDto()//
+                .setSessionId(sessionId)//
+                .setAction(KeypleMessageDto.Action.ADD_SE_PROTOCOL_SETTING.name())//
+                .setServerNodeId("serverNodeId")//
+                .setClientNodeId("clientNodeId")//
+                .setBody(body.toString());
+    }
+
+    public static KeypleMessageDto getSetSeProtocolSettingDto(String sessionId) {
+        Map<SeProtocol, String> protocolSetting = new HashMap<SeProtocol, String>();
+        protocolSetting.put(new SeProtocol() {
+            @Override
+            public String getName() {
+                return SeCommonProtocols.PROTOCOL_ISO14443_4.name();
+            }
+
+            @Override
+            public TransmissionMode getTransmissionMode() {
+                return TransmissionMode.CONTACTS;
+            }
+        }, "protocolRule");
+        JsonObject body = new JsonObject();
+        body.addProperty("protocolSetting", KeypleJsonParser.getParser().toJson(protocolSetting,
+                new TypeToken<Map<SeProtocol, String>>() {}.getType()));
+        return new KeypleMessageDto()//
+                .setSessionId(sessionId)//
+                .setAction(KeypleMessageDto.Action.SET_SE_PROTOCOL_SETTING.name())//
+                .setServerNodeId("serverNodeId")//
+                .setClientNodeId("clientNodeId")//
+                .setBody(body.toString());
+    }
+
+    public static KeypleMessageDto getGetTransmissionModeDto(String sessionId) {
+        return new KeypleMessageDto()//
+                .setSessionId(sessionId)//
+                .setAction(KeypleMessageDto.Action.GET_TRANSMISSION_MODE.name())//
+                .setServerNodeId("serverNodeId")//
+                .setClientNodeId("clientNodeId")//
+                .setBody(null);
+    }
+
     public static SeRequest getASeRequest() {
         String poAid = "A000000291A000000191";
         List<ApduRequest> poApduRequests;
-        poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
-        SeRequest seRequest = new SeRequest(poApduRequests);
-        return seRequest;
+        poApduRequests =
+                Collections.singletonList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
+        return new SeRequest(poApduRequests);
     }
 
 
