@@ -1,14 +1,14 @@
-/********************************************************************************
+/* **************************************************************************************
  * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * See the NOTICE file(s) distributed with this work for additional information regarding copyright
- * ownership.
+ * See the NOTICE file(s) distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * This program and the accompanying materials are made available under the terms of the Eclipse
- * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- ********************************************************************************/
+ ************************************************************************************** */
 package org.eclipse.keyple.example.remote.application.multi;
 
 import org.eclipse.keyple.example.remote.application.MasterNodeController;
@@ -21,24 +21,20 @@ import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;
  */
 public class Demo_Webservice_MasterServer_Server {
 
+  public static final Integer port = 8888;
+  public static final String hostname = "0.0.0.0";
+  public static final String protocol = "http://";
 
-    public static final Integer port = 8888;
-    public static final String hostname = "0.0.0.0";
-    public static final String protocol = "http://";
+  public static void main(String[] args) throws Exception {
 
+    final String SERVER_NODE_ID = "RSEServer1";
 
-    public static void main(String[] args) throws Exception {
+    // Create the procotol factory
+    TransportFactory factory = new WsPollingFactory(SERVER_NODE_ID, protocol, hostname, port);
 
-        final String SERVER_NODE_ID = "RSEServer1";
-
-
-        // Create the procotol factory
-        TransportFactory factory = new WsPollingFactory(SERVER_NODE_ID, protocol, hostname, port);
-
-        // Launch the Server thread
-        // Server is Master
-        MasterNodeController master = new MasterNodeController(factory, true, null);
-        master.boot();
-
-    }
+    // Launch the Server thread
+    // Server is Master
+    MasterNodeController master = new MasterNodeController(factory, true, null);
+    master.boot();
+  }
 }

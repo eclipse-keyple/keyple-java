@@ -1,17 +1,18 @@
-/********************************************************************************
+/* **************************************************************************************
  * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * See the NOTICE file(s) distributed with this work for additional information regarding copyright
- * ownership.
+ * See the NOTICE file(s) distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * This program and the accompanying materials are made available under the terms of the Eclipse
- * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- ********************************************************************************/
+ ************************************************************************************** */
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import static org.mockito.Mockito.doReturn;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,149 +38,159 @@ import org.slf4j.LoggerFactory;
 @RunWith(Parameterized.class)
 public class RemoteSePluginImplTest extends CoreBaseTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(RemoteSePluginImplTest.class);
+  private static final Logger logger = LoggerFactory.getLogger(RemoteSePluginImplTest.class);
 
-    static final Integer X_TIMES = 50; // run tests multiple times
+  static final Integer X_TIMES = 50; // run tests multiple times
 
-    @Parameterized.Parameters
-    public static Object[][] data() {
-        return new Object[X_TIMES][0];
-    }
+  @Parameterized.Parameters
+  public static Object[][] data() {
+    return new Object[X_TIMES][0];
+  }
 
+  @Before
+  public void setUp() {
+    logger.info("------------------------------");
+    logger.info("Test {}", name.getMethodName() + "");
+    logger.info("------------------------------");
+  }
 
+  /**
+   * Test if createVirtualReader does not send ConcurrentModificationException
+   * https://keyple.atlassian.net/browse/KEYP-203
+   *
+   * @throws Throwable
+   */
+  @Test
+  public void createVirtualReaderMultiThread() throws InterruptedException, KeypleReaderException {
 
-    @Before
-    public void setUp() {
-        logger.info("------------------------------");
-        logger.info("Test {}", name.getMethodName() + "");
-        logger.info("------------------------------");
-    }
+    DtoSender dtoSender = Mockito.mock(DtoSender.class);
+    doReturn("masterNode1").when(dtoSender).getNodeId();
 
-    /**
-     * Test if createVirtualReader does not send ConcurrentModificationException
-     * https://keyple.atlassian.net/browse/KEYP-203
-     *
-     * @throws Throwable
-     */
-    @Test
-    public void createVirtualReaderMultiThread()
-            throws InterruptedException, KeypleReaderException {
+    RemoteSePluginImpl plugin =
+        new RemoteSePluginImpl(
+            new VirtualReaderSessionFactory(),
+            dtoSender,
+            10000,
+            "pluginName",
+            Executors.newCachedThreadPool());
 
-        DtoSender dtoSender = Mockito.mock(DtoSender.class);
-        doReturn("masterNode1").when(dtoSender).getNodeId();
+    ConcurrentMap<String, SeReader> readers = plugin.getReaders();
 
-        RemoteSePluginImpl plugin = new RemoteSePluginImpl(new VirtualReaderSessionFactory(),
-                dtoSender, 10000, "pluginName", Executors.newCachedThreadPool());
+    final CountDownLatch lock = new CountDownLatch(9);
 
-        ConcurrentMap<String, SeReader> readers = plugin.getReaders();
+    addReaderThread(plugin, dtoSender, 10, lock);
+    removeReaderThread(readers, 10, lock);
+    listReaders(readers, 10, lock);
+    removeReaderThread(readers, 10, lock);
+    listReaders(readers, 10, lock);
+    addReaderThread(plugin, dtoSender, 10, lock);
+    removeReaderThread(readers, 10, lock);
+    listReaders(readers, 10, lock);
+    removeReaderThread(readers, 10, lock);
 
-        final CountDownLatch lock = new CountDownLatch(9);
+    // wait for all thread to finish with timeout
+    lock.await(10, TimeUnit.SECONDS);
 
-        addReaderThread(plugin, dtoSender, 10, lock);
-        removeReaderThread(readers, 10, lock);
-        listReaders(readers, 10, lock);
-        removeReaderThread(readers, 10, lock);
-        listReaders(readers, 10, lock);
-        addReaderThread(plugin, dtoSender, 10, lock);
-        removeReaderThread(readers, 10, lock);
-        listReaders(readers, 10, lock);
-        removeReaderThread(readers, 10, lock);
+    // if all thread finished correctly, lock count should be 0
+    Assert.assertEquals(0, lock.getCount());
+  }
 
-        // wait for all thread to finish with timeout
-        lock.await(10, TimeUnit.SECONDS);
-
-        // if all thread finished correctly, lock count should be 0
-        Assert.assertEquals(0, lock.getCount());
-    }
-
-
-    public static void listReaders(final ConcurrentMap<String, SeReader> readers, final int N,
-            final CountDownLatch lock) {
-        Thread thread = new Thread() {
-            public void run() {
-                for (int i = 0; i < N; i++) {
-                    Collection<SeReader> seReaders = readers.values();
-                    for (SeReader reader : seReaders) {
-                        logger.debug("list, readers: {}, reader {}", readers.size(),
-                                reader.getName());
-                    }
-                    try {
-                        Thread.sleep(10);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                // if no error, count down latch
-                lock.countDown();
+  public static void listReaders(
+      final ConcurrentMap<String, SeReader> readers, final int N, final CountDownLatch lock) {
+    Thread thread =
+        new Thread() {
+          public void run() {
+            for (int i = 0; i < N; i++) {
+              Collection<SeReader> seReaders = readers.values();
+              for (SeReader reader : seReaders) {
+                logger.debug("list, readers: {}, reader {}", readers.size(), reader.getName());
+              }
+              try {
+                Thread.sleep(10);
+              } catch (InterruptedException e) {
+                e.printStackTrace();
+              }
             }
+            // if no error, count down latch
+            lock.countDown();
+          }
         };
-        thread.start();
-    }
+    thread.start();
+  }
 
-
-    public static void removeReaderThread(final ConcurrentMap<String, SeReader> readers,
-            final int N, final CountDownLatch lock) {
-        Thread thread = new Thread() {
-            public void run() {
-                for (int i = 0; i < N; i++) {
-                    try {
-                        Map.Entry<String, SeReader> entry = readers.entrySet().iterator().next();
-                        if (entry != null) {
-                            logger.debug("Removing reader {}", entry.getKey());
-                            readers.remove(entry.getKey());
-                        } else {
-                            // list is empty
-                            logger.debug("readers: {}, list is empty", readers.size());
-                        }
-                    } catch (NoSuchElementException e) {
-                        // list is empty
-                        logger.debug("readers: {}, list is empty", readers.size());
-                    }
-
-                    try {
-                        Thread.sleep(10);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+  public static void removeReaderThread(
+      final ConcurrentMap<String, SeReader> readers, final int N, final CountDownLatch lock) {
+    Thread thread =
+        new Thread() {
+          public void run() {
+            for (int i = 0; i < N; i++) {
+              try {
+                Map.Entry<String, SeReader> entry = readers.entrySet().iterator().next();
+                if (entry != null) {
+                  logger.debug("Removing reader {}", entry.getKey());
+                  readers.remove(entry.getKey());
+                } else {
+                  // list is empty
+                  logger.debug("readers: {}, list is empty", readers.size());
                 }
-                // if no error, count down latch
-                lock.countDown();
+              } catch (NoSuchElementException e) {
+                // list is empty
+                logger.debug("readers: {}, list is empty", readers.size());
+              }
+
+              try {
+                Thread.sleep(10);
+              } catch (InterruptedException e) {
+                e.printStackTrace();
+              }
             }
+            // if no error, count down latch
+            lock.countDown();
+          }
         };
-        thread.start();
-    }
+    thread.start();
+  }
 
-    public static void addReaderThread(final RemoteSePluginImpl plugin, final DtoSender dtoSender,
-            final int N, final CountDownLatch lock) {
-        Thread thread = new Thread() {
-            public void run() {
-                boolean success = true;
-                for (int i = 0; i < N; i++) {
-                    try {
-                        String readerName =
-                                "nativeReaderName-" + currentThread().getName() + "-" + i;
-                        logger.debug("create virtual reader: {}, add reader {}",
-                                plugin.getReaders().size(), readerName);
-                        plugin.createVirtualReader("slaveNodeId", readerName, dtoSender,
-                                TransmissionMode.CONTACTS, true, new HashMap<String, String>());
-                    } catch (Exception e) {
-                        success = false;
-                        e.printStackTrace();
-                    }
+  public static void addReaderThread(
+      final RemoteSePluginImpl plugin,
+      final DtoSender dtoSender,
+      final int N,
+      final CountDownLatch lock) {
+    Thread thread =
+        new Thread() {
+          public void run() {
+            boolean success = true;
+            for (int i = 0; i < N; i++) {
+              try {
+                String readerName = "nativeReaderName-" + currentThread().getName() + "-" + i;
+                logger.debug(
+                    "create virtual reader: {}, add reader {}",
+                    plugin.getReaders().size(),
+                    readerName);
+                plugin.createVirtualReader(
+                    "slaveNodeId",
+                    readerName,
+                    dtoSender,
+                    TransmissionMode.CONTACTS,
+                    true,
+                    new HashMap<String, String>());
+              } catch (Exception e) {
+                success = false;
+                e.printStackTrace();
+              }
 
-                    try {
-                        Thread.sleep(10);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                // if no error, count down latch
-                if (success) {
-                    lock.countDown();
-                }
+              try {
+                Thread.sleep(10);
+              } catch (InterruptedException e) {
+                e.printStackTrace();
+              }
             }
+            // if no error, count down latch
+            if (success) {
+              lock.countDown();
+            }
+          }
         };
-        thread.start();
-    }
-
+    thread.start();
+  }
 }
