@@ -116,18 +116,6 @@ abstract class AbstractRemoteSePlugin extends AbstractKeypleMessageHandler imple
     }
 
     /**
-     * Compare the name of the current ReaderPlugin to the name of the provided plugin.
-     *
-     * @param plugin The plugin to compare to
-     * @return true if the names matches (The method is needed for the SortedSet lists)
-     * @since 1.0
-     */
-    @Override
-    public final int compareTo(ReaderPlugin plugin) {
-        return this.getName().compareTo(plugin.getName());
-    }
-
-    /**
      * (protected)<br>
      * Init connected native readers (from third party library) and returns a map of corresponding
      * {@link SeReader} with their name as key and each {@link SeReader} is a new instance.
