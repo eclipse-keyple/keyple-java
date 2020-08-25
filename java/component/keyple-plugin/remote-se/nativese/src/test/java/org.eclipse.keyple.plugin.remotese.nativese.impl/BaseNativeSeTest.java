@@ -175,7 +175,7 @@ public abstract class BaseNativeSeTest {
         return new SeResponse(true, true, new SelectionStatus(atr, apdu, true), apduResponses);
     }
 
-    static public void assertMetaDataMatches(KeypleMessageDto request, KeypleMessageDto response) {
+    static public void assertMetadataMatches(KeypleMessageDto request, KeypleMessageDto response) {
         assertThat(response).isNotNull();
         assertThat(response.getSessionId()).isEqualTo(request.getSessionId());
         assertThat(response.getNativeReaderName()).isEqualTo(request.getNativeReaderName());
