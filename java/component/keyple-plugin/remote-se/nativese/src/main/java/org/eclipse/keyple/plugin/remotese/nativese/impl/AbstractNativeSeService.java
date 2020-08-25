@@ -23,6 +23,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remotese.core.impl.AbstractKeypleMessageHandler;
@@ -135,7 +136,7 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
             } catch (KeypleReaderIOException e) {
                 response = new KeypleMessageDto(msg)//
                         .setAction(KeypleMessageDto.Action.ERROR.name())//
-                        .setBody(KeypleJsonParser.getParser().toJson(e));
+                        .setBody(KeypleJsonParser.getParser().toJson(new BodyError(e)));
             }
             return response;
         }

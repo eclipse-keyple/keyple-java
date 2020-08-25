@@ -25,6 +25,7 @@ import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 import org.junit.Assert;
@@ -35,7 +36,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -134,14 +134,11 @@ public class AbstractNativeSeServiceTest extends BaseNativeSeTest {
         assertMetadataMatches(requestDto, responseDto);
         assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.ERROR.name());
         // check embedded seResponses
-        JsonObject bodyResponse =
-                KeypleJsonParser.getParser().fromJson(responseDto.getBody(), JsonObject.class);
-        SeResponse seResponseInException = KeypleJsonParser.getParser()
-                .fromJson(bodyResponse.get("seResponse").getAsJsonObject(), SeResponse.class);
-        List<SeResponse> seResponsesInException = KeypleJsonParser.getParser().fromJson(
-                bodyResponse.get("seResponses"), new TypeToken<List<SeResponse>>() {}.getType());
-        assertThat(seResponseInException).isEqualToComparingFieldByField(seResponse);
-        assertThat(seResponsesInException).hasSameElementsAs(seResponses);
+        BodyError bodyResponse =
+                KeypleJsonParser.getParser().fromJson(responseDto.getBody(), BodyError.class);
+        KeypleReaderIOException error = (KeypleReaderIOException) bodyResponse.getException();
+        assertThat(error.getSeResponses()).hasSameElementsAs(seResponses);
+        assertThat(error.getSeResponse()).isEqualToComparingFieldByField(seResponse);
     }
 
     @Test
@@ -175,10 +172,11 @@ public class AbstractNativeSeServiceTest extends BaseNativeSeTest {
         assertMetadataMatches(requestDto, responseDto);
         assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.ERROR.name());
         // check embedded seResponses
-        JsonObject bodyResponse =
-                KeypleJsonParser.getParser().fromJson(responseDto.getBody(), JsonObject.class);
-        assertThat(bodyResponse.has("seResponse")).isTrue();
-        assertThat(bodyResponse.has("seResponses")).isTrue();
+        BodyError bodyResponse =
+                KeypleJsonParser.getParser().fromJson(responseDto.getBody(), BodyError.class);
+        KeypleReaderIOException error = (KeypleReaderIOException) bodyResponse.getException();
+        assertThat(error.getSeResponses()).isNotNull();
+        assertThat(error.getSeResponse()).isNotNull();
     }
 
     @Test
@@ -195,12 +193,11 @@ public class AbstractNativeSeServiceTest extends BaseNativeSeTest {
         assertMetadataMatches(requestDto, responseDto);
         assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.ERROR.name());
         // check embedded seResponses
-        JsonObject bodyResponse =
-                KeypleJsonParser.getParser().fromJson(responseDto.getBody(), JsonObject.class);
-        SeResponse seResponseInException = KeypleJsonParser.getParser()
-                .fromJson(bodyResponse.get("seResponse").getAsJsonObject(), SeResponse.class);
-        assertThat(seResponseInException).isEqualToComparingFieldByField(seResponse);
-        assertThat(bodyResponse.has("seResponses")).isFalse();
+        BodyError bodyResponse =
+                KeypleJsonParser.getParser().fromJson(responseDto.getBody(), BodyError.class);
+        KeypleReaderIOException error = (KeypleReaderIOException) bodyResponse.getException();
+        assertThat(error.getSeResponses()).isNull();
+        assertThat(error.getSeResponse()).isEqualToComparingFieldByField(seResponse);
     }
 
     @Test
@@ -217,12 +214,11 @@ public class AbstractNativeSeServiceTest extends BaseNativeSeTest {
         assertMetadataMatches(requestDto, responseDto);
         assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.ERROR.name());
         // check embedded seResponses
-        JsonObject bodyResponse =
-                KeypleJsonParser.getParser().fromJson(responseDto.getBody(), JsonObject.class);
-        List<SeResponse> seResponsesInException = KeypleJsonParser.getParser().fromJson(
-                bodyResponse.get("seResponses"), new TypeToken<List<SeResponse>>() {}.getType());
-        assertThat(seResponsesInException).hasSameElementsAs(seResponses);
-        assertThat(bodyResponse.has("seResponse")).isFalse();
+        BodyError bodyResponse =
+                KeypleJsonParser.getParser().fromJson(responseDto.getBody(), BodyError.class);
+        KeypleReaderIOException error = (KeypleReaderIOException) bodyResponse.getException();
+        assertThat(error.getSeResponses()).hasSameElementsAs(seResponses);
+        assertThat(error.getSeResponse()).isNull();
     }
 
     @Test

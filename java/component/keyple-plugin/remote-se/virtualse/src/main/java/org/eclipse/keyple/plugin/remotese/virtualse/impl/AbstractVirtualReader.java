@@ -11,10 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.virtualse.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
@@ -53,17 +50,14 @@ abstract class AbstractVirtualReader extends AbstractReader {
      * Constructor
      *
      * @param pluginName The name of the plugin (must be not null).
-     * @param name The name of the virtual reader (must be not null).
      * @param nativeReaderName The name of the native reader (must be not null).
      * @param node The associated node (must be not null).
-     * @param sessionId The associated session id (optional)
      */
-    AbstractVirtualReader(String pluginName, String name, String nativeReaderName,
-            AbstractKeypleNode node, String sessionId) {
-        super(pluginName, name);
+    AbstractVirtualReader(String pluginName, String nativeReaderName, AbstractKeypleNode node) {
+        super(pluginName, UUID.randomUUID().toString());
         this.nativeReaderName = nativeReaderName;
         this.node = node;
-        this.sessionId = sessionId;
+        this.sessionId = null;
         this.parameters = new HashMap<String, String>();
     }
 
@@ -244,7 +238,7 @@ abstract class AbstractVirtualReader extends AbstractReader {
      * @return a not null value.
      */
     String getSessionId() {
-        return sessionId;
+        return sessionId != null ? sessionId : UUID.randomUUID().toString();
     }
 
     /**
