@@ -24,11 +24,11 @@ import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -94,12 +94,12 @@ public class AbstractNativeSeServiceTest extends BaseNativeSeTest {
     }
 
     @Test(expected = KeypleReaderNotFoundException.class)
-    public void findLocalReader_notFound() throws Exception {
+    public void findLocalReader_notFound() {
         service.findLocalReader(readerNameUnknown);
     }
 
     @Test
-    public void findLocalReader_Found() throws Exception {
+    public void findLocalReader_Found() {
         // execute
         ProxyReader seReader = service.findLocalReader(readerName);
         // results
@@ -116,7 +116,7 @@ public class AbstractNativeSeServiceTest extends BaseNativeSeTest {
         // execute
         KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
         // results
-        assertMetaDataMatches(requestDto, responseDto);
+        assertMetadataMatches(requestDto, responseDto);
         assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.TRANSMIT.name());
         assertThat(KeypleJsonParser.getParser().fromJson(responseDto.getBody(), SeResponse.class))
                 .isEqualToComparingFieldByField(seResponse);
@@ -131,7 +131,7 @@ public class AbstractNativeSeServiceTest extends BaseNativeSeTest {
         // execute
         KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
         // results
-        assertMetaDataMatches(requestDto, responseDto);
+        assertMetadataMatches(requestDto, responseDto);
         assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.ERROR.name());
         // check embedded seResponses
         JsonObject bodyResponse =
@@ -144,8 +144,6 @@ public class AbstractNativeSeServiceTest extends BaseNativeSeTest {
         assertThat(seResponsesInException).hasSameElementsAs(seResponses);
     }
 
-
-
     @Test
     public void transmitSet_returnsSeResponseDto() {
         // init
@@ -157,7 +155,7 @@ public class AbstractNativeSeServiceTest extends BaseNativeSeTest {
         KeypleMessageDto requestDto = getTransmitSetDto("aSessionId");
         KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
         // results
-        assertMetaDataMatches(requestDto, responseDto);
+        assertMetadataMatches(requestDto, responseDto);
         assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.TRANSMIT_SET.name());
         assertThat(KeypleJsonParser.getParser().fromJson(responseDto.getBody(),
                 new TypeToken<List<SeResponse>>() {}.getType()))
@@ -174,16 +172,13 @@ public class AbstractNativeSeServiceTest extends BaseNativeSeTest {
         // execute
         KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
         // results
-        assertMetaDataMatches(requestDto, responseDto);
+        assertMetadataMatches(requestDto, responseDto);
         assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.ERROR.name());
-
         // check embedded seResponses
         JsonObject bodyResponse =
                 KeypleJsonParser.getParser().fromJson(responseDto.getBody(), JsonObject.class);
         assertThat(bodyResponse.has("seResponse")).isTrue();
         assertThat(bodyResponse.has("seResponses")).isTrue();
-        // todo
-
     }
 
     @Test
@@ -197,9 +192,8 @@ public class AbstractNativeSeServiceTest extends BaseNativeSeTest {
         // execute
         KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
         // results
-        assertMetaDataMatches(requestDto, responseDto);
+        assertMetadataMatches(requestDto, responseDto);
         assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.ERROR.name());
-
         // check embedded seResponses
         JsonObject bodyResponse =
                 KeypleJsonParser.getParser().fromJson(responseDto.getBody(), JsonObject.class);
@@ -207,7 +201,6 @@ public class AbstractNativeSeServiceTest extends BaseNativeSeTest {
                 .fromJson(bodyResponse.get("seResponse").getAsJsonObject(), SeResponse.class);
         assertThat(seResponseInException).isEqualToComparingFieldByField(seResponse);
         assertThat(bodyResponse.has("seResponses")).isFalse();
-
     }
 
     @Test
@@ -221,9 +214,8 @@ public class AbstractNativeSeServiceTest extends BaseNativeSeTest {
         // execute
         KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
         // results
-        assertMetaDataMatches(requestDto, responseDto);
+        assertMetadataMatches(requestDto, responseDto);
         assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.ERROR.name());
-
         // check embedded seResponses
         JsonObject bodyResponse =
                 KeypleJsonParser.getParser().fromJson(responseDto.getBody(), JsonObject.class);
@@ -240,21 +232,25 @@ public class AbstractNativeSeServiceTest extends BaseNativeSeTest {
         // execute
         KeypleMessageDto responseDto = service.executeLocally(observableReaderMocked, requestDto);
         // results
-        assertMetaDataMatches(requestDto, responseDto);
+        assertMetadataMatches(requestDto, responseDto);
         assertThat(responseDto.getAction())
                 .isEqualTo(KeypleMessageDto.Action.SET_DEFAULT_SELECTION.name());
-
+        assertThat(responseDto.getBody()).isNull();
     }
 
     @Test
     public void isSePresent() {
         // init
+        doReturn(true).when(readerMocked).isSePresent();
         KeypleMessageDto requestDto = getIsSePresentDto("aSessionId");
         // execute
         KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
         // results
-        assertMetaDataMatches(requestDto, responseDto);
+        assertMetadataMatches(requestDto, responseDto);
         assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.IS_SE_PRESENT.name());
+        boolean bodyValue =
+                KeypleJsonParser.getParser().fromJson(responseDto.getBody(), Boolean.class);
+        assertThat(bodyValue).isTrue();
     }
 
     @Test
@@ -264,12 +260,12 @@ public class AbstractNativeSeServiceTest extends BaseNativeSeTest {
         // execute
         KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
         // results
-        assertMetaDataMatches(requestDto, responseDto);
+        assertMetadataMatches(requestDto, responseDto);
         assertThat(responseDto.getAction())
                 .isEqualTo(KeypleMessageDto.Action.ADD_SE_PROTOCOL_SETTING.name());
+        assertThat(responseDto.getBody()).isNull();
     }
 
-    @Ignore // FIXME resolve Map<SeProtocol, String> Json serialization/deserialization
     @Test
     public void setSeProtocolSetting() {
         // init
@@ -277,21 +273,26 @@ public class AbstractNativeSeServiceTest extends BaseNativeSeTest {
         // execute
         KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
         // results
-        assertMetaDataMatches(requestDto, responseDto);
+        assertMetadataMatches(requestDto, responseDto);
         assertThat(responseDto.getAction())
                 .isEqualTo(KeypleMessageDto.Action.SET_SE_PROTOCOL_SETTING.name());
+        assertThat(responseDto.getBody()).isNull();
     }
 
     @Test
     public void getTransmissionMode() {
         // init
+        doReturn(TransmissionMode.CONTACTS).when(readerMocked).getTransmissionMode();
         KeypleMessageDto requestDto = getGetTransmissionModeDto("aSessionId");
         // execute
         KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
         // results
-        assertMetaDataMatches(requestDto, responseDto);
+        assertMetadataMatches(requestDto, responseDto);
         assertThat(responseDto.getAction())
                 .isEqualTo(KeypleMessageDto.Action.GET_TRANSMISSION_MODE.name());
+        TransmissionMode bodyValue = KeypleJsonParser.getParser().fromJson(responseDto.getBody(),
+                TransmissionMode.class);
+        assertThat(bodyValue).isEqualTo(TransmissionMode.CONTACTS);
     }
 
 }

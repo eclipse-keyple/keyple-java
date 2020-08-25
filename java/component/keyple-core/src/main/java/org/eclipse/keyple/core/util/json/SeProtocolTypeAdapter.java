@@ -18,9 +18,9 @@ import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import com.google.gson.*;
 
 /**
- * Gson Adapter to serialize and unserialize {@link SeProtocol}
+ * Gson Adapter to serialize and deserialize {@link SeProtocol}
  */
-public class GsonSeProtocolTypeAdapter
+public class SeProtocolTypeAdapter
         implements JsonDeserializer<SeProtocol>, JsonSerializer<SeProtocol> {
 
     @Override
