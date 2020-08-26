@@ -272,6 +272,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
    *     the SE detection is restarted, if SINGLESHOT, the SE detection is stopped until a new call
    *     to startSeDetection is made.
    */
+  @Override
   public final void startSeDetection(ObservableReader.PollingMode pollingMode) {
     if (logger.isTraceEnabled()) {
       logger.trace("[{}] start Se Detection with pollingMode {}", getName(), pollingMode);
@@ -286,6 +287,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
    * <p>This method must be overloaded by readers depending on the particularity of their management
    * of the start of SE detection.
    */
+  @Override
   public final void stopSeDetection() {
     if (logger.isTraceEnabled()) {
       logger.trace("[{}] stop Se Detection", getName());
@@ -309,6 +311,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
    *     when a SE is inserted
    * @param notificationMode the notification mode enum (ALWAYS or MATCHED_ONLY)
    */
+  @Override
   public final void setDefaultSelectionRequest(
       AbstractDefaultSelectionsRequest defaultSelectionsRequest,
       ObservableReader.NotificationMode notificationMode) {
@@ -327,6 +330,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
    *     the SE detection is restarted, if STOP, the SE detection is stopped until a new call to
    *     startSeDetection is made.
    */
+  @Override
   public final void setDefaultSelectionRequest(
       AbstractDefaultSelectionsRequest defaultSelectionsRequest,
       ObservableReader.NotificationMode notificationMode,
