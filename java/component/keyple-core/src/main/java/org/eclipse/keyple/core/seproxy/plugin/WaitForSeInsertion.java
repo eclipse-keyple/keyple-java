@@ -71,7 +71,7 @@ public class WaitForSeInsertion extends AbstractObservableState {
           if (logger.isTraceEnabled()) {
             logger.trace("[{}] onEvent => Inserted SE hasn't matched", reader.getName());
           }
-          switchState(MonitoringState.WAIT_FOR_SE_INSERTION);
+          switchState(MonitoringState.WAIT_FOR_SE_REMOVAL);
         }
         break;
 
