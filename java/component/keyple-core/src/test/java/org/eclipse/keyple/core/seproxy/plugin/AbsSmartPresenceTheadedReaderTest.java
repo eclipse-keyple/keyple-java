@@ -1,19 +1,20 @@
-/********************************************************************************
+/* **************************************************************************************
  * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * See the NOTICE file(s) distributed with this work for additional information regarding copyright
- * ownership.
+ * See the NOTICE file(s) distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * This program and the accompanying materials are made available under the terms of the Eclipse
- * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- ********************************************************************************/
+ ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.plugin;
 
 import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION;
 import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION;
 import static org.mockito.Mockito.doReturn;
+
 import java.util.concurrent.CountDownLatch;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -34,145 +35,138 @@ import org.slf4j.LoggerFactory;
 @RunWith(Parameterized.class)
 public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
 
-    private static final Logger logger =
-            LoggerFactory.getLogger(AbsSmartPresenceTheadedReaderTest.class);
+  private static final Logger logger =
+      LoggerFactory.getLogger(AbsSmartPresenceTheadedReaderTest.class);
 
+  final String PLUGIN_NAME = "AbsSmartPresenceTheadedReaderTestP";
+  final String READER_NAME = "AbsSmartPresenceTheadedReaderTest";
 
-    final String PLUGIN_NAME = "AbsSmartPresenceTheadedReaderTestP";
-    final String READER_NAME = "AbsSmartPresenceTheadedReaderTest";
+  BlankSmartPresenceTheadedReader r;
 
-    BlankSmartPresenceTheadedReader r;
+  // Execute tests 10 times
+  @Parameterized.Parameters
+  public static Object[][] data() {
+    int x = 0;
+    return new Object[x][0];
+  }
 
-    // Execute tests 10 times
-    @Parameterized.Parameters
-    public static Object[][] data() {
-        int x = 0;
-        return new Object[x][0];
-    }
+  @Before
+  public void setUp() {
+    logger.info("------------------------------");
+    logger.info("Test {}", name.getMethodName() + "");
+    logger.info("------------------------------");
 
+    r = getSmartSpy(PLUGIN_NAME, READER_NAME);
+  }
 
-    @Before
-    public void setUp() {
-        logger.info("------------------------------");
-        logger.info("Test {}", name.getMethodName() + "");
-        logger.info("------------------------------");
+  /*
+   */
+  @After
+  public void tearDown() throws Throwable {
+    r.clearObservers();
+    r = null;
+  }
 
-        r = getSmartSpy(PLUGIN_NAME, READER_NAME);
-    }
+  @Test
+  public void startRemovalSequence() throws Exception {
 
-    /*
-     */
-    @After
-    public void tearDown() throws Throwable {
-        r.clearObservers();
-        r = null;
+    // SE matched
+    doReturn(true).when(r).processSeInserted();
 
-    }
+    r.addObserver(getObs());
+    Thread.sleep(100);
 
-    @Test
-    public void startRemovalSequence() throws Exception {
+    r.terminateSeCommunication();
+    Thread.sleep(100);
 
-        // SE matched
-        doReturn(true).when(r).processSeInserted();
+    // does nothing
+    Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentMonitoringState());
+  }
 
-        r.addObserver(getObs());
-        Thread.sleep(100);
+  @Test
+  public void startRemovalSequence_CONTINUE() throws Exception {
 
-        r.terminateSeCommunication();
-        Thread.sleep(100);
+    // SE matched
+    doReturn(true).when(r).processSeInserted();
+    // use mocked BlankSmartPresenceTheadedReader methods
 
-        // does nothing
-        Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentMonitoringState());
-    }
+    r.addObserver(getObs());
+    r.startSeDetection(ObservableReader.PollingMode.REPEATING); // WAIT_FOR_SE_INSERTION
+    Thread.sleep(100);
 
-    @Test
-    public void startRemovalSequence_CONTINUE() throws Exception {
+    r.terminateSeCommunication();
+    Thread.sleep(100);
 
-        // SE matched
-        doReturn(true).when(r).processSeInserted();
-        // use mocked BlankSmartPresenceTheadedReader methods
+    Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentMonitoringState());
+  }
 
-        r.addObserver(getObs());
-        r.startSeDetection(ObservableReader.PollingMode.REPEATING);// WAIT_FOR_SE_INSERTION
-        Thread.sleep(100);
+  @Test
+  public void startRemovalSequence_noping_STOP() throws Exception {
 
-        r.terminateSeCommunication();
-        Thread.sleep(100);
+    // SE matched
+    doReturn(true).when(r).processSeInserted();
+    doReturn(false).when(r).isSePresentPing();
 
-        Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentMonitoringState());
-    }
+    r.addObserver(getObs());
+    r.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+    Thread.sleep(100);
 
-    @Test
-    public void startRemovalSequence_noping_STOP() throws Exception {
+    r.terminateSeCommunication();
+    Thread.sleep(100);
 
-        // SE matched
-        doReturn(true).when(r).processSeInserted();
-        doReturn(false).when(r).isSePresentPing();
+    Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentMonitoringState());
+  }
 
-        r.addObserver(getObs());
-        r.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
-        Thread.sleep(100);
+  @Test
+  public void startRemovalSequence_ping_STOP() throws Exception {
 
-        r.terminateSeCommunication();
-        Thread.sleep(100);
+    // SE matched
+    doReturn(true).when(r).processSeInserted();
+    // doReturn(true).when(r).isSePresentPing();
+    doReturn(true).when(r).isSePresent();
 
-        Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentMonitoringState());
-    }
+    r.addObserver(getObs());
+    r.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+    Thread.sleep(100);
 
+    r.terminateSeCommunication();
+    Thread.sleep(100);
 
-    @Test
-    public void startRemovalSequence_ping_STOP() throws Exception {
+    Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentMonitoringState());
+  }
 
-        // SE matched
-        doReturn(true).when(r).processSeInserted();
-        // doReturn(true).when(r).isSePresentPing();
-        doReturn(true).when(r).isSePresent();
+  /*
+   * Helpers
+   */
 
-        r.addObserver(getObs());
-        r.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
-        Thread.sleep(100);
+  public static BlankSmartPresenceTheadedReader getSmartSpy(String pluginName, String readerName) {
+    BlankSmartPresenceTheadedReader r =
+        Mockito.spy(new BlankSmartPresenceTheadedReader(pluginName, readerName, 1));
+    return r;
+  }
 
-        r.terminateSeCommunication();
-        Thread.sleep(100);
+  public static BlankSmartPresenceTheadedReader getSmartPresenceMock(
+      String pluginName, String readerName) {
+    BlankSmartPresenceTheadedReader r = Mockito.mock(BlankSmartPresenceTheadedReader.class);
+    doReturn("test").when(r).getName();
+    return r;
+  }
 
-        Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentMonitoringState());
-    }
+  public static ObservableReader.ReaderObserver getObs() {
+    return new ObservableReader.ReaderObserver() {
+      @Override
+      public void update(ReaderEvent event) {}
+    };
+  }
 
-    /*
-     * Helpers
-     */
-
-    public static BlankSmartPresenceTheadedReader getSmartSpy(String pluginName,
-            String readerName) {
-        BlankSmartPresenceTheadedReader r =
-                Mockito.spy(new BlankSmartPresenceTheadedReader(pluginName, readerName, 1));
-        return r;
-    }
-
-    public static BlankSmartPresenceTheadedReader getSmartPresenceMock(String pluginName,
-            String readerName) {
-        BlankSmartPresenceTheadedReader r = Mockito.mock(BlankSmartPresenceTheadedReader.class);
-        doReturn("test").when(r).getName();
-        return r;
-    }
-
-
-    public static ObservableReader.ReaderObserver getObs() {
-        return new ObservableReader.ReaderObserver() {
-            @Override
-            public void update(ReaderEvent event) {}
-        };
-    }
-
-    public static ObservableReader.ReaderObserver countDownOnTimeout(final CountDownLatch lock) {
-        return new ObservableReader.ReaderObserver() {
-            @Override
-            public void update(ReaderEvent event) {
-                if (ReaderEvent.EventType.TIMEOUT_ERROR.equals(event.getEventType())) {
-                    lock.countDown();
-                }
-            }
-        };
-    }
-
+  public static ObservableReader.ReaderObserver countDownOnTimeout(final CountDownLatch lock) {
+    return new ObservableReader.ReaderObserver() {
+      @Override
+      public void update(ReaderEvent event) {
+        if (ReaderEvent.EventType.TIMEOUT_ERROR.equals(event.getEventType())) {
+          lock.countDown();
+        }
+      }
+    };
+  }
 }

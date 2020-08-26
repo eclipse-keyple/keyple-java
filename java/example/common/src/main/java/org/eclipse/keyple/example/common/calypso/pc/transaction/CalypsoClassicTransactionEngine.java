@@ -1,18 +1,18 @@
-/********************************************************************************
+/* **************************************************************************************
  * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * See the NOTICE file(s) distributed with this work for additional information regarding copyright
- * ownership.
+ * See the NOTICE file(s) distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * This program and the accompanying materials are made available under the terms of the Eclipse
- * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- ********************************************************************************/
+ ************************************************************************************** */
 package org.eclipse.keyple.example.common.calypso.pc.transaction;
 
-
 import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
+
 import java.util.Map;
 import java.util.SortedMap;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
@@ -42,355 +42,355 @@ import org.slf4j.profiler.Profiler;
  * This Calypso demonstration code consists in:
  *
  * <ol>
- * <li>Setting up a two-reader configuration and adding an observer method ({@link #update update})
- * <li>Starting a card operation when a PO presence is notified (processSeMatch
- * operateSeTransaction)
- * <li>Opening a logical channel with the SAM (C1 SAM is expected) see
- * ({@link CalypsoClassicInfo#SAM_C1_ATR_REGEX SAM_C1_ATR_REGEX})
- * <li>Attempting to open a logical channel with the PO with 3 options:
- * <ul>
- * <li>Selecting with a fake AID (1)
- * <li>Selecting with the Calypso AID and reading the event log file
- * <li>Selecting with a fake AID (2)
- * </ul>
- * <li>Display {@link AbstractDefaultSelectionsResponse} data
- * <li>If the Calypso selection succeeded, do a Calypso transaction
- * ({doCalypsoReadWriteTransaction(PoTransaction, ApduResponse, boolean)}
- * doCalypsoReadWriteTransaction}).
+ *   <li>Setting up a two-reader configuration and adding an observer method ({@link #update
+ *       update})
+ *   <li>Starting a card operation when a PO presence is notified (processSeMatch
+ *       operateSeTransaction)
+ *   <li>Opening a logical channel with the SAM (C1 SAM is expected) see ({@link
+ *       CalypsoClassicInfo#SAM_C1_ATR_REGEX SAM_C1_ATR_REGEX})
+ *   <li>Attempting to open a logical channel with the PO with 3 options:
+ *       <ul>
+ *         <li>Selecting with a fake AID (1)
+ *         <li>Selecting with the Calypso AID and reading the event log file
+ *         <li>Selecting with a fake AID (2)
+ *       </ul>
+ *   <li>Display {@link AbstractDefaultSelectionsResponse} data
+ *   <li>If the Calypso selection succeeded, do a Calypso transaction
+ *       ({doCalypsoReadWriteTransaction(PoTransaction, ApduResponse, boolean)}
+ *       doCalypsoReadWriteTransaction}).
  * </ol>
  *
- * <p>
- * The Calypso transactions demonstrated here shows the Keyple API in use with Calypso SE (PO and
+ * <p>The Calypso transactions demonstrated here shows the Keyple API in use with Calypso SE (PO and
  * SAM).
  *
- * <p>
- * Read the doc of each methods for further details.
+ * <p>Read the doc of each methods for further details.
  */
 @SuppressWarnings("unused")
 public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngine {
-    private static Logger logger = LoggerFactory.getLogger(CalypsoClassicTransactionEngine.class);
+  private static Logger logger = LoggerFactory.getLogger(CalypsoClassicTransactionEngine.class);
 
-    private SeReader poReader;
-    private SeReader samReader;
-    private SeResource<CalypsoSam> samResource = null;
+  private SeReader poReader;
+  private SeReader samReader;
+  private SeResource<CalypsoSam> samResource = null;
 
-    private SeSelection seSelection;
+  private SeSelection seSelection;
 
-    private boolean samChannelOpen;
+  private boolean samChannelOpen;
 
-    /* Constructor */
-    public CalypsoClassicTransactionEngine() {
-        super();
-        this.samChannelOpen = false;
-    }
+  /* Constructor */
+  public CalypsoClassicTransactionEngine() {
+    super();
+    this.samChannelOpen = false;
+  }
 
-    /* Assign readers to the transaction engine */
-    public void setReaders(SeReader poReader, SeReader samReader) {
-        this.poReader = poReader;
-        this.samReader = samReader;
-    }
+  /* Assign readers to the transaction engine */
+  public void setReaders(SeReader poReader, SeReader samReader) {
+    this.poReader = poReader;
+    this.samReader = samReader;
+  }
 
-    /**
-     * Do a Calypso transaction
-     * <p>
-     * Nominal case (the previous transaction was ratified):
-     * <ul>
-     * <li>Process opening
-     * <ul>
-     * <li>Reading the event log file</li>
-     * <li>Reading the contract list</li>
-     * </ul>
-     * </li>
-     * <li>Process PO commands
-     * <ul>
-     * <li>Reading the 4 contracts</li>
-     * </ul>
-     * </li>
-     * <li>Process closing
-     * <ul>
-     * <li>A new record is appended to the event log file</li>
-     * <li>The session is closed in CONTACTLESS_MODE (a ratification command is sent)</li>
-     * </ul>
-     * </li>
-     * </ul>
-     * <p>
-     * Alternate case (the previous transaction was not ratified):
-     * <ul>
-     * <li>Process opening
-     * <ul>
-     * <li>Reading the event log file</li>
-     * <li>Reading the contract list</li>
-     * </ul>
-     * </li>
-     * <li>Process closing
-     * <ul>
-     * <li>The session is closed in CONTACTLESS_MODE (a ratification command is sent)</li>
-     * </ul>
-     * </li>
-     * </ul>
-     * <p>
-     * The PO logical channel is kept open or closed according to the closeSeChannel flag
-     *
-     *
-     * @param calypsoPo the current {@link CalypsoPo}
-     * @param poTransaction PoTransaction object
-     * @param closeSeChannel flag to ask or not the channel closing at the end of the transaction
-     * @throws CalypsoPoTransactionException if a functional error occurs (including PO and SAM IO
-     *         errors)
-     * @throws CalypsoPoCommandException if a PO command failed
-     * @throws CalypsoSamCommandException if a SAM command failed
+  /**
+   * Do a Calypso transaction
+   *
+   * <p>Nominal case (the previous transaction was ratified):
+   *
+   * <ul>
+   *   <li>Process opening
+   *       <ul>
+   *         <li>Reading the event log file
+   *         <li>Reading the contract list
+   *       </ul>
+   *   <li>Process PO commands
+   *       <ul>
+   *         <li>Reading the 4 contracts
+   *       </ul>
+   *   <li>Process closing
+   *       <ul>
+   *         <li>A new record is appended to the event log file
+   *         <li>The session is closed in CONTACTLESS_MODE (a ratification command is sent)
+   *       </ul>
+   * </ul>
+   *
+   * <p>Alternate case (the previous transaction was not ratified):
+   *
+   * <ul>
+   *   <li>Process opening
+   *       <ul>
+   *         <li>Reading the event log file
+   *         <li>Reading the contract list
+   *       </ul>
+   *   <li>Process closing
+   *       <ul>
+   *         <li>The session is closed in CONTACTLESS_MODE (a ratification command is sent)
+   *       </ul>
+   * </ul>
+   *
+   * <p>The PO logical channel is kept open or closed according to the closeSeChannel flag
+   *
+   * @param calypsoPo the current {@link CalypsoPo}
+   * @param poTransaction PoTransaction object
+   * @param closeSeChannel flag to ask or not the channel closing at the end of the transaction
+   * @throws CalypsoPoTransactionException if a functional error occurs (including PO and SAM IO
+   *     errors)
+   * @throws CalypsoPoCommandException if a PO command failed
+   * @throws CalypsoSamCommandException if a SAM command failed
+   */
+  public void doCalypsoReadWriteTransaction(
+      CalypsoPo calypsoPo, PoTransaction poTransaction, boolean closeSeChannel) {
+
+    /*
+     * Read commands to execute during the opening step: EventLog, ContractList
      */
-    public void doCalypsoReadWriteTransaction(CalypsoPo calypsoPo, PoTransaction poTransaction,
-            boolean closeSeChannel) {
+    /* prepare Environment and Holder read record */
+    poTransaction.prepareReadRecordFile(
+        CalypsoClassicInfo.SFI_EnvironmentAndHolder, CalypsoClassicInfo.RECORD_NUMBER_1);
 
-        /*
-         * Read commands to execute during the opening step: EventLog, ContractList
-         */
-        /* prepare Environment and Holder read record */
-        poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_EnvironmentAndHolder,
-                CalypsoClassicInfo.RECORD_NUMBER_1);
+    /* prepare Event Log read record */
+    poTransaction.prepareReadRecordFile(
+        CalypsoClassicInfo.SFI_EventLog, CalypsoClassicInfo.RECORD_NUMBER_1);
 
-        /* prepare Event Log read record */
-        poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_EventLog,
-                CalypsoClassicInfo.RECORD_NUMBER_1);
+    /* prepare Contract List read record */
+    poTransaction.prepareReadRecordFile(
+        CalypsoClassicInfo.SFI_ContractList, CalypsoClassicInfo.RECORD_NUMBER_1);
 
-        /* prepare Contract List read record */
-        poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_ContractList,
-                CalypsoClassicInfo.RECORD_NUMBER_1);
-
-        if (logger.isInfoEnabled()) {
-            logger.info(
-                    "========= PO Calypso session ======= Opening ============================");
-        }
-
-        /*
-         * Open Session for the debit key - with reading of the first record of the cyclic EF of
-         * Environment and Holder file
-         */
-        poTransaction.processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT);
-
-        ElementaryFile efEventLog = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
-        byte[] eventLog = efEventLog.getData().getContent();
-        logger.info("EventLog file: {}", ByteArrayUtil.toHex(eventLog));
-
-        ElementaryFile efContractList = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_ContractList);
-
-        byte[] contractList = efContractList.getData().getContent(1);
-        logger.info("ContractList file: {}", ByteArrayUtil.toHex(contractList));
-
-        if (!calypsoPo.isDfRatified()) {
-            logger.info(
-                    "========= Previous Secure Session was not ratified. =====================");
-
-            /*
-             * [------------------------------------]
-             *
-             * The previous Secure Session has not been ratified, so we simply close the Secure
-             * Session.
-             *
-             * We would analyze here the event log read during the opening phase.
-             *
-             * [------------------------------------]
-             */
-
-            if (logger.isInfoEnabled()) {
-                logger.info(
-                        "========= PO Calypso session ======= Closing ============================");
-            }
-
-            /*
-             * A ratification command will be sent (CONTACTLESS_MODE).
-             */
-            poTransaction.prepareReleasePoChannel();
-            poTransaction.processClosing();
-
-        } else {
-            /*
-             * [------------------------------------]
-             *
-             * Place to analyze the PO profile available in seResponse: Environment/Holder,
-             * EventLog, ContractList.
-             *
-             * The information available allows the determination of the contract to be read.
-             *
-             * [------------------------------------]
-             */
-
-            if (logger.isInfoEnabled()) {
-                logger.info(
-                        "========= PO Calypso session ======= Processing of PO commands =======================");
-            }
-
-            /* Read all 4 contracts command, record size set to 29 */
-            poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_Contracts,
-                    CalypsoClassicInfo.RECORD_NUMBER_1, 4, 29);
-            /* proceed with the sending of commands, don't close the channel */
-            poTransaction.processPoCommands();
-
-            ElementaryFile efContracts = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_Contracts);
-
-            SortedMap<Integer, byte[]> records = efContracts.getData().getAllRecordsContent();
-            for (Map.Entry<Integer, byte[]> entry : records.entrySet()) {
-                logger.info("Contract #{}: {}", entry.getKey(),
-                        ByteArrayUtil.toHex(entry.getValue()));
-            }
-
-            if (logger.isInfoEnabled()) {
-                logger.info(
-                        "========= PO Calypso session ======= Closing ============================");
-            }
-
-            /*
-             * [------------------------------------]
-             *
-             * Place to analyze the Contract (in seResponse).
-             *
-             * The content of the contract will grant or not access.
-             *
-             * In any case, a new record will be added to the EventLog.
-             *
-             * [------------------------------------]
-             */
-
-            /* prepare Event Log append record */
-
-
-            poTransaction.prepareAppendRecord(CalypsoClassicInfo.SFI_EventLog,
-                    ByteArrayUtil.fromHex(CalypsoClassicInfo.eventLog_dataFill));
-            /*
-             * A ratification command will be sent (CONTACTLESS_MODE).
-             */
-            poTransaction.prepareReleasePoChannel();
-            poTransaction.processClosing();
-        }
-
-        logger.info("========= PO Calypso session ======= SUCCESS !!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    if (logger.isInfoEnabled()) {
+      logger.info("========= PO Calypso session ======= Opening ============================");
     }
 
-    public AbstractDefaultSelectionsRequest preparePoSelection() {
-        /*
-         * Initialize the selection process
-         */
-        seSelection = new SeSelection();
+    /*
+     * Open Session for the debit key - with reading of the first record of the cyclic EF of
+     * Environment and Holder file
+     */
+    poTransaction.processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT);
 
-        /* operate multiple PO selections */
-        String poFakeAid1 = "AABBCCDDEE"; // fake AID 1
-        String poFakeAid2 = "EEDDCCBBAA"; // fake AID 2
+    ElementaryFile efEventLog = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+    byte[] eventLog = efEventLog.getData().getContent();
+    logger.info("EventLog file: {}", ByteArrayUtil.toHex(eventLog));
 
-        /*
-         * Add selection case 1: Fake AID1, protocol ISO, target rev 3
-         */
-        seSelection.prepareSelection(new PoSelectionRequest(
-                PoSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
-                        .aidSelector(AidSelector.builder().aidToSelect(poFakeAid1).build())
-                        .invalidatedPo(InvalidatedPo.REJECT).build()));
+    ElementaryFile efContractList = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_ContractList);
 
-        /*
-         * Add selection case 2: Calypso application, protocol ISO, target rev 2 or 3
-         *
-         * addition of read commands to execute following the selection
-         */
-        PoSelectionRequest poSelectionRequestCalypsoAid = new PoSelectionRequest(PoSelector
-                .builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+    byte[] contractList = efContractList.getData().getContent(1);
+    logger.info("ContractList file: {}", ByteArrayUtil.toHex(contractList));
+
+    if (!calypsoPo.isDfRatified()) {
+      logger.info("========= Previous Secure Session was not ratified. =====================");
+
+      /*
+       * [------------------------------------]
+       *
+       * The previous Secure Session has not been ratified, so we simply close the Secure
+       * Session.
+       *
+       * We would analyze here the event log read during the opening phase.
+       *
+       * [------------------------------------]
+       */
+
+      if (logger.isInfoEnabled()) {
+        logger.info("========= PO Calypso session ======= Closing ============================");
+      }
+
+      /*
+       * A ratification command will be sent (CONTACTLESS_MODE).
+       */
+      poTransaction.prepareReleasePoChannel();
+      poTransaction.processClosing();
+
+    } else {
+      /*
+       * [------------------------------------]
+       *
+       * Place to analyze the PO profile available in seResponse: Environment/Holder,
+       * EventLog, ContractList.
+       *
+       * The information available allows the determination of the contract to be read.
+       *
+       * [------------------------------------]
+       */
+
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            "========= PO Calypso session ======= Processing of PO commands =======================");
+      }
+
+      /* Read all 4 contracts command, record size set to 29 */
+      poTransaction.prepareReadRecordFile(
+          CalypsoClassicInfo.SFI_Contracts, CalypsoClassicInfo.RECORD_NUMBER_1, 4, 29);
+      /* proceed with the sending of commands, don't close the channel */
+      poTransaction.processPoCommands();
+
+      ElementaryFile efContracts = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_Contracts);
+
+      SortedMap<Integer, byte[]> records = efContracts.getData().getAllRecordsContent();
+      for (Map.Entry<Integer, byte[]> entry : records.entrySet()) {
+        logger.info("Contract #{}: {}", entry.getKey(), ByteArrayUtil.toHex(entry.getValue()));
+      }
+
+      if (logger.isInfoEnabled()) {
+        logger.info("========= PO Calypso session ======= Closing ============================");
+      }
+
+      /*
+       * [------------------------------------]
+       *
+       * Place to analyze the Contract (in seResponse).
+       *
+       * The content of the contract will grant or not access.
+       *
+       * In any case, a new record will be added to the EventLog.
+       *
+       * [------------------------------------]
+       */
+
+      /* prepare Event Log append record */
+
+      poTransaction.prepareAppendRecord(
+          CalypsoClassicInfo.SFI_EventLog,
+          ByteArrayUtil.fromHex(CalypsoClassicInfo.eventLog_dataFill));
+      /*
+       * A ratification command will be sent (CONTACTLESS_MODE).
+       */
+      poTransaction.prepareReleasePoChannel();
+      poTransaction.processClosing();
+    }
+
+    logger.info("========= PO Calypso session ======= SUCCESS !!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+  }
+
+  public AbstractDefaultSelectionsRequest preparePoSelection() {
+    /*
+     * Initialize the selection process
+     */
+    seSelection = new SeSelection();
+
+    /* operate multiple PO selections */
+    String poFakeAid1 = "AABBCCDDEE"; // fake AID 1
+    String poFakeAid2 = "EEDDCCBBAA"; // fake AID 2
+
+    /*
+     * Add selection case 1: Fake AID1, protocol ISO, target rev 3
+     */
+    seSelection.prepareSelection(
+        new PoSelectionRequest(
+            PoSelector.builder()
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .aidSelector(AidSelector.builder().aidToSelect(poFakeAid1).build())
+                .invalidatedPo(InvalidatedPo.REJECT)
+                .build()));
+
+    /*
+     * Add selection case 2: Calypso application, protocol ISO, target rev 2 or 3
+     *
+     * addition of read commands to execute following the selection
+     */
+    PoSelectionRequest poSelectionRequestCalypsoAid =
+        new PoSelectionRequest(
+            PoSelector.builder()
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
                 .aidSelector(AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
-                .invalidatedPo(InvalidatedPo.ACCEPT).build());
+                .invalidatedPo(InvalidatedPo.ACCEPT)
+                .build());
 
-        poSelectionRequestCalypsoAid.prepareSelectFile(CalypsoClassicInfo.LID_DF_RT);
+    poSelectionRequestCalypsoAid.prepareSelectFile(CalypsoClassicInfo.LID_DF_RT);
 
-        poSelectionRequestCalypsoAid.prepareSelectFile(CalypsoClassicInfo.LID_EventLog);
+    poSelectionRequestCalypsoAid.prepareSelectFile(CalypsoClassicInfo.LID_EventLog);
 
-        poSelectionRequestCalypsoAid.prepareReadRecordFile(CalypsoClassicInfo.SFI_EventLog,
-                CalypsoClassicInfo.RECORD_NUMBER_1);
+    poSelectionRequestCalypsoAid.prepareReadRecordFile(
+        CalypsoClassicInfo.SFI_EventLog, CalypsoClassicInfo.RECORD_NUMBER_1);
 
-        seSelection.prepareSelection(poSelectionRequestCalypsoAid);
+    seSelection.prepareSelection(poSelectionRequestCalypsoAid);
 
-        /*
-         * Add selection case 3: Fake AID2, unspecified protocol, target rev 2 or 3
-         */
-        seSelection.prepareSelection(new PoSelectionRequest(
-                PoSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME)
-                        .aidSelector(AidSelector.builder().aidToSelect(poFakeAid2).build())
-                        .invalidatedPo(InvalidatedPo.REJECT).build()));
-
-        /*
-         * Add selection case 4: ATR selection, rev 1 atrregex
-         */
-        seSelection.prepareSelection(new PoSelectionRequest(
-                PoSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME)
-                        .atrFilter(new PoSelector.AtrFilter(CalypsoClassicInfo.ATR_REV1_REGEX))
-                        .invalidatedPo(InvalidatedPo.REJECT).build()));
-
-        return seSelection.getSelectionOperation();
-    }
-
-    /**
-     * Do the PO selection and possibly go on with Calypso transactions.
+    /*
+     * Add selection case 3: Fake AID2, unspecified protocol, target rev 2 or 3
      */
-    @Override
-    public void processSeMatch(AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
-        CalypsoPo calypsoPo = (CalypsoPo) seSelection
-                .processDefaultSelection(defaultSelectionsResponse).getActiveMatchingSe();
-        if (calypsoPo != null) {
-            logger.info("DF RT header: {}", calypsoPo.getDirectoryHeader());
+    seSelection.prepareSelection(
+        new PoSelectionRequest(
+            PoSelector.builder()
+                .seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME)
+                .aidSelector(AidSelector.builder().aidToSelect(poFakeAid2).build())
+                .invalidatedPo(InvalidatedPo.REJECT)
+                .build()));
 
-            ElementaryFile eventLogEF = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+    /*
+     * Add selection case 4: ATR selection, rev 1 atrregex
+     */
+    seSelection.prepareSelection(
+        new PoSelectionRequest(
+            PoSelector.builder()
+                .seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME)
+                .atrFilter(new PoSelector.AtrFilter(CalypsoClassicInfo.ATR_REV1_REGEX))
+                .invalidatedPo(InvalidatedPo.REJECT)
+                .build()));
 
-            logger.info("Event Log header: {}", eventLogEF.getHeader());
+    return seSelection.getSelectionOperation();
+  }
 
-            byte[] eventLogBytes =
-                    eventLogEF.getData().getContent(CalypsoClassicInfo.RECORD_NUMBER_1);
+  /** Do the PO selection and possibly go on with Calypso transactions. */
+  @Override
+  public void processSeMatch(AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
+    CalypsoPo calypsoPo =
+        (CalypsoPo)
+            seSelection.processDefaultSelection(defaultSelectionsResponse).getActiveMatchingSe();
+    if (calypsoPo != null) {
+      logger.info("DF RT header: {}", calypsoPo.getDirectoryHeader());
 
-            String eventLog = ByteArrayUtil.toHex(eventLogBytes);
+      ElementaryFile eventLogEF = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
 
-            logger.info("EventLog: {}", eventLog);
+      logger.info("Event Log header: {}", eventLogEF.getHeader());
 
-            try {
-                /* first time: check SAM */
-                if (!this.samChannelOpen) {
-                    /* the following method will throw an exception if the SAM is not available. */
-                    samResource = CalypsoUtilities.checkSamAndOpenChannel(samReader);
-                    this.samChannelOpen = true;
-                }
+      byte[] eventLogBytes = eventLogEF.getData().getContent(CalypsoClassicInfo.RECORD_NUMBER_1);
 
-                Profiler profiler = new Profiler("Entire transaction");
+      String eventLog = ByteArrayUtil.toHex(eventLogBytes);
 
-                /* Time measurement */
-                profiler.start("Initial selection");
+      logger.info("EventLog: {}", eventLog);
 
-                profiler.start("Calypso1");
-
-                /* define the SAM parameters to provide when creating PoTransaction */
-                PoSecuritySettings poSecuritySettings =
-                        CalypsoUtilities.getSecuritySettings(samResource);
-
-                PoTransaction poTransaction = new PoTransaction(
-                        new SeResource<CalypsoPo>(poReader, calypsoPo), poSecuritySettings);
-
-                doCalypsoReadWriteTransaction(calypsoPo, poTransaction, true);
-
-                profiler.stop();
-                logger.warn("{}{}", System.getProperty("line.separator"), profiler);
-            } catch (CalypsoPoCommandException e) {
-                logger.error("PO command {} failed with the status code 0x{}. {}", e.getCommand(),
-                        Integer.toHexString(e.getStatusCode() & 0xFFFF).toUpperCase(),
-                        e.getMessage());
-            }
-
+      try {
+        /* first time: check SAM */
+        if (!this.samChannelOpen) {
+          /* the following method will throw an exception if the SAM is not available. */
+          samResource = CalypsoUtilities.checkSamAndOpenChannel(samReader);
+          this.samChannelOpen = true;
         }
-    }
 
-    @Override
-    public void processSeInserted() {
-        logger.error("Unexpected SE insertion event");
-    }
+        Profiler profiler = new Profiler("Entire transaction");
 
-    @Override
-    public void processSeRemoved() {
-        logger.error("SE removal event");
-    }
+        /* Time measurement */
+        profiler.start("Initial selection");
 
-    @Override
-    public void processUnexpectedSeRemoval() {
-        logger.error("Unexpected SE removal event");
+        profiler.start("Calypso1");
+
+        /* define the SAM parameters to provide when creating PoTransaction */
+        PoSecuritySettings poSecuritySettings = CalypsoUtilities.getSecuritySettings(samResource);
+
+        PoTransaction poTransaction =
+            new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPo), poSecuritySettings);
+
+        doCalypsoReadWriteTransaction(calypsoPo, poTransaction, true);
+
+        profiler.stop();
+        logger.warn("{}{}", System.getProperty("line.separator"), profiler);
+      } catch (CalypsoPoCommandException e) {
+        logger.error(
+            "PO command {} failed with the status code 0x{}. {}",
+            e.getCommand(),
+            Integer.toHexString(e.getStatusCode() & 0xFFFF).toUpperCase(),
+            e.getMessage());
+      }
     }
+  }
+
+  @Override
+  public void processSeInserted() {
+    logger.error("Unexpected SE insertion event");
+  }
+
+  @Override
+  public void processSeRemoved() {
+    logger.error("SE removal event");
+  }
+
+  @Override
+  public void processUnexpectedSeRemoval() {
+    logger.error("Unexpected SE removal event");
+  }
 }

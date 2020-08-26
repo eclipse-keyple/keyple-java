@@ -1,14 +1,14 @@
-/********************************************************************************
+/* **************************************************************************************
  * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * See the NOTICE file(s) distributed with this work for additional information regarding copyright
- * ownership.
+ * See the NOTICE file(s) distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * This program and the accompanying materials are made available under the terms of the Eclipse
- * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- ********************************************************************************/
+ ************************************************************************************** */
 package org.eclipse.keyple.calypso.command.po.builder.security;
 
 import org.eclipse.keyple.calypso.command.PoClass;
@@ -23,36 +23,36 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  */
 public final class PoGetChallengeCmdBuild extends AbstractPoCommandBuilder<PoGetChallengeRespPars> {
 
-    private static final CalypsoPoCommand command = CalypsoPoCommand.GET_CHALLENGE;
+  private static final CalypsoPoCommand command = CalypsoPoCommand.GET_CHALLENGE;
 
-    /**
-     * Instantiates a new PoGetChallengeCmdBuild.
-     *
-     * @param poClass indicates which CLA byte should be used for the Apdu
-     */
-    public PoGetChallengeCmdBuild(PoClass poClass) {
-        super(command, null);
+  /**
+   * Instantiates a new PoGetChallengeCmdBuild.
+   *
+   * @param poClass indicates which CLA byte should be used for the Apdu
+   */
+  public PoGetChallengeCmdBuild(PoClass poClass) {
+    super(command, null);
 
-        byte p1 = (byte) 0x00;
-        byte p2 = (byte) 0x00;
-        byte le = (byte) 0x08;
+    byte p1 = (byte) 0x00;
+    byte p2 = (byte) 0x00;
+    byte le = (byte) 0x08;
 
-        this.request = setApduRequest(poClass.getValue(), command, p1, p2, null, le);
-    }
+    this.request = setApduRequest(poClass.getValue(), command, p1, p2, null, le);
+  }
 
-    @Override
-    public PoGetChallengeRespPars createResponseParser(ApduResponse apduResponse) {
-        return new PoGetChallengeRespPars(apduResponse, this);
-    }
+  @Override
+  public PoGetChallengeRespPars createResponseParser(ApduResponse apduResponse) {
+    return new PoGetChallengeRespPars(apduResponse, this);
+  }
 
-    /**
-     * This command doesn't modify the contents of the PO and therefore doesn't uses the session
-     * buffer.
-     * 
-     * @return false
-     */
-    @Override
-    public boolean isSessionBufferUsed() {
-        return false;
-    }
+  /**
+   * This command doesn't modify the contents of the PO and therefore doesn't uses the session
+   * buffer.
+   *
+   * @return false
+   */
+  @Override
+  public boolean isSessionBufferUsed() {
+    return false;
+  }
 }

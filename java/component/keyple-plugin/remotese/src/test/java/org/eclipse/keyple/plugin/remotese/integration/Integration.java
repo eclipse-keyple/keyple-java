@@ -1,17 +1,15 @@
-/********************************************************************************
+/* **************************************************************************************
  * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * See the NOTICE file(s) distributed with this work for additional information regarding copyright
- * ownership.
+ * See the NOTICE file(s) distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * This program and the accompanying materials are made available under the terms of the Eclipse
- * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- ********************************************************************************/
+ ************************************************************************************** */
 package org.eclipse.keyple.plugin.remotese.integration;
-
-
 
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
@@ -36,158 +34,146 @@ import org.slf4j.LoggerFactory;
 
 public class Integration {
 
-    private static final Logger logger = LoggerFactory.getLogger(Integration.class);
-    public static final String SLAVE_STUB = "SLAVE_STUB";
-    public static final String SLAVE_POOL_STUB = "SLAVE_POOL_STUB";
+  private static final Logger logger = LoggerFactory.getLogger(Integration.class);
+  public static final String SLAVE_STUB = "SLAVE_STUB";
+  public static final String SLAVE_POOL_STUB = "SLAVE_POOL_STUB";
 
-    /**
-     * Create a Spy MasterAPI
-     * 
-     * @param node
-     * @return
-     */
-    public static MasterAPI createSpyMasterAPI(DtoNode node, String pluginName) {
+  /**
+   * Create a Spy MasterAPI
+   *
+   * @param node
+   * @return
+   */
+  public static MasterAPI createSpyMasterAPI(DtoNode node, String pluginName) {
 
-        // Create Master services : masterAPI
-        return Mockito.spy(new MasterAPI(SeProxyService.getInstance(), node, 10000,
-                MasterAPI.PLUGIN_TYPE_DEFAULT, pluginName));
+    // Create Master services : masterAPI
+    return Mockito.spy(
+        new MasterAPI(
+            SeProxyService.getInstance(), node, 10000, MasterAPI.PLUGIN_TYPE_DEFAULT, pluginName));
+  }
+
+  /**
+   * Create a Spy SlaveAPI
+   *
+   * @param node
+   * @return
+   */
+  public static SlaveAPI createSpySlaveAPI(DtoNode node, String masterNodeId) {
+    // Binds node for outgoing KeypleDto
+    return Mockito.spy(new SlaveAPI(SeProxyService.getInstance(), node, masterNodeId));
+  }
+
+  /**
+   * Create a Stub reader
+   *
+   * @param stubReaderName
+   * @return
+   * @throws InterruptedException
+   * @throws KeypleReaderNotFoundException
+   */
+  public static StubReader createStubReader(
+      String stubReaderName, TransmissionMode transmissionMode)
+      throws InterruptedException, KeypleReaderNotFoundException, KeyplePluginNotFoundException {
+
+    StubPlugin stubPlugin = createStubPlugin();
+
+    // register an stubPluginObserver to start the plugin monitoring thread
+    // stubPlugin.addObserver(observer); //do not observe so the monitoring thread is not
+    // created
+
+    logger.debug("Stub plugin count observers : {}", stubPlugin.countObservers());
+
+    logger.debug("Create a new StubReader : {}", stubReaderName);
+    stubPlugin.plugStubReader(stubReaderName, transmissionMode, true);
+
+    Thread.sleep(100);
+
+    // Get the created proxy reader
+    return (StubReader) stubPlugin.getReader(stubReaderName);
+  }
+
+  public static void unregisterAllPlugin(String remoteSePluginName) {
+    SeProxyService.getInstance().unregisterPlugin(SLAVE_STUB);
+    SeProxyService.getInstance().unregisterPlugin(SLAVE_POOL_STUB);
+    SeProxyService.getInstance().unregisterPlugin(remoteSePluginName);
+  }
+
+  public static StubPlugin createStubPlugin() {
+
+    try {
+      // get SeProxyService
+      SeProxyService seProxyService = SeProxyService.getInstance();
+
+      // register plugin
+      StubPlugin stubPlugin =
+          (StubPlugin) seProxyService.registerPlugin(new StubPluginFactory(SLAVE_STUB));
+
+      return stubPlugin;
+    } catch (KeyplePluginInstantiationException e) {
+      e.printStackTrace();
     }
 
-    /**
-     * Create a Spy SlaveAPI
-     * 
-     * @param node
-     * @return
-     */
-    public static SlaveAPI createSpySlaveAPI(DtoNode node, String masterNodeId) {
-        // Binds node for outgoing KeypleDto
-        return Mockito.spy(new SlaveAPI(SeProxyService.getInstance(), node, masterNodeId));
+    return null;
+  }
+
+  /**
+   * Create a Stub Reader Pool Plugin
+   *
+   * @return
+   * @throws InterruptedException
+   * @throws KeypleReaderNotFoundException
+   */
+  public static StubPoolPlugin createStubPoolPlugin() {
+
+    SeProxyService seProxyService = SeProxyService.getInstance();
+
+    StubPoolPluginFactory stubPoolPluginFactory = new StubPoolPluginFactory(SLAVE_POOL_STUB);
+
+    try {
+      StubPoolPlugin poolPlugin =
+          (StubPoolPlugin) seProxyService.registerPlugin(stubPoolPluginFactory);
+
+      return poolPlugin;
+    } catch (KeyplePluginInstantiationException e) {
+      e.printStackTrace();
     }
+    return null;
+  }
 
-    /**
-     * Create a Stub reader
-     * 
-     * @param stubReaderName
-     * @return
-     * @throws InterruptedException
-     * @throws KeypleReaderNotFoundException
-     */
-    public static StubReader createStubReader(String stubReaderName,
-            TransmissionMode transmissionMode) throws InterruptedException,
-            KeypleReaderNotFoundException, KeyplePluginNotFoundException {
+  /**
+   * Create a mock method for onDto() that checks that keypleDto contains an exception
+   *
+   * @return
+   */
+  public static Answer<TransportDto> assertContainsException() {
+    return new Answer<TransportDto>() {
+      @Override
+      public TransportDto answer(InvocationOnMock invocationOnMock) throws Throwable {
+        TransportDto transportDto = invocationOnMock.getArgument(0);
 
-        StubPlugin stubPlugin = createStubPlugin();
+        // assert that returning dto DOES contain an exception
+        Assert.assertTrue(KeypleDtoHelper.containsException(transportDto.getKeypleDTO()));
+        return new LocalTransportDto(
+            KeypleDtoHelper.NoResponse(transportDto.getKeypleDTO().getId()), null);
+      }
+    };
+  }
 
-        // register an stubPluginObserver to start the plugin monitoring thread
-        // stubPlugin.addObserver(observer); //do not observe so the monitoring thread is not
-        // created
+  public static DtoNode getFakeDtoNode() {
+    return new DtoNode() {
+      @Override
+      public void setDtoHandler(DtoHandler handler) {}
 
-        logger.debug("Stub plugin count observers : {}", stubPlugin.countObservers());
+      @Override
+      public void sendDTO(TransportDto message) {}
 
-        logger.debug("Create a new StubReader : {}", stubReaderName);
-        stubPlugin.plugStubReader(stubReaderName, transmissionMode, true);
+      @Override
+      public void sendDTO(KeypleDto message) {}
 
-        Thread.sleep(100);
-
-        // Get the created proxy reader
-        return (StubReader) stubPlugin.getReader(stubReaderName);
-    }
-
-    public static void unregisterAllPlugin(String remoteSePluginName) {
-        SeProxyService.getInstance().unregisterPlugin(SLAVE_STUB);
-        SeProxyService.getInstance().unregisterPlugin(SLAVE_POOL_STUB);
-        SeProxyService.getInstance().unregisterPlugin(remoteSePluginName);
-
-    }
-
-
-    public static StubPlugin createStubPlugin() {
-
-        try {
-            // get SeProxyService
-            SeProxyService seProxyService = SeProxyService.getInstance();
-
-            // register plugin
-            StubPlugin stubPlugin =
-                    (StubPlugin) seProxyService.registerPlugin(new StubPluginFactory(SLAVE_STUB));
-
-            return stubPlugin;
-        } catch (KeyplePluginInstantiationException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-
-    }
-
-    /**
-     * Create a Stub Reader Pool Plugin
-     *
-     * @return
-     * @throws InterruptedException
-     * @throws KeypleReaderNotFoundException
-     */
-    public static StubPoolPlugin createStubPoolPlugin() {
-
-        SeProxyService seProxyService = SeProxyService.getInstance();
-
-        StubPoolPluginFactory stubPoolPluginFactory = new StubPoolPluginFactory(SLAVE_POOL_STUB);
-
-        try {
-            StubPoolPlugin poolPlugin =
-                    (StubPoolPlugin) seProxyService.registerPlugin(stubPoolPluginFactory);
-
-            return poolPlugin;
-        } catch (KeyplePluginInstantiationException e) {
-            e.printStackTrace();
-        }
-        return null;
-
-
-    }
-
-
-    /**
-     * Create a mock method for onDto() that checks that keypleDto contains an exception
-     * 
-     * @return
-     */
-    public static Answer<TransportDto> assertContainsException() {
-        return new Answer<TransportDto>() {
-            @Override
-            public TransportDto answer(InvocationOnMock invocationOnMock) throws Throwable {
-                TransportDto transportDto = invocationOnMock.getArgument(0);
-
-                // assert that returning dto DOES contain an exception
-                Assert.assertTrue(KeypleDtoHelper.containsException(transportDto.getKeypleDTO()));
-                return new LocalTransportDto(
-                        KeypleDtoHelper.NoResponse(transportDto.getKeypleDTO().getId()), null);
-            }
-        };
-    }
-
-    public static DtoNode getFakeDtoNode() {
-        return new DtoNode() {
-            @Override
-            public void setDtoHandler(DtoHandler handler) {
-
-            }
-
-            @Override
-            public void sendDTO(TransportDto message) {
-
-            }
-
-            @Override
-            public void sendDTO(KeypleDto message) {
-
-            }
-
-            @Override
-            public String getNodeId() {
-                return "";
-            }
-        };
-    }
-
+      @Override
+      public String getNodeId() {
+        return "";
+      }
+    };
+  }
 }
