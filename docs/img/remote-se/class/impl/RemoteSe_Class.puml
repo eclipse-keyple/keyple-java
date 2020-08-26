@@ -1,6 +1,6 @@
 @startuml
 title
-    Keyple Plugin Remote SE (19/08/2020)
+    Keyple Plugin Remote SE (25/08/2020)
 end title
 
 ' == THEME ==
@@ -347,17 +347,17 @@ package org.eclipse.keyple.plugin.remotese {
                 # String nativeReaderName
                 - String sessionId
                 __
-                ~ AbstractVirtualReader (String pluginName,\n String name,\n String nativeReaderName,\n AbstractKeypleNode node,\n String sessionId)
+                ~ AbstractVirtualReader (String pluginName,\n String name,\n String nativeReaderName,\n AbstractKeypleNode node)
                 ..
                 ~ String getSessionId ()
                 ~ void setSessionId (String sessionId)
             }
             ~class "**final** VirtualReader" as VirtualReader extends AbstractVirtualReader {
-                ~ VirtualReader (String name,\n AbstractKeypleNode node,\n String sessionId)
+                ~ VirtualReader (String pluginName,\n String nativeReaderName,\n AbstractKeypleNode node)
             }
             ~class "<< <back:#FDEBD0>ObservableReaderNotifier</back> >>\n**final** VirtualObservableReader" as VirtualObservableReader extends AbstractVirtualReader {
                 __
-                ~ VirtualObservableReader (String name,\n AbstractKeypleNode node,\n String sessionId)
+                ~ VirtualObservableReader (String pluginName,\n String nativeReaderName,\n AbstractKeypleNode node)
                 ..
                 ~ void onEvent (KeypleMessageDto msg)
             }
