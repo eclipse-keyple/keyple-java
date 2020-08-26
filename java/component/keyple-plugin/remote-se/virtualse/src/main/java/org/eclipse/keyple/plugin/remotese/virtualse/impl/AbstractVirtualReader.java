@@ -188,17 +188,17 @@ abstract class AbstractVirtualReader extends AbstractReader {
     parameters.put(key, value);
   }
 
-  /**
-   * (private)<br>
-   * <li>Build the message using the provided action and body.
-   * <li>Send it as a request.
-   * <li>If an error is contained in the response, then throw an exception.
-   *
-   * @param action The action (must be not null).
-   * @param body The body (optional).
-   * @return a not null reference.
-   */
-  private KeypleMessageDto sendRequest(KeypleMessageDto.Action action, JsonObject body) {
+    /**
+     * (private)<br>
+     * <li>Build the message using the provided action and body.
+     * <li>Send it as a request.
+     * <li>If an error is contained in the response, then throw an exception.
+     *
+     * @param action The action (must be not null).
+     * @param body The body (optional).
+     * @return a not null reference.
+     */
+    protected KeypleMessageDto sendRequest(KeypleMessageDto.Action action, JsonObject body) {
 
     // Build the message
     KeypleMessageDto message =
