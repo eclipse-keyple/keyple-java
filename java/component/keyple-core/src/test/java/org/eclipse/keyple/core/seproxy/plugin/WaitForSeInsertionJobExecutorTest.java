@@ -122,8 +122,8 @@ public class WaitForSeInsertionJobExecutorTest extends CoreBaseTest {
     Thread.sleep(20l);
 
     /* Assert */
-    // switched to the same state to relaunch the monitoring job
-    verify(r, times(1)).switchState(WAIT_FOR_SE_INSERTION);
+    // wait for the card removal
+    verify(r, times(1)).switchState(WAIT_FOR_SE_REMOVAL);
   }
 
   // @Test
