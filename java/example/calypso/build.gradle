@@ -28,7 +28,7 @@ project(remotese_subproject) {
             licenseHeaderFile rootProject.file('.build/spotless.license.txt')
             importOrder 'java', 'javax', 'org', 'com', 'com.diffplug', ''
             removeUnusedImports()
-            eclipse().configFile rootProject.file('.build/spotless.eclipseformat.xml')
+            googleJavaFormat()
         }
 
         format 'misc', {

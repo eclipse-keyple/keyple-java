@@ -213,7 +213,7 @@ spotless {
         licenseHeaderFile '.build/spotless.license.txt'
         importOrder 'java', 'javax', 'org', 'com', 'com.diffplug', ''
         removeUnusedImports()
-        eclipse().configFile '.build/spotless.eclipseformat.xml'
+        googleJavaFormat()
     }
 
     format 'misc', {

@@ -1,16 +1,15 @@
-/********************************************************************************
+/* **************************************************************************************
  * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * See the NOTICE file(s) distributed with this work for additional information regarding copyright
- * ownership.
+ * See the NOTICE file(s) distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * This program and the accompanying materials are made available under the terms of the Eclipse
- * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- ********************************************************************************/
+ ************************************************************************************** */
 package org.eclipse.keyple.plugin.remotese.rm.json;
-
 
 import java.io.IOException;
 import java.util.*;
@@ -26,152 +25,145 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 public class SampleFactory {
 
-    public static KeypleReaderIOException getAStackedKeypleException() {
-        return new KeypleReaderIOException("Keyple Reader Exception", new IOException("IO Error",
-                new IOException("IO Error2", new RuntimeException("sdfsdf"))));
-    }
+  public static KeypleReaderIOException getAStackedKeypleException() {
+    return new KeypleReaderIOException(
+        "Keyple Reader Exception",
+        new IOException("IO Error", new IOException("IO Error2", new RuntimeException("sdfsdf"))));
+  }
 
-    public static KeypleReaderIOException getASimpleKeypleException() {
-        return new KeypleReaderIOException("Keyple Reader Exception");
-    }
+  public static KeypleReaderIOException getASimpleKeypleException() {
+    return new KeypleReaderIOException("Keyple Reader Exception");
+  }
 
-    public static AbstractDefaultSelectionsRequest getSelectionRequest() {
-        return new DefaultSelectionsRequest(getASeRequestList_ISO14443_4(),
-                MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
-    }
+  public static AbstractDefaultSelectionsRequest getSelectionRequest() {
+    return new DefaultSelectionsRequest(
+        getASeRequestList_ISO14443_4(),
+        MultiSeRequestProcessing.FIRST_MATCH,
+        ChannelControl.KEEP_OPEN);
+  }
 
-    public static ObservableReader.NotificationMode getNotificationMode() {
-        return ObservableReader.NotificationMode.ALWAYS;
-    }
+  public static ObservableReader.NotificationMode getNotificationMode() {
+    return ObservableReader.NotificationMode.ALWAYS;
+  }
 
-    public static List<SeRequest> getASeRequestList_ISO14443_4() {
-        String poAid = "A000000291A000000191";
+  public static List<SeRequest> getASeRequestList_ISO14443_4() {
+    String poAid = "A000000291A000000191";
 
-        List<ApduRequest> poApduRequests;
-        poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
+    List<ApduRequest> poApduRequests;
+    poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
-        SeSelector.AidSelector aidSelector = SeSelector.AidSelector.builder()//
-                .aidToSelect(poAid)//
-                .build();
+    SeSelector.AidSelector aidSelector =
+        SeSelector.AidSelector.builder().aidToSelect(poAid).build();
 
-        SeSelector seSelector = SeSelector.builder() //
-                .aidSelector(aidSelector) //
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)//
-                .build();
+    SeSelector seSelector =
+        SeSelector.builder()
+            .aidSelector(aidSelector)
+            .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+            .build();
 
-        SeRequest seRequest = new SeRequest(seSelector, poApduRequests);
+    SeRequest seRequest = new SeRequest(seSelector, poApduRequests);
 
-        List<SeRequest> seRequests = new ArrayList<SeRequest>();
+    List<SeRequest> seRequests = new ArrayList<SeRequest>();
 
-        seRequests.add(seRequest);
+    seRequests.add(seRequest);
 
-        return seRequests;
+    return seRequests;
+  }
 
-    }
+  public static List<SeRequest> getASeRequestList() {
+    String poAid = "A000000291A000000191";
 
+    List<ApduRequest> poApduRequests;
+    poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
-    public static List<SeRequest> getASeRequestList() {
-        String poAid = "A000000291A000000191";
+    SeRequest seRequest = new SeRequest(poApduRequests);
 
-        List<ApduRequest> poApduRequests;
-        poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
+    List<SeRequest> seRequests = new ArrayList<SeRequest>();
 
-        SeRequest seRequest = new SeRequest(poApduRequests);
+    seRequests.add(seRequest);
 
-        List<SeRequest> seRequests = new ArrayList<SeRequest>();
+    return seRequests;
+  }
 
-        seRequests.add(seRequest);
+  public static SeRequest getASeRequest_ISO14443_4() {
+    String poAid = "A000000291A000000191";
 
-        return seRequests;
+    List<ApduRequest> poApduRequests;
+    poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
-    }
+    SeSelector.AidSelector aidSelector =
+        SeSelector.AidSelector.builder().aidToSelect(poAid).build();
 
-    public static SeRequest getASeRequest_ISO14443_4() {
-        String poAid = "A000000291A000000191";
+    SeSelector seSelector =
+        SeSelector.builder()
+            .aidSelector(aidSelector)
+            .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+            .build();
 
-        List<ApduRequest> poApduRequests;
-        poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
+    SeRequest seRequest = new SeRequest(seSelector, poApduRequests);
+    return seRequest;
+  }
 
-        SeSelector.AidSelector aidSelector = SeSelector.AidSelector.builder()//
-                .aidToSelect(poAid)//
-                .build();
+  public static SeRequest getASeRequest() {
+    String poAid = "A000000291A000000191";
 
-        SeSelector seSelector = SeSelector.builder() //
-                .aidSelector(aidSelector) //
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)//
-                .build();
+    List<ApduRequest> poApduRequests;
+    poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
-        SeRequest seRequest = new SeRequest(seSelector, poApduRequests);
-        return seRequest;
+    SeRequest seRequest = new SeRequest(poApduRequests);
+    return seRequest;
+  }
 
-    }
+  public static List<SeRequest> getCompleteRequestList() {
+    String poAid = "A000000291A000000191";
 
-    public static SeRequest getASeRequest() {
-        String poAid = "A000000291A000000191";
+    List<ApduRequest> poApduRequests;
 
-        List<ApduRequest> poApduRequests;
-        poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
+    poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
-        SeRequest seRequest = new SeRequest(poApduRequests);
-        return seRequest;
+    SeSelector.AidSelector aidSelector =
+        SeSelector.AidSelector.builder().aidToSelect(poAid).build();
 
-    }
+    SeSelector aidSeSelector =
+        SeSelector.builder()
+            .aidSelector(aidSelector)
+            .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+            .build();
 
-    public static List<SeRequest> getCompleteRequestList() {
-        String poAid = "A000000291A000000191";
+    SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter("/regex/");
 
-        List<ApduRequest> poApduRequests;
+    SeSelector seAtrSelector =
+        SeSelector.builder()
+            .atrFilter(atrFilter)
+            .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
+            .build();
 
-        poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
+    SeRequest seRequest = new SeRequest(aidSeSelector, poApduRequests);
 
-        SeSelector.AidSelector aidSelector = SeSelector.AidSelector.builder()//
-                .aidToSelect(poAid)//
-                .build();
+    SeRequest seRequest2 = new SeRequest(seAtrSelector, poApduRequests);
 
-        SeSelector aidSeSelector = SeSelector.builder() //
-                .aidSelector(aidSelector) //
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)//
-                .build();
+    List<SeRequest> seRequests = new ArrayList<SeRequest>();
+    seRequests.add(seRequest);
+    seRequests.add(seRequest2);
 
-        SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter("/regex/");
+    return seRequests;
+  }
 
-        SeSelector seAtrSelector = SeSelector.builder() //
-                .atrFilter(atrFilter) //
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)//
-                .build();
+  public static List<SeResponse> getCompleteResponseSet() {
+    List<SeResponse> seResponses = new ArrayList<SeResponse>();
 
-        SeRequest seRequest = new SeRequest(aidSeSelector, poApduRequests);
+    ApduResponse apdu = new ApduResponse(ByteArrayUtil.fromHex("9000"), new HashSet<Integer>());
+    ApduResponse apdu2 = new ApduResponse(ByteArrayUtil.fromHex("9000"), new HashSet<Integer>());
 
-        SeRequest seRequest2 = new SeRequest(seAtrSelector, poApduRequests);
+    List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
+    apduResponses.add(apdu);
+    apduResponses.add(apdu2);
 
-        List<SeRequest> seRequests = new ArrayList<SeRequest>();
-        seRequests.add(seRequest);
-        seRequests.add(seRequest2);
+    seResponses.add(
+        new SeResponse(true, true, new SelectionStatus(null, apdu, true), apduResponses));
+    seResponses.add(
+        new SeResponse(true, true, new SelectionStatus(null, apdu, true), apduResponses));
 
-        return seRequests;
-    }
-
-    public static List<SeResponse> getCompleteResponseSet() {
-        List<SeResponse> seResponses = new ArrayList<SeResponse>();
-
-        ApduResponse apdu = new ApduResponse(ByteArrayUtil.fromHex("9000"), new HashSet<Integer>());
-        ApduResponse apdu2 =
-                new ApduResponse(ByteArrayUtil.fromHex("9000"), new HashSet<Integer>());
-
-        List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
-        apduResponses.add(apdu);
-        apduResponses.add(apdu2);
-
-        seResponses.add(
-                new SeResponse(true, true, new SelectionStatus(null, apdu, true), apduResponses));
-        seResponses.add(
-                new SeResponse(true, true, new SelectionStatus(null, apdu, true), apduResponses));
-
-        return seResponses;
-
-
-    }
-
-
-
+    return seResponses;
+  }
 }

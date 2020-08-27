@@ -1,14 +1,14 @@
-/********************************************************************************
+/* **************************************************************************************
  * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * See the NOTICE file(s) distributed with this work for additional information regarding copyright
- * ownership.
+ * See the NOTICE file(s) distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * This program and the accompanying materials are made available under the terms of the Eclipse
- * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- ********************************************************************************/
+ ************************************************************************************** */
 package org.eclipse.keyple.calypso.transaction;
 
 import static org.eclipse.keyple.calypso.transaction.SamResourceManagerFactory.DEFAULT_SLEEP_TIME;
@@ -16,6 +16,7 @@ import static org.eclipse.keyple.calypso.transaction.SamResourceManagerFactory.M
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -38,121 +39,125 @@ import org.slf4j.LoggerFactory;
 @RunWith(MockitoJUnitRunner.class)
 public class ManagedSamResourceManagerDefaultTest extends CalypsoBaseTest {
 
+  private static final Logger logger =
+      LoggerFactory.getLogger(ManagedSamResourceManagerDefaultTest.class);
 
-    private static final Logger logger =
-            LoggerFactory.getLogger(ManagedSamResourceManagerDefaultTest.class);
+  private static final String SAM_READER_NAME = "sam-reader-name";
 
-    private static final String SAM_READER_NAME = "sam-reader-name";
+  @Before
+  public void setUp() {
+    logger.info("------------------------------");
+    logger.info("Test {}", name.getMethodName() + "");
+    logger.info("------------------------------");
+  }
 
-    @Before
-    public void setUp() {
-        logger.info("------------------------------");
-        logger.info("Test {}", name.getMethodName() + "");
-        logger.info("------------------------------");
+  @Test
+  public void waitResources() {
+    // init SamResourceManager with a not mathching filter
+    SamResourceManagerDefault srmSpy = srmSpy("notMatchingFilter");
+    long start = System.currentTimeMillis();
+    Boolean exceptionThrown = false;
+
+    // test
+    SeResource<CalypsoSam> out = null;
+    try {
+      out =
+          srmSpy.allocateSamResource(
+              SamResourceManager.AllocationMode.BLOCKING,
+              SamIdentifier.builder()
+                  .samRevision(SamRevision.AUTO)
+                  .serialNumber("any")
+                  .groupReference("any")
+                  .build());
+
+    } catch (CalypsoNoSamResourceAvailableException e) {
+      exceptionThrown = true;
     }
+    long stop = System.currentTimeMillis();
 
-    @Test
-    public void waitResources() {
-        // init SamResourceManager with a not mathching filter
-        SamResourceManagerDefault srmSpy = srmSpy("notMatchingFilter");
-        long start = System.currentTimeMillis();
-        Boolean exceptionThrown = false;
+    // assert an exception is thrown after MAX_BLOCKING_TIME
+    Assert.assertNull(out);
+    Assert.assertTrue(exceptionThrown);
+    Assert.assertTrue(stop - start > MAX_BLOCKING_TIME);
+  }
 
-        // test
-        SeResource<CalypsoSam> out = null;
-        try {
-            out = srmSpy.allocateSamResource(SamResourceManager.AllocationMode.BLOCKING,
-                    SamIdentifier.builder().samRevision(SamRevision.AUTO).serialNumber("any")
-                            .groupReference("any").build());
+  @Test
+  public void getSamResource() {
 
-        } catch (CalypsoNoSamResourceAvailableException e) {
-            exceptionThrown = true;
-        }
-        long stop = System.currentTimeMillis();
+    // init SamResourceManager with a mathching filter
+    SamResourceManagerDefault srmSpy = srmSpy(".*");
+    // doReturn(samResourceMock()).when(srmSpy).createSamResource(any(SeReader.class));
 
-        // assert an exception is thrown after MAX_BLOCKING_TIME
-        Assert.assertNull(out);
-        Assert.assertTrue(exceptionThrown);
-        Assert.assertTrue(stop - start > MAX_BLOCKING_TIME);
-    }
+    long start = System.currentTimeMillis();
 
-    @Test
-    public void getSamResource() {
+    // test
+    SeResource<CalypsoSam> out =
+        srmSpy.allocateSamResource(
+            SamResourceManager.AllocationMode.BLOCKING,
+            SamIdentifier.builder().samRevision(SamRevision.AUTO).build());
 
-        // init SamResourceManager with a mathching filter
-        SamResourceManagerDefault srmSpy = srmSpy(".*");
-        // doReturn(samResourceMock()).when(srmSpy).createSamResource(any(SeReader.class));
+    long stop = System.currentTimeMillis();
 
-        long start = System.currentTimeMillis();
+    // assert results
+    Assert.assertNotNull(out);
+    Assert.assertTrue(stop - start < MAX_BLOCKING_TIME);
+  }
 
-        // test
-        SeResource<CalypsoSam> out =
-                srmSpy.allocateSamResource(SamResourceManager.AllocationMode.BLOCKING,
-                        SamIdentifier.builder().samRevision(SamRevision.AUTO).build());
+  /*
+   * Helpers
+   */
 
-        long stop = System.currentTimeMillis();
+  SeResponse samSelectionSuccess() {
+    SelectionStatus selectionStatus = Mockito.mock(SelectionStatus.class);
+    when(selectionStatus.hasMatched()).thenReturn(true);
+    when(selectionStatus.getAtr())
+        .thenReturn(new AnswerToReset(ByteArrayUtil.fromHex(CalypsoSamTest.ATR1)));
 
-        // assert results
-        Assert.assertNotNull(out);
-        Assert.assertTrue(stop - start < MAX_BLOCKING_TIME);
-    }
+    SeResponse seResponse = Mockito.mock(SeResponse.class);
+    when(seResponse.getSelectionStatus()).thenReturn(selectionStatus);
+    when(seResponse.isLogicalChannelOpen()).thenReturn(true);
 
+    return seResponse;
+  }
 
+  // get a sam manager spy with a selectable sam
+  SamResourceManagerDefault srmSpy(String samFilter) {
 
-    /*
-     * Helpers
-     */
+    List<SeResponse> selectionResponses = new ArrayList<SeResponse>();
+    selectionResponses.add(samSelectionSuccess());
 
-    SeResponse samSelectionSuccess() {
-        SelectionStatus selectionStatus = Mockito.mock(SelectionStatus.class);
-        when(selectionStatus.hasMatched()).thenReturn(true);
-        when(selectionStatus.getAtr())
-                .thenReturn(new AnswerToReset(ByteArrayUtil.fromHex(CalypsoSamTest.ATR1)));
+    // create a mock reader
+    ProxyReader reader = Mockito.mock(ProxyReader.class);
+    when(reader.getName()).thenReturn(SAM_READER_NAME);
+    when(reader.isSePresent()).thenReturn(true);
+    doReturn(selectionResponses)
+        .when(reader)
+        .transmitSeRequests(
+            any(List.class), any(MultiSeRequestProcessing.class), any(ChannelControl.class));
 
-        SeResponse seResponse = Mockito.mock(SeResponse.class);
-        when(seResponse.getSelectionStatus()).thenReturn(selectionStatus);
-        when(seResponse.isLogicalChannelOpen()).thenReturn(true);
+    // create a list of mock readers
+    ConcurrentMap<String, SeReader> readers = new ConcurrentHashMap<String, SeReader>();
+    readers.put(reader.getName(), reader);
 
-        return seResponse;
-    }
+    // create the mock plugin
+    ReaderPlugin plugin = Mockito.mock(ReaderPlugin.class);
+    when(plugin.getReaders()).thenReturn(readers);
+    when(plugin.getReader(SAM_READER_NAME)).thenReturn(reader);
 
+    return Mockito.spy(
+        new SamResourceManagerDefault(plugin, samFilter, MAX_BLOCKING_TIME, DEFAULT_SLEEP_TIME));
+  }
 
-    // get a sam manager spy with a selectable sam
-    SamResourceManagerDefault srmSpy(String samFilter) {
+  SamResourceManagerDefault.ManagedSamResource samResourceMock() {
+    SamResourceManagerDefault.ManagedSamResource mock =
+        Mockito.mock(SamResourceManagerDefault.ManagedSamResource.class);
+    doReturn(true).when(mock).isSamMatching(any(SamIdentifier.class));
+    doReturn(true).when(mock).isSamResourceFree();
+    return mock;
+  }
 
-        List<SeResponse> selectionResponses = new ArrayList<SeResponse>();
-        selectionResponses.add(samSelectionSuccess());
-
-        // create a mock reader
-        ProxyReader reader = Mockito.mock(ProxyReader.class);
-        when(reader.getName()).thenReturn(SAM_READER_NAME);
-        when(reader.isSePresent()).thenReturn(true);
-        doReturn(selectionResponses).when(reader).transmitSeRequests(any(List.class),
-                any(MultiSeRequestProcessing.class), any(ChannelControl.class));
-
-        // create a list of mock readers
-        ConcurrentMap<String, SeReader> readers = new ConcurrentHashMap<String, SeReader>();
-        readers.put(reader.getName(), reader);
-
-        // create the mock plugin
-        ReaderPlugin plugin = Mockito.mock(ReaderPlugin.class);
-        when(plugin.getReaders()).thenReturn(readers);
-        when(plugin.getReader(SAM_READER_NAME)).thenReturn(reader);
-
-        return Mockito.spy(new SamResourceManagerDefault(plugin, samFilter, MAX_BLOCKING_TIME,
-                DEFAULT_SLEEP_TIME));
-    }
-
-    SamResourceManagerDefault.ManagedSamResource samResourceMock() {
-        SamResourceManagerDefault.ManagedSamResource mock =
-                Mockito.mock(SamResourceManagerDefault.ManagedSamResource.class);
-        doReturn(true).when(mock).isSamMatching(any(SamIdentifier.class));
-        doReturn(true).when(mock).isSamResourceFree();
-        return mock;
-    }
-
-    SeReader seReaderMock() {
-        SeReader mock = Mockito.mock(SeReader.class);
-        return mock;
-    }
+  SeReader seReaderMock() {
+    SeReader mock = Mockito.mock(SeReader.class);
+    return mock;
+  }
 }

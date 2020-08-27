@@ -1,14 +1,14 @@
-/********************************************************************************
+/* **************************************************************************************
  * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * See the NOTICE file(s) distributed with this work for additional information regarding copyright
- * ownership.
+ * See the NOTICE file(s) distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * This program and the accompanying materials are made available under the terms of the Eclipse
- * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- ********************************************************************************/
+ ************************************************************************************** */
 package org.eclipse.keyple.calypso.transaction.exception;
 
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
@@ -23,21 +23,19 @@ import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException
  */
 public class CalypsoPoCloseSecureSessionException extends CalypsoPoTransactionException {
 
-    /**
-     * Encapsulates the {@link CalypsoPoCommandException} exception.
-     *
-     * @param message message to identify the exception context
-     * @param cause the cause
-     */
-    public CalypsoPoCloseSecureSessionException(String message, CalypsoPoCommandException cause) {
-        super(message, cause);
-    }
+  /**
+   * Encapsulates the {@link CalypsoPoCommandException} exception.
+   *
+   * @param message message to identify the exception context
+   * @param cause the cause
+   */
+  public CalypsoPoCloseSecureSessionException(String message, CalypsoPoCommandException cause) {
+    super(message, cause);
+  }
 
-    /**
-     * @return the cause {@link CalypsoPoCommandException}
-     */
-    @Override
-    public synchronized CalypsoPoCommandException getCause() {
-        return (CalypsoPoCommandException) super.getCause();
-    }
+  /** @return the cause {@link CalypsoPoCommandException} */
+  @Override
+  public synchronized CalypsoPoCommandException getCause() {
+    return (CalypsoPoCommandException) super.getCause();
+  }
 }
