@@ -12,7 +12,9 @@
 package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.List;
+import java.util.Map;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
@@ -30,7 +32,10 @@ import org.slf4j.LoggerFactory;
  *   <li>Plugin naming management
  * </ul>
  */
-public abstract class AbstractReader extends AbstractSeProxyComponent implements ProxyReader {
+public abstract class AbstractReader implements ProxyReader {
+
+  /** The name of the reader */
+  private final String name;
 
   /** logger */
   private static final Logger logger = LoggerFactory.getLogger(AbstractReader.class);
@@ -50,13 +55,18 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
    * @param name the name of the reader
    */
   protected AbstractReader(String pluginName, String name) {
-    super(name);
+    this.name = name;
     this.pluginName = pluginName;
     this.before = System.nanoTime(); /*
                                           * provides an initial value for measuring the
                                           * inter-exchange time. The first measurement gives the
                                           * time elapsed since the plugin was loaded.
                                           */
+  }
+
+  /** @return the name of the reader */
+  public final String getName() {
+    return name;
   }
 
   /**
@@ -237,4 +247,18 @@ public abstract class AbstractReader extends AbstractSeProxyComponent implements
    */
   protected abstract SeResponse processSeRequest(
       SeRequest seRequest, ChannelControl channelControl);
+
+  /**
+   * Sets at once a set of parameters for the reader
+   *
+   * <p>See {@link #setParameter(String, String)} for more details
+   *
+   * @param parameters a Map &lt;String, String&gt; parameter set
+   * @throws KeypleException if one of the parameters could not be set up
+   */
+  public final void setParameters(Map<String, String> parameters) {
+    for (Map.Entry<String, String> en : parameters.entrySet()) {
+      setParameter(en.getKey(), en.getValue());
+    }
+  }
 }
