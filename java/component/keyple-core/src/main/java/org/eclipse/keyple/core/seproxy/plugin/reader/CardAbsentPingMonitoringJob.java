@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.seproxy.plugin;
+package org.eclipse.keyple.core.seproxy.plugin.reader;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
