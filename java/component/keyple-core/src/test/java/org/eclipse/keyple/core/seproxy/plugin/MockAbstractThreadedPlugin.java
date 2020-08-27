@@ -17,6 +17,7 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractReader;
 
 public class MockAbstractThreadedPlugin extends AbstractThreadedObservablePlugin {
 
