@@ -12,8 +12,8 @@
 package org.eclipse.keyple.plugin.android.omapi
 
 import java.util.HashMap
-import org.eclipse.keyple.core.seproxy.plugin.AbstractLocalReader
-import org.eclipse.keyple.core.seproxy.plugin.SmartSelectionReader
+import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractLocalReader
+import org.eclipse.keyple.core.seproxy.plugin.reader.SmartSelectionReader
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode
