@@ -14,6 +14,7 @@ package org.eclipse.keyple.calypso.transaction;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Java6Assertions.shouldHaveThrown;
 import static org.eclipse.keyple.calypso.command.sam.SamRevision.*;
+
 import org.assertj.core.api.Assertions;
 import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
@@ -26,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CalypsoSamTest {
-    private static final Logger logger = LoggerFactory.getLogger(CalypsoSamTest.class);
+  private static final Logger logger = LoggerFactory.getLogger(CalypsoSamTest.class);
 
   public static String ATR1 = "3B001122805A0180D002030411223344829000";
   public static String ATR2 = "3B001122805A0180D102030411223344829000";
@@ -151,16 +152,16 @@ public class CalypsoSamTest {
     shouldHaveThrown(IllegalArgumentException.class);
   }
 
-
-    @Test
-    public void json_fromJson() {
-        SelectionStatus selectionStatus =
-                new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR1)), null, true);
-        CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null),
-                TransmissionMode.CONTACTS);
-        String json = KeypleJsonParser.getParser().toJson(calypsoSam);
-        logger.debug(json);
-        Assertions.assertThat(KeypleJsonParser.getParser().fromJson(json, CalypsoSam.class))
-                .isEqualToComparingFieldByFieldRecursively(calypsoSam);
-    }
+  @Test
+  public void json_fromJson() {
+    SelectionStatus selectionStatus =
+        new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR1)), null, true);
+    CalypsoSam calypsoSam =
+        new CalypsoSam(
+            new SeResponse(true, true, selectionStatus, null), TransmissionMode.CONTACTS);
+    String json = KeypleJsonParser.getParser().toJson(calypsoSam);
+    logger.debug(json);
+    Assertions.assertThat(KeypleJsonParser.getParser().fromJson(json, CalypsoSam.class))
+        .isEqualToComparingFieldByFieldRecursively(calypsoSam);
+  }
 }

@@ -1423,18 +1423,18 @@ public class StubReaderTest extends BaseStubTest {
         transmissionMode = seSelector.getSeProtocol().getTransmissionMode();
       }
 
-            @Override
-            protected AbstractMatchingSe parse(SeResponse seResponse) {
-                class GenericMatchingSe extends AbstractMatchingSe {
+      @Override
+      protected AbstractMatchingSe parse(SeResponse seResponse) {
+        class GenericMatchingSe extends AbstractMatchingSe {
 
-                    public GenericMatchingSe(SeResponse selectionResponse,
-                            TransmissionMode transmissionMode) {
-                        super(selectionResponse, transmissionMode);
-                    }
-                }
-                return new GenericMatchingSe(seResponse, transmissionMode);
-            }
+          public GenericMatchingSe(
+              SeResponse selectionResponse, TransmissionMode transmissionMode) {
+            super(selectionResponse, transmissionMode);
+          }
         }
+        return new GenericMatchingSe(seResponse, transmissionMode);
+      }
+    }
 
     SeSelection seSelection = new SeSelection();
     // SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.PROCESS_ALL,

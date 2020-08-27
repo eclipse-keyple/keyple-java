@@ -51,14 +51,13 @@ public class SeResourceTest extends CoreBaseTest {
     Assert.assertEquals(null, localSeResource.getSeReader());
   }
 
-  /** Matching Se instantiation
-     */
-    private final class MatchingSe extends AbstractMatchingSe {
+  /** Matching Se instantiation */
+  private final class MatchingSe extends AbstractMatchingSe {
 
-        MatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode) {
-            super(selectionResponse, transmissionMode);
-        }
+    MatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode) {
+      super(selectionResponse, transmissionMode);
     }
+  }
 
   /** SeResource instantiation */
   private final class LocalSeResource extends SeResource<MatchingSe> {

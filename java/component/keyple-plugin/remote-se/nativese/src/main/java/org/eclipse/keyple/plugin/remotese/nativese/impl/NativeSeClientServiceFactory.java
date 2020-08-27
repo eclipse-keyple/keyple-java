@@ -1,14 +1,14 @@
-/********************************************************************************
+/* **************************************************************************************
  * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * See the NOTICE file(s) distributed with this work for additional information regarding copyright
- * ownership.
+ * See the NOTICE file(s) distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * This program and the accompanying materials are made available under the terms of the Eclipse
- * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- ********************************************************************************/
+ ************************************************************************************** */
 package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
 import org.eclipse.keyple.core.util.Assert;
@@ -26,119 +26,118 @@ import org.slf4j.LoggerFactory;
  */
 public class NativeSeClientServiceFactory {
 
-    private static final Logger logger =
-            LoggerFactory.getLogger(NativeSeClientServiceFactory.class);
+  private static final Logger logger = LoggerFactory.getLogger(NativeSeClientServiceFactory.class);
 
+  /**
+   * Init the builder
+   *
+   * @return next configuration step
+   */
+  public NodeStep builder() {
+    return new Step();
+  }
+
+  public interface BuilderStep {
     /**
-     * Init the builder
-     * 
+     * Build the service
+     *
+     * @return singleton instance of the service
+     */
+    NativeSeClientService getService();
+  }
+
+  public interface NodeStep {
+    /**
+     * Configure the service with an async Client
+     *
+     * @param asyncClient non nullable instance of an async client
      * @return next configuration step
      */
-    public NodeStep builder() {
-        return new Step();
+    ReaderStep withAsyncNode(KeypleClientAsync asyncClient);
+
+    /**
+     * Configure the service with a sync Client
+     *
+     * @param syncClient non nullable instance of a sync client
+     * @return next configuration step
+     */
+    ReaderStep withSyncNode(KeypleClientSync syncClient);
+  }
+
+  public interface ReaderStep {
+    /**
+     * Configure the service to observe the local reader
+     *
+     * @param eventFilter non-nullable event filter
+     * @return next configuration step
+     */
+    BuilderStep withReaderObservation(KeypleClientReaderEventFilter eventFilter);
+
+    /**
+     * Configure the service without observation
+     *
+     * @return next configuration step
+     */
+    BuilderStep withoutReaderObservation();
+  }
+
+  private static class Step implements NodeStep, ReaderStep, BuilderStep {
+
+    private KeypleClientAsync asyncEndpoint;
+    private KeypleClientSync syncEndpoint;
+    private Boolean withReaderObservation;
+    private KeypleClientReaderEventFilter eventFilter;
+
+    private Step() {}
+
+    @Override
+    public ReaderStep withAsyncNode(KeypleClientAsync endpoint) {
+      Assert.getInstance().notNull(endpoint, "endpoint");
+      this.asyncEndpoint = endpoint;
+      return this;
     }
 
-    public interface BuilderStep {
-        /**
-         * Build the service
-         *
-         * @return singleton instance of the service
-         */
-        NativeSeClientService getService();
+    @Override
+    public ReaderStep withSyncNode(KeypleClientSync endpoint) {
+      Assert.getInstance().notNull(endpoint, "endpoint");
+      this.syncEndpoint = endpoint;
+      return this;
     }
 
-    public interface NodeStep {
-        /**
-         * Configure the service with an async Client
-         *
-         * @param asyncClient non nullable instance of an async client
-         * @return next configuration step
-         */
-        ReaderStep withAsyncNode(KeypleClientAsync asyncClient);
-
-        /**
-         * Configure the service with a sync Client
-         *
-         * @param syncClient non nullable instance of a sync client
-         * @return next configuration step
-         */
-        ReaderStep withSyncNode(KeypleClientSync syncClient);
+    @Override
+    public BuilderStep withoutReaderObservation() {
+      this.withReaderObservation = false;
+      return this;
     }
 
-    public interface ReaderStep {
-        /**
-         * Configure the service to observe the local reader
-         *
-         * @param eventFilter non-nullable event filter
-         * @return next configuration step
-         */
-        BuilderStep withReaderObservation(KeypleClientReaderEventFilter eventFilter);
-
-        /**
-         * Configure the service without observation
-         *
-         * @return next configuration step
-         */
-        BuilderStep withoutReaderObservation();
+    @Override
+    public BuilderStep withReaderObservation(KeypleClientReaderEventFilter eventFilter) {
+      Assert.getInstance().notNull(eventFilter, "eventFilter");
+      this.withReaderObservation = true;
+      this.eventFilter = eventFilter;
+      return this;
     }
 
-    private static class Step implements NodeStep, ReaderStep, BuilderStep {
+    @Override
+    public NativeSeClientService getService() {
 
-        private KeypleClientAsync asyncEndpoint;
-        private KeypleClientSync syncEndpoint;
-        private Boolean withReaderObservation;
-        private KeypleClientReaderEventFilter eventFilter;
+      // create the service
+      NativeSeClientServiceImpl service =
+          NativeSeClientServiceImpl.createInstance(withReaderObservation, eventFilter);
 
-        private Step() {}
-
-        @Override
-        public ReaderStep withAsyncNode(KeypleClientAsync endpoint) {
-            Assert.getInstance().notNull(endpoint, "endpoint");
-            this.asyncEndpoint = endpoint;
-            return this;
-        }
-
-        @Override
-        public ReaderStep withSyncNode(KeypleClientSync endpoint) {
-            Assert.getInstance().notNull(endpoint, "endpoint");
-            this.syncEndpoint = endpoint;
-            return this;
-        }
-
-        @Override
-        public BuilderStep withoutReaderObservation() {
-            this.withReaderObservation = false;
-            return this;
-        }
-
-        @Override
-        public BuilderStep withReaderObservation(KeypleClientReaderEventFilter eventFilter) {
-            Assert.getInstance().notNull(eventFilter, "eventFilter");
-            this.withReaderObservation = true;
-            this.eventFilter = eventFilter;
-            return this;
-        }
-
-        @Override
-        public NativeSeClientService getService() {
-
-            // create the service
-            NativeSeClientServiceImpl service =
-                    NativeSeClientServiceImpl.createInstance(withReaderObservation, eventFilter);
-
-            // bind the service to the node
-            if (asyncEndpoint != null) {
-                logger.info(
-                        "Create a new NativeSeClientServiceImpl with a async client and params withReaderObservation:{}",
-                        withReaderObservation);
-                service.bindClientAsyncNode(asyncEndpoint);
-            } else {
-                logger.info(
-                        "Create a new NativeSeClientServiceImpl with a sync client and params withReaderObservation:{}",
-                        withReaderObservation);
-                service.bindClientSyncNode(syncEndpoint, null, null);
-            }
-            return service;
-        }
+      // bind the service to the node
+      if (asyncEndpoint != null) {
+        logger.info(
+            "Create a new NativeSeClientServiceImpl with a async client and params withReaderObservation:{}",
+            withReaderObservation);
+        service.bindClientAsyncNode(asyncEndpoint);
+      } else {
+        logger.info(
+            "Create a new NativeSeClientServiceImpl with a sync client and params withReaderObservation:{}",
+            withReaderObservation);
+        service.bindClientSyncNode(syncEndpoint, null, null);
+      }
+      return service;
     }
+  }
 }

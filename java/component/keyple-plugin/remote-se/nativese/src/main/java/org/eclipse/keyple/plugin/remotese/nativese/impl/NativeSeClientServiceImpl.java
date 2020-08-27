@@ -1,16 +1,18 @@
-/********************************************************************************
+/* **************************************************************************************
  * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * See the NOTICE file(s) distributed with this work for additional information regarding copyright
- * ownership.
+ * See the NOTICE file(s) distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * This program and the accompanying materials are made available under the terms of the Eclipse
- * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- ********************************************************************************/
+ ************************************************************************************** */
 package org.eclipse.keyple.plugin.remotese.nativese.impl;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -24,275 +26,272 @@ import org.eclipse.keyple.plugin.remotese.nativese.NativeSeClientService;
 import org.eclipse.keyple.plugin.remotese.nativese.RemoteServiceParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 /**
  * (package-private)<br>
  * Singleton instance of the {@link NativeSeClientService} implementation
  */
 final class NativeSeClientServiceImpl extends AbstractNativeSeService
-        implements ObservableReader.ReaderObserver, NativeSeClientService {
+    implements ObservableReader.ReaderObserver, NativeSeClientService {
 
-    private static final Logger logger = LoggerFactory.getLogger(NativeSeClientServiceImpl.class);
+  private static final Logger logger = LoggerFactory.getLogger(NativeSeClientServiceImpl.class);
 
-    private static NativeSeClientServiceImpl uniqueInstance;
+  private static NativeSeClientServiceImpl uniqueInstance;
 
-    private final boolean withReaderObservation;
-    private final KeypleClientReaderEventFilter eventFilter;
+  private final boolean withReaderObservation;
+  private final KeypleClientReaderEventFilter eventFilter;
 
-    /**
-     * (private)<br>
-     * Constructor
-     *
-     * @param withReaderObservation Indicates if reader observation should be activated.
-     * @param eventFilter The event filter to use if reader observation should is activated.
-     */
-    private NativeSeClientServiceImpl(boolean withReaderObservation,
-            KeypleClientReaderEventFilter eventFilter) {
-        super();
-        this.withReaderObservation = withReaderObservation;
-        this.eventFilter = eventFilter;
+  /**
+   * (private)<br>
+   * Constructor
+   *
+   * @param withReaderObservation Indicates if reader observation should be activated.
+   * @param eventFilter The event filter to use if reader observation should is activated.
+   */
+  private NativeSeClientServiceImpl(
+      boolean withReaderObservation, KeypleClientReaderEventFilter eventFilter) {
+    super();
+    this.withReaderObservation = withReaderObservation;
+    this.eventFilter = eventFilter;
+  }
+
+  /**
+   * (package-private)<br>
+   * Create an instance of this singleton service
+   *
+   * @param withReaderObservation true if reader observation should be activated
+   * @return a not null instance of the singleton
+   */
+  static NativeSeClientServiceImpl createInstance(
+      boolean withReaderObservation, KeypleClientReaderEventFilter eventFilter) {
+    uniqueInstance = new NativeSeClientServiceImpl(withReaderObservation, eventFilter);
+    return uniqueInstance;
+  }
+
+  /**
+   * (package-private)<br>
+   * Retrieve the instance of this singleton service
+   *
+   * @return a not null instance
+   */
+  static NativeSeClientServiceImpl getInstance() {
+    return uniqueInstance;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public <T> T executeRemoteService(RemoteServiceParameters parameters, Class<T> classOfT) {
+
+    // check params
+    Assert.getInstance() //
+        .notNull(parameters, "parameters") //
+        .notNull(classOfT, "classOfT");
+
+    // get nativeReader
+    ProxyReader nativeReader = (ProxyReader) parameters.getNativeReader();
+
+    if (logger.isTraceEnabled()) {
+      logger.trace(
+          "Execute remoteService {} for native reader {}",
+          parameters.getServiceId(),
+          nativeReader.getName());
     }
 
-    /**
-     * (package-private)<br>
-     * Create an instance of this singleton service
-     * 
-     * @param withReaderObservation true if reader observation should be activated
-     * @return a not null instance of the singleton
-     */
-    static NativeSeClientServiceImpl createInstance(boolean withReaderObservation,
-            KeypleClientReaderEventFilter eventFilter) {
-        uniqueInstance = new NativeSeClientServiceImpl(withReaderObservation, eventFilter);
-        return uniqueInstance;
-    }
+    // Generate a new session id
+    String sessionId = generateSessionId();
 
-    /**
-     * (package-private)<br>
-     * Retrieve the instance of this singleton service
-     * 
-     * @return a not null instance
-     */
-    static NativeSeClientServiceImpl getInstance() {
-        return uniqueInstance;
-    }
+    // build keypleMessageDto EXECUTE_REMOTE_SERVICE with user params
+    KeypleMessageDto remoteServiceDto = buildRemoteServiceMessage(parameters, sessionId);
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public <T> T executeRemoteService(RemoteServiceParameters parameters, Class<T> classOfT) {
+    try {
+      // Open a new session on the node
+      node.openSession(sessionId);
 
-        // check params
-        Assert.getInstance()//
-                .notNull(parameters, "parameters")//
-                .notNull(classOfT, "classOfT");
+      // send keypleMessageDto through the node
+      KeypleMessageDto receivedDto = node.sendRequest(remoteServiceDto);
 
-        // get nativeReader
-        ProxyReader nativeReader = (ProxyReader) parameters.getNativeReader();
-
-        if (logger.isTraceEnabled()) {
-            logger.trace("Execute remoteService {} for native reader {}", parameters.getServiceId(),
-                    nativeReader.getName());
+      // start observation if needed
+      if (withReaderObservation) {
+        if (nativeReader instanceof ObservableReader) {
+          if (logger.isTraceEnabled()) {
+            logger.trace(
+                "Add NativeSeClientService as an observer for reader {}", nativeReader.getName());
+          }
+          ((ObservableReader) nativeReader).addObserver(this);
+        } else {
+          throw new IllegalArgumentException(
+              "Observation can not be activated because native reader is not observable");
         }
+      }
 
-        // Generate a new session id
-        String sessionId = generateSessionId();
+      // check server response : while dto is not a terminate service, execute dto locally and
+      // send back response
+      while (!receivedDto.getAction().equals(KeypleMessageDto.Action.TERMINATE_SERVICE.name())
+          && !receivedDto.getAction().equals(KeypleMessageDto.Action.ERROR.name())) {
 
-        // build keypleMessageDto EXECUTE_REMOTE_SERVICE with user params
-        KeypleMessageDto remoteServiceDto = buildRemoteServiceMessage(parameters, sessionId);
+        // execute dto request locally
+        KeypleMessageDto responseDto = executeLocally(nativeReader, receivedDto);
 
-        try {
-            // Open a new session on the node
-            node.openSession(sessionId);
+        // get response dto - send dto response to server
+        receivedDto = node.sendRequest(responseDto);
+      }
 
-            // send keypleMessageDto through the node
-            KeypleMessageDto receivedDto = node.sendRequest(remoteServiceDto);
+      // Check if the received dto contains an error
+      checkError(receivedDto);
 
-            // start observation if needed
-            if (withReaderObservation) {
-                if (nativeReader instanceof ObservableReader) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Add NativeSeClientService as an observer for reader {}",
-                                nativeReader.getName());
-                    }
-                    ((ObservableReader) nativeReader).addObserver(this);
-                } else {
-                    throw new IllegalArgumentException(
-                            "Observation can not be activated because native reader is not observable");
-                }
-            }
+      // return userOutputData
+      return extractUserData(receivedDto, classOfT);
 
-            // check server response : while dto is not a terminate service, execute dto locally and
-            // send back response
-            while (!receivedDto.getAction().equals(KeypleMessageDto.Action.TERMINATE_SERVICE.name())
-                    && !receivedDto.getAction().equals(KeypleMessageDto.Action.ERROR.name())) {
+    } finally {
+      // Close the session
+      node.closeSessionSilently(sessionId);
+    }
+  }
 
-                // execute dto request locally
-                KeypleMessageDto responseDto = executeLocally(nativeReader, receivedDto);
+  /** {@inheritDoc} */
+  @Override
+  protected void onMessage(KeypleMessageDto msg) {
+    throw new UnsupportedOperationException("onMessage");
+  }
 
-                // get response dto - send dto response to server
-                receivedDto = node.sendRequest(responseDto);
-            }
+  /**
+   * Propagate Reader Events to RemoteSePlugin (internal use only)
+   *
+   * @param event The event to be propagated (should be not null)
+   * @since 1.0
+   */
+  @Override
+  public void update(ReaderEvent event) {
 
-            // Check if the received dto contains an error
-            checkError(receivedDto);
-
-            // return userOutputData
-            return extractUserData(receivedDto, classOfT);
-
-        } finally {
-            // Close the session
-            node.closeSessionSilently(sessionId);
-        }
+    Object userData;
+    try {
+      // Get the user input data from the event filter
+      userData = eventFilter.beforePropagation(event);
+    } catch (KeypleDoNotPropagateEventException e) {
+      // do not throw event
+      logger.info(
+          "The propagation of the reader event ["
+              + event.getEventType().getName()
+              + "] is cancelled by the user's event filter");
+      return;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void onMessage(KeypleMessageDto msg) {
-        throw new UnsupportedOperationException("onMessage");
+    // Generate a new session id
+    String sessionId = generateSessionId();
+
+    // Build an event message with the user data
+    KeypleMessageDto eventMessageDto = buildEventMessage(event, userData, sessionId);
+
+    try {
+      // Open a new session on the node
+      node.openSession(sessionId);
+
+      // send keypleMessageDto through the node
+      KeypleMessageDto receivedDto = node.sendRequest(eventMessageDto);
+
+      // execute KeypleMessage(s) locally
+      while (!receivedDto.getAction().equals(KeypleMessageDto.Action.TERMINATE_SERVICE.name())
+          && !receivedDto.getAction().equals(KeypleMessageDto.Action.ERROR.name())) {
+
+        ProxyReader nativeReader = findLocalReader(event.getReaderName());
+
+        // execute dto request locally
+        KeypleMessageDto responseDto = executeLocally(nativeReader, receivedDto);
+
+        // get response dto - send dto response to server
+        receivedDto = node.sendRequest(responseDto);
+      }
+
+      // Check if the received dto contains an error
+      checkError(receivedDto);
+
+      // extract userOutputData
+      Object userOutputData = extractUserData(receivedDto, eventFilter.getUserOutputDataClass());
+
+      // invoke callback
+      eventFilter.afterPropagation(userOutputData);
+
+    } finally {
+      // Close the session
+      node.closeSessionSilently(sessionId);
+    }
+  }
+
+  /**
+   * (private)<br>
+   * Extract the user output data from the provided message.
+   *
+   * @param msg The message.
+   * @param classOfT The class of T.
+   * @param <T> The type of the output data.
+   * @return null if there is no user data to extract.
+   */
+  private <T> T extractUserData(KeypleMessageDto msg, Class<T> classOfT) {
+    if (classOfT == null) {
+      return null;
+    }
+    Gson parser = KeypleJsonParser.getParser();
+    JsonObject body = parser.fromJson(msg.getBody(), JsonObject.class);
+    return parser.fromJson(body.get("userOutputData"), classOfT);
+  }
+
+  /**
+   * (private)<br>
+   * Build the message associated to the EXECUTE_SERVICE action.
+   *
+   * @param parameters The main parameters.
+   * @param sessionId The session id to use.
+   * @return a not null reference.
+   */
+  private KeypleMessageDto buildRemoteServiceMessage(
+      RemoteServiceParameters parameters, String sessionId) {
+
+    JsonObject body = new JsonObject();
+
+    body.addProperty("serviceId", parameters.getServiceId());
+
+    Object userInputData = parameters.getUserInputData();
+    if (userInputData != null) {
+      body.add("userInputData", KeypleJsonParser.getParser().toJsonTree(userInputData));
     }
 
-    /**
-     * Propagate Reader Events to RemoteSePlugin (internal use only)
-     * 
-     * @param event The event to be propagated (should be not null)
-     * @since 1.0
-     */
-    @Override
-    public void update(ReaderEvent event) {
-
-        Object userData;
-        try {
-            // Get the user input data from the event filter
-            userData = eventFilter.beforePropagation(event);
-        } catch (KeypleDoNotPropagateEventException e) {
-            // do not throw event
-            logger.info("The propagation of the reader event [" + event.getEventType().getName()
-                    + "] is cancelled by the user's event filter");
-            return;
-        }
-
-        // Generate a new session id
-        String sessionId = generateSessionId();
-
-        // Build an event message with the user data
-        KeypleMessageDto eventMessageDto = buildEventMessage(event, userData, sessionId);
-
-        try {
-            // Open a new session on the node
-            node.openSession(sessionId);
-
-            // send keypleMessageDto through the node
-            KeypleMessageDto receivedDto = node.sendRequest(eventMessageDto);
-
-            // execute KeypleMessage(s) locally
-            while (!receivedDto.getAction().equals(KeypleMessageDto.Action.TERMINATE_SERVICE.name())
-                    && !receivedDto.getAction().equals(KeypleMessageDto.Action.ERROR.name())) {
-
-                ProxyReader nativeReader = findLocalReader(event.getReaderName());
-
-                // execute dto request locally
-                KeypleMessageDto responseDto = executeLocally(nativeReader, receivedDto);
-
-                // get response dto - send dto response to server
-                receivedDto = node.sendRequest(responseDto);
-            }
-
-            // Check if the received dto contains an error
-            checkError(receivedDto);
-
-            // extract userOutputData
-            Object userOutputData =
-                    extractUserData(receivedDto, eventFilter.getUserOutputDataClass());
-
-            // invoke callback
-            eventFilter.afterPropagation(userOutputData);
-
-        } finally {
-            // Close the session
-            node.closeSessionSilently(sessionId);
-        }
+    AbstractMatchingSe initialSeContent = parameters.getInitialSeContent();
+    if (initialSeContent != null) {
+      body.add("initialSeContent", KeypleJsonParser.getParser().toJsonTree(initialSeContent));
     }
 
-    /**
-     * (private)<br>
-     * Extract the user output data from the provided message.
-     *
-     * @param msg The message.
-     * @param classOfT The class of T.
-     * @param <T> The type of the output data.
-     * @return null if there is no user data to extract.
-     */
-    private <T> T extractUserData(KeypleMessageDto msg, Class<T> classOfT) {
-        if (classOfT == null) {
-            return null;
-        }
-        Gson parser = KeypleJsonParser.getParser();
-        JsonObject body = parser.fromJson(msg.getBody(), JsonObject.class);
-        return parser.fromJson(body.get("userOutputData"), classOfT);
-    }
+    body.addProperty(
+        "isObservable",
+        withReaderObservation && (parameters.getNativeReader() instanceof ObservableReader));
 
-    /**
-     * (private)<br>
-     * Build the message associated to the EXECUTE_SERVICE action.
-     *
-     * @param parameters The main parameters.
-     * @param sessionId The session id to use.
-     * @return a not null reference.
-     */
-    private KeypleMessageDto buildRemoteServiceMessage(RemoteServiceParameters parameters,
-            String sessionId) {
+    return new KeypleMessageDto() //
+        .setSessionId(sessionId) //
+        .setAction(KeypleMessageDto.Action.EXECUTE_REMOTE_SERVICE.name()) //
+        .setNativeReaderName(parameters.getNativeReader().getName()) //
+        .setBody(body.toString());
+  }
 
-        JsonObject body = new JsonObject();
+  /**
+   * (private)<br>
+   * Build the message associated to the READER_EVENT action.
+   *
+   * @param readerEvent The reader event.
+   * @param userInputData The user input data.
+   * @param sessionId The session id to use.
+   * @return a not null reference.
+   */
+  private KeypleMessageDto buildEventMessage(
+      ReaderEvent readerEvent, Object userInputData, String sessionId) {
 
-        body.addProperty("serviceId", parameters.getServiceId());
+    JsonObject body = new JsonObject();
 
-        Object userInputData = parameters.getUserInputData();
-        if (userInputData != null) {
-            body.add("userInputData", KeypleJsonParser.getParser().toJsonTree(userInputData));
-        }
+    body.add("readerEvent", KeypleJsonParser.getParser().toJsonTree(readerEvent));
+    body.add("userInputData", KeypleJsonParser.getParser().toJsonTree(userInputData));
 
-        AbstractMatchingSe initialSeContent = parameters.getInitialSeContent();
-        if (initialSeContent != null) {
-            body.add("initialSeContent", KeypleJsonParser.getParser().toJsonTree(initialSeContent));
-        }
-
-        body.addProperty("isObservable", withReaderObservation
-                && (parameters.getNativeReader() instanceof ObservableReader));
-
-        return new KeypleMessageDto()//
-                .setSessionId(sessionId)//
-                .setAction(KeypleMessageDto.Action.EXECUTE_REMOTE_SERVICE.name())//
-                .setNativeReaderName(parameters.getNativeReader().getName())//
-                .setBody(body.toString());
-    }
-
-    /**
-     * (private)<br>
-     * Build the message associated to the READER_EVENT action.
-     *
-     * @param readerEvent The reader event.
-     * @param userInputData The user input data.
-     * @param sessionId The session id to use.
-     * @return a not null reference.
-     */
-    private KeypleMessageDto buildEventMessage(ReaderEvent readerEvent, Object userInputData,
-            String sessionId) {
-
-        JsonObject body = new JsonObject();
-
-        body.add("readerEvent", KeypleJsonParser.getParser().toJsonTree(readerEvent));
-        body.add("userInputData", KeypleJsonParser.getParser().toJsonTree(userInputData));
-
-        return new KeypleMessageDto()//
-                .setSessionId(sessionId)//
-                .setAction(KeypleMessageDto.Action.READER_EVENT.name())//
-                .setNativeReaderName(readerEvent.getReaderName())//
-                .setBody(body.toString());
-    }
-
+    return new KeypleMessageDto() //
+        .setSessionId(sessionId) //
+        .setAction(KeypleMessageDto.Action.READER_EVENT.name()) //
+        .setNativeReaderName(readerEvent.getReaderName()) //
+        .setBody(body.toString());
+  }
 }

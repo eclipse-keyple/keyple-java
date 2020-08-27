@@ -26,20 +26,18 @@ public class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
     transmissionMode = seSelector.getSeProtocol().getTransmissionMode();
   }
 
-    @Override
-    protected AbstractMatchingSe parse(SeResponse seResponse) {
-        class GenericMatchingSe extends AbstractMatchingSe {
-            public GenericMatchingSe(SeResponse selectionResponse,
-                    TransmissionMode transmissionMode) {
-                super(selectionResponse, transmissionMode);
+  @Override
+  protected AbstractMatchingSe parse(SeResponse seResponse) {
+    class GenericMatchingSe extends AbstractMatchingSe {
+      public GenericMatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode) {
+        super(selectionResponse, transmissionMode);
+      }
 
-            }
-
-            @Override
-            public String toJson() {
-                return "{}";
-            }
-        }
-        return new GenericMatchingSe(seResponse, transmissionMode);
+      @Override
+      public String toJson() {
+        return "{}";
+      }
     }
+    return new GenericMatchingSe(seResponse, transmissionMode);
+  }
 }

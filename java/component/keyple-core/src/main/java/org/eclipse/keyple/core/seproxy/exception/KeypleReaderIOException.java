@@ -57,5 +57,4 @@ public class KeypleReaderIOException extends KeypleReaderException {
   public void setSeResponse(SeResponse seResponse) {
     this.seResponse = seResponse;
   }
-
 }

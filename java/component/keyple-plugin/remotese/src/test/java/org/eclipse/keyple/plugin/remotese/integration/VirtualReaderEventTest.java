@@ -516,17 +516,15 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
       transmissionMode = seSelector.getSeProtocol().getTransmissionMode();
     }
 
-        @Override
-        protected AbstractMatchingSe parse(SeResponse seResponse) {
-            class GenericMatchingSe extends AbstractMatchingSe {
-                public GenericMatchingSe(SeResponse selectionResponse,
-                        TransmissionMode transmissionMode) {
-                    super(selectionResponse, transmissionMode);
-                }
-
+    @Override
+    protected AbstractMatchingSe parse(SeResponse seResponse) {
+      class GenericMatchingSe extends AbstractMatchingSe {
+        public GenericMatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode) {
+          super(selectionResponse, transmissionMode);
+        }
       }
 
-            return new GenericMatchingSe(seResponse, transmissionMode);
-        }
+      return new GenericMatchingSe(seResponse, transmissionMode);
     }
+  }
 }

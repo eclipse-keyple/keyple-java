@@ -36,39 +36,39 @@ import org.slf4j.LoggerFactory;
 @RunWith(MockitoJUnitRunner.class)
 public class CalypsoPoTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(CalypsoPoTest.class);
+  private static final Logger logger = LoggerFactory.getLogger(CalypsoPoTest.class);
 
-    public static final String ATR_VALUE = "3B8F8001805A08030400020011223344829000F3";
-    public static final String ATR_VALUE_2 = "3B8F8001805A08030400020011223344829000";
-    /*
-    // @formatter:off
-    Rev 3.1 FCI sample data
-    6F
-    23
-        84
-        09
-        315449432E49434131      // AID
-        A5
-        16
-            BF0C
-            13
-                C7
-                08
-                0000000011223344 // SERIAL NUMBER
-                53
-                07
-                0A3C2305141001   // STARTUP INFORMATION
+  public static final String ATR_VALUE = "3B8F8001805A08030400020011223344829000F3";
+  public static final String ATR_VALUE_2 = "3B8F8001805A08030400020011223344829000";
+  /*
+   // @formatter:off
+   Rev 3.1 FCI sample data
+   6F
+   23
+       84
+       09
+       315449432E49434131      // AID
+       A5
+       16
+           BF0C
+           13
+               C7
+               08
+               0000000011223344 // SERIAL NUMBER
+               53
+               07
+               0A3C2305141001   // STARTUP INFORMATION
 
-    STARTUP INFORMATION
-        0A Buffer size indicator
-        3C Type of platform
-        2F Calypso revision
-        05 File structure reference
-        14 Software issuer reference
-        10 Software version (MSB)
-        01 Software version (LSB)
-   // @formatter:on
-   */
+   STARTUP INFORMATION
+       0A Buffer size indicator
+       3C Type of platform
+       2F Calypso revision
+       05 File structure reference
+       14 Software issuer reference
+       10 Software version (MSB)
+       01 Software version (LSB)
+  // @formatter:on
+  */
   private static final String FCI_REV31 =
       "6F238409315449432E49434131A516BF0C13C708000000001122334453070A3C2F051410019000";
   private static final String FCI_REV31_FLAGS_FALSE =
@@ -556,36 +556,38 @@ public class CalypsoPoTest {
     assertThat(allDebitLogs.get(2).getSamId()).isEqualTo(0xAABBCC03);
   }
 
+  @Test
+  public void json_fromJson_shouldReturnCopy() {
+    loadPo();
+    String json = KeypleJsonParser.getParser().toJson(po);
+    logger.debug(json);
+    CalypsoPo target = KeypleJsonParser.getParser().fromJson(json, CalypsoPo.class);
+    assertThat(target).isEqualToComparingFieldByFieldRecursively(po);
+  }
 
-    @Test
-    public void json_fromJson_shouldReturnCopy() {
-        loadPo();
-        String json = KeypleJsonParser.getParser().toJson(po);
-        logger.debug(json);
-        CalypsoPo target = KeypleJsonParser.getParser().fromJson(json, CalypsoPo.class);
-        assertThat(target).isEqualToComparingFieldByFieldRecursively(po);
-    }
-
-
-    void loadPo() {
-        byte[] svLoadRecordData =
-                ByteArrayUtil.fromHex("000000780000001A0000020000AABBCCDD0000DB007000000000000000");
-        byte[] svDebitRecordData1 =
-                ByteArrayUtil.fromHex("FFFE0000000079AABBCC010000DA000018006F00000000000000000000");
-        byte[] svDebitRecordData2 =
-                ByteArrayUtil.fromHex("FFFE0000000079AABBCC020000DA000018006F00000000000000000000");
-        byte[] svDebitRecordData3 =
-                ByteArrayUtil.fromHex("FFFE0000000079AABBCC030000DA000018006F00000000000000000000");
-        po.setContent(CalypsoPoUtils.SV_RELOAD_LOG_FILE_SFI, 1, svLoadRecordData);
-        po.setContent(CalypsoPoUtils.SV_DEBIT_LOG_FILE_SFI, 1, svDebitRecordData1);
-        po.setContent(CalypsoPoUtils.SV_DEBIT_LOG_FILE_SFI, 2, svDebitRecordData2);
-        po.setContent(CalypsoPoUtils.SV_DEBIT_LOG_FILE_SFI, 3, svDebitRecordData3);
-        byte[] svGetReloadData = ByteArrayUtil
-                .fromHex("79007013DE31022200001A000000780000001A0000020000AABBCCDD0000DB00709000");
-        byte[] svGetDebitData = ByteArrayUtil
-                .fromHex("79007013DE31A75F00001AFFFE0000000079AABBCCDD0000DA000018006F");
-        po.setSvData(123, 456, new SvLoadLogRecord(svGetReloadData, 11),
-                new SvDebitLogRecord(svGetDebitData, 11));
-        po.setPinAttemptRemaining(0);
-    }
+  void loadPo() {
+    byte[] svLoadRecordData =
+        ByteArrayUtil.fromHex("000000780000001A0000020000AABBCCDD0000DB007000000000000000");
+    byte[] svDebitRecordData1 =
+        ByteArrayUtil.fromHex("FFFE0000000079AABBCC010000DA000018006F00000000000000000000");
+    byte[] svDebitRecordData2 =
+        ByteArrayUtil.fromHex("FFFE0000000079AABBCC020000DA000018006F00000000000000000000");
+    byte[] svDebitRecordData3 =
+        ByteArrayUtil.fromHex("FFFE0000000079AABBCC030000DA000018006F00000000000000000000");
+    po.setContent(CalypsoPoUtils.SV_RELOAD_LOG_FILE_SFI, 1, svLoadRecordData);
+    po.setContent(CalypsoPoUtils.SV_DEBIT_LOG_FILE_SFI, 1, svDebitRecordData1);
+    po.setContent(CalypsoPoUtils.SV_DEBIT_LOG_FILE_SFI, 2, svDebitRecordData2);
+    po.setContent(CalypsoPoUtils.SV_DEBIT_LOG_FILE_SFI, 3, svDebitRecordData3);
+    byte[] svGetReloadData =
+        ByteArrayUtil.fromHex(
+            "79007013DE31022200001A000000780000001A0000020000AABBCCDD0000DB00709000");
+    byte[] svGetDebitData =
+        ByteArrayUtil.fromHex("79007013DE31A75F00001AFFFE0000000079AABBCCDD0000DA000018006F");
+    po.setSvData(
+        123,
+        456,
+        new SvLoadLogRecord(svGetReloadData, 11),
+        new SvDebitLogRecord(svGetDebitData, 11));
+    po.setPinAttemptRemaining(0);
+  }
 }

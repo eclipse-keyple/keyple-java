@@ -91,10 +91,10 @@ public class AbstractMatchingSeTest {
     assertThat(testMatchingSe.getFciBytes()).isEqualTo(ByteArrayUtil.fromHex(FCI_REV31));
   }
 
-    private static class TestMatchingSe extends AbstractMatchingSe {
+  private static class TestMatchingSe extends AbstractMatchingSe {
 
-        protected TestMatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode) {
-            super(selectionResponse, transmissionMode);
-        }
+    protected TestMatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode) {
+      super(selectionResponse, transmissionMode);
     }
+  }
 }
