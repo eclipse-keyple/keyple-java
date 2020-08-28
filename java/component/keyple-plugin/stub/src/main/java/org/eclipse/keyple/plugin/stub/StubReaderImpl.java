@@ -226,6 +226,8 @@ class StubReaderImpl extends AbstractObservableLocalReader
         Thread.sleep(10);
       } catch (InterruptedException e) {
         logger.debug("Sleep was interrupted");
+        // Restore interrupted state...
+        Thread.currentThread().interrupt();
       }
     }
     return false;
@@ -239,8 +241,8 @@ class StubReaderImpl extends AbstractObservableLocalReader
   }
 
   /**
-   * Defined in the {@link org.eclipse.keyple.core.seproxy.plugin.local.SmartRemovalReader}
-   * interface, this method is called by the monitoring thread to check SE absence
+   * Defined in the {@link SmartRemovalReader} interface, this method is called by the monitoring
+   * thread to check SE absence
    *
    * @return true if the SE is absent
    */
@@ -256,6 +258,8 @@ class StubReaderImpl extends AbstractObservableLocalReader
         Thread.sleep(10);
       } catch (InterruptedException e) {
         logger.debug("Sleep was interrupted");
+        // Restore interrupted state...
+        Thread.currentThread().interrupt();
       }
     }
     return false;

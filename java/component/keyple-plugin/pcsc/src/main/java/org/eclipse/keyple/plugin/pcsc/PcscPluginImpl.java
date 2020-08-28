@@ -74,7 +74,9 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
   }
 
   @Override
-  public void setParameter(String key, String value) {}
+  public void setParameter(String key, String value) {
+    // no parameter for this plugin
+  }
 
   /**
    * Fetch the list of connected native reader (from smartcardio) and returns their names
