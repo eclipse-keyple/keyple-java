@@ -12,7 +12,6 @@
 package org.eclipse.keyple.plugin.stub;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentMap;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.*;
@@ -165,7 +164,7 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
   }
 
   @Override
-  public ConcurrentMap<String, SeReader> getReaders() {
+  public Map<String, SeReader> getReaders() {
     return stubPlugin.getReaders();
   }
 

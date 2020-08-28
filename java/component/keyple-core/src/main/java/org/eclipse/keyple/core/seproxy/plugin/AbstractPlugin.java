@@ -14,7 +14,6 @@ package org.eclipse.keyple.core.seproxy.plugin;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.*;
@@ -26,7 +25,7 @@ public abstract class AbstractPlugin implements ReaderPlugin {
   private final String name;
 
   /** The list of readers */
-  protected ConcurrentMap<String, SeReader> readers = new ConcurrentHashMap<String, SeReader>();
+  protected Map<String, SeReader> readers = new ConcurrentHashMap<String, SeReader>();
 
   /**
    * Instantiates a new ReaderPlugin. Retrieve the current readers list.
@@ -57,7 +56,7 @@ public abstract class AbstractPlugin implements ReaderPlugin {
    * @return the current readers map, can be an empty
    */
   @Override
-  public final ConcurrentMap<String, SeReader> getReaders() {
+  public final Map<String, SeReader> getReaders() {
     return readers;
   }
 
@@ -84,8 +83,7 @@ public abstract class AbstractPlugin implements ReaderPlugin {
    * @return the map of AbstractReader objects.
    * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
    */
-  protected abstract ConcurrentMap<String, SeReader> initNativeReaders()
-      throws KeypleReaderIOException;
+  protected abstract Map<String, SeReader> initNativeReaders() throws KeypleReaderIOException;
 
   /**
    * Gets a specific reader designated by its name in the current readers list

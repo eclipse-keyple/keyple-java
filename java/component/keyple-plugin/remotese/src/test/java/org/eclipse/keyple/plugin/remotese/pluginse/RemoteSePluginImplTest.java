@@ -17,7 +17,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -74,7 +73,7 @@ public class RemoteSePluginImplTest extends CoreBaseTest {
             "pluginName",
             Executors.newCachedThreadPool());
 
-    ConcurrentMap<String, SeReader> readers = plugin.getReaders();
+    Map<String, SeReader> readers = plugin.getReaders();
 
     final CountDownLatch lock = new CountDownLatch(9);
 
@@ -96,7 +95,7 @@ public class RemoteSePluginImplTest extends CoreBaseTest {
   }
 
   public static void listReaders(
-      final ConcurrentMap<String, SeReader> readers, final int N, final CountDownLatch lock) {
+      final Map<String, SeReader> readers, final int N, final CountDownLatch lock) {
     Thread thread =
         new Thread() {
           public void run() {
@@ -119,7 +118,7 @@ public class RemoteSePluginImplTest extends CoreBaseTest {
   }
 
   public static void removeReaderThread(
-      final ConcurrentMap<String, SeReader> readers, final int N, final CountDownLatch lock) {
+      final Map<String, SeReader> readers, final int N, final CountDownLatch lock) {
     Thread thread =
         new Thread() {
           public void run() {

@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.core.CoreBaseTest;
@@ -58,7 +57,7 @@ public class AbstractPluginTest extends CoreBaseTest {
   @Test
   public void addRemoveReadersMultiThreaded() throws Exception {
     ReaderPlugin plugin = new BlankAbstractPlugin("addRemoveReadersMultiThreaded");
-    ConcurrentMap<String, SeReader> readers = plugin.getReaders();
+    Map<String, SeReader> readers = plugin.getReaders();
     final CountDownLatch lock = new CountDownLatch(10);
 
     addReaderThread(readers, 10, lock);
@@ -80,7 +79,7 @@ public class AbstractPluginTest extends CoreBaseTest {
   }
 
   public static void listReaders(
-      final ConcurrentMap<String, SeReader> readers, final int N, final CountDownLatch lock) {
+      final Map<String, SeReader> readers, final int N, final CountDownLatch lock) {
     Thread thread =
         new Thread() {
           public void run() {
@@ -103,7 +102,7 @@ public class AbstractPluginTest extends CoreBaseTest {
   }
 
   public static void removeReaderThread(
-      final ConcurrentMap<String, SeReader> readers, final int N, final CountDownLatch lock) {
+      final Map<String, SeReader> readers, final int N, final CountDownLatch lock) {
     Thread thread =
         new Thread() {
           public void run() {
@@ -134,7 +133,7 @@ public class AbstractPluginTest extends CoreBaseTest {
   }
 
   public static void addReaderThread(
-      final ConcurrentMap<String, SeReader> readers, final int N, final CountDownLatch lock) {
+      final Map<String, SeReader> readers, final int N, final CountDownLatch lock) {
     Thread thread =
         new Thread() {
           public void run() {

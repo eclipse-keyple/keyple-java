@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.slf4j.Logger;
@@ -33,7 +32,7 @@ public final class SeProxyService {
   private static SeProxyService uniqueInstance = new SeProxyService();
 
   /** the list of readers’ plugins interfaced with the SE Proxy Service */
-  private final ConcurrentMap<String, ReaderPlugin> plugins = new ConcurrentHashMap();
+  private final Map<String, ReaderPlugin> plugins = new ConcurrentHashMap();
 
   // this is the object we will be synchronizing on ("the monitor")
   private final Object MONITOR = new Object();
@@ -112,7 +111,7 @@ public final class SeProxyService {
    *
    * @return the plugin names and plugin instances map of interfaced reader’s plugins.
    */
-  public synchronized ConcurrentMap<String, ReaderPlugin> getPlugins() {
+  public synchronized Map<String, ReaderPlugin> getPlugins() {
     return plugins;
   }
 
