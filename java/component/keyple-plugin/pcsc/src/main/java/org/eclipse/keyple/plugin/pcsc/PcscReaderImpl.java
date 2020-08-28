@@ -319,7 +319,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
       // the request will be executed only if the protocol match the requestElement
       String selectionMask = getProtocolsMap().get(protocolFlag);
       if (selectionMask == null) {
-        throw new KeypleReaderIOException("Target selector mask not found!", null);
+        throw new KeypleReaderIOException("Target selector mask not found: " + protocolFlag, null);
       }
       Pattern p = Pattern.compile(selectionMask);
       String atr = ByteArrayUtil.toHex(card.getATR().getBytes());
