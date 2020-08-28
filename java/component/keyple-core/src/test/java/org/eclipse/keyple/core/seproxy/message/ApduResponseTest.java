@@ -73,44 +73,6 @@ public class ApduResponseTest {
   }
 
   @Test
-  public void isEqualsTest() {
-    assertTrue(getAFCI().equals(getAFCI()));
-  }
-
-  @Test
-  public void isThisEquals() {
-    ApduResponse resp = getAFCI();
-    assertTrue(resp.equals(resp));
-  }
-
-  @Test
-  public void isNotEquals() {
-    ApduResponse resp = getAFCI();
-    Object obj = new Object();
-    assertFalse(resp.equals(obj));
-  }
-
-  @Test
-  public void isNotEqualsNull() {
-    ApduResponse resp = getAFCI();
-    ApduResponse respNull = new ApduResponse(null, null);
-    assertFalse(resp.equals(respNull));
-  }
-
-  @Test
-  public void hashcodeTest() {
-    ApduResponse resp = getAFCI();
-    ApduResponse resp2 = getAFCI();
-    assertTrue(resp.hashCode() == resp2.hashCode());
-  }
-
-  @Test
-  public void hashcodeNull() {
-    ApduResponse resp = new ApduResponse(null, null);
-    assertNotNull(resp.hashCode());
-  }
-
-  @Test
   public void testToStringNull() {
     ApduResponse resp = new ApduResponse(null, null);
     assertNotNull(resp.toString());

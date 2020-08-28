@@ -30,9 +30,6 @@ public class AbstractSeSelectionRequestTest {
   private static final String APDU2 = "00 11 2233 01 22";
 
   @Test
-  public void testGetSelectionRequest() {}
-
-  @Test
   public void testGetSeSelector() {
     SeSelector seSelector =
         SeSelector.builder()

@@ -61,22 +61,6 @@ public class AbstractIso7816CommandBuilderTest extends CoreBaseTest {
   }
 
   @Test
-  public void testConstructor2() {
-    ApduRequest apduRequest = new ApduRequest(ByteArrayUtil.fromHex("00112233445566"), false);
-
-    // TODO do we really need this second form of constructor?
-    Iso7816CommandBuilder iso7816CommandBuilder =
-        new Iso7816CommandBuilder("COMMAND_1", apduRequest);
-
-    Assert.assertEquals("COMMAND_1", iso7816CommandBuilder.getName());
-    Assert.assertArrayEquals(
-        ByteArrayUtil.fromHex("00112233445566"), iso7816CommandBuilder.getApduRequest().getBytes());
-    Assert.assertFalse(iso7816CommandBuilder.getApduRequest().isCase4());
-    Assert.assertNull(iso7816CommandBuilder.getApduRequest().getSuccessfulStatusCodes());
-    Assert.assertEquals("COMMAND_1", iso7816CommandBuilder.getApduRequest().getName());
-  }
-
-  @Test
   public void testAddSubName() {
     Iso7816CommandBuilder iso7816CommandBuilder =
         new Iso7816CommandBuilder(CommandRef.COMMAND_1, null);
@@ -208,10 +192,6 @@ public class AbstractIso7816CommandBuilderTest extends CoreBaseTest {
   private class Iso7816CommandBuilder extends AbstractIso7816CommandBuilder {
     public Iso7816CommandBuilder(SeCommand commandReference, ApduRequest request) {
       super(commandReference, request);
-    }
-
-    public Iso7816CommandBuilder(String name, ApduRequest request) {
-      super(name, request);
     }
   }
 }
