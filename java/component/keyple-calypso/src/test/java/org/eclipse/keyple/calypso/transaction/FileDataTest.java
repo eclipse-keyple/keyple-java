@@ -285,9 +285,9 @@ public class FileDataTest {
   }
 
   @Test
-  public void clone_shouldReturnACopy() {
+  public void cloningConstructor_shouldReturnACopy() {
     file.setContent(1, data1);
-    FileData clone = file.clone();
+    FileData clone = new FileData(file);
     assertThat(clone).isNotSameAs(file);
     assertThat(clone.getContent(1)).isNotSameAs(file.getContent(1));
   }
