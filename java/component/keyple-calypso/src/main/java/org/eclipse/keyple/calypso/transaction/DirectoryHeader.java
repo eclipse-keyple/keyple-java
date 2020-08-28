@@ -185,6 +185,30 @@ public class DirectoryHeader implements Serializable {
   }
 
   /**
+   * Returns true if the KIF for the provided level is available.
+   *
+   * @param level the session access level (should be not null)
+   * @return true if the KIF for the provided level is available
+   * @since 0.9
+   */
+  public boolean isKifAvailable(PoTransaction.SessionSetting.AccessLevel level) {
+    Assert.getInstance().notNull(level, "level");
+    return kif.get(level) != null;
+  }
+
+  /**
+   * Returns true if the KVC for the provided level is available.
+   *
+   * @param level the session access level (should be not null)
+   * @return true if the KVC for the provided level is available
+   * @since 0.9
+   */
+  public boolean isKvcAvailable(PoTransaction.SessionSetting.AccessLevel level) {
+    Assert.getInstance().notNull(level, "level");
+    return kvc.get(level) != null;
+  }
+
+  /**
    * Gets the KIF associated to the provided session access level.
    *
    * @param level the session access level (should be not null)

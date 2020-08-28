@@ -507,8 +507,10 @@ public class StubReaderTest extends BaseStubTest {
         new ObservableReader.ReaderObserver() {
           @Override
           public void update(ReaderEvent event) {
-            // no event is thrown
-            lock.countDown(); // should not be called
+            // only SE_REMOVED event should be thrown
+            if (event.getEventType() != ReaderEvent.EventType.SE_REMOVED) {
+              lock.countDown(); // should not be called
+            }
           }
         };
 
