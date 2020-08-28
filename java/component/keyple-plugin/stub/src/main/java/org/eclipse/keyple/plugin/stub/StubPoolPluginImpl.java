@@ -165,7 +165,7 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
   }
 
   @Override
-  public ConcurrentMap<String, SeReader> getReaders() {
+  public Map<String, SeReader> getReaders() {
     return stubPlugin.getReaders();
   }
 
