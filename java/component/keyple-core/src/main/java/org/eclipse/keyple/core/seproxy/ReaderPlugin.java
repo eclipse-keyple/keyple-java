@@ -13,7 +13,6 @@ package org.eclipse.keyple.core.seproxy;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentMap;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 
 /** Card readers plugin interface. */

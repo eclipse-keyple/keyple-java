@@ -12,7 +12,6 @@
 package org.eclipse.keyple.plugin.stub;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentMap;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.*;

@@ -14,7 +14,6 @@ package org.eclipse.keyple.core.seproxy.plugin;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.*;
@@ -76,8 +75,7 @@ public abstract class AbstractPlugin extends AbstractSeProxyComponent implements
    * @return the map of AbstractReader objects.
    * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
    */
-  protected abstract Map<String, SeReader> initNativeReaders()
-      throws KeypleReaderIOException;
+  protected abstract Map<String, SeReader> initNativeReaders() throws KeypleReaderIOException;
 
   /**
    * Gets a specific reader designated by its name in the current readers list

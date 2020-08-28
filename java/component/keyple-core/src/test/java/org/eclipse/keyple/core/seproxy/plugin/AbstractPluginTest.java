@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.core.CoreBaseTest;
