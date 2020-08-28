@@ -35,10 +35,12 @@ public class SampleFactory {
     return new KeypleReaderIOException("Keyple Reader Exception");
   }
 
-    public static DefaultSelectionsRequest getSelectionRequest() {
-        return new DefaultSelectionsRequest(getASeRequestList_ISO14443_4(),
-                MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
-    }
+  public static DefaultSelectionsRequest getSelectionRequest() {
+    return new DefaultSelectionsRequest(
+        getASeRequestList_ISO14443_4(),
+        MultiSeRequestProcessing.FIRST_MATCH,
+        ChannelControl.KEEP_OPEN);
+  }
 
   public static ObservableReader.NotificationMode getNotificationMode() {
     return ObservableReader.NotificationMode.ALWAYS;

@@ -301,4 +301,42 @@ public class AbstractNativeSeServiceTest extends BaseNativeSeTest {
         KeypleJsonParser.getParser().fromJson(responseDto.getBody(), TransmissionMode.class);
     assertThat(bodyValue).isEqualTo(TransmissionMode.CONTACTS);
   }
+
+  @Test
+  public void startSeDetection() {
+    // init
+    KeypleMessageDto requestDto = getStartSeDetection("aSessionId");
+    // execute
+    KeypleMessageDto responseDto = service.executeLocally(observableReaderMocked, requestDto);
+    // results
+    assertMetadataMatches(requestDto, responseDto);
+    assertThat(responseDto.getAction())
+        .isEqualTo(KeypleMessageDto.Action.START_SE_DETECTION.name());
+    assertThat(responseDto.getBody()).isEqualTo("{}");
+  }
+
+  @Test
+  public void stopSeDetection() {
+    // init
+    KeypleMessageDto requestDto = getStopSeDetection("aSessionId");
+    // execute
+    KeypleMessageDto responseDto = service.executeLocally(observableReaderMocked, requestDto);
+    // results
+    assertMetadataMatches(requestDto, responseDto);
+    assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.STOP_SE_DETECTION.name());
+    assertThat(responseDto.getBody()).isEqualTo("{}");
+  }
+
+  @Test
+  public void finalizeSeProcessing() {
+    // init
+    KeypleMessageDto requestDto = getFinalizeSeProcessing("aSessionId");
+    // execute
+    KeypleMessageDto responseDto = service.executeLocally(observableReaderMocked, requestDto);
+    // results
+    assertMetadataMatches(requestDto, responseDto);
+    assertThat(responseDto.getAction())
+        .isEqualTo(KeypleMessageDto.Action.FINALIZE_SE_PROCESSING.name());
+    assertThat(responseDto.getBody()).isEqualTo("{}");
+  }
 }

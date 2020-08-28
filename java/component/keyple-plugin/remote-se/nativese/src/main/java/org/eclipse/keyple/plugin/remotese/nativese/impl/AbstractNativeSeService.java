@@ -132,6 +132,15 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
           case GET_TRANSMISSION_MODE:
             response = getTransmissionMode();
             break;
+          case START_SE_DETECTION:
+            response = startSeDetection();
+            break;
+          case STOP_SE_DETECTION:
+            response = stopSeDetection();
+            break;
+          case FINALIZE_SE_PROCESSING:
+            response = finalizeSeProcessing();
+            break;
           default:
             throw new IllegalArgumentException(action.name());
         }
@@ -360,6 +369,64 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
       // Build response
       String body = KeypleJsonParser.getParser().toJson(transmissionMode, TransmissionMode.class);
       return new KeypleMessageDto(msg).setBody(body);
+    }
+
+    /**
+     * (private)<br>
+     * Start SE Detection
+     *
+     * @return a not null reference.
+     * @throws KeypleReaderIOException if a reader IO error occurs.
+     */
+    private KeypleMessageDto startSeDetection() {
+
+      // Extract info from the message
+      JsonObject body = KeypleJsonParser.getParser().fromJson(msg.getBody(), JsonObject.class);
+
+      ObservableReader.PollingMode pollingMode =
+          KeypleJsonParser.getParser()
+              .fromJson(body.get("pollingMode"), ObservableReader.PollingMode.class);
+
+      // Execute the action on the reader
+      ((ObservableReader) reader).startSeDetection(pollingMode);
+
+      // Build response
+      String bodyResponse = "{}";
+      return new KeypleMessageDto(msg).setBody(bodyResponse);
+    }
+
+    /**
+     * (private)<br>
+     * Stop SE Detection
+     *
+     * @return a not null reference.
+     * @throws KeypleReaderIOException if a reader IO error occurs.
+     */
+    private KeypleMessageDto stopSeDetection() {
+
+      // Execute the action on the reader
+      ((ObservableReader) reader).stopSeDetection();
+
+      // Build response
+      String bodyResponse = "{}";
+      return new KeypleMessageDto(msg).setBody(bodyResponse);
+    }
+
+    /**
+     * (private)<br>
+     * Finalize SE Processing
+     *
+     * @return a not null reference.
+     * @throws KeypleReaderIOException if a reader IO error occurs.
+     */
+    private KeypleMessageDto finalizeSeProcessing() {
+
+      // Execute the action on the reader
+      ((ObservableReader) reader).finalizeSeProcessing();
+
+      // Build response
+      String bodyResponse = "{}";
+      return new KeypleMessageDto(msg).setBody(bodyResponse);
     }
   }
 }
