@@ -1,6 +1,6 @@
 @startuml
 title
-    Keyple Plugin Remote SE (25/08/2020)
+    Keyple Plugin Remote SE (28/08/2020)
 end title
 
 ' == THEME ==
@@ -70,7 +70,7 @@ package org.eclipse.keyple.core.seproxy {
         }
     }
 
-    package plugin {
+    package plugin.reader {
         +abstract AbstractReader implements ProxyReader {
         }
         +interface ObservableReaderNotifier extends ObservableReader {
@@ -363,14 +363,14 @@ package org.eclipse.keyple.plugin.remotese {
             }
             ' Server Readers
             ~abstract "<< <back:#D0ECE7>ProxyReader</back> >>\nAbstractServerVirtualReader" as AbstractServerVirtualReader implements RemoteSeServerReader {
-                ~ AbstractServerVirtualReader (\n AbstractVirtualReader reader,\n String serviceId,\n AbstractMatchingSe matchingSe,\n Object userInputData)
+                ~ AbstractServerVirtualReader (\n AbstractVirtualReader reader,\n String serviceId,\n String userInputDataJson,\n String initialSeContentJson)
             }
             ~class "**final** ServerVirtualReader" as ServerVirtualReader extends AbstractServerVirtualReader {
-                ~ ServerVirtualReader (\n AbstractVirtualReader reader,\n String serviceId,\n AbstractMatchingSe matchingSe,\n Object userInputData)
+                ~ ServerVirtualReader (\n AbstractVirtualReader reader,\n String serviceId,\n String userInputDataJson,\n String initialSeContentJson)
             }
             ~class "<< <back:#FDEBD0>ObservableReaderNotifier</back> >>\n**final** ServerVirtualObservableReader" as ServerVirtualObservableReader extends AbstractServerVirtualReader implements RemoteSeServerObservableReader {
                 __
-                ~ ServerVirtualObservableReader (\n AbstractVirtualReader reader,\n String serviceId,\n AbstractMatchingSe matchingSe,\n Object userInputData)
+                ~ ServerVirtualObservableReader (\n AbstractVirtualReader reader,\n String serviceId,\n String userInputDataJson,\n String initialSeContentJson)
                 ..
                 ~ void onEvent (KeypleMessageDto msg)
             }
