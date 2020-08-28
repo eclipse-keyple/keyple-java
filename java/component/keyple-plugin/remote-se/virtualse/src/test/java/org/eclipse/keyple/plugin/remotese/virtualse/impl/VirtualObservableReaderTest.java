@@ -18,6 +18,8 @@ import static org.mockito.Mockito.verify;
 
 import com.google.gson.JsonObject;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader.PollingMode;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
@@ -38,13 +40,13 @@ public class VirtualObservableReaderTest {
 
   VirtualObservableReader reader;
   AbstractKeypleNode node;
-  ObservableReader.ReaderObserver observer;
+  ReaderObserver observer;
 
   static final DefaultSelectionsRequest abstractDefaultSelectionsRequest =
       SampleFactory.getSelectionRequest();;
   static final ObservableReader.NotificationMode notificationMode =
       SampleFactory.getNotificationMode();;
-  static final ObservableReader.PollingMode pollingMode = ObservableReader.PollingMode.REPEATING;;
+  static final PollingMode pollingMode = PollingMode.REPEATING;;
   static final ReaderEvent event =
       new ReaderEvent(pluginName, nativeReaderName, ReaderEvent.EventType.SE_INSERTED, null);;
   static final KeypleMessageDto response =
@@ -60,7 +62,7 @@ public class VirtualObservableReaderTest {
   public void setUp() {
     node = Mockito.mock(AbstractKeypleNode.class);
     doReturn(response).when(node).sendRequest(any(KeypleMessageDto.class));
-    observer = Mockito.mock(ObservableReader.ReaderObserver.class);
+    observer = Mockito.mock(ReaderObserver.class);
     reader = new VirtualObservableReader(pluginName, nativeReaderName, node);
   }
 
@@ -112,7 +114,7 @@ public class VirtualObservableReaderTest {
     assertThat(
             KeypleJsonParser.getParser()
                 .fromJson(
-                    body.get("pollingMode").getAsString(), ObservableReader.PollingMode.class))
+                    body.get("pollingMode").getAsString(), PollingMode.class))
         .isEqualToComparingFieldByFieldRecursively(pollingMode);
   }
 
@@ -136,7 +138,7 @@ public class VirtualObservableReaderTest {
     assertThat(
             KeypleJsonParser.getParser()
                 .fromJson(
-                    body.get("pollingMode").getAsString(), ObservableReader.PollingMode.class))
+                    body.get("pollingMode").getAsString(), PollingMode.class))
         .isEqualToComparingFieldByFieldRecursively(pollingMode);
   }
 
@@ -147,7 +149,7 @@ public class VirtualObservableReaderTest {
     KeypleMessageDto request = messageArgumentCaptor.getValue();
     assertThat(request.getAction()).isEqualTo(KeypleMessageDto.Action.STOP_SE_DETECTION.name());
     JsonObject body = KeypleJsonParser.getParser().fromJson(request.getBody(), JsonObject.class);
-    assertThat(body.toString()).isEqualTo("{}");
+    assertThat(body).isNull();
   }
 
   @Test
@@ -158,6 +160,6 @@ public class VirtualObservableReaderTest {
     assertThat(request.getAction())
         .isEqualTo(KeypleMessageDto.Action.FINALIZE_SE_PROCESSING.name());
     JsonObject body = KeypleJsonParser.getParser().fromJson(request.getBody(), JsonObject.class);
-    assertThat(body.toString()).isEqualTo("{}");
+    assertThat(body).isNull();
   }
 }

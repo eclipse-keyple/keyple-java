@@ -17,7 +17,7 @@ import java.util.List;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.plugin.ObservableReaderNotifier;
+import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderNotifier;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
@@ -108,7 +108,7 @@ final class VirtualObservableReader extends AbstractVirtualReader
 
   @Override
   public void stopSeDetection() {
-    sendRequest(KeypleMessageDto.Action.STOP_SE_DETECTION, getBlankBody());
+    sendRequest(KeypleMessageDto.Action.STOP_SE_DETECTION, null);
   }
 
   @Override
@@ -145,14 +145,7 @@ final class VirtualObservableReader extends AbstractVirtualReader
 
   @Override
   public void finalizeSeProcessing() {
-    sendRequest(KeypleMessageDto.Action.FINALIZE_SE_PROCESSING, getBlankBody());
+    sendRequest(KeypleMessageDto.Action.FINALIZE_SE_PROCESSING, null);
   }
 
-  /*
-   * private methods
-   */
-
-  private JsonObject getBlankBody() {
-    return new JsonObject();
-  }
 }

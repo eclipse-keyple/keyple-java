@@ -390,9 +390,7 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
       // Execute the action on the reader
       ((ObservableReader) reader).startSeDetection(pollingMode);
 
-      // Build response
-      String bodyResponse = "{}";
-      return new KeypleMessageDto(msg).setBody(bodyResponse);
+      return new KeypleMessageDto(msg).setBody(null);
     }
 
     /**
@@ -407,9 +405,7 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
       // Execute the action on the reader
       ((ObservableReader) reader).stopSeDetection();
 
-      // Build response
-      String bodyResponse = "{}";
-      return new KeypleMessageDto(msg).setBody(bodyResponse);
+      return new KeypleMessageDto(msg).setBody(null);
     }
 
     /**
@@ -424,9 +420,7 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
       // Execute the action on the reader
       ((ObservableReader) reader).finalizeSeProcessing();
 
-      // Build response
-      String bodyResponse = "{}";
-      return new KeypleMessageDto(msg).setBody(bodyResponse);
+      return new KeypleMessageDto(msg).setBody(null);
     }
   }
 }

@@ -312,7 +312,7 @@ public class AbstractNativeSeServiceTest extends BaseNativeSeTest {
     assertMetadataMatches(requestDto, responseDto);
     assertThat(responseDto.getAction())
         .isEqualTo(KeypleMessageDto.Action.START_SE_DETECTION.name());
-    assertThat(responseDto.getBody()).isEqualTo("{}");
+    assertThat(responseDto.getBody()).isNull();
   }
 
   @Test
@@ -324,7 +324,7 @@ public class AbstractNativeSeServiceTest extends BaseNativeSeTest {
     // results
     assertMetadataMatches(requestDto, responseDto);
     assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.STOP_SE_DETECTION.name());
-    assertThat(responseDto.getBody()).isEqualTo("{}");
+    assertThat(responseDto.getBody()).isNull();
   }
 
   @Test
@@ -337,6 +337,6 @@ public class AbstractNativeSeServiceTest extends BaseNativeSeTest {
     assertMetadataMatches(requestDto, responseDto);
     assertThat(responseDto.getAction())
         .isEqualTo(KeypleMessageDto.Action.FINALIZE_SE_PROCESSING.name());
-    assertThat(responseDto.getBody()).isEqualTo("{}");
+    assertThat(responseDto.getBody()).isNull();
   }
 }
