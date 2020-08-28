@@ -167,13 +167,127 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
       this.interrupt();
     }
 
+    /**
+     * (private)<br>
+     * Indicate whether the thread is running or not
+     */
     boolean isMonitoring() {
       return running;
     }
 
+    /**
+     * (private)<br>
+     * Adds a reader to the list of known readers (by the plugin)
+     */
+    private void addReader(String readerName) {
+      SeReader reader = fetchNativeReader(readerName);
+      readers.put(reader.getName(), reader);
+      if (logger.isTraceEnabled()) {
+        logger.trace(
+            "[{}][{}] Plugin thread => Add plugged reader to readers list.",
+            this.pluginName,
+            reader.getName());
+      }
+      /* add reader name to the current list */
+      nativeReadersNames.add(readerName);
+    }
+
+    /**
+     * (private)<br>
+     * Removes a reader from the list of known readers (by the plugin)
+     */
+    private void removeReader(SeReader reader) {
+      /* removes any possible observers before removing the reader */
+      if (reader instanceof ObservableReader) {
+        ((ObservableReader) reader).clearObservers();
+
+        // In case where Reader was detecting SE
+        ((ObservableReader) reader).stopSeDetection();
+      }
+      readers.remove(reader.getName());
+      if (logger.isTraceEnabled()) {
+        logger.trace(
+            "[{}][{}] Plugin thread => Remove unplugged reader from readers list.",
+            this.pluginName,
+            reader.getName());
+      }
+      /* remove reader name from the current list */
+      nativeReadersNames.remove(reader.getName());
+    }
+
+    /**
+     * (private)<br>
+     * Notifies observers of changes in the list of readers<br>
+     * .
+     */
+    private void notifyChanges(
+        PluginEvent.EventType eventType, SortedSet<String> changedReaderNames) {
+      /* grouped notification */
+      if (logger.isTraceEnabled()) {
+        logger.trace(
+            "Notifying {}(s): {}",
+            eventType == PluginEvent.EventType.READER_CONNECTED ? "connection" : "disconnection",
+            changedReaderNames);
+      }
+      notifyObservers(new PluginEvent(this.pluginName, changedReaderNames, eventType));
+    }
+
+    /**
+     * (private)<br>
+     * Compares the list of current readers to the list provided by the system and adds or removes
+     * readers accordingly.<br>
+     * Observers are notified of changes.
+     *
+     * @param actualNativeReadersNames the list of readers currently known by the system
+     */
+    private void processChanges(SortedSet<String> actualNativeReadersNames) {
+      SortedSet<String> changedReaderNames = new ConcurrentSkipListSet<String>();
+      /*
+       * parse the current readers list, notify for disappeared readers, update
+       * readers list
+       */
+      final Collection<SeReader> readerCollection = readers.values();
+      for (SeReader reader : readerCollection) {
+        if (!actualNativeReadersNames.contains(reader.getName())) {
+          changedReaderNames.add(reader.getName());
+        }
+      }
+      /* notify disconnections if any and update the reader list */
+      if (!changedReaderNames.isEmpty()) {
+        notifyChanges(PluginEvent.EventType.READER_DISCONNECTED, changedReaderNames);
+        /* list update */
+        for (SeReader reader : readerCollection) {
+          if (!actualNativeReadersNames.contains(reader.getName())) {
+            removeReader(reader);
+          }
+        }
+        /* clean the list for a possible connection notification */
+        changedReaderNames.clear();
+      }
+      /*
+       * parse the new readers list, notify for readers appearance, update readers
+       * list
+       */
+      for (String readerName : actualNativeReadersNames) {
+        if (!nativeReadersNames.contains(readerName)) {
+          addReader(readerName);
+          /* add to the notification list */
+          changedReaderNames.add(readerName);
+        }
+      }
+      /* notify connections if any */
+      if (!changedReaderNames.isEmpty()) {
+        notifyChanges(PluginEvent.EventType.READER_CONNECTED, changedReaderNames);
+      }
+    }
+
+    /**
+     * Reader monitoring loop<br>
+     * Checks reader insertions and removals<br>
+     * Notifies observers of any changes
+     */
     @Override
     public void run() {
-      SortedSet<String> changedReaderNames = new ConcurrentSkipListSet<String>();
       try {
         while (running) {
           /* retrieves the current readers names list */
@@ -183,82 +297,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
            * checks if it has changed this algorithm favors cases where nothing change
            */
           if (!nativeReadersNames.equals(actualNativeReadersNames)) {
-            /*
-             * parse the current readers list, notify for disappeared readers, update
-             * readers list
-             */
-            /* build changed reader names list */
-            changedReaderNames.clear();
-            final Collection<SeReader> readerCollection = readers.values();
-            for (SeReader reader : readerCollection) {
-              if (!actualNativeReadersNames.contains(reader.getName())) {
-                changedReaderNames.add(reader.getName());
-              }
-            }
-            /* notify disconnections if any and update the reader list */
-            if (!changedReaderNames.isEmpty()) {
-              /* grouped notification */
-              if (logger.isTraceEnabled()) {
-                logger.trace("Notifying disconnection(s): {}", changedReaderNames);
-              }
-              notifyObservers(
-                  new PluginEvent(
-                      this.pluginName,
-                      changedReaderNames,
-                      PluginEvent.EventType.READER_DISCONNECTED));
-              /* list update */
-              for (SeReader reader : readerCollection) {
-                if (!actualNativeReadersNames.contains(reader.getName())) {
-                  /* removes any possible observers before removing the reader */
-                  if (reader instanceof ObservableReader) {
-                    ((ObservableReader) reader).clearObservers();
-
-                    // In case where Reader was detecting SE
-                    ((ObservableReader) reader).stopSeDetection();
-                  }
-                  readers.remove(reader.getName());
-                  if (logger.isTraceEnabled()) {
-                    logger.trace(
-                        "[{}][{}] Plugin thread => Remove unplugged reader from readers list.",
-                        this.pluginName,
-                        reader.getName());
-                  }
-                  /* remove reader name from the current list */
-                  nativeReadersNames.remove(reader.getName());
-                }
-              }
-              /* clean the list for a possible connection notification */
-              changedReaderNames.clear();
-            }
-            /*
-             * parse the new readers list, notify for readers appearance, update readers
-             * list
-             */
-            for (String readerName : actualNativeReadersNames) {
-              if (!nativeReadersNames.contains(readerName)) {
-                SeReader reader = fetchNativeReader(readerName);
-                readers.put(reader.getName(), reader);
-                /* add to the notification list */
-                changedReaderNames.add(readerName);
-                if (logger.isTraceEnabled()) {
-                  logger.trace(
-                      "[{}][{}] Plugin thread => Add plugged reader to readers list.",
-                      this.pluginName,
-                      reader.getName());
-                }
-                /* add reader name to the current list */
-                nativeReadersNames.add(readerName);
-              }
-            }
-            /* notify connections if any */
-            if (!changedReaderNames.isEmpty()) {
-              if (logger.isTraceEnabled()) {
-                logger.trace("Notifying connection(s): {}", changedReaderNames);
-              }
-              notifyObservers(
-                  new PluginEvent(
-                      this.pluginName, changedReaderNames, PluginEvent.EventType.READER_CONNECTED));
-            }
+            processChanges(actualNativeReadersNames);
           }
           /* sleep for a while. */
           Thread.sleep(threadWaitTimeout);
@@ -279,21 +318,5 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
             e);
       }
     }
-  }
-
-  /**
-   * Called when the class is unloaded. Attempt to do a clean exit.
-   *
-   * @throws Throwable a generic exception
-   * @deprecated will change in a later version
-   */
-  @Deprecated
-  @Override
-  protected void finalize() throws Throwable {
-    thread.end();
-    if (logger.isTraceEnabled()) {
-      logger.trace("[{}] Observable Plugin thread ended.", this.getName());
-    }
-    super.finalize();
   }
 }
