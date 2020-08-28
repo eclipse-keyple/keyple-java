@@ -74,8 +74,8 @@ class MainActivity : BasicActivity(), View.OnClickListener {
     }
 
     @Throws(KeyplePluginNotFoundException::class, KeyplePluginInstantiationException::class)
-    private suspend fun connectOmapi(): ConcurrentMap<String, SeReader> = withContext(Dispatchers.IO) {
-        var readers: ConcurrentMap<String, SeReader> ? = null
+    private suspend fun connectOmapi(): Map<String, SeReader> = withContext(Dispatchers.IO) {
+        var readers: Map<String, SeReader> ? = null
         for (x in 1..MAX_TRIES) {
             readers = SeProxyService.getInstance().getPlugin(PLUGIN_NAME).readers
             if (readers == null || readers.size < 1) {

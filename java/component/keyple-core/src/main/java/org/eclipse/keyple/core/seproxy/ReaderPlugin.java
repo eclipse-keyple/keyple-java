@@ -11,8 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy;
 
+import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentMap;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 
 /** Card readers plugin interface. */
@@ -31,7 +31,7 @@ public interface ReaderPlugin extends ProxyElement {
    * @return the map of this plugin's connected reader's name and instance, can be an empty list,
    *     can not be null;
    */
-  ConcurrentMap<String, SeReader> getReaders();
+  Map<String, SeReader> getReaders();
 
   /**
    * Gets the reader whose name is provided as an argument

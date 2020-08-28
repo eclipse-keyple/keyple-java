@@ -37,7 +37,7 @@ abstract class ExamplesActivity : BasicActivity(), NavigationView.OnNavigationIt
     /**
      * Variables for event window
      */
-    protected lateinit var readers: ConcurrentMap<String, SeReader>
+    protected lateinit var readers: Map<String, SeReader>
     private lateinit var adapter: RecyclerView.Adapter<*>
     private lateinit var layoutManager: RecyclerView.LayoutManager
     protected val events = arrayListOf<EventModel>()
