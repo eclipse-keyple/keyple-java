@@ -11,7 +11,9 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.message;
 
-public class SelectionStatus {
+import java.io.Serializable;
+
+public class SelectionStatus implements Serializable {
   private final AnswerToReset atr;
   private final ApduResponse fci;
   private final boolean isMatching;

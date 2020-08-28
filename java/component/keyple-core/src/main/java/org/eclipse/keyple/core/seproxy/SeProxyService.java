@@ -29,10 +29,10 @@ public final class SeProxyService {
   private static final Logger logger = LoggerFactory.getLogger(SeProxyService.class);
 
   /** singleton instance of SeProxyService */
-  private static SeProxyService uniqueInstance = new SeProxyService();
+  private static final SeProxyService uniqueInstance = new SeProxyService();
 
   /** the list of readers’ plugins interfaced with the SE Proxy Service */
-  private final Map<String, ReaderPlugin> plugins = new ConcurrentHashMap();
+  private final Map<String, ReaderPlugin> plugins = new ConcurrentHashMap<String, ReaderPlugin>();
 
   // this is the object we will be synchronizing on ("the monitor")
   private final Object MONITOR = new Object();

@@ -11,6 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
@@ -22,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * The SeSelector class groups the information and methods used to select a particular secure
  * element
  */
-public class SeSelector {
+public class SeSelector implements Serializable {
   /** logger */
   private static final Logger logger = LoggerFactory.getLogger(SeSelector.class);
 
@@ -40,7 +41,7 @@ public class SeSelector {
    * missing in SeSelector when operating SE which don’t support the Select Application command (as
    * it is the case for SAM).
    */
-  public static final class AidSelector {
+  public static final class AidSelector implements Serializable {
     public static final int AID_MIN_LENGTH = 5;
     public static final int AID_MAX_LENGTH = 16;
 
@@ -258,7 +259,7 @@ public class SeSelector {
   }
 
   /** Static nested class to hold the data elements used to perform an ATR based filtering */
-  public static final class AtrFilter {
+  public static final class AtrFilter implements Serializable {
     /** Regular expression dedicated to handle SE logical channel opening based on ATR pattern */
     private String atrRegex;
 
