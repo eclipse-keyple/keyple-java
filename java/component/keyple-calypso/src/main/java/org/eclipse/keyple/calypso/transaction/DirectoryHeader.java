@@ -12,7 +12,7 @@
 package org.eclipse.keyple.calypso.transaction;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.NoSuchElementException;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -28,8 +28,9 @@ public class DirectoryHeader implements Serializable {
   private final byte[] accessConditions;
   private final byte[] keyIndexes;
   private final byte dfStatus;
-  private final HashMap<PoTransaction.SessionSetting.AccessLevel, Byte> kif;
-  private final HashMap<PoTransaction.SessionSetting.AccessLevel, Byte> kvc;
+  private final EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte> kif;
+  private final EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte> kvc;
+  private static final String LEVEL_STR = "level";
 
   /** Private constructor */
   private DirectoryHeader(DirectoryHeaderBuilder builder) {
@@ -51,10 +52,12 @@ public class DirectoryHeader implements Serializable {
     private byte[] accessConditions;
     private byte[] keyIndexes;
     private byte dfStatus;
-    private final HashMap<PoTransaction.SessionSetting.AccessLevel, Byte> kif =
-        new HashMap<PoTransaction.SessionSetting.AccessLevel, Byte>();
-    private final HashMap<PoTransaction.SessionSetting.AccessLevel, Byte> kvc =
-        new HashMap<PoTransaction.SessionSetting.AccessLevel, Byte>();
+    private final EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte> kif =
+        new EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte>(
+            PoTransaction.SessionSetting.AccessLevel.class);
+    private final EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte> kvc =
+        new EnumMap<PoTransaction.SessionSetting.AccessLevel, Byte>(
+            PoTransaction.SessionSetting.AccessLevel.class);
 
     /** Private constructor */
     private DirectoryHeaderBuilder() {}
@@ -192,7 +195,7 @@ public class DirectoryHeader implements Serializable {
    * @since 0.9
    */
   public boolean isKifAvailable(PoTransaction.SessionSetting.AccessLevel level) {
-    Assert.getInstance().notNull(level, "level");
+    Assert.getInstance().notNull(level, LEVEL_STR);
     return kif.get(level) != null;
   }
 
@@ -204,7 +207,7 @@ public class DirectoryHeader implements Serializable {
    * @since 0.9
    */
   public boolean isKvcAvailable(PoTransaction.SessionSetting.AccessLevel level) {
-    Assert.getInstance().notNull(level, "level");
+    Assert.getInstance().notNull(level, LEVEL_STR);
     return kvc.get(level) != null;
   }
 
@@ -219,7 +222,7 @@ public class DirectoryHeader implements Serializable {
    */
   public byte getKif(PoTransaction.SessionSetting.AccessLevel level) {
 
-    Assert.getInstance().notNull(level, "level");
+    Assert.getInstance().notNull(level, LEVEL_STR);
 
     Byte result = kif.get(level);
     if (result == null) {
@@ -239,7 +242,7 @@ public class DirectoryHeader implements Serializable {
    */
   public byte getKvc(PoTransaction.SessionSetting.AccessLevel level) {
 
-    Assert.getInstance().notNull(level, "level");
+    Assert.getInstance().notNull(level, LEVEL_STR);
 
     Byte result = kvc.get(level);
     if (result == null) {

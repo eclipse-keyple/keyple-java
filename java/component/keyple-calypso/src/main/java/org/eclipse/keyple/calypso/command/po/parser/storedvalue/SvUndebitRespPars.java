@@ -129,6 +129,6 @@ public class SvUndebitRespPars extends AbstractPoResponseParser {
 
   @Override
   public String toString() {
-    return String.format("SV Undebit");
+    return "SV Undebit";
   }
 }

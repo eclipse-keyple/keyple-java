@@ -24,8 +24,6 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.bertlv.TLV;
 import org.eclipse.keyple.core.util.bertlv.Tag;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class provides status code properties and the getters to access to the structured fields of
@@ -35,7 +33,6 @@ import org.slf4j.LoggerFactory;
  * made available using the corresponding getter.
  */
 public final class SelectFileRespPars extends AbstractPoResponseParser {
-  private static final Logger logger = LoggerFactory.getLogger(SelectFileRespPars.class);
   private static final Map<Integer, StatusProperties> STATUS_TABLE;
 
   static {

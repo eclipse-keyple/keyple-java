@@ -116,6 +116,6 @@ public final class SvReloadRespPars extends AbstractPoResponseParser {
 
   @Override
   public String toString() {
-    return String.format("SV Reload");
+    return "SV Reload";
   }
 }

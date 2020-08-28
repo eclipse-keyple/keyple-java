@@ -129,6 +129,6 @@ public class SvDebitRespPars extends AbstractPoResponseParser {
 
   @Override
   public String toString() {
-    return String.format("SV Debit");
+    return "SV Debit";
   }
 }

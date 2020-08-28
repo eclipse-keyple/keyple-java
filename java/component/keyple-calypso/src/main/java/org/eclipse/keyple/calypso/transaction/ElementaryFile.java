@@ -18,7 +18,7 @@ import java.io.Serializable;
  *
  * @since 0.9
  */
-public class ElementaryFile implements Serializable, Cloneable {
+public class ElementaryFile implements Serializable {
 
   private final byte sfi;
   private FileHeader header;
@@ -37,15 +37,17 @@ public class ElementaryFile implements Serializable, Cloneable {
   }
 
   /**
-   * (private)<br>
-   * Constructor used only by method "clone".
+   * (package-private)<br>
+   * Constructor used to create a clone of the provided EF.
    *
-   * @param sfi the SFI
-   * @param data the data
+   * @param source the EF to be cloned
    */
-  private ElementaryFile(byte sfi, FileData data) {
-    this.sfi = sfi;
-    this.data = data;
+  ElementaryFile(ElementaryFile source) {
+    this.sfi = source.getSfi();
+    if (source.getHeader() != null) {
+      this.header = new FileHeader(source.getHeader());
+    }
+    this.data = new FileData(source.getData());
   }
 
   /**
@@ -88,21 +90,6 @@ public class ElementaryFile implements Serializable, Cloneable {
    */
   public FileData getData() {
     return data;
-  }
-
-  /**
-   * Gets a clone of the current instance.
-   *
-   * @return not null object
-   * @since 0.9
-   */
-  @Override
-  public ElementaryFile clone() {
-    ElementaryFile ef = new ElementaryFile(sfi, data.clone());
-    if (header != null) {
-      ef.setHeader(header.clone());
-    }
-    return ef;
   }
 
   /**

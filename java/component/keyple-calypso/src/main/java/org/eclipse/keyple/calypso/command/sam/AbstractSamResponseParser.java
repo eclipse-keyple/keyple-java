@@ -47,14 +47,16 @@ public abstract class AbstractSamResponseParser extends AbstractApduResponsePars
    * @param response response to parse
    * @param builder the reference of the builder that created the parser
    */
-  public AbstractSamResponseParser(ApduResponse response, AbstractSamCommandBuilder builder) {
+  public AbstractSamResponseParser(
+      ApduResponse response,
+      AbstractSamCommandBuilder<? extends AbstractSamResponseParser> builder) {
     super(response, builder);
   }
 
   /** {@inheritDoc} */
   @Override
-  public final AbstractSamCommandBuilder getBuilder() {
-    return (AbstractSamCommandBuilder) super.getBuilder();
+  public final AbstractSamCommandBuilder<AbstractSamResponseParser> getBuilder() {
+    return (AbstractSamCommandBuilder<AbstractSamResponseParser>) super.getBuilder();
   }
 
   /** {@inheritDoc} */
