@@ -93,9 +93,4 @@ public final class DecreaseRespPars extends AbstractPoResponseParser {
           "No counter value available in response to the Decrease command.");
     }
   }
-
-  @Override
-  public String toString() {
-    return String.format("New counter value: %d", getNewValue());
-  }
 }
