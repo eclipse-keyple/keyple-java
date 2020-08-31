@@ -38,7 +38,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
   }
 
   @Test
-  @Ignore
+  @Ignore // needs a reader
   public void testInsertRemoveCard() throws InterruptedException {
     logger.info("** ******************************* **");
     logger.info("** Remove any card before the test **");
@@ -70,7 +70,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
   }
 
   @Test
-  @Ignore
+  @Ignore // needs a reader
   public void testAlreadyInsertedCard() throws InterruptedException {
     logger.info("** ***************************** **");
     logger.info("** Insert a card before the test **");
@@ -95,7 +95,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
   }
 
   @Test
-  @Ignore
+  @Ignore // needs a reader
   public void testLoop() throws InterruptedException {
     logger.info("** ********************************************* **");
     logger.info("** try to present a card 5 times   in 10 seconds **");
@@ -133,7 +133,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
   }
 
   @Test
-  @Ignore
+  @Ignore // needs a reader
   public void fullScenario() throws InterruptedException {
 
     final CountDownLatch connect1 = new CountDownLatch(1);

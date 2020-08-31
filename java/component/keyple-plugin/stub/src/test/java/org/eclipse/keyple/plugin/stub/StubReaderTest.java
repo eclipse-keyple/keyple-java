@@ -850,8 +850,8 @@ public class StubReaderTest extends BaseStubTest {
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
-      Assert.assertEquals(ex.getSeResponses().size(), 1);
-      Assert.assertEquals(ex.getSeResponses().get(0).getApduResponses().size(), 2);
+      Assert.assertEquals(1, ex.getSeResponses().size());
+      Assert.assertEquals(2, ex.getSeResponses().get(0).getApduResponses().size());
     }
   }
 
@@ -883,10 +883,10 @@ public class StubReaderTest extends BaseStubTest {
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
-      Assert.assertEquals(ex.getSeResponses().size(), 2);
-      Assert.assertEquals(ex.getSeResponses().get(0).getApduResponses().size(), 4);
-      Assert.assertEquals(ex.getSeResponses().get(1).getApduResponses().size(), 2);
-      Assert.assertEquals(ex.getSeResponses().get(1).getApduResponses().size(), 2);
+      Assert.assertEquals(2, ex.getSeResponses().size());
+      Assert.assertEquals(4, ex.getSeResponses().get(0).getApduResponses().size());
+      Assert.assertEquals(2, ex.getSeResponses().get(1).getApduResponses().size());
+      Assert.assertEquals(2, ex.getSeResponses().get(1).getApduResponses().size());
     }
   }
 
@@ -918,10 +918,10 @@ public class StubReaderTest extends BaseStubTest {
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
-      Assert.assertEquals(ex.getSeResponses().size(), 3);
-      Assert.assertEquals(ex.getSeResponses().get(0).getApduResponses().size(), 4);
-      Assert.assertEquals(ex.getSeResponses().get(1).getApduResponses().size(), 4);
-      Assert.assertEquals(ex.getSeResponses().get(2).getApduResponses().size(), 2);
+      Assert.assertEquals(3, ex.getSeResponses().size());
+      Assert.assertEquals(4, ex.getSeResponses().get(0).getApduResponses().size());
+      Assert.assertEquals(4, ex.getSeResponses().get(1).getApduResponses().size());
+      Assert.assertEquals(2, ex.getSeResponses().get(2).getApduResponses().size());
     }
   }
 
@@ -950,10 +950,10 @@ public class StubReaderTest extends BaseStubTest {
           ((ProxyReader) reader)
               .transmitSeRequests(
                   seRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
-      Assert.assertEquals(seResponses.size(), 3);
-      Assert.assertEquals(seResponses.get(0).getApduResponses().size(), 4);
-      Assert.assertEquals(seResponses.get(1).getApduResponses().size(), 4);
-      Assert.assertEquals(seResponses.get(2).getApduResponses().size(), 4);
+      Assert.assertEquals(3, seResponses.size());
+      Assert.assertEquals(4, seResponses.get(0).getApduResponses().size());
+      Assert.assertEquals(4, seResponses.get(1).getApduResponses().size());
+      Assert.assertEquals(4, seResponses.get(2).getApduResponses().size());
     } catch (KeypleReaderException ex) {
       Assert.fail("Should not throw exception");
     }
@@ -985,7 +985,7 @@ public class StubReaderTest extends BaseStubTest {
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
-      Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 0);
+      Assert.assertEquals(0, ex.getSeResponse().getApduResponses().size());
     }
   }
 
@@ -1015,7 +1015,7 @@ public class StubReaderTest extends BaseStubTest {
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
-      Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 1);
+      Assert.assertEquals(1, ex.getSeResponse().getApduResponses().size());
     }
   }
 
@@ -1045,7 +1045,7 @@ public class StubReaderTest extends BaseStubTest {
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
-      Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 2);
+      Assert.assertEquals(2, ex.getSeResponse().getApduResponses().size());
     }
   }
 
@@ -1072,7 +1072,7 @@ public class StubReaderTest extends BaseStubTest {
     try {
       SeResponse seResponse =
           ((ProxyReader) reader).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN);
-      Assert.assertEquals(seResponse.getApduResponses().size(), 3);
+      Assert.assertEquals(3, seResponse.getApduResponses().size());
     } catch (KeypleReaderException ex) {
       Assert.fail("Should not throw exception");
     }

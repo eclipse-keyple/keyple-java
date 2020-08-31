@@ -182,8 +182,6 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
         }
       }
     } catch (CardException e) {
-      logger.trace(
-          "[{}] Terminal list is not accessible. Exception: {}", this.getName(), e.getMessage());
       throw new KeypleReaderIOException("Could not access terminals list", e);
     }
     if (seReader == null) {
@@ -201,13 +199,13 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
        * Some SONAR warnings have been disabled.
        */
       try {
-        Class pcscterminal;
+        Class<?> pcscterminal;
         pcscterminal = Class.forName("sun.security.smartcardio.PCSCTerminals");
         Field contextId = pcscterminal.getDeclaredField("contextId");
         contextId.setAccessible(true); // NOSONAR
 
         if (contextId.getLong(pcscterminal) != 0L) {
-          Class pcsc = Class.forName("sun.security.smartcardio.PCSC");
+          Class<?> pcsc = Class.forName("sun.security.smartcardio.PCSC");
           Method SCardEstablishContext =
               pcsc.getDeclaredMethod("SCardEstablishContext", new Class[] {Integer.TYPE});
           SCardEstablishContext.setAccessible(true); // NOSONAR
@@ -227,7 +225,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
           CardTerminals terminals = factory.terminals();
           Field fieldTerminals = pcscterminal.getDeclaredField("terminals");
           fieldTerminals.setAccessible(true); // NOSONAR
-          Class classMap = Class.forName("java.util.Map");
+          Class<?> classMap = Class.forName("java.util.Map");
           Method clearMap = classMap.getDeclaredMethod("clear");
 
           clearMap.invoke(fieldTerminals.get(terminals));

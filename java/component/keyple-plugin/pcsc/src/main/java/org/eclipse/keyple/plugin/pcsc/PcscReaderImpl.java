@@ -170,8 +170,6 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     try {
       return terminal.isCardPresent();
     } catch (CardException e) {
-      logger.debug(
-          "[{}] Exception occurred in isSePresent. Message: {}", this.getName(), e.getMessage());
       throw new KeypleReaderIOException("Exception occurred in isSePresent", e);
     }
   }

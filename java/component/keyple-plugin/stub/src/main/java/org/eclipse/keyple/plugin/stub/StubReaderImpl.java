@@ -231,8 +231,6 @@ class StubReaderImpl extends AbstractObservableLocalReader
       }
     }
     return false;
-    // logger.trace("[{}] no card was inserted", this.getName());
-    // return false;
   }
 
   @Override
@@ -263,8 +261,6 @@ class StubReaderImpl extends AbstractObservableLocalReader
       }
     }
     return false;
-    // logger.trace("[{}] no card was removed", this.getName());
-    // return false;
   }
 
   @Override
