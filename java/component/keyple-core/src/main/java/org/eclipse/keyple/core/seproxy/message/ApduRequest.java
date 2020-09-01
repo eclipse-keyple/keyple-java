@@ -19,10 +19,8 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
 /** Single APDU request wrapper */
 public final class ApduRequest implements Serializable {
 
-  static final long serialVersionUID = 877369841119873812L;
-
   /** Buffer of the APDU Request */
-  private byte[] bytes;
+  private final byte[] bytes;
 
   /**
    * a ‘case 4’ flag in order to explicitly specify, if it’s expected that the APDU command returns

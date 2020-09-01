@@ -153,14 +153,13 @@ final class CalypsoPoUtils {
   /**
    * Checks the response to a Close Session command
    *
-   * @param calypsoPo the {@link CalypsoPo} object to update
    * @param closeSessionCmdBuild the Close Session command builder
    * @param apduResponse the response received
    * @return the created response parser
    * @throws CalypsoPoCommandException if a response from the PO was unexpected
    */
   private static CloseSessionRespPars updateCalypsoPoCloseSession(
-      CalypsoPo calypsoPo, CloseSessionCmdBuild closeSessionCmdBuild, ApduResponse apduResponse) {
+      CloseSessionCmdBuild closeSessionCmdBuild, ApduResponse apduResponse) {
     CloseSessionRespPars closeSessionRespPars =
         closeSessionCmdBuild.createResponseParser(apduResponse);
 
@@ -443,14 +442,12 @@ final class CalypsoPoUtils {
    * the PO<br>
    * Keep the PO SV signature if any (command executed outside a secure session).
    *
-   * @param calypsoPo the {@link CalypsoPo} object to update
    * @param svOperationCmdBuild the SV Operation command builder (SvReloadCmdBuild, SvDebitCmdBuild
    *     or SvUndebitCmdBuild)
    * @param apduResponse the response received
    * @throws CalypsoPoCommandException if a response from the PO was unexpected
    */
   private static AbstractPoResponseParser updateCalypsoPoSvOperation(
-      CalypsoPo calypsoPo,
       AbstractPoCommandBuilder<? extends AbstractPoResponseParser> svOperationCmdBuild,
       ApduResponse apduResponse) {
     AbstractPoResponseParser svOperationRespPars =
@@ -466,13 +463,11 @@ final class CalypsoPoUtils {
   /**
    * Checks the response to Invalidate/Rehabilitate commands
    *
-   * @param calypsoPo the {@link CalypsoPo} object to update
    * @param invalidateRehabilitateCmdBuild the Invalidate or Rehabilitate response parser
    * @param apduResponse the response received
    * @throws CalypsoPoCommandException if a response from the PO was unexpected
    */
   private static AbstractPoResponseParser updateCalypsoInvalidateRehabilitate(
-      CalypsoPo calypsoPo,
       AbstractPoCommandBuilder<? extends AbstractPoResponseParser> invalidateRehabilitateCmdBuild,
       ApduResponse apduResponse) {
     AbstractPoResponseParser invalidateRehabilitateRespPars =
@@ -653,8 +648,7 @@ final class CalypsoPoUtils {
         return updateCalypsoPoOpenSession(
             calypsoPo, (AbstractOpenSessionCmdBuild) commandBuilder, apduResponse);
       case CLOSE_SESSION:
-        return updateCalypsoPoCloseSession(
-            calypsoPo, (CloseSessionCmdBuild) commandBuilder, apduResponse);
+        return updateCalypsoPoCloseSession((CloseSessionCmdBuild) commandBuilder, apduResponse);
       case GET_CHALLENGE:
         return updateCalypsoPoGetChallenge((PoGetChallengeCmdBuild) commandBuilder, apduResponse);
       case VERIFY_PIN:
@@ -664,10 +658,10 @@ final class CalypsoPoUtils {
       case SV_RELOAD:
       case SV_DEBIT:
       case SV_UNDEBIT:
-        return updateCalypsoPoSvOperation(calypsoPo, commandBuilder, apduResponse);
+        return updateCalypsoPoSvOperation(commandBuilder, apduResponse);
       case INVALIDATE:
       case REHABILITATE:
-        return updateCalypsoInvalidateRehabilitate(calypsoPo, commandBuilder, apduResponse);
+        return updateCalypsoInvalidateRehabilitate(commandBuilder, apduResponse);
       case CHANGE_KEY:
       case GET_DATA_FCI:
       case GET_DATA_TRACE:

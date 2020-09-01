@@ -11,7 +11,9 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.protocol;
 
-public interface SeProtocol {
+import java.io.Serializable;
+
+public interface SeProtocol extends Serializable {
 
   /**
    * Protocol name
@@ -25,5 +27,5 @@ public interface SeProtocol {
    *
    * @return a TransmissionMode enum value
    */
-  public TransmissionMode getTransmissionMode();
+  TransmissionMode getTransmissionMode();
 }

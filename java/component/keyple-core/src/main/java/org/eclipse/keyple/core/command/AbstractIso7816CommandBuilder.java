@@ -40,14 +40,26 @@ public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandB
   }
 
   /**
-   * Abstract constructor to build a command with a command name and an {@link ApduRequest}
+   * Returns a byte array having the expected length determined by dataIn an le
    *
-   * @param name name of command
-   * @param request ApduRequest
+   * @param dataIn incoming data array
+   * @param le expected outgoing length
+   * @return a new byte array
    */
-  @Deprecated
-  public AbstractIso7816CommandBuilder(String name, ApduRequest request) {
-    super(name, request);
+  private byte[] allocateBuffer(byte[] dataIn, Byte le) {
+    int length = 4; // header
+    if (dataIn == null && le == null) {
+      // case 1: 5-byte apdu, le=0
+      length += 1; // Le
+    } else {
+      if (dataIn != null) {
+        length += dataIn.length + 1; // Lc + data
+      }
+      if (le != null) {
+        length += 1; // Le
+      }
+    }
+    return new byte[length];
   }
 
   /**
@@ -90,19 +102,7 @@ public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandB
     }
 
     /* Buffer allocation */
-    int length = 4; // header
-    if (dataIn == null && le == null) {
-      // case 1: 5-byte apdu, le=0
-      length += 1; // Le
-    } else {
-      if (dataIn != null) {
-        length += dataIn.length + 1; // Lc + data
-      }
-      if (le != null) {
-        length += 1; // Le
-      }
-    }
-    byte[] apdu = new byte[length];
+    byte[] apdu = allocateBuffer(dataIn, le);
 
     /* Build APDU buffer from provided arguments */
     apdu[0] = cla;
@@ -121,7 +121,7 @@ public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandB
          * Recommendations - T84)
          */
         case4 = true;
-        apdu[length - 1] = le;
+        apdu[apdu.length - 1] = le;
       } else {
         /* case3: ingoing data only, no Le */
         case4 = false;

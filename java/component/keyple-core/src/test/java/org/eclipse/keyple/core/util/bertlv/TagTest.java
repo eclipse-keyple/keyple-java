@@ -92,26 +92,26 @@ public class TagTest {
     System.out.println("Tag1: " + tag1.toString());
     System.out.println("Tag2: " + tag2.toString());
     System.out.println("Tag3: " + tag3.toString());
-    Assert.assertTrue(tag1.equals(tag2));
-    Assert.assertFalse(tag1.equals(tag3));
-    Assert.assertFalse(tag2.equals(tag3));
+    Assert.assertEquals(tag1, tag2);
+    Assert.assertNotEquals(tag1, tag3);
+    Assert.assertNotEquals(tag2, tag3);
 
     Tag tag4 = new Tag(0x05, Tag.UNIVERSAL, Tag.TagType.CONSTRUCTED, 1);
     Tag tag5 = new Tag(ByteArrayUtil.fromHex("250100"), 0);
     System.out.println("Tag4: " + tag4.toString());
     System.out.println("Tag5: " + tag5.toString());
-    Assert.assertTrue(tag4.equals(tag5));
+    Assert.assertEquals(tag4, tag5);
 
     Tag tag6 = new Tag(0x07, Tag.UNIVERSAL, Tag.TagType.PRIMITIVE, 1);
     Tag tag7 = new Tag(ByteArrayUtil.fromHex("070100"), 0);
     System.out.println("Tag6: " + tag6.toString());
     System.out.println("Tag7: " + tag7.toString());
-    Assert.assertTrue(tag6.equals(tag7));
+    Assert.assertEquals(tag6, tag7);
 
     Tag tag8 = new Tag(0x12, Tag.UNIVERSAL, Tag.TagType.PRIMITIVE, 2);
     Tag tag9 = new Tag(ByteArrayUtil.fromHex("1F120100"), 0);
     System.out.println("Tag8: " + tag8.toString());
     System.out.println("Tag9: " + tag9.toString());
-    Assert.assertTrue(tag8.equals(tag9));
+    Assert.assertEquals(tag8, tag9);
   }
 }

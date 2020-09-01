@@ -42,7 +42,7 @@ public abstract class AbstractObservableState {
   protected AbstractMonitoringJob monitoringJob;
 
   /* Result of the background job if any */
-  protected Future monitoringEvent;
+  protected Future<?> monitoringEvent;
 
   /* Executor service used to execute AbstractMonitoringJob */
   protected ExecutorService executorService;

@@ -11,6 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.message;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
@@ -18,7 +19,7 @@ import java.util.Arrays;
  *
  * <p>(May be enhanced to provide analysis methods)
  */
-public class AnswerToReset {
+public class AnswerToReset implements Serializable {
   private final byte[] atrBytes;
 
   public AnswerToReset(byte[] atrBytes) {

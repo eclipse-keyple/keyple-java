@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.util;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import org.junit.Test;
 
@@ -49,7 +49,7 @@ public class ByteArrayUtilTest {
   @Test
   public void fromHex_empty() {
     byte[] bytes = ByteArrayUtil.fromHex("");
-    assertEquals(bytes.length, 0);
+    assertThat(bytes.length).isEqualTo(0);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -61,32 +61,35 @@ public class ByteArrayUtilTest {
   public void fromHex_bad_hex() {
     // no verification is being carried out at the moment.
     byte[] bytes = ByteArrayUtil.fromHex(HEXSTRING_BAD);
+    // just check that the conversion is wrong
+    String hex = ByteArrayUtil.toHex(bytes);
+    assertThat(hex).isNotEqualTo(HEXSTRING_BAD);
   }
 
   @Test
   public void fromHex_good_hex() {
     // no verification is being carried out at the moment.
     byte[] bytes = ByteArrayUtil.fromHex(HEXSTRING_GOOD);
-    assertArrayEquals(bytes, BYTEARRAY_GOOD);
+    assertThat(bytes).isEqualTo(BYTEARRAY_GOOD);
   }
 
   @Test
   public void toHex_null() {
     String hex = ByteArrayUtil.toHex(null);
-    assertEquals(hex.length(), 0);
+    assertThat(hex.length()).isEqualTo(0);
   }
 
   @Test
   public void toHex_empty() {
     byte[] bytes = new byte[0];
     String hex = ByteArrayUtil.toHex(bytes);
-    assertEquals(hex.length(), 0);
+    assertThat(hex.length()).isEqualTo(0);
   }
 
   @Test
   public void toHex_bytearray_good() {
     String hex = ByteArrayUtil.toHex(BYTEARRAY_GOOD);
-    assertEquals(hex, HEXSTRING_GOOD);
+    assertThat(hex).isEqualTo(HEXSTRING_GOOD);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -112,30 +115,30 @@ public class ByteArrayUtilTest {
   @Test
   public void threeBytesToInt_buffer_ok_1() {
     int value = ByteArrayUtil.threeBytesToInt(BYTEARRAY_LEN_3, 0);
-    assertEquals(value, 0x123456);
+    assertThat(value).isEqualTo(0x123456);
   }
 
   @Test
   public void threeBytesToInt_buffer_ok_2() {
     int value = ByteArrayUtil.threeBytesToInt(BYTEARRAY_GOOD, 0);
-    assertEquals(value, 0x123456);
+    assertThat(value).isEqualTo(0x123456);
   }
 
   @Test
   public void threeBytesToInt_buffer_ok_3() {
     int value = ByteArrayUtil.threeBytesToInt(BYTEARRAY_GOOD, 1);
-    assertEquals(value, 0x345678);
+    assertThat(value).isEqualTo(0x345678);
   }
 
   @Test
   public void threeBytesToInt_buffer_ok_4() {
     int value = ByteArrayUtil.threeBytesToInt(BYTEARRAY_GOOD, 4);
-    assertEquals(value, 0x90ABCD);
+    assertThat(value).isEqualTo(0x90ABCD);
   }
 
   @Test
   public void threeBytesToInt_buffer_ok_5() {
     int value = ByteArrayUtil.threeBytesToInt(BYTEARRAY_GOOD, 13);
-    assertEquals(value, 0x654321);
+    assertThat(value).isEqualTo(0x654321);
   }
 }

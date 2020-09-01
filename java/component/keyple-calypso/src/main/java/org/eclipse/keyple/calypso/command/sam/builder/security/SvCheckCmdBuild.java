@@ -12,13 +12,14 @@
 package org.eclipse.keyple.calypso.command.sam.builder.security;
 
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
+import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.parser.security.SvCheckRespPars;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /** Builder for the SAM SV Check APDU command. */
-public class SvCheckCmdBuild extends AbstractSamCommandBuilder {
+public class SvCheckCmdBuild extends AbstractSamCommandBuilder<AbstractSamResponseParser> {
   /** The command reference. */
   private static final CalypsoSamCommand command = CalypsoSamCommand.SV_CHECK;
 

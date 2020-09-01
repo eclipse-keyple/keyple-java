@@ -872,7 +872,7 @@ public class CalypsoPo extends AbstractMatchingSe {
   private static void copyMapFiles(Map<Byte, ElementaryFile> src, Map<Byte, ElementaryFile> dest) {
     dest.clear();
     for (Map.Entry<Byte, ElementaryFile> entry : src.entrySet()) {
-      dest.put(entry.getKey(), entry.getValue().clone());
+      dest.put(entry.getKey(), new ElementaryFile(entry.getValue()));
     }
   }
 

@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
  *
  * @since 0.9
  */
-public class FileData implements Serializable, Cloneable {
+public class FileData implements Serializable {
 
   private final TreeMap<Integer, byte[]> records = new TreeMap<Integer, byte[]>();
 
@@ -30,6 +30,19 @@ public class FileData implements Serializable, Cloneable {
    * Constructor
    */
   FileData() {}
+
+  /**
+   * (package-private)<br>
+   * Constructor used to create a clone of the provided file file data.
+   *
+   * @param source the header to be cloned
+   */
+  FileData(FileData source) {
+    SortedMap<Integer, byte[]> sourceContent = source.getAllRecordsContent();
+    for (Map.Entry<Integer, byte[]> entry : sourceContent.entrySet()) {
+      records.put(entry.getKey(), Arrays.copyOf(entry.getValue(), entry.getValue().length));
+    }
+  }
 
   /**
    * Gets a reference to all known records content.
@@ -270,21 +283,6 @@ public class FileData implements Serializable, Cloneable {
       records.put(i + 1, records.get(i));
     }
     records.put(1, content);
-  }
-
-  /**
-   * Gets a clone of the current instance.
-   *
-   * @return not null object
-   * @since 0.9
-   */
-  @Override
-  public FileData clone() {
-    FileData data = new FileData();
-    for (Map.Entry<Integer, byte[]> entry : records.entrySet()) {
-      data.setContent(entry.getKey(), Arrays.copyOf(entry.getValue(), entry.getValue().length));
-    }
-    return data;
   }
 
   @Override

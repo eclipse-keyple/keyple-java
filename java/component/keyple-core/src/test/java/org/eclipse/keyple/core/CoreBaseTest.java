@@ -14,7 +14,8 @@ package org.eclipse.keyple.core;
 import org.junit.Rule;
 import org.junit.rules.TestName;
 
-public class CoreBaseTest {
+public abstract class CoreBaseTest {
+  protected CoreBaseTest() {}
 
   @Rule public TestName name = new TestName();
 }
