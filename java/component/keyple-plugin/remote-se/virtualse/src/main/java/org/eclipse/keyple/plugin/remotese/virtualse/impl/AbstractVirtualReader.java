@@ -198,7 +198,7 @@ abstract class AbstractVirtualReader extends AbstractReader {
    * @param body The body (optional).
    * @return a not null reference.
    */
-  private KeypleMessageDto sendRequest(KeypleMessageDto.Action action, JsonObject body) {
+  protected KeypleMessageDto sendRequest(KeypleMessageDto.Action action, JsonObject body) {
 
     // Build the message
     KeypleMessageDto message =

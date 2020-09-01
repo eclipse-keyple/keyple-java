@@ -191,6 +191,9 @@ dependencies {
 
     //add slf4j simple logger implementation
     testImplementation "org.slf4j:slf4j-simple:${slf4jsimple_version}"
+
+    // https://github.com/awaitility/awaitility
+    testImplementation 'org.awaitility:awaitility:4.0.3'
 }
 
 jacocoTestReport {

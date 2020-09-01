@@ -101,6 +101,38 @@ public abstract class BaseNativeSeTest {
         .setBody(null);
   }
 
+  public static KeypleMessageDto getStartSeDetection(String sessionId) {
+    JsonObject body = new JsonObject();
+    body.addProperty("pollingMode", ObservableReader.PollingMode.REPEATING.name());
+
+    return new KeypleMessageDto() //
+        .setSessionId(sessionId) //
+        .setAction(KeypleMessageDto.Action.START_SE_DETECTION.name()) //
+        .setServerNodeId("serverNodeId") //
+        .setClientNodeId("clientNodeId") //
+        .setBody(body.toString());
+  }
+
+  public static KeypleMessageDto getStopSeDetection(String sessionId) {
+    JsonObject body = new JsonObject();
+    return new KeypleMessageDto() //
+        .setSessionId(sessionId) //
+        .setAction(KeypleMessageDto.Action.STOP_SE_DETECTION.name()) //
+        .setServerNodeId("serverNodeId") //
+        .setClientNodeId("clientNodeId") //
+        .setBody(body.toString());
+  }
+
+  public static KeypleMessageDto getFinalizeSeProcessing(String sessionId) {
+    JsonObject body = new JsonObject();
+    return new KeypleMessageDto() //
+        .setSessionId(sessionId) //
+        .setAction(KeypleMessageDto.Action.FINALIZE_SE_PROCESSING.name()) //
+        .setServerNodeId("serverNodeId") //
+        .setClientNodeId("clientNodeId") //
+        .setBody(body.toString());
+  }
+
   public static KeypleMessageDto getAddSeProtocolSettingDto(String sessionId) {
     JsonObject body = new JsonObject();
     body.addProperty(

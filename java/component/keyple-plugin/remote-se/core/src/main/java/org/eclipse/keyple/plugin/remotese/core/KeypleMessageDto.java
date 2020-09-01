@@ -55,6 +55,9 @@ public class KeypleMessageDto {
     SET_SE_PROTOCOL_SETTING, //
     GET_TRANSMISSION_MODE, //
     TERMINATE_SERVICE, //
+    STOP_SE_DETECTION, //
+    START_SE_DETECTION, //
+    FINALIZE_SE_PROCESSING, //
     ERROR;
   }
 

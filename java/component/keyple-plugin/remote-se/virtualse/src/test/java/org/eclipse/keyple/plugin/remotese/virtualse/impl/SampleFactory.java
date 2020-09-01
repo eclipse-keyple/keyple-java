@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.util.*;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
@@ -36,7 +35,7 @@ public class SampleFactory {
     return new KeypleReaderIOException("Keyple Reader Exception");
   }
 
-  public static AbstractDefaultSelectionsRequest getSelectionRequest() {
+  public static DefaultSelectionsRequest getSelectionRequest() {
     return new DefaultSelectionsRequest(
         getASeRequestList_ISO14443_4(),
         MultiSeRequestProcessing.FIRST_MATCH,
