@@ -47,7 +47,8 @@ public class CardGenerateKeyCmdBuild extends AbstractSamCommandBuilder<CardGener
 
     byte cla = this.defaultRevision.getClassByte();
 
-    byte p1, p2;
+    byte p1;
+    byte p2;
     byte[] data;
 
     if (cipheringKey == null) {

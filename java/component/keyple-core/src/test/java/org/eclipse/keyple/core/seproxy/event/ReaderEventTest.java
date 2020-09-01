@@ -30,8 +30,8 @@ public class ReaderEventTest {
   public void testGetEvent() {
     ReaderEvent event =
         new ReaderEvent("plugin", "reader", ReaderEvent.EventType.TIMEOUT_ERROR, null);
-    assertEquals(event.getReaderName(), "reader");
-    assertEquals(event.getPluginName(), "plugin");
-    assertEquals(event.getEventType(), ReaderEvent.EventType.TIMEOUT_ERROR);
+    assertEquals("reader", event.getReaderName());
+    assertEquals("plugin", event.getPluginName());
+    assertEquals(ReaderEvent.EventType.TIMEOUT_ERROR, event.getEventType());
   }
 }

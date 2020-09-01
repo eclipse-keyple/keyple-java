@@ -20,7 +20,7 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
  *
  * @since 0.9
  */
-public class FileHeader implements Serializable, Cloneable {
+public class FileHeader implements Serializable {
 
   private final short lid;
   private final int recordsNumber;
@@ -290,23 +290,21 @@ public class FileHeader implements Serializable, Cloneable {
   }
 
   /**
-   * Gets a clone of the current instance.
+   * (package-private)<br>
+   * Constructor used to create a clone of the provided file header.
    *
-   * @return a not null object
-   * @since 0.9
+   * @param source the header to be cloned
    */
-  @Override
-  public FileHeader clone() {
-    return FileHeader.builder()
-        .lid(lid)
-        .recordsNumber(recordsNumber)
-        .recordSize(recordSize)
-        .type(type)
-        .accessConditions(Arrays.copyOf(accessConditions, accessConditions.length))
-        .keyIndexes(Arrays.copyOf(keyIndexes, keyIndexes.length))
-        .dfStatus(dfStatus)
-        .sharedReference(sharedReference)
-        .build();
+  FileHeader(FileHeader source) {
+    this.lid = source.getLid();
+    this.recordsNumber = source.getRecordsNumber();
+    this.recordSize = source.getRecordSize();
+    this.type = source.getType();
+    this.accessConditions =
+        Arrays.copyOf(source.getAccessConditions(), source.getAccessConditions().length);
+    this.keyIndexes = Arrays.copyOf(source.getKeyIndexes(), source.getKeyIndexes().length);
+    this.dfStatus = source.getDfStatus();
+    this.sharedReference = source.getSharedReference();
   }
 
   /**

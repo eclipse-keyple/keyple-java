@@ -11,7 +11,9 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.command;
 
-public interface SeCommand {
+import java.io.Serializable;
+
+public interface SeCommand extends Serializable {
 
   String getName();
 

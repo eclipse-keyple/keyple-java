@@ -14,7 +14,8 @@ package org.eclipse.keyple.calypso;
 import org.junit.Rule;
 import org.junit.rules.TestName;
 
-public class CalypsoBaseTest {
+public abstract class CalypsoBaseTest {
+  protected CalypsoBaseTest() {}
 
   @Rule public TestName name = new TestName();
 }

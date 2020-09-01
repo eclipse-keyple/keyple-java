@@ -83,7 +83,7 @@ public abstract class AbstractPlugin implements ReaderPlugin {
    * @return the map of AbstractReader objects.
    * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
    */
-  protected abstract Map<String, SeReader> initNativeReaders() throws KeypleReaderIOException;
+  protected abstract Map<String, SeReader> initNativeReaders();
 
   /**
    * Gets a specific reader designated by its name in the current readers list

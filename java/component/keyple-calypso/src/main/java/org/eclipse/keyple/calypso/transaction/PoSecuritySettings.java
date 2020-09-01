@@ -40,7 +40,7 @@ public class PoSecuritySettings {
   private final ModificationMode sessionModificationMode;
   private final RatificationMode ratificationMode;
   private final PoTransaction.PinTransmissionMode pinTransmissionMode;
-  private final KeyReference pinCipheringKey;
+  private final KeyReference defaultPinCipheringKey;
   private final PoTransaction.SvSettings.LogRead svGetLogReadMode;
   private final PoTransaction.SvSettings.NegativeBalance svNegativeBalance;
 
@@ -48,7 +48,7 @@ public class PoSecuritySettings {
   public static final RatificationMode defaultRatificationMode = RatificationMode.CLOSE_RATIFIED;
   public static final PoTransaction.PinTransmissionMode defaultPinTransmissionMode =
       PoTransaction.PinTransmissionMode.ENCRYPTED;
-  private static final KeyReference defaultPinCipheringKey = new KeyReference((byte) 0, (byte) 0);
+  private static final KeyReference nullPinCipheringKey = new KeyReference((byte) 0, (byte) 0);
   private static final PoTransaction.SvSettings.LogRead defaultSvGetLogReadMode =
       PoTransaction.SvSettings.LogRead.SINGLE;
   private static final PoTransaction.SvSettings.NegativeBalance defaultSvNegativeBalance =
@@ -64,7 +64,7 @@ public class PoSecuritySettings {
     this.sessionModificationMode = builder.sessionModificationMode;
     this.ratificationMode = builder.ratificationMode;
     this.pinTransmissionMode = builder.pinTransmissionMode;
-    this.pinCipheringKey = builder.pinCipheringKey;
+    this.defaultPinCipheringKey = builder.defaultPinCipheringKey;
     this.svGetLogReadMode = builder.svGetLogReadMode;
     this.svNegativeBalance = builder.svNegativeBalance;
   }
@@ -87,7 +87,7 @@ public class PoSecuritySettings {
     ModificationMode sessionModificationMode = defaultSessionModificationMode;
     RatificationMode ratificationMode = defaultRatificationMode;
     PoTransaction.PinTransmissionMode pinTransmissionMode = defaultPinTransmissionMode;
-    KeyReference pinCipheringKey = defaultPinCipheringKey;
+    KeyReference defaultPinCipheringKey = nullPinCipheringKey;
     PoTransaction.SvSettings.LogRead svGetLogReadMode = defaultSvGetLogReadMode;
     PoTransaction.SvSettings.NegativeBalance svNegativeBalance = defaultSvNegativeBalance;
 
@@ -206,7 +206,7 @@ public class PoSecuritySettings {
      * @return the builder instance
      */
     public PoSecuritySettingsBuilder pinCipheringKey(byte kif, byte kvc) {
-      this.pinCipheringKey = new KeyReference(kif, kvc);
+      this.defaultPinCipheringKey = new KeyReference(kif, kvc);
       return this;
     }
 
@@ -333,7 +333,7 @@ public class PoSecuritySettings {
    * @return the default key reference to be used for PIN encryption
    */
   KeyReference getDefaultPinCipheringKey() {
-    return pinCipheringKey;
+    return defaultPinCipheringKey;
   }
 
   /**

@@ -37,14 +37,14 @@ public class TLVTest {
   @Test(expected = IllegalArgumentException.class)
   public void parse_tag_null() {
     TLV tlv = new TLV(ByteArrayUtil.fromHex("84050011223344"));
-    Assert.assertTrue(tlv.parse(null, 0));
+    tlv.parse(null, 0);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void parse_too_large_index() {
     Tag tag = new Tag(0x04, Tag.CONTEXT, PRIMITIVE, 1);
     TLV tlv = new TLV(ByteArrayUtil.fromHex("84050011223344"));
-    Assert.assertTrue(tlv.parse(null, 20));
+    tlv.parse(null, 20);
   }
 
   @Test
@@ -67,15 +67,15 @@ public class TLVTest {
     TLV tlv = new TLV(ByteArrayUtil.fromHex("8405001122334484055566778899"));
     Assert.assertTrue(tlv.parse(tag1, 0));
     // test position before getValue
-    Assert.assertEquals(tlv.getPosition(), 2);
+    Assert.assertEquals(2, tlv.getPosition());
     Assert.assertArrayEquals(ByteArrayUtil.fromHex("0011223344"), tlv.getValue());
     // test position after getValue
-    Assert.assertEquals(tlv.getPosition(), 7);
+    Assert.assertEquals(7, tlv.getPosition());
     Assert.assertTrue(tlv.parse(tag1, tlv.getPosition()));
     // test position before getValue
-    Assert.assertEquals(tlv.getPosition(), 9);
+    Assert.assertEquals(9, tlv.getPosition());
     Assert.assertArrayEquals(ByteArrayUtil.fromHex("5566778899"), tlv.getValue());
     // test position after getValue
-    Assert.assertEquals(tlv.getPosition(), 14);
+    Assert.assertEquals(14, tlv.getPosition());
   }
 }

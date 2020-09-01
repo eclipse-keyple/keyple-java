@@ -34,12 +34,8 @@ public abstract class AbstractApduCommandBuilder {
    */
   protected final SeCommand commandRef;
 
-  /**
-   * The command name (will appear in logs)
-   *
-   * @deprecated use {@code reference} field instead
-   */
-  @Deprecated private String name;
+  /** The command name (will appear in logs) */
+  private String name;
 
   /** the byte array APDU request. */
   protected ApduRequest request;
@@ -58,17 +54,6 @@ public abstract class AbstractApduCommandBuilder {
     // set APDU name for non null request
     if (request != null) {
       this.request.setName(commandRef.getName());
-    }
-  }
-
-  @Deprecated
-  public AbstractApduCommandBuilder(String name, ApduRequest request) {
-    this.commandRef = null;
-    this.name = name;
-    this.request = request;
-    // set APDU name for non null request
-    if (request != null) {
-      this.request.setName(name);
     }
   }
 

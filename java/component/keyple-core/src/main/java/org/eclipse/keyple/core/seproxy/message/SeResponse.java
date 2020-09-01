@@ -23,8 +23,6 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
 @SuppressWarnings("PMD.NPathComplexity")
 public final class SeResponse implements Serializable {
 
-  static final long serialVersionUID = 265369841119873812L;
-
   /**
    * is defined as true by the SE reader in case a logical channel was already open with the target
    * SE application.

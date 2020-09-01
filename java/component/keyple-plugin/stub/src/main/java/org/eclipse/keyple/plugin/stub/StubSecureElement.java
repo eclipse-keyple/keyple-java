@@ -51,7 +51,9 @@ public abstract class StubSecureElement {
    * @param response : hexadecimal response to be sent in reaction to command
    */
   public void addHexCommand(String command, String response) {
-    assert command != null && response != null : "command and response should not be null";
+    if (command == null || response == null) {
+      throw new IllegalArgumentException("Command and Response should not be null");
+    }
     // add commands without space
     hexCommands.put(command.replace(" ", ""), response.replace(" ", ""));
   }
@@ -62,7 +64,9 @@ public abstract class StubSecureElement {
    * @param command : hexadecimal command to be removed
    */
   public void removeHexCommand(String command) {
-    assert command != null : "command should not be null";
+    if (command == null) {
+      throw new IllegalArgumentException("Command should not be null");
+    }
     hexCommands.remove(command.trim());
   }
 

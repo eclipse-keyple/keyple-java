@@ -22,8 +22,6 @@ import org.eclipse.keyple.core.seproxy.SeSelector;
  */
 public final class SeRequest implements Serializable {
 
-  static final long serialVersionUID = 6018469841127325812L;
-
   /** SE seSelector is either an AID or an ATR regular expression */
   private final SeSelector seSelector;
 

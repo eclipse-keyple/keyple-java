@@ -32,10 +32,10 @@ public class SeResponseTest {
     Assert.assertNotNull(response);
     Assert.assertArrayEquals(
         ApduResponseTest.getAListOfAPDUs().toArray(), response.getApduResponses().toArray());
-    Assert.assertEquals(true, response.wasChannelPreviouslyOpen());
+    Assert.assertTrue(response.wasChannelPreviouslyOpen());
     Assert.assertEquals(ApduResponseTest.getAAtr(), response.getSelectionStatus().getAtr());
     Assert.assertEquals(ApduResponseTest.getAFCI(), response.getSelectionStatus().getFci());
-    Assert.assertEquals(response.getSelectionStatus().hasMatched(), true);
+    Assert.assertTrue(response.getSelectionStatus().hasMatched());
   }
 
   @Test
@@ -50,10 +50,10 @@ public class SeResponseTest {
     Assert.assertNotNull(response);
     Assert.assertArrayEquals(
         ApduResponseTest.getAListOfAPDUs().toArray(), response.getApduResponses().toArray());
-    Assert.assertEquals(true, response.wasChannelPreviouslyOpen());
+    Assert.assertTrue(response.wasChannelPreviouslyOpen());
     Assert.assertEquals(ApduResponseTest.getAAtr(), response.getSelectionStatus().getAtr());
     Assert.assertEquals(ApduResponseTest.getAFCI(), response.getSelectionStatus().getFci());
-    Assert.assertEquals(response.getSelectionStatus().hasMatched(), false);
+    Assert.assertFalse(response.getSelectionStatus().hasMatched());
   }
 
   @Test
@@ -83,60 +83,6 @@ public class SeResponseTest {
     SeResponse response =
         new SeResponse(
             true, true, new SelectionStatus(null, null, true), ApduResponseTest.getAListOfAPDUs());
-    Assert.assertNull(response);
-  }
-
-  @Test()
-  public void testEquals() throws Exception {
-    Assert.assertTrue(getASeResponse().equals(getASeResponse()));
-  }
-
-  @Test()
-  public void testThisEquals() throws Exception {
-    SeResponse resp = getASeResponse();
-    Assert.assertTrue(resp.equals(resp));
-  }
-
-  @Test()
-  public void testNotEquals() throws Exception {
-    SeResponse resp = getASeResponse();
-    Object any = new Object();
-    Assert.assertFalse(resp.equals(any));
-  }
-
-  @Test()
-  public void testNotEqualsNull() throws Exception {
-    SeResponse resp = getASeResponse();
-    SeResponse respNull =
-        new SeResponse(
-            true, true, new SelectionStatus(null, ApduResponseTest.getAFCI(), true), null);
-    SeResponse respNull2 =
-        new SeResponse(
-            true, true, new SelectionStatus(ApduResponseTest.getAAtr(), null, true), null);
-    SeResponse respNull3 =
-        new SeResponse(
-            true,
-            true,
-            new SelectionStatus(ApduResponseTest.getAAtr(), ApduResponseTest.getAFCI(), true),
-            null);
-    Assert.assertFalse(resp.equals(respNull));
-    Assert.assertFalse(resp.equals(respNull2));
-    Assert.assertFalse(resp.equals(respNull3));
-  }
-
-  @Test()
-  public void hashcode() throws Exception {
-    SeResponse resp = getASeResponse();
-    SeResponse resp2 = getASeResponse();
-    Assert.assertTrue(resp.hashCode() == resp2.hashCode());
-  }
-
-  @Test()
-  public void hashcodeNull() throws Exception {
-    SeResponse resp =
-        new SeResponse(
-            true, true, new SelectionStatus(null, ApduResponseTest.getAFCI(), true), null);
-    Assert.assertNotNull(resp.hashCode());
   }
 
   /*

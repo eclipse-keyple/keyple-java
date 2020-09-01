@@ -12,9 +12,9 @@
 package org.eclipse.keyple.plugin.stub;
 
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 
@@ -24,9 +24,12 @@ import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
  *
  * <p>The application can choose to add all parameters or only a subset.
  */
-public class StubProtocolSetting {
+public final class StubProtocolSetting {
 
   public static final Map<SeProtocol, String> STUB_PROTOCOL_SETTING;
+
+  /** (private) */
+  private StubProtocolSetting() {}
 
   /**
    * Associates a protocol and a string defining how to identify it (here a regex to be applied on
@@ -59,7 +62,7 @@ public class StubProtocolSetting {
    * @return a settings map
    */
   public static Map<SeProtocol, String> getSpecificSettings(
-      EnumSet<SeCommonProtocols> specificProtocols) {
+      Set<SeCommonProtocols> specificProtocols) {
     Map<SeProtocol, String> map = new HashMap<SeProtocol, String>();
     for (SeCommonProtocols seCommonProtocols : specificProtocols) {
       map.put(seCommonProtocols, STUB_PROTOCOL_SETTING.get(seCommonProtocols));

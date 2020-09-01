@@ -31,8 +31,6 @@ import org.slf4j.LoggerFactory;
  */
 final class StubPluginImpl extends AbstractThreadedObservablePlugin implements StubPlugin {
 
-  // private static final StubPlugin uniqueInstance = new StubPlugin();
-
   private static final Logger logger = LoggerFactory.getLogger(StubPluginImpl.class);
 
   private final Map<String, String> parameters = new HashMap<String, String>();
@@ -56,15 +54,6 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
     threadWaitTimeout = 10;
   }
 
-  /**
-   * Gets the single instance of StubPlugin.
-   *
-   * @return single instance of StubPlugin
-   */
-  /*
-   * public static StubPlugin getInstance() { return uniqueInstance; }
-   */
-
   @Override
   public Map<String, String> getParameters() {
     return parameters;
@@ -86,7 +75,7 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
   public void plugStubReader(
       String readerName, TransmissionMode transmissionMode, Boolean synchronous) {
 
-    logger.info("Plugging a new reader with readerName " + readerName);
+    logger.info("Plugging a new reader with readerName {}", readerName);
     /* add the native reader to the native readers list */
     Boolean exist = connectedStubNames.contains(readerName);
 
@@ -98,7 +87,7 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
     connectedStubNames.add(readerName);
 
     if (exist) {
-      logger.error("Reader with readerName " + readerName + " was already plugged");
+      logger.error("Reader with readerName {} was already plugged", readerName);
     }
   }
 
@@ -118,7 +107,7 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
      * Add new readerNames to the connectedStubNames
      */
 
-    if (newNames.size() > 0) {
+    if (!newNames.isEmpty()) {
       if (synchronous) {
         ConcurrentMap<String, StubReaderImpl> newReaders =
             new ConcurrentHashMap<String, StubReaderImpl>();
@@ -199,7 +188,7 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
   @Override
   protected ConcurrentMap<String, SeReader> initNativeReaders() {
     /* init Stub Readers response object */
-    ConcurrentMap<String, SeReader> newNativeReaders = new ConcurrentHashMap();
+    ConcurrentMap<String, SeReader> newNativeReaders = new ConcurrentHashMap<String, SeReader>();
     return newNativeReaders;
   }
 
