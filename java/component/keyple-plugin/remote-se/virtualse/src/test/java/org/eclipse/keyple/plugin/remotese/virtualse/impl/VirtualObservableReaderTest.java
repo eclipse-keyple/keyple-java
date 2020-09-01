@@ -12,11 +12,16 @@
 package org.eclipse.keyple.plugin.remotese.virtualse.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import com.google.gson.JsonObject;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.PollingMode;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
@@ -53,6 +58,8 @@ public class VirtualObservableReaderTest {
       new KeypleMessageDto()
           .setAction(KeypleMessageDto.Action.SET_DEFAULT_SELECTION_RESPONSE.name());;
 
+  static final ExecutorService notificationPool = Executors.newCachedThreadPool();;
+
   final ArgumentCaptor<KeypleMessageDto> messageArgumentCaptor =
       ArgumentCaptor.forClass(KeypleMessageDto.class);;
   final ArgumentCaptor<ReaderEvent> readerEventArgumentCaptor =
@@ -62,8 +69,8 @@ public class VirtualObservableReaderTest {
   public void setUp() {
     node = Mockito.mock(AbstractKeypleNode.class);
     doReturn(response).when(node).sendRequest(any(KeypleMessageDto.class));
-    observer = Mockito.mock(ReaderObserver.class);
-    reader = new VirtualObservableReader(pluginName, nativeReaderName, node);
+    observer = new MockObserver();
+    reader = new VirtualObservableReader(pluginName, nativeReaderName, node, notificationPool);
   }
 
   @Test
@@ -83,9 +90,15 @@ public class VirtualObservableReaderTest {
   public void notifyEvent_to_OneObserver() {
     reader.addObserver(observer);
     reader.notifyObservers(event);
-    verify(observer).update(readerEventArgumentCaptor.capture());
-    ReaderEvent event = readerEventArgumentCaptor.getValue();
-    assertThat(event).isEqualToComparingFieldByFieldRecursively(event);
+    await()
+        .atMost(1, TimeUnit.SECONDS)
+        .until(
+            new Callable<Boolean>() {
+              @Override
+              public Boolean call() throws Exception {
+                return ((MockObserver) observer).getEvent().equals(event);
+              }
+            });
   }
 
   @Test
@@ -159,5 +172,19 @@ public class VirtualObservableReaderTest {
         .isEqualTo(KeypleMessageDto.Action.FINALIZE_SE_PROCESSING.name());
     JsonObject body = KeypleJsonParser.getParser().fromJson(request.getBody(), JsonObject.class);
     assertThat(body).isNull();
+  }
+
+  private static class MockObserver implements ReaderObserver {
+
+    ReaderEvent event;
+
+    @Override
+    public void update(ReaderEvent event) {
+      this.event = event;
+    }
+
+    public ReaderEvent getEvent() {
+      return event;
+    }
   }
 }

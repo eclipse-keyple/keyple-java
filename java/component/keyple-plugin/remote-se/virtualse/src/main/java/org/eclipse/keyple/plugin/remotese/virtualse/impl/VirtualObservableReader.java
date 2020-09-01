@@ -14,6 +14,7 @@ package org.eclipse.keyple.plugin.remotese.virtualse.impl;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -39,6 +40,8 @@ final class VirtualObservableReader extends AbstractVirtualReader
   /* The observers of this object */
   private final List<ReaderObserver> observers;
 
+  private final ExecutorService notificationPool;
+
   /**
    * (package-private)<br>
    * Constructor
@@ -46,14 +49,20 @@ final class VirtualObservableReader extends AbstractVirtualReader
    * @param pluginName The name of the plugin (must be not null).
    * @param nativeReaderName The name of the native reader (must be not null).
    * @param node The associated node (must be not null).
+   * @param notificationPool The thread pool used to notify ReaderEvent (must be not null).
    */
-  VirtualObservableReader(String pluginName, String nativeReaderName, AbstractKeypleNode node) {
+  VirtualObservableReader(
+      String pluginName,
+      String nativeReaderName,
+      AbstractKeypleNode node,
+      ExecutorService notificationPool) {
     super(pluginName, nativeReaderName, node);
-    observers = new ArrayList<ReaderObserver>();
+    this.observers = new ArrayList<ReaderObserver>();
+    this.notificationPool = notificationPool;
   }
 
   @Override
-  public void notifyObservers(ReaderEvent event) {
+  public void notifyObservers(final ReaderEvent event) {
     if (logger.isTraceEnabled()) {
       logger.trace(
           "[{}] Notifying a reader event to {} observers. EVENTNAME = {}",
@@ -64,8 +73,15 @@ final class VirtualObservableReader extends AbstractVirtualReader
 
     List<ReaderObserver> observersCopy = new ArrayList<ReaderObserver>(observers);
 
-    for (ObservableReader.ReaderObserver observer : observersCopy) {
-      observer.update(event);
+    /* Notify each observer of the readerEvent in a separate thread */
+    for (final ObservableReader.ReaderObserver observer : observersCopy) {
+      notificationPool.execute(
+          new Runnable() {
+            @Override
+            public void run() {
+              observer.update(event);
+            }
+          });
     }
   }
 
