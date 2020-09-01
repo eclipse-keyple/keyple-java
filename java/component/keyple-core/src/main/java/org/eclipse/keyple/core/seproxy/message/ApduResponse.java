@@ -19,8 +19,6 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
 /** Single APDU response wrapper */
 public final class ApduResponse implements Serializable {
 
-  static final long serialVersionUID = 6418469841122636812L;
-
   /**
    * * the success result of the processed APDU command to allow chaining responses in a group of
    * APDUs
