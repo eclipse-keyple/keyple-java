@@ -25,6 +25,12 @@ import org.eclipse.keyple.plugin.remotese.core.impl.AbstractKeypleNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * (package-private)<br>
+ * Observable Virtual Reader
+ *
+ * <p>This object is a {@link AbstractVirtualReader} with additional ObservableReader features.
+ */
 final class VirtualObservableReader extends AbstractVirtualReader
     implements ObservableReaderNotifier {
 
@@ -147,5 +153,4 @@ final class VirtualObservableReader extends AbstractVirtualReader
   public void finalizeSeProcessing() {
     sendRequest(KeypleMessageDto.Action.FINALIZE_SE_PROCESSING, null);
   }
-
 }

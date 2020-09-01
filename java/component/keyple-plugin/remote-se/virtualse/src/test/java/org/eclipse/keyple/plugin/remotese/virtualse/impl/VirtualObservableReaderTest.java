@@ -113,8 +113,7 @@ public class VirtualObservableReaderTest {
         .isEqualToComparingFieldByFieldRecursively(notificationMode);
     assertThat(
             KeypleJsonParser.getParser()
-                .fromJson(
-                    body.get("pollingMode").getAsString(), PollingMode.class))
+                .fromJson(body.get("pollingMode").getAsString(), PollingMode.class))
         .isEqualToComparingFieldByFieldRecursively(pollingMode);
   }
 
@@ -137,8 +136,7 @@ public class VirtualObservableReaderTest {
     JsonObject body = KeypleJsonParser.getParser().fromJson(request.getBody(), JsonObject.class);
     assertThat(
             KeypleJsonParser.getParser()
-                .fromJson(
-                    body.get("pollingMode").getAsString(), PollingMode.class))
+                .fromJson(body.get("pollingMode").getAsString(), PollingMode.class))
         .isEqualToComparingFieldByFieldRecursively(pollingMode);
   }
 
