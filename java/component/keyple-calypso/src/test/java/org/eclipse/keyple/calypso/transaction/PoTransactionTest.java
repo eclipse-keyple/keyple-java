@@ -1688,7 +1688,7 @@ public class PoTransactionTest {
             false,
             new SelectionStatus(null, new ApduResponse(ByteArrayUtil.fromHex(FCI), null), true),
             null);
-    return new CalypsoPo(selectionData, TransmissionMode.CONTACTLESS);
+    return new CalypsoPo(selectionData);
   }
 
   private CalypsoSam createCalypsoSam() {

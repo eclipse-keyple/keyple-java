@@ -39,10 +39,9 @@ public class CalypsoSam extends AbstractMatchingSe {
    * Constructor.
    *
    * @param selectionResponse the selection response from the SAM
-   * @param transmissionMode the current {@link TransmissionMode} (contacts or contactless)
    */
   CalypsoSam(SeResponse selectionResponse, TransmissionMode transmissionMode) {
-    super(selectionResponse, transmissionMode);
+    super(selectionResponse);
 
     String atrString =
         ByteArrayUtil.toHex(selectionResponse.getSelectionStatus().getAtr().getBytes());

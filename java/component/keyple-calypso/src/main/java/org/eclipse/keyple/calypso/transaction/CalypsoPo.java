@@ -17,7 +17,6 @@ import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /**
@@ -95,10 +94,9 @@ public class CalypsoPo extends AbstractMatchingSe {
    * Constructor.
    *
    * @param selectionResponse the response to the selection application command
-   * @param transmissionMode the current {@link TransmissionMode} (contacts or contactless)
    */
-  CalypsoPo(SeResponse selectionResponse, TransmissionMode transmissionMode) {
-    super(selectionResponse, transmissionMode);
+  CalypsoPo(SeResponse selectionResponse) {
+    super(selectionResponse);
 
     int bufferSizeIndicator;
     int bufferSizeValue;

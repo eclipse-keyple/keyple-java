@@ -1428,12 +1428,11 @@ public class StubReaderTest extends BaseStubTest {
       @Override
       protected AbstractMatchingSe parse(SeResponse seResponse) {
         class GenericMatchingSe extends AbstractMatchingSe {
-          public GenericMatchingSe(
-              SeResponse selectionResponse, TransmissionMode transmissionMode) {
-            super(selectionResponse, transmissionMode);
+          public GenericMatchingSe(SeResponse selectionResponse) {
+            super(selectionResponse);
           }
         }
-        return new GenericMatchingSe(seResponse, transmissionMode);
+        return new GenericMatchingSe(seResponse);
       }
     }
 
@@ -1453,7 +1452,7 @@ public class StubReaderTest extends BaseStubTest {
     try {
       seSelection.processExplicitSelection(reader);
     } catch (KeypleException e) {
-      Assert.fail("Unexcepted exception");
+      Assert.fail("Unexpected exception");
     }
   }
 }
