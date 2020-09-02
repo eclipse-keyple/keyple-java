@@ -168,5 +168,5 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
     return observers.size();
   }
 
-  ServerVirtualReader createVirtualReader(KeypleMessageDto message){return null;}
+  private ServerVirtualReader createVirtualReader(KeypleMessageDto message){return null;}
 }
