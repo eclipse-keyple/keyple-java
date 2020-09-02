@@ -23,6 +23,7 @@ import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoClassicTr
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
+import org.eclipse.keyple.plugin.pcsc.PcscReaderSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,8 +75,11 @@ public class Demo_CalypsoClassic_Pcsc {
     logger.info("SAM Reader  NAME = {}", samReader.getName());
 
     /* Set PcSc settings per reader */
-    poReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T1);
-    samReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
+    poReader.setParameter(PcscReaderSetting.KEY_PROTOCOL, PcscReaderSetting.PROTOCOL_T1);
+    samReader.setParameter(PcscReaderSetting.KEY_PROTOCOL, PcscReaderSetting.PROTOCOL_T0);
+
+    poReader.setParameter(PcscReaderSetting.KEY_TRANSMISSION_MODE, PcscReaderSetting.TRANSMISSION_MODE_CONTACTLESS);
+    samReader.setParameter(PcscReaderSetting.KEY_TRANSMISSION_MODE, PcscReaderSetting.TRANSMISSION_MODE_CONTACTS);
 
     /*
      * PC/SC card access mode:
@@ -91,8 +95,8 @@ public class Demo_CalypsoClassic_Pcsc {
      * See KEYPLE-CORE.PC.md file to learn more about this point.
      *
      */
-    samReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
-    poReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
+    samReader.setParameter(PcscReaderSetting.KEY_MODE, PcscReaderSetting.MODE_SHARED);
+    poReader.setParameter(PcscReaderSetting.KEY_MODE, PcscReaderSetting.MODE_SHARED);
 
     /* Set the PO reader protocol flag */
     poReader.addSeProtocolSetting(
