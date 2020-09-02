@@ -37,10 +37,8 @@ final class VirtualObservableReader extends AbstractVirtualReader
 
   private static final Logger logger = LoggerFactory.getLogger(VirtualObservableReader.class);
 
-  /* The observers of this object */
   private final List<ReaderObserver> observers;
-
-  private final ExecutorService notificationPool;
+  private final ExecutorService eventNotificationPool;
 
   /**
    * (package-private)<br>
@@ -49,16 +47,16 @@ final class VirtualObservableReader extends AbstractVirtualReader
    * @param pluginName The name of the plugin (must be not null).
    * @param nativeReaderName The name of the native reader (must be not null).
    * @param node The associated node (must be not null).
-   * @param notificationPool The thread pool used to notify ReaderEvent (must be not null).
+   * @param eventNotificationPool The thread pool used to notify ReaderEvent (must be not null).
    */
   VirtualObservableReader(
       String pluginName,
       String nativeReaderName,
       AbstractKeypleNode node,
-      ExecutorService notificationPool) {
+      ExecutorService eventNotificationPool) {
     super(pluginName, nativeReaderName, node);
     this.observers = new ArrayList<ReaderObserver>();
-    this.notificationPool = notificationPool;
+    this.eventNotificationPool = eventNotificationPool;
   }
 
   @Override
@@ -75,7 +73,7 @@ final class VirtualObservableReader extends AbstractVirtualReader
 
     /* Notify each observer of the readerEvent in a separate thread */
     for (final ObservableReader.ReaderObserver observer : observersCopy) {
-      notificationPool.execute(
+      eventNotificationPool.execute(
           new Runnable() {
             @Override
             public void run() {
@@ -85,6 +83,11 @@ final class VirtualObservableReader extends AbstractVirtualReader
     }
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void addObserver(ReaderObserver observer) {
     Assert.getInstance().notNull(observer, "Reader Observer");
@@ -96,6 +99,11 @@ final class VirtualObservableReader extends AbstractVirtualReader
     ;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void removeObserver(ReaderObserver observer) {
     Assert.getInstance().notNull(observer, "Reader Observer");
@@ -105,6 +113,11 @@ final class VirtualObservableReader extends AbstractVirtualReader
     }
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void clearObservers() {
     observers.clear();
@@ -113,11 +126,21 @@ final class VirtualObservableReader extends AbstractVirtualReader
     }
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public int countObservers() {
     return observers.size();
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void startSeDetection(PollingMode pollingMode) {
     Assert.getInstance().notNull(pollingMode, "Polling Mode");
@@ -128,11 +151,21 @@ final class VirtualObservableReader extends AbstractVirtualReader
     sendRequest(KeypleMessageDto.Action.START_SE_DETECTION, body);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void stopSeDetection() {
     sendRequest(KeypleMessageDto.Action.STOP_SE_DETECTION, null);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void setDefaultSelectionRequest(
       AbstractDefaultSelectionsRequest defaultSelectionsRequest,
@@ -140,6 +173,11 @@ final class VirtualObservableReader extends AbstractVirtualReader
     setDefaultSelectionRequest(defaultSelectionsRequest, notificationMode, null);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void setDefaultSelectionRequest(
       AbstractDefaultSelectionsRequest defaultSelectionsRequest,
@@ -165,6 +203,11 @@ final class VirtualObservableReader extends AbstractVirtualReader
     sendRequest(KeypleMessageDto.Action.SET_DEFAULT_SELECTION, body);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void finalizeSeProcessing() {
     sendRequest(KeypleMessageDto.Action.FINALIZE_SE_PROCESSING, null);

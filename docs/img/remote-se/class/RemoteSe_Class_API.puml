@@ -1,7 +1,7 @@
 @startuml
 title
     Keyple Plugin Remote SE
-    Public API (14/08/2020)
+    Public API (01/09/2020)
 end title
 
 ' == THEME ==
@@ -106,7 +106,11 @@ package org.eclipse.keyple.plugin.remotese {
                 + PluginObservationStep withSyncNode ()
             }
             +interface "PluginObserverStep" as RemoteSeServerPluginFactoryPluginObserverStep {
-                + BuilderStep withPluginObserver (\n    ObservablePlugin.PluginObserver observer)
+                + EventNotificationPoolStep withPluginObserver (\n    ObservablePlugin.PluginObserver observer)
+            }
+            +interface "EventNotificationPoolStep" as RemoteSeServerPluginFactoryEventNotificationPoolStep {
+                + BuilderStep usingDefaultEventNotificationPool ()
+                + BuilderStep usingEventNotificationPool (\n    ExecutorService eventNotificationPool)
             }
             +interface "BuilderStep" as RemoteSeServerPluginFactoryBuilderStep {
                 + RemoteSeServerPluginFactory build ()
@@ -119,28 +123,44 @@ package org.eclipse.keyple.plugin.remotese {
                 + SyncNodePluginStep withSyncNode (\n    KeypleClientSync endpoint)
             }
             +interface "AsyncNodePluginStep" as RemoteSeClientPluginFactoryAsyncNodePluginStep {
-                + AsyncNodeReaderStep withPluginObservation ()
+                + AsyncNodePluginEventNotificationPoolStep withPluginObservation ()
                 + AsyncNodeReaderStep withoutPluginObservation ()
             }
+            +interface "AsyncNodePluginEventNotificationPoolStep" as RemoteSeClientPluginFactoryAsyncNodePluginEventNotificationPoolStep {
+                + AsyncNodeReaderStep usingDefaultEventNotificationPool ()
+                + AsyncNodeReaderStep usingEventNotificationPool (\n    ExecutorService eventNotificationPool)
+            }
             +interface "AsyncNodeReaderStep" as RemoteSeClientPluginFactoryAsyncNodeReaderStep {
-                + BuilderStep withReaderObservation ()
+                + AsyncNodeReaderEventNotificationPoolStep withReaderObservation ()
                 + BuilderStep withoutReaderObservation ()
+            }
+            +interface "AsyncNodeReaderEventNotificationPoolStep" as RemoteSeClientPluginFactoryAsyncNodeReaderEventNotificationPoolStep {
+                + BuilderStep usingDefaultEventNotificationPool ()
+                + BuilderStep usingEventNotificationPool (\n    ExecutorService eventNotificationPool)
             }
             +interface "SyncNodePluginStep" as RemoteSeClientPluginFactorySyncNodePluginStep {
                 + ServerPushPluginEventStrategyStep withPluginObservation ()
                 + SyncNodeReaderStep withoutPluginObservation ()
             }
             +interface "ServerPushPluginEventStrategyStep" as RemoteSeClientPluginFactoryServerPushPluginEventStrategyStep {
-                + SyncNodeReaderStep usingPluginPollingStrategy (\n    int requestFrequencyInSeconds)
-                + SyncNodeReaderStep usingPluginLongPollingStrategy (\n    int requestTimeoutInSeconds)
+                + SyncNodePluginEventNotificationPoolStep usingPluginPollingStrategy (\n    int requestFrequencyInSeconds)
+                + SyncNodePluginEventNotificationPoolStep usingPluginLongPollingStrategy (\n    int requestTimeoutInSeconds)
+            }
+            +interface "SyncNodePluginEventNotificationPoolStep" as RemoteSeClientPluginFactorySyncNodePluginEventNotificationPoolStep {
+                + SyncNodeReaderStep usingDefaultEventNotificationPool ()
+                + SyncNodeReaderStep usingEventNotificationPool (\n    ExecutorService eventNotificationPool)
             }
             +interface "SyncNodeReaderStep" as RemoteSeClientPluginFactorySyncNodeReaderStep {
                 + ServerPushReaderEventStrategyStep withReaderObservation ()
                 + BuilderStep withoutReaderObservation ()
             }
             +interface "ServerPushReaderEventStrategyStep" as RemoteSeClientPluginFactoryServerPushReaderEventStrategyStep {
-                + BuilderStep usingReaderPollingStrategy (\n    int requestFrequencyInSeconds)
-                + BuilderStep usingReaderLongPollingStrategy (\n    int requestTimeoutInSeconds)
+                + SyncNodeReaderEventNotificationPoolStep usingReaderPollingStrategy (\n    int requestFrequencyInSeconds)
+                + SyncNodeReaderEventNotificationPoolStep usingReaderLongPollingStrategy (\n    int requestTimeoutInSeconds)
+            }
+            +interface "SyncNodeReaderEventNotificationPoolStep" as RemoteSeClientPluginFactorySyncNodeReaderEventNotificationPoolStep {
+                + BuilderStep usingDefaultEventNotificationPool ()
+                + BuilderStep usingEventNotificationPool (\n    ExecutorService eventNotificationPool)
             }
             +interface "BuilderStep" as RemoteSeClientPluginFactoryBuilderStep {
                 + RemoteSeClientPluginFactory build ()
@@ -313,19 +333,26 @@ package org.eclipse.keyple.plugin.remotese {
 ' Associations
 RemoteSeServerPluginFactory ..> RemoteSeServerPluginFactoryNodeStep #C_USE
 RemoteSeServerPluginFactoryNodeStep ..> RemoteSeServerPluginFactoryPluginObserverStep #C_USE
-RemoteSeServerPluginFactoryPluginObserverStep ..> RemoteSeServerPluginFactoryBuilderStep #C_USE
+RemoteSeServerPluginFactoryPluginObserverStep ..> RemoteSeServerPluginFactoryEventNotificationPoolStep #C_USE
+RemoteSeServerPluginFactoryEventNotificationPoolStep ..> RemoteSeServerPluginFactoryBuilderStep #C_USE
 
 RemoteSeClientPluginFactory ..> RemoteSeClientPluginFactoryNodeStep #C_USE
 RemoteSeClientPluginFactoryNodeStep ..> RemoteSeClientPluginFactoryAsyncNodePluginStep #C_USE
+RemoteSeClientPluginFactoryAsyncNodePluginStep ..> RemoteSeClientPluginFactoryAsyncNodePluginEventNotificationPoolStep #C_USE
+RemoteSeClientPluginFactoryAsyncNodePluginEventNotificationPoolStep ..> RemoteSeClientPluginFactoryAsyncNodeReaderStep #C_USE
 RemoteSeClientPluginFactoryAsyncNodePluginStep ..> RemoteSeClientPluginFactoryAsyncNodeReaderStep #C_USE
 RemoteSeClientPluginFactoryNodeStep ..> RemoteSeClientPluginFactorySyncNodePluginStep #C_USE
 RemoteSeClientPluginFactorySyncNodePluginStep ..> RemoteSeClientPluginFactoryServerPushPluginEventStrategyStep #C_USE
+RemoteSeClientPluginFactoryServerPushPluginEventStrategyStep ..> RemoteSeClientPluginFactorySyncNodePluginEventNotificationPoolStep #C_USE
 RemoteSeClientPluginFactorySyncNodePluginStep ..> RemoteSeClientPluginFactorySyncNodeReaderStep #C_USE
+RemoteSeClientPluginFactoryAsyncNodeReaderStep ..> RemoteSeClientPluginFactoryAsyncNodeReaderEventNotificationPoolStep #C_USE
+RemoteSeClientPluginFactoryAsyncNodeReaderEventNotificationPoolStep ..> RemoteSeClientPluginFactoryBuilderStep #C_USE
 RemoteSeClientPluginFactoryAsyncNodeReaderStep ..> RemoteSeClientPluginFactoryBuilderStep #C_USE
-RemoteSeClientPluginFactoryServerPushPluginEventStrategyStep ..> RemoteSeClientPluginFactorySyncNodeReaderStep #C_USE
+RemoteSeClientPluginFactorySyncNodePluginEventNotificationPoolStep ..> RemoteSeClientPluginFactorySyncNodeReaderStep #C_USE
 RemoteSeClientPluginFactorySyncNodeReaderStep ..> RemoteSeClientPluginFactoryBuilderStep #C_USE
 RemoteSeClientPluginFactorySyncNodeReaderStep ..> RemoteSeClientPluginFactoryServerPushReaderEventStrategyStep #C_USE
-RemoteSeClientPluginFactoryServerPushReaderEventStrategyStep ..> RemoteSeClientPluginFactoryBuilderStep #C_USE
+RemoteSeClientPluginFactoryServerPushReaderEventStrategyStep ..> RemoteSeClientPluginFactorySyncNodeReaderEventNotificationPoolStep #C_USE
+RemoteSeClientPluginFactorySyncNodeReaderEventNotificationPoolStep ..> RemoteSeClientPluginFactoryBuilderStep #C_USE
 
 RemoteSePoolClientPluginFactory ..> RemoteSePoolClientPluginFactoryNodeStep #C_USE
 RemoteSePoolClientPluginFactoryNodeStep ..> RemoteSePoolClientPluginFactoryBuilderStep #C_USE
@@ -401,6 +428,7 @@ interface RemoteSeServerObservableReader <<green>>
 class RemoteSeServerPluginFactory <<green>>
 interface RemoteSeServerPluginFactoryNodeStep <<green>>
 interface RemoteSeServerPluginFactoryPluginObserverStep <<green>>
+interface RemoteSeServerPluginFactoryEventNotificationPoolStep <<green>>
 interface RemoteSeServerPluginFactoryBuilderStep <<green>>
 interface NativeSeClientService <<green>>
 class NativeSeClientServiceFactory <<green>>
@@ -416,11 +444,15 @@ interface RemoteSeClientPlugin <<purple>>
 class RemoteSeClientPluginFactory <<purple>>
 interface RemoteSeClientPluginFactoryNodeStep <<purple>>
 interface RemoteSeClientPluginFactoryAsyncNodePluginStep <<purple>>
+interface RemoteSeClientPluginFactoryAsyncNodePluginEventNotificationPoolStep <<purple>>
 interface RemoteSeClientPluginFactoryAsyncNodeReaderStep <<purple>>
+interface RemoteSeClientPluginFactoryAsyncNodeReaderEventNotificationPoolStep <<purple>>
 interface RemoteSeClientPluginFactorySyncNodePluginStep <<purple>>
 interface RemoteSeClientPluginFactoryServerPushPluginEventStrategyStep <<purple>>
+interface RemoteSeClientPluginFactorySyncNodePluginEventNotificationPoolStep <<purple>>
 interface RemoteSeClientPluginFactorySyncNodeReaderStep <<purple>>
 interface RemoteSeClientPluginFactoryServerPushReaderEventStrategyStep <<purple>>
+interface RemoteSeClientPluginFactorySyncNodeReaderEventNotificationPoolStep <<purple>>
 interface RemoteSeClientPluginFactoryBuilderStep <<purple>>
 interface NativeSeServerService <<purple>>
 class NativeSeServerServiceFactory <<purple>>
