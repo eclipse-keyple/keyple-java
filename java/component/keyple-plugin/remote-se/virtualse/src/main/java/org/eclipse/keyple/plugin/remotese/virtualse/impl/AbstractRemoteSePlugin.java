@@ -37,7 +37,7 @@ abstract class AbstractRemoteSePlugin extends AbstractKeypleMessageHandler imple
   private static final Logger logger = LoggerFactory.getLogger(AbstractRemoteSePlugin.class);
 
   private final String name;
-  protected final ConcurrentMap<String, SeReader> readers;
+  protected final Map<String, SeReader> readers;
 
   /**
    * (package-private)<br>
@@ -76,7 +76,7 @@ abstract class AbstractRemoteSePlugin extends AbstractKeypleMessageHandler imple
    * @since 1.0
    */
   @Override
-  public final ConcurrentMap<String, SeReader> getReaders() {
+  public final Map<String, SeReader> getReaders() {
     return readers;
   }
 

@@ -21,12 +21,14 @@ import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerReader;
 
 /**
  * (package-private)<br>
- * Abstract Server Virtual Reader. This class is a decorator of a {@link AbstractVirtualReader}.
+ * Abstract Server Virtual Reader class.<br>
+ * This class is a decorator of a {@link AbstractVirtualReader}.
  */
 abstract class AbstractServerVirtualReader implements RemoteSeServerReader, ProxyReader {
 
@@ -95,6 +97,7 @@ abstract class AbstractServerVirtualReader implements RemoteSeServerReader, Prox
    */
   @Override
   public <T> T getUserInputData(Class<T> classOfT) {
+    Assert.getInstance().notNull(classOfT, "classOfT");
     return userInputDataJson != null
         ? KeypleJsonParser.getParser().fromJson(userInputDataJson, classOfT)
         : null;
@@ -107,6 +110,7 @@ abstract class AbstractServerVirtualReader implements RemoteSeServerReader, Prox
    */
   @Override
   public <T extends AbstractMatchingSe> T getInitialSeContent(Class<T> classOfT) {
+    Assert.getInstance().notNull(classOfT, "classOfT");
     return initialSeContentJson != null
         ? KeypleJsonParser.getParser().fromJson(initialSeContentJson, classOfT)
         : null;

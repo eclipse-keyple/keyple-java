@@ -1,6 +1,6 @@
 @startuml
 title
-    Keyple Plugin Remote SE (28/08/2020)
+    Keyple Plugin Remote SE (01/09/2020)
 end title
 
 ' == THEME ==
@@ -331,16 +331,16 @@ package org.eclipse.keyple.plugin.remotese {
 
 
             ~class "**final** RemoteSeServerPluginImpl" as RemoteSeServerPluginImpl extends AbstractRemoteSePlugin implements RemoteSeServerPlugin {
-                ~ RemoteSeServerPluginImpl (String name)
+                ~ RemoteSeServerPluginImpl (String name,\n ExecutorService eventNotificationPool)
             }
             ~class "**final** RemoteSeClientObservablePluginImpl" as RemoteSeClientObservablePluginImpl extends RemoteSeClientPluginImpl implements RemoteSeClientObservablePlugin {
-                ~ RemoteSeClientObservablePluginImpl (String name,\n ServerPushEventStrategy pluginObservationStrategy,\n ServerPushEventStrategy readerObservationStrategy)
+                ~ RemoteSeClientObservablePluginImpl (String name,\n ServerPushEventStrategy pluginObservationStrategy,\n ServerPushEventStrategy readerObservationStrategy,\n ExecutorService pluginEventNotificationPool,\n ExecutorService readerEventNotificationPool)
             }
             ~class "**final** RemoteSePoolClientPluginImpl" as RemoteSePoolClientPluginImpl extends AbstractRemoteSePlugin implements RemoteSePoolClientPlugin {
                 ~ RemoteSePoolClientPluginImpl (String name)
             }
             ~class "RemoteSeClientPluginImpl" as RemoteSeClientPluginImpl extends AbstractRemoteSePlugin implements RemoteSeClientPlugin {
-                ~ RemoteSeClientPluginImpl (String name,\n ServerPushEventStrategy readerObservationStrategy)
+                ~ RemoteSeClientPluginImpl (String name,\n ServerPushEventStrategy readerObservationStrategy,\n ExecutorService readerEventNotificationPool)
             }
             ' Virtual Readers
             ~abstract "<< <back:#D0ECE7>AbstractReader</back> >>\nAbstractVirtualReader" as AbstractVirtualReader {
@@ -356,23 +356,17 @@ package org.eclipse.keyple.plugin.remotese {
                 ~ VirtualReader (String pluginName,\n String nativeReaderName,\n AbstractKeypleNode node)
             }
             ~class "<< <back:#FDEBD0>ObservableReaderNotifier</back> >>\n**final** VirtualObservableReader" as VirtualObservableReader extends AbstractVirtualReader {
-                __
-                ~ VirtualObservableReader (String pluginName,\n String nativeReaderName,\n AbstractKeypleNode node)
-                ..
-                ~ void onEvent (KeypleMessageDto msg)
+                ~ VirtualObservableReader (String pluginName,\n String nativeReaderName,\n AbstractKeypleNode node,\n ExecutorService eventNotificationPool)
             }
             ' Server Readers
             ~abstract "<< <back:#D0ECE7>ProxyReader</back> >>\nAbstractServerVirtualReader" as AbstractServerVirtualReader implements RemoteSeServerReader {
                 ~ AbstractServerVirtualReader (\n AbstractVirtualReader reader,\n String serviceId,\n String userInputDataJson,\n String initialSeContentJson)
             }
             ~class "**final** ServerVirtualReader" as ServerVirtualReader extends AbstractServerVirtualReader {
-                ~ ServerVirtualReader (\n AbstractVirtualReader reader,\n String serviceId,\n String userInputDataJson,\n String initialSeContentJson)
+                ~ ServerVirtualReader (\n VirtualReader reader,\n String serviceId,\n String userInputDataJson,\n String initialSeContentJson)
             }
             ~class "<< <back:#FDEBD0>ObservableReaderNotifier</back> >>\n**final** ServerVirtualObservableReader" as ServerVirtualObservableReader extends AbstractServerVirtualReader implements RemoteSeServerObservableReader {
-                __
-                ~ ServerVirtualObservableReader (\n AbstractVirtualReader reader,\n String serviceId,\n String userInputDataJson,\n String initialSeContentJson)
-                ..
-                ~ void onEvent (KeypleMessageDto msg)
+                ~ ServerVirtualObservableReader (\n VirtualObservableReader reader,\n String serviceId,\n String userInputDataJson,\n String initialSeContentJson)
             }
 
         }
