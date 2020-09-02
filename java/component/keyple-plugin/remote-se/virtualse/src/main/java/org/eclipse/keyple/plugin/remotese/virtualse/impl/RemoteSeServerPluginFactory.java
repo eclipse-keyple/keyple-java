@@ -1,0 +1,160 @@
+/* **************************************************************************************
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * See the NOTICE file(s) distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ************************************************************************************** */
+package org.eclipse.keyple.plugin.remotese.virtualse.impl;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
+import org.eclipse.keyple.core.util.Assert;
+import org.eclipse.keyple.plugin.remotese.core.KeypleServerAsync;
+import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerPlugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class RemoteSeServerPluginFactory {
+
+  private static final Logger logger = LoggerFactory.getLogger(RemoteSeServerPluginFactory.class);
+
+  public static NodeStep builder() {
+    return new Builder();
+  }
+
+  public interface NameStep {
+    /**
+     * Configure the plugin name
+     *
+     * @param pluginName
+     * @return next configuration step
+     */
+    NodeStep withName(String pluginName);
+  }
+
+  public interface NodeStep {
+    /**
+     * Configure the plugin with an async server endpoint
+     *
+     * @param asyncEndpoint non nullable instance of an async server endpoint
+     * @return next configuration step
+     */
+    PluginObserverStep withAsyncNode(KeypleServerAsync asyncEndpoint);
+
+    /**
+     * Configure the plugin with a sync server endpoint
+     *
+     * @return next configuration step
+     */
+    PluginObserverStep withSyncNode();
+  }
+
+  public interface PluginObserverStep {
+    /**
+     * Configure the observer of the plugin
+     *
+     * @param observer
+     * @return next configuration step
+     */
+    EventNotificationPoolStep withPluginObserver(ObservablePlugin.PluginObserver observer);
+  }
+
+  public interface EventNotificationPoolStep {
+    /**
+     * Configure the plugin to use a default notification pool
+     *
+     * @return next configuration step
+     */
+    BuilderStep withDefaultPool();
+
+    /**
+     * Configure the plugin to use a custom notification thread pool
+     *
+     * @param eventNotificationPool
+     * @return next configuration step
+     */
+    BuilderStep withPool(ExecutorService eventNotificationPool);
+  }
+
+  public interface BuilderStep {
+    /**
+     * Build the plugin
+     *
+     * @return instance of the plugin
+     */
+    RemoteSeServerPlugin build();
+  }
+
+  /** The builder pattern */
+  public static class Builder
+      implements NodeStep, PluginObserverStep, EventNotificationPoolStep, BuilderStep, NameStep {
+
+    private String pluginName;
+    private KeypleServerAsync asyncEndpoint;
+    private ExecutorService eventNotificationPool;
+    private ObservablePlugin.PluginObserver observer;
+
+    @Override
+    public NodeStep withName(String pluginName) {
+      this.pluginName = pluginName;
+      return this;
+    }
+
+    @Override
+    public PluginObserverStep withAsyncNode(KeypleServerAsync asyncEndpoint) {
+      Assert.getInstance().notNull(asyncEndpoint, "asyncEndpoint");
+      this.asyncEndpoint = asyncEndpoint;
+      return this;
+    }
+
+    @Override
+    public PluginObserverStep withSyncNode() {
+      return this;
+    }
+
+    @Override
+    public EventNotificationPoolStep withPluginObserver(ObservablePlugin.PluginObserver observer) {
+      Assert.getInstance().notNull(observer, "observer");
+      this.observer = observer;
+      return this;
+    }
+
+    @Override
+    public BuilderStep withDefaultPool() {
+      this.eventNotificationPool = Executors.newCachedThreadPool();
+      return this;
+    }
+
+    @Override
+    public BuilderStep withPool(ExecutorService eventNotificationPool) {
+      Assert.getInstance().notNull(eventNotificationPool, "eventNotificationPool");
+      this.eventNotificationPool = eventNotificationPool;
+      return this;
+    }
+
+    @Override
+    public RemoteSeServerPlugin build() {
+
+      RemoteSeServerPluginImpl plugin =
+          new RemoteSeServerPluginImpl(pluginName, eventNotificationPool);
+
+      if (asyncEndpoint != null) {
+        logger.info("Create a new RemoteSeServerPlugin with a async server endpoint");
+        plugin.bindServerAsyncNode(asyncEndpoint);
+      } else {
+        logger.info("Create a new RemoteSeServerPlugin with a sync server endpoint");
+        plugin.bindServerSyncNode();
+      }
+
+      plugin.addObserver(observer);
+
+      return plugin;
+    }
+  }
+}

@@ -19,7 +19,6 @@ import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
 import org.eclipse.keyple.plugin.remotese.core.impl.AbstractKeypleMessageHandler;
 import org.slf4j.Logger;
@@ -38,6 +37,7 @@ abstract class AbstractRemoteSePlugin extends AbstractKeypleMessageHandler imple
 
   private final String name;
   protected final Map<String, SeReader> readers;
+  protected Map<String, String> parameters;
 
   /**
    * (package-private)<br>
@@ -96,12 +96,10 @@ abstract class AbstractRemoteSePlugin extends AbstractKeypleMessageHandler imple
    * @since 1.0
    */
   @Override
-  public final SeReader getReader(String name) {
-    SeReader seReader = readers.get(name);
-    if (seReader == null) {
-      throw new KeypleReaderNotFoundException(name);
+  public final void setParameters(Map<String, String> parameters) {
+    for (Map.Entry<String, String> en : parameters.entrySet()) {
+      setParameter(en.getKey(), en.getValue());
     }
-    return seReader;
   }
 
   /**
@@ -110,10 +108,18 @@ abstract class AbstractRemoteSePlugin extends AbstractKeypleMessageHandler imple
    * @since 1.0
    */
   @Override
-  public final void setParameters(Map<String, String> parameters) {
-    for (Map.Entry<String, String> en : parameters.entrySet()) {
-      setParameter(en.getKey(), en.getValue());
-    }
+  public Map<String, String> getParameters() {
+    return parameters;
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
+  @Override
+  public void setParameter(String key, String value) {
+    parameters.put(key, value);
   }
 
   /**
