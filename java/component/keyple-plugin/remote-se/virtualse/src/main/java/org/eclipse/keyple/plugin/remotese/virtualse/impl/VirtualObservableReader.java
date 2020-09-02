@@ -59,6 +59,11 @@ final class VirtualObservableReader extends AbstractVirtualReader
     this.eventNotificationPool = eventNotificationPool;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void notifyObservers(final ReaderEvent event) {
     if (logger.isTraceEnabled()) {
@@ -96,7 +101,6 @@ final class VirtualObservableReader extends AbstractVirtualReader
       logger.trace(
           "[{}] Added reader observer '{}'", getName(), observer.getClass().getSimpleName());
     }
-    ;
   }
 
   /**

@@ -33,13 +33,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class ServerVirtualReaderTest {
 
   static final String serviceId = "serviceId";
-  static final String userInpuDataJson = "userInpuDataJson";
+  static final String userInputDataJson = "userInputDataJson";
   static final String initialSeContentJson = "initialSeContentJson";
 
   VirtualReader virtualReaderMocked;
   ServerVirtualReader reader;
 
-  private class MyMatchingSe extends AbstractMatchingSe {
+  private static class MyMatchingSe extends AbstractMatchingSe {
 
     MyMatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode) {
       super(selectionResponse, transmissionMode);
@@ -51,7 +51,7 @@ public class ServerVirtualReaderTest {
     virtualReaderMocked = mock(VirtualReader.class);
     reader =
         new ServerVirtualReader(
-            virtualReaderMocked, serviceId, userInpuDataJson, initialSeContentJson);
+            virtualReaderMocked, serviceId, userInputDataJson, initialSeContentJson);
   }
 
   @Test
@@ -248,6 +248,7 @@ public class ServerVirtualReaderTest {
     reader.getTransmissionMode();
   }
 
+  @SuppressWarnings("ResultOfMethodCallIgnored")
   @Test
   public void getParameters_shouldDelegateMethodToVirtualReader() {
 
@@ -299,6 +300,7 @@ public class ServerVirtualReaderTest {
     verifyNoMoreInteractions(virtualReaderMocked);
   }
 
+  @SuppressWarnings("ResultOfMethodCallIgnored")
   @Test
   public void getName_shouldDelegateMethodToVirtualReader() {
 
@@ -353,14 +355,14 @@ public class ServerVirtualReaderTest {
     String result = reader.getUserInputData(String.class);
 
     // verify
-    assertThat(result).isEqualTo(userInpuDataJson);
+    assertThat(result).isEqualTo(userInputDataJson);
   }
 
   @Test(expected = RuntimeException.class)
   public void getUserInputData_whenClassIsNotConform_shouldThrowRuntimeException() {
 
     // execute
-    VirtualReader result = reader.getUserInputData(VirtualReader.class);
+    reader.getUserInputData(VirtualReader.class);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -374,7 +376,7 @@ public class ServerVirtualReaderTest {
   public void getInitialSeContent_whenDataIsNull_shouldReturnNull() {
 
     // init
-    reader = new ServerVirtualReader(virtualReaderMocked, serviceId, userInpuDataJson, null);
+    reader = new ServerVirtualReader(virtualReaderMocked, serviceId, userInputDataJson, null);
 
     // execute
     AbstractMatchingSe result = reader.getInitialSeContent(AbstractMatchingSe.class);
@@ -395,7 +397,7 @@ public class ServerVirtualReaderTest {
 
     reader =
         new ServerVirtualReader(
-            virtualReaderMocked, serviceId, userInpuDataJson, initialSeContentJson);
+            virtualReaderMocked, serviceId, userInputDataJson, initialSeContentJson);
 
     // execute
     MyMatchingSe result = reader.getInitialSeContent(MyMatchingSe.class);

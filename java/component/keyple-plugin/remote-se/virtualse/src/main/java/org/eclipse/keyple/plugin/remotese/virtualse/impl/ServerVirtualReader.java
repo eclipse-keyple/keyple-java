@@ -13,7 +13,8 @@ package org.eclipse.keyple.plugin.remotese.virtualse.impl;
 
 /**
  * (package-private)<br>
- * Server Virtual Reader class.
+ * Server Virtual Reader class.<br>
+ * This object is a decorator of a {@link VirtualReader}.
  */
 final class ServerVirtualReader extends AbstractServerVirtualReader {
 
