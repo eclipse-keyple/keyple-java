@@ -29,10 +29,10 @@ public class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
   @Override
   protected AbstractMatchingSe parse(SeResponse seResponse) {
     class GenericMatchingSe extends AbstractMatchingSe {
-      public GenericMatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode) {
-        super(selectionResponse, transmissionMode);
+      public GenericMatchingSe(SeResponse selectionResponse) {
+        super(selectionResponse);
       }
     }
-    return new GenericMatchingSe(seResponse, transmissionMode);
+    return new GenericMatchingSe(seResponse);
   }
 }

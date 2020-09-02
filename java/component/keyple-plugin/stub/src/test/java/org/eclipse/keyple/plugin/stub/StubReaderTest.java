@@ -778,24 +778,6 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertTrue(seResponse.get(0).getApduResponses().get(0).isSuccessful());
   }
 
-  // @Test
-  // public void transmit_null_Selection() {
-  // // init SE
-  // // no SE
-  //
-  // // init request
-  // SeRequest seRequest = getRequestIsoDepSetSample();
-  //
-  // // add Protocol flag
-  // reader.addSeProtocolSetting(
-  // new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
-  //
-  // // test
-  // SeResponse resp = reader.transmit(seRequest);
-  //
-  // Assert.assertNull(resp.get(0));
-  // }
-
   @Test(expected = KeypleReaderException.class)
   public void transmit_no_response() throws Exception {
     stubPlugin.plugStubReader("StubReaderTest", true);
