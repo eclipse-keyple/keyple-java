@@ -11,6 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.pcsc;
 
+import static org.eclipse.keyple.plugin.pcsc.PcscReaderSetting.*;
+
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +21,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 import javax.smartcardio.*;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState;
@@ -76,7 +79,8 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   /**
    * This constructor should only be called by PcscPlugin PCSC reader parameters are initialized
    * with their default values as defined in setParameter. See {@link
-   * Configurable#setParameter(String, String)} for more details
+   * org.eclipse.keyple.core.seproxy.plugin.reader.AbstractLocalReader#setParameter(String, String)}
+   * for more details
    *
    * @param pluginName the name of the plugin
    * @param terminal the PC/SC terminal
@@ -98,10 +102,10 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
 
     // Using null values to use the standard method for defining default values
     try {
-      setParameter(SETTING_KEY_TRANSMISSION_MODE, null);
-      setParameter(SETTING_KEY_PROTOCOL, null);
-      setParameter(SETTING_KEY_MODE, null);
-      setParameter(SETTING_KEY_DISCONNECT, null);
+      setParameter(KEY_TRANSMISSION_MODE, null);
+      setParameter(KEY_PROTOCOL, null);
+      setParameter(KEY_MODE, null);
+      setParameter(KEY_DISCONNECT, null);
     } catch (KeypleException ex) {
       // can not fail with null value
     }
@@ -393,30 +397,30 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     if (name == null) {
       throw new IllegalArgumentException("Parameter shouldn't be null");
     }
-    if (name.equals(SETTING_KEY_TRANSMISSION_MODE)) {
+    if (name.equals(KEY_TRANSMISSION_MODE)) {
       if (value == null) {
         transmissionMode = null;
-      } else if (value.equals(SETTING_TRANSMISSION_MODE_CONTACTS)) {
+      } else if (value.equals(TRANSMISSION_MODE_CONTACTS)) {
         transmissionMode = TransmissionMode.CONTACTS;
-      } else if (value.equals(SETTING_TRANSMISSION_MODE_CONTACTLESS)) {
+      } else if (value.equals(TRANSMISSION_MODE_CONTACTLESS)) {
         transmissionMode = TransmissionMode.CONTACTLESS;
       } else {
         throw new IllegalArgumentException("Bad tranmission mode " + name + " : " + value);
       }
-    } else if (name.equals(SETTING_KEY_PROTOCOL)) {
-      if (value == null || value.equals(SETTING_PROTOCOL_TX)) {
+    } else if (name.equals(KEY_PROTOCOL)) {
+      if (value == null || value.equals(PROTOCOL_TX)) {
         parameterCardProtocol = "*";
-      } else if (value.equals(SETTING_PROTOCOL_T0)) {
+      } else if (value.equals(PcscReaderSetting.PROTOCOL_T0)) {
         parameterCardProtocol = "T=0";
-      } else if (value.equals(SETTING_PROTOCOL_T1)) {
+      } else if (value.equals(PcscReaderSetting.PROTOCOL_T1)) {
         parameterCardProtocol = "T=1";
-      } else if (value.equals(SETTING_PROTOCOL_T_CL)) {
+      } else if (value.equals(PcscReaderSetting.PROTOCOL_T_CL)) {
         parameterCardProtocol = "T=CL";
       } else {
         throw new IllegalArgumentException("Bad protocol " + name + " : " + value);
       }
-    } else if (name.equals(SETTING_KEY_MODE)) {
-      if (value == null || value.equals(SETTING_MODE_SHARED)) {
+    } else if (name.equals(KEY_MODE)) {
+      if (value == null || value.equals(MODE_SHARED)) {
         if (cardExclusiveMode && card != null) {
           try {
             card.endExclusive();
@@ -425,17 +429,17 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
           }
         }
         cardExclusiveMode = false;
-      } else if (value.equals(SETTING_MODE_EXCLUSIVE)) {
+      } else if (value.equals(MODE_EXCLUSIVE)) {
         cardExclusiveMode = true;
       } else {
         throw new IllegalArgumentException("Parameter value not supported " + name + " : " + value);
       }
-    } else if (name.equals(SETTING_KEY_DISCONNECT)) {
-      if (value == null || value.equals(SETTING_DISCONNECT_RESET)) {
+    } else if (name.equals(KEY_DISCONNECT)) {
+      if (value == null || value.equals(DISCONNECT_RESET)) {
         cardReset = true;
-      } else if (value.equals(SETTING_DISCONNECT_UNPOWER)) {
+      } else if (value.equals(DISCONNECT_UNPOWER)) {
         cardReset = false;
-      } else if (value.equals(SETTING_DISCONNECT_EJECT) || value.equals(SETTING_DISCONNECT_LEAVE)) {
+      } else if (value.equals(DISCONNECT_EJECT) || value.equals(DISCONNECT_LEAVE)) {
         throw new IllegalArgumentException(
             "This disconnection parameter is not supported by this plugin" + name + " : " + value);
       } else {
@@ -453,19 +457,19 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     // Returning the protocol
     String protocol = parameterCardProtocol;
     if (protocol.equals("*")) {
-      protocol = SETTING_PROTOCOL_TX;
+      protocol = PROTOCOL_TX;
     } else if (protocol.equals("T=0")) {
-      protocol = SETTING_PROTOCOL_T0;
+      protocol = PcscReaderSetting.PROTOCOL_T0;
     } else if (protocol.equals("T=1")) {
-      protocol = SETTING_PROTOCOL_T1;
+      protocol = PcscReaderSetting.PROTOCOL_T1;
     } else {
       throw new IllegalStateException("Illegal protocol: " + protocol);
     }
-    parameters.put(SETTING_KEY_PROTOCOL, protocol);
+    parameters.put(KEY_PROTOCOL, protocol);
 
     // The mode ?
     if (!cardExclusiveMode) {
-      parameters.put(SETTING_KEY_MODE, SETTING_MODE_SHARED);
+      parameters.put(KEY_MODE, MODE_SHARED);
     }
 
     return parameters;
@@ -522,28 +526,25 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   }
 
   /**
-   * The transmission mode can set with setParameter(SETTING_KEY_TRANSMISSION_MODE, )
+   * Return the mode of tranmsission used to communicate with the SEs<br>
+   * The transmission mode can set explicitly with setParameter(SETTING_KEY_TRANSMISSION_MODE,
+   * MODE). In this case, this parameter has priority.
    *
-   * <p>When the transmission mode has not explicitly set, it is deduced from the protocol:
-   *
-   * <ul>
-   *   <li>T=0: contacts mode
-   *   <li>T=1: contactless mode
-   * </ul>
+   * <p>When the transmission mode has not explicitly set, we try to determine it from the name of
+   * the reader and a parameter defined at the plugin level.
    *
    * @return the current transmission mode
+   * @throws IllegalStateException if the transmission mode could not be determined
    */
   @Override
   public TransmissionMode getTransmissionMode() {
-    if (transmissionMode != null) {
-      return transmissionMode;
-    } else {
-      if (parameterCardProtocol.contentEquals(PROTOCOL_T1)
-          || parameterCardProtocol.contentEquals(PROTOCOL_T_CL)) {
-        return TransmissionMode.CONTACTLESS;
-      } else {
-        return TransmissionMode.CONTACTS;
-      }
+    if (transmissionMode == null) {
+      // the transmission mode has not yet been determined or fixed explicitly, let's ask the plugin
+      // to determine it (only once)
+      transmissionMode =
+          ((PcscPluginImpl) SeProxyService.getInstance().getPlugin(getPluginName()))
+              .findTransmissionMode(getName());
     }
+    return transmissionMode;
   }
 }

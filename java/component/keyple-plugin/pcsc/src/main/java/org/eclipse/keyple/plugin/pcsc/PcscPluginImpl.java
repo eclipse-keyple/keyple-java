@@ -18,6 +18,7 @@ import java.util.SortedSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.regex.Pattern;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CardTerminals;
@@ -28,6 +29,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractReader;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +38,9 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
   private static final Logger logger = LoggerFactory.getLogger(PcscPluginImpl.class);
 
   private boolean scardNoServiceHackNeeded;
+
+  private String contactReaderRegexFilter = "";
+  private String contactlessReaderRegexFilter = "";
 
   /**
    * Singleton instance of SeProxyService 'volatile' qualifier ensures that read access to the
@@ -236,5 +241,27 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
     }
 
     return TerminalFactory.getDefault().terminals();
+  }
+
+  /**
+   * (package-private)<br>
+   * Tente de déterminer l
+   *
+   * @param readerName the name of the reader for which we want to determine the transmission mode
+   * @return the transmission mode CONTACTS or CONTACTLESS
+   * @throws IllegalStateException if the mode of transmission could not be determined
+   */
+  TransmissionMode findTransmissionMode(String readerName) {
+    Pattern p;
+    p = Pattern.compile(contactReaderRegexFilter);
+    if (p.matcher(readerName).matches()) {
+      return TransmissionMode.CONTACTS;
+    }
+    p = Pattern.compile(contactlessReaderRegexFilter);
+    if (p.matcher(readerName).matches()) {
+      return TransmissionMode.CONTACTLESS;
+    }
+    throw new IllegalStateException(
+        "Unable to determine the transmission mode for reader " + readerName);
   }
 }
