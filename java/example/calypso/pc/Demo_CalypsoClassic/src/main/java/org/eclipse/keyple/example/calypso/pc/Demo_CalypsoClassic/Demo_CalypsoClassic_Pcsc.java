@@ -22,7 +22,7 @@ import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoClassicTransactionEngine;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
-import org.eclipse.keyple.plugin.pcsc.PcscReaderSetting;
+import org.eclipse.keyple.plugin.pcsc.PcscReaderConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,13 +74,15 @@ public class Demo_CalypsoClassic_Pcsc {
     logger.info("SAM Reader  NAME = {}", samReader.getName());
 
     /* Set PcSc settings per reader */
-    poReader.setParameter(PcscReaderSetting.KEY_PROTOCOL, PcscReaderSetting.PROTOCOL_T1);
-    samReader.setParameter(PcscReaderSetting.KEY_PROTOCOL, PcscReaderSetting.PROTOCOL_T0);
+    poReader.setParameter(PcscReaderConstants.PROTOCOL_KEY, PcscReaderConstants.PROTOCOL_VAL_T1);
+    samReader.setParameter(PcscReaderConstants.PROTOCOL_KEY, PcscReaderConstants.PROTOCOL_VAL_T0);
 
     poReader.setParameter(
-        PcscReaderSetting.KEY_TRANSMISSION_MODE, PcscReaderSetting.TRANSMISSION_MODE_CONTACTLESS);
+        PcscReaderConstants.TRANSMISSION_MODE_KEY,
+        PcscReaderConstants.TRANSMISSION_MODE_VAL_CONTACTLESS);
     samReader.setParameter(
-        PcscReaderSetting.KEY_TRANSMISSION_MODE, PcscReaderSetting.TRANSMISSION_MODE_CONTACTS);
+        PcscReaderConstants.TRANSMISSION_MODE_KEY,
+        PcscReaderConstants.TRANSMISSION_MODE_VAL_CONTACTS);
 
     /*
      * PC/SC card access mode:
@@ -96,8 +98,8 @@ public class Demo_CalypsoClassic_Pcsc {
      * See KEYPLE-CORE.PC.md file to learn more about this point.
      *
      */
-    samReader.setParameter(PcscReaderSetting.KEY_MODE, PcscReaderSetting.MODE_SHARED);
-    poReader.setParameter(PcscReaderSetting.KEY_MODE, PcscReaderSetting.MODE_SHARED);
+    samReader.setParameter(PcscReaderConstants.MODE_KEY, PcscReaderConstants.MODE_VAL_SHARED);
+    poReader.setParameter(PcscReaderConstants.MODE_KEY, PcscReaderConstants.MODE_VAL_SHARED);
 
     /* Set the PO reader protocol flag */
     poReader.addSeProtocolSetting(

@@ -12,7 +12,6 @@
 package org.eclipse.keyple.plugin.pcsc;
 
 import org.eclipse.keyple.core.seproxy.PluginFactory;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 
 /** Builds a {@link PcscPlugin} */
@@ -20,21 +19,20 @@ public class PcscPluginFactory implements PluginFactory {
 
   @Override
   public String getPluginName() {
-    return PcscPlugin.PLUGIN_NAME;
+    return PcscPluginConstants.PLUGIN_NAME;
   }
 
   /**
    * Returns an instance of the {@link PcscPlugin} if the platform is ready
    *
    * @return PcscPlugin instance
-   * @throws KeyplePluginInstantiationException if Smartcard.io library is not ready
+   * @throws KeyplePluginInstantiationException if smartcard.io library is not ready
    */
-  public ReaderPlugin getPlugin() {
+  public PcscPlugin getPlugin() {
     try {
       return PcscPluginImpl.getInstance();
     } catch (Exception e) {
-      throw new KeyplePluginInstantiationException(
-          "Can not access Smartcard.io readers, check createVirtualReader trace", e);
+      throw new KeyplePluginInstantiationException("Can not access smartcard.io readers", e);
     }
   }
 }

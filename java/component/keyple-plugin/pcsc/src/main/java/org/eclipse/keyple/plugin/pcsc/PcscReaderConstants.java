@@ -13,44 +13,44 @@ package org.eclipse.keyple.plugin.pcsc;
 
 /**
  * This class defines the constants useful for the configuration of the PC/SC readers.<br>
- * These constants are strings defining the keys (prefix KEY_) and values to be used with the
- * setParameter method.
+ * These constants are strings defining the keys (suffix _KEY) and values (suffix _VAL) to be used
+ * with the setParameter method.
  */
-public final class PcscReaderSetting {
-  /** key to set the transmission mode */
-  public static final String KEY_TRANSMISSION_MODE = "transmission_mode";
+public final class PcscReaderConstants {
+  /** key to set the transmission mode used with the SEs */
+  public static final String TRANSMISSION_MODE_KEY = "transmission_mode";
   /** contact transmission mode */
-  public static final String TRANSMISSION_MODE_CONTACTS = "contacts";
+  public static final String TRANSMISSION_MODE_VAL_CONTACTS = "contacts";
   /** contactless transmission mode */
-  public static final String TRANSMISSION_MODE_CONTACTLESS = "contactless";
+  public static final String TRANSMISSION_MODE_VAL_CONTACTLESS = "contactless";
   // The following parameters correspond to the PC/SC parameters provided by smartcard.io
   /** key to set the PC/SC protocol parameter */
-  public static final String KEY_PROTOCOL = "protocol";
+  public static final String PROTOCOL_KEY = "protocol";
   /** PC/SC protocol T=0 */
-  public static final String PROTOCOL_T0 = "T0";
+  public static final String PROTOCOL_VAL_T0 = "T0";
   /** PC/SC protocol T=1 */
-  public static final String PROTOCOL_T1 = "T1";
+  public static final String PROTOCOL_VAL_T1 = "T1";
   /** PC/SC protocol T=CL */
-  public static final String PROTOCOL_T_CL = "TCL";
+  public static final String PROTOCOL_VAL_T_CL = "TCL";
   /** PC/SC protocol '*' */
-  public static final String PROTOCOL_TX = "Tx";
+  public static final String PROTOCOL_VAL_TX = "Tx";
   /** key to set the PC/SC sharing mode */
-  public static final String KEY_MODE = "mode";
+  public static final String MODE_KEY = "mode";
   /** PC/SC exclusive mode */
-  public static final String MODE_EXCLUSIVE = "exclusive";
+  public static final String MODE_VAL_EXCLUSIVE = "exclusive";
   /** PC/SC shared mode */
-  public static final String MODE_SHARED = "shared";
+  public static final String MODE_VAL_SHARED = "shared";
   /** key to set the PC/SC action to perform when disconnecting */
-  public static final String KEY_DISCONNECT = "disconnect";
+  public static final String DISCONNECT_KEY = "disconnect";
   /** Reset the SE after disconnect */
-  public static final String DISCONNECT_RESET = "reset";
+  public static final String DISCONNECT_VAL_RESET = "reset";
   /** Unpower the SE after disconnect */
-  public static final String DISCONNECT_UNPOWER = "unpower";
+  public static final String DISCONNECT_VAL_UNPOWER = "unpower";
   /** Leave the SE after disconnect */
-  public static final String DISCONNECT_LEAVE = "leave";
+  public static final String DISCONNECT_VAL_LEAVE = "leave";
   /** Eject the SE after disconnect */
-  public static final String DISCONNECT_EJECT = "eject";
+  public static final String DISCONNECT_VAL_EJECT = "eject";
 
   /** (private) */
-  private PcscReaderSetting() {}
+  private PcscReaderConstants() {}
 }

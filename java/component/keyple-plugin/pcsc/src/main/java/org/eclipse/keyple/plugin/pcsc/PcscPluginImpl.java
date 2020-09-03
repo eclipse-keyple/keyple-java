@@ -53,7 +53,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
   // pattern.
 
   private PcscPluginImpl() {
-    super(PLUGIN_NAME);
+    super(PcscPluginConstants.PLUGIN_NAME);
   }
 
   /**
@@ -80,7 +80,23 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
 
   @Override
   public void setParameter(String key, String value) {
-    // no parameter for this plugin
+    if (logger.isDebugEnabled()) {
+      logger.debug(
+          "[{}] setParameter => PCSC Plugin: Set a parameter. KEY = {}, VALUE = {}",
+          this.getName(),
+          key,
+          value);
+    }
+    if (key == null || value == null) {
+      throw new IllegalArgumentException("None of the parameters can be null");
+    }
+    if (key.equals(PcscPluginConstants.CONTACT_READER_MATCHER_KEY)) {
+      contactReaderRegexFilter = value;
+    } else if (key.equals(PcscPluginConstants.CONTACTLESS_READER_MATCHER_KEY)) {
+      contactlessReaderRegexFilter = value;
+    } else {
+      throw new IllegalArgumentException("Invalid key value: " + key);
+    }
   }
 
   /**

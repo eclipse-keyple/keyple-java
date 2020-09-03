@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.pcsc;
 
-import static org.eclipse.keyple.plugin.pcsc.PcscReaderSetting.*;
+import static org.eclipse.keyple.plugin.pcsc.PcscReaderConstants.*;
 
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 import javax.smartcardio.*;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState;
@@ -42,7 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 final class PcscReaderImpl extends AbstractObservableLocalReader
-    implements PcscReader, SmartInsertionReader, SmartRemovalReader {
+    implements ObservableReader, SmartInsertionReader, SmartRemovalReader {
 
   private static final Logger logger = LoggerFactory.getLogger(PcscReaderImpl.class);
 
@@ -102,10 +103,10 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
 
     // Using null values to use the standard method for defining default values
     try {
-      setParameter(KEY_TRANSMISSION_MODE, null);
-      setParameter(KEY_PROTOCOL, null);
-      setParameter(KEY_MODE, null);
-      setParameter(KEY_DISCONNECT, null);
+      setParameter(TRANSMISSION_MODE_KEY, null);
+      setParameter(PROTOCOL_KEY, null);
+      setParameter(MODE_KEY, null);
+      setParameter(DISCONNECT_KEY, null);
     } catch (KeypleException ex) {
       // can not fail with null value
     }
@@ -389,38 +390,38 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   public void setParameter(String name, String value) {
 
     logger.debug(
-        "[{}] setParameter => PCSC: Set a parameter. NAME = {}, VALUE = {}",
+        "[{}] setParameter => PCSC Reader: Set a parameter. NAME = {}, VALUE = {}",
         this.getName(),
         name,
         value);
 
     if (name == null) {
-      throw new IllegalArgumentException("Parameter shouldn't be null");
+      throw new IllegalArgumentException("Parameter key shouldn't be null");
     }
-    if (name.equals(KEY_TRANSMISSION_MODE)) {
+    if (name.equals(TRANSMISSION_MODE_KEY)) {
       if (value == null) {
         transmissionMode = null;
-      } else if (value.equals(TRANSMISSION_MODE_CONTACTS)) {
+      } else if (value.equals(TRANSMISSION_MODE_VAL_CONTACTS)) {
         transmissionMode = TransmissionMode.CONTACTS;
-      } else if (value.equals(TRANSMISSION_MODE_CONTACTLESS)) {
+      } else if (value.equals(TRANSMISSION_MODE_VAL_CONTACTLESS)) {
         transmissionMode = TransmissionMode.CONTACTLESS;
       } else {
         throw new IllegalArgumentException("Bad tranmission mode " + name + " : " + value);
       }
-    } else if (name.equals(KEY_PROTOCOL)) {
-      if (value == null || value.equals(PROTOCOL_TX)) {
+    } else if (name.equals(PROTOCOL_KEY)) {
+      if (value == null || value.equals(PROTOCOL_VAL_TX)) {
         parameterCardProtocol = "*";
-      } else if (value.equals(PcscReaderSetting.PROTOCOL_T0)) {
+      } else if (value.equals(PcscReaderConstants.PROTOCOL_VAL_T0)) {
         parameterCardProtocol = "T=0";
-      } else if (value.equals(PcscReaderSetting.PROTOCOL_T1)) {
+      } else if (value.equals(PcscReaderConstants.PROTOCOL_VAL_T1)) {
         parameterCardProtocol = "T=1";
-      } else if (value.equals(PcscReaderSetting.PROTOCOL_T_CL)) {
+      } else if (value.equals(PcscReaderConstants.PROTOCOL_VAL_T_CL)) {
         parameterCardProtocol = "T=CL";
       } else {
         throw new IllegalArgumentException("Bad protocol " + name + " : " + value);
       }
-    } else if (name.equals(KEY_MODE)) {
-      if (value == null || value.equals(MODE_SHARED)) {
+    } else if (name.equals(MODE_KEY)) {
+      if (value == null || value.equals(MODE_VAL_SHARED)) {
         if (cardExclusiveMode && card != null) {
           try {
             card.endExclusive();
@@ -429,17 +430,17 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
           }
         }
         cardExclusiveMode = false;
-      } else if (value.equals(MODE_EXCLUSIVE)) {
+      } else if (value.equals(MODE_VAL_EXCLUSIVE)) {
         cardExclusiveMode = true;
       } else {
         throw new IllegalArgumentException("Parameter value not supported " + name + " : " + value);
       }
-    } else if (name.equals(KEY_DISCONNECT)) {
-      if (value == null || value.equals(DISCONNECT_RESET)) {
+    } else if (name.equals(DISCONNECT_KEY)) {
+      if (value == null || value.equals(DISCONNECT_VAL_RESET)) {
         cardReset = true;
-      } else if (value.equals(DISCONNECT_UNPOWER)) {
+      } else if (value.equals(DISCONNECT_VAL_UNPOWER)) {
         cardReset = false;
-      } else if (value.equals(DISCONNECT_EJECT) || value.equals(DISCONNECT_LEAVE)) {
+      } else if (value.equals(DISCONNECT_VAL_EJECT) || value.equals(DISCONNECT_VAL_LEAVE)) {
         throw new IllegalArgumentException(
             "This disconnection parameter is not supported by this plugin" + name + " : " + value);
       } else {
@@ -457,19 +458,19 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     // Returning the protocol
     String protocol = parameterCardProtocol;
     if (protocol.equals("*")) {
-      protocol = PROTOCOL_TX;
+      protocol = PROTOCOL_VAL_TX;
     } else if (protocol.equals("T=0")) {
-      protocol = PcscReaderSetting.PROTOCOL_T0;
+      protocol = PcscReaderConstants.PROTOCOL_VAL_T0;
     } else if (protocol.equals("T=1")) {
-      protocol = PcscReaderSetting.PROTOCOL_T1;
+      protocol = PcscReaderConstants.PROTOCOL_VAL_T1;
     } else {
       throw new IllegalStateException("Illegal protocol: " + protocol);
     }
-    parameters.put(KEY_PROTOCOL, protocol);
+    parameters.put(PROTOCOL_KEY, protocol);
 
     // The mode ?
     if (!cardExclusiveMode) {
-      parameters.put(KEY_MODE, MODE_SHARED);
+      parameters.put(MODE_KEY, MODE_VAL_SHARED);
     }
 
     return parameters;

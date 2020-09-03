@@ -13,5 +13,8 @@ package org.eclipse.keyple.plugin.pcsc;
 
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 
-/** The PcscReader interface provides the public elements used to manage a PC/SC reader. */
-public interface PcscReader extends ObservableReader {}
+/**
+ * The PcscReader interface remains internal since it does not define any complement to {@link
+ * ObservableReader}.
+ */
+interface PcscReader extends ObservableReader {}
