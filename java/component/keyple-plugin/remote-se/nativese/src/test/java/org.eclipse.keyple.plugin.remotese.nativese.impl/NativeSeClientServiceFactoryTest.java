@@ -186,8 +186,7 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
             .build();
 
     // test
-    MyKeypleUserData output =
-        nativeSeClientService.executeRemoteService(params, MyKeypleUserData.class);
+    nativeSeClientService.executeRemoteService(params, MyKeypleUserData.class);
 
     // verify service is added as observer
     verify(observableReaderMocked).addObserver((NativeSeClientServiceImpl) nativeSeClientService);
@@ -207,8 +206,7 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
         RemoteServiceParameters.builder(serviceId, readerMocked).build();
 
     // test
-    MyKeypleUserData output =
-        nativeSeClientService.executeRemoteService(params, MyKeypleUserData.class);
+    nativeSeClientService.executeRemoteService(params, MyKeypleUserData.class);
 
     verify(observableReaderMocked, times(1))
         .addObserver((NativeSeClientServiceImpl) nativeSeClientService);
@@ -340,18 +338,17 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
     }
   }
 
-  public class MyKeypleUserData {
+  public static class MyKeypleUserData {
     final String field;
-    final Integer field2 = 2;
 
     MyKeypleUserData(String field) {
       this.field = field;
     }
   }
 
-  public interface ObservableProxyReader extends ProxyReader, ObservableReader {};
+  public interface ObservableProxyReader extends ProxyReader, ObservableReader {}
 
-  public class MatchingSeImpl extends AbstractMatchingSe {
+  public static class MatchingSeImpl extends AbstractMatchingSe {
 
     /**
      * Constructor.
@@ -382,7 +379,7 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
     }
 
     @Override
-    public Class<? extends Object> getUserOutputDataClass() {
+    public Class<?> getUserOutputDataClass() {
       return MyKeypleUserData.class;
     }
 
@@ -396,6 +393,7 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
   public KeypleMessageDto getTerminateDto(String sessionId) {
     JsonObject body = new JsonObject();
     body.add("userOutputData", parser.toJsonTree(outputData, MyKeypleUserData.class));
+    body.add("unregisterVirtualReader", parser.toJsonTree(true, Boolean.class));
     return new KeypleMessageDto()
         .setSessionId(sessionId) //
         .setAction(KeypleMessageDto.Action.TERMINATE_SERVICE.name()) //
