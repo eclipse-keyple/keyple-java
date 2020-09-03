@@ -18,10 +18,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.event.PluginEvent;
+import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderNotifier;
 import org.eclipse.keyple.core.util.Assert;
+import org.eclipse.keyple.core.util.json.BodyError;
+import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerPlugin;
 import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerReader;
@@ -69,10 +75,54 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
   }
 
   @Override
-  protected void onMessage(KeypleMessageDto msg) {}
+  protected void onMessage(KeypleMessageDto message) {
+
+    switch (KeypleMessageDto.Action.valueOf(message.getAction())){
+      case EXECUTE_REMOTE_SERVICE:
+        SeReader seReader;
+        try{
+          seReader = getReader(message.getVirtualReaderName());
+          //reader found, do not create virtual reader
+        }catch (KeypleReaderNotFoundException e){
+          //reader not found, create a virtual reader
+          final SeReader createdReader = createVirtualReader(message);
+          //notify observer of READER CONNECTED
+          for(final PluginObserver observer : observers){
+            eventNotificationPool.execute(new Runnable() {
+              @Override
+              public void run() {
+                observer.update(new PluginEvent(getName(), createdReader.getName(), PluginEvent.EventType.READER_CONNECTED));
+              }
+            });
+          }
+        }
+        break;
+      case READER_EVENT:
+        ObservableReaderNotifier observableReader = (ObservableReaderNotifier) getReader(message.getVirtualReaderName());
+        observableReader.notifyObservers(KeypleJsonParser.getParser().fromJson(message.getBody(), ReaderEvent.class));
+        break;
+    }
+  }
 
   @Override
-  public void terminateService(String virtualReaderName, Object userOutputData) {}
+  public void terminateService(String virtualReaderName, Object userOutputData) {
+
+    AbstractVirtualReader virtualReader = (AbstractVirtualReader) getReader(virtualReaderName);
+
+    // Build the message
+    KeypleMessageDto message =
+            new KeypleMessageDto() //
+                    .setSessionId(virtualReader.getSessionId())
+                    .setAction(KeypleMessageDto.Action.TERMINATE_SERVICE.name()) //
+                    .setVirtualReaderName(virtualReaderName) //
+                    .setBody(KeypleJsonParser.getParser().toJson(userOutputData));
+
+    // Send the message
+    node.sendMessage(message);
+
+    //remove virtual readers
+    readers.remove(virtualReader.getName());
+  }
 
   @Override
   public RemoteSeServerReader getReader(String name) throws KeypleReaderNotFoundException {
@@ -117,4 +167,6 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
   public int countObservers() {
     return observers.size();
   }
+
+  ServerVirtualReader createVirtualReader(KeypleMessageDto message){return null;}
 }

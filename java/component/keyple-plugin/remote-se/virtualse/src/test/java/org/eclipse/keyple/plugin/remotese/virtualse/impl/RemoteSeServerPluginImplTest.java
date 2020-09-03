@@ -11,4 +11,39 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remotese.virtualse.impl;
 
-public class RemoteSeServerPluginImplTest {}
+import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
+import org.junit.Test;
+
+public class RemoteSeServerPluginImplTest {
+
+
+    RemoteSeServerPluginImpl remoteSePlugin;
+    AbstractVirtualReader virtualReader;
+    KeypleMessageDto message;
+
+    @Test
+    public void onMessage_executeRemoteService_createVirtualReader_shouldRaisePluginEvent(){}
+
+    @Test
+    public void onMessage_executeRemoteService_createObservableVirtualReader_shouldRaisePluginEvent(){}
+
+    @Test
+    public void onMessage_executeRemoteService_readerAlreadyExists_shouldRaisePluginEvent(){}
+
+    @Test
+    public void onMessage_response_FromNativeReader(){}
+
+    @Test
+    public void onMessage_event(){}
+
+    @Test
+    public void terminateService_shouldSendOutput_deleteVirtualReader(){}
+
+
+
+
+
+
+
+
+}

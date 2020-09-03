@@ -33,10 +33,8 @@ import org.slf4j.LoggerFactory;
  */
 abstract class AbstractRemoteSePlugin extends AbstractKeypleMessageHandler implements ReaderPlugin {
 
-  private static final Logger logger = LoggerFactory.getLogger(AbstractRemoteSePlugin.class);
-
   private final String name;
-  protected final Map<String, SeReader> readers;
+  protected final ConcurrentMap<String, SeReader> readers;
   protected Map<String, String> parameters;
 
   /**
@@ -76,7 +74,7 @@ abstract class AbstractRemoteSePlugin extends AbstractKeypleMessageHandler imple
    * @since 1.0
    */
   @Override
-  public final Map<String, SeReader> getReaders() {
+  public final ConcurrentMap<String, SeReader> getReaders() {
     return readers;
   }
 
