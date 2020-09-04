@@ -261,10 +261,12 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
 
   /**
    * (package-private)<br>
-   * Tente de déterminer l
+   * Attempt to determine the transmission mode of the reader whose name is provided.<br>
+   * This determination is made by a test based on regular expressions provided by the application
+   * in parameter to the plugin (see CONTACT_READER_MATCHER_KEY and CONTACTLESS_READER_MATCHER_KEY)
    *
    * @param readerName the name of the reader for which we want to determine the transmission mode
-   * @return the transmission mode CONTACTS or CONTACTLESS
+   * @return the transmission mode (CONTACTS or CONTACTLESS)
    * @throws IllegalStateException if the mode of transmission could not be determined
    */
   TransmissionMode findTransmissionMode(String readerName) {

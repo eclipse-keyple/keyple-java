@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 import javax.smartcardio.*;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState;
@@ -43,14 +42,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 final class PcscReaderImpl extends AbstractObservableLocalReader
-    implements ObservableReader, SmartInsertionReader, SmartRemovalReader {
+    implements PcscReader, SmartInsertionReader, SmartRemovalReader {
 
   private static final Logger logger = LoggerFactory.getLogger(PcscReaderImpl.class);
 
   private static final String PROTOCOL_T0 = "T=0";
   private static final String PROTOCOL_T1 = "T=1";
   private static final String PROTOCOL_T_CL = "T=CL";
-  private static final String PROTOCOL_ANY = "T=0";
+  private static final String PROTOCOL_ANY = "*";
 
   private final CardTerminal terminal;
 
@@ -410,13 +409,13 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
       }
     } else if (name.equals(PROTOCOL_KEY)) {
       if (value == null || value.equals(PROTOCOL_VAL_TX)) {
-        parameterCardProtocol = "*";
+        parameterCardProtocol = PROTOCOL_ANY;
       } else if (value.equals(PcscReaderConstants.PROTOCOL_VAL_T0)) {
-        parameterCardProtocol = "T=0";
+        parameterCardProtocol = PROTOCOL_T0;
       } else if (value.equals(PcscReaderConstants.PROTOCOL_VAL_T1)) {
-        parameterCardProtocol = "T=1";
+        parameterCardProtocol = PROTOCOL_T1;
       } else if (value.equals(PcscReaderConstants.PROTOCOL_VAL_T_CL)) {
-        parameterCardProtocol = "T=CL";
+        parameterCardProtocol = PROTOCOL_T_CL;
       } else {
         throw new IllegalArgumentException("Bad protocol " + name + " : " + value);
       }
@@ -457,21 +456,23 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
 
     // Returning the protocol
     String protocol = parameterCardProtocol;
-    if (protocol.equals("*")) {
+    if (protocol.equals(PROTOCOL_ANY)) {
       protocol = PROTOCOL_VAL_TX;
-    } else if (protocol.equals("T=0")) {
+    } else if (protocol.equals(PROTOCOL_T0)) {
       protocol = PcscReaderConstants.PROTOCOL_VAL_T0;
-    } else if (protocol.equals("T=1")) {
+    } else if (protocol.equals(PROTOCOL_T1)) {
       protocol = PcscReaderConstants.PROTOCOL_VAL_T1;
+    } else if (protocol.equals(PROTOCOL_T_CL)) {
+      protocol = PcscReaderConstants.PROTOCOL_VAL_T_CL;
     } else {
       throw new IllegalStateException("Illegal protocol: " + protocol);
     }
     parameters.put(PROTOCOL_KEY, protocol);
+    parameters.put(
+        TRANSMISSION_MODE_KEY, transmissionMode != null ? transmissionMode.toString() : "UNSET");
 
     // The mode ?
-    if (!cardExclusiveMode) {
-      parameters.put(MODE_KEY, MODE_VAL_SHARED);
-    }
+    parameters.put(MODE_KEY, cardExclusiveMode ? MODE_VAL_EXCLUSIVE : MODE_VAL_SHARED);
 
     return parameters;
   }
@@ -527,7 +528,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   }
 
   /**
-   * Return the mode of tranmsission used to communicate with the SEs<br>
+   * Return the mode of transmission used to communicate with the SEs<br>
    * The transmission mode can set explicitly with setParameter(SETTING_KEY_TRANSMISSION_MODE,
    * MODE). In this case, this parameter has priority.
    *

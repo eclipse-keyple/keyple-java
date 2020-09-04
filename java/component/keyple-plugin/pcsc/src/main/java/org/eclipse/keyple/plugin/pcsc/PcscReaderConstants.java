@@ -11,6 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.pcsc;
 
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+
 /**
  * This class defines the constants useful for the configuration of the PC/SC readers.<br>
  * These constants are strings defining the keys (suffix _KEY) and values (suffix _VAL) to be used
@@ -20,9 +22,10 @@ public final class PcscReaderConstants {
   /** key to set the transmission mode used with the SEs */
   public static final String TRANSMISSION_MODE_KEY = "transmission_mode";
   /** contact transmission mode */
-  public static final String TRANSMISSION_MODE_VAL_CONTACTS = "contacts";
+  public static final String TRANSMISSION_MODE_VAL_CONTACTS = TransmissionMode.CONTACTS.toString();
   /** contactless transmission mode */
-  public static final String TRANSMISSION_MODE_VAL_CONTACTLESS = "contactless";
+  public static final String TRANSMISSION_MODE_VAL_CONTACTLESS =
+      TransmissionMode.CONTACTLESS.toString();
   // The following parameters correspond to the PC/SC parameters provided by smartcard.io
   /** key to set the PC/SC protocol parameter */
   public static final String PROTOCOL_KEY = "protocol";
