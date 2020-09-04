@@ -14,14 +14,15 @@ package org.eclipse.keyple.example.generic.pc.usecase4;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.generic.GenericSeSelectionRequest;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
+import org.eclipse.keyple.plugin.pcsc.PcscReaderConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,12 +51,16 @@ public class SequentialMultiSelection_Pcsc {
     // Get the instance of the SeProxyService (Singleton pattern)
     SeProxyService seProxyService = SeProxyService.getInstance();
 
-    // Assign PcscPlugin to the SeProxyService
-    seProxyService.registerPlugin(new PcscPluginFactory());
+    // Register the PcscPlugin with SeProxyService, get the corresponding generic ReaderPlugin in
+    // return
+    ReaderPlugin readerPlugin = seProxyService.registerPlugin(new PcscPluginFactory());
 
-    // Get a SE reader ready to work with generic SE. Use the getReader helper method from the
-    // ReaderUtilities class.
-    SeReader seReader = ReaderUtilities.getDefaultContactLessSeReader();
+    // Get and configure the PO reader
+    SeReader seReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
+    seReader.setParameter(
+        PcscReaderConstants.TRANSMISSION_MODE_KEY,
+        PcscReaderConstants.TRANSMISSION_MODE_VAL_CONTACTLESS);
+    seReader.setParameter(PcscReaderConstants.PROTOCOL_KEY, PcscReaderConstants.PROTOCOL_VAL_T1);
 
     logger.info(
         "=============== UseCase Generic #4: AID based sequential explicit multiple selection "
@@ -79,7 +84,6 @@ public class SequentialMultiSelection_Pcsc {
       seSelection.prepareSelection(
           new GenericSeSelectionRequest(
               SeSelector.builder()
-                  .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
                   .aidSelector(
                       SeSelector.AidSelector.builder()
                           .aidToSelect(seAidPrefix)
@@ -98,7 +102,6 @@ public class SequentialMultiSelection_Pcsc {
       seSelection.prepareSelection(
           new GenericSeSelectionRequest(
               SeSelector.builder()
-                  .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
                   .aidSelector(
                       SeSelector.AidSelector.builder()
                           .aidToSelect(seAidPrefix)

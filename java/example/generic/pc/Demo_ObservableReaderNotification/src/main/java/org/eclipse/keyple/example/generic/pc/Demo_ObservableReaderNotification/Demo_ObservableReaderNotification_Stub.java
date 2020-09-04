@@ -13,7 +13,6 @@ package org.eclipse.keyple.example.generic.pc.Demo_ObservableReaderNotification;
 
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.example.common.generic.ObservableReaderNotificationEngine;
 import org.eclipse.keyple.example.common.generic.stub.StubSe1;
 import org.eclipse.keyple.example.common.generic.stub.StubSe2;
 import org.eclipse.keyple.plugin.stub.StubPlugin;

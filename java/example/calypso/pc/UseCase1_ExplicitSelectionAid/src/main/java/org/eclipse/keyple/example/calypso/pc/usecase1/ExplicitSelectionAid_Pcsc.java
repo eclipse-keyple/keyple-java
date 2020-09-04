@@ -20,13 +20,14 @@ import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
+import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
+import org.eclipse.keyple.plugin.pcsc.PcscReaderConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,12 +61,16 @@ public class ExplicitSelectionAid_Pcsc {
     // Get the instance of the SeProxyService (Singleton pattern) */
     SeProxyService seProxyService = SeProxyService.getInstance();
 
-    // Assign PcscPlugin to the SeProxyService
-    seProxyService.registerPlugin(new PcscPluginFactory());
+    // Register the PcscPlugin with SeProxyService, get the corresponding generic ReaderPlugin in
+    // return
+    ReaderPlugin readerPlugin = seProxyService.registerPlugin(new PcscPluginFactory());
 
-    // Get a PO reader ready to work with Calypso PO. Use the getReader helper method from the
-    // CalypsoUtilities class.
-    SeReader poReader = CalypsoUtilities.getDefaultPoReader();
+    // Get and configure the PO reader
+    SeReader poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
+    poReader.setParameter(
+        PcscReaderConstants.TRANSMISSION_MODE_KEY,
+        PcscReaderConstants.TRANSMISSION_MODE_VAL_CONTACTLESS);
+    poReader.setParameter(PcscReaderConstants.PROTOCOL_KEY, PcscReaderConstants.PROTOCOL_VAL_T1);
 
     logger.info(
         "=============== UseCase Calypso #1: AID based explicit selection ==================");
@@ -81,15 +86,14 @@ public class ExplicitSelectionAid_Pcsc {
 
       // Setting of an AID based selection of a Calypso REV3 PO
       // Select the first application matching the selection AID whatever the SE
-      // communication
-      // protocol keep the logical channel open after the selection
+      // communication protocol.
+      // Keep the logical channel open after the selection
 
       // Calypso selection: configures a PoSelectionRequest with all the desired attributes to
       // make the selection and read additional information afterwards
       PoSelectionRequest poSelectionRequest =
           new PoSelectionRequest(
               PoSelector.builder()
-                  .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
                   .aidSelector(AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
                   .invalidatedPo(InvalidatedPo.REJECT)
                   .build());
@@ -119,7 +123,7 @@ public class ExplicitSelectionAid_Pcsc {
       // Log the result
       logger.info("EnvironmentAndHolder file data: {}", environmentAndHolder);
 
-      /* Go on with the reading of the first record of the EventLog file */
+      // Go on with the reading of the first record of the EventLog file
       logger.info("= #### 2nd PO exchange: reading transaction of the EventLog file.");
 
       PoTransaction poTransaction =

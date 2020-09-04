@@ -11,6 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.calypso.pc.usecase4;
 
+import static org.eclipse.keyple.calypso.command.sam.SamRevision.C1;
 import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
 
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
@@ -19,11 +20,16 @@ import org.eclipse.keyple.calypso.transaction.ElementaryFile;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.calypso.transaction.SamSelectionRequest;
+import org.eclipse.keyple.calypso.transaction.SamSelector;
 import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
@@ -108,9 +114,31 @@ public class PoAuthentication_Stub {
     logger.info("Insert stub SAM.");
     ((StubReader) samReader).insertSe(calypsoSamStubSe);
 
-    // Open logical channel for the SAM inserted in the reader
-    // (We expect the right is inserted)
-    SeResource<CalypsoSam> samResource = CalypsoUtilities.checkSamAndOpenChannel(samReader);
+    // Create a SAM resource after selecting the SAM
+    SeSelection samSelection = new SeSelection();
+
+    SamSelector samSelector = SamSelector.builder().samRevision(C1).serialNumber(".*").build();
+
+    // Prepare selector
+    samSelection.prepareSelection(new SamSelectionRequest(samSelector));
+    CalypsoSam calypsoSam;
+    try {
+      if (samReader.isSePresent()) {
+        SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
+        if (selectionsResult.hasActiveSelection()) {
+          calypsoSam = (CalypsoSam) selectionsResult.getActiveMatchingSe();
+        } else {
+          throw new IllegalStateException("Unable to open a logical channel for SAM!");
+        }
+      } else {
+        throw new IllegalStateException("No SAM is present in the reader " + samReader.getName());
+      }
+    } catch (KeypleReaderException e) {
+      throw new IllegalStateException("Reader exception: " + e.getMessage());
+    } catch (KeypleException e) {
+      throw new IllegalStateException("Reader exception: " + e.getMessage());
+    }
+    SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
 
     logger.info("=============== UseCase Calypso #4: Po Authentication ==================");
     logger.info("= PO Reader  NAME = {}", poReader.getName());

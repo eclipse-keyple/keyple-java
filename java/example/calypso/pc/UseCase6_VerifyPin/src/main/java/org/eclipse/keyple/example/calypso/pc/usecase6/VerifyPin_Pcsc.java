@@ -11,6 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.calypso.pc.usecase6;
 
+import static org.eclipse.keyple.calypso.command.sam.SamRevision.C1;
+
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoPinException;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.CalypsoSam;
@@ -18,16 +20,21 @@ import org.eclipse.keyple.calypso.transaction.PoSecuritySettings;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.calypso.transaction.SamSelectionRequest;
+import org.eclipse.keyple.calypso.transaction.SamSelector;
 import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.SelectionsResult;
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
+import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
+import org.eclipse.keyple.plugin.pcsc.PcscReaderConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +84,6 @@ public class VerifyPin_Pcsc {
       PoSelectionRequest poSelectionRequest =
           new PoSelectionRequest(
               PoSelector.builder()
-                  .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
                   .aidSelector(
                       SeSelector.AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
                   .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
@@ -107,17 +113,51 @@ public class VerifyPin_Pcsc {
     // Get the instance of the SeProxyService (Singleton pattern)
     SeProxyService seProxyService = SeProxyService.getInstance();
 
-    // Assign PcscPlugin to the SeProxyService
-    seProxyService.registerPlugin(new PcscPluginFactory());
+    // Register the PcscPlugin with SeProxyService, get the corresponding generic ReaderPlugin in
+    // return
+    ReaderPlugin readerPlugin = seProxyService.registerPlugin(new PcscPluginFactory());
 
-    // Get a PO reader ready to work with Calypso PO. Use the getReader helper method from the
-    // CalypsoUtilities class.
-    poReader = CalypsoUtilities.getDefaultPoReader();
+    // Get and configure the PO reader
+    poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
+    poReader.setParameter(
+        PcscReaderConstants.TRANSMISSION_MODE_KEY,
+        PcscReaderConstants.TRANSMISSION_MODE_VAL_CONTACTLESS);
+    poReader.setParameter(PcscReaderConstants.PROTOCOL_KEY, PcscReaderConstants.PROTOCOL_VAL_T1);
 
-    // Get a SAM reader ready to work with Calypso PO. Use the getReader helper method from the
-    // CalypsoUtilities class.
-    SeResource<CalypsoSam> samResource = CalypsoUtilities.getDefaultSamResource();
+    // Get and configure the SAM reader
+    SeReader samReader = readerPlugin.getReader(ReaderUtilities.getContactReaderName());
+    poReader.setParameter(
+        PcscReaderConstants.TRANSMISSION_MODE_KEY,
+        PcscReaderConstants.TRANSMISSION_MODE_VAL_CONTACTS);
+    poReader.setParameter(PcscReaderConstants.PROTOCOL_KEY, PcscReaderConstants.PROTOCOL_VAL_T0);
 
+    // Create a SAM resource after selecting the SAM
+    SeSelection samSelection = new SeSelection();
+
+    SamSelector samSelector = SamSelector.builder().samRevision(C1).serialNumber(".*").build();
+
+    // Prepare selector
+    samSelection.prepareSelection(new SamSelectionRequest(samSelector));
+    CalypsoSam calypsoSam;
+    try {
+      if (samReader.isSePresent()) {
+        SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
+        if (selectionsResult.hasActiveSelection()) {
+          calypsoSam = (CalypsoSam) selectionsResult.getActiveMatchingSe();
+        } else {
+          throw new IllegalStateException("Unable to open a logical channel for SAM!");
+        }
+      } else {
+        throw new IllegalStateException("No SAM is present in the reader " + samReader.getName());
+      }
+    } catch (KeypleReaderException e) {
+      throw new IllegalStateException("Reader exception: " + e.getMessage());
+    } catch (KeypleException e) {
+      throw new IllegalStateException("Reader exception: " + e.getMessage());
+    }
+    SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
+
+    // display basic information about the readers and SAM
     logger.info("=============== UseCase Calypso #6: Verify PIN  ==================");
     logger.info("= PO Reader  NAME = {}", poReader.getName());
     logger.info("= SAM Reader  NAME = {}", samResource.getSeReader().getName());
