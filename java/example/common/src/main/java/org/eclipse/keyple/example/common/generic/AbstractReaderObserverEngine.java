@@ -103,7 +103,7 @@ public abstract class AbstractReaderObserverEngine implements ObservableReader.R
     thread.start();
   }
 
-  public void update(final ReaderEvent event) {
+  public final void update(final ReaderEvent event) {
     logger.info("New reader event: {}", event.getReaderName());
 
     switch (event.getEventType()) {
