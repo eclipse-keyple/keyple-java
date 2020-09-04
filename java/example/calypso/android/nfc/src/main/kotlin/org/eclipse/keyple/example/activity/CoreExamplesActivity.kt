@@ -398,14 +398,11 @@ class CoreExamplesActivity : AbstractExampleActivity() {
      * Create a new class extending AbstractSeSelectionRequest
      */
     inner class GenericSeSelectionRequest(seSelector: SeSelector) : AbstractSeSelectionRequest<AbstractApduCommandBuilder>(seSelector) {
-        private var transmissionMode: TransmissionMode = seSelector.seProtocol.transmissionMode
-
         override fun parse(seResponse: SeResponse): AbstractMatchingSe {
             class GenericMatchingSe(
-                selectionResponse: SeResponse,
-                transmissionMode: TransmissionMode
-            ) : AbstractMatchingSe(selectionResponse, transmissionMode)
-            return GenericMatchingSe(seResponse, transmissionMode)
+                selectionResponse: SeResponse
+            ) : AbstractMatchingSe(selectionResponse)
+            return GenericMatchingSe(seResponse)
         }
     }
 }

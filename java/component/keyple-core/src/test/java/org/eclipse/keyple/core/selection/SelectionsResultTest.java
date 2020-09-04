@@ -17,7 +17,6 @@ import java.util.Map;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
 
@@ -36,8 +35,8 @@ public class SelectionsResultTest {
     ApduResponse fci2 = new ApduResponse(ByteArrayUtil.fromHex(FCI2), null);
     SelectionStatus selectionStatus2 = new SelectionStatus(null, fci2, true);
     SeResponse seResponse2 = new SeResponse(true, false, selectionStatus2, null);
-    TestMatchingSe testMatchingSe1 = new TestMatchingSe(seResponse1, TransmissionMode.CONTACTLESS);
-    TestMatchingSe testMatchingSe2 = new TestMatchingSe(seResponse2, TransmissionMode.CONTACTLESS);
+    TestMatchingSe testMatchingSe1 = new TestMatchingSe(seResponse1);
+    TestMatchingSe testMatchingSe2 = new TestMatchingSe(seResponse2);
     selectionsResult.addMatchingSe(0, testMatchingSe1, false);
     selectionsResult.addMatchingSe(2, testMatchingSe2, true);
     assertThat(selectionsResult.hasActiveSelection()).isTrue();
@@ -56,8 +55,8 @@ public class SelectionsResultTest {
   }
 
   private static class TestMatchingSe extends AbstractMatchingSe {
-    protected TestMatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode) {
-      super(selectionResponse, transmissionMode);
+    protected TestMatchingSe(SeResponse selectionResponse) {
+      super(selectionResponse);
     }
   }
 }

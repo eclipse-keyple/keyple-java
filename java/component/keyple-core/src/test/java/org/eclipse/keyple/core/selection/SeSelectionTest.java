@@ -23,7 +23,6 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Before;
@@ -234,8 +233,6 @@ public class SeSelectionTest extends CoreBaseTest {
 
     Assert.assertTrue(selectionsResult.hasActiveSelection());
     Assert.assertNotNull(selectionsResult.getActiveMatchingSe());
-    MatchingSe matchingSe = (MatchingSe) selectionsResult.getActiveMatchingSe();
-    Assert.assertEquals(TransmissionMode.CONTACTLESS, matchingSe.getTransmissionMode());
   }
 
   /*
@@ -321,14 +318,14 @@ public class SeSelectionTest extends CoreBaseTest {
 
     @Override
     protected AbstractMatchingSe parse(SeResponse seResponse) {
-      return new MatchingSe(seResponse, seSelector.getSeProtocol().getTransmissionMode());
+      return new MatchingSe(seResponse);
     }
   }
 
   /** Matching Se instantiation */
   private final class MatchingSe extends AbstractMatchingSe {
-    MatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode) {
-      super(selectionResponse, transmissionMode);
+    MatchingSe(SeResponse selectionResponse) {
+      super(selectionResponse);
     }
   }
 

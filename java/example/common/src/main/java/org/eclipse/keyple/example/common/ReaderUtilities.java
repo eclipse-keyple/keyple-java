@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
-import org.eclipse.keyple.plugin.pcsc.PcscReader;
+import org.eclipse.keyple.plugin.pcsc.PcscReaderConstants;
 
 public final class ReaderUtilities {
   private ReaderUtilities() {}
@@ -70,7 +70,7 @@ public final class ReaderUtilities {
    */
   public static void setContactlessSettings(SeReader reader) {
     /* Contactless SE works with T1 protocol */
-    reader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T1);
+    reader.setParameter(PcscReaderConstants.PROTOCOL_KEY, PcscReaderConstants.PROTOCOL_VAL_T1);
 
     /*
      * PC/SC card access mode:
@@ -83,7 +83,12 @@ public final class ReaderUtilities {
      *
      * These two points will be addressed in a coming release of the Keyple PcSc reader plugin.
      */
-    reader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
+    reader.setParameter(PcscReaderConstants.MODE_KEY, PcscReaderConstants.MODE_VAL_SHARED);
+
+    // Set the transmission mode to CONTACTLESS
+    reader.setParameter(
+        PcscReaderConstants.TRANSMISSION_MODE_KEY,
+        PcscReaderConstants.TRANSMISSION_MODE_VAL_CONTACTLESS);
 
     /* Set the PO reader protocol flag */
     reader.addSeProtocolSetting(
@@ -99,7 +104,7 @@ public final class ReaderUtilities {
    */
   public static void setContactsSettings(SeReader reader) {
     /* Contactless SE works with T0 protocol */
-    reader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
+    reader.setParameter(PcscReaderConstants.PROTOCOL_KEY, PcscReaderConstants.PROTOCOL_VAL_T0);
 
     /*
      * PC/SC card access mode:
@@ -112,9 +117,14 @@ public final class ReaderUtilities {
      *
      * These two points will be addressed in a coming release of the Keyple PcSc reader plugin.
      */
-    reader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
+    reader.setParameter(PcscReaderConstants.MODE_KEY, PcscReaderConstants.MODE_VAL_SHARED);
 
-    /* Set the SAM reader protocol flag */
+    // Set the transmission mode to CONTACT
+    reader.setParameter(
+        PcscReaderConstants.TRANSMISSION_MODE_KEY,
+        PcscReaderConstants.TRANSMISSION_MODE_VAL_CONTACTS);
+
+    // Set the SAM reader protocol flag
     reader.addSeProtocolSetting(
         SeCommonProtocols.PROTOCOL_ISO7816_3,
         PcscProtocolSetting.PCSC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO7816_3));

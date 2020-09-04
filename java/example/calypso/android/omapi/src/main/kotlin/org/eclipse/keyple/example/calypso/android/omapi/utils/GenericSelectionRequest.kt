@@ -19,13 +19,10 @@ import org.eclipse.keyple.core.seproxy.message.SeResponse
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode
 
 class GenericSeSelectionRequest(seSelector: SeSelector) : AbstractSeSelectionRequest<AbstractApduCommandBuilder>(seSelector) {
-    private var transmissionMode: TransmissionMode = seSelector.seProtocol.transmissionMode
-
     override fun parse(seResponse: SeResponse): AbstractMatchingSe {
         class GenericMatchingSe(
-            selectionResponse: SeResponse,
-            transmissionMode: TransmissionMode
-        ) : AbstractMatchingSe(selectionResponse, transmissionMode)
-        return GenericMatchingSe(seResponse, transmissionMode)
+            selectionResponse: SeResponse
+        ) : AbstractMatchingSe(selectionResponse)
+        return GenericMatchingSe(seResponse)
     }
 }

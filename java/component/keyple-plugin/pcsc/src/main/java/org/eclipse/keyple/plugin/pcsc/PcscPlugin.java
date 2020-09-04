@@ -13,7 +13,8 @@ package org.eclipse.keyple.plugin.pcsc;
 
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 
-/** The PcscPlugin interface provides the public elements used to manage the PC/SC plugin. */
-public interface PcscPlugin extends ObservablePlugin {
-  String PLUGIN_NAME = "PcscPlugin";
-}
+/**
+ * The PcscPlugin interface provides the public elements used to manage the PC/SC plugin.<br>
+ * It defines in particular the type of object produced by the {@link PcscPluginFactory}.
+ */
+public interface PcscPlugin extends ObservablePlugin {}

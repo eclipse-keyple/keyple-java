@@ -18,7 +18,6 @@ import static org.eclipse.keyple.calypso.command.sam.SamRevision.*;
 import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
 
@@ -39,9 +38,7 @@ public class CalypsoSamTest {
     SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
     SelectionStatus selectionStatus =
         new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR1)), null, true);
-    CalypsoSam calypsoSam =
-        new CalypsoSam(
-            new SeResponse(true, true, selectionStatus, null), TransmissionMode.CONTACTS);
+    CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null));
     assertThat(S1D).isEqualTo(calypsoSam.getSamRevision());
     assertThat((byte) 0x80).isEqualTo(calypsoSam.getApplicationType());
     assertThat((byte) 0xD0).isEqualTo(calypsoSam.getApplicationSubType());
@@ -59,9 +56,7 @@ public class CalypsoSamTest {
     SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
     SelectionStatus selectionStatus =
         new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR2)), null, true);
-    CalypsoSam calypsoSam =
-        new CalypsoSam(
-            new SeResponse(true, true, selectionStatus, null), TransmissionMode.CONTACTS);
+    CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null));
     assertThat(S1D).isEqualTo(calypsoSam.getSamRevision());
     assertThat((byte) 0xD1).isEqualTo(calypsoSam.getApplicationSubType());
   }
@@ -73,9 +68,7 @@ public class CalypsoSamTest {
     SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
     SelectionStatus selectionStatus =
         new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR3)), null, true);
-    CalypsoSam calypsoSam =
-        new CalypsoSam(
-            new SeResponse(true, true, selectionStatus, null), TransmissionMode.CONTACTS);
+    CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null));
     assertThat(S1D).isEqualTo(calypsoSam.getSamRevision());
     assertThat((byte) 0xD2).isEqualTo(calypsoSam.getApplicationSubType());
   }
@@ -87,9 +80,7 @@ public class CalypsoSamTest {
     SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
     SelectionStatus selectionStatus =
         new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR4)), null, true);
-    CalypsoSam calypsoSam =
-        new CalypsoSam(
-            new SeResponse(true, true, selectionStatus, null), TransmissionMode.CONTACTS);
+    CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null));
     assertThat(C1).isEqualTo(calypsoSam.getSamRevision());
     assertThat((byte) 0xC1).isEqualTo(calypsoSam.getApplicationSubType());
   }
@@ -101,9 +92,7 @@ public class CalypsoSamTest {
     SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
     SelectionStatus selectionStatus =
         new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR5)), null, true);
-    CalypsoSam calypsoSam =
-        new CalypsoSam(
-            new SeResponse(true, true, selectionStatus, null), TransmissionMode.CONTACTS);
+    CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null));
     assertThat(S1E).isEqualTo(calypsoSam.getSamRevision());
     assertThat((byte) 0xE1).isEqualTo(calypsoSam.getApplicationSubType());
   }
@@ -115,9 +104,7 @@ public class CalypsoSamTest {
     SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
     SelectionStatus selectionStatus =
         new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR6)), null, true);
-    CalypsoSam calypsoSam =
-        new CalypsoSam(
-            new SeResponse(true, true, selectionStatus, null), TransmissionMode.CONTACTS);
+    CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null));
     shouldHaveThrown(IllegalArgumentException.class);
   }
 
@@ -128,9 +115,7 @@ public class CalypsoSamTest {
     SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
     SelectionStatus selectionStatus =
         new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR7)), null, true);
-    CalypsoSam calypsoSam =
-        new CalypsoSam(
-            new SeResponse(true, true, selectionStatus, null), TransmissionMode.CONTACTS);
+    CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null));
     shouldHaveThrown(IllegalArgumentException.class);
   }
 
@@ -141,9 +126,7 @@ public class CalypsoSamTest {
     SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
     SelectionStatus selectionStatus =
         new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex("")), null, true);
-    CalypsoSam calypsoSam =
-        new CalypsoSam(
-            new SeResponse(true, true, selectionStatus, null), TransmissionMode.CONTACTS);
+    CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null));
     shouldHaveThrown(IllegalArgumentException.class);
   }
 }

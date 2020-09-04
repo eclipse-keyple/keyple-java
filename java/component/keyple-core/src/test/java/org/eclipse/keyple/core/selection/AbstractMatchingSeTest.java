@@ -18,7 +18,6 @@ import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
 
@@ -28,24 +27,12 @@ public class AbstractMatchingSeTest {
   private static final String ATR1 = "3B3F9600805A0080C120000012345678829000";
 
   @Test
-  public void testGetTransmissionMode() {
-    TestMatchingSe testMatchingSe;
-    ApduResponse fci = new ApduResponse(ByteArrayUtil.fromHex(FCI_REV31), null);
-    SelectionStatus selectionStatus = new SelectionStatus(null, fci, true);
-    SeResponse seResponse = new SeResponse(true, false, selectionStatus, null);
-    testMatchingSe = new TestMatchingSe(seResponse, TransmissionMode.CONTACTLESS);
-    assertThat(testMatchingSe.getTransmissionMode()).isEqualTo(TransmissionMode.CONTACTLESS);
-    testMatchingSe = new TestMatchingSe(seResponse, TransmissionMode.CONTACTS);
-    assertThat(testMatchingSe.getTransmissionMode()).isEqualTo(TransmissionMode.CONTACTS);
-  }
-
-  @Test
   public void testHasAtr_true_HasFci_false_getAtrBytes() {
     TestMatchingSe testMatchingSe;
     AnswerToReset answerToReset = new AnswerToReset(ByteArrayUtil.fromHex(ATR1));
     SelectionStatus selectionStatus = new SelectionStatus(answerToReset, null, true);
     SeResponse seResponse = new SeResponse(true, false, selectionStatus, null);
-    testMatchingSe = new TestMatchingSe(seResponse, TransmissionMode.CONTACTLESS);
+    testMatchingSe = new TestMatchingSe(seResponse);
     assertThat(testMatchingSe.hasAtr()).isTrue();
     assertThat(testMatchingSe.hasFci()).isFalse();
     assertThat(testMatchingSe.getAtrBytes()).isEqualTo(ByteArrayUtil.fromHex(ATR1));
@@ -64,7 +51,7 @@ public class AbstractMatchingSeTest {
     ApduResponse fci = new ApduResponse(ByteArrayUtil.fromHex(FCI_REV31), null);
     SelectionStatus selectionStatus = new SelectionStatus(null, fci, true);
     SeResponse seResponse = new SeResponse(true, false, selectionStatus, null);
-    testMatchingSe = new TestMatchingSe(seResponse, TransmissionMode.CONTACTLESS);
+    testMatchingSe = new TestMatchingSe(seResponse);
     assertThat(testMatchingSe.hasAtr()).isFalse();
     assertThat(testMatchingSe.hasFci()).isTrue();
     assertThat(testMatchingSe.getFciBytes()).isEqualTo(ByteArrayUtil.fromHex(FCI_REV31));
@@ -84,7 +71,7 @@ public class AbstractMatchingSeTest {
     ApduResponse fci = new ApduResponse(ByteArrayUtil.fromHex(FCI_REV31), null);
     SelectionStatus selectionStatus = new SelectionStatus(answerToReset, fci, true);
     SeResponse seResponse = new SeResponse(true, false, selectionStatus, null);
-    testMatchingSe = new TestMatchingSe(seResponse, TransmissionMode.CONTACTLESS);
+    testMatchingSe = new TestMatchingSe(seResponse);
     assertThat(testMatchingSe.hasAtr()).isTrue();
     assertThat(testMatchingSe.hasFci()).isTrue();
     assertThat(testMatchingSe.getAtrBytes()).isEqualTo(ByteArrayUtil.fromHex(ATR1));
@@ -92,8 +79,8 @@ public class AbstractMatchingSeTest {
   }
 
   private static class TestMatchingSe extends AbstractMatchingSe {
-    protected TestMatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode) {
-      super(selectionResponse, transmissionMode);
+    protected TestMatchingSe(SeResponse selectionResponse) {
+      super(selectionResponse);
     }
   }
 }

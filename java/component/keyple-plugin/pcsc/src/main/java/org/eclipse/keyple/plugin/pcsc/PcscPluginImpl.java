@@ -18,6 +18,7 @@ import java.util.SortedSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.regex.Pattern;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CardTerminals;
@@ -28,6 +29,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractReader;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +38,9 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
   private static final Logger logger = LoggerFactory.getLogger(PcscPluginImpl.class);
 
   private boolean scardNoServiceHackNeeded;
+
+  private String contactReaderRegexFilter = "";
+  private String contactlessReaderRegexFilter = "";
 
   /**
    * Singleton instance of SeProxyService 'volatile' qualifier ensures that read access to the
@@ -48,7 +53,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
   // pattern.
 
   private PcscPluginImpl() {
-    super(PLUGIN_NAME);
+    super(PcscPluginConstants.PLUGIN_NAME);
   }
 
   /**
@@ -75,7 +80,23 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
 
   @Override
   public void setParameter(String key, String value) {
-    // no parameter for this plugin
+    if (logger.isDebugEnabled()) {
+      logger.debug(
+          "[{}] setParameter => PCSC Plugin: Set a parameter. KEY = {}, VALUE = {}",
+          this.getName(),
+          key,
+          value);
+    }
+    if (key == null || value == null) {
+      throw new IllegalArgumentException("None of the parameters can be null");
+    }
+    if (key.equals(PcscPluginConstants.CONTACT_READER_MATCHER_KEY)) {
+      contactReaderRegexFilter = value;
+    } else if (key.equals(PcscPluginConstants.CONTACTLESS_READER_MATCHER_KEY)) {
+      contactlessReaderRegexFilter = value;
+    } else {
+      throw new IllegalArgumentException("Invalid key value: " + key);
+    }
   }
 
   /**
@@ -236,5 +257,29 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
     }
 
     return TerminalFactory.getDefault().terminals();
+  }
+
+  /**
+   * (package-private)<br>
+   * Attempt to determine the transmission mode of the reader whose name is provided.<br>
+   * This determination is made by a test based on regular expressions provided by the application
+   * in parameter to the plugin (see CONTACT_READER_MATCHER_KEY and CONTACTLESS_READER_MATCHER_KEY)
+   *
+   * @param readerName the name of the reader for which we want to determine the transmission mode
+   * @return the transmission mode (CONTACTS or CONTACTLESS)
+   * @throws IllegalStateException if the mode of transmission could not be determined
+   */
+  TransmissionMode findTransmissionMode(String readerName) {
+    Pattern p;
+    p = Pattern.compile(contactReaderRegexFilter);
+    if (p.matcher(readerName).matches()) {
+      return TransmissionMode.CONTACTS;
+    }
+    p = Pattern.compile(contactlessReaderRegexFilter);
+    if (p.matcher(readerName).matches()) {
+      return TransmissionMode.CONTACTLESS;
+    }
+    throw new IllegalStateException(
+        "Unable to determine the transmission mode for reader " + readerName);
   }
 }
