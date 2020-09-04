@@ -1688,15 +1688,14 @@ public class PoTransactionTest {
             false,
             new SelectionStatus(null, new ApduResponse(ByteArrayUtil.fromHex(FCI), null), true),
             null);
-    return new CalypsoPo(selectionData, TransmissionMode.CONTACTLESS);
+    return new CalypsoPo(selectionData);
   }
 
   private CalypsoSam createCalypsoSam() {
 
     SelectionStatus selectionStatus =
         new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR1)), null, true);
-    return new CalypsoSam(
-        new SeResponse(true, true, selectionStatus, null), TransmissionMode.CONTACTS);
+    return new CalypsoSam(new SeResponse(true, true, selectionStatus, null));
   }
 
   private ProxyReader createMockReader(

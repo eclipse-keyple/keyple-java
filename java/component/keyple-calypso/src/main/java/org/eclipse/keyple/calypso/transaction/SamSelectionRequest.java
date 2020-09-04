@@ -71,6 +71,6 @@ public class SamSelectionRequest
       commandBuilders.get(0).createResponseParser(apduResponses.get(0)).checkStatus();
     }
 
-    return new CalypsoSam(seResponse, seSelector.getSeProtocol().getTransmissionMode());
+    return new CalypsoSam(seResponse);
   }
 }

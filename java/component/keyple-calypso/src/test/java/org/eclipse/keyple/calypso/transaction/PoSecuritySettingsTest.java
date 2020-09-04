@@ -28,7 +28,6 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
 
@@ -226,8 +225,7 @@ public class PoSecuritySettingsTest {
 
     SelectionStatus selectionStatus =
         new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR1)), null, true);
-    return new CalypsoSam(
-        new SeResponse(true, true, selectionStatus, null), TransmissionMode.CONTACTS);
+    return new CalypsoSam(new SeResponse(true, true, selectionStatus, null));
   }
 
   @Test

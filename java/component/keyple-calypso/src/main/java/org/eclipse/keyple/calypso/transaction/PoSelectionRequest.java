@@ -117,8 +117,7 @@ public class PoSelectionRequest
           "Mismatch in the number of requests/responses");
     }
 
-    CalypsoPo calypsoPo =
-        new CalypsoPo(seResponse, seSelector.getSeProtocol().getTransmissionMode());
+    CalypsoPo calypsoPo = new CalypsoPo(seResponse);
 
     if (!commandBuilders.isEmpty()) {
       CalypsoPoUtils.updateCalypsoPo(calypsoPo, commandBuilders, apduResponses);

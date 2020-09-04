@@ -13,22 +13,8 @@ package org.eclipse.keyple.plugin.pcsc;
 
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 
-/** The PcscReader interface provides the public elements used to manage a PC/SC reader. */
-public interface PcscReader extends ObservableReader {
-  String SETTING_KEY_TRANSMISSION_MODE = "transmission_mode";
-  String SETTING_TRANSMISSION_MODE_CONTACTS = "contacts";
-  String SETTING_TRANSMISSION_MODE_CONTACTLESS = "contactless";
-  String SETTING_KEY_PROTOCOL = "protocol";
-  String SETTING_PROTOCOL_T0 = "T0";
-  String SETTING_PROTOCOL_T1 = "T1";
-  String SETTING_PROTOCOL_T_CL = "TCL";
-  String SETTING_PROTOCOL_TX = "Tx";
-  String SETTING_KEY_MODE = "mode";
-  String SETTING_MODE_EXCLUSIVE = "exclusive";
-  String SETTING_MODE_SHARED = "shared";
-  String SETTING_KEY_DISCONNECT = "disconnect";
-  String SETTING_DISCONNECT_RESET = "reset";
-  String SETTING_DISCONNECT_UNPOWER = "unpower";
-  String SETTING_DISCONNECT_LEAVE = "leave";
-  String SETTING_DISCONNECT_EJECT = "eject";
-}
+/**
+ * The PcscReader interface remains internal since it does not define any complement to {@link
+ * ObservableReader}.
+ */
+interface PcscReader extends ObservableReader {}

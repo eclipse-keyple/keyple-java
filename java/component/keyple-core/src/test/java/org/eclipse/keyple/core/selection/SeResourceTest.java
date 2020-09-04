@@ -18,7 +18,6 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Before;
@@ -42,9 +41,7 @@ public class SeResourceTest extends CoreBaseTest {
     SelectionStatus selectionStatus =
         new SelectionStatus(
             new AnswerToReset(ByteArrayUtil.fromHex("3B00000000000000")), null, false);
-    MatchingSe matchingSe =
-        new MatchingSe(
-            new SeResponse(true, true, selectionStatus, null), TransmissionMode.CONTACTLESS);
+    MatchingSe matchingSe = new MatchingSe(new SeResponse(true, true, selectionStatus, null));
     SeReader seReader = null;
     LocalSeResource localSeResource = new LocalSeResource(seReader, matchingSe);
     Assert.assertEquals(matchingSe, localSeResource.getMatchingSe());
@@ -54,8 +51,8 @@ public class SeResourceTest extends CoreBaseTest {
   /** Matching Se instantiation */
   private final class MatchingSe extends AbstractMatchingSe {
 
-    MatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode) {
-      super(selectionResponse, transmissionMode);
+    MatchingSe(SeResponse selectionResponse) {
+      super(selectionResponse);
     }
   }
 

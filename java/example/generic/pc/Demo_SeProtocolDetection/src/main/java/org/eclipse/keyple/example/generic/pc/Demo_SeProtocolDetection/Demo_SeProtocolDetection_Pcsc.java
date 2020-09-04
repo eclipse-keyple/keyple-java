@@ -25,7 +25,7 @@ import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.generic.SeProtocolDetectionEngine;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
-import org.eclipse.keyple.plugin.pcsc.PcscReader;
+import org.eclipse.keyple.plugin.pcsc.PcscReaderConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +62,7 @@ public class Demo_SeProtocolDetection_Pcsc {
     observer.setReader(poReader);
 
     // configure reader
-    poReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T1);
+    poReader.setParameter(PcscReaderConstants.PROTOCOL_KEY, PcscReaderConstants.PROTOCOL_VAL_T1);
 
     // Protocol detection settings.
     // add 8 expected protocols with three different methods:

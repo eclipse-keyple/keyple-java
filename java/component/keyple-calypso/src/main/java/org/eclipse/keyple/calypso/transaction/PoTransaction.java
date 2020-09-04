@@ -466,7 +466,7 @@ public class PoTransaction {
     // Add the PO Ratification command if any
     boolean ratificationCommandAdded;
     if (SessionSetting.RatificationMode.CLOSE_RATIFIED.equals(ratificationMode)
-        && TransmissionMode.CONTACTLESS.equals(calypsoPo.getTransmissionMode())) {
+        && TransmissionMode.CONTACTLESS.equals(poReader.getTransmissionMode())) {
       poApduRequests.add(RatificationCmdBuild.getApduRequest(calypsoPo.getPoClass()));
       ratificationCommandAdded = true;
     } else {

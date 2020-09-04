@@ -778,24 +778,6 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertTrue(seResponse.get(0).getApduResponses().get(0).isSuccessful());
   }
 
-  // @Test
-  // public void transmit_null_Selection() {
-  // // init SE
-  // // no SE
-  //
-  // // init request
-  // SeRequest seRequest = getRequestIsoDepSetSample();
-  //
-  // // add Protocol flag
-  // reader.addSeProtocolSetting(
-  // new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
-  //
-  // // test
-  // SeResponse resp = reader.transmit(seRequest);
-  //
-  // Assert.assertNull(resp.get(0));
-  // }
-
   @Test(expected = KeypleReaderException.class)
   public void transmit_no_response() throws Exception {
     stubPlugin.plugStubReader("StubReaderTest", true);
@@ -1429,12 +1411,11 @@ public class StubReaderTest extends BaseStubTest {
       protected AbstractMatchingSe parse(SeResponse seResponse) {
         class GenericMatchingSe extends AbstractMatchingSe {
 
-          public GenericMatchingSe(
-              SeResponse selectionResponse, TransmissionMode transmissionMode) {
-            super(selectionResponse, transmissionMode);
+          public GenericMatchingSe(SeResponse selectionResponse) {
+            super(selectionResponse);
           }
         }
-        return new GenericMatchingSe(seResponse, transmissionMode);
+        return new GenericMatchingSe(seResponse);
       }
     }
 
@@ -1454,7 +1435,7 @@ public class StubReaderTest extends BaseStubTest {
     try {
       seSelection.processExplicitSelection(reader);
     } catch (KeypleException e) {
-      Assert.fail("Unexcepted exception");
+      Assert.fail("Unexpected exception");
     }
   }
 }
