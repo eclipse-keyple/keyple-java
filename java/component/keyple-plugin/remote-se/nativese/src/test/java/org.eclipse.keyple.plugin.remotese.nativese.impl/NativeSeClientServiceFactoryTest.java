@@ -28,7 +28,6 @@ import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remotese.core.KeypleClientAsync;
 import org.eclipse.keyple.plugin.remotese.core.KeypleClientReaderEventFilter;
@@ -85,7 +84,7 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
     doReturn(observableReaderMocked).when(readerPlugin).getReader(observableReaderName);
     outputData = new MyKeypleUserData("output1");
     inputData = new MyKeypleUserData("input1");
-    matchingSe = new MatchingSeImpl(getASeResponse(), TransmissionMode.CONTACTLESS);
+    matchingSe = new MatchingSeImpl(getASeResponse());
     readerEvent =
         new ReaderEvent(
             pluginName, //
@@ -354,10 +353,9 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
      * Constructor.
      *
      * @param selectionResponse the response from the SE
-     * @param transmissionMode the transmission mode, contact or contactless
      */
-    protected MatchingSeImpl(SeResponse selectionResponse, TransmissionMode transmissionMode) {
-      super(selectionResponse, transmissionMode);
+    protected MatchingSeImpl(SeResponse selectionResponse) {
+      super(selectionResponse);
     }
   }
 

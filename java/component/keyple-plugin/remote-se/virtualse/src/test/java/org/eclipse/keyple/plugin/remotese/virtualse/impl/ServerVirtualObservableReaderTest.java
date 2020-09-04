@@ -46,8 +46,8 @@ public class ServerVirtualObservableReaderTest {
 
   private static class MyMatchingSe extends AbstractMatchingSe {
 
-    MyMatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode) {
-      super(selectionResponse, transmissionMode);
+    MyMatchingSe(SeResponse selectionResponse) {
+      super(selectionResponse);
     }
   }
 
@@ -402,9 +402,7 @@ public class ServerVirtualObservableReaderTest {
   public void getInitialSeContent_whenDataIsNotNull_shouldReturnParsedData() {
 
     // init
-    MyMatchingSe matchingSe =
-        new MyMatchingSe(
-            SampleFactory.getCompleteResponseList().get(0), TransmissionMode.CONTACTLESS);
+    MyMatchingSe matchingSe = new MyMatchingSe(SampleFactory.getCompleteResponseList().get(0));
 
     String initialSeContentJson = KeypleJsonParser.getParser().toJson(matchingSe);
 
