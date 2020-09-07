@@ -76,7 +76,7 @@ public final class ReaderUtilities {
    * @throws KeypleReaderException the reader is not found or readers are not initialized
    */
   public static String getContactlessReaderName() {
-    return getReaderNameForType("reader.contactless.regex");
+    return getReaderNameForType("reader.pcsc.contactless.regex");
   }
 
   /**
@@ -88,7 +88,7 @@ public final class ReaderUtilities {
    * @throws KeypleReaderException the reader is not found or readers are not initialized
    */
   public static String getContactReaderName() {
-    return getReaderNameForType("reader.contact.regex");
+    return getReaderNameForType("reader.pcsc.contact.regex");
   }
 
   /** (private) */
