@@ -61,9 +61,7 @@ public class VirtualObservableReaderTest {
   static final ExecutorService notificationPool = Executors.newCachedThreadPool();;
 
   final ArgumentCaptor<KeypleMessageDto> messageArgumentCaptor =
-      ArgumentCaptor.forClass(KeypleMessageDto.class);;
-  final ArgumentCaptor<ReaderEvent> readerEventArgumentCaptor =
-      ArgumentCaptor.forClass(ReaderEvent.class);;
+      ArgumentCaptor.forClass(KeypleMessageDto.class);
 
   @Before
   public void setUp() {

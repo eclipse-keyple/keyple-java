@@ -195,4 +195,13 @@ abstract class AbstractServerVirtualReader implements RemoteSeServerReader, Prox
   public void setParameters(Map<String, String> parameters) {
     reader.setParameters(parameters);
   }
+
+  /**
+   * (package-private)
+   *
+   * @return
+   */
+  String getSessionId() {
+    return this.reader.getSessionId();
+  }
 }

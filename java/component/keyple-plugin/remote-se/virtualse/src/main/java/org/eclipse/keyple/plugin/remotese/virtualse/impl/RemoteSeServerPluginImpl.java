@@ -29,6 +29,7 @@ import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderNotifier;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerObservableReader;
 import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerPlugin;
 import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerReader;
 import org.slf4j.Logger;
@@ -73,60 +74,35 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
 
   @Override
   protected void onMessage(KeypleMessageDto message) {
+    Assert.getInstance().notNull(message, "message");
     switch (KeypleMessageDto.Action.valueOf(message.getAction())) {
       case EXECUTE_REMOTE_SERVICE:
-        try {
-          // reader found, do not create a new virtual reader
-          if (message.getVirtualReaderName()!=null) {
-            SeReader seReader = getReader(message.getVirtualReaderName());
-            if(logger.isTraceEnabled()){
-              logger.trace(
-                  "Attempting to create a virtual reader {}, but virtual reader already exists",
-                  seReader.getName());
-            }
-          }else{
-            // reader not found, create a virtual reader
-            final SeReader createdReader = createVirtualReader(message);
 
-            readers.put(createdReader.getName(), createdReader);
+        // create a virtual reader from message parameters
+        final AbstractServerVirtualReader createdReader = createVirtualReader(message);
 
-            // notify observer of READER CONNECTED
-            for (final PluginObserver observer : observers) {
-              eventNotificationPool.execute(
-                      new Runnable() {
-                        @Override
-                        public void run() {
-                          observer.update(
-                                  new PluginEvent(
-                                          getName(),
-                                          createdReader.getName(),
-                                          PluginEvent.EventType.READER_CONNECTED));
-                        }
-                      });
-            }
-          }
-        } catch (KeypleReaderNotFoundException e) {
-          //todo
-        }
+        readers.put(createdReader.getName(), createdReader);
+
+        notifyObservers(
+            new PluginEvent(
+                getName(), createdReader.getName(), PluginEvent.EventType.READER_CONNECTED));
         break;
       case READER_EVENT:
+        Assert.getInstance().notNull(message.getVirtualReaderName(), "virtualReaderName");
         ObservableReaderNotifier virtualObservableReader =
             (ObservableReaderNotifier) getReader(message.getVirtualReaderName());
 
-        JsonObject body =
-            KeypleJsonParser.getParser().fromJson(message.getBody(), JsonObject.class);
-        String userInputData = body.get("userInputData").getAsString();
-        String nativeReaderName = message.getNativeReaderName();
         ReaderEvent readerEvent =
-            KeypleJsonParser.getParser().fromJson(body.get("readerEvent"), ReaderEvent.class);
+            KeypleJsonParser.getParser()
+                .fromJson(
+                    KeypleJsonParser.getParser()
+                        .fromJson(message.getBody(), JsonObject.class)
+                        .get("readerEvent"),
+                    ReaderEvent.class);
 
-        // create a temporary virtual reader for this event
-        final ServerVirtualReader sessionReader =
-            new ServerVirtualReader(
-                new VirtualReader(getName(), nativeReaderName, getNode()),
-                "none",
-                userInputData,
-                null);
+        AbstractServerVirtualReader sessionReader = createSessionReader(message);
+
+        readers.put(sessionReader.getName(), sessionReader);
 
         // notify observers of this event targeting the temporary virtual reader
         virtualObservableReader.notifyObservers(
@@ -135,20 +111,24 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
                 sessionReader.getName(),
                 readerEvent.getEventType(),
                 readerEvent.getDefaultSelectionsResponse()));
+
         break;
+      default:
+        throw new IllegalStateException("Message is not supported by Remote Se Plugin " + message);
     }
   }
 
   @Override
   public void terminateService(String virtualReaderName, Object userOutputData) {
 
-    AbstractVirtualReader virtualReader = (AbstractVirtualReader) getReader(virtualReaderName);
-
-    Boolean unregisterVirtualReader =
-        virtualReader instanceof VirtualObservableReader
-            && ((VirtualObservableReader) virtualReader).countObservers() > 0;
+    AbstractServerVirtualReader virtualReader =
+        (AbstractServerVirtualReader) getReader(virtualReaderName);
 
     // remove virtual reader if observable and has observers
+    Boolean unregisterVirtualReader =
+        virtualReader instanceof RemoteSeServerObservableReader
+            && ((RemoteSeServerObservableReader) virtualReader).countObservers() > 0;
+
     if (unregisterVirtualReader) {
       // remove virtual readers
       readers.remove(virtualReader.getName());
@@ -161,13 +141,13 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
     // Build the message
     KeypleMessageDto message =
         new KeypleMessageDto() //
-            .setSessionId(virtualReader.getSessionId())
             .setAction(KeypleMessageDto.Action.TERMINATE_SERVICE.name()) //
             .setVirtualReaderName(virtualReaderName) //
+            .setSessionId(virtualReader.getSessionId()) //
             .setBody(body.toString());
 
     // Send the message
-    node.sendMessage(message);
+    getNode().sendMessage(message);
   }
 
   @Override
@@ -183,7 +163,6 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
   @Override
   public void addObserver(PluginObserver observer) {
     Assert.getInstance().notNull(observer, "Plugin Observer");
-
     if (observers.add(observer) && logger.isTraceEnabled()) {
       logger.trace(
           "[{}] Added plugin observer '{}'", getName(), observer.getClass().getSimpleName());
@@ -193,7 +172,6 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
   @Override
   public void removeObserver(PluginObserver observer) {
     Assert.getInstance().notNull(observer, "Plugin Observer");
-
     if (observers.remove(observer) && logger.isTraceEnabled()) {
       logger.trace(
           "[{}] Removed plugin observer '{}'", getName(), observer.getClass().getSimpleName());
@@ -214,6 +192,23 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
   }
 
   /**
+   * Notify observers of an event. Each observer is notified in a separate thread.
+   *
+   * @param event non nullable instance of event
+   */
+  private void notifyObservers(final PluginEvent event) {
+    for (final PluginObserver observer : observers) {
+      eventNotificationPool.execute(
+          new Runnable() {
+            @Override
+            public void run() {
+              observer.update(event);
+            }
+          });
+    }
+  }
+
+  /**
    * Create a server virtual reader based on incoming message. Can be an observable or none server
    * observable virtual reader
    *
@@ -226,25 +221,49 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
     String userInputData = body.get("userInputData").getAsString();
     String initialSeContent = body.get("initialSeContent").getAsString();
     boolean isObservable = body.has("isObservable") && body.get("isObservable").getAsBoolean();
-    String nativeReaderName = message.getNativeReaderName();
-    if(logger.isTraceEnabled()){
+    String virtualReaderName = UUID.randomUUID().toString();
+    String sessionId = message.getSessionId();
+
+    if (logger.isTraceEnabled()) {
       logger.trace(
-              "Create a virtual reader {} with serviceId:{} and isObservable:{}",
-              nativeReaderName, serviceId, isObservable);
+          "[{}] Create a virtual reader {} with serviceId:{} and isObservable:{}",
+          this.getName(),
+          virtualReaderName,
+          serviceId,
+          isObservable);
     }
     if (isObservable) {
-      return new ServerVirtualObservableReader(
+      VirtualObservableReader virtualObservableReader =
           new VirtualObservableReader(
-              getName(), UUID.randomUUID().toString(), getNode(), eventNotificationPool),
-          serviceId,
-          userInputData,
-          initialSeContent);
+              getName(), virtualReaderName, getNode(), eventNotificationPool);
+      virtualObservableReader.setSessionId(sessionId);
+      return new ServerVirtualObservableReader(
+          virtualObservableReader, serviceId, userInputData, initialSeContent);
     } else {
-      return new ServerVirtualReader(
-          new VirtualReader(getName(), UUID.randomUUID().toString(), getNode()),
-          serviceId,
-          userInputData,
-          initialSeContent);
+      VirtualReader virtualReader = new VirtualReader(getName(), virtualReaderName, getNode());
+      virtualReader.setSessionId(sessionId);
+      return new ServerVirtualReader(virtualReader, serviceId, userInputData, initialSeContent);
     }
+  }
+
+  /**
+   * Create a reader to handle the communication in the session of the event notification
+   *
+   * @param message incoming reader event message
+   * @return non null instance of a AbstractServerVirtualReader
+   */
+  private AbstractServerVirtualReader createSessionReader(KeypleMessageDto message) {
+    String userInputData =
+        KeypleJsonParser.getParser()
+            .fromJson(message.getBody(), JsonObject.class)
+            .get("userInputData")
+            .getAsString();
+
+    // create a temporary virtual reader for this event
+    return new ServerVirtualReader(
+        new VirtualReader(getName(), UUID.randomUUID().toString(), getNode()),
+        null,
+        userInputData,
+        null);
   }
 }
