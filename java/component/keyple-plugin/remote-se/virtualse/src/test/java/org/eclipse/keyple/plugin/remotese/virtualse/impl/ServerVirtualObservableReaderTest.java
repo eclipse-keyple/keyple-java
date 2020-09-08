@@ -47,7 +47,7 @@ public class ServerVirtualObservableReaderTest {
   private static class MyMatchingSe extends AbstractMatchingSe {
 
     MyMatchingSe(SeResponse selectionResponse) {
-      super(selectionResponse);
+      super(selectionResponse, TransmissionMode.CONTACTLESS);
     }
   }
 
