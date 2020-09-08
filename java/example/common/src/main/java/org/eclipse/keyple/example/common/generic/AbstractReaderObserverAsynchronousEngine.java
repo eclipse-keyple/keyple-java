@@ -22,19 +22,39 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This abstract class is intended to be extended by the applications classes in which the SE
- * insertion, selection, removal is factorized here.
+ * insertion, selection, removal is factorized here.<br>
+ * In this implementation of the reader observation, the method {@link
+ * ObservableReader.ReaderObserver#update(ReaderEvent)} is processed asynchronously from a separate
+ * thread running asynchronously from the monitoring thread.
  */
-public abstract class AbstractReaderObserverEngine implements ObservableReader.ReaderObserver {
+public abstract class AbstractReaderObserverAsynchronousEngine
+    implements ObservableReader.ReaderObserver {
 
-  private static final Logger logger = LoggerFactory.getLogger(AbstractReaderObserverEngine.class);
+  private static final Logger logger =
+      LoggerFactory.getLogger(AbstractReaderObserverAsynchronousEngine.class);
 
+  /**
+   * Method to be implemented by the application to handle the SE_MATCHED reader event.<br>
+   * The response to the default selections request is provided in argument.
+   *
+   * @param defaultSelectionsResponse the default selections response
+   */
   protected abstract void processSeMatch(
       AbstractDefaultSelectionsResponse defaultSelectionsResponse);
 
-  protected abstract void processSeInserted(); // alternative AID selection
+  /** Method to be implemented by the application to handle the SE_INSERTED reader event */
+  protected abstract void processSeInserted();
 
+  /**
+   * Method to be implemented by the application to handle the SE_REMOVED reader event at the end of
+   * the SE processing
+   */
   protected abstract void processSeRemoved();
 
+  /**
+   * Method to be implemented by the application to handle the SE_REMOVED reader event during the SE
+   * processing
+   */
   protected abstract void processUnexpectedSeRemoval();
 
   /**
@@ -43,6 +63,11 @@ public abstract class AbstractReaderObserverEngine implements ObservableReader.R
    */
   boolean currentlyProcessingSe = false;
 
+  /**
+   * Process {@link #processSeMatch(AbstractDefaultSelectionsResponse)} in a separate thread
+   *
+   * @param event t
+   */
   private void runProcessSeInserted(final ReaderEvent event) {
     /* Run the PO processing asynchronously in a detach thread */
     Thread thread =
@@ -103,6 +128,17 @@ public abstract class AbstractReaderObserverEngine implements ObservableReader.R
     thread.start();
   }
 
+  /**
+   * Implementation of the {@link ObservableReader.ReaderObserver#update(ReaderEvent)} method.<br>
+   * Its role is to call the abstract methods implemented by the application according to the
+   * received event.<br>
+   * Processing is done asynchronously in a separate thread and any exceptions raised by the
+   * application are caught.<br>
+   * Note: in the case of SE_MATCHED, the received event also carries the response to the default
+   * selection.
+   *
+   * @param event the reader event, either SE_MATCHED, SE_INSERTED, SE_REMOVED or TIMEOUT_ERROR
+   */
   public final void update(final ReaderEvent event) {
     logger.info("New reader event: {}", event.getReaderName());
 
