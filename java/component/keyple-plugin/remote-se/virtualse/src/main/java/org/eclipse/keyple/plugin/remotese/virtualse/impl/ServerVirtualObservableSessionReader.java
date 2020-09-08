@@ -18,30 +18,29 @@ import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerObservableRead
 
 /**
  * (package-private)<br>
- * Server Virtual Observable Reader class.<br>
- * This object is a decorator of a {@link VirtualObservableReader}.
+ * Server Virtual Observable Session Reader class.<br>
+ * This object is a proxy of a {@link ServerVirtualObservableReader}.
  */
-final class ServerVirtualObservableReader extends AbstractServerVirtualReader
+final class ServerVirtualObservableSessionReader extends AbstractServerVirtualReader
     implements RemoteSeServerObservableReader, ObservableReaderNotifier {
 
+  private final ServerVirtualObservableReader masterReader;
   private final VirtualObservableReader reader;
-
   /**
    * (package-private)<br>
    * Constructor
    *
-   * @param reader The reader to decorate (must be not null).
-   * @param serviceId The service id (must be not null).
+   * @param masterReader The reader to proxy (must be not null).
    * @param userInputDataJson The user input data as a JSON string (optional).
-   * @param initialSeContentJson The initial SE content as a JSON string (optional).
+   * @param masterReader The master virtual observable reader
    */
-  ServerVirtualObservableReader(
+  ServerVirtualObservableSessionReader(
       VirtualObservableReader reader,
-      String serviceId,
       String userInputDataJson,
-      String initialSeContentJson) {
-    super(reader, serviceId, userInputDataJson, initialSeContentJson);
+      ServerVirtualObservableReader masterReader) {
+    super(reader, null, userInputDataJson, null);
     this.reader = reader;
+    this.masterReader = masterReader;
   }
 
   /**
@@ -51,7 +50,8 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
    */
   @Override
   public void notifyObservers(ReaderEvent event) {
-    reader.notifyObservers(event);
+    // proxy the message to the masterReader
+    masterReader.notifyObservers(event);
   }
 
   /**
@@ -61,7 +61,7 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
    */
   @Override
   public void addObserver(ReaderObserver observer) {
-    reader.addObserver(observer);
+    masterReader.addObserver(observer);
   }
 
   /**
@@ -71,11 +71,7 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
    */
   @Override
   public void removeObserver(ReaderObserver observer) {
-    reader.removeObserver(observer);
-    if (reader.countObservers() == 0) {
-      RemoteSeServerPluginImpl.unregisterReader(
-          reader.getPluginName(), this.getName()); // unregister reader from plugin
-    }
+    masterReader.removeObserver(observer);
   }
 
   /**
@@ -85,9 +81,7 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
    */
   @Override
   public void clearObservers() {
-    reader.clearObservers();
-    RemoteSeServerPluginImpl.unregisterReader(
-        reader.getPluginName(), this.getName()); // unregister reader from plugin
+    masterReader.clearObservers();
   }
 
   /**
@@ -97,7 +91,7 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
    */
   @Override
   public int countObservers() {
-    return reader.countObservers();
+    return masterReader.countObservers();
   }
 
   /**

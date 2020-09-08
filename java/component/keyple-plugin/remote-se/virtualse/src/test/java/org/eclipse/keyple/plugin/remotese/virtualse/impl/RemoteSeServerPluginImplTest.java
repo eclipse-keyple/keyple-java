@@ -11,61 +11,52 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remotese.virtualse.impl;
 
-import static org.assertj.core.api.Assertions.allOf;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.eclipse.keyple.plugin.remotese.virtualse.impl.SampleFactory.getDefaultSelectionsResponse;
 import static org.mockito.Mockito.*;
 
-import com.google.gson.JsonObject;
-
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
+import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.event.*;
-import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderNotifier;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remotese.core.impl.AbstractKeypleNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
-public class RemoteSeServerPluginImplTest {
-
-  RemoteSeServerPluginImpl remoteSePlugin;
-  AbstractKeypleNode node;
-  final MockPluginObserver pluginObserver = new MockPluginObserver();
-  final MockReaderObserver readerObserver = new MockReaderObserver();
-  String clientId = "client1";
-  String nativeReaderName = "nativeReaderName1";
-  String remoteSePluginName = "remoteSePluginName1";
-  String nativePluginName = "nativePluginName1";
-  MockUserOutputData userOutputData = new MockUserOutputData();
-  String serviceId = "1";
-  ExecutorService eventNotificationPool = Executors.newCachedThreadPool();
-
-  final ArgumentCaptor<KeypleMessageDto> messageArgumentCaptor =
-      ArgumentCaptor.forClass(KeypleMessageDto.class);
+public class RemoteSeServerPluginImplTest extends RemoteSeServerBaseTest {
 
   @Before
   public void setUp() {
-    remoteSePlugin = Mockito.spy(new RemoteSeServerPluginImpl(remoteSePluginName, eventNotificationPool));
+    pluginObserver = new MockPluginObserver(true);
+    readerObserver = new MockReaderObserver();
+    messageArgumentCaptor = ArgumentCaptor.forClass(KeypleMessageDto.class);
+    remoteSePlugin =
+        Mockito.spy(new RemoteSeServerPluginImpl(remoteSePluginName, eventNotificationPool));
     remoteSePlugin.addObserver(pluginObserver);
     node = Mockito.mock(AbstractKeypleNode.class);
+    doReturn(node).when(remoteSePlugin).getNode();
+    doAnswer(aVoid()).when(node).sendMessage(messageArgumentCaptor.capture());
   }
 
   /*
    * Tests
    */
+
+  @Test
+  public void registerPlugin() {
+    SeProxyService.getInstance()
+        .registerPlugin(
+            RemoteSeServerPluginFactory.builder()
+                .withName(remoteSePluginName)
+                .withSyncNode()
+                .withPluginObserver(pluginObserver)
+                .withDefaultPool()
+                .build());
+    assertThat(SeProxyService.getInstance().getPlugin(remoteSePluginName)).isNotNull();
+  }
 
   @Test
   public void addObserver_removeObserver() {
@@ -77,7 +68,6 @@ public class RemoteSeServerPluginImplTest {
     remoteSePlugin.clearObservers();
     assertThat(remoteSePlugin.countObservers()).isEqualTo(0);
   }
-
 
   @Test
   public void onMessage_executeRemoteService_createVirtualReader_shouldRaisePluginEvent() {
@@ -108,174 +98,99 @@ public class RemoteSeServerPluginImplTest {
   }
 
   @Test
-  public void terminateService_shouldSendOutput_deleteVirtualReader() {
-    // create a VirtualReader
-    doReturn(node).when(remoteSePlugin).getNode();
-    doAnswer(aVoid()).when(node).sendMessage(messageArgumentCaptor.capture());
-    String sessionId1 = UUID.randomUUID().toString();
+  public void terminateService_onVirtualReader_withObserver_doNotdeleteVirtualReader() {
 
-    // execute remote service
-    remoteSePlugin.onMessage(executeRemoteServiceMessage(sessionId1, true));
+    // executing remote service creates a virtual reader
+    String sessionId0 = UUID.randomUUID().toString();
+    remoteSePlugin.onMessage(executeRemoteServiceMessage(sessionId0, true));
     await().atMost(1, TimeUnit.SECONDS).until(validReaderConnectEvent());
 
-    // terminate service
+    // terminate service without unregistering reader
     pluginObserver.terminateService(userOutputData);
     KeypleMessageDto terminateServiceMsg = messageArgumentCaptor.getValue();
-    assertThat(terminateServiceMsg).isNotNull();
-    assertThat(terminateServiceMsg.getAction())
-        .isEqualTo(KeypleMessageDto.Action.TERMINATE_SERVICE.name());
-    JsonObject body =
-        KeypleJsonParser.getParser().fromJson(terminateServiceMsg.getBody(), JsonObject.class);
-    MockUserOutputData userOutputResponse =
-        KeypleJsonParser.getParser()
-            .fromJson(body.get("userOutputData").getAsString(), MockUserOutputData.class);
-    Boolean unregisterVirtualReader = body.get("unregisterVirtualReader").getAsBoolean();
-    assertThat(userOutputData).isEqualToComparingFieldByFieldRecursively(userOutputResponse);
-    assertThat(unregisterVirtualReader).isEqualTo(true); // reader is unregister
+    assertThat(terminateServiceMsg.getSessionId()).isEqualTo(sessionId0);
+    validateTerminateSessionResponse(terminateServiceMsg, false);
+    assertThat(remoteSePlugin.getReaders()).hasSize(1);
+  }
+
+  @Test
+  public void terminateService_onVirtualReader_withoutObserver_shouldDeleteVirtualReader() {
+    remoteSePlugin.clearObservers();
+    pluginObserver = new MockPluginObserver(false);
+    remoteSePlugin.addObserver(pluginObserver);
+
+    // executing a remote service creates a virtual reader
+    String sessionId0 = UUID.randomUUID().toString();
+    remoteSePlugin.onMessage(executeRemoteServiceMessage(sessionId0, true));
+    await().atMost(1, TimeUnit.SECONDS).until(validReaderConnectEvent());
+
+    // terminate service without unregistering reader
+    pluginObserver.terminateService(userOutputData);
+    KeypleMessageDto terminateServiceMsg = messageArgumentCaptor.getValue();
+    assertThat(terminateServiceMsg.getSessionId()).isEqualTo(sessionId0);
+    validateTerminateSessionResponse(terminateServiceMsg, true);
+    assertThat(remoteSePlugin.getReaders()).hasSize(0);
   }
 
   @Test
   public void onEvent_eachEvent_shouldCreateAReader() {
-    // create a VirtualReader
-    doReturn(node).when(remoteSePlugin).getNode();
-    doAnswer(aVoid()).when(node).sendMessage(messageArgumentCaptor.capture());
+    String sessionId0 = UUID.randomUUID().toString();
     String sessionId1 = UUID.randomUUID().toString();
     String sessionId2 = UUID.randomUUID().toString();
 
     // execute remote service
-    remoteSePlugin.onMessage(executeRemoteServiceMessage(sessionId1, true));
+    remoteSePlugin.onMessage(executeRemoteServiceMessage(sessionId0, true));
     await().atMost(1, TimeUnit.SECONDS).until(validReaderConnectEvent());
 
-    //get the virtualReader name
+    assertThat(remoteSePlugin.getReaders()).hasSize(1); // one virtual reader
+
+    // get the virtualReader name
     String virtualReaderName = remoteSePlugin.getReaders().values().iterator().next().getName();
 
     // send a SE_INSERTED event (1)
-    KeypleMessageDto readerEventMessage = readerEventMessage(sessionId2, virtualReaderName);
+    KeypleMessageDto readerEventMessage = readerEventMessage(sessionId1, virtualReaderName);
     remoteSePlugin.onMessage(readerEventMessage);
 
-    //validate the SE_INSERTED event (1)
-    await().atMost(1, TimeUnit.SECONDS)
-            .until(validSeInsertedEvent(virtualReaderName,1));
+    // validate the SE_INSERTED event (1)
+    await().atMost(1, TimeUnit.SECONDS).until(validSeInsertedEvent(virtualReaderName, 1));
 
-    assertThat(remoteSePlugin.getReaders().values().size()).isEqualTo(2);//one virtual reader, one event session reader
-    readerObserver.event = null;
+    assertThat(remoteSePlugin.getReaders())
+        .hasSize(2); // one virtual reader, one event session reader
 
     // send another SE_INSERTED event (2)
     KeypleMessageDto readerEventMessage2 = readerEventMessage(sessionId2, virtualReaderName);
     remoteSePlugin.onMessage(readerEventMessage2);
 
-    //validate the SE_INSERTED event (2)
-    await().atMost(1, TimeUnit.SECONDS)
-            .until(validSeInsertedEvent(virtualReaderName,2));
+    // validate the SE_INSERTED event (2)
+    await().atMost(1, TimeUnit.SECONDS).until(validSeInsertedEvent(virtualReaderName, 2));
 
-    assertThat(remoteSePlugin.getReaders().values().size()).isEqualTo(3);//one virtual reader, two event session readers
-
+    assertThat(remoteSePlugin.getReaders())
+        .hasSize(3); // one virtual reader, two event session readers
   }
 
-  /*
-   * Private helpers
-   */
+  @Test
+  public void terminateService_onSessionReader_shouldSendOutput_deleteVirtualReader() {
+    String sessionId0 = UUID.randomUUID().toString();
+    String sessionId1 = UUID.randomUUID().toString();
 
-  private class MockReaderObserver implements ObservableReader.ReaderObserver {
-    ReaderEvent event;
-    Set<String> virtualReaderNames = new HashSet<String>();
+    // execute remote service
+    remoteSePlugin.onMessage(executeRemoteServiceMessage(sessionId0, true));
+    await().atMost(1, TimeUnit.SECONDS).until(validReaderConnectEvent());
 
-    @Override
-    public void update(ReaderEvent event) {
-      if(virtualReaderNames.add(event.getReaderName())){
-        this.event = event;
-      };//verify that each event targets a new virtual reader
-    }
-  }
+    // get the virtualReader name
+    String virtualReaderName = remoteSePlugin.getReaders().values().iterator().next().getName();
 
-  private class MockPluginObserver implements ObservablePlugin.PluginObserver {
-    PluginEvent event;
+    // send a SE_INSERTED event (1)
+    KeypleMessageDto readerEventMessage = readerEventMessage(sessionId1, virtualReaderName);
+    remoteSePlugin.onMessage(readerEventMessage);
 
-    @Override
-    public void update(PluginEvent event) {
-      this.event = event;
-      // attach an observer to the VirtualReader
-      ((ObservableReaderNotifier) remoteSePlugin.getReader(event.getReaderNames().first()))
-              .addObserver(readerObserver);
-    }
+    // validate the SE_INSERTED event (1)
+    await().atMost(1, TimeUnit.SECONDS).until(validSeInsertedEvent(virtualReaderName, 1));
 
-    public void terminateService(Object userOutputData) {
-      remoteSePlugin.terminateService(event.getReaderNames().first(), userOutputData);
-    }
-  }
-
-
-
-  private KeypleMessageDto executeRemoteServiceMessage(String sessionId, boolean isObservable) {
-    JsonObject body = new JsonObject();
-    body.addProperty("serviceId", serviceId);
-    body.addProperty("initialSeContent", "");
-    body.addProperty("userInputData", "anyObject");
-    body.addProperty("isObservable", isObservable);
-
-    return new KeypleMessageDto()
-        .setSessionId(sessionId)
-        .setAction(KeypleMessageDto.Action.EXECUTE_REMOTE_SERVICE.name())
-        .setClientNodeId(clientId)
-        .setNativeReaderName(nativeReaderName)
-        .setBody(body.toString());
-  }
-
-  private Callable<Boolean> validReaderConnectEvent() {
-    return new Callable<Boolean>() {
-      @Override
-      public Boolean call() throws Exception {
-
-        return PluginEvent.EventType.READER_CONNECTED.compareTo(pluginObserver.event.getEventType())
-                == 0
-                && remoteSePluginName.equals(pluginObserver.event.getPluginName())
-                && remoteSePlugin.getReader(pluginObserver.event.getReaderNames().first()) != null;
-      }
-    };
-  }
-
-  private KeypleMessageDto readerEventMessage(String sessionId, String virtualReaderName) {
-    JsonObject body = new JsonObject();
-    body.addProperty("userInputData", "anyObject");
-    body.add(
-        "readerEvent",
-        KeypleJsonParser.getParser()
-            .toJsonTree(
-                new ReaderEvent(
-                        nativePluginName, nativeReaderName, ReaderEvent.EventType.SE_INSERTED, getDefaultSelectionsResponse())));
-
-    return new KeypleMessageDto()
-        .setSessionId(sessionId)
-        .setAction(KeypleMessageDto.Action.READER_EVENT.name())
-        .setClientNodeId(clientId)
-        .setNativeReaderName(nativeReaderName)
-        .setVirtualReaderName(virtualReaderName)
-        .setBody(body.toString());
-  }
-
-  private Callable<Boolean> validSeInsertedEvent(final String virtualReaderName, final int messageNumber) {
-    return new Callable<Boolean>() {
-      @Override
-      public Boolean call() throws Exception {
-        return ReaderEvent.EventType.SE_INSERTED.compareTo(readerObserver.event.getEventType()) == 0
-                && remoteSePluginName.equals(pluginObserver.event.getPluginName())
-                && !readerObserver.event.getReaderName().equals(virtualReaderName)
-                && readerObserver.virtualReaderNames.size()==messageNumber;//event is targeted to the sessionReader
-
-      }
-    };
-  }
-
-  private class MockUserOutputData {
-    String data = "data";
-  }
-
-  private Answer aVoid() {
-    return new Answer() {
-      @Override
-      public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-        return null;
-      }
-    };
+    assertThat(remoteSePlugin.getReaders()).hasSize(2); // one virtual reader, one session reader
+    readerObserver.terminateService(userOutputData);
+    KeypleMessageDto terminateServiceMsg = messageArgumentCaptor.getValue();
+    assertThat(terminateServiceMsg.getSessionId()).isEqualTo(sessionId1);
+    validateTerminateSessionResponse(terminateServiceMsg, true);
   }
 }

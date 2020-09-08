@@ -13,6 +13,8 @@ package org.eclipse.keyple.plugin.remotese.virtualse.impl;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.eclipse.keyple.core.seproxy.PluginFactory;
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remotese.core.KeypleServerAsync;
@@ -20,12 +22,28 @@ import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RemoteSeServerPluginFactory {
+public class RemoteSeServerPluginFactory implements PluginFactory {
 
   private static final Logger logger = LoggerFactory.getLogger(RemoteSeServerPluginFactory.class);
 
-  public static NodeStep builder() {
+  public static NameStep builder() {
     return new Builder();
+  }
+
+  private RemoteSeServerPlugin plugin;
+
+  private RemoteSeServerPluginFactory(RemoteSeServerPlugin plugin) {
+    this.plugin = plugin;
+  }
+
+  @Override
+  public String getPluginName() {
+    return plugin.getName();
+  }
+
+  @Override
+  public ReaderPlugin getPlugin() {
+    return plugin;
   }
 
   public interface NameStep {
@@ -88,7 +106,7 @@ public class RemoteSeServerPluginFactory {
      *
      * @return instance of the plugin
      */
-    RemoteSeServerPlugin build();
+    RemoteSeServerPluginFactory build();
   }
 
   /** The builder pattern */
@@ -139,7 +157,7 @@ public class RemoteSeServerPluginFactory {
     }
 
     @Override
-    public RemoteSeServerPlugin build() {
+    public RemoteSeServerPluginFactory build() {
 
       RemoteSeServerPluginImpl plugin =
           new RemoteSeServerPluginImpl(pluginName, eventNotificationPool);
@@ -154,7 +172,7 @@ public class RemoteSeServerPluginFactory {
 
       plugin.addObserver(observer);
 
-      return plugin;
+      return new RemoteSeServerPluginFactory(plugin);
     }
   }
 }
