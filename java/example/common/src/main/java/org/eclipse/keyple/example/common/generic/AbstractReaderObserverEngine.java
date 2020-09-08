@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractReaderObserverEngine implements ObservableReader.ReaderObserver {
 
-  private static Logger logger = LoggerFactory.getLogger(AbstractReaderObserverEngine.class);
+  private static final Logger logger = LoggerFactory.getLogger(AbstractReaderObserverEngine.class);
 
   protected abstract void processSeMatch(
       AbstractDefaultSelectionsResponse defaultSelectionsResponse);
@@ -103,7 +103,7 @@ public abstract class AbstractReaderObserverEngine implements ObservableReader.R
     thread.start();
   }
 
-  public void update(final ReaderEvent event) {
+  public final void update(final ReaderEvent event) {
     logger.info("New reader event: {}", event.getReaderName());
 
     switch (event.getEventType()) {

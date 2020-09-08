@@ -19,7 +19,6 @@ import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationExcept
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoClassicTransactionEngine;
 import org.eclipse.keyple.example.common.calypso.stub.StubCalypsoClassic;
 import org.eclipse.keyple.example.common.calypso.stub.StubSamCalypsoClassic;
 import org.eclipse.keyple.plugin.stub.StubPlugin;

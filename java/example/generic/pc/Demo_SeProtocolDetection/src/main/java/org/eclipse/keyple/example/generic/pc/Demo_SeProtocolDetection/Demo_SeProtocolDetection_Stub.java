@@ -18,7 +18,6 @@ import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationExcept
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.example.common.generic.SeProtocolDetectionEngine;
 import org.eclipse.keyple.example.common.generic.stub.StubMifareClassic;
 import org.eclipse.keyple.example.common.generic.stub.StubMifareDesfire;
 import org.eclipse.keyple.example.common.generic.stub.StubMifareUL;
