@@ -167,7 +167,7 @@ The transaction API is defined on a low-level Calypso commands API which contain
     <td>Calypso PO &amp; SAM APDU commands' sets<br/>
       <ul><li>APDU command builders<br/></li>
         <li>APDU response parsers<br/></li></ul>
-      (technical parameter settings specific to the PO &amp; SAM revisions revisions)<br></td>
+      (technical parameter settings specific to the PO &amp; SAM revisions)<br></td>
   </tr>
 </tbody>
 </table>
