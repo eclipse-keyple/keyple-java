@@ -62,7 +62,11 @@ public class ServerVirtualObservableReaderTest extends RemoteSeServerBaseTest {
     registerPlugin();
     reader =
         new ServerVirtualObservableReader(
-            virtualObservableReaderMocked, serviceId, userInputDataJson, initialSeContentJson);
+            virtualObservableReaderMocked,
+            serviceId,
+            userInputDataJson,
+            initialSeContentJson,
+            null);
   }
 
   @After
@@ -361,7 +365,7 @@ public class ServerVirtualObservableReaderTest extends RemoteSeServerBaseTest {
     // init
     reader =
         new ServerVirtualObservableReader(
-            virtualObservableReaderMocked, serviceId, null, initialSeContentJson);
+            virtualObservableReaderMocked, serviceId, null, initialSeContentJson, null);
 
     // execute
     String result = reader.getUserInputData(String.class);
@@ -400,7 +404,7 @@ public class ServerVirtualObservableReaderTest extends RemoteSeServerBaseTest {
     // init
     reader =
         new ServerVirtualObservableReader(
-            virtualObservableReaderMocked, serviceId, userInputDataJson, null);
+            virtualObservableReaderMocked, serviceId, userInputDataJson, null, null);
 
     // execute
     AbstractMatchingSe result = reader.getInitialSeContent(AbstractMatchingSe.class);
@@ -419,7 +423,11 @@ public class ServerVirtualObservableReaderTest extends RemoteSeServerBaseTest {
 
     reader =
         new ServerVirtualObservableReader(
-            virtualObservableReaderMocked, serviceId, userInputDataJson, initialSeContentJson);
+            virtualObservableReaderMocked,
+            serviceId,
+            userInputDataJson,
+            initialSeContentJson,
+            null);
 
     // execute
     MyMatchingSe result = reader.getInitialSeContent(MyMatchingSe.class);
@@ -506,7 +514,8 @@ public class ServerVirtualObservableReaderTest extends RemoteSeServerBaseTest {
 
     // verify
     verify(virtualObservableReaderMocked).removeObserver(observer);
-    // verifyNoMoreInteractions(virtualObservableReaderMocked);
+    // verifyNoMoreInteractions(virtualObservableReaderMocked); if no observer left, method removes
+    // reader from plugin
   }
 
   @Test(expected = KeypleReaderIOException.class)
@@ -534,7 +543,7 @@ public class ServerVirtualObservableReaderTest extends RemoteSeServerBaseTest {
 
     // verify
     verify(virtualObservableReaderMocked).clearObservers();
-    // verifyNoMoreInteractions(virtualObservableReaderMocked);
+    // verifyNoMoreInteractions(virtualObservableReaderMocked); method removes reader from plugin
   }
 
   @Test(expected = KeypleReaderIOException.class)

@@ -22,25 +22,47 @@ import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/** Plugin Factory to build a {@link RemoteSeServerPlugin} */
 public class RemoteSeServerPluginFactory implements PluginFactory {
 
   private static final Logger logger = LoggerFactory.getLogger(RemoteSeServerPluginFactory.class);
+  private RemoteSeServerPlugin plugin;
 
+  /**
+   * (public)<br>
+   * Create a builder process for this factory
+   *
+   * @return next configuration step
+   */
   public static NameStep builder() {
     return new Builder();
   }
 
-  private RemoteSeServerPlugin plugin;
-
+  /**
+   * (private)<br>
+   * constructor
+   *
+   * @param plugin instance created from the builder process
+   */
   private RemoteSeServerPluginFactory(RemoteSeServerPlugin plugin) {
     this.plugin = plugin;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public String getPluginName() {
     return plugin.getName();
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public ReaderPlugin getPlugin() {
     return plugin;
@@ -102,9 +124,9 @@ public class RemoteSeServerPluginFactory implements PluginFactory {
 
   public interface BuilderStep {
     /**
-     * Build the plugin
+     * Build the plugin factory
      *
-     * @return instance of the plugin
+     * @return instance of the plugin factory
      */
     RemoteSeServerPluginFactory build();
   }
@@ -118,12 +140,22 @@ public class RemoteSeServerPluginFactory implements PluginFactory {
     private ExecutorService eventNotificationPool;
     private ObservablePlugin.PluginObserver observer;
 
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public NodeStep withName(String pluginName) {
       this.pluginName = pluginName;
       return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public PluginObserverStep withAsyncNode(KeypleServerAsync asyncEndpoint) {
       Assert.getInstance().notNull(asyncEndpoint, "asyncEndpoint");
@@ -131,11 +163,21 @@ public class RemoteSeServerPluginFactory implements PluginFactory {
       return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public PluginObserverStep withSyncNode() {
       return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public EventNotificationPoolStep withPluginObserver(ObservablePlugin.PluginObserver observer) {
       Assert.getInstance().notNull(observer, "observer");
@@ -143,12 +185,22 @@ public class RemoteSeServerPluginFactory implements PluginFactory {
       return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public BuilderStep withDefaultPool() {
       this.eventNotificationPool = Executors.newCachedThreadPool();
       return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public BuilderStep withPool(ExecutorService eventNotificationPool) {
       Assert.getInstance().notNull(eventNotificationPool, "eventNotificationPool");
@@ -156,6 +208,11 @@ public class RemoteSeServerPluginFactory implements PluginFactory {
       return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
     @Override
     public RemoteSeServerPluginFactory build() {
 

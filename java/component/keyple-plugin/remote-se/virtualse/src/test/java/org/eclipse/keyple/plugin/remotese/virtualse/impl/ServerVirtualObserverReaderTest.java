@@ -19,7 +19,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ServerVirtualObservableSessionReaderTest extends RemoteSeServerBaseTest {
+public class ServerVirtualObserverReaderTest extends RemoteSeServerBaseTest {
 
   @Before
   public void setUp() {

@@ -169,7 +169,7 @@ public class RemoteSeServerPluginImplTest extends RemoteSeServerBaseTest {
   }
 
   @Test
-  public void terminateService_onSessionReader_shouldSendOutput_deleteVirtualReader() {
+  public void terminateService_onDelegateReader_shouldSendOutput_deleteVirtualReader() {
     String sessionId0 = UUID.randomUUID().toString();
     String sessionId1 = UUID.randomUUID().toString();
 

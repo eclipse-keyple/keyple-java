@@ -25,6 +25,8 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
     implements RemoteSeServerObservableReader, ObservableReaderNotifier {
 
   private final VirtualObservableReader reader;
+  private final ObservableReaderNotifier notifierReader;
+  private final Boolean isDelegated;
 
   /**
    * (package-private)<br>
@@ -39,9 +41,12 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
       VirtualObservableReader reader,
       String serviceId,
       String userInputDataJson,
-      String initialSeContentJson) {
+      String initialSeContentJson,
+      ServerVirtualObservableReader masterReader) {
     super(reader, serviceId, userInputDataJson, initialSeContentJson);
     this.reader = reader;
+    this.notifierReader = masterReader == null ? this.reader : masterReader;
+    this.isDelegated = masterReader == null;
   }
 
   /**
@@ -51,7 +56,7 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
    */
   @Override
   public void notifyObservers(ReaderEvent event) {
-    reader.notifyObservers(event);
+    notifierReader.notifyObservers(event);
   }
 
   /**
@@ -61,7 +66,7 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
    */
   @Override
   public void addObserver(ReaderObserver observer) {
-    reader.addObserver(observer);
+    notifierReader.addObserver(observer);
   }
 
   /**
@@ -71,8 +76,32 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
    */
   @Override
   public void removeObserver(ReaderObserver observer) {
-    reader.removeObserver(observer);
-    if (reader.countObservers() == 0) {
+    notifierReader.removeObserver(observer);
+    if (notifierReader.countObservers() == 0) {
+      // unregister the notifier reader (either master or delegate)
+      RemoteSeServerPluginImpl.unregisterReader(
+          reader.getPluginName(), notifierReader.getName()); // unregister reader from plugin
+      if (isDelegated) {
+        // unplug this reader too
+        RemoteSeServerPluginImpl.unregisterReader(
+            reader.getPluginName(), this.getName()); // unregister reader from plugin
+      }
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
+  @Override
+  public void clearObservers() {
+    notifierReader.clearObservers();
+    // unregister the notifier reader (either master or delegate)
+    RemoteSeServerPluginImpl.unregisterReader(
+        reader.getPluginName(), notifierReader.getName()); // unregister reader from plugin
+    if (isDelegated) {
+      // unplug this reader too
       RemoteSeServerPluginImpl.unregisterReader(
           reader.getPluginName(), this.getName()); // unregister reader from plugin
     }
@@ -84,20 +113,8 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
    * @since 1.0
    */
   @Override
-  public void clearObservers() {
-    reader.clearObservers();
-    RemoteSeServerPluginImpl.unregisterReader(
-        reader.getPluginName(), this.getName()); // unregister reader from plugin
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
-  @Override
   public int countObservers() {
-    return reader.countObservers();
+    return notifierReader.countObservers();
   }
 
   /**

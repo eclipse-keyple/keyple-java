@@ -61,7 +61,11 @@ abstract class AbstractVirtualReader extends AbstractReader {
     this.parameters = new HashMap<String, String>();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   protected List<SeResponse> processSeRequests(
       List<SeRequest> seRequests,
@@ -85,7 +89,11 @@ abstract class AbstractVirtualReader extends AbstractReader {
         .fromJson(response.getBody(), new TypeToken<ArrayList<SeResponse>>() {}.getType());
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   protected SeResponse processSeRequest(SeRequest seRequest, ChannelControl channelControl) {
 

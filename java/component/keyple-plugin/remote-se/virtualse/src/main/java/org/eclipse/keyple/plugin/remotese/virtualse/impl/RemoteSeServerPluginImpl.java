@@ -36,13 +36,16 @@ import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Implementation of RemoteSeServerPlugin */
+/**
+ * (package-private)<br>
+ * Implementation of RemoteSeServerPlugin
+ */
 final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
     implements RemoteSeServerPlugin {
 
   private static final Logger logger = LoggerFactory.getLogger(RemoteSeServerPluginImpl.class);
 
-  private ExecutorService eventNotificationPool;
+  private final ExecutorService eventNotificationPool;
 
   /* The observers of this object */
   private final List<PluginObserver> observers;
@@ -68,11 +71,36 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
     this.observers = new ArrayList<PluginObserver>();
   }
 
+  /**
+   * (package-private)<br>
+   * unregister a reader from the list of readers of a this plugin type
+   *
+   * @param pluginName name of a RemoteSeServerPluginImpl plugin
+   * @param readerName name of the reader to unregister
+   * @since 1.0
+   */
+  static void unregisterReader(String pluginName, String readerName) {
+    ReaderPlugin plugin = SeProxyService.getInstance().getPlugin(pluginName);
+    if (plugin instanceof RemoteSeServerPlugin) {
+      ((RemoteSeServerPluginImpl) plugin).unregisterVirtualReader(readerName);
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   protected ConcurrentMap<String, SeReader> initNativeReaders() throws KeypleReaderIOException {
     return new ConcurrentHashMap<String, SeReader>();
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   protected void onMessage(KeypleMessageDto message) {
     Assert.getInstance().notNull(message, "message");
@@ -80,17 +108,22 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
       case EXECUTE_REMOTE_SERVICE:
 
         // create a virtual reader from message parameters
-        final AbstractServerVirtualReader createdReader = createVirtualReader(message);
+        final AbstractServerVirtualReader virtualReader = createMasterReader(message);
 
-        readers.put(createdReader.getName(), createdReader);
+        readers.put(virtualReader.getName(), virtualReader);
 
         notifyObservers(
             new PluginEvent(
-                getName(), createdReader.getName(), PluginEvent.EventType.READER_CONNECTED));
+                getName(), virtualReader.getName(), PluginEvent.EventType.READER_CONNECTED));
         break;
       case READER_EVENT:
         Assert.getInstance().notNull(message.getVirtualReaderName(), "virtualReaderName");
 
+        ServerVirtualObservableReader delegateVirtualReader = createDelegatedReader(message);
+
+        readers.put(delegateVirtualReader.getName(), delegateVirtualReader);
+
+        // notify observers of this event
         ReaderEvent readerEvent =
             KeypleJsonParser.getParser()
                 .fromJson(
@@ -99,15 +132,10 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
                         .get("readerEvent"),
                     ReaderEvent.class);
 
-        ServerVirtualObservableSessionReader sessionReader = createSessionReader(message);
-
-        readers.put(sessionReader.getName(), sessionReader);
-
-        // notify observers of this event
-        sessionReader.notifyObservers(
+        delegateVirtualReader.notifyObservers(
             new ReaderEvent(
-                getName(),
-                sessionReader.getName(),
+                getName(), // plugin name is overwritten
+                delegateVirtualReader.getName(), // reader name is overwritten
                 readerEvent.getEventType(),
                 readerEvent.getDefaultSelectionsResponse()));
 
@@ -117,26 +145,30 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
     }
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void terminateService(String virtualReaderName, Object userOutputData) {
 
     AbstractServerVirtualReader virtualReader =
         (AbstractServerVirtualReader) getReader(virtualReaderName);
 
-    // remove virtual reader if observable and has observers
-    Boolean unregisterVirtualReader =
-        virtualReader instanceof ServerVirtualObservableSessionReader
-            || (virtualReader instanceof RemoteSeServerObservableReader
-                && ((RemoteSeServerObservableReader) virtualReader).countObservers() == 0);
+    // keep virtual reader if observable and has observers
+    Boolean keepVirtualReader =
+        virtualReader instanceof RemoteSeServerObservableReader
+            && ((RemoteSeServerObservableReader) virtualReader).countObservers() > 0;
 
-    if (unregisterVirtualReader) {
+    if (!keepVirtualReader) {
       // remove virtual readers
       readers.remove(virtualReader.getName());
     }
 
     JsonObject body = new JsonObject();
     body.addProperty("userOutputData", KeypleJsonParser.getParser().toJson(userOutputData));
-    body.addProperty("unregisterVirtualReader", unregisterVirtualReader);
+    body.addProperty("unregisterVirtualReader", !keepVirtualReader);
 
     // Build the message
     KeypleMessageDto message =
@@ -150,6 +182,11 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
     getNode().sendMessage(message);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public RemoteSeServerReader getReader(String name) throws KeypleReaderNotFoundException {
     Assert.getInstance().notNull(name, "reader name");
@@ -160,6 +197,11 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
     return seReader;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void addObserver(PluginObserver observer) {
     Assert.getInstance().notNull(observer, "Plugin Observer");
@@ -169,9 +211,13 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
     }
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void removeObserver(PluginObserver observer) {
-    // todo removeObserver should delete reader if no observer
     Assert.getInstance().notNull(observer, "Plugin Observer");
     if (observers.remove(observer) && logger.isTraceEnabled()) {
       logger.trace(
@@ -179,6 +225,11 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
     }
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void clearObservers() {
     observers.clear();
@@ -187,12 +238,18 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
     }
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public int countObservers() {
     return observers.size();
   }
 
   /**
+   * (private)<br>
    * Notify observers of an event. Each observer is notified in a separate thread.
    *
    * @param event non nullable instance of event
@@ -210,13 +267,13 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
   }
 
   /**
-   * Create a server virtual reader based on incoming message. Can be an observable or none server
-   * observable virtual reader
+   * (private)<br>
+   * Create a server virtual reader based on incoming message. Can be an observable or not.
    *
    * @param message incoming message
    * @return non null instance of AbstractServerVirtualReader
    */
-  private AbstractServerVirtualReader createVirtualReader(KeypleMessageDto message) {
+  private AbstractServerVirtualReader createMasterReader(KeypleMessageDto message) {
     JsonObject body = KeypleJsonParser.getParser().fromJson(message.getBody(), JsonObject.class);
     String serviceId = body.get("serviceId").getAsString();
     String userInputData = body.get("userInputData").getAsString();
@@ -239,7 +296,7 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
               getName(), virtualReaderName, getNode(), eventNotificationPool);
       virtualObservableReader.setSessionId(sessionId);
       return new ServerVirtualObservableReader(
-          virtualObservableReader, serviceId, userInputData, initialSeContent);
+          virtualObservableReader, serviceId, userInputData, initialSeContent, null);
     } else {
       VirtualReader virtualReader = new VirtualReader(getName(), virtualReaderName, getNode());
       virtualReader.setSessionId(sessionId);
@@ -248,12 +305,13 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
   }
 
   /**
+   * (private)<br>
    * Create a reader to handle the communication in the session of the event notification
    *
    * @param message incoming reader event message
-   * @return non null instance of a AbstractServerVirtualReader
+   * @return non null instance of a ServerVirtualObservableReader
    */
-  private ServerVirtualObservableSessionReader createSessionReader(KeypleMessageDto message) {
+  private ServerVirtualObservableReader createDelegatedReader(KeypleMessageDto message) {
     ServerVirtualObservableReader virtualObservableReader =
         (ServerVirtualObservableReader) getReader(message.getVirtualReaderName());
 
@@ -268,18 +326,18 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
             getName(), UUID.randomUUID().toString(), getNode(), eventNotificationPool);
     virtualReader.setSessionId(message.getSessionId());
     // create a temporary virtual reader for this event
-    return new ServerVirtualObservableSessionReader(
-        virtualReader, userInputData, virtualObservableReader);
+    return new ServerVirtualObservableReader(
+        virtualReader, null, userInputData, null, virtualObservableReader);
   }
 
-  boolean unregisterVirtualReader(String readerName) {
+  /**
+   * (private)<br>
+   * Remove reader from the readers list
+   *
+   * @param readerName name of the reader to be removed
+   * @return true if a reader was properly removed, false if not
+   */
+  private boolean unregisterVirtualReader(String readerName) {
     return this.readers.remove(readerName) != null;
-  }
-
-  static void unregisterReader(String pluginName, String readerName) {
-    ReaderPlugin plugin = SeProxyService.getInstance().getPlugin(pluginName);
-    if (plugin instanceof RemoteSeServerPlugin) {
-      ((RemoteSeServerPluginImpl) plugin).unregisterVirtualReader(readerName);
-    }
   }
 }

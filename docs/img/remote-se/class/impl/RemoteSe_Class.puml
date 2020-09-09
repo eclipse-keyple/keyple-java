@@ -366,10 +366,7 @@ package org.eclipse.keyple.plugin.remotese {
                 ~ ServerVirtualReader (\n VirtualReader reader,\n String serviceId,\n String userInputDataJson,\n String initialSeContentJson)
             }
             ~class "<< <back:#FDEBD0>ObservableReaderNotifier</back> >>\n**final** ServerVirtualObservableReader" as ServerVirtualObservableReader extends AbstractServerVirtualReader implements RemoteSeServerObservableReader {
-                ~ ServerVirtualObservableReader (\n VirtualObservableReader reader,\n String serviceId,\n String userInputDataJson,\n String initialSeContentJson)
-            }
-            ~class "<< <back:#FDEBD0>ObservableReaderNotifier</back> >>\n**final** ServerVirtualSessionReader" as ServerVirtualSessionReader extends AbstractServerVirtualReader implements RemoteSeServerObservableReader {
-                ~ ServerVirtualSessionReader (\n ServerVirtualObservableReader masterReader,\n String initialSeContentJson)
+                ~ ServerVirtualObservableReader (\n VirtualObservableReader reader,\n String serviceId,\n String userInputDataJson,\n String initialSeContentJson,\n ServerVirtualObservableReader masterReader)
             }
 
         }
@@ -386,7 +383,6 @@ KeypleServerAsyncNodeImpl --> "endpoint" KeypleServerAsync #C_LINK
 KeypleClientSyncNodeImpl --> "endpoint" KeypleClientSync #C_LINK
 RemoteSeClientPluginImpl *--> "1..N" AbstractVirtualReader #C_LINK : readers
 RemoteSeServerPluginImpl *--> "1..N" AbstractServerVirtualReader #C_LINK : readers
-ServerVirtualSessionReader o-up-> "1" ServerVirtualObservableReader #C_LINK : proxies
 AbstractServerVirtualReader o-up-> "1" AbstractVirtualReader #C_LINK : decorates
 RemoteSePoolClientPluginImpl *--> "1..N" VirtualReader #C_LINK : readers
 AbstractVirtualReader -up-> "node" AbstractKeypleNode #C_LINK
