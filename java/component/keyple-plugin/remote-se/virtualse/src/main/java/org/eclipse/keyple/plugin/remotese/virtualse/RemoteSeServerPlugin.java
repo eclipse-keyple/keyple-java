@@ -11,13 +11,15 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remotese.virtualse;
 
-import java.util.concurrent.ConcurrentMap;
+import java.util.Map;
 import org.eclipse.keyple.core.seproxy.PluginFactory;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.plugin.remotese.virtualse.impl.RemoteSeServerPluginFactory;
+import org.eclipse.keyple.plugin.remotese.virtualse.impl.RemoteSeServerUtils;
 
 /**
  * <b>Remote SE Server Plugin</b> API.
@@ -78,7 +80,7 @@ public interface RemoteSeServerPlugin extends ObservablePlugin {
    * @since 1.0
    */
   @Override
-  ConcurrentMap<String, SeReader> getReaders();
+  Map<String, SeReader> getReaders();
 
   /**
    * {@inheritDoc}
