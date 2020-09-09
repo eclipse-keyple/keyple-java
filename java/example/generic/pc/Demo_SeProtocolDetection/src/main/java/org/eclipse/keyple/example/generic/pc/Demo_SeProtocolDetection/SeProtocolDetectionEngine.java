@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.common.generic;
+package org.eclipse.keyple.example.generic.pc.Demo_SeProtocolDetection;
 
 import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
 
@@ -22,6 +22,8 @@ import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.example.common.generic.AbstractReaderObserverAsynchronousEngine;
+import org.eclipse.keyple.example.common.generic.GenericSeSelectionRequest;
 
 /**
  * This code demonstrates the multi-protocols capability of the Keyple SeProxy
@@ -38,8 +40,8 @@ import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
  * The program spends most of its time waiting for a Enter key before exit. The actual SE processing
  * is mainly event driven through the observability.
  */
-public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
-  private SeReader poReader;
+public class SeProtocolDetectionEngine extends AbstractReaderObserverAsynchronousEngine {
+  private SeReader seReader;
   private SeSelection seSelection;
 
   public SeProtocolDetectionEngine() {
@@ -48,7 +50,7 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
 
   /* Assign reader to the transaction engine */
   public void setReader(SeReader poReader) {
-    this.poReader = poReader;
+    this.seReader = poReader;
   }
 
   public AbstractDefaultSelectionsRequest prepareSeSelection() {
@@ -61,9 +63,6 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
         case PROTOCOL_ISO14443_4:
           /* Add a Hoplink selector */
           String HoplinkAID = "A000000291A000000191";
-          byte SFI_T2Usage = (byte) 0x1A;
-          byte SFI_T2Environment = (byte) 0x14;
-
           PoSelectionRequest poSelectionRequest =
               new PoSelectionRequest(
                   PoSelector.builder()
@@ -71,8 +70,6 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
                       .aidSelector(AidSelector.builder().aidToSelect(HoplinkAID).build())
                       .invalidatedPo(InvalidatedPo.REJECT)
                       .build());
-
-          poSelectionRequest.prepareReadRecordFile(SFI_T2Environment, 1);
 
           seSelection.prepareSelection(poSelectionRequest);
 

@@ -15,14 +15,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.EnumSet;
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.example.common.PcscReadersSettings;
 import org.eclipse.keyple.example.common.ReaderUtilities;
-import org.eclipse.keyple.example.common.generic.SeProtocolDetectionEngine;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReaderConstants;
@@ -48,11 +47,16 @@ public class Demo_SeProtocolDetection_Pcsc {
     // get the SeProxyService instance
     SeProxyService seProxyService = SeProxyService.getInstance();
 
-    // Assign PcscPlugin to the SeProxyService
-    seProxyService.registerPlugin(new PcscPluginFactory());
+    // Register the PcscPlugin with SeProxyService, get the corresponding generic ReaderPlugin in
+    // return
+    ReaderPlugin readerPlugin = seProxyService.registerPlugin(new PcscPluginFactory());
 
-    // attempt to get the SeReader (the right reader should be ready here)
-    SeReader poReader = ReaderUtilities.getReaderByName(PcscReadersSettings.PO_READER_NAME_REGEX);
+    // Get and configure the PO reader
+    SeReader poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
+    poReader.setParameter(
+        PcscReaderConstants.TRANSMISSION_MODE_KEY,
+        PcscReaderConstants.TRANSMISSION_MODE_VAL_CONTACTLESS);
+    poReader.setParameter(PcscReaderConstants.PROTOCOL_KEY, PcscReaderConstants.PROTOCOL_VAL_T1);
 
     logger.info("PO Reader  : {}", poReader.getName());
 

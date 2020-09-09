@@ -11,7 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.common.calypso.pc.transaction;
 
-import static org.eclipse.keyple.calypso.command.sam.SamRevision.C1;
 import static org.eclipse.keyple.calypso.transaction.PoTransaction.SessionSetting.AccessLevel;
 
 import java.io.FileNotFoundException;
@@ -20,15 +19,7 @@ import java.io.InputStream;
 import java.util.Properties;
 import org.eclipse.keyple.calypso.transaction.CalypsoSam;
 import org.eclipse.keyple.calypso.transaction.PoSecuritySettings;
-import org.eclipse.keyple.calypso.transaction.SamSelectionRequest;
-import org.eclipse.keyple.calypso.transaction.SamSelector;
 import org.eclipse.keyple.core.selection.SeResource;
-import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,40 +51,6 @@ public final class CalypsoUtilities {
 
   private CalypsoUtilities() {}
 
-  /**
-   * Get the default reader for PO communications
-   *
-   * @return a SeReader object
-   * @throws KeypleException if an error occurred
-   */
-  public static SeReader getDefaultPoReader() {
-    SeReader poReader = ReaderUtilities.getReaderByName(properties.getProperty("po.reader.regex"));
-
-    ReaderUtilities.setContactlessSettings(poReader);
-
-    return poReader;
-  }
-
-  /**
-   * Get the default reader for SAM communications
-   *
-   * @return a {@link SeResource} object
-   * @throws KeypleException if an error occurred
-   */
-  public static SeResource<CalypsoSam> getDefaultSamResource() {
-    SeReader samReader =
-        ReaderUtilities.getReaderByName(properties.getProperty("sam.reader.regex"));
-
-    ReaderUtilities.setContactsSettings(samReader);
-
-    /*
-     * Open logical channel for the SAM inserted in the reader
-     *
-     * (We expect the right is inserted)
-     */
-    return checkSamAndOpenChannel(samReader);
-  }
-
   public static PoSecuritySettings getSecuritySettings(SeResource<CalypsoSam> samResource) {
 
     // The default KIF values for personalization, loading and debiting
@@ -116,47 +73,5 @@ public final class CalypsoUtilities {
         .sessionDefaultKeyRecordNumber(
             AccessLevel.SESSION_LVL_DEBIT, DEFAULT_KEY_RECORD_NUMBER_DEBIT)
         .build();
-  }
-
-  /**
-   * Check SAM presence and consistency and return a {@code SeResource<CalypsoSam>} when everything
-   * is correct.
-   *
-   * <p>Throw an exception if the expected SAM is not available
-   *
-   * @param samReader the SAM reader
-   * @return the SAM SeResource
-   */
-  public static SeResource<CalypsoSam> checkSamAndOpenChannel(SeReader samReader) {
-    /*
-     * check the availability of the SAM doing a ATR based selection, open its physical and
-     * logical channels and keep it open
-     */
-    SeSelection samSelection = new SeSelection();
-
-    SamSelector samSelector = SamSelector.builder().samRevision(C1).serialNumber(".*").build();
-
-    /* Prepare selector, ignore AbstractMatchingSe here */
-    samSelection.prepareSelection(new SamSelectionRequest(samSelector));
-    CalypsoSam calypsoSam;
-
-    try {
-      if (samReader.isSePresent()) {
-        SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
-        if (selectionsResult.hasActiveSelection()) {
-          calypsoSam = (CalypsoSam) selectionsResult.getActiveMatchingSe();
-        } else {
-          throw new IllegalStateException("Unable to open a logical channel for SAM!");
-        }
-      } else {
-        throw new IllegalStateException("No SAM is present in the reader " + samReader.getName());
-      }
-    } catch (KeypleReaderException e) {
-      throw new IllegalStateException("Reader exception: " + e.getMessage());
-    } catch (KeypleException e) {
-      throw new IllegalStateException("Reader exception: " + e.getMessage());
-    }
-    logger.info("The SAM resource has been created");
-    return new SeResource<CalypsoSam>(samReader, calypsoSam);
   }
 }

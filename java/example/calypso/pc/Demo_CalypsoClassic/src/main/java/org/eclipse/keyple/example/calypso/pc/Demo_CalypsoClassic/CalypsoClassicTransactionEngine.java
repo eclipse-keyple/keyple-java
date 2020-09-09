@@ -9,8 +9,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.common.calypso.pc.transaction;
+package org.eclipse.keyple.example.calypso.pc.Demo_CalypsoClassic;
 
+import static org.eclipse.keyple.calypso.command.sam.SamRevision.C1;
 import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
 
 import java.util.Map;
@@ -24,16 +25,22 @@ import org.eclipse.keyple.calypso.transaction.PoSecuritySettings;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.calypso.transaction.SamSelectionRequest;
+import org.eclipse.keyple.calypso.transaction.SamSelector;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
 import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
-import org.eclipse.keyple.example.common.generic.AbstractReaderObserverEngine;
+import org.eclipse.keyple.example.common.generic.AbstractReaderObserverAsynchronousEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.profiler.Profiler;
@@ -66,8 +73,9 @@ import org.slf4j.profiler.Profiler;
  * <p>Read the doc of each methods for further details.
  */
 @SuppressWarnings("unused")
-public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngine {
-  private static Logger logger = LoggerFactory.getLogger(CalypsoClassicTransactionEngine.class);
+public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsynchronousEngine {
+  private static final Logger logger =
+      LoggerFactory.getLogger(CalypsoClassicTransactionEngine.class);
 
   private SeReader poReader;
   private SeReader samReader;
@@ -75,18 +83,43 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
 
   private SeSelection seSelection;
 
-  private boolean samChannelOpen;
-
   /* Constructor */
   public CalypsoClassicTransactionEngine() {
     super();
-    this.samChannelOpen = false;
   }
 
   /* Assign readers to the transaction engine */
   public void setReaders(SeReader poReader, SeReader samReader) {
     this.poReader = poReader;
     this.samReader = samReader;
+  }
+
+  private SeResource<CalypsoSam> getSamResource() {
+    // Create a SAM resource after selecting the SAM
+    SeSelection samSelection = new SeSelection();
+
+    SamSelector samSelector = SamSelector.builder().samRevision(C1).serialNumber(".*").build();
+
+    // Prepare selector
+    samSelection.prepareSelection(new SamSelectionRequest(samSelector));
+    CalypsoSam calypsoSam;
+    try {
+      if (samReader.isSePresent()) {
+        SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
+        if (selectionsResult.hasActiveSelection()) {
+          calypsoSam = (CalypsoSam) selectionsResult.getActiveMatchingSe();
+        } else {
+          throw new IllegalStateException("Unable to open a logical channel for SAM!");
+        }
+      } else {
+        throw new IllegalStateException("No SAM is present in the reader " + samReader.getName());
+      }
+    } catch (KeypleReaderException e) {
+      throw new IllegalStateException("Reader exception: " + e.getMessage());
+    } catch (KeypleException e) {
+      throw new IllegalStateException("Reader exception: " + e.getMessage());
+    }
+    return new SeResource<CalypsoSam>(samReader, calypsoSam);
   }
 
   /**
@@ -273,7 +306,6 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
     seSelection.prepareSelection(
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
                 .aidSelector(AidSelector.builder().aidToSelect(poFakeAid1).build())
                 .invalidatedPo(InvalidatedPo.REJECT)
                 .build()));
@@ -286,7 +318,6 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
     PoSelectionRequest poSelectionRequestCalypsoAid =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
                 .aidSelector(AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
                 .invalidatedPo(InvalidatedPo.ACCEPT)
                 .build());
@@ -345,11 +376,10 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
       logger.info("EventLog: {}", eventLog);
 
       try {
-        /* first time: check SAM */
-        if (!this.samChannelOpen) {
+        /* first time: create a SAM resource */
+        if (samResource == null) {
           /* the following method will throw an exception if the SAM is not available. */
-          samResource = CalypsoUtilities.checkSamAndOpenChannel(samReader);
-          this.samChannelOpen = true;
+          samResource = getSamResource();
         }
 
         Profiler profiler = new Profiler("Entire transaction");

@@ -22,6 +22,7 @@ import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
 import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -30,11 +31,11 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
+import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
+import org.eclipse.keyple.plugin.pcsc.PcscReaderConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +66,7 @@ import org.slf4j.LoggerFactory;
 public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
   private static final Logger logger =
       LoggerFactory.getLogger(DefaultSelectionNotification_Pcsc.class);
-  private SeSelection seSelection;
+  private final SeSelection seSelection;
 
   // This object is used to freeze the main thread while card operations are handle through the
   // observers callbacks. A call to the notify() method would end the program (not demonstrated
@@ -76,17 +77,16 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
     // Get the instance of the SeProxyService (Singleton pattern)
     SeProxyService seProxyService = SeProxyService.getInstance();
 
-    // Assign PcscPlugin to the SeProxyService
-    seProxyService.registerPlugin(new PcscPluginFactory());
+    // Register the PcscPlugin with SeProxyService, get the corresponding generic ReaderPlugin in
+    // return
+    ReaderPlugin readerPlugin = seProxyService.registerPlugin(new PcscPluginFactory());
 
-    // Get a PO reader ready to work with Calypso PO. Use the getReader helper method from the
-    // CalypsoUtilities class.
-    SeReader poReader = CalypsoUtilities.getDefaultPoReader();
-
-    // Check if the reader exists
-    if (poReader == null) {
-      throw new IllegalStateException("Bad PO reader setup");
-    }
+    // Get and configure the PO reader
+    SeReader poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
+    poReader.setParameter(
+        PcscReaderConstants.TRANSMISSION_MODE_KEY,
+        PcscReaderConstants.TRANSMISSION_MODE_VAL_CONTACTLESS);
+    poReader.setParameter(PcscReaderConstants.PROTOCOL_KEY, PcscReaderConstants.PROTOCOL_VAL_T1);
 
     logger.info(
         "=============== UseCase Calypso #2: AID based default selection ===================");
@@ -104,7 +104,6 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
                 .aidSelector(AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
                 .invalidatedPo(InvalidatedPo.REJECT)
                 .build());

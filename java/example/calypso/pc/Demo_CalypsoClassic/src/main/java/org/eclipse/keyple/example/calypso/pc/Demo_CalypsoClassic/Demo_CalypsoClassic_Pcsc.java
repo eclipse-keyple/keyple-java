@@ -11,15 +11,14 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.calypso.pc.Demo_CalypsoClassic;
 
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.example.common.PcscReadersSettings;
 import org.eclipse.keyple.example.common.ReaderUtilities;
-import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoClassicTransactionEngine;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReaderConstants;
@@ -48,7 +47,7 @@ public class Demo_CalypsoClassic_Pcsc {
     SeProxyService seProxyService = SeProxyService.getInstance();
 
     /* Assign PcscPlugin to the SeProxyService */
-    seProxyService.registerPlugin(new PcscPluginFactory());
+    ReaderPlugin readerPlugin = seProxyService.registerPlugin(new PcscPluginFactory());
 
     /* Setting up the transaction engine (implements Observer) */
     CalypsoClassicTransactionEngine transactionEngine = new CalypsoClassicTransactionEngine();
@@ -57,10 +56,11 @@ public class Demo_CalypsoClassic_Pcsc {
      * Get PO and SAM readers. Apply regulars expressions to reader names to select PO / SAM
      * readers. Use the getReader helper method from the transaction engine.
      */
-    SeReader poReader = null, samReader = null;
+    SeReader poReader = null;
+    SeReader samReader = null;
     try {
-      poReader = ReaderUtilities.getReaderByName(PcscReadersSettings.PO_READER_NAME_REGEX);
-      samReader = ReaderUtilities.getReaderByName(PcscReadersSettings.SAM_READER_NAME_REGEX);
+      poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
+      samReader = readerPlugin.getReader(ReaderUtilities.getContactReaderName());
     } catch (KeypleReaderNotFoundException e) {
       e.printStackTrace();
     }

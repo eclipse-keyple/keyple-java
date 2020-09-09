@@ -15,15 +15,11 @@ import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 
 /** Create a new class extending AbstractSeSelectionRequest */
 public class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
-  TransmissionMode transmissionMode;
-
   public GenericSeSelectionRequest(SeSelector seSelector) {
     super(seSelector);
-    transmissionMode = seSelector.getSeProtocol().getTransmissionMode();
   }
 
   @Override
