@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/usecase1"
+            android:icon="@drawable/ic_nfc_black_24dp"
+            android:title="UC1: Explicit Selection"
+            android:checked="true"
+            />
+        <item
+            android:id="@+id/usecase2"
+            android:icon="@drawable/ic_nfc_black_24dp"
+            android:title="UC2: Default selection notification"
+            android:checked="true"
+            />
+        <item
+            android:id="@+id/usecase3"
+            android:icon="@drawable/ic_nfc_black_24dp"
+            android:title="UC3: Grouped Multi Selection"
+            android:checked="true"
+            />
+        <item
+            android:id="@+id/usecase4"
+            android:icon="@drawable/ic_nfc_black_24dp"
+            android:title="UC4: Sequential Multi Selection"
+            android:checked="true"
+            />
+        <item
+            android:id="@+id/start_scan"
+            android:icon="@drawable/ic_nfc_black_24dp"
+            android:title="Read Env"
+            android:checked="true"
+            />
+    </group>
+</menu>

@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
 group 'org.eclipse.keyple'
@@ -10,6 +11,19 @@ ext {
     //if a property keyple_version is specified, this version will be taken, else the '+' latest version will be taken
     keyple_v = project.hasProperty("keyple_version") ? keyple_version : '+'
 }
+
+mainClassName = 'org.eclipse.keyple.example.calypso.pc.Demo_CalypsoClassic.Demo_CalypsoClassic_Pcsc'
+
+task('runPcsc', dependsOn: 'classes', type: JavaExec, group:'application') {
+    main = 'org.eclipse.keyple.example.calypso.pc.Demo_CalypsoClassic.Demo_CalypsoClassic_Pcsc'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task('runStub', dependsOn: 'classes', type: JavaExec, group:'application') {
+    main = 'org.eclipse.keyple.example.calypso.pc.Demo_CalypsoClassic.Demo_CalypsoClassic_Stub'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
 
 repositories {
     mavenLocal()
