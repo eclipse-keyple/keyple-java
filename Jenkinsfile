@@ -10,6 +10,8 @@ pipeline {
     environment {
         uploadParams = "-PdoSign=true --info"
         forceBuild = false
+        PROJECT_NAME = "keyple-java"
+        PROJECT_BOT_NAME = "Eclipse Keyple Bot"
     }
     stages {
         stage('Import keyring'){
@@ -36,6 +38,18 @@ pipeline {
                             targetLocation: '/home/jenkins/agent/gradle.properties')]) {
                         /* Read key Id in gradle.properties */
                         sh 'head -1 /home/jenkins/.gradle/gradle.properties'
+                    }
+                }
+            }
+        }
+        stage('Prepare settings') {
+            steps{
+                container('java-builder') {
+                    script {
+                        keypleVersion = sh(script: 'grep version java/component/keyple-core/gradle.properties | cut -d= -f2 | tr -d "[:space:]"', returnStdout: true).trim()
+                        echo "Building version ${keypleVersion}"
+                        deploySnapshot = env.GIT_URL == 'https://github.com/eclipse/keyple-java.git' && env.GIT_BRANCH == "develop" && env.CHANGE_ID == null && keypleVersion ==~ /.*-SNAPSHOT$/
+                        deployRelease = env.GIT_URL == 'https://github.com/eclipse/keyple-java.git' && (env.GIT_BRANCH == "master" || env.GIT_BRANCH.startsWith('release-')) && env.CHANGE_ID == null && keypleVersion ==~ /\d+\.\d+.\d+$/
                     }
                 }
             }
@@ -83,9 +97,33 @@ pipeline {
                 }
             }
         }
+        stage('Keyple Java: Commit/Tag/Push') {
+            when {
+                expression { deployRelease }
+            }
+            steps{
+                container('java-builder') {
+                    withCredentials([usernamePassword(credentialsId: 'github-bot', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                        sh """
+                            git add .
+                            if ! git diff --cached --exit-code; then
+                                git config --global user.email "${PROJECT_NAME}-bot@eclipse.org"
+                                git config --global user.name "${PROJECT_BOT_NAME}"
+                                git commit -m 'Release keyple-java ${keypleVersion} --signoff'
+                                git tag '${keypleVersion}'
+                                git push 'https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/eclipse/keyple-java.git' refs/tags/${keypleVersion}
+                            else
+                                echo 'No changes have been detected since last build, nothing to publish'
+                                exit 2
+                            fi
+                        """
+                    }
+                }
+            }
+        }
         stage('Keyple Java: Code Quality') {
             when {
-                expression { env.GIT_URL == 'https://github.com/eclipse/keyple-java.git' && (env.GIT_BRANCH == "develop" || env.GIT_BRANCH.startsWith('release-0.9')) && env.CHANGE_ID == null && keypleVersion ==~ /.*-SNAPSHOT$/ }
+                expression { deploySnapshot || deployRelease }
             }
             steps {
                 catchError(buildResult: 'SUCCESS', message: 'Unable to log code quality to Sonar.', stageResult: 'FAILURE') {
@@ -99,7 +137,7 @@ pipeline {
         }
         stage('Keyple Android: Code Quality') {
             when {
-                expression { env.GIT_URL == 'https://github.com/eclipse/keyple-java.git' && (env.GIT_BRANCH == "develop" || env.GIT_BRANCH.startsWith('release-0.9')) && env.CHANGE_ID == null && keypleVersion ==~ /.*-SNAPSHOT$/ }
+                expression { deploySnapshot || deployRelease }
             }
             steps {
                 catchError(buildResult: 'SUCCESS', message: 'Unable to log code quality to Sonar.', stageResult: 'FAILURE') {
@@ -115,7 +153,7 @@ pipeline {
         }
         stage('Keyple Java: Upload artifacts to sonatype') {
             when {
-                expression { env.GIT_URL == 'https://github.com/eclipse/keyple-java.git' && (env.GIT_BRANCH == "develop" || env.GIT_BRANCH.startsWith('release-0.9')) && env.CHANGE_ID == null && keypleVersion ==~ /.*-SNAPSHOT$/ }
+                expression { deploySnapshot || deployRelease }
             }
             steps{
                 container('java-builder') {
@@ -134,7 +172,7 @@ pipeline {
         }
         stage('Keyple Android: Upload artifacts to sonatype') {
             when {
-                expression { env.GIT_URL == 'https://github.com/eclipse/keyple-java.git' && (env.GIT_BRANCH == "develop" || env.GIT_BRANCH.startsWith('release-0.9')) && env.CHANGE_ID == null && keypleVersion ==~ /.*-SNAPSHOT$/ }
+                expression { deploySnapshot || deployRelease }
             }
             steps{
                 container('java-builder') {
@@ -150,9 +188,9 @@ pipeline {
                 }
             }
         }
-        stage('Keyple Java: Deploy to eclipse') {
+        stage('Keyple Java: Prepare packaging') {
             when {
-                expression { env.GIT_URL == 'https://github.com/eclipse/keyple-java.git' && (env.GIT_BRANCH == "develop" || env.GIT_BRANCH.startsWith('release-0.9')) && env.CHANGE_ID == null && keypleVersion ==~ /.*-SNAPSHOT$/ }
+                expression { deploySnapshot || deployRelease }
             }
             steps {
                 container('java-builder') {
@@ -169,10 +207,33 @@ pipeline {
                     sh 'cp ./android/keyple-plugin/android-nfc/build/outputs/aar/keyple-android-plugin*.aar ./repository/android'
                     sh 'cp ./android/keyple-plugin/android-omapi/build/outputs/aar/keyple-android-plugin*.aar ./repository/android'
                     sh 'ls -R ./repository'
+                }
+            }
+        }
+        stage('Keyple Java: Deploy packaging to eclipse snapshots') {
+            when {
+                expression { deploySnapshot }
+            }
+            steps {
+                container('java-builder') {
                     sshagent(['projects-storage.eclipse.org-bot-ssh']) {
                         sh "ssh genie.keyple@projects-storage.eclipse.org rm -rf /home/data/httpd/download.eclipse.org/keyple/snapshots"
                         sh "ssh genie.keyple@projects-storage.eclipse.org mkdir -p /home/data/httpd/download.eclipse.org/keyple/snapshots"
                         sh "scp -r ./repository/* genie.keyple@projects-storage.eclipse.org:/home/data/httpd/download.eclipse.org/keyple/snapshots"
+                    }
+                }
+            }
+        }
+        stage('Keyple Java: Deploy packaging to eclipse releases') {
+            when {
+                expression { deployRelease }
+            }
+            steps {
+                container('java-builder') {
+                    sshagent(['projects-storage.eclipse.org-bot-ssh']) {
+                        sh "ssh genie.keyple@projects-storage.eclipse.org rm -rf /home/data/httpd/download.eclipse.org/keyple/releases"
+                        sh "ssh genie.keyple@projects-storage.eclipse.org mkdir -p /home/data/httpd/download.eclipse.org/keyple/releases"
+                        sh "scp -r ./repository/* genie.keyple@projects-storage.eclipse.org:/home/data/httpd/download.eclipse.org/keyple/releases"
                     }
                 }
             }
