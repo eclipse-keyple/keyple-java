@@ -115,6 +115,7 @@ public class RemoteSeServerPluginImplTest extends RemoteSeServerBaseTest {
 
   @Test
   public void terminateService_onVirtualReader_withoutObserver_shouldDeleteVirtualReader() {
+    // do not attach a readerObserver
     remoteSePlugin.clearObservers();
     pluginObserver = new MockPluginObserver(false);
     remoteSePlugin.addObserver(pluginObserver);
@@ -186,10 +187,12 @@ public class RemoteSeServerPluginImplTest extends RemoteSeServerBaseTest {
 
     // validate the SE_INSERTED event (1)
     await().atMost(1, TimeUnit.SECONDS).until(validSeInsertedEvent(virtualReaderName, 1));
-
     assertThat(remoteSePlugin.getReaders()).hasSize(2); // one virtual reader, one session reader
+
+    // terminate service, should unregister the reader
     readerObserver.terminateService(userOutputData);
     KeypleMessageDto terminateServiceMsg = messageArgumentCaptor.getValue();
+    assertThat(terminateServiceMsg.getVirtualReaderName()).isNotEqualTo(virtualReaderName);
     assertThat(terminateServiceMsg.getSessionId()).isEqualTo(sessionId1);
     validateTerminateSessionResponse(terminateServiceMsg, true);
   }

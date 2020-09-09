@@ -49,7 +49,7 @@ public class ServerVirtualObservableReaderTest extends RemoteSeServerBaseTest {
   private static class MyMatchingSe extends AbstractMatchingSe {
 
     MyMatchingSe(SeResponse selectionResponse) {
-      super(selectionResponse, TransmissionMode.CONTACTLESS);
+      super(selectionResponse);
     }
   }
 

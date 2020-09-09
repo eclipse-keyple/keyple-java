@@ -76,8 +76,8 @@ public class RemoteSeServerBaseTest {
     PluginEvent event;
     Boolean attachObserver;
 
-    MockPluginObserver(Boolean attachObserver) {
-      this.attachObserver = attachObserver;
+    MockPluginObserver(Boolean attachReaderObserver) {
+      this.attachObserver = attachReaderObserver;
     }
 
     @Override

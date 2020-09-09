@@ -14,6 +14,7 @@ package org.eclipse.keyple.plugin.remotese.virtualse.impl;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderNotifier;
+import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerObservableReader;
 
 /**
@@ -25,7 +26,7 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
     implements RemoteSeServerObservableReader, ObservableReaderNotifier {
 
   private final VirtualObservableReader reader;
-  private final ObservableReaderNotifier notifierReader;
+  private final ObservableReaderNotifier masterReader;
   private final Boolean isDelegated;
 
   /**
@@ -45,44 +46,50 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
       ServerVirtualObservableReader masterReader) {
     super(reader, serviceId, userInputDataJson, initialSeContentJson);
     this.reader = reader;
-    this.notifierReader = masterReader == null ? this.reader : masterReader;
+    this.masterReader = masterReader == null ? this.reader : masterReader;
     this.isDelegated = masterReader == null;
   }
 
   /**
-   * {@inheritDoc}
+   * (public)<br>
+   * Notify event to the master reader observers
    *
-   * @since 1.0
+   * @param event non nullable instance of a readerEvent
    */
   @Override
   public void notifyObservers(ReaderEvent event) {
-    notifierReader.notifyObservers(event);
+    masterReader.notifyObservers(event);
   }
 
   /**
-   * {@inheritDoc}
+   * (public)<br>
+   * Add observer on the master reader
    *
-   * @since 1.0
+   * @param observer non nullable instance of a reader observer
    */
   @Override
   public void addObserver(ReaderObserver observer) {
-    notifierReader.addObserver(observer);
+    Assert.getInstance().notNull(observer, "observer");
+    masterReader.addObserver(observer);
   }
 
   /**
-   * {@inheritDoc}
+   * (public)<br>
+   * Remove observers on the master reader. If the master reader has no observer left, unplug it
+   * from the plugin
    *
    * @since 1.0
    */
   @Override
   public void removeObserver(ReaderObserver observer) {
-    notifierReader.removeObserver(observer);
-    if (notifierReader.countObservers() == 0) {
-      // unregister the notifier reader (either master or delegate)
+    Assert.getInstance().notNull(observer, "observer");
+    masterReader.removeObserver(observer);
+    if (masterReader.countObservers() == 0) {
+      // unregister the master reader
       RemoteSeServerPluginImpl.unregisterReader(
-          reader.getPluginName(), notifierReader.getName()); // unregister reader from plugin
+          reader.getPluginName(), masterReader.getName()); // unregister reader from plugin
       if (isDelegated) {
-        // unplug this reader too
+        // if this reader was not the master reader, unregister too
         RemoteSeServerPluginImpl.unregisterReader(
             reader.getPluginName(), this.getName()); // unregister reader from plugin
       }
@@ -90,16 +97,16 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
   }
 
   /**
-   * {@inheritDoc}
+   * Clear observers on the master reader and unplug it from the plugin
    *
    * @since 1.0
    */
   @Override
   public void clearObservers() {
-    notifierReader.clearObservers();
+    masterReader.clearObservers();
     // unregister the notifier reader (either master or delegate)
     RemoteSeServerPluginImpl.unregisterReader(
-        reader.getPluginName(), notifierReader.getName()); // unregister reader from plugin
+        reader.getPluginName(), masterReader.getName()); // unregister reader from plugin
     if (isDelegated) {
       // unplug this reader too
       RemoteSeServerPluginImpl.unregisterReader(
@@ -114,7 +121,7 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
    */
   @Override
   public int countObservers() {
-    return notifierReader.countObservers();
+    return reader.countObservers();
   }
 
   /**

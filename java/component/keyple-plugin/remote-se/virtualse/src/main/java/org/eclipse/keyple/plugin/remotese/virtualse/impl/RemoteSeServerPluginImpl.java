@@ -157,18 +157,18 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
         (AbstractServerVirtualReader) getReader(virtualReaderName);
 
     // keep virtual reader if observable and has observers
-    Boolean keepVirtualReader =
-        virtualReader instanceof RemoteSeServerObservableReader
-            && ((RemoteSeServerObservableReader) virtualReader).countObservers() > 0;
+    Boolean unregisterVirtualReader =
+        !(virtualReader instanceof RemoteSeServerObservableReader)
+            || ((RemoteSeServerObservableReader) virtualReader).countObservers() == 0;
 
-    if (!keepVirtualReader) {
+    if (unregisterVirtualReader) {
       // remove virtual readers
       readers.remove(virtualReader.getName());
     }
 
     JsonObject body = new JsonObject();
     body.addProperty("userOutputData", KeypleJsonParser.getParser().toJson(userOutputData));
-    body.addProperty("unregisterVirtualReader", !keepVirtualReader);
+    body.addProperty("unregisterVirtualReader", unregisterVirtualReader);
 
     // Build the message
     KeypleMessageDto message =
