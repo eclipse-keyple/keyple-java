@@ -24,12 +24,15 @@ This is the repository for the Java implementation of the 'Eclipse Keyple' API. 
 ![global architecture](docs/img/Keyple-components.svg "keyple SDK global architecture")
 
 The API is currently divided in two major layers:
-- The ‘Keyple Core' : a Secure Element Proxy API which allows managing SE readers in a generic way, whaterver the reader driver or environment, and for standalone or distributed solution ([Keyple Core User Guide](./docs/KeypleCore_UserGuide.md)).
-- A ‘Calypso Keyple extension' : a high level Calypso Processing API allowing to operate commands with a Calypso Portable Object, and to manage a secure Calypso transaction ([Keyple Calypso User Guide](./docs/KeypleCalypso_UserGuide.md)).
+- The ‘Keyple Core' : a Secure Element Proxy API which allows managing SE readers in a generic way, whaterver the reader driver or environment, and for standalone or distributed solution.
+- A ‘Calypso Keyple extension' : a high level Calypso Processing API allowing to operate commands with a Calypso Portable Object, and to manage a secure Calypso transaction.
 
 Dedicated reader’s plugins have to be implemented in order to interface the SE Proxy API with the specific reader’s drivers.
 
-For a distributed architecture, the Remote SE Plugin should be used (([Keyple Remote SE User Guide](./docs/KeypleRemoteSe_UserGuide.md)).)
+API guides for the Keyple Core and Keyple Calypso are available on [keyple.org](https://keyple.org/).
+
+For a distributed architecture, the Remote SE Plugin should be used ([Keyple Remote SE User Guide](./docs/KeypleRemoteSe_UserGuide.md)). In version 0.9 the SE Plugin is still proposed as a draft, a simpler API will be provided in the version 1.0 alpha 1 in October 2020.
+
 ### Supported platforms
 - Java SE 1.6 compact2
 - Android 4.4 KitKat API level 19
