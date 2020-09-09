@@ -72,7 +72,7 @@ abstract class AbstractRemoteSePlugin extends AbstractKeypleMessageHandler imple
    * @since 1.0
    */
   @Override
-  public final ConcurrentMap<String, SeReader> getReaders() {
+  public final Map<String, SeReader> getReaders() {
     return readers;
   }
 
