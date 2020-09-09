@@ -22,7 +22,7 @@ import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.example.common.generic.AbstractReaderObserverEngine;
+import org.eclipse.keyple.example.common.generic.AbstractReaderObserverAsynchronousEngine;
 import org.eclipse.keyple.example.common.generic.GenericSeSelectionRequest;
 
 /**
@@ -40,7 +40,7 @@ import org.eclipse.keyple.example.common.generic.GenericSeSelectionRequest;
  * The program spends most of its time waiting for a Enter key before exit. The actual SE processing
  * is mainly event driven through the observability.
  */
-public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
+public class SeProtocolDetectionEngine extends AbstractReaderObserverAsynchronousEngine {
   private SeReader seReader;
   private SeSelection seSelection;
 

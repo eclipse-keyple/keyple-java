@@ -40,7 +40,7 @@ import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
-import org.eclipse.keyple.example.common.generic.AbstractReaderObserverEngine;
+import org.eclipse.keyple.example.common.generic.AbstractReaderObserverAsynchronousEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.profiler.Profiler;
@@ -73,7 +73,7 @@ import org.slf4j.profiler.Profiler;
  * <p>Read the doc of each methods for further details.
  */
 @SuppressWarnings("unused")
-public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngine {
+public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsynchronousEngine {
   private static final Logger logger =
       LoggerFactory.getLogger(CalypsoClassicTransactionEngine.class);
 
