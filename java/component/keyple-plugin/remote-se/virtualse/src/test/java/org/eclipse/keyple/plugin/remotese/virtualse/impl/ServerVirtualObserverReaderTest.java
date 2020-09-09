@@ -25,7 +25,7 @@ public class ServerVirtualObserverReaderTest extends RemoteSeServerBaseTest {
   public void setUp() {
     pluginObserver = new MockPluginObserver(true);
     readerObserver = new MockReaderObserver();
-    registerPlugin();
+    registerSyncPlugin();
     assertThat(remoteSePlugin).isNotNull();
   }
 

@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.event.*;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remotese.core.KeypleServerAsync;
 import org.eclipse.keyple.plugin.remotese.core.impl.AbstractKeypleNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,16 +47,33 @@ public class RemoteSeServerPluginImplTest extends RemoteSeServerBaseTest {
    */
 
   @Test
-  public void registerPlugin() {
+  public void registerSyncPlugin() {
     SeProxyService.getInstance()
         .registerPlugin(
             RemoteSeServerPluginFactory.builder()
-                .withName(remoteSePluginName)
                 .withSyncNode()
                 .withPluginObserver(pluginObserver)
                 .withDefaultPool()
                 .build());
-    assertThat(SeProxyService.getInstance().getPlugin(remoteSePluginName)).isNotNull();
+    assertThat(RemoteSeServerUtils.getSyncPlugin()).isNotNull();
+    assertThat(RemoteSeServerUtils.getSyncNode()).isNotNull();
+
+    SeProxyService.getInstance().unregisterPlugin(RemoteSeServerPluginFactory.PLUGIN_NAME_SYNC);
+  }
+
+  @Test
+  public void registerAsyncPlugin() {
+    SeProxyService.getInstance()
+        .registerPlugin(
+            RemoteSeServerPluginFactory.builder()
+                .withAsyncNode(Mockito.mock(KeypleServerAsync.class))
+                .withPluginObserver(pluginObserver)
+                .withDefaultPool()
+                .build());
+    assertThat(RemoteSeServerUtils.getAsyncPlugin()).isNotNull();
+    assertThat(RemoteSeServerUtils.getAsyncNode()).isNotNull();
+
+    SeProxyService.getInstance().unregisterPlugin(RemoteSeServerPluginFactory.PLUGIN_NAME_ASYNC);
   }
 
   @Test

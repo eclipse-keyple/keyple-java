@@ -59,7 +59,7 @@ public class ServerVirtualObservableReaderTest extends RemoteSeServerBaseTest {
     when(virtualObservableReaderMocked.getPluginName()).thenReturn(remoteSePluginName);
     when(virtualObservableReaderMocked.getName()).thenReturn(UUID.randomUUID().toString());
     pluginObserver = new MockPluginObserver(true);
-    registerPlugin();
+    registerSyncPlugin();
     reader =
         new ServerVirtualObservableReader(
             virtualObservableReaderMocked,

@@ -38,7 +38,7 @@ public class RemoteSeServerBaseTest {
 
   static String clientId = "client1";
   static String nativeReaderName = "nativeReaderName1";
-  static String remoteSePluginName = "remoteSePluginName1";
+  static String remoteSePluginName = RemoteSeServerPluginFactory.PLUGIN_NAME_SYNC;
   static String nativePluginName = "nativePluginName1";
   static String serviceId = "1";
   static RemoteSeServerPluginImplTest.MockUserOutputData userOutputData =
@@ -186,11 +186,10 @@ public class RemoteSeServerBaseTest {
     assertThat(unregisterVirtualReader).isEqualTo(shouldUnregister); // reader is unregister
   }
 
-  void registerPlugin() {
+  void registerSyncPlugin() {
     SeProxyService.getInstance()
         .registerPlugin(
             RemoteSeServerPluginFactory.builder()
-                .withName(remoteSePluginName)
                 .withSyncNode()
                 .withPluginObserver(pluginObserver)
                 .withDefaultPool()

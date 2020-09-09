@@ -26,6 +26,15 @@ import org.slf4j.LoggerFactory;
 public class RemoteSeServerPluginFactory implements PluginFactory {
 
   private static final Logger logger = LoggerFactory.getLogger(RemoteSeServerPluginFactory.class);
+  /**
+   * default name of the RemoteSeServerPlugin for a sync node {@value "RemoteSeServerPluginSync"}
+   */
+  public static final String PLUGIN_NAME_SYNC = "RemoteSeServerPluginSync";
+  /**
+   * default name of the RemoteSeServerPlugin for a async node {@value "RemoteSeServerPluginAsync"}
+   */
+  public static final String PLUGIN_NAME_ASYNC = "RemoteSeServerPluginAsync";
+
   private RemoteSeServerPlugin plugin;
 
   /**
@@ -34,7 +43,7 @@ public class RemoteSeServerPluginFactory implements PluginFactory {
    *
    * @return next configuration step
    */
-  public static NameStep builder() {
+  public static NodeStep builder() {
     return new Builder();
   }
 
@@ -66,16 +75,6 @@ public class RemoteSeServerPluginFactory implements PluginFactory {
   @Override
   public ReaderPlugin getPlugin() {
     return plugin;
-  }
-
-  public interface NameStep {
-    /**
-     * Configure the plugin name
-     *
-     * @param pluginName
-     * @return next configuration step
-     */
-    NodeStep withName(String pluginName);
   }
 
   public interface NodeStep {
@@ -133,23 +132,11 @@ public class RemoteSeServerPluginFactory implements PluginFactory {
 
   /** The builder pattern */
   public static class Builder
-      implements NodeStep, PluginObserverStep, EventNotificationPoolStep, BuilderStep, NameStep {
+      implements NodeStep, PluginObserverStep, EventNotificationPoolStep, BuilderStep {
 
-    private String pluginName;
     private KeypleServerAsync asyncEndpoint;
     private ExecutorService eventNotificationPool;
     private ObservablePlugin.PluginObserver observer;
-
-    /**
-     * {@inheritDoc}
-     *
-     * @since 1.0
-     */
-    @Override
-    public NodeStep withName(String pluginName) {
-      this.pluginName = pluginName;
-      return this;
-    }
 
     /**
      * {@inheritDoc}
@@ -216,13 +203,14 @@ public class RemoteSeServerPluginFactory implements PluginFactory {
     @Override
     public RemoteSeServerPluginFactory build() {
 
-      RemoteSeServerPluginImpl plugin =
-          new RemoteSeServerPluginImpl(pluginName, eventNotificationPool);
+      RemoteSeServerPluginImpl plugin;
 
       if (asyncEndpoint != null) {
+        plugin = new RemoteSeServerPluginImpl(PLUGIN_NAME_ASYNC, eventNotificationPool);
         logger.info("Create a new RemoteSeServerPlugin with a async server endpoint");
         plugin.bindServerAsyncNode(asyncEndpoint);
       } else {
+        plugin = new RemoteSeServerPluginImpl(PLUGIN_NAME_SYNC, eventNotificationPool);
         logger.info("Create a new RemoteSeServerPlugin with a sync server endpoint");
         plugin.bindServerSyncNode();
       }
