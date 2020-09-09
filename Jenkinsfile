@@ -97,7 +97,7 @@ pipeline {
                 }
             }
         }
-        stage('Keyple Java: Commit/Tag/Push') {
+        stage('Keyple Java: Tag/Push') {
             when {
                 expression { deployRelease }
             }
@@ -105,17 +105,10 @@ pipeline {
                 container('java-builder') {
                     withCredentials([usernamePassword(credentialsId: 'github-bot', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                         sh """
-                            git add .
-                            if ! git diff --cached --exit-code; then
-                                git config --global user.email "${PROJECT_NAME}-bot@eclipse.org"
-                                git config --global user.name "${PROJECT_BOT_NAME}"
-                                git commit -m 'Release keyple-java ${keypleVersion} --signoff'
-                                git tag '${keypleVersion}'
-                                git push 'https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/eclipse/keyple-java.git' refs/tags/${keypleVersion}
-                            else
-                                echo 'No changes have been detected since last build, nothing to publish'
-                                exit 2
-                            fi
+                            git config --global user.email "${PROJECT_NAME}-bot@eclipse.org"
+                            git config --global user.name "${PROJECT_BOT_NAME}"
+                            git tag '${keypleVersion}'
+                            git push 'https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/eclipse/keyple-java.git' refs/tags/${keypleVersion}
                         """
                     }
                 }
