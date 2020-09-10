@@ -5,8 +5,6 @@ This project aims at implementing the concept of executing a Calypso transaction
 
 One terminal is acting as the Master terminal, it will pilot the transaction. The other terminal acts as a Slave, it will proxy a local Reader to allow the Master terminal to communicate with any Secure Element inserted. 
 
-In those examples, Slave nodes listen for Calypso Portable Object (PO) while the SAM resource is connected to the Master Node.
-
 Master and Slave communicates between each other through a transport layer that must be provided. In those examples, two tranport layer have been implemented :
 - HTTP Web services with long polling
 - Web socket 
@@ -22,8 +20,8 @@ All 4 examples execute the same scenario :
 The ticketing logic is defined in the Master terminal, the slave Terminal acts only as a proxy. All SE inserted in the slave are accessible from the Master.
 
 4 examples of Remote SE plugin :   
-- ``Demo_Webservice_MasterClient`` : execute the demo with a Webservice protocol, the Master device uses a Retrofit client 
-- ``Demo_Webservice_MasterServer`` : execute the demo with a webservice protocol, the Master device uses the webservice server
+- ``Demo_WebserviceWithRetrofit_MasterClient`` : execute the demo with a Webservice protocol, the Master device uses a Retrofit client 
+- ``Demo_WebserviceWithRetrofit_MasterServer`` : execute the demo with a webservice protocol, the Master device uses the webservice server
 - ``DemoWsKMasterServer`` : execute the demo with a websocket protocol, the master device uses the websocket server
 - ``DemoWsKMasterClient`` : execute the demo with a websocket protocol, the master device uses the websocket client
 
@@ -37,7 +35,7 @@ Remotese examples requires a specific JDK in order to have the polling working c
 It has been successfully tested with :
 - ``jdk1.8.0_40``
 
-Some compatibilities issues have been acknowledged with the Webservice examples on newer JDK :
+Some issues have been acknowledged with the WebserviceWithRetrofit examples on a newer JDK :
 - ``jdk1.8.0_231`` 
 - ``adoptopenjdk-11.jdk``
 

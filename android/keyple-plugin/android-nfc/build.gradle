@@ -1,39 +1,33 @@
-apply from: "../../build.gradle"
+def version = "0.8.1"
+
+if(project.getProperties().containsKey("release") && release=="true"){
+    project.version = version
+}else{
+    project.version = version+'-'+ timestamp+ '-SNAPSHOT'
+}
 
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'org.eclipse.keyple'
-apply plugin: 'jacoco'
-apply plugin: 'jacoco-android'
-apply plugin: 'org.sonarqube'
-
 
 archivesBaseName = "keyple-android-plugin-nfc"
 
-group 'org.eclipse.keyple'
+project.group 'org.eclipse.keyple'
 project.description = 'Keyple Plugin Android Nfc'
 
-
 android {
-    compileSdkVersion 29
-    buildToolsVersion '29.0.2'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.3'
 
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 29
+        targetSdkVersion 26
         versionName project.version
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
             minifyEnabled  false
-            testCoverageEnabled true
-        }
-        debug { 
-            testCoverageEnabled = true 
         }
     }
 
@@ -43,16 +37,9 @@ android {
     }
 
     testOptions {
-        unitTests {
-            returnDefaultValues = true//mock Log Android object
-            includeAndroidResources = true
-        }
-        unitTests.all {
-            jacoco {
-                includeNoLocationClasses = true
-            }
-        }
+        unitTests.returnDefaultValues = true//mock Log Android object
     }
+
 
     lintOptions {
         abortOnError false
@@ -100,35 +87,24 @@ android {
 
     }
 
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-        test.java.srcDirs += 'src/test/kotlin'
-    }
 
 }
 
-jacoco {
-    toolVersion "0.8.5"
+//build javadoc
+task javadoc(type: Javadoc) {
+    failOnError false
+    source = android.sourceSets.main.java.sourceFiles
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    classpath += configurations.compile
 }
 
-jacocoAndroidUnitTestReport {
-  csv.enabled false
-  html.enabled true
-  xml.enabled true
+// build a jar with javadoc
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
 }
 
-sonarqube {
-    properties {
-        property "sonar.projectKey", "eclipse_keyple-plugin_android-nfc"
-        property "sonar.organization", "eclipse"
-        property "sonar.host.url", "https://sonarcloud.io"
-        property "sonar.login", System.getenv('SONAR_LOGIN')
-        property "sonar.branch.name", System.getenv('BRANCH_NAME')
-        property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacocoTestDebugUnitTestReport/jacocoTestDebugUnitTestReport.xml"
-    }
-}
-
-//build sources jar
+//build source jar
 task androidSourcesJar(type: Jar) {
     classifier = 'sources'
     from android.sourceSets.main.java.sourceFiles
@@ -222,6 +198,7 @@ uploadArchives  {
     }
 }
 
+
 repositories {
     mavenLocal()
     mavenCentral()
@@ -242,24 +219,26 @@ dependencies {
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: project.version
 
     //android
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation "com.android.support:support-v4:${android_support_version}"
+    implementation "com.android.support:appcompat-v7:${android_support_version}"
 
     //logging
-    implementation "org.slf4j:slf4j-api:1.7.25"
-    implementation 'com.jakewharton.timber:timber:4.7.1' //Android
-    implementation 'com.arcao:slf4j-timber:3.1@aar' //SLF4J binding for Timber
+    implementation "org.slf4j:slf4j-api:${slf4japi_version}"
+
 
     /*
     Tests
      */
-    /** Test **/
-    testImplementation "junit:junit:4.12"
 
-    /** Mocking for tests **/
-    testImplementation "io.mockk:mockk:1.9"
+    testImplementation "junit:junit:${junit_version}"
 
-    /** Allow to use Android SDK in JVM */
-    testImplementation 'org.robolectric:robolectric:4.3.1'
+    /**Power mock**/
+    androidTestImplementation "org.mockito:mockito-android:${mockito_android_version}"
+    androidTestImplementation "org.powermock:powermock-api-mockito:${powermock_version}"
+    androidTestImplementation "org.powermock:powermock-module-junit4:${powermock_version}"
+
+    testImplementation "org.powermock:powermock-api-mockito:${powermock_version}"
+    testImplementation "org.powermock:powermock-module-junit4:${powermock_version}"
+    /**End of power mock **/
 
 }

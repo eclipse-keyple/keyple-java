@@ -1,6 +1,5 @@
 plugins {
     id 'java'
-    id 'application'
 }
 
 group 'org.eclipse.keyple'
@@ -12,12 +11,6 @@ ext {
     keyple_v = project.hasProperty("keyple_version") ? keyple_version : '+'
 }
 
-mainClassName = 'org.eclipse.keyple.example.generic.pc.usecase2.DefaultSelectionNotification_Pcsc'
-
-task('runPcsc', dependsOn: 'classes', type: JavaExec, group:'application') {
-    main = 'org.eclipse.keyple.example.generic.pc.usecase2.DefaultSelectionNotification_Pcsc'
-    classpath = sourceSets.main.runtimeClasspath
-}
 
 repositories {
     mavenLocal()

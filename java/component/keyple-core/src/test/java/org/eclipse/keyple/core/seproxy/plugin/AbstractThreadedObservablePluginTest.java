@@ -1,20 +1,22 @@
-/* **************************************************************************************
+/********************************************************************************
  * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * See the NOTICE file(s) distributed with this work for additional information
- * regarding copyright ownership.
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
  *
- * This program and the accompanying materials are made available under the terms of the
- * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- ************************************************************************************** */
+ ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleRuntimeException;
+import org.eclipse.keyple.core.seproxy.plugin.mock.BlankFailingPlugin;
+import org.eclipse.keyple.core.seproxy.plugin.mock.MockAbstractThreadedPlugin;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,84 +25,94 @@ import org.slf4j.LoggerFactory;
 
 public class AbstractThreadedObservablePluginTest extends CoreBaseTest {
 
-  private static final Logger logger =
-      LoggerFactory.getLogger(AbstractThreadedObservablePluginTest.class);
+    private static final Logger logger =
+            LoggerFactory.getLogger(AbstractThreadedObservablePluginTest.class);
 
-  @Before
-  public void setUp() {
-    logger.info("------------------------------");
-    logger.info("Test {}", name.getMethodName() + "");
-    logger.info("------------------------------");
-  }
 
-  /**
-   * An KeypleRuntimeException is thrown when building the plugin
-   *
-   * @throws Throwable
-   */
-  @Test(expected = KeypleReaderException.class)
-  public void instantiatePlugin() {
-    new BlankFailingPlugin("addObserverTest");
-  }
+    @Before
+    public void setUp() {
+        logger.info("------------------------------");
+        logger.info("Test {}", name.getMethodName() + "");
+        logger.info("------------------------------");
+    }
 
-  @Test
-  public void addObserver() throws Throwable {
-    MockAbstractThreadedPlugin plugin = new MockAbstractThreadedPlugin("addObserverTest");
+    /**
+     * An KeypleRuntimeException is thrown when building the plugin
+     * 
+     * @throws Throwable
+     */
+    @Test(expected = KeypleRuntimeException.class)
+    public void instantiatePlugin() {
+        new BlankFailingPlugin("addObserverTest");
+    }
 
-    // add observer
-    plugin.addObserver(getOneObserver());
 
-    Assert.assertEquals(1, plugin.countObservers());
-    // test if thread is activated
-    Assert.assertTrue(plugin.isMonitoring());
+    @Test
+    public void addObserver() throws Throwable {
+        MockAbstractThreadedPlugin plugin = new MockAbstractThreadedPlugin("addObserverTest");
 
-    // shutdown thread
-    plugin.finalize();
-  }
+        // add observer
+        plugin.addObserver(getOneObserver());
 
-  @Test
-  public void removeObserver() throws Throwable {
-    MockAbstractThreadedPlugin plugin = new MockAbstractThreadedPlugin("addObserverTest");
+        Assert.assertEquals(1, plugin.countObservers());
+        // test if thread is activated
+        Assert.assertTrue(plugin.isMonitoring());
 
-    ObservablePlugin.PluginObserver obs = getOneObserver();
 
-    // add observer
-    plugin.addObserver(obs);
-    plugin.removeObserver(obs);
+        // shutdown thread
+        plugin.finalize();
+    }
 
-    Assert.assertEquals(0, plugin.countObservers());
-    // test if thread is deactivated
-    Assert.assertFalse(plugin.isMonitoring());
+    @Test
+    public void removeObserver() throws Throwable {
+        MockAbstractThreadedPlugin plugin = new MockAbstractThreadedPlugin("addObserverTest");
 
-    // shutdown thread
-    plugin.finalize();
-  }
+        ObservablePlugin.PluginObserver obs = getOneObserver();
 
-  @Test
-  public void clearObserver() throws Throwable {
-    MockAbstractThreadedPlugin plugin = new MockAbstractThreadedPlugin("addObserverTest");
+        // add observer
+        plugin.addObserver(obs);
+        plugin.removeObserver(obs);
 
-    ObservablePlugin.PluginObserver obs = getOneObserver();
+        Assert.assertEquals(0, plugin.countObservers());
+        // test if thread is deactivated
+        Assert.assertFalse(plugin.isMonitoring());
 
-    // add observer
-    plugin.addObserver(obs);
-    plugin.clearObservers();
+        // shutdown thread
+        plugin.finalize();
 
-    Assert.assertEquals(0, plugin.countObservers());
-    // test if thread is deactivated
-    Assert.assertFalse(plugin.isMonitoring());
+    }
 
-    // shutdown thread
-    plugin.finalize();
-  }
+    @Test
+    public void clearObserver() throws Throwable {
+        MockAbstractThreadedPlugin plugin = new MockAbstractThreadedPlugin("addObserverTest");
 
-  /*
-   * Helpers
-   */
-  ObservablePlugin.PluginObserver getOneObserver() {
-    return new ObservablePlugin.PluginObserver() {
-      @Override
-      public void update(PluginEvent event) {}
-    };
-  }
+        ObservablePlugin.PluginObserver obs = getOneObserver();
+
+        // add observer
+        plugin.addObserver(obs);
+        plugin.clearObservers();
+
+        Assert.assertEquals(0, plugin.countObservers());
+        // test if thread is deactivated
+        Assert.assertFalse(plugin.isMonitoring());
+
+        // shutdown thread
+        plugin.finalize();
+
+    }
+
+
+
+    /*
+     * Helpers
+     */
+    ObservablePlugin.PluginObserver getOneObserver() {
+        return new ObservablePlugin.PluginObserver() {
+            @Override
+            public void update(PluginEvent event) {
+
+            }
+        };
+    }
+
 }

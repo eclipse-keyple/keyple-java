@@ -1,0 +1,168 @@
+@startuml
+package external.terminalapplication #3399FF {
+	class SpecificTerminal
+
+	class SpecificPluginObserver {
+		+update(ObservablePlugin plugin, AbstractPluginEvent event)
+	}
+	class SpecificReaderObserver {
+		+update(ObservableReader reader, ReaderEvent event)
+	}
+
+	SpecificTerminal -right[hidden]--> SpecificPluginObserver
+	SpecificPluginObserver -right[hidden]--> SpecificReaderObserver
+}
+
+package org.eclipse.keyple.core.seproxy #FFFFFF {
+
++class "<b>final</b> SeProxyService" as SeProxyService << Singleton >> {
+	+{static}SeProxyService getInstance()
+	+String getVersion()
+	+registerPlugin(AbstractPluginFactory pluginFactory)
+	+boolean isRegistered(String pluginName)
+	+boolean unregisterPlugin(String pluginName)
+	+ReaderPlugin getPlugin(String name)
+	+SortedSet<ReaderPlugin> getPlugins()
+}
+
+package event #FFFFFF {
+
+'---- EVENT_PLUGIN -------------------------------------------------------------[
+
++enum "EventType" as EventType_Plugin {
+	READER_CONNECTED("Reader connected")
+	READER_DISCONNECTED("Reader disconnected")
+	+EventType(String name);
+        +String getName();
+}
+
++class "<b>final</b> PluginEvent" as PluginEvent {
+	+PluginEvent(String pluginName, String readerName, EventType eventType);
+	+PluginEvent(String pluginName, Set<String> readerNames, EventType eventType);
+	+String getPluginName();
+	+SortedSet<String> getReaderNames();
+	+EventType getEventType();
+}
+
+'EventType_Plugin -down-+ PluginEvent
+EventType_Plugin -up-+ PluginEvent
+
++interface PluginObserver {
+  +update(PluginEvent event)
+}
+
++interface ObservablePlugin {  
+  +void addObserver(PluginObserver observer);
+  +void removeObserver(PluginObserver observer);
+  +void notifyObservers(PluginEvent event);
+}
+
+'---- EVENT_PLUGIN -------------------------------------------------------------]
+
+'---- EVENT_PLUGIN_RELATION ----------------------------------------------------[
+'PluginObserver "1" o-down-+ "*" ObservablePlugin : observed >
+PluginObserver "1" +-down-o "*" ObservablePlugin : observes <
+PluginEvent . (ObservablePlugin, PluginObserver)
+'PluginObserver --+ ObservablePlugin
+'(ObservablePlugin, PluginObserver) . PluginEvent
+'---- EVENT_PLUGIN_RELATION ----------------------------------------------------]
+
+'---- EVENT_READER -------------------------------------------------------------[
+
++enum "EventType" as EventType_Reader {
+	IO_ERROR("SE Reader IO Error")
+	SE_INSERTED("SE insertion")
+	SE_MATCHED("SE matched")
+	SE_REMOVAL("SE removal")
+
+	+EventType(String name);
+	+String getName();
+}
+
++class "<b>final</b> ReaderEvent" as ReaderEvent {
+	+ReaderEvent(String pluginName, String readerName, EventType eventType,
+DefaultSelectionsResponse defaultSelectionsResponse);
+	+String getPluginName();
+	+String getReaderName();
+	+EventType getEventType();
+	+AbstractDefaultSelectionsResponse getDefaultSelectionsResponse();
+}
+
+'EventType_Reader -down-+ ReaderEvent
+EventType_Reader -up-+ ReaderEvent
+
++interface ReaderObserver {
+  +update(ReaderEvent event)
+}
+
+'+enum NotificationMode {
+'	ALWAYS("always")
+'	MATCHED_ONLY("matched_only")
+'
+'	+NotificationMode(String name);
+'	+String getName();
+'	+{static}NotificationMode get(String name);
+'}
+
++interface ObservableReader {
+  	+void addObserver(ReaderObserver observer);
+	+void removeObserver(ReaderObserver observer);
+	+void notifyObservers(ReaderEvent event);
+
+	+void setDefaultSelectionRequest(AbstractDefaultSelectionsRequest
+defaultSelectionsRequest, NotificationMode notificationMode);
+	+void setDefaultSelectionRequest(AbstractDefaultSelectionsRequest
+defaultSelectionsRequest, NotificationMode notificationMode,
+PollingMode pollingMode);
+
+	+startSeDetection(PollingMode pollingMode);
+	+stopSeDetection();
+	+notifySeProcessed();
+}
+'NotificationMode -left-+ ObservableReader
+
+'interface ReaderObserver extends Observable.Observer<ReaderEvent>
+'---- EVENT_READER -------------------------------------------------------------]
+
+'---- EVENT_READER_RELATION ----------------------------------------------------[
+'ReaderObserver "1" o-down- "*" ObservableReader : observed >
+ReaderObserver "1" +-down-o "*" ObservableReader : observes <
+'ReaderObserver +-down- ObservableReader
+'(ReaderObserver, ObservableReader) . ReaderEvent
+ReaderEvent . (ReaderObserver, ObservableReader)
+'---- EVENT_READER_RELATION ----------------------------------------------------]
+}
+
++interface ReaderPlugin {
+	+SortedSet<String> getReaderNames()
+	+SeReader getReader(String name)
+	+SortedSet<? extends SeReader> getReaders()
+}
+
++interface SeReader {
+	+boolean isSePresent()
+	+void addSeProtocolSetting(SeProtocol seProtocol, String protocolRule);
+	+void setSeProtocolSetting(Map<SeProtocol, String> protocolSetting);
+	+TransmissionMode getTransmissionMode();
+}
+
+SeProxyService "1" *--> "*" ReaderPlugin : plugins
+ReaderPlugin "1" *-right-> "*" SeReader : readers
+
+ObservablePlugin -down-|> ReaderPlugin : extends
+ObservableReader --|> SeReader : extends
+}
+
+SpecificPluginObserver .down.|> PluginObserver : implements
+SpecificReaderObserver .down.|> ReaderObserver : implements
+SpecificTerminal -down- SeProxyService : uses >
+
+SpecificTerminal -right[hidden]- SpecificPluginObserver
+
+'SeProxyService -right[hidden]--> PluginObserver
+SeProxyService -right[hidden]--> EventType_Plugin
+EventType_Plugin  -right[hidden]--> PluginObserver
+PluginObserver -right[hidden]--> ReaderObserver
+ReaderObserver  -right[hidden]--> EventType_Reader
+
+@enduml

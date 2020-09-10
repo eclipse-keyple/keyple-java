@@ -1,14 +1,14 @@
-/* **************************************************************************************
+/********************************************************************************
  * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * See the NOTICE file(s) distributed with this work for additional information
- * regarding copyright ownership.
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
  *
- * This program and the accompanying materials are made available under the terms of the
- * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- ************************************************************************************** */
+ ********************************************************************************/
 package org.eclipse.keyple.example.remote.transport.wspolling.server;
 
 import java.util.concurrent.BlockingQueue;
@@ -19,49 +19,55 @@ import org.slf4j.LoggerFactory;
 
 public class PublishQueue<T> {
 
-  private final BlockingQueue<T> q;
-  private final String webClientId;
-  private static final Logger logger = LoggerFactory.getLogger(PublishQueue.class);
+    private final BlockingQueue<T> q;
+    private final String webClientId;
+    private static final Logger logger = LoggerFactory.getLogger(PublishQueue.class);
 
-  public PublishQueue(String webClientId) {
-    this.webClientId = webClientId;
-    q = new LinkedBlockingQueue<T>(1);
-  }
 
-  public String getWebClientId() {
-    return this.webClientId;
-  }
-
-  public void init() {
-    if (!q.isEmpty()) {
-      try {
-        T state = q.take();
-        logger.error("Remove un-consumed element : " + state);
-
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    } else {
-      logger.debug("Queue is empty");
+    public PublishQueue(String webClientId) {
+        this.webClientId = webClientId;
+        q = new LinkedBlockingQueue<T>(1);
     }
-  }
 
-  public void publish(T state) {
-    logger.trace("Publish new item : " + state);
-    try {
-      if (q.size() > 0) {
-
-        logger.error("publish(), Queue is not empty, unconsumed element {}", q.take());
-      }
-      q.put(state);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
+    public String getWebClientId() {
+        return this.webClientId;
     }
-  }
 
-  public T get(long timeout) throws InterruptedException {
+    public void init() {
+        if (!q.isEmpty()) {
+            try {
+                T state = q.take();
+                logger.error("Remove un-consumed element : " + state);
 
-    T element = q.poll(timeout, TimeUnit.MILLISECONDS);
-    return element;
-  }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } else {
+            logger.debug("Queue is empty");
+
+        }
+    }
+
+    public void publish(T state) {
+        logger.trace("Publish new item : " + state);
+        try {
+            if (q.size() > 0) {
+
+                logger.error("publish(), Queue is not empty, unconsumed element {}", q.take());
+
+            }
+            q.put(state);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public T get(long timeout) throws InterruptedException {
+
+        T element = q.poll(timeout, TimeUnit.MILLISECONDS);
+        return element;
+
+    }
+
+
 }

@@ -1,22 +1,22 @@
-/* **************************************************************************************
+/********************************************************************************
  * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * See the NOTICE file(s) distributed with this work for additional information
- * regarding copyright ownership.
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
  *
- * This program and the accompanying materials are made available under the terms of the
- * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- ************************************************************************************** */
+ ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.pluginse;
+
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
-
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -29,73 +29,80 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Unit Test Observable Virtual Reader */
+/**
+ * Unit Test Observable Virtual Reader
+ */
 public class VirtualObservableReaderTest extends VirtualReaderBaseTest {
 
-  private static final Logger logger = LoggerFactory.getLogger(VirtualObservableReaderTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(VirtualObservableReaderTest.class);
 
-  private VirtualObservableReader virtualReader;
-  private ObservableReader nativeReader;
+    private VirtualObservableReader virtualReader;
+    private ObservableReader nativeReader;
 
-  @Before
-  public void setUp() throws Exception {
-    Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
-    initMasterNSlave();
+    @Before
+    public void setUp() throws Exception {
+        Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
+        initMasterNSlave();
 
-    // configure and connect a Mock Reader
-    nativeReader = connectMockObservableReader("mockObservableReader");
+        // configure and connect a Mock Reader
+        nativeReader = connectMockObservableReader("mockObservableReader");
 
-    // get the paired virtual reader
-    virtualReader = (VirtualObservableReader) getVirtualReader();
-  }
 
-  @After
-  public void tearDown() throws Exception {
-    Integration.unregisterAllPlugin(RemoteSePluginImpl.DEFAULT_PLUGIN_NAME);
+        // get the paired virtual reader
+        virtualReader = (VirtualObservableReader) getVirtualReader();
 
-    Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
-  }
+    }
 
-  /**
-   * Successful setDefaultSelectionRequest with NotificationMode
-   *
-   * @throws Exception
-   */
-  @Test
-  @Ignore
-  // TODO Mock does not work, see this#connectMockReader()
-  // execute at hand and check logs
-  public void setDefaultSelectionRequest_withNotificationMode() throws Exception {
+    @After
+    public void tearDown() throws Exception {
+        Integration.unregisterAllPlugin(RemoteSePluginImpl.DEFAULT_PLUGIN_NAME);
 
-    DefaultSelectionsRequest defaultSelectionsRequest =
-        Mockito.mock(DefaultSelectionsRequest.class);
+        Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
+    }
 
-    // test setDefaultSelectionRequest with NotificationMode
-    (virtualReader)
-        .setDefaultSelectionRequest(
-            defaultSelectionsRequest, ObservableReader.NotificationMode.MATCHED_ONLY);
 
-    // condition -> the nativeReader execute the method executed on the virtual reader
-    verify(nativeReader, times(1))
-        .setDefaultSelectionRequest(
-            defaultSelectionsRequest, ObservableReader.NotificationMode.MATCHED_ONLY);
-  }
+    /**
+     * Successful setDefaultSelectionRequest with NotificationMode
+     *
+     * @throws Exception
+     */
+    @Test
+    @Ignore
+    // TODO Mock does not work, see this#connectMockReader()
+    // execute at hand and check logs
+    public void setDefaultSelectionRequest_withNotificationMode() throws Exception {
 
-  protected ObservableReader connectMockObservableReader(String readerName) throws Exception {
+        DefaultSelectionsRequest defaultSelectionsRequest =
+                Mockito.mock(DefaultSelectionsRequest.class);
 
-    // configure mock native reader
-    ObservableReader mockReader = Mockito.spy(ObservableReader.class);
-    doReturn(readerName).when(mockReader).getName();
-    doReturn(TransmissionMode.CONTACTLESS).when(mockReader).getTransmissionMode();
+        // test setDefaultSelectionRequest with NotificationMode
+        (virtualReader).setDefaultSelectionRequest(defaultSelectionsRequest,
+                ObservableReader.NotificationMode.MATCHED_ONLY);
 
-    // Configure slaveAPI to find mockReader
-    // TODO : findLocalReader real method is called, the mock does not work maybe due to
-    // multiple thread...
-    doReturn(mockReader).when(slaveAPI).findLocalReader(any(String.class));
-    doCallRealMethod().when(slaveAPI).connectReader(any(SeReader.class));
 
-    slaveAPI.connectReader(mockReader);
+        // condition -> the nativeReader execute the method executed on the virtual reader
+        verify(nativeReader, times(1)).setDefaultSelectionRequest(defaultSelectionsRequest,
+                ObservableReader.NotificationMode.MATCHED_ONLY);
+    }
 
-    return mockReader;
-  }
+
+    protected ObservableReader connectMockObservableReader(String readerName) throws Exception {
+
+        // configure mock native reader
+        ObservableReader mockReader = Mockito.spy(ObservableReader.class);
+        doReturn(readerName).when(mockReader).getName();
+        doReturn(TransmissionMode.CONTACTLESS).when(mockReader).getTransmissionMode();
+
+
+        // Configure slaveAPI to find mockReader
+        // TODO : findLocalReader real method is called, the mock does not work maybe due to
+        // multiple thread...
+        doReturn(mockReader).when(slaveAPI).findLocalReader(any(String.class));
+        doCallRealMethod().when(slaveAPI).connectReader(any(SeReader.class));
+
+        slaveAPI.connectReader(mockReader);
+
+        return mockReader;
+    }
+
 }

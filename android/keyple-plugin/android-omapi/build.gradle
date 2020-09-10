@@ -1,36 +1,39 @@
-apply from: "../../build.gradle"
+def version = "0.8.1"
+
+if(project.getProperties().containsKey("release") && release=="true"){
+    project.version = version
+}else{
+    project.version = version+'-'+ timestamp+ '-SNAPSHOT'
+}
 
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'org.eclipse.keyple'
-apply plugin: 'jacoco'
-apply plugin: 'jacoco-android'
-apply plugin: 'org.sonarqube'
-
 archivesBaseName = "keyple-android-plugin-omapi"
 
 group 'org.eclipse.keyple'
 project.description = 'Keyple Plugin Android OMAPI'
 
+pmd {
+    ruleSets = [
+            "java-basic",
+            "java-braces",
+    ]
+}
+
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.2"
+    compileSdkVersion 26
+    buildToolsVersion '26.0.3'
 
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 29
+        targetSdkVersion 21
         versionName project.version
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
             minifyEnabled false
-        }
-        debug {
-            testCoverageEnabled = true 
         }
     }
     
@@ -41,12 +44,8 @@ android {
 
     testOptions {
         unitTests.returnDefaultValues = true//mock Log Android object
-        unitTests.all {
-            jacoco {
-                includeNoLocationClasses = true
-            }
-        }
     }
+
 
     lintOptions {
         abortOnError false
@@ -94,32 +93,21 @@ android {
 
     }
 
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-        test.java.srcDirs += 'src/test/kotlin'
-    }
-
 }
 
-jacoco {
-    toolVersion "0.8.5"
+
+//build javadoc
+task javadoc(type: Javadoc) {
+    failOnError false
+    source = android.sourceSets.main.java.sourceFiles
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    classpath += configurations.compile
 }
 
-jacocoAndroidUnitTestReport {
-  csv.enabled false
-  html.enabled true
-  xml.enabled true
-}
-
-sonarqube {
-    properties {
-        property "sonar.projectKey", "eclipse_keyple-plugin_android-omapi"
-        property "sonar.organization", "eclipse"
-        property "sonar.host.url", "https://sonarcloud.io"
-        property "sonar.login", System.getenv('SONAR_LOGIN')
-        property "sonar.branch.name", System.getenv('BRANCH_NAME')
-        property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacocoTestDebugUnitTestReport/jacocoTestDebugUnitTestReport.xml"
-    }
+// build a jar with javadoc
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
 }
 
 //build sources jar
@@ -229,25 +217,34 @@ task installPlugin{
 }
 
 dependencies {
-    //simalliance omapi definition
-    compileOnly files('libs/org.simalliance.openmobileapi.jar')
-
-    //Kotlin
-    implementation 'androidx.core:core-ktx:1.2.0'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation fileTree(include: ['*.jar'], exclude: ['org.simalliance.openmobileapi.jar'], dir: 'libs')
 
     //keyple-core project
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: project.version
 
+    //android
+    implementation "com.android.support:support-v4:${android_support_version}"
+    implementation "com.android.support:appcompat-v7:${android_support_version}"
+
     //logging
-    implementation "org.slf4j:slf4j-api:1.7.25" //java
-    implementation 'com.jakewharton.timber:timber:4.7.1' //Android
-    implementation 'com.arcao:slf4j-timber:3.1@aar' //SLF4J binding for Timber
+    implementation "org.slf4j:slf4j-api:${slf4japi_version}"
+
+    //omapi definition
+    compileOnly files('libs/org.simalliance.openmobileapi.jar')
+    /*
+    Tests
+     *
 
     /** Test **/
-    testImplementation "junit:junit:4.12"
     testImplementation files('libs/org.simalliance.openmobileapi.jar')
 
-    /** Mocking for tests **/
-    testImplementation "io.mockk:mockk:1.9"
+    /**Power mock**/
+    androidTestImplementation "org.mockito:mockito-android:${mockito_android_version}"
+    androidTestImplementation "org.powermock:powermock-api-mockito:${powermock_version}"
+    androidTestImplementation "org.powermock:powermock-module-junit4:${powermock_version}"
+
+    testImplementation "junit:junit:${junit_version}"
+    testImplementation "org.powermock:powermock-api-mockito:${powermock_version}"
+    testImplementation "org.powermock:powermock-module-junit4:${powermock_version}"
+    /**End of power mock **/
 }

@@ -1,6 +1,5 @@
 plugins {
     id 'java'
-    id 'application'
 }
 
 group 'org.eclipse.keyple'
@@ -10,18 +9,6 @@ sourceCompatibility = 1.6
 ext {
     //if a property keyple_version is specified, this version will be taken, else the '+' latest version will be taken
     keyple_v = project.hasProperty("keyple_version") ? keyple_version : '+'
-}
-
-mainClassName = 'org.eclipse.keyple.example.calypso.pc.usecase2.DefaultSelectionNotification_Pcsc'
-
-task('runPcsc', dependsOn: 'classes', type: JavaExec, group:'application') {
-    main = 'org.eclipse.keyple.example.calypso.pc.usecase2.DefaultSelectionNotification_Pcsc'
-    classpath = sourceSets.main.runtimeClasspath
-}
-
-task('runStub', dependsOn: 'classes', type: JavaExec, group:'application') {
-    main = 'org.eclipse.keyple.example.calypso.pc.usecase2.DefaultSelectionNotification_Stub'
-    classpath = sourceSets.main.runtimeClasspath
 }
 
 repositories {
