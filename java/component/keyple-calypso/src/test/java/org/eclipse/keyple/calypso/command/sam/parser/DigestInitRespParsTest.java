@@ -1,43 +1,46 @@
-/* **************************************************************************************
+/********************************************************************************
  * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * See the NOTICE file(s) distributed with this work for additional information
- * regarding copyright ownership.
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
  *
- * This program and the accompanying materials are made available under the terms of the
- * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- ************************************************************************************** */
+ ********************************************************************************/
 package org.eclipse.keyple.calypso.command.sam.parser;
 
-import static org.assertj.core.api.Assertions.shouldHaveThrown;
-
-import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException;
+import java.util.ArrayList;
+import java.util.List;
 import org.eclipse.keyple.calypso.command.sam.parser.security.DigestInitRespPars;
+import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DigestInitRespParsTest {
-  private static final String SW1SW2_KO = "6A83";
-  private static final String SW1SW2_OK = "9000";
 
-  @Test(expected = CalypsoSamCommandException.class)
-  public void digestInitRespPars_badStatus() {
-    DigestInitRespPars digestInitRespPars =
-        new DigestInitRespPars(new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null), null);
-    digestInitRespPars.checkStatus();
-    shouldHaveThrown(CalypsoSamCommandException.class);
-  }
+    @Test
+    public void digestInitRespPars() {
+        List<ApduResponse> responses = new ArrayList<ApduResponse>();
+        ApduResponse apduResponse = new ApduResponse(new byte[] {(byte) 0x90, 0x00}, null);
+        responses.add(apduResponse);
+        SeResponse seResponse =
+                new SeResponse(true, true,
+                        new SelectionStatus(null,
+                                new ApduResponse(ByteArrayUtil.fromHex("9000"), null), true),
+                        responses);
 
-  @Test
-  public void digestInitRespPars_goodStatus() {
-    DigestInitRespPars digestInitRespPars =
-        new DigestInitRespPars(new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_OK), null), null);
-    digestInitRespPars.checkStatus();
-  }
+        AbstractApduResponseParser apduResponseParser =
+                new DigestInitRespPars(seResponse.getApduResponses().get(0));
+        Assert.assertArrayEquals(new byte[] {(byte) 0x90, 0x00},
+                apduResponseParser.getApduResponse().getBytes());
+    }
 }

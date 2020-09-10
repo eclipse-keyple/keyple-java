@@ -1,45 +1,42 @@
-/* **************************************************************************************
+/********************************************************************************
  * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * See the NOTICE file(s) distributed with this work for additional information
- * regarding copyright ownership.
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
  *
- * This program and the accompanying materials are made available under the terms of the
- * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- ************************************************************************************** */
+ ********************************************************************************/
 package org.eclipse.keyple.calypso.command.sam.parser;
 
-import static org.assertj.core.api.Assertions.shouldHaveThrown;
 
-import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException;
 import org.eclipse.keyple.calypso.command.sam.parser.security.SelectDiversifierRespPars;
+import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
-import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.hamcrest.core.IsNot;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SelectDiversifierRespParsTest {
-  private static final String SW1SW2_KO = "6985";
-  private static final String SW1SW2_OK = "9000";
 
-  @Test(expected = CalypsoSamCommandException.class)
-  public void selectDiversifierRespPars_badStatus() {
-    SelectDiversifierRespPars selectDiversifierRespPars =
-        new SelectDiversifierRespPars(
-            new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_KO), null), null);
-    selectDiversifierRespPars.checkStatus();
-    shouldHaveThrown(CalypsoSamCommandException.class);
-  }
+    @Test
+    public void selectDiversifierResp() {
+        // We check here that the value returned by getApduResponse matches the value provided at
+        // construct time
+        ApduResponse apduResponse = new ApduResponse(new byte[] {(byte) 0x90, 0x00}, null);
+        ApduResponse apduResponse1 = new ApduResponse(new byte[] {(byte) 0x80, 0x00}, null);
 
-  @Test
-  public void selectDiversifierRespPars_goodStatus() {
-    SelectDiversifierRespPars selectDiversifierRespPars =
-        new SelectDiversifierRespPars(
-            new ApduResponse(ByteArrayUtil.fromHex(SW1SW2_OK), null), null);
-    selectDiversifierRespPars.checkStatus();
-  }
+        AbstractApduResponseParser apduResponseParser = new SelectDiversifierRespPars(apduResponse);
+
+        Assert.assertEquals(0x9000, apduResponseParser.getApduResponse().getStatusCode());
+
+        apduResponseParser = new SelectDiversifierRespPars(apduResponse1);
+
+        Assert.assertThat(apduResponseParser.getApduResponse().getStatusCode(), IsNot.not(0x9000));
+    }
 }

@@ -1,10 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Keyple Android NFC</string>
-    <string name="open_navigation_drawer">Open menu</string>
-    <string name="close_navigation_drawer">Close Menu</string>
-    <string name="alert_dialog_title">NFC Error</string>
-    <string name="alert_dialog_message">Oops: %s</string>
-    <string name="alert_positive_button">Ok</string>
-    <string name="start_scan">Start scan</string>
 </resources>
