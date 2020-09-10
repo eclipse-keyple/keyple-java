@@ -21,7 +21,6 @@ import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerPlugin;
 public class RemoteSeServerUtils {
 
   /**
-   * (public)<br>
    * Access the registered RemoteSeServerPlugin with an async Node
    *
    * @return a registered instance of the RemoteSeServerPlugin
@@ -33,7 +32,6 @@ public class RemoteSeServerUtils {
   }
 
   /**
-   * (public)<br>
    * Retrieve the async node used in the RemoteSeServerPlugin
    *
    * @return non nullable instance of KeypleServerSyncNode
@@ -43,7 +41,6 @@ public class RemoteSeServerUtils {
   }
 
   /**
-   * (public)<br>
    * Access the registered RemoteSeServerPlugin with a sync Node
    *
    * @return a registered instance of the RemoteSeServerPlugin
@@ -55,7 +52,6 @@ public class RemoteSeServerUtils {
   }
 
   /**
-   * (public)<br>
    * Retrieve the sync node used in the RemoteSeServerPlugin
    *
    * @return non nullable instance of KeypleServerSyncNode

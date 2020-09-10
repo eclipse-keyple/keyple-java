@@ -17,7 +17,6 @@ import static org.mockito.Mockito.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
@@ -56,8 +55,8 @@ public class ServerVirtualObservableReaderTest extends RemoteSeServerBaseTest {
   @Before
   public void setUp() {
     virtualObservableReaderMocked = mock(VirtualObservableReader.class);
-    when(virtualObservableReaderMocked.getPluginName()).thenReturn(remoteSePluginName);
-    when(virtualObservableReaderMocked.getName()).thenReturn(UUID.randomUUID().toString());
+    // when(virtualObservableReaderMocked.getPluginName()).thenReturn(remoteSePluginName);
+    // when(virtualObservableReaderMocked.getName()).thenReturn(UUID.randomUUID().toString());
     pluginObserver = new MockPluginObserver(true);
     registerSyncPlugin();
     reader =
@@ -514,8 +513,7 @@ public class ServerVirtualObservableReaderTest extends RemoteSeServerBaseTest {
 
     // verify
     verify(virtualObservableReaderMocked).removeObserver(observer);
-    // verifyNoMoreInteractions(virtualObservableReaderMocked); if no observer left, method removes
-    // reader from plugin
+    verifyNoMoreInteractions(virtualObservableReaderMocked);
   }
 
   @Test(expected = KeypleReaderIOException.class)
@@ -543,7 +541,7 @@ public class ServerVirtualObservableReaderTest extends RemoteSeServerBaseTest {
 
     // verify
     verify(virtualObservableReaderMocked).clearObservers();
-    // verifyNoMoreInteractions(virtualObservableReaderMocked); method removes reader from plugin
+    verifyNoMoreInteractions(virtualObservableReaderMocked);
   }
 
   @Test(expected = KeypleReaderIOException.class)

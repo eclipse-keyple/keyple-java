@@ -17,6 +17,7 @@ import static org.mockito.Mockito.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.seproxy.PluginFactory;
@@ -59,6 +60,7 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
   ReaderEvent readerEvent;
   String pluginName = "mockPlugin";
   String serviceId = "serviceId";
+  String virtualReaderName = "virtualReaderName";
   Gson parser;
 
   @Before
@@ -391,12 +393,14 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
   public KeypleMessageDto getTerminateDto(String sessionId) {
     JsonObject body = new JsonObject();
     body.add("userOutputData", parser.toJsonTree(outputData, MyKeypleUserData.class));
-    body.add("unregisterVirtualReader", parser.toJsonTree(true, Boolean.class));
+    body.add("unregisterVirtualReaders", parser.toJsonTree(Arrays.asList(virtualReaderName)));
     return new KeypleMessageDto()
         .setSessionId(sessionId) //
         .setAction(KeypleMessageDto.Action.TERMINATE_SERVICE.name()) //
         .setServerNodeId("serverNodeId") //
         .setClientNodeId("clientNodeId") //
+        .setNativeReaderName(readerName)
+        .setVirtualReaderName(virtualReaderName)
         .setBody(body.toString());
   }
 }

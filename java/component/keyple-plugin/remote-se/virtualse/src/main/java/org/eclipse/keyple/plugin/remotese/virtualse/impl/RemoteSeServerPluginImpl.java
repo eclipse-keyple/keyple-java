@@ -12,10 +12,7 @@
 package org.eclipse.keyple.plugin.remotese.virtualse.impl;
 
 import com.google.gson.JsonObject;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
@@ -153,29 +150,49 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
   @Override
   public void terminateService(String virtualReaderName, Object userOutputData) {
 
-    AbstractServerVirtualReader virtualReader =
-        (AbstractServerVirtualReader) getReader(virtualReaderName);
+    RemoteSeServerReader virtualReader = getReader(virtualReaderName);
 
-    // keep virtual reader if observable and has observers
-    Boolean unregisterVirtualReader =
-        !(virtualReader instanceof RemoteSeServerObservableReader)
-            || ((RemoteSeServerObservableReader) virtualReader).countObservers() == 0;
+    // list of virtual reader names to be unregister, can contain one or two element
+    List<String> unregisterVirtualReaders = new ArrayList<String>(2);
 
-    if (unregisterVirtualReader) {
-      // remove virtual readers
-      readers.remove(virtualReader.getName());
+    if (!(virtualReader instanceof RemoteSeServerObservableReader)) {
+      // is not observable
+      unregisterVirtualReaders.add(virtualReader.getName());
+    } else {
+      // is observable
+      ServerVirtualObservableReader serverObservableReader =
+          (ServerVirtualObservableReader) virtualReader;
+      if (serverObservableReader.getMasterReader() == null) {
+        if (serverObservableReader.countObservers() == 0) {
+          // is master reader and has no observer
+          unregisterVirtualReaders.add(serverObservableReader.getName());
+        }
+      } else {
+        // is a slave reader
+        unregisterVirtualReaders.add(serverObservableReader.getName());
+        if (serverObservableReader.getMasterReader().countObservers() == 0) {
+          // remove master reader if no observer
+          unregisterVirtualReaders.add(serverObservableReader.getMasterReader().getName());
+        }
+      }
+    }
+
+    for (String readerName : unregisterVirtualReaders) {
+      readers.remove(readerName);
     }
 
     JsonObject body = new JsonObject();
-    body.addProperty("userOutputData", KeypleJsonParser.getParser().toJson(userOutputData));
-    body.addProperty("unregisterVirtualReader", unregisterVirtualReader);
+    body.add("userOutputData", KeypleJsonParser.getParser().toJsonTree(userOutputData));
+    body.add(
+        "unregisterVirtualReaders",
+        KeypleJsonParser.getParser().toJsonTree(unregisterVirtualReaders));
 
     // Build the message
     KeypleMessageDto message =
         new KeypleMessageDto() //
             .setAction(KeypleMessageDto.Action.TERMINATE_SERVICE.name()) //
             .setVirtualReaderName(virtualReaderName) //
-            .setSessionId(virtualReader.getSessionId()) //
+            .setSessionId(((AbstractServerVirtualReader) virtualReader).getSessionId()) //
             .setBody(body.toString());
 
     // Send the message

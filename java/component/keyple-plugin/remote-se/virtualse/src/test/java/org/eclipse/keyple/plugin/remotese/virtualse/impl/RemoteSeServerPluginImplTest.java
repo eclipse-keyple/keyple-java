@@ -127,7 +127,7 @@ public class RemoteSeServerPluginImplTest extends RemoteSeServerBaseTest {
     pluginObserver.terminateService(userOutputData);
     KeypleMessageDto terminateServiceMsg = messageArgumentCaptor.getValue();
     assertThat(terminateServiceMsg.getSessionId()).isEqualTo(sessionId0);
-    validateTerminateSessionResponse(terminateServiceMsg, false);
+    validateTerminateSessionResponse(terminateServiceMsg, 0);
     assertThat(remoteSePlugin.getReaders()).hasSize(1);
   }
 
@@ -147,7 +147,7 @@ public class RemoteSeServerPluginImplTest extends RemoteSeServerBaseTest {
     pluginObserver.terminateService(userOutputData);
     KeypleMessageDto terminateServiceMsg = messageArgumentCaptor.getValue();
     assertThat(terminateServiceMsg.getSessionId()).isEqualTo(sessionId0);
-    validateTerminateSessionResponse(terminateServiceMsg, true);
+    validateTerminateSessionResponse(terminateServiceMsg, 1);
     assertThat(remoteSePlugin.getReaders()).hasSize(0);
   }
 
@@ -207,11 +207,11 @@ public class RemoteSeServerPluginImplTest extends RemoteSeServerBaseTest {
     await().atMost(1, TimeUnit.SECONDS).until(validSeInsertedEvent(virtualReaderName, 1));
     assertThat(remoteSePlugin.getReaders()).hasSize(2); // one virtual reader, one session reader
 
-    // terminate service, should unregister the reader
+    // terminate service, should unregister the slave reader
     readerObserver.terminateService(userOutputData);
     KeypleMessageDto terminateServiceMsg = messageArgumentCaptor.getValue();
     assertThat(terminateServiceMsg.getVirtualReaderName()).isNotEqualTo(virtualReaderName);
     assertThat(terminateServiceMsg.getSessionId()).isEqualTo(sessionId1);
-    validateTerminateSessionResponse(terminateServiceMsg, true);
+    validateTerminateSessionResponse(terminateServiceMsg, 1);
   }
 }

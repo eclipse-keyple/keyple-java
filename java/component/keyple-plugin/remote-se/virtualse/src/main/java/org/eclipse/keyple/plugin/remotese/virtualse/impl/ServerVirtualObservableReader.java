@@ -26,8 +26,7 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
     implements RemoteSeServerObservableReader, ObservableReaderNotifier {
 
   private final VirtualObservableReader reader;
-  private final ObservableReaderNotifier masterReader;
-  private final Boolean isDelegated;
+  private final ServerVirtualObservableReader masterReader;
 
   /**
    * (package-private)<br>
@@ -46,53 +45,54 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
       ServerVirtualObservableReader masterReader) {
     super(reader, serviceId, userInputDataJson, initialSeContentJson);
     this.reader = reader;
-    this.masterReader = masterReader == null ? this.reader : masterReader;
-    this.isDelegated = masterReader == null;
+    this.masterReader = masterReader;
   }
 
   /**
-   * (public)<br>
    * Notify event to the master reader observers
    *
    * @param event non nullable instance of a readerEvent
+   * @since 1.0
    */
   @Override
   public void notifyObservers(ReaderEvent event) {
-    masterReader.notifyObservers(event);
+    if (masterReader != null) {
+      masterReader.notifyObservers(event);
+    } else {
+      reader.notifyObservers(event);
+    }
   }
 
   /**
-   * (public)<br>
    * Add observer on the master reader
    *
    * @param observer non nullable instance of a reader observer
+   * @since 1.0
    */
   @Override
   public void addObserver(ReaderObserver observer) {
     Assert.getInstance().notNull(observer, "observer");
-    masterReader.addObserver(observer);
+    if (masterReader != null) {
+      masterReader.addObserver(observer);
+    } else {
+      reader.addObserver(observer);
+    }
   }
 
   /**
-   * (public)<br>
    * Remove observers on the master reader. If the master reader has no observer left, unplug it
    * from the plugin
    *
+   * @param observer non nullable instance of a reader observer
    * @since 1.0
    */
   @Override
   public void removeObserver(ReaderObserver observer) {
     Assert.getInstance().notNull(observer, "observer");
-    masterReader.removeObserver(observer);
-    if (masterReader.countObservers() == 0) {
-      // unregister the master reader
-      RemoteSeServerPluginImpl.unregisterReader(
-          reader.getPluginName(), masterReader.getName()); // unregister reader from plugin
-      if (isDelegated) {
-        // if this reader was not the master reader, unregister too
-        RemoteSeServerPluginImpl.unregisterReader(
-            reader.getPluginName(), this.getName()); // unregister reader from plugin
-      }
+    if (masterReader != null) {
+      masterReader.removeObserver(observer);
+    } else {
+      reader.removeObserver(observer);
     }
   }
 
@@ -103,25 +103,25 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
    */
   @Override
   public void clearObservers() {
-    masterReader.clearObservers();
-    // unregister the notifier reader (either master or delegate)
-    RemoteSeServerPluginImpl.unregisterReader(
-        reader.getPluginName(), masterReader.getName()); // unregister reader from plugin
-    if (isDelegated) {
-      // unplug this reader too
-      RemoteSeServerPluginImpl.unregisterReader(
-          reader.getPluginName(), this.getName()); // unregister reader from plugin
+    if (masterReader != null) {
+      masterReader.clearObservers();
+    } else {
+      reader.clearObservers();
     }
   }
 
   /**
-   * {@inheritDoc}
+   * Count observers on the master reader
    *
    * @since 1.0
    */
   @Override
   public int countObservers() {
-    return reader.countObservers();
+    if (masterReader != null) {
+      return masterReader.countObservers();
+    } else {
+      return reader.countObservers();
+    }
   }
 
   /**
@@ -177,5 +177,15 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
   @Override
   public void finalizeSeProcessing() {
     reader.finalizeSeProcessing();
+  }
+
+  /**
+   * (package-private)<br>
+   * Return the master reader if any, null if none
+   *
+   * @return boolean
+   */
+  ServerVirtualObservableReader getMasterReader() {
+    return masterReader;
   }
 }

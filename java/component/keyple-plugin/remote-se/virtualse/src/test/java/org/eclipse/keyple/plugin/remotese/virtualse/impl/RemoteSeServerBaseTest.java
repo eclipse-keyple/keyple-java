@@ -16,6 +16,7 @@ import static org.eclipse.keyple.plugin.remotese.virtualse.impl.SampleFactory.ge
 
 import com.google.gson.JsonObject;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -172,18 +173,18 @@ public class RemoteSeServerBaseTest {
   }
 
   void validateTerminateSessionResponse(
-      KeypleMessageDto terminateServiceMsg, boolean shouldUnregister) {
+      KeypleMessageDto terminateServiceMsg, int shouldUnregister) {
 
     assertThat(terminateServiceMsg.getAction())
         .isEqualTo(KeypleMessageDto.Action.TERMINATE_SERVICE.name());
     JsonObject body =
         KeypleJsonParser.getParser().fromJson(terminateServiceMsg.getBody(), JsonObject.class);
     MockUserOutputData userOutputResponse =
-        KeypleJsonParser.getParser()
-            .fromJson(body.get("userOutputData").getAsString(), MockUserOutputData.class);
-    Boolean unregisterVirtualReader = body.get("unregisterVirtualReader").getAsBoolean();
+        KeypleJsonParser.getParser().fromJson(body.get("userOutputData"), MockUserOutputData.class);
+    List<String> unregisterVirtualReaders =
+        KeypleJsonParser.getParser().fromJson(body.get("unregisterVirtualReaders"), List.class);
     assertThat(userOutputData).isEqualToComparingFieldByFieldRecursively(userOutputResponse);
-    assertThat(unregisterVirtualReader).isEqualTo(shouldUnregister); // reader is unregister
+    assertThat(unregisterVirtualReaders).hasSize(shouldUnregister);
   }
 
   void registerSyncPlugin() {

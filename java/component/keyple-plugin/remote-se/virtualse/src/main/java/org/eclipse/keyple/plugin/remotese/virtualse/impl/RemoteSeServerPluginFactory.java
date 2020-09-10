@@ -38,7 +38,6 @@ public class RemoteSeServerPluginFactory implements PluginFactory {
   private RemoteSeServerPlugin plugin;
 
   /**
-   * (public)<br>
    * Create a builder process for this factory
    *
    * @return next configuration step
