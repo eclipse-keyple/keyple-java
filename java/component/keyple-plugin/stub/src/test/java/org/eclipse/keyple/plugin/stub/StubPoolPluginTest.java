@@ -1,21 +1,18 @@
-/********************************************************************************
+/* **************************************************************************************
  * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * See the NOTICE file(s) distributed with this work for additional information regarding copyright
- * ownership.
+ * See the NOTICE file(s) distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * This program and the accompanying materials are made available under the terms of the Eclipse
- * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- ********************************************************************************/
+ ************************************************************************************** */
 package org.eclipse.keyple.plugin.stub;
 
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationNoReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.*;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -27,148 +24,120 @@ import org.slf4j.LoggerFactory;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class StubPoolPluginTest extends BaseStubTest {
 
-    static public final String POOL_PLUGIN_NAME = "pool1";
+  public static final String POOL_PLUGIN_NAME = "pool1";
 
-    Logger logger = LoggerFactory.getLogger(StubPoolPluginTest.class);
+  Logger logger = LoggerFactory.getLogger(StubPoolPluginTest.class);
 
-    @Before
-    public void setupStub() throws Exception {
-        super.setupStub();
+  @Before
+  public void setupStub() throws Exception {
+    super.setupStub();
+  }
 
-    }
+  @After
+  public void clearStub()
+      throws InterruptedException, KeypleReaderException, KeyplePluginNotFoundException {
+    super.clearStub();
+  }
 
-    @After
-    public void clearStub()
-            throws InterruptedException, KeypleReaderException, KeyplePluginNotFoundException {
-        super.clearStub();
-    }
+  /** Plug a pool reader */
+  @Test
+  public void plugStubPoolReader_success() {
+    StubPoolPluginImpl stubPoolPlugin =
+        (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME).getPlugin();
 
+    SeReader seReader = stubPoolPlugin.plugStubPoolReader("anyGroup", "anyName", stubSe);
 
-    /**
-     * Plug a pool reader
-     */
-    @Test
-    public void plugStubPoolReader_success() throws InterruptedException, KeypleReaderException {
-        StubPoolPluginImpl stubPoolPlugin =
-                (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)
-                        .getPluginInstance();
+    Assert.assertEquals(1, stubPoolPlugin.getReaders().size());
+    Assert.assertEquals(true, seReader.isSePresent());
+    Assert.assertEquals(1, stubPoolPlugin.getReaderGroupReferences().size());
+  }
 
-        SeReader seReader = stubPoolPlugin.plugStubPoolReader("anyGroup", "anyName", stubSe);
+  /** Unplug a pool reader */
+  @Test
+  public void unplugStubPoolReader_success() throws Exception {
+    StubPoolPluginImpl stubPoolPlugin =
+        (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME).getPlugin();
 
-        Assert.assertEquals(1, stubPoolPlugin.getReaders().size());
-        Assert.assertEquals(true, seReader.isSePresent());
-        Assert.assertEquals(1, stubPoolPlugin.getReaderGroupReferences().size());
-    }
+    // plug a reader
+    stubPoolPlugin.plugStubPoolReader("anyGroup", "anyName", stubSe);
 
-    /**
-     * Unplug a pool reader
-     */
-    @Test
-    public void unplugStubPoolReader_success() throws InterruptedException, KeypleReaderException {
-        StubPoolPluginImpl stubPoolPlugin =
-                (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)
-                        .getPluginInstance();
+    // unplug the reader
+    stubPoolPlugin.unplugStubPoolReader("anyGroup");
 
-        // plug a reader
-        stubPoolPlugin.plugStubPoolReader("anyGroup", "anyName", stubSe);
+    Assert.assertEquals(0, stubPoolPlugin.getReaders().size());
+    Assert.assertEquals(0, stubPoolPlugin.getReaderGroupReferences().size());
+  }
 
-        // unplug the reader
-        stubPoolPlugin.unplugStubPoolReader("anyGroup");
+  /** Allocate one reader */
+  @Test
+  public void allocate_success() throws Exception {
+    // init stubPoolPlugin
+    StubPoolPluginImpl stubPoolPlugin =
+        (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME).getPlugin();
 
-        Assert.assertEquals(0, stubPoolPlugin.getReaders().size());
-        Assert.assertEquals(0, stubPoolPlugin.getReaderGroupReferences().size());
+    // plug readers
+    stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubSe);
+    stubPoolPlugin.plugStubPoolReader("group2", "stub2", stubSe);
 
+    // allocate Reader
+    SeReader seReader = stubPoolPlugin.allocateReader("group1");
 
-    }
+    // check allocate result is correct
+    Assert.assertTrue(seReader.getName().startsWith("stub1"));
 
-    /**
-     * Allocate one reader
-     */
-    @Test
-    public void allocate_success()
-            throws KeypleAllocationReaderException, KeypleAllocationNoReaderException {
-        // init stubPoolPlugin
-        StubPoolPluginImpl stubPoolPlugin =
-                (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)
-                        .getPluginInstance();
+    // check allocate list is correct
+    Assert.assertTrue(stubPoolPlugin.listAllocatedReaders().containsKey("stub1"));
+    Assert.assertEquals(1, stubPoolPlugin.listAllocatedReaders().size());
+  }
 
-        // plug readers
-        stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubSe);
-        stubPoolPlugin.plugStubPoolReader("group2", "stub2", stubSe);
+  /** Allocate twice the same reader */
+  @Test(expected = KeypleAllocationNoReaderException.class)
+  public void allocate_twice() throws Exception {
+    // init stubPoolPlugin
+    StubPoolPluginImpl stubPoolPlugin =
+        (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME).getPlugin();
 
-        // allocate Reader
-        SeReader seReader = stubPoolPlugin.allocateReader("group1");
+    // plug readers
+    stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubSe);
+    stubPoolPlugin.plugStubPoolReader("group2", "stub2", stubSe);
 
-        // check allocate result is correct
-        Assert.assertTrue(seReader.getName().startsWith("stub1"));
+    // allocate Reader
+    SeReader seReader = stubPoolPlugin.allocateReader("group1");
+    SeReader seReader2 = stubPoolPlugin.allocateReader("group1");
+  }
 
-        // check allocate list is correct
-        Assert.assertTrue(stubPoolPlugin.listAllocatedReaders().containsKey("stub1"));
-        Assert.assertEquals(1, stubPoolPlugin.listAllocatedReaders().size());
+  /** Release one reader */
+  @Test
+  public void release_success() throws Exception {
+    // init stubPoolPlugin
+    StubPoolPluginImpl stubPoolPlugin =
+        (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME).getPlugin();
 
-    }
+    // plug readers
+    stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubSe);
+    stubPoolPlugin.plugStubPoolReader("group2", "stub2", stubSe);
 
-    /**
-     * Allocate twice the same reader
-     */
-    @Test(expected = KeypleAllocationNoReaderException.class)
-    public void allocate_twice() throws InterruptedException, KeypleReaderException,
-            KeypleAllocationReaderException, KeypleAllocationNoReaderException {
-        // init stubPoolPlugin
-        StubPoolPluginImpl stubPoolPlugin =
-                (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)
-                        .getPluginInstance();
+    // allocate Reader
+    SeReader seReader = stubPoolPlugin.allocateReader("group1");
 
-        // plug readers
-        stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubSe);
-        stubPoolPlugin.plugStubPoolReader("group2", "stub2", stubSe);
+    // release reader
+    stubPoolPlugin.releaseReader(seReader);
 
-        // allocate Reader
-        SeReader seReader = stubPoolPlugin.allocateReader("group1");
-        SeReader seReader2 = stubPoolPlugin.allocateReader("group1");
+    // assert no reader is allocated
+    Assert.assertEquals(0, stubPoolPlugin.listAllocatedReaders().size());
+  }
 
-    }
-
-    /**
-     * Release one reader
-     */
-    @Test
-    public void release_success()
-            throws KeypleAllocationReaderException, KeypleAllocationNoReaderException {
-        // init stubPoolPlugin
-        StubPoolPluginImpl stubPoolPlugin =
-                (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME)
-                        .getPluginInstance();
-
-        // plug readers
-        stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubSe);
-        stubPoolPlugin.plugStubPoolReader("group2", "stub2", stubSe);
-
-        // allocate Reader
-        SeReader seReader = stubPoolPlugin.allocateReader("group1");
-
-        // release reader
-        stubPoolPlugin.releaseReader(seReader);
-
-        // assert no reader is allocated
-        Assert.assertEquals(0, stubPoolPlugin.listAllocatedReaders().size());
-
-    }
-
-    /**
-     * Stub Secure Element
-     */
-    final static private StubSecureElement stubSe = new StubSecureElement() {
+  /** Stub Secure Element */
+  private static final StubSecureElement stubSe =
+      new StubSecureElement() {
         @Override
         public byte[] getATR() {
-            return new byte[0];
+          return new byte[0];
         }
 
         @Override
         public String getSeProcotol() {
-            return null;
+          return null;
         }
-    };
-
-
+      };
 }

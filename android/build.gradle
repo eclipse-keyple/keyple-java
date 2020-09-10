@@ -1,31 +1,30 @@
 buildscript {
+    ext.kotlin_version = '1.3.50'
     repositories {
-        mavenLocal()
         mavenCentral()
+        maven {url 'https://oss.sonatype.org/content/repositories/snapshots' }
+        mavenLocal()
         google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
-        classpath "com.diffplug.spotless:spotless-plugin-gradle:3.14.0"
+        classpath 'com.android.tools.build:gradle:3.5.3'
+        classpath "com.diffplug.spotless:spotless-plugin-gradle:3.27.1"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.10.0"
+        classpath 'org.eclipse.keyple:keyple-gradle:0.1.0-SNAPSHOT'
+        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.2"
+        classpath "org.jacoco:org.jacoco.core:0.8.5"
+        classpath "org.jacoco:org.jacoco.agent:0.8.5"
+        classpath 'com.dicedmelon.gradle:jacoco-android:0.1.4'
     }
 }
 
-
-ext {
-    timestamp = new Date().format('yyyyMMdd')
-}
-
-
-
-
-
-
-subprojects {
-
+allprojects {
     group 'org.eclipse.keyple'
     apply plugin: 'pmd'
-
+    apply plugin: 'org.jetbrains.dokka'
+    apply plugin: "com.diffplug.gradle.spotless"
 
     repositories {
         mavenLocal()
@@ -46,10 +45,60 @@ subprojects {
                 "java-braces",
         ]
     }
-    
 }
 
+subprojects{
 
+    dokka {
+        outputFormat = 'html'
+        outputDirectory = "$buildDir/javadoc"
+    }
+
+    spotless {
+        kotlin {
+            target "**/*.kt"
+            ktlint()
+
+            // also supports license headers
+            licenseHeader '/********************************************************************************\n' +
+                    ' * Copyright (c) $YEAR Calypso Networks Association https://www.calypsonet-asso.org/\n' +
+                    ' *\n' +
+                    ' * See the NOTICE file(s) distributed with this work for additional information regarding copyright\n' +
+                    ' * ownership.\n' +
+                    ' *\n' +
+                    ' * This program and the accompanying materials are made available under the terms of the Eclipse\n' +
+                    ' * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0\n' +
+                    ' *\n' +
+                    ' * SPDX-License-Identifier: EPL-2.0\n' +
+                    ' ********************************************************************************/'
+        }
+    }
+}
+
+task javadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
+    outputFormat = 'javadoc'
+    outputDirectory = dokka.outputDirectory
+    inputs.dir 'src/main/kotlin'
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from dokka.outputDirectory
+}
+
+task codeQuality {
+    group 'keyple'
+    description 'Analyse code and send results to Sonar'
+    dependsOn ':keyple-plugin:keyple-plugin-android-nfc:check'
+    dependsOn ':keyple-plugin:keyple-plugin-android-nfc:jacocoTestReport'
+    dependsOn ':keyple-plugin:keyple-plugin-android-nfc:sonarqube'
+    dependsOn ':keyple-plugin:keyple-plugin-android-omapi:check'
+    dependsOn ':keyple-plugin:keyple-plugin-android-omapi:jacocoTestReport'
+    dependsOn ':keyple-plugin:keyple-plugin-android-omapi:sonarqube'
+    doLast {
+        println 'Keyple code has been analysed and result was sent to SonarQube.'
+    }
+}
 
 //create task for to agragate javadoc
 /*

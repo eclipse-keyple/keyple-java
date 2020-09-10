@@ -1,207 +1,155 @@
-/********************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+/* **************************************************************************************
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * See the NOTICE file(s) distributed with this work for additional information regarding copyright
- * ownership.
+ * See the NOTICE file(s) distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * This program and the accompanying materials are made available under the terms of the Eclipse
- * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- ********************************************************************************/
+ ************************************************************************************** */
 package org.eclipse.keyple.example.calypso.pc.usecase1;
 
+import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
 
-import java.io.IOException;
-import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
-import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
-import org.eclipse.keyple.calypso.transaction.*;
-import org.eclipse.keyple.core.selection.MatchingSelection;
+import org.eclipse.keyple.calypso.transaction.CalypsoPo;
+import org.eclipse.keyple.calypso.transaction.ElementaryFile;
+import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
+import org.eclipse.keyple.calypso.transaction.PoSelector;
+import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.*;
-import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
+import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
+import org.eclipse.keyple.plugin.pcsc.PcscReaderConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ *
+ *
  * <h1>Use Case ‘Calypso 1’ – Explicit Selection Aid (PC/SC)</h1>
+ *
  * <ul>
- * <li>
- * <h2>Scenario:</h2>
- * <ul>
- * <li>Check if a ISO 14443-4 SE is in the reader, select a Calypso PO, operate a simple Calypso PO
- * transaction (simple plain read, not involving a Calypso SAM).</li>
- * <li><code>
- Explicit Selection
- </code> means that it is the terminal application which start the SE processing.</li>
- * <li>PO messages:
- * <ul>
- * <li>A first SE message to select the application in the reader</li>
- * <li>A second SE message to operate the simple Calypso transaction</li>
- * </ul>
- * </li>
- * </ul>
- * </li>
+ *   <li>
+ *       <h2>Scenario:</h2>
+ *       <ul>
+ *         <li>Check if a ISO 14443-4 SE is in the reader, select a Calypso PO, operate a simple
+ *             Calypso PO transaction (simple plain read, not involving a Calypso SAM).
+ *         <li><code>
+ * Explicit Selection
+ * </code> means that it is the terminal application which start the SE processing.
+ *         <li>PO messages:
+ *             <ul>
+ *               <li>A first SE message to select the application in the reader
+ *               <li>A second SE message to operate the simple Calypso transaction
+ *             </ul>
+ *       </ul>
  * </ul>
  */
 public class ExplicitSelectionAid_Pcsc {
-    protected static final Logger logger = LoggerFactory.getLogger(ExplicitSelectionAid_Pcsc.class);
+  private static final Logger logger = LoggerFactory.getLogger(ExplicitSelectionAid_Pcsc.class);
 
-    public static void main(String[] args)
-            throws KeypleBaseException, InterruptedException, IOException {
+  public static void main(String[] args) {
 
-        /* Get the instance of the SeProxyService (Singleton pattern) */
-        SeProxyService seProxyService = SeProxyService.getInstance();
+    // Get the instance of the SeProxyService (Singleton pattern) */
+    SeProxyService seProxyService = SeProxyService.getInstance();
 
-        /* Assign PcscPlugin to the SeProxyService */
-        seProxyService.registerPlugin(new PcscPluginFactory());
+    // Register the PcscPlugin with SeProxyService, get the corresponding generic ReaderPlugin in
+    // return
+    ReaderPlugin readerPlugin = seProxyService.registerPlugin(new PcscPluginFactory());
 
-        /*
-         * Get a PO reader ready to work with Calypso PO. Use the getReader helper method from the
-         * CalypsoUtilities class.
-         */
-        SeReader poReader = CalypsoUtilities.getDefaultPoReader();
+    // Get and configure the PO reader
+    SeReader poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
+    poReader.setParameter(
+        PcscReaderConstants.TRANSMISSION_MODE_KEY,
+        PcscReaderConstants.TRANSMISSION_MODE_VAL_CONTACTLESS);
+    poReader.setParameter(PcscReaderConstants.PROTOCOL_KEY, PcscReaderConstants.PROTOCOL_VAL_T1);
 
-        /* Check if the reader exists */
-        if (poReader == null) {
-            throw new IllegalStateException("Bad PO reader setup");
-        }
+    logger.info(
+        "=============== UseCase Calypso #1: AID based explicit selection ==================");
+    logger.info("= PO Reader  NAME = {}", poReader.getName());
 
-        logger.info(
-                "=============== UseCase Calypso #1: AID based explicit selection ==================");
-        logger.info("= PO Reader  NAME = {}", poReader.getName());
+    // Check if a PO is present in the reader
+    if (poReader.isSePresent()) {
 
-        /* Check if a PO is present in the reader */
-        if (poReader.isSePresent()) {
+      logger.info("= #### 1st PO exchange: AID based selection with reading of Environment file.");
 
-            logger.info(
-                    "==================================================================================");
-            logger.info(
-                    "= 1st PO exchange: AID based selection with reading of Environment file.         =");
-            logger.info(
-                    "==================================================================================");
+      // Prepare a Calypso PO selection
+      SeSelection seSelection = new SeSelection();
 
-            /*
-             * Prepare a Calypso PO selection
-             */
-            SeSelection seSelection = new SeSelection();
+      // Setting of an AID based selection of a Calypso REV3 PO
+      // Select the first application matching the selection AID whatever the SE
+      // communication protocol.
+      // Keep the logical channel open after the selection
 
-            /*
-             * Setting of an AID based selection of a Calypso REV3 PO
-             *
-             * Select the first application matching the selection AID whatever the SE communication
-             * protocol keep the logical channel open after the selection
-             */
+      // Calypso selection: configures a PoSelectionRequest with all the desired attributes to
+      // make the selection and read additional information afterwards
+      PoSelectionRequest poSelectionRequest =
+          new PoSelectionRequest(
+              PoSelector.builder()
+                  .aidSelector(AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
+                  .invalidatedPo(InvalidatedPo.REJECT)
+                  .build());
 
-            /*
-             * Calypso selection: configures a PoSelectionRequest with all the desired attributes to
-             * make the selection and read additional information afterwards
-             */
-            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
-                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                    new PoSelector.PoAidSelector(
-                            new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
-                            PoSelector.InvalidatedPo.REJECT),
-                    "AID: " + CalypsoClassicInfo.AID));
+      // Prepare the reading order.
+      poSelectionRequest.prepareReadRecordFile(
+          CalypsoClassicInfo.SFI_EnvironmentAndHolder, CalypsoClassicInfo.RECORD_NUMBER_1);
 
-            /*
-             * Prepare the reading order and keep the associated parser for later use once the
-             * selection has been made.
-             */
-            int readEnvironmentParserIndex = poSelectionRequest.prepareReadRecordsCmd(
-                    CalypsoClassicInfo.SFI_EnvironmentAndHolder,
-                    ReadDataStructure.SINGLE_RECORD_DATA, CalypsoClassicInfo.RECORD_NUMBER_1,
-                    String.format("EnvironmentAndHolder (SFI=%02X))",
-                            CalypsoClassicInfo.SFI_EnvironmentAndHolder));
+      // Add the selection case to the current selection (we could have added other cases
+      // here)
+      // Ignore the returned index since we have only one selection here.
+      seSelection.prepareSelection(poSelectionRequest);
 
-            /*
-             * Add the selection case to the current selection (we could have added other cases
-             * here)
-             *
-             * Ignore the returned index since we have only one selection here.
-             */
-            seSelection.prepareSelection(poSelectionRequest);
+      // Actual PO communication: operate through a single request the Calypso PO selection
+      // and the file read
 
-            /*
-             * Actual PO communication: operate through a single request the Calypso PO selection
-             * and the file read
-             */
+      CalypsoPo calypsoPo =
+          (CalypsoPo) seSelection.processExplicitSelection(poReader).getActiveMatchingSe();
+      logger.info("The selection of the PO has succeeded.");
 
-            SelectionsResult selectionsResult = seSelection.processExplicitSelection(poReader);
+      // Retrieve the data read from the CalyspoPo updated during the transaction process
+      ElementaryFile efEnvironmentAndHolder =
+          calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EnvironmentAndHolder);
+      String environmentAndHolder =
+          ByteArrayUtil.toHex(efEnvironmentAndHolder.getData().getContent());
 
-            if (selectionsResult.hasActiveSelection()) {
-                MatchingSelection matchingSelection = selectionsResult.getActiveSelection();
+      // Log the result
+      logger.info("EnvironmentAndHolder file data: {}", environmentAndHolder);
 
-                CalypsoPo calypsoPo = (CalypsoPo) matchingSelection.getMatchingSe();
-                logger.info("The selection of the PO has succeeded.");
+      // Go on with the reading of the first record of the EventLog file
+      logger.info("= #### 2nd PO exchange: reading transaction of the EventLog file.");
 
-                ReadRecordsRespPars readEnvironmentParser = (ReadRecordsRespPars) matchingSelection
-                        .getResponseParser(readEnvironmentParserIndex);
+      PoTransaction poTransaction =
+          new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPo));
 
-                /* Retrieve the data read from the parser updated during the selection process */
-                byte environmentAndHolder[] = (readEnvironmentParser.getRecords())
-                        .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
+      // Prepare the reading order.
+      poTransaction.prepareReadRecordFile(
+          CalypsoClassicInfo.SFI_EventLog, CalypsoClassicInfo.RECORD_NUMBER_1);
 
-                /* Log the result */
-                logger.info("Environment file data: {}", ByteArrayUtil.toHex(environmentAndHolder));
+      // Actual PO communication: send the prepared read order, then close the channel with
+      // the PO
+      poTransaction.prepareReleasePoChannel();
+      poTransaction.processPoCommands();
+      logger.info("The reading of the EventLog has succeeded.");
 
-                /* Go on with the reading of the first record of the EventLog file */
-                logger.info(
-                        "==================================================================================");
-                logger.info(
-                        "= 2nd PO exchange: reading transaction of the EventLog file.                     =");
-                logger.info(
-                        "==================================================================================");
+      // Retrieve the data read from the CalyspoPo updated during the transaction process
+      ElementaryFile efEventLog = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+      String eventLog = ByteArrayUtil.toHex(efEventLog.getData().getContent());
 
-                PoTransaction poTransaction =
-                        new PoTransaction(new PoResource(poReader, calypsoPo));
+      // Log the result
+      logger.info("EventLog file data: {}", eventLog);
 
-                /*
-                 * Prepare the reading order and keep the associated parser for later use once the
-                 * transaction has been processed.
-                 */
-                int readEventLogParserIndex = poTransaction.prepareReadRecordsCmd(
-                        CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
-                        CalypsoClassicInfo.RECORD_NUMBER_1,
-                        String.format("EventLog (SFI=%02X, recnbr=%d))",
-                                CalypsoClassicInfo.SFI_EventLog,
-                                CalypsoClassicInfo.RECORD_NUMBER_1));
-
-                /*
-                 * Actual PO communication: send the prepared read order, then close the channel
-                 * with the PO
-                 */
-                if (poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER)) {
-                    logger.info("The reading of the EventLog has succeeded.");
-
-                    /*
-                     * Retrieve the data read from the parser updated during the transaction process
-                     */
-                    byte eventLog[] = (((ReadRecordsRespPars) poTransaction
-                            .getResponseParser(readEventLogParserIndex)).getRecords())
-                                    .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
-
-                    /* Log the result */
-                    logger.info("EventLog file data: {}", ByteArrayUtil.toHex(eventLog));
-                }
-                logger.info(
-                        "==================================================================================");
-                logger.info(
-                        "= End of the Calypso PO processing.                                              =");
-                logger.info(
-                        "==================================================================================");
-            } else {
-                logger.error("The selection of the PO has failed.");
-            }
-        } else {
-            logger.error("No PO were detected.");
-        }
-        System.exit(0);
+      logger.info("= #### End of the Calypso PO processing.");
+    } else {
+      logger.error("No PO were detected.");
     }
+    System.exit(0);
+  }
 }

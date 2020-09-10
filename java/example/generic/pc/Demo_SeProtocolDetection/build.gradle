@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
 group 'org.eclispe.keyple'
@@ -11,6 +12,17 @@ ext {
     keyple_v = project.hasProperty("keyple_version") ? keyple_version : '+'
 }
 
+mainClassName = 'org.eclipse.keyple.example.generic.pc.Demo_SeProtocolDetection.Demo_SeProtocolDetection_Pcsc'
+
+task('runPcsc', dependsOn: 'classes', type: JavaExec, group:'application') {
+    main = 'org.eclipse.keyple.example.generic.pc.Demo_SeProtocolDetection.Demo_SeProtocolDetection_Pcsc'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task('runStub', dependsOn: 'classes', type: JavaExec, group:'application') {
+    main = 'org.eclipse.keyple.example.generic.pc.Demo_SeProtocolDetection.Demo_SeProtocolDetection_Stub'
+    classpath = sourceSets.main.runtimeClasspath
+}
 
 repositories {
     mavenLocal()

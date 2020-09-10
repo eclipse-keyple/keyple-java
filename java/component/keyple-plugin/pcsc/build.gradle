@@ -1,14 +1,9 @@
-def version = "0.8.1"
-
-if(project.getProperties().containsKey("release") && release=="true"){
-    project.version = version
-}else{
-    project.version = version+'-'+ timestamp+ '-SNAPSHOT'
-}
-
 apply plugin: 'java'
 apply plugin: 'java-library'
 apply plugin: 'maven'
+apply plugin: 'org.eclipse.keyple'
+apply plugin: 'jacoco'
+apply plugin: 'org.sonarqube'
 
 sourceCompatibility = 1.6
 archivesBaseName = "keyple-java-plugin-pcsc"
@@ -45,6 +40,7 @@ task sourcesJar(type: Jar, dependsOn : classes) {
 //generate javadoc jar
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
+    javadoc.options.encoding = 'UTF-8'
     from javadoc.destinationDir
 }
 
@@ -189,6 +185,23 @@ dependencies {
     testImplementation "org.slf4j:slf4j-simple:${slf4jsimple_version}"
 }
 
-test {
-    exclude '**'
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.enabled false
+    }
+}
+
+test.exclude '**'
+test.finalizedBy jacocoTestReport
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "eclipse_keyple-plugin_pcsc"
+        property "sonar.organization", "eclipse"
+        property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.login", System.getenv('SONAR_LOGIN')
+        property "sonar.branch.name", System.getenv('BRANCH_NAME')
+    }
 }

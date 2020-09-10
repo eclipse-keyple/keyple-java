@@ -1,29 +1,26 @@
-/********************************************************************************
+/* **************************************************************************************
  * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * See the NOTICE file(s) distributed with this work for additional information regarding copyright
- * ownership.
+ * See the NOTICE file(s) distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * This program and the accompanying materials are made available under the terms of the Eclipse
- * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- ********************************************************************************/
+ ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.exception;
 
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+
 /**
- * Exception thrown when {@link org.eclipse.keyple.core.seproxy.ReaderPlugin} is not found
+ * The exception {@code KeyplePluginNotFoundException} indicates that the plugin is not found,
+ * generally when it has not been previously registered to the {@link SeProxyService}.
  */
 public class KeyplePluginNotFoundException extends KeyplePluginException {
 
-    /**
-     * Exception thrown when {@link org.eclipse.keyple.core.seproxy.ReaderPlugin} is not found
-     * 
-     * @param pluginName : pluginName that has not been found
-     */
-    public KeyplePluginNotFoundException(String pluginName) {
-        super("Plugin with name " + pluginName + " was not found");
-    }
-
-
+  /** @param pluginName the name of the plugin that has not been found */
+  public KeyplePluginNotFoundException(String pluginName) {
+    super("Plugin with name " + pluginName + " was not found");
+  }
 }

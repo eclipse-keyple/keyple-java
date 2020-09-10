@@ -1,14 +1,14 @@
-/********************************************************************************
+/* **************************************************************************************
  * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * See the NOTICE file(s) distributed with this work for additional information regarding copyright
- * ownership.
+ * See the NOTICE file(s) distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * This program and the accompanying materials are made available under the terms of the Eclipse
- * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- ********************************************************************************/
+ ************************************************************************************** */
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import java.util.SortedSet;
@@ -22,105 +22,110 @@ import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * Remote SE Plugin Creates a virtual reader when a remote readers connect Manages the dispatch of
  * events received from remote readers
  */
 class RemoteSePoolPluginImpl extends RemoteSePluginImpl implements RemoteSePoolPlugin {
 
-    private static final Logger logger = LoggerFactory.getLogger(RemoteSePoolPluginImpl.class);
+  private static final Logger logger = LoggerFactory.getLogger(RemoteSePoolPluginImpl.class);
 
+  // Slave Node where the ReaderPluginPool is located
+  String slaveNodeId;
+  RemoteMethodTxPoolEngine rmTxEngine;
 
-    // Slave Node where the ReaderPluginPool is located
-    String slaveNodeId;
-    RemoteMethodTxPoolEngine rmTxEngine;
+  /** Only {@link MasterAPI} can instantiate a RemoteSePlugin */
+  RemoteSePoolPluginImpl(
+      VirtualReaderSessionFactory sessionManager,
+      DtoSender sender,
+      long rpcTimeout,
+      String pluginName,
+      ExecutorService executorService) {
+    super(sessionManager, sender, rpcTimeout, pluginName, executorService);
 
-    /**
-     * Only {@link MasterAPI} can instantiate a RemoteSePlugin
+    // allocate a rmTxPoolEngine
+    rmTxEngine = new RemoteMethodTxPoolEngine(sender, rpcTimeout, executorService);
+  }
+
+  public void bind(String slaveNodeId) {
+    this.slaveNodeId = slaveNodeId;
+  }
+
+  @Override
+  public SortedSet<String> getReaderGroupReferences() {
+    /*
+     * Not implemented
      */
-    RemoteSePoolPluginImpl(VirtualReaderSessionFactory sessionManager, DtoSender sender,
-            long rpcTimeout, String pluginName, ExecutorService executorService) {
-        super(sessionManager, sender, rpcTimeout, pluginName, executorService);
+    return null;
+  }
 
-        // allocate a rmTxPoolEngine
-        rmTxEngine = new RemoteMethodTxPoolEngine(sender, rpcTimeout, executorService);
+  @Override
+  public SeReader allocateReader(String groupReference) {
+
+    if (slaveNodeId == null) {
+      throw new IllegalStateException(
+          "RemoteSePluginPool is not bind to any Slave Node, invoke RemoteSePluginPool#bind()");
     }
 
-    public void bind(String slaveNodeId) {
-        this.slaveNodeId = slaveNodeId;
+    // call remote method for allocateReader
+    RmPoolAllocateTx allocate =
+        new RmPoolAllocateTx(
+            groupReference, this, this.dtoSender, slaveNodeId, dtoSender.getNodeId());
+    try {
+      // blocking call
+      return allocate.execute(rmTxEngine);
+    } catch (KeypleRemoteException e) {
+      Throwable cause = e.getCause();
+      if (cause instanceof KeypleAllocationReaderException) {
+        throw (KeypleAllocationReaderException) cause;
+      } else if (cause instanceof KeypleAllocationNoReaderException) {
+        throw (KeypleAllocationNoReaderException) cause;
+      } else {
+        throw new KeypleAllocationReaderException(
+            "Unexpected error while remotely allocating a reader", cause);
+      }
+    }
+  }
+
+  @Override
+  public void releaseReader(SeReader seReader) {
+    // call remote method for releaseReader
+    if (slaveNodeId == null) {
+      throw new IllegalStateException(
+          "RemoteSePluginPool is not bind to any Slave Node, invoke RemoteSePluginPool#bind() first");
     }
 
-    @Override
-    public SortedSet<String> getReaderGroupReferences() {
-        /*
-         * Not implemented
-         */
-        return null;
+    if (!(seReader instanceof VirtualReaderImpl)) {
+      throw new IllegalStateException(
+          "RemoteSePluginPool can release only VirtualReader, seReader is type of "
+              + seReader.getClass().getSimpleName());
     }
 
-    @Override
-    public SeReader allocateReader(String groupReference)
-            throws KeypleAllocationReaderException, KeypleAllocationNoReaderException {
+    VirtualReaderImpl virtualReader = (VirtualReaderImpl) seReader;
 
-        if (slaveNodeId == null) {
-            throw new IllegalStateException(
-                    "RemoteSePluginPool is not bind to any Slave Node, invoke RemoteSePluginPool#bind()");
-        }
+    // call remote method for releaseReader
+    RmPoolReleaseTx releaseTx =
+        new RmPoolReleaseTx(
+            virtualReader.getNativeReaderName(),
+            virtualReader.getName(),
+            this,
+            this.dtoSender,
+            virtualReader.getSession().getSessionId(),
+            slaveNodeId,
+            dtoSender.getNodeId());
 
-        // call remote method for allocateReader
-        RmPoolAllocateTx allocate = new RmPoolAllocateTx(groupReference, this, this.dtoSender,
-                slaveNodeId, dtoSender.getNodeId());
-        try {
-            // blocking call
-            return allocate.execute(rmTxEngine);
-        } catch (KeypleRemoteException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof KeypleAllocationReaderException) {
-                throw (KeypleAllocationReaderException) cause;
-            } else if (cause instanceof KeypleAllocationNoReaderException) {
-                throw (KeypleAllocationNoReaderException) cause;
-            } else {
-                throw new KeypleAllocationReaderException(
-                        "Unexpected error while remotely allocating a reader", cause);
-            }
-        }
+    try {
+      // blocking call
+      releaseTx.execute(rmTxEngine);
+    } catch (KeypleRemoteException e) {
+      logger.error(
+          "Impossible to release reader {} {}",
+          virtualReader.getName(),
+          virtualReader.getNativeReaderName());
     }
+  }
 
-    @Override
-    public void releaseReader(SeReader seReader) {
-        // call remote method for releaseReader
-        if (slaveNodeId == null) {
-            throw new IllegalStateException(
-                    "RemoteSePluginPool is not bind to any Slave Node, invoke RemoteSePluginPool#bind() first");
-        }
-
-        if (!(seReader instanceof VirtualReaderImpl)) {
-            throw new IllegalStateException(
-                    "RemoteSePluginPool can release only VirtualReader, seReader is type of "
-                            + seReader.getClass().getSimpleName());
-        }
-
-        VirtualReaderImpl virtualReader = (VirtualReaderImpl) seReader;
-
-        // call remote method for releaseReader
-        RmPoolReleaseTx releaseTx = new RmPoolReleaseTx(virtualReader.getNativeReaderName(),
-                virtualReader.getName(), this, this.dtoSender,
-                virtualReader.getSession().getSessionId(), slaveNodeId, dtoSender.getNodeId());
-
-        try {
-            // blocking call
-            releaseTx.execute(rmTxEngine);
-        } catch (KeypleRemoteException e) {
-            logger.error("Impossible to release reader {} {}", virtualReader.getName(),
-                    virtualReader.getNativeReaderName());
-        }
-    }
-
-    RemoteMethodTxPoolEngine getRmTxEngine() {
-        return rmTxEngine;
-    }
-
-
-
+  RemoteMethodTxPoolEngine getRmTxEngine() {
+    return rmTxEngine;
+  }
 }

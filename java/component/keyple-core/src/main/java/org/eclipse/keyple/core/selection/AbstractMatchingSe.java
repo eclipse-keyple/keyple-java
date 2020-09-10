@@ -1,83 +1,79 @@
-/********************************************************************************
+/* **************************************************************************************
  * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * See the NOTICE file(s) distributed with this work for additional information regarding copyright
- * ownership.
+ * See the NOTICE file(s) distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * This program and the accompanying materials are made available under the terms of the Eclipse
- * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- ********************************************************************************/
+ ************************************************************************************** */
 package org.eclipse.keyple.core.selection;
 
+import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 
 /**
- * AbstractMatchingSe is the class to manage the elements of the result of a selection.
- *
+ * AbstractMatchingSe is the class to manage the elements of the result of a selection.<br>
+ * This class should be extended for the management of specific SE.<br>
+ * Nevertheless it gives access to the generic parameters common to all SEs which are the FCI
+ * (response to select command) and the ATR (SE's answer to reset) when they are available.
  */
 public abstract class AbstractMatchingSe {
-    private final SeResponse selectionResponse;
-    private final TransmissionMode transmissionMode;
-    private final SelectionStatus selectionStatus;
-    private final String selectionExtraInfo;
+  private final byte[] fciBytes;
+  private final byte[] atrBytes;
 
-    /**
-     * Constructor.
-     * 
-     * @param selectionResponse the response from the SE
-     * @param transmissionMode the transmission mode, contact or contactless
-     * @param extraInfo information string
-     */
-    protected AbstractMatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode,
-            String extraInfo) {
-        this.selectionResponse = selectionResponse;
-        this.transmissionMode = transmissionMode;
-        if (selectionResponse != null) {
-            this.selectionStatus = selectionResponse.getSelectionStatus();
-        } else {
-            this.selectionStatus = null;
-        }
-        this.selectionExtraInfo = extraInfo;
+  /**
+   * Constructor.
+   *
+   * @param selectionResponse the response from the SE
+   */
+  protected AbstractMatchingSe(SeResponse selectionResponse) {
+    ApduResponse fci = selectionResponse.getSelectionStatus().getFci();
+    if (fci != null) {
+      this.fciBytes = fci.getBytes();
+    } else {
+      this.fciBytes = null;
     }
+    AnswerToReset atr = selectionResponse.getSelectionStatus().getAtr();
+    if (atr != null) {
+      this.atrBytes = atr.getBytes();
+    } else {
+      this.atrBytes = null;
+    }
+  }
 
-    /**
-     * Indicates whether the current SE has been identified as selected: the logical channel is open
-     * and the selection process returned either a FCI or an ATR
-     * 
-     * @return true or false
-     */
-    public final boolean isSelected() {
-        boolean isSelected;
-        if (selectionStatus != null) {
-            isSelected = selectionStatus.hasMatched() && selectionResponse.isLogicalChannelOpen();
-        } else {
-            isSelected = false;
-        }
-        return isSelected;
-    }
+  /** @return true if the matching SE has an FCI */
+  public boolean hasFci() {
+    return fciBytes != null && fciBytes.length > 0;
+  }
 
-    /**
-     * @return the SE {@link SelectionStatus}
-     */
-    public SelectionStatus getSelectionStatus() {
-        return selectionStatus;
-    }
+  /** @return true if the matching SE has an ATR */
+  public boolean hasAtr() {
+    return atrBytes != null && atrBytes.length > 0;
+  }
 
-    /**
-     * @return the SE {@link TransmissionMode} (contacts or contactless)
-     */
-    public TransmissionMode getTransmissionMode() {
-        return transmissionMode;
+  /**
+   * @return the FCI
+   * @throws IllegalStateException if no FCI is available (see hasFci)
+   */
+  public byte[] getFciBytes() {
+    if (hasFci()) {
+      return fciBytes;
     }
+    throw new IllegalStateException("No FCI is available in this AbstractMatchingSe");
+  }
 
-    /**
-     * @return the selection extra info string
-     */
-    public String getSelectionExtraInfo() {
-        return selectionExtraInfo;
+  /**
+   * @return the ATR
+   * @throws IllegalStateException if no ATR is available (see hasAtr)
+   */
+  public byte[] getAtrBytes() {
+    if (hasAtr()) {
+      return atrBytes;
     }
+    throw new IllegalStateException("No ATR is available in this AbstractMatchingSe");
+  }
 }

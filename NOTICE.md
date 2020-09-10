@@ -44,6 +44,7 @@ The project maintains the following source code repositories:
    *   Olivier Delcroix - plugins Android, plugin Remote SE
    *   Florent Clairambault - Keyple Core
    *   Paulo Barreto - integration and demo
+   *   Meddy Menzikoff - Android plugins and Examples 
    
 
 ## Third-party Content
@@ -66,10 +67,30 @@ Junit (4.12)
 
 ####Specific for Android plugins
 
-SEEK for Android (plugin OMAPI)
+SEEK for Android (plugin OMAPI) (3.2):
 
  * License: Apache Software License, 2.0
 
 Android Open Source Project
 
  * License: Apache Software License, 2.0
+ 
+Timber (4.7.1):
+ 
+ * Licence: Apache Software License, 2.0
+
+slf4j Timber (3.1):
+ 
+ * Licence: Apache Software License, 2.0
+ 
+Mockk (1.9): 
+ 
+ * Licence: Apache Software License, 2.0
+ 
+Kotlin Standard Library (1.3.50):
+  
+  * Licence: Apache Software License, 2.0
+ 
+Kotlinx Coroutines core (1.3.3):
+ 
+ * Licence: Apache Software License, 2.0

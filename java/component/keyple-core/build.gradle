@@ -1,15 +1,9 @@
-def version = "0.8.1"
-
-if(project.getProperties().containsKey("release") && release=="true"){
-    project.version = version
-}else{
-    project.version = version+'-'+ timestamp+ '-SNAPSHOT'
-}
-
-
 apply plugin: 'java'
 apply plugin: 'java-library'
 apply plugin: 'maven'
+apply plugin: 'org.eclipse.keyple'
+apply plugin: 'jacoco'
+apply plugin: 'org.sonarqube'
 
 sourceCompatibility = 1.6
 archivesBaseName = "keyple-java-core"
@@ -66,6 +60,7 @@ task sourcesJar(type: Jar, dependsOn : classes) {
 //generate javadoc jar
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
+    javadoc.options.encoding = 'UTF-8'
     from javadoc.destinationDir
 }
 
@@ -168,7 +163,27 @@ task installCore{
     dependsOn ':java:component:keyple-core:uploadArchives'
 
     doLast {
-        println 'Keyple Core library has been installed into maven local repo at path : ' + project.getRepositories().get(0).getAt("url")
+        println "Keyple Core library ${project.version} has been installed into maven local repo at path : " + project.getRepositories().get(0).getAt("url")
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.enabled false
+    }
+}
+
+test.finalizedBy jacocoTestReport
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "eclipse_keyple-core"
+        property "sonar.organization", "eclipse"
+        property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.login", System.getenv('SONAR_LOGIN')
+        property "sonar.branch.name", System.getenv('BRANCH_NAME')
     }
 }
 
@@ -178,11 +193,11 @@ dependencies {
 
     testImplementation "junit:junit:${junit_version}"
 
-    // https://mvnrepository.com/artifact/org.mockito/mockito-core
-    testImplementation "org.mockito:mockito-core:${mockitocore_version}"
+    // https://search.maven.org/artifact/org.assertj/assertj-core/2.9.1/bundle
+    testImplementation "org.assertj:assertj-core:${assertj_version}"
 
     // https://mvnrepository.com/artifact/org.mockito/mockito-core
-    testImplementation "junit:junit:${junit_version}"
+    testImplementation "org.mockito:mockito-core:${mockitocore_version}"
 
     //add slf4j simple logger implementation
     testImplementation "org.slf4j:slf4j-simple:${slf4jsimple_version}"

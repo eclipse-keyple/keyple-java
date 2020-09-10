@@ -1,4 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Keyple Android OMAPI</string>
+    <string name="connect_omapi_label">Init OMAPI Readers</string>
+    <string name="alert_dialog_title">Connecting OMAPI</string>
+    <string name="alert_dialog_message">Error: %s</string>
+    <string name="error_no_reader_found">No reader found after %d tries</string>
+    <string name="core_examples">Keyple-core Examples</string>
+    <string name="calypso_examples">Keyple-calypso Examples</string>
+    <string name="case_explicit_selection">Explicit Selection Aid</string>
+    <string name="groupedMultiSelection">Grouped MultiSelection</string>
+    <string name="sequentialMultiSelection">Sequential MultiSelection</string>
+    <string name="get_readers_infos">Get Readers Infos</string>
+    <string name="read_env_and_usage">Read environment and usage</string>
+
+    <string name="open_navigation_drawer">Open menu</string>
+    <string name="close_navigation_drawer">Close Menu</string>
 </resources>

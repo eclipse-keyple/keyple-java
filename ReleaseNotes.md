@@ -1,9 +1,79 @@
 # Keyple - Release Notes
 
 Releases:
+ - Alpha [Keyple Java 20/next](#keyple-java-20next)
  - [Patch - Keyple Java 20/05](#patch---keyple-java-2005)
  - [Master - Keyple Java 20/01](#master---keyple-java-2001)
  - [Master - Keyple Java 19/07](#master---keyple-java-1907)
+
+
+## Keyple Java 20/next
+ - [keyple-java-core 0.9a](#keyple-java-core-09a)
+ - [keyple-java-calypso 0.9a](#keyple-java-calypso-09a)
+ - [keyple-java-plugin-pcsc 0.9a](#keyple-java-plugin-pcsc-09a)
+ - [keyple-java-plugin-stub 0.9a](#keyple-java-plugin-stub-09a)
+ - [keyple-java-plugin-remotese 0.9a](#keyple-java-plugin-remotese-09a)
+ - [keyple-android-plugin-android-nfc 0.9a](#keyple-android-plugin-android-nfc-09a)
+ - [keyple-android-plugin-android-omapi 0.9a](#keyple-android-plugin-android-omapi-09a)
+
+### keyple-java-core 0.9a
+* KEYP-320 : ReaderPlugin and SeReader no longer implement the Comparable interface
+* KEYP-319 : added a method finalizeSeProcessing to ObservableReader to handle abnormal transaction terminations
+* KEYP-318 : added a direct access to the plugin and reader that generated a ReaderEvent
+* KEYP-317 : changed ChannelControl access
+* KEYP-316 : added a new method (prepareReleaseSeChannel) to control the channel during selection
+* KEYP-314 : reviewed the channel control management: notifySeProcessed is removed
+* KEYP-312 : restricting access to methods of the reader API that are not used by the plugins.
+* KEYP-108, 213 : improved plugin lifecycle management (SeProxyService, PluginFactory)
+* KEYP-145 : improved command builders and parsers to manage erroneous status word with dedicated exceptions
+* KEYP-154,295 : improved exceptions management, all exceptions are now runtime exceptions
+* KEYP-243,250,251 : improvement of the classes from the selection package (deep refactoring and simplification)
+* KEYP-245 : improved isolation in the plugin API
+* KEYP-202, 241, 242 : fixed misused Set fields (changed into List), simplified ProxyReader API (less methods)
+* KEYP-225 : SeResource constructor is now public
+* fixed a comparison issue in the Tag class
+* various other refactorings and improvements
+* fixed many issues raised by Sonarqube
+ 
+### keyple-java-calypso 0.9a
+* KEYP-314 : simplified the channel control management: a new prepareReleasePoChannel command is added to PoTransaction 
+* KEYP-306 : added a default value to SeProtocol in PoSelector and SamSelector (specifying it is now optional)
+* KEYP-311 : added the possibility to unlock the SAM when it is selected
+* KEYP-62 : added Invalidate and Rehabilitate commands
+* KEYP-96 : added Stored Value management commands
+* KEYP-23 : added PIN management commands
+* KEYP-101 : enhanced CalypsoPo with card data (updated during the transaction)
+* KEYP-102 : update the content of CalypsoPo during selection
+* KEYP-103,113 : extensive reworking of the PoTransaction class (split into 3 classes). The data received from the PO are now made available in CalypsoPo instead of the previous parser system. 
+* KEYP-134,216 : extensive reworking of the selection classes. The data received from the PO are now made available in CalypsoPo.
+* KEYP-145 : extensive reworking of command builders and parsers 
+* KEYP-154 : improved exceptions management, add many exception cases
+* KEYP-290 : fixed NPE when opening a secure session without reading with rev 2.4 PO
+* KEYP-292 : make CalypsoPo and CalypsoSam classes extendable
+* KEYP-225 : PoResource and SamResource classes are removed, their usage is replaced by SeResource<CalypsoPo/CalypsoSam>
+* KEYP-306 : SE protocol is now optional when building PoSelector and SamSelector. Its default value is ISO_14443_4 and ISO7816_3 respectively.
+* updated with the new keyple-java-core API
+* various other refactorings and improvements
+* fixed many issues raised by Sonarqube
+
+### keyple-java-plugin-pcsc 0.9a
+### keyple-java-plugin-stub 0.9a
+* any parameters can be set in the stub reader
+### keyple-java-plugin-remotese 0.9a
+### keyple-android-plugin-android-nfc 0.9a
+* Conversion of the Java code to Kotlin
+* Removal of Supports Library usage
+* AndroidNFC plugin now support Android 9.0+ remove SE detection
+* Updated versions of Android sdk support and dependencies
+* Various improvements of Android NFC example application
+### keyple-android-plugin-android-omapi 0.9a
+* Conversion of the Java code to Kotlin
+* Removal of Supports Library usage
+* OMAPI compliance improvement to the SIM Alliance 
+* OMAPI implementation and to the Android 9.0 native OMAPI implementation.
+* OMAPI Plugin may now support NEXT instruction on SimAlliance OMAPI 3+
+* Updated versions of Android sdk support and dependencies
+* Various improvements of OMAPI's example application
 
 
 ## Patch - Keyple Java 20/05
