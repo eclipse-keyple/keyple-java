@@ -12,8 +12,6 @@
 package org.eclipse.keyple.core.seproxy.event;
 
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent.EventType;
-import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 
 /**
  * Provides the API to observe Secure Elements in readers.
@@ -141,8 +139,10 @@ public interface ObservableReader extends SeReader {
   /**
    * Defines the default selection request to be processed when an SE is inserted.
    *
-   * <p>Depending on the SE and the notificationMode parameter, a {@link EventType#SE_INSERTED},
-   * {@link EventType#SE_MATCHED} or no event at all will be notified to the application observers.
+   * <p>Depending on the SE and the notificationMode parameter, a {@link
+   * org.eclipse.keyple.core.seproxy.event.ReaderEvent.EventType#SE_INSERTED EventType#SE_INSERTED},
+   * {@link org.eclipse.keyple.core.seproxy.event.ReaderEvent.EventType#SE_MATCHED
+   * EventType#SE_MATCHED} or no event at all will be notified to the application observers.
    *
    * @param defaultSelectionsRequest The default selection request to be operated (should be not
    *     null).
@@ -156,7 +156,8 @@ public interface ObservableReader extends SeReader {
    * Defines the default selection request and starts the SE detection using the provided polling
    * mode.
    *
-   * <p>The notification mode indicates whether a {@link EventType#SE_INSERTED} event should be
+   * <p>The notification mode indicates whether a {@link
+   * org.eclipse.keyple.core.seproxy.event.ReaderEvent.EventType#SE_INSERTED} event should be
    * notified even if the selection has failed ({@link NotificationMode#ALWAYS}) or whether the SE
    * insertion should be ignored in this case ({@link NotificationMode#MATCHED_ONLY}).
    *
@@ -177,10 +178,11 @@ public interface ObservableReader extends SeReader {
   /**
    * Terminates the processing of the SE, in particular after an interruption by exception<br>
    * Do nothing if the channel is already closed.<br>
-   * Channel closing is nominally managed by using the {@link ChannelControl#CLOSE_AFTER} flag
-   * during the last transmission with the SE. However, there are cases where exchanges with the SE
-   * are interrupted by an exception, in which case it is necessary to explicitly close the channel
-   * using this method.
+   * Channel closing is nominally managed by using the {@link
+   * org.eclipse.keyple.core.seproxy.message.ChannelControl#CLOSE_AFTER} flag during the last
+   * transmission with the SE. However, there are cases where exchanges with the SE are interrupted
+   * by an exception, in which case it is necessary to explicitly close the channel using this
+   * method.
    *
    * @since 0.9
    */
