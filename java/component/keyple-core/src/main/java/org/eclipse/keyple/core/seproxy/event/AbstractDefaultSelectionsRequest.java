@@ -18,23 +18,26 @@ import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 
 /**
- * This abstract class defines the default selection request to be processed when an SE is inserted
- * in an observable reader.
+ * This POJO defines the default selection request to be processed when an SE is inserted in an
+ * observable reader.
  *
  * <p>The default selection is defined by:
  *
  * <ul>
- *   <li>a list of {@link SeRequest} corresponding to one or more selection cases
- *   <li>a {@link MultiSeRequestProcessing} indicator specifying whether all planned selections are
- *       to be executed or whether to stop at the first one that is successful
- *   <li>a {@link ChannelControl} indicator controlling the physical channel to stipulate whether it
- *       should be closed or left open at the end of the selection process
+ *   <li>A list of {@link SeRequest} corresponding to one or more selection cases.
+ *   <li>A {@link MultiSeRequestProcessing} indicator specifying whether all planned selections are
+ *       to be executed or whether to stop at the first one that is successful.
+ *   <li>A {@link ChannelControl} indicator controlling the physical channel to stipulate whether it
+ *       should be closed or left open at the end of the selection process.
  * </ul>
  *
  * <p>The purpose of this abstract class is to hide the constructor that is defined as public in its
  * implementation {@link DefaultSelectionsRequest}.
+ *
+ * @since 0.9
  */
 public abstract class AbstractDefaultSelectionsRequest {
+
   private final List<SeRequest> selectionSeRequests;
   private final MultiSeRequestProcessing multiSeRequestProcessing;
   private final ChannelControl channelControl;
@@ -45,8 +48,9 @@ public abstract class AbstractDefaultSelectionsRequest {
    * expected behaviour of the selection process.
    *
    * <p>The {@link MultiSeRequestProcessing} enum is used to attempt to execute all the selection
-   * cases: PROCESS_ALL (for example in order to list all the applications present in a secure
-   * element) or FIRST_MATCH (to target a single application).
+   * cases: {@link MultiSeRequestProcessing#PROCESS_ALL} (for example in order to list all the
+   * applications present in a secure element) or {@link MultiSeRequestProcessing#FIRST_MATCH} (to
+   * target a single application).
    *
    * <p>The {@link ChannelControl} enum controls the closing of the physical channel at the end of
    * the selection.
@@ -55,10 +59,11 @@ public abstract class AbstractDefaultSelectionsRequest {
    * expected in the application to optimize the processing time of the selection process. The first
    * selection case in the list will be processed first.
    *
-   * @param selectionSeRequests a list of {@link SeRequest} embedding the selection data (should not
-   *     be null)
-   * @param multiSeRequestProcessing an enum constant of type {@link MultiSeRequestProcessing}
-   * @param channelControl an enum constant of type {@link ChannelControl}
+   * @param selectionSeRequests A list of {@link SeRequest} embedding the selection data (must be
+   *     not null).
+   * @param multiSeRequestProcessing The multi request processing mode (must be not null).
+   * @param channelControl The channel control (must be not null).
+   * @since 0.9
    */
   protected AbstractDefaultSelectionsRequest(
       List<SeRequest> selectionSeRequests,
@@ -73,7 +78,8 @@ public abstract class AbstractDefaultSelectionsRequest {
    * Gets the indication whether the selection process should stop after the first matching case or
    * process all of them.
    *
-   * @return an enum constant of type {@link MultiSeRequestProcessing} (FIRST_MATCH or PROCESS_ALL)
+   * @return A not null value.
+   * @since 0.9
    */
   public final MultiSeRequestProcessing getMultiSeRequestProcessing() {
     return multiSeRequestProcessing;
@@ -82,7 +88,8 @@ public abstract class AbstractDefaultSelectionsRequest {
   /**
    * Gets the indication whether the logic channel is to be kept open or closed
    *
-   * @return an enum constant of type {@link ChannelControl} (KEEP_OPEN or CLOSE_AFTER)
+   * @return A not null value.
+   * @since 0.9
    */
   public final ChannelControl getChannelControl() {
     return channelControl;
@@ -91,7 +98,8 @@ public abstract class AbstractDefaultSelectionsRequest {
   /**
    * Gets the list of selection cases provided in the default selection
    *
-   * @return a list of {@link SeRequest}
+   * @return A not empty list.
+   * @since 0.9
    */
   public final List<SeRequest> getSelectionSeRequests() {
     return selectionSeRequests;

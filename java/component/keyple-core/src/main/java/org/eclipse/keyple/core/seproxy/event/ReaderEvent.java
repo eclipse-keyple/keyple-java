@@ -17,7 +17,7 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 
 /**
- * A {@link ReaderEvent} is used to propagate a change of a SE state in {@link ObservableReader}.
+ * This POJO is used to propagate a change of a SE state in an {@link ObservableReader}.
  *
  * <p>The various events that can occur concern the insertion and removal of an SE from a reader.
  *
@@ -28,21 +28,13 @@ import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
  */
 public final class ReaderEvent {
 
-  /** The name of the plugin handling the reader that produced the event */
   private final String pluginName;
-
-  /** The name of the reader that produced the event */
   private final String readerName;
-
-  /**
-   * The response to the selection request Note: although the object is instantiated externally, we
-   * use DefaultSelectionsResponse here to keep ReaderEvent serializable
-   */
   private final DefaultSelectionsResponse defaultResponses;
 
   /**
    * The different types of reader events, reflecting the status of the reader regarding the
-   * presence of a Secure Element
+   * presence of a Secure Element.
    *
    * @since 0.9
    */
@@ -88,7 +80,7 @@ public final class ReaderEvent {
   /**
    * Gets the name of the plugin from which the reader that generated the event comes from
    *
-   * @return A string containing a plugin name
+   * @return A not empty string.
    * @since 0.9
    */
   public String getPluginName() {
@@ -98,7 +90,7 @@ public final class ReaderEvent {
   /**
    * Gets the name of the reader that generated the event comes from
    *
-   * @return A string containing a reader name
+   * @return A not empty string.
    * @since 0.9
    */
   public String getReaderName() {
@@ -106,9 +98,9 @@ public final class ReaderEvent {
   }
 
   /**
-   * Gets the type of {@link ReaderEvent}
+   * Gets the reader event type.
    *
-   * @return A enum constant of type {@link EventType}
+   * @return A not null value.
    * @since 0.9
    */
   public EventType getEventType() {
@@ -117,9 +109,10 @@ public final class ReaderEvent {
 
   /**
    * Gets the default selection response that may be present when the event is {@link
-   * EventType#SE_INSERTED} or {@link EventType#SE_MATCHED}
+   * EventType#SE_INSERTED}, always present when the event is {@link EventType#SE_MATCHED} and null
+   * in the others cases.
    *
-   * @return the default selection response
+   * @return A nullable value.
    * @since 0.9
    */
   public AbstractDefaultSelectionsResponse getDefaultSelectionsResponse() {
@@ -127,9 +120,9 @@ public final class ReaderEvent {
   }
 
   /**
-   * Gets the plugin from which the reader that generated the event comes from
+   * Gets the {@link ReaderPlugin} from which the reader that generated the event comes from.
    *
-   * @return The {@link ReaderPlugin} involved in this event
+   * @return A not null reference.
    * @since 0.9
    */
   public ReaderPlugin getPlugin() {
@@ -137,9 +130,9 @@ public final class ReaderEvent {
   }
 
   /**
-   * Gets the reader that generated the event comes from
+   * Gets the {@link SeReader} that generated the event comes from
    *
-   * @return The {@link SeReader} involved in this event
+   * @return A not null reference.
    * @since 0.9
    */
   public SeReader getReader() {
