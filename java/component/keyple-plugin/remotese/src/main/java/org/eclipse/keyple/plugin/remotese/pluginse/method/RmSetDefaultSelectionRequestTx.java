@@ -77,7 +77,7 @@ public class RmSetDefaultSelectionRequestTx extends AbstractRemoteMethodTx {
     body.addProperty(
         "defaultSelectionsRequest", JsonParser.getGson().toJson(defaultSelectionsRequest));
 
-    body.addProperty("notificationMode", notificationMode.getName());
+    body.addProperty("notificationMode", notificationMode.name());
 
     if (pollingMode != null) {
       body.addProperty("pollingMode", pollingMode.name());

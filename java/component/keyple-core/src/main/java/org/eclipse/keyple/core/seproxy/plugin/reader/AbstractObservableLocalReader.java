@@ -201,7 +201,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
           "[{}] Notifying a reader event to {} observers. EVENTNAME = {}",
           getName(),
           this.countObservers(),
-          event.getEventType().getName());
+          event.getEventType().name());
     }
 
     List<ObservableReader.ReaderObserver> observersCopy;

@@ -12,24 +12,53 @@
 package org.eclipse.keyple.core.seproxy.event;
 
 import java.util.List;
+import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
+import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
+import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 
 /**
- * The abstract class defining the default selections response in return to the default selection
- * made when the SE was inserted..
+ * This abstract class defines the default selections responses in return to the default selections
+ * made when the SE was inserted.
  *
- * <p>The default selections response provides a list of {@link SeResponse}<br>
- * The purpose of this abstract class is to hide the constructor that is defined as public in its
- * implementation {@link org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest}.
+ * <p>Its main feature is to provide a list of {@link SeResponse} following a selection process.
+ *
+ * <p>The purpose of this abstract class is to hide the constructor that is defined as public in its
+ * implementation {@link DefaultSelectionsResponse}.
  */
 public abstract class AbstractDefaultSelectionsResponse {
   private final List<SeResponse> selectionSeResponses;
 
+  /**
+   * Constructor<br>
+   * This object is constructed from the list of {@link SeResponse} received from the reader during
+   * the selection process. It transports the selection results into the {@link ReaderEvent} when
+   * the reader is observed and also during explicit selections in the case of an unobserved reader.
+   *
+   * <p>The list of {@link SeResponse} corresponds to the list of {@link SeRequest} present in the
+   * {@link DefaultSelectionsRequest}. The first {@link SeResponse} corresponds to the first {@link
+   * SeRequest} and so on.
+   *
+   * <p>When a {@link SeRequest} has not resulted in a response, then the corresponding {@link
+   * SeResponse} in the list is null.
+   *
+   * <p>Depending on the setting of the selection, the process either processes all selection cases
+   * provided in the {@link DefaultSelectionsRequest} or stops at the first selection case that
+   * results in a response. In the latter case, the {@link SeResponse} list may be shorter than the
+   * {@link SeRequest} list.
+   *
+   * @param selectionSeResponses a list of {@link SeResponse} (should not be null)
+   */
   protected AbstractDefaultSelectionsResponse(List<SeResponse> selectionSeResponses) {
     this.selectionSeResponses = selectionSeResponses;
   }
 
-  /** @return the list of {@link SeResponse} */
+  /**
+   * Gets the result of the selection as a list of responses corresponding to the requests made in
+   * {@link AbstractDefaultSelectionsRequest}.
+   *
+   * @return a list of {@link SeResponse}
+   */
   public final List<SeResponse> getSelectionSeResponses() {
     return selectionSeResponses;
   }
