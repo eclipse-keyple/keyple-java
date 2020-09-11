@@ -17,7 +17,6 @@ import static org.mockito.Mockito.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.seproxy.PluginFactory;
@@ -47,7 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RunWith(MockitoJUnitRunner.class)
-public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
+public class NativeSeClientServiceTest extends BaseNativeSeTest {
 
   private static final Logger logger = LoggerFactory.getLogger(AbstractNativeSeServiceTest.class);
   KeypleClientSync syncClientEndpoint;
@@ -393,7 +392,7 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
   public KeypleMessageDto getTerminateDto(String sessionId) {
     JsonObject body = new JsonObject();
     body.add("userOutputData", parser.toJsonTree(outputData, MyKeypleUserData.class));
-    body.add("unregisterVirtualReaders", parser.toJsonTree(Arrays.asList(virtualReaderName)));
+    body.add("unregisterVirtualReader", parser.toJsonTree(true, Boolean.class));
     return new KeypleMessageDto()
         .setSessionId(sessionId) //
         .setAction(KeypleMessageDto.Action.TERMINATE_SERVICE.name()) //

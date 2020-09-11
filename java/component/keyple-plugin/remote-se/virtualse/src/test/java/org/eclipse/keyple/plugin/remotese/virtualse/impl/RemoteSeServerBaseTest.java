@@ -16,7 +16,6 @@ import static org.eclipse.keyple.plugin.remotese.virtualse.impl.SampleFactory.ge
 
 import com.google.gson.JsonObject;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -172,19 +171,19 @@ public class RemoteSeServerBaseTest {
     };
   }
 
-  void validateTerminateSessionResponse(
-      KeypleMessageDto terminateServiceMsg, int shouldUnregister) {
+  void validateTerminateServiceResponse(
+      KeypleMessageDto terminateServiceMsg, boolean shouldUnregister) {
 
     assertThat(terminateServiceMsg.getAction())
         .isEqualTo(KeypleMessageDto.Action.TERMINATE_SERVICE.name());
     JsonObject body =
         KeypleJsonParser.getParser().fromJson(terminateServiceMsg.getBody(), JsonObject.class);
     MockUserOutputData userOutputResponse =
-        KeypleJsonParser.getParser().fromJson(body.get("userOutputData"), MockUserOutputData.class);
-    List<String> unregisterVirtualReaders =
-        KeypleJsonParser.getParser().fromJson(body.get("unregisterVirtualReaders"), List.class);
+        KeypleJsonParser.getParser()
+            .fromJson(body.get("userOutputData").getAsString(), MockUserOutputData.class);
+    boolean unregisterVirtualReader = body.get("unregisterVirtualReader").getAsBoolean();
     assertThat(userOutputData).isEqualToComparingFieldByFieldRecursively(userOutputResponse);
-    assertThat(unregisterVirtualReaders).hasSize(shouldUnregister);
+    assertThat(unregisterVirtualReader).isEqualTo(shouldUnregister);
   }
 
   void registerSyncPlugin() {
@@ -193,7 +192,7 @@ public class RemoteSeServerBaseTest {
             RemoteSeServerPluginFactory.builder()
                 .withSyncNode()
                 .withPluginObserver(pluginObserver)
-                .withDefaultPool()
+                .usingDefaultEventNotificationPool()
                 .build());
     remoteSePlugin =
         (RemoteSeServerPluginImpl) SeProxyService.getInstance().getPlugin(remoteSePluginName);

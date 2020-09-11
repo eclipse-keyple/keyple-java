@@ -14,7 +14,6 @@ package org.eclipse.keyple.plugin.remotese.virtualse.impl;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -32,7 +31,7 @@ import org.eclipse.keyple.plugin.remotese.core.impl.AbstractKeypleMessageHandler
 abstract class AbstractRemoteSePlugin extends AbstractKeypleMessageHandler implements ReaderPlugin {
 
   private final String name;
-  protected final ConcurrentMap<String, SeReader> readers;
+  protected final Map<String, SeReader> readers;
   protected Map<String, String> parameters;
 
   /**
@@ -128,6 +127,5 @@ abstract class AbstractRemoteSePlugin extends AbstractKeypleMessageHandler imple
    * @return a not null map.
    * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
    */
-  protected abstract ConcurrentMap<String, SeReader> initNativeReaders()
-      throws KeypleReaderIOException;
+  protected abstract Map<String, SeReader> initNativeReaders() throws KeypleReaderIOException;
 }

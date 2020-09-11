@@ -14,8 +14,6 @@ package org.eclipse.keyple.plugin.remotese.nativese.impl;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -139,9 +137,10 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
             // Extract user output data
             userOutputData = extractUserOutputData(receivedDto, classOfT);
 
-            // Unregister virtual readers contained  in the message
-            unregisterVirtualReaders(receivedDto);
-
+            // Verify if the virtual reader can be unregistered.
+            if (canUnregisterVirtualReader(receivedDto)) {
+              virtualReaders.remove(nativeReader.getName());
+            }
           } catch (RuntimeException e) {
             // Unregister the associated virtual reader.
             virtualReaders.remove(nativeReader.getName());
@@ -285,23 +284,15 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
 
   /**
    * (private)<br>
-   * Unregister virtual readers contained in the message
+   * Verify if the virtual reader associated to the provided message can be unregistered.
    *
    * @param msg The message to analyse.
+   * @return true if the virtual reader can be unregistered.
    */
-  private void unregisterVirtualReaders(KeypleMessageDto msg) {
+  private boolean canUnregisterVirtualReader(KeypleMessageDto msg) {
     Gson parser = KeypleJsonParser.getParser();
     JsonObject body = parser.fromJson(msg.getBody(), JsonObject.class);
-    List<String> unregisterVirtualReaders =
-        KeypleJsonParser.getParser().fromJson(body.get("unregisterVirtualReaders"), List.class);
-
-    // remove virtual readers from the map
-    for (Iterator<String> iterator = virtualReaders.values().iterator(); iterator.hasNext(); ) {
-      String virtualReader = iterator.next();
-      if (unregisterVirtualReaders.contains(virtualReader)) {
-        iterator.remove();
-      }
-    }
+    return parser.fromJson(body.get("unregisterVirtualReader"), Boolean.class);
   }
 
   /**

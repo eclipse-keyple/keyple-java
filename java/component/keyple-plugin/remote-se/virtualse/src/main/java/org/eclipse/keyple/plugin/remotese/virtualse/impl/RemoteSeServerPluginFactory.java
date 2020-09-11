@@ -22,18 +22,27 @@ import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Plugin Factory to build a {@link RemoteSeServerPlugin} */
+/**
+ * <b>Remote Se Server Plugin</b> Factory
+ *
+ * <p>This factory must be used in the use case of the <b>Remote SE Server Plugin</b>.
+ *
+ * <p>To register a Remote Se Server Plugin, use the method {@link
+ * org.eclipse.keyple.core.seproxy.SeProxyService#registerPlugin(PluginFactory)} fed in with
+ * an instance of this factory. Invoke the {@link #builder()} method to create and configure a
+ * factory instance.</p>
+ *
+ * <p>Plugin name is defined by default in the factory. Access the Remote Se Server Plugin with the {@link
+ * RemoteSeServerUtils#getAsyncPlugin()} or {@link RemoteSeServerUtils#getSyncNode()} depending on
+ * your node configuration.</p>
+ */
 public class RemoteSeServerPluginFactory implements PluginFactory {
 
   private static final Logger logger = LoggerFactory.getLogger(RemoteSeServerPluginFactory.class);
-  /**
-   * default name of the RemoteSeServerPlugin for a sync node {@value "RemoteSeServerPluginSync"}
-   */
-  public static final String PLUGIN_NAME_SYNC = "RemoteSeServerPluginSync";
-  /**
-   * default name of the RemoteSeServerPlugin for a async node {@value "RemoteSeServerPluginAsync"}
-   */
-  public static final String PLUGIN_NAME_ASYNC = "RemoteSeServerPluginAsync";
+  /** default name of the RemoteSeServerPlugin for a sync node : {@value} */
+  static final String PLUGIN_NAME_SYNC = "RemoteSeServerPluginSync";
+  /** default name of the RemoteSeServerPlugin for a async node : {@value} */
+  static final String PLUGIN_NAME_ASYNC = "RemoteSeServerPluginAsync";
 
   private RemoteSeServerPlugin plugin;
 
@@ -41,6 +50,7 @@ public class RemoteSeServerPluginFactory implements PluginFactory {
    * Create a builder process for this factory
    *
    * @return next configuration step
+   * @since 1.0
    */
   public static NodeStep builder() {
     return new Builder();
@@ -82,6 +92,7 @@ public class RemoteSeServerPluginFactory implements PluginFactory {
      *
      * @param asyncEndpoint non nullable instance of an async server endpoint
      * @return next configuration step
+     * @since 1.0
      */
     PluginObserverStep withAsyncNode(KeypleServerAsync asyncEndpoint);
 
@@ -89,6 +100,7 @@ public class RemoteSeServerPluginFactory implements PluginFactory {
      * Configure the plugin with a sync server endpoint
      *
      * @return next configuration step
+     * @since 1.0
      */
     PluginObserverStep withSyncNode();
   }
@@ -99,25 +111,28 @@ public class RemoteSeServerPluginFactory implements PluginFactory {
      *
      * @param observer
      * @return next configuration step
+     * @since 1.0
      */
     EventNotificationPoolStep withPluginObserver(ObservablePlugin.PluginObserver observer);
   }
 
   public interface EventNotificationPoolStep {
     /**
-     * Configure the plugin to use a default notification pool
+     * Configure the plugin to use a default pool for events notification
      *
      * @return next configuration step
+     * @since 1.0
      */
-    BuilderStep withDefaultPool();
+    BuilderStep usingDefaultEventNotificationPool();
 
     /**
-     * Configure the plugin to use a custom notification thread pool
+     * Configure the plugin to use a custom pool for events notification
      *
      * @param eventNotificationPool
      * @return next configuration step
+     * @since 1.0
      */
-    BuilderStep withPool(ExecutorService eventNotificationPool);
+    BuilderStep usingEventNotificationPool(ExecutorService eventNotificationPool);
   }
 
   public interface BuilderStep {
@@ -125,6 +140,7 @@ public class RemoteSeServerPluginFactory implements PluginFactory {
      * Build the plugin factory
      *
      * @return instance of the plugin factory
+     * @since 1.0
      */
     RemoteSeServerPluginFactory build();
   }
@@ -177,7 +193,7 @@ public class RemoteSeServerPluginFactory implements PluginFactory {
      * @since 1.0
      */
     @Override
-    public BuilderStep withDefaultPool() {
+    public BuilderStep usingDefaultEventNotificationPool() {
       this.eventNotificationPool = Executors.newCachedThreadPool();
       return this;
     }
@@ -188,7 +204,7 @@ public class RemoteSeServerPluginFactory implements PluginFactory {
      * @since 1.0
      */
     @Override
-    public BuilderStep withPool(ExecutorService eventNotificationPool) {
+    public BuilderStep usingEventNotificationPool(ExecutorService eventNotificationPool) {
       Assert.getInstance().notNull(eventNotificationPool, "eventNotificationPool");
       this.eventNotificationPool = eventNotificationPool;
       return this;

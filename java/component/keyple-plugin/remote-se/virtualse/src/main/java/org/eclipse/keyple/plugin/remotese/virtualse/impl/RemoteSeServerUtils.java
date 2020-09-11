@@ -17,7 +17,7 @@ import org.eclipse.keyple.plugin.remotese.core.KeypleServerAsyncNode;
 import org.eclipse.keyple.plugin.remotese.core.KeypleServerSyncNode;
 import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerPlugin;
 
-/** Utils class to access the @{@link RemoteSeServerPlugin} */
+/** Use this class to access the registered {@link RemoteSeServerPlugin} */
 public class RemoteSeServerUtils {
 
   /**
@@ -25,6 +25,7 @@ public class RemoteSeServerUtils {
    *
    * @return a registered instance of the RemoteSeServerPlugin
    * @throws KeyplePluginNotFoundException if no RemoteSeServerPlugin is registered
+   * @since 1.0
    */
   public static RemoteSeServerPlugin getAsyncPlugin() {
     return (RemoteSeServerPlugin)
@@ -35,6 +36,7 @@ public class RemoteSeServerUtils {
    * Retrieve the async node used in the RemoteSeServerPlugin
    *
    * @return non nullable instance of KeypleServerSyncNode
+   * @since 1.0
    */
   public static KeypleServerAsyncNode getAsyncNode() {
     return (KeypleServerAsyncNode) ((RemoteSeServerPluginImpl) getAsyncPlugin()).getNode();
@@ -45,6 +47,7 @@ public class RemoteSeServerUtils {
    *
    * @return a registered instance of the RemoteSeServerPlugin
    * @throws KeyplePluginNotFoundException if no RemoteSeServerPlugin is registered
+   * @since 1.0
    */
   public static RemoteSeServerPlugin getSyncPlugin() {
     return (RemoteSeServerPlugin)
@@ -55,6 +58,7 @@ public class RemoteSeServerUtils {
    * Retrieve the sync node used in the RemoteSeServerPlugin
    *
    * @return non nullable instance of KeypleServerSyncNode
+   * @since 1.0
    */
   public static KeypleServerSyncNode getSyncNode() {
     return (KeypleServerSyncNode) ((RemoteSeServerPluginImpl) getSyncPlugin()).getNode();

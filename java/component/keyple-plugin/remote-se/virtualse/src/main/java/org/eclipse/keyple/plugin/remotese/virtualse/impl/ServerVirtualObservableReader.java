@@ -49,9 +49,8 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
   }
 
   /**
-   * Notify event to the master reader observers
+   * {@inheritDoc}
    *
-   * @param event non nullable instance of a readerEvent
    * @since 1.0
    */
   @Override
@@ -64,9 +63,8 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
   }
 
   /**
-   * Add observer on the master reader
+   * {@inheritDoc}
    *
-   * @param observer non nullable instance of a reader observer
    * @since 1.0
    */
   @Override
@@ -80,10 +78,8 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
   }
 
   /**
-   * Remove observers on the master reader. If the master reader has no observer left, unplug it
-   * from the plugin
+   * {@inheritDoc}
    *
-   * @param observer non nullable instance of a reader observer
    * @since 1.0
    */
   @Override
@@ -97,7 +93,7 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
   }
 
   /**
-   * Clear observers on the master reader and unplug it from the plugin
+   * {@inheritDoc}
    *
    * @since 1.0
    */
@@ -111,7 +107,7 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
   }
 
   /**
-   * Count observers on the master reader
+   * {@inheritDoc}
    *
    * @since 1.0
    */
@@ -183,7 +179,7 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
    * (package-private)<br>
    * Return the master reader if any, null if none
    *
-   * @return boolean
+   * @return nullable instance of a master reader
    */
   ServerVirtualObservableReader getMasterReader() {
     return masterReader;
