@@ -33,7 +33,7 @@ interface ProxyElement {
 
   /**
    * allows to define a proprietary setting for a reader or a plugin (contactless protocols polling
-   * sequence, baud rate, … etc.).
+   * sequence, baud rate, ...).
    *
    * @param key the parameter key
    * @param value the parameter value
@@ -44,7 +44,7 @@ interface ProxyElement {
 
   /**
    * allows to define a set of proprietary settings for a reader or a plugin (contactless protocols
-   * polling sequence, baud rate, … etc.).
+   * polling sequence, baud rate, ...).
    *
    * @param parameters Parameters to setup
    * @throws IllegalArgumentException if the parameters or the values is not supported

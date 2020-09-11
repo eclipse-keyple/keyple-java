@@ -16,8 +16,18 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 
-/** ReaderEvent used to notify changes at reader level */
+/**
+ * A {@link ReaderEvent} is used to propagate a change of a SE state in {@link ObservableReader}.
+ *
+ * <p>The various events that can occur concern the insertion and removal of an SE from a reader.
+ *
+ * <p>When an insertion is made there are two cases depending on whether a default selection has
+ * been programmed or not.
+ *
+ * @since 0.9
+ */
 public final class ReaderEvent {
+
   /** The name of the plugin handling the reader that produced the event */
   private final String pluginName;
 
@@ -32,31 +42,23 @@ public final class ReaderEvent {
 
   /**
    * The different types of reader events, reflecting the status of the reader regarding the
-   * presence of the card
+   * presence of a Secure Element
+   *
+   * @since 0.9
    */
   public enum EventType {
+
     /** An timeout error occurred. */
-    TIMEOUT_ERROR("SE Reader timeout Error"),
+    TIMEOUT_ERROR,
 
     /** A SE has been inserted. */
-    SE_INSERTED("SE insertion"),
+    SE_INSERTED,
 
     /** A SE has been inserted and the default requests process has been successfully operated. */
-    SE_MATCHED("SE matched"),
+    SE_MATCHED,
 
     /** The SE has been removed and is no longer able to communicate with the reader */
-    SE_REMOVED("SE removed");
-
-    /** The event name. */
-    private String name;
-
-    EventType(String name) {
-      this.name = name;
-    }
-
-    public String getName() {
-      return name;
-    }
+    SE_REMOVED
   }
 
   /** The type of event */
@@ -65,11 +67,12 @@ public final class ReaderEvent {
   /**
    * ReaderEvent constructor for simple insertion notification mode
    *
-   * @param pluginName the name of the current plugin
-   * @param readerName the name of the current reader
-   * @param eventType the type of event
+   * @param pluginName the name of the current plugin (should be not null)
+   * @param readerName the name of the current reader (should be not null)
+   * @param eventType the type of event (should be not null)
    * @param defaultSelectionsResponse the response to the default AbstractDefaultSelectionsRequest
    *     (may be null)
+   * @since 0.9
    */
   public ReaderEvent(
       String pluginName,
@@ -82,32 +85,63 @@ public final class ReaderEvent {
     this.defaultResponses = (DefaultSelectionsResponse) defaultSelectionsResponse;
   }
 
-  /** @return the name of the plugin from which the reader that generated the event comes from */
+  /**
+   * Gets the name of the plugin from which the reader that generated the event comes from
+   *
+   * @return A string containing a plugin name
+   * @since 0.9
+   */
   public String getPluginName() {
     return pluginName;
   }
 
-  /** @return the name of the reader that generated the event comes from */
+  /**
+   * Gets the name of the reader that generated the event comes from
+   *
+   * @return A string containing a reader name
+   * @since 0.9
+   */
   public String getReaderName() {
     return readerName;
   }
 
-  /** @return the type of event */
+  /**
+   * Gets the type of {@link ReaderEvent}
+   *
+   * @return A enum constant of type {@link EventType}
+   * @since 0.9
+   */
   public EventType getEventType() {
     return eventType;
   }
 
-  /** @return the default selection response (when the event is SE_INSERTED or SE_MATCHED) */
+  /**
+   * Gets the default selection response that may be present when the event is {@link
+   * EventType#SE_INSERTED} or {@link EventType#SE_MATCHED}
+   *
+   * @return the default selection response
+   * @since 0.9
+   */
   public AbstractDefaultSelectionsResponse getDefaultSelectionsResponse() {
     return defaultResponses;
   }
 
-  /** @return the plugin from which the reader that generated the event comes from */
+  /**
+   * Gets the plugin from which the reader that generated the event comes from
+   *
+   * @return The {@link ReaderPlugin} involved in this event
+   * @since 0.9
+   */
   public ReaderPlugin getPlugin() {
     return SeProxyService.getInstance().getPlugin(pluginName);
   }
 
-  /** @return the reader that generated the event comes from */
+  /**
+   * Gets the reader that generated the event comes from
+   *
+   * @return The {@link SeReader} involved in this event
+   * @since 0.9
+   */
   public SeReader getReader() {
     return getPlugin().getReader(readerName);
   }
