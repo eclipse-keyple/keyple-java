@@ -17,7 +17,6 @@ import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.core.command.SeCommand;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.message.*;
@@ -50,7 +49,8 @@ public class SeSelectionTest extends CoreBaseTest {
     // (see createSelectionSelectionSelection to have a look at the expected values)
 
     // get the selection operation
-    AbstractDefaultSelectionsRequest selectionOperation = seSelection.getSelectionOperation();
+    DefaultSelectionsRequest selectionOperation =
+        (DefaultSelectionsRequest) seSelection.getSelectionOperation();
 
     // check common flags
     Assert.assertEquals(

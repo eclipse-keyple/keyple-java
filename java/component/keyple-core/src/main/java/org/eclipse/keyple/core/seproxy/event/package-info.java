@@ -11,7 +11,7 @@
  * <p>The API for observing the readers is defined by the interface {@link
  * org.eclipse.keyple.core.seproxy.event.ObservableReader ObservableReader} and generates events
  * {@link org.eclipse.keyple.core.seproxy.event.ReaderEvent ReaderEvent}.<br>
- * The implementation of the abstract classes {@link
+ * The implementation of the abstract POJO classes {@link
  * org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest
  * AbstractDefaultSelectionsRequest} and {@link
  * org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse
