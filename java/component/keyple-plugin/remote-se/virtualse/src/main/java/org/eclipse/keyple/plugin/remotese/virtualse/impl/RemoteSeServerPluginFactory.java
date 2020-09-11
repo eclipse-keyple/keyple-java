@@ -18,6 +18,7 @@ import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remotese.core.KeypleServerAsync;
+import org.eclipse.keyple.plugin.remotese.core.KeypleServerSyncNode;
 import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,13 +29,13 @@ import org.slf4j.LoggerFactory;
  * <p>This factory must be used in the use case of the <b>Remote SE Server Plugin</b>.
  *
  * <p>To register a Remote Se Server Plugin, use the method {@link
- * org.eclipse.keyple.core.seproxy.SeProxyService#registerPlugin(PluginFactory)} fed in with
- * an instance of this factory. Invoke the {@link #builder()} method to create and configure a
- * factory instance.</p>
+ * org.eclipse.keyple.core.seproxy.SeProxyService#registerPlugin(PluginFactory)} fed in with an
+ * instance of this factory. Invoke the {@link #builder()} method to create and configure a factory
+ * instance.
  *
- * <p>Plugin name is defined by default in the factory. Access the Remote Se Server Plugin with the {@link
- * RemoteSeServerUtils#getAsyncPlugin()} or {@link RemoteSeServerUtils#getSyncNode()} depending on
- * your node configuration.</p>
+ * <p>Plugin name is defined by default in the factory. Access the Remote Se Server Plugin with the
+ * {@link RemoteSeServerUtils#getAsyncPlugin()} or {@link RemoteSeServerUtils#getSyncNode()}
+ * depending on your node configuration.
  */
 public class RemoteSeServerPluginFactory implements PluginFactory {
 
@@ -88,7 +89,9 @@ public class RemoteSeServerPluginFactory implements PluginFactory {
 
   public interface NodeStep {
     /**
-     * Configure the plugin with an async server endpoint
+     * Configure the plugin with an async server endpoint. Retrieve the created {@link
+     * org.eclipse.keyple.plugin.remotese.core.KeypleServerAsyncNode} with the method {@code
+     * RemoteSeServerUtils.getAsyncNode()}
      *
      * @param asyncEndpoint non nullable instance of an async server endpoint
      * @return next configuration step
@@ -97,7 +100,8 @@ public class RemoteSeServerPluginFactory implements PluginFactory {
     PluginObserverStep withAsyncNode(KeypleServerAsync asyncEndpoint);
 
     /**
-     * Configure the plugin with a sync server endpoint
+     * Configure the plugin to be used with a sync node. Retrieve the created {@link
+     * KeypleServerSyncNode} with the method {@link RemoteSeServerUtils#getSyncNode()}
      *
      * @return next configuration step
      * @since 1.0
@@ -107,9 +111,10 @@ public class RemoteSeServerPluginFactory implements PluginFactory {
 
   public interface PluginObserverStep {
     /**
-     * Configure the observer of the plugin
+     * Configure the observer of the plugin. More observers can be added later with the method
+     * {@link RemoteSeServerPlugin#addObserver(ObservablePlugin.PluginObserver)}
      *
-     * @param observer
+     * @param observer non nullable instance of a plugin observer
      * @return next configuration step
      * @since 1.0
      */
@@ -118,7 +123,9 @@ public class RemoteSeServerPluginFactory implements PluginFactory {
 
   public interface EventNotificationPoolStep {
     /**
-     * Configure the plugin to use a default pool for events notification
+     * Configure the plugin to use the default pool for events notification. The thread pool used by
+     * default is a {@link Executors#newCachedThreadPool()}. From the documentation, "it creates new
+     * threads as needed, but will reuse previously constructed threads when they are available."
      *
      * @return next configuration step
      * @since 1.0
@@ -126,9 +133,12 @@ public class RemoteSeServerPluginFactory implements PluginFactory {
     BuilderStep usingDefaultEventNotificationPool();
 
     /**
-     * Configure the plugin to use a custom pool for events notification
+     * Configure the plugin to use a custom thread pool for events notification. The custom pool
+     * should be flexible enough to handle many tasks parallely as each {@link
+     * org.eclipse.keyple.core.seproxy.event.ReaderEvent} and {@link
+     * org.eclipse.keyple.core.seproxy.event.PluginEvent} are executed asynchronously.
      *
-     * @param eventNotificationPool
+     * @param eventNotificationPool non nullable instance of a executor service
      * @return next configuration step
      * @since 1.0
      */
@@ -137,7 +147,11 @@ public class RemoteSeServerPluginFactory implements PluginFactory {
 
   public interface BuilderStep {
     /**
-     * Build the plugin factory
+     * Build the plugin factory instance.
+     *
+     * <p>This instance should be passed to {@link
+     * org.eclipse.keyple.core.seproxy.SeProxyService#registerPlugin(PluginFactory)} in order to
+     * register the plugin.
      *
      * @return instance of the plugin factory
      * @since 1.0
@@ -145,7 +159,7 @@ public class RemoteSeServerPluginFactory implements PluginFactory {
     RemoteSeServerPluginFactory build();
   }
 
-  /** The builder pattern */
+  /** The builder pattern to create the factory instance. */
   public static class Builder
       implements NodeStep, PluginObserverStep, EventNotificationPoolStep, BuilderStep {
 
