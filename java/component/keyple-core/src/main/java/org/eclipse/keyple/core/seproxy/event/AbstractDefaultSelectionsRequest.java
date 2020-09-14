@@ -17,51 +17,37 @@ import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 
 /**
- * The abstract class defining the default selection request to be processed when an SE is inserted
- * in an observable reader.
+ * This abstract class defines the POJO used to carry the default selection request data.
  *
- * <p>The default selection is defined by:
+ * <p>The default selection request is obtained from the selection preparation process and provided
+ * to an observable reader.
  *
- * <ul>
- *   <li>a set of requests corresponding to one or more selection cases
- *   <li>a {@link MultiSeRequestProcessing} indicator specifying whether all planned selections are
- *       to be executed or whether to stop at the first one that is successful
- *   <li>an indicator to control the physical channel to stipulate whether it should be closed or
- *       left open at the end of the selection process
- * </ul>
- *
- * The purpose of this abstract class is to hide the constructor that is defined as public in its
- * implementation {@link org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest}.
+ * @since 0.9
  */
 public abstract class AbstractDefaultSelectionsRequest {
-  private final List<SeRequest> selectionSeRequests;
-  private final MultiSeRequestProcessing multiSeRequestProcessing;
-  private final ChannelControl channelControl;
-
-  protected AbstractDefaultSelectionsRequest(
-      List<SeRequest> selectionSeRequests,
-      MultiSeRequestProcessing multiSeRequestProcessing,
-      ChannelControl channelControl) {
-    this.selectionSeRequests = selectionSeRequests;
-    this.multiSeRequestProcessing = multiSeRequestProcessing;
-    this.channelControl = channelControl;
-  }
 
   /**
-   * @return the flag indicating whether the selection process should stop after the first matching
-   *     or process all
+   * Gets the indication whether the selection process should stop after the first matching case or
+   * process all of them.
+   *
+   * @return A not null value.
+   * @since 0.9
    */
-  public final MultiSeRequestProcessing getMultiSeRequestProcessing() {
-    return multiSeRequestProcessing;
-  }
+  protected abstract MultiSeRequestProcessing getMultiSeRequestProcessing();
 
-  /** @return the flag indicating whether the logic channel is to be kept open or closed */
-  public final ChannelControl getChannelControl() {
-    return channelControl;
-  }
+  /**
+   * Gets the indication whether the logic channel is to be kept open or closed
+   *
+   * @return A not null value.
+   * @since 0.9
+   */
+  protected abstract ChannelControl getChannelControl();
 
-  /** @return the list of requests that make up the selection */
-  public final List<SeRequest> getSelectionSeRequests() {
-    return selectionSeRequests;
-  }
+  /**
+   * Gets the list of selection cases provided in the default selection
+   *
+   * @return A not empty list.
+   * @since 0.9
+   */
+  protected abstract List<SeRequest> getSelectionSeRequests();
 }
