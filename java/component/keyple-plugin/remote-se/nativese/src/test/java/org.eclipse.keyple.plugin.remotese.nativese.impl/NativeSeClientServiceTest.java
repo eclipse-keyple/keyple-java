@@ -16,8 +16,10 @@ import static org.mockito.Mockito.*;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.seproxy.PluginFactory;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
@@ -271,7 +273,8 @@ public class NativeSeClientServiceTest extends BaseNativeSeTest {
   }
 
   @Test
-  public void onUpdate_withSyncNode_unregisterReader() {
+  public void onUpdate_withSyncNode_unregisterReader()
+      throws NoSuchFieldException, IllegalAccessException {
     // init
     syncClientEndpoint = new KeypleClientSyncMock(2);
     NativeSeClientServiceImpl nativeSeClientService =
@@ -282,7 +285,7 @@ public class NativeSeClientServiceTest extends BaseNativeSeTest {
                 .withReaderObservation(new MyEventFilter(true)) //
                 .getService();
 
-    // test
+    // send a readerEvent
     nativeSeClientService.update(readerEvent);
 
     // verify READER_EVENT dto
@@ -298,7 +301,11 @@ public class NativeSeClientServiceTest extends BaseNativeSeTest {
         .isEqualToComparingFieldByField(readerEvent);
     assertThat(parser.fromJson(body.get("userInputData"), MyKeypleUserData.class))
         .isEqualToComparingFieldByFieldRecursively(inputData);
+
     // output is verified in eventFilter
+
+    // assert that virtual reader is unregister as required by the terminate service
+    assertThat(getVirtualReaders(nativeSeClientService)).hasSize(0);
   }
 
   /*
@@ -306,6 +313,14 @@ public class NativeSeClientServiceTest extends BaseNativeSeTest {
    * Helper
    *
    * */
+
+  private Map<String, String> getVirtualReaders(NativeSeClientServiceImpl service)
+      throws NoSuchFieldException, IllegalAccessException {
+    Field privateStringField = null;
+    privateStringField = NativeSeClientServiceImpl.class.getDeclaredField("virtualReaders");
+    privateStringField.setAccessible(true);
+    return (Map<String, String>) privateStringField.get(service);
+  }
 
   class KeypleClientSyncMock implements KeypleClientSync {
 
