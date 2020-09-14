@@ -271,7 +271,7 @@ public class NativeSeClientServiceTest extends BaseNativeSeTest {
   }
 
   @Test
-  public void onUpdate_withSyncNode() {
+  public void onUpdate_withSyncNode_unregisterReader() {
     // init
     syncClientEndpoint = new KeypleClientSyncMock(2);
     NativeSeClientServiceImpl nativeSeClientService =
@@ -298,13 +298,14 @@ public class NativeSeClientServiceTest extends BaseNativeSeTest {
         .isEqualToComparingFieldByField(readerEvent);
     assertThat(parser.fromJson(body.get("userInputData"), MyKeypleUserData.class))
         .isEqualToComparingFieldByFieldRecursively(inputData);
-
     // output is verified in eventFilter
   }
 
   /*
+   *
    * Helper
-   */
+   *
+   * */
 
   class KeypleClientSyncMock implements KeypleClientSync {
 
@@ -324,7 +325,7 @@ public class NativeSeClientServiceTest extends BaseNativeSeTest {
 
       List<KeypleMessageDto> responses = new ArrayList<KeypleMessageDto>();
       if (answerNumber == 1) {
-        responses.add(getTerminateDto(msg.getSessionId()));
+        responses.add(getTerminateDto(msg.getSessionId(), true));
       }
       if (answerNumber > 1) {
         responses.add(getTransmitDto(msg.getSessionId()));
@@ -389,10 +390,10 @@ public class NativeSeClientServiceTest extends BaseNativeSeTest {
     }
   }
 
-  public KeypleMessageDto getTerminateDto(String sessionId) {
+  public KeypleMessageDto getTerminateDto(String sessionId, boolean unregister) {
     JsonObject body = new JsonObject();
     body.add("userOutputData", parser.toJsonTree(outputData, MyKeypleUserData.class));
-    body.add("unregisterVirtualReader", parser.toJsonTree(true, Boolean.class));
+    body.add("unregisterVirtualReader", parser.toJsonTree(unregister, Boolean.class));
     return new KeypleMessageDto()
         .setSessionId(sessionId) //
         .setAction(KeypleMessageDto.Action.TERMINATE_SERVICE.name()) //
