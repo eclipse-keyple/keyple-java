@@ -15,22 +15,21 @@ import java.util.List;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 
 /**
- * The abstract class defining the default selections response in return to the default selection
- * made when the SE was inserted..
+ * This abstract class defines the POJO used to carry the response to a default selection request.
  *
- * <p>The default selections response provides a list of {@link SeResponse}<br>
- * The purpose of this abstract class is to hide the constructor that is defined as public in its
- * implementation {@link org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest}.
+ * <p>The response to a default selection is obtained from an observable reader and analyzed by the
+ * selection class that created the selection request.
+ *
+ * @since 0.9
  */
 public abstract class AbstractDefaultSelectionsResponse {
-  private final List<SeResponse> selectionSeResponses;
 
-  protected AbstractDefaultSelectionsResponse(List<SeResponse> selectionSeResponses) {
-    this.selectionSeResponses = selectionSeResponses;
-  }
-
-  /** @return the list of {@link SeResponse} */
-  public final List<SeResponse> getSelectionSeResponses() {
-    return selectionSeResponses;
-  }
+  /**
+   * Gets the result of the selection as a list of responses corresponding to the requests made in
+   * {@link AbstractDefaultSelectionsRequest}.
+   *
+   * @return A not empty list.
+   * @since 0.9
+   */
+  protected abstract List<SeResponse> getSelectionSeResponses();
 }

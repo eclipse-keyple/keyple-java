@@ -122,7 +122,7 @@ public abstract class AbstractObservablePlugin extends AbstractPlugin
           "[{}] Notifying a plugin event to {} observers. EVENTNAME = {} ",
           this.getName(),
           countObservers(),
-          event.getEventType().getName());
+          event.getEventType().name());
     }
     List<PluginObserver> observersCopy;
 

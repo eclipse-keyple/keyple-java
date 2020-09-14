@@ -91,7 +91,7 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
         "[{}] Notifying a reader event to {} observers. EVENTNAME = {}",
         this.getName(),
         this.countObservers(),
-        event.getEventType().getName());
+        event.getEventType().name());
 
     List<ReaderObserver> observersCopy;
 

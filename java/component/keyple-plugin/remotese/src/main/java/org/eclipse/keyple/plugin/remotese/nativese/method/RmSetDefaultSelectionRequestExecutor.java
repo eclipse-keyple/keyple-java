@@ -60,7 +60,7 @@ public class RmSetDefaultSelectionRequestExecutor implements IRemoteMethodExecut
 
     // Notification Mode
     ObservableReader.NotificationMode notificationMode =
-        ObservableReader.NotificationMode.get(
+        ObservableReader.NotificationMode.valueOf(
             jsonObject.getAsJsonPrimitive("notificationMode").getAsString());
 
     // Polling Mode can be set or not.
