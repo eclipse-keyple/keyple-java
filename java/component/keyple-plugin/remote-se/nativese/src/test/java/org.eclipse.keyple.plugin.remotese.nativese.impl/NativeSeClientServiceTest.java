@@ -16,8 +16,10 @@ import static org.mockito.Mockito.*;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.seproxy.PluginFactory;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
@@ -46,7 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RunWith(MockitoJUnitRunner.class)
-public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
+public class NativeSeClientServiceTest extends BaseNativeSeTest {
 
   private static final Logger logger = LoggerFactory.getLogger(AbstractNativeSeServiceTest.class);
   KeypleClientSync syncClientEndpoint;
@@ -59,6 +61,7 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
   ReaderEvent readerEvent;
   String pluginName = "mockPlugin";
   String serviceId = "serviceId";
+  String virtualReaderName = "virtualReaderName";
   Gson parser;
 
   @Before
@@ -270,7 +273,8 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
   }
 
   @Test
-  public void onUpdate_withSyncNode() {
+  public void onUpdate_withSyncNode_unregisterReader()
+      throws NoSuchFieldException, IllegalAccessException {
     // init
     syncClientEndpoint = new KeypleClientSyncMock(2);
     NativeSeClientServiceImpl nativeSeClientService =
@@ -281,7 +285,7 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
                 .withReaderObservation(new MyEventFilter(true)) //
                 .getService();
 
-    // test
+    // send a readerEvent
     nativeSeClientService.update(readerEvent);
 
     // verify READER_EVENT dto
@@ -299,11 +303,24 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
         .isEqualToComparingFieldByFieldRecursively(inputData);
 
     // output is verified in eventFilter
+
+    // assert that virtual reader is unregister as required by the terminate service
+    assertThat(getVirtualReaders(nativeSeClientService)).hasSize(0);
   }
 
   /*
+   *
    * Helper
-   */
+   *
+   * */
+
+  private Map<String, String> getVirtualReaders(NativeSeClientServiceImpl service)
+      throws NoSuchFieldException, IllegalAccessException {
+    Field privateStringField = null;
+    privateStringField = NativeSeClientServiceImpl.class.getDeclaredField("virtualReaders");
+    privateStringField.setAccessible(true);
+    return (Map<String, String>) privateStringField.get(service);
+  }
 
   class KeypleClientSyncMock implements KeypleClientSync {
 
@@ -323,7 +340,7 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
 
       List<KeypleMessageDto> responses = new ArrayList<KeypleMessageDto>();
       if (answerNumber == 1) {
-        responses.add(getTerminateDto(msg.getSessionId()));
+        responses.add(getTerminateDto(msg.getSessionId(), true));
       }
       if (answerNumber > 1) {
         responses.add(getTransmitDto(msg.getSessionId()));
@@ -388,15 +405,17 @@ public class NativeSeClientServiceFactoryTest extends BaseNativeSeTest {
     }
   }
 
-  public KeypleMessageDto getTerminateDto(String sessionId) {
+  public KeypleMessageDto getTerminateDto(String sessionId, boolean unregister) {
     JsonObject body = new JsonObject();
     body.add("userOutputData", parser.toJsonTree(outputData, MyKeypleUserData.class));
-    body.add("unregisterVirtualReader", parser.toJsonTree(true, Boolean.class));
+    body.add("unregisterVirtualReader", parser.toJsonTree(unregister, Boolean.class));
     return new KeypleMessageDto()
         .setSessionId(sessionId) //
         .setAction(KeypleMessageDto.Action.TERMINATE_SERVICE.name()) //
         .setServerNodeId("serverNodeId") //
         .setClientNodeId("clientNodeId") //
+        .setNativeReaderName(readerName)
+        .setVirtualReaderName(virtualReaderName)
         .setBody(body.toString());
   }
 }

@@ -14,6 +14,7 @@ package org.eclipse.keyple.plugin.remotese.virtualse.impl;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderNotifier;
+import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerObservableReader;
 
 /**
@@ -25,6 +26,7 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
     implements RemoteSeServerObservableReader, ObservableReaderNotifier {
 
   private final VirtualObservableReader reader;
+  private final ServerVirtualObservableReader masterReader;
 
   /**
    * (package-private)<br>
@@ -39,9 +41,11 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
       VirtualObservableReader reader,
       String serviceId,
       String userInputDataJson,
-      String initialSeContentJson) {
+      String initialSeContentJson,
+      ServerVirtualObservableReader masterReader) {
     super(reader, serviceId, userInputDataJson, initialSeContentJson);
     this.reader = reader;
+    this.masterReader = masterReader;
   }
 
   /**
@@ -51,7 +55,11 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
    */
   @Override
   public void notifyObservers(ReaderEvent event) {
-    reader.notifyObservers(event);
+    if (masterReader != null) {
+      masterReader.notifyObservers(event);
+    } else {
+      reader.notifyObservers(event);
+    }
   }
 
   /**
@@ -61,7 +69,12 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
    */
   @Override
   public void addObserver(ReaderObserver observer) {
-    reader.addObserver(observer);
+    Assert.getInstance().notNull(observer, "observer");
+    if (masterReader != null) {
+      masterReader.addObserver(observer);
+    } else {
+      reader.addObserver(observer);
+    }
   }
 
   /**
@@ -71,7 +84,12 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
    */
   @Override
   public void removeObserver(ReaderObserver observer) {
-    reader.removeObserver(observer);
+    Assert.getInstance().notNull(observer, "observer");
+    if (masterReader != null) {
+      masterReader.removeObserver(observer);
+    } else {
+      reader.removeObserver(observer);
+    }
   }
 
   /**
@@ -81,7 +99,11 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
    */
   @Override
   public void clearObservers() {
-    reader.clearObservers();
+    if (masterReader != null) {
+      masterReader.clearObservers();
+    } else {
+      reader.clearObservers();
+    }
   }
 
   /**
@@ -91,7 +113,11 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
    */
   @Override
   public int countObservers() {
-    return reader.countObservers();
+    if (masterReader != null) {
+      return masterReader.countObservers();
+    } else {
+      return reader.countObservers();
+    }
   }
 
   /**
@@ -147,5 +173,15 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
   @Override
   public void finalizeSeProcessing() {
     reader.finalizeSeProcessing();
+  }
+
+  /**
+   * (package-private)<br>
+   * Return the master reader if any, null if none
+   *
+   * @return nullable instance of a master reader
+   */
+  ServerVirtualObservableReader getMasterReader() {
+    return masterReader;
   }
 }

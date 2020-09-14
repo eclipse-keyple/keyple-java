@@ -219,6 +219,11 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
         Object userOutputData =
             extractUserOutputData(receivedDto, eventFilter.getUserOutputDataClass());
 
+        // Verify if the virtual reader can be unregistered.
+        if (canUnregisterVirtualReader(receivedDto)) {
+          virtualReaders.remove(nativeReader.getName());
+        }
+
         // invoke callback
         eventFilter.afterPropagation(userOutputData);
 

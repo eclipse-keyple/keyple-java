@@ -193,4 +193,8 @@ public class SampleFactory {
     seProtocolSetting.put(seProtocol, "protocolRule");
     return seProtocolSetting;
   }
+
+  public static DefaultSelectionsResponse getDefaultSelectionsResponse() {
+    return new DefaultSelectionsResponse(getCompleteResponseList());
+  }
 }

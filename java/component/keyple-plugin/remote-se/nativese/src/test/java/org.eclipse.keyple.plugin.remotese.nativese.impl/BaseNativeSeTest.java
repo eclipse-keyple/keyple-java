@@ -36,12 +36,11 @@ public abstract class BaseNativeSeTest {
   final String observableReaderName = "observableReaderName";
 
   ProxyReader readerMocked;
-  NativeSeClientServiceFactoryTest.ObservableProxyReader observableReaderMocked;
+  NativeSeClientServiceTest.ObservableProxyReader observableReaderMocked;
 
   public void init() {
     readerMocked = Mockito.mock(ProxyReader.class);
-    observableReaderMocked =
-        Mockito.mock(NativeSeClientServiceFactoryTest.ObservableProxyReader.class);
+    observableReaderMocked = Mockito.mock(NativeSeClientServiceTest.ObservableProxyReader.class);
     doReturn(readerName).when(readerMocked).getName();
   }
 

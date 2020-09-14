@@ -366,7 +366,7 @@ package org.eclipse.keyple.plugin.remotese {
                 ~ ServerVirtualReader (\n VirtualReader reader,\n String serviceId,\n String userInputDataJson,\n String initialSeContentJson)
             }
             ~class "<< <back:#FDEBD0>ObservableReaderNotifier</back> >>\n**final** ServerVirtualObservableReader" as ServerVirtualObservableReader extends AbstractServerVirtualReader implements RemoteSeServerObservableReader {
-                ~ ServerVirtualObservableReader (\n VirtualObservableReader reader,\n String serviceId,\n String userInputDataJson,\n String initialSeContentJson)
+                ~ ServerVirtualObservableReader (\n VirtualObservableReader reader,\n String serviceId,\n String userInputDataJson,\n String initialSeContentJson,\n ServerVirtualObservableReader masterReader)
             }
 
         }

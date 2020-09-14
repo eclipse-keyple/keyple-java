@@ -14,16 +14,12 @@ package org.eclipse.keyple.plugin.remotese.virtualse.impl;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
 import org.eclipse.keyple.plugin.remotese.core.impl.AbstractKeypleMessageHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * (package-private)<br>
@@ -34,10 +30,9 @@ import org.slf4j.LoggerFactory;
  */
 abstract class AbstractRemoteSePlugin extends AbstractKeypleMessageHandler implements ReaderPlugin {
 
-  private static final Logger logger = LoggerFactory.getLogger(AbstractRemoteSePlugin.class);
-
   private final String name;
   protected final Map<String, SeReader> readers;
+  protected Map<String, String> parameters;
 
   /**
    * (package-private)<br>
@@ -96,12 +91,10 @@ abstract class AbstractRemoteSePlugin extends AbstractKeypleMessageHandler imple
    * @since 1.0
    */
   @Override
-  public final SeReader getReader(String name) {
-    SeReader seReader = readers.get(name);
-    if (seReader == null) {
-      throw new KeypleReaderNotFoundException(name);
+  public final void setParameters(Map<String, String> parameters) {
+    for (Map.Entry<String, String> en : parameters.entrySet()) {
+      setParameter(en.getKey(), en.getValue());
     }
-    return seReader;
   }
 
   /**
@@ -110,10 +103,18 @@ abstract class AbstractRemoteSePlugin extends AbstractKeypleMessageHandler imple
    * @since 1.0
    */
   @Override
-  public final void setParameters(Map<String, String> parameters) {
-    for (Map.Entry<String, String> en : parameters.entrySet()) {
-      setParameter(en.getKey(), en.getValue());
-    }
+  public Map<String, String> getParameters() {
+    return parameters;
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
+  @Override
+  public void setParameter(String key, String value) {
+    parameters.put(key, value);
   }
 
   /**
@@ -126,6 +127,5 @@ abstract class AbstractRemoteSePlugin extends AbstractKeypleMessageHandler imple
    * @return a not null map.
    * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
    */
-  protected abstract ConcurrentMap<String, SeReader> initNativeReaders()
-      throws KeypleReaderIOException;
+  protected abstract Map<String, SeReader> initNativeReaders() throws KeypleReaderIOException;
 }
