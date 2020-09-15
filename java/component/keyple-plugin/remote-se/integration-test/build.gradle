@@ -1,0 +1,58 @@
+apply plugin: 'java'
+apply plugin: 'org.eclipse.keyple'
+apply plugin: 'jacoco'
+apply plugin: 'org.sonarqube'
+
+sourceCompatibility = 1.6
+archivesBaseName = "keyple-java-plugin-remotese-integration-test"
+project.description ='Integration tests of Keyple Plugin Remote SE, only for testing'
+
+
+dependencies {
+    /*
+    Test
+     */
+
+    implementation project(path:':java:component:keyple-plugin:remote-se:keyple-plugin-remotese-core')
+    //testImplementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remotese-core', version: project.version
+
+    implementation project(path:':java:component:keyple-plugin:remote-se:keyple-plugin-remotese-nativese')
+    //testImplementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remotese-nativese', version: project.version
+
+    implementation project(path:':java:component:keyple-plugin:remote-se:keyple-plugin-remotese-virtualse')
+    //testImplementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remotese-virtualse', version: project.version
+
+    implementation project(path:':java:component:keyple-plugin:keyple-plugin-stub')
+
+    implementation project(path:':java:component:keyple-calypso')
+
+    testImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.11.2"
+
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+    testImplementation "org.slf4j:slf4j-api:${slf4japi_version}"
+
+    // https://mvnrepository.com/artifact/junit/junit
+    testImplementation "junit:junit:${junit_version}"
+
+    // https://search.maven.org/artifact/org.assertj/assertj-core/2.9.1/bundle
+    testImplementation "org.assertj:assertj-core:${assertj_version}"
+
+    // https://mvnrepository.com/artifact/org.mockito/mockito-core
+    testImplementation "org.mockito:mockito-core:${mockitocore_version}"
+
+    //add slf4j simple logger implementation
+    testImplementation "org.slf4j:slf4j-simple:${slf4jsimple_version}"
+
+    // https://github.com/awaitility/awaitility
+    testImplementation 'org.awaitility:awaitility:4.0.3'
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.enabled false
+    }
+}
+
+test.finalizedBy jacocoTestReport

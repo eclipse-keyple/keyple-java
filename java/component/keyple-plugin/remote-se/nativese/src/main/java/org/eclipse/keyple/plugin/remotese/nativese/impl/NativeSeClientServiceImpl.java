@@ -284,7 +284,7 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
     }
     Gson parser = KeypleJsonParser.getParser();
     JsonObject body = parser.fromJson(msg.getBody(), JsonObject.class);
-    return parser.fromJson(body.get("userOutputData"), classOfT);
+    return parser.fromJson(body.get("userOutputData").getAsString(), classOfT);
   }
 
   /**

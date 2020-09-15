@@ -254,8 +254,8 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
   private AbstractServerVirtualReader createMasterReader(KeypleMessageDto message) {
     JsonObject body = KeypleJsonParser.getParser().fromJson(message.getBody(), JsonObject.class);
     String serviceId = body.get("serviceId").getAsString();
-    String userInputData = body.get("userInputData").getAsString();
-    String initialSeContent = body.get("initialSeContent").getAsString();
+    String userInputData = body.get("userInputData").toString();
+    String initialSeContent = body.get("initialSeContent").toString();
     boolean isObservable = body.has("isObservable") && body.get("isObservable").getAsBoolean();
     String virtualReaderName = UUID.randomUUID().toString();
     String sessionId = message.getSessionId();
