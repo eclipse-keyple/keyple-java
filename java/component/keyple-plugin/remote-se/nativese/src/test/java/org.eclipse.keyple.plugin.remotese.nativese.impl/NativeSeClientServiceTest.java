@@ -407,8 +407,8 @@ public class NativeSeClientServiceTest extends BaseNativeSeTest {
 
   public KeypleMessageDto getTerminateDto(String sessionId, boolean unregister) {
     JsonObject body = new JsonObject();
-    body.add("userOutputData", parser.toJsonTree(outputData, MyKeypleUserData.class));
-    body.add("unregisterVirtualReader", parser.toJsonTree(unregister, Boolean.class));
+    body.addProperty("userOutputData", parser.toJson(outputData, MyKeypleUserData.class));
+    body.addProperty("unregisterVirtualReader", parser.toJson(unregister, Boolean.class));
     return new KeypleMessageDto()
         .setSessionId(sessionId) //
         .setAction(KeypleMessageDto.Action.TERMINATE_SERVICE.name()) //
