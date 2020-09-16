@@ -11,25 +11,25 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remotese.integration.common.model;
 
-public class UserOutput {
+public class ConfigurationResult {
   private Boolean isSuccessful;
-  private String userId;
+  private String deviceId;
 
-  public UserOutput setSuccessful(Boolean successful) {
+  public ConfigurationResult setSuccessful(Boolean successful) {
     isSuccessful = successful;
     return this;
   }
 
-  public UserOutput setUserId(String userId) {
-    this.userId = userId;
+  public ConfigurationResult setDeviceId(String userId) {
+    this.deviceId = userId;
     return this;
   }
 
-  public Boolean getSuccessful() {
+  public Boolean isSuccessful() {
     return isSuccessful;
   }
 
-  public String getUserId() {
-    return userId;
+  public String getDeviceId() {
+    return deviceId;
   }
 }

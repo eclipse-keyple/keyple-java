@@ -12,12 +12,17 @@
 package org.eclipse.keyple.plugin.remotese.integration.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.plugin.remotese.core.KeypleClientSync;
-import org.eclipse.keyple.plugin.remotese.integration.common.endpoint.StubSyncClient;
+import org.eclipse.keyple.plugin.remotese.integration.common.endpoint.StubSyncClientEndpoint;
+import org.eclipse.keyple.plugin.remotese.integration.common.model.ConfigurationResult;
+import org.eclipse.keyple.plugin.remotese.integration.common.model.DeviceInput;
+import org.eclipse.keyple.plugin.remotese.integration.common.model.TransactionResult;
 import org.eclipse.keyple.plugin.remotese.integration.common.model.UserInput;
-import org.eclipse.keyple.plugin.remotese.integration.common.model.UserOutput;
 import org.eclipse.keyple.plugin.remotese.integration.common.se.StubCalypsoClassic;
 import org.eclipse.keyple.plugin.remotese.nativese.NativeSeClientService;
 import org.eclipse.keyple.plugin.remotese.nativese.RemoteServiceParameters;
@@ -25,31 +30,41 @@ import org.eclipse.keyple.plugin.remotese.nativese.impl.NativeSeClientServiceFac
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SyncScenario extends BaseScenario {
 
-  /**
-   * Server side : - retrieve remotese plugin if not initialized - initialize the plugin with a sync
-   * node, attach the plugin observer
-   *
-   * <p>Client side : - retrieve stub plugin if registered, retrieve stub native reader - if not,
-   * register stub plugin, create a stub virtual reader
-   */
   KeypleClientSync clientSyncEndpoint;
+  private static final Logger logger = LoggerFactory.getLogger(SyncScenario.class);
 
   @Before
   public void setUp() {
 
+    /*
+     * Server side :
+     * - retrieve remotese plugin if not initialized
+     * - initialize the plugin with a sync node
+     * attach the plugin observer
+     */
     initRemoteSePluginWithSyncNode();
 
-    // client side
+    /*
+     * <p>Client side : - retrieve stub plugin if registered, retrieve stub native reader - if not,
+     * register stub plugin, create a stub virtual reader
+     */
     initNativeStubPlugin();
 
-    clientSyncEndpoint = new StubSyncClient();
+    clientSyncEndpoint = new StubSyncClientEndpoint();
+
+    user1 = new UserInput().setUserId(UUID.randomUUID().toString());
   }
 
   @After
-  public void tearDown() {}
+  public void tearDown() {
+    /** Unplug the native reader */
+    clearNativeReader();
+  }
 
   /*
    * Tests
@@ -67,14 +82,14 @@ public class SyncScenario extends BaseScenario {
    * <p>This scenario can be executed on Sync node and Async node.
    */
   @Test
-  public void execute1_localselection_remotePoTransaction() {
+  public void execute1_localselection_remoteTransaction_successful() {
 
     NativeSeClientService nativeService =
-            new NativeSeClientServiceFactory()
-                    .builder()
-                    .withSyncNode(clientSyncEndpoint)
-                    .withoutReaderObservation()
-                    .getService();
+        new NativeSeClientServiceFactory()
+            .builder()
+            .withSyncNode(clientSyncEndpoint)
+            .withoutReaderObservation()
+            .getService();
 
     // insert stub SE into stub
     nativeReader.insertSe(new StubCalypsoClassic());
@@ -82,21 +97,70 @@ public class SyncScenario extends BaseScenario {
     CalypsoPo calypsoPo = explicitPoSelection();
 
     // execute remote service
-    UserOutput output =
-            nativeService.executeRemoteService(
-                    RemoteServiceParameters.builder(SERVICE_ID_1, nativeReader)
-                            .withInitialSeContext(calypsoPo)
-                            .withUserInputData(new UserInput().setUserId(USER_ID))
-                            .build(),
-                    UserOutput.class);
+    TransactionResult output =
+        nativeService.executeRemoteService(
+            RemoteServiceParameters.builder(SERVICE_ID_1, nativeReader)
+                .withInitialSeContext(calypsoPo)
+                .withUserInputData(new UserInput().setUserId(user1.getUserId()))
+                .build(),
+            TransactionResult.class);
 
     // validate result
-    assertThat(output.getSuccessful()).isTrue();
-    assertThat(output.getUserId()).isEqualTo(USER_ID);
+    assertThat(output.isSuccessful()).isTrue();
+    assertThat(output.getUserId()).isEqualTo(user1.getUserId());
   }
 
   @Test
-  public void execute2() {
+  public void execute2_defaultSelection_onMatched_transaction_successful()
+      throws InterruptedException {
 
+    final ReaderEventFilter eventFilter = new ReaderEventFilter();
+
+    NativeSeClientService nativeService =
+        new NativeSeClientServiceFactory()
+            .builder()
+            .withSyncNode(clientSyncEndpoint)
+            .withReaderObservation(eventFilter)
+            .getService();
+
+    // execute remote service to create observable virtual reader
+    ConfigurationResult configurationResult =
+        nativeService.executeRemoteService(
+            RemoteServiceParameters.builder(SERVICE_ID_2, nativeReader)
+                .withUserInputData(new DeviceInput().setDeviceId(DEVICE_ID))
+                .build(),
+            ConfigurationResult.class);
+
+    assertThat(configurationResult.isSuccessful()).isTrue();
+    assertThat(configurationResult.getDeviceId()).isEqualTo(DEVICE_ID);
+
+    eventFilter.setUser(user1);
+
+    // user1 insert SE , SE event should be sent to server
+    nativeReader.insertSe(new StubCalypsoClassic());
+    logger.info(
+        "1 - Verify User Transaction is successful for first user {}",
+        eventFilter.user.getUserId());
+    // filter
+    await().atMost(2, TimeUnit.SECONDS).until(verifyUserTransaction(eventFilter, user1));
+
+    nativeReader.removeSe();
+
+    await().atMost(1, TimeUnit.SECONDS).until(seRemoved(nativeReader));
+
+    UserInput user2 = new UserInput().setUserId(UUID.randomUUID().toString());
+    eventFilter.setUser(user2);
+    eventFilter.transactionResult = null;
+
+    // user2 insert SE , SE event should be sent to server
+    nativeReader.insertSe(new StubCalypsoClassic());
+    logger.info(
+        "2 - Verify User Transaction is successful for second user {}",
+        eventFilter.user.getUserId());
+    // filter
+    await().atMost(2, TimeUnit.SECONDS).until(verifyUserTransaction(eventFilter, user2));
+
+    nativeReader.removeSe();
+    await().atMost(1, TimeUnit.SECONDS).until(seRemoved(nativeReader));
   }
 }

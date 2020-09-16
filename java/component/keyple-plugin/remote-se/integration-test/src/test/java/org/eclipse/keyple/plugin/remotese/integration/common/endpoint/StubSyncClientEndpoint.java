@@ -22,10 +22,13 @@ import org.eclipse.keyple.plugin.remotese.core.KeypleClientSync;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remotese.integration.common.util.JacksonParser;
 import org.eclipse.keyple.plugin.remotese.virtualse.impl.RemoteSeServerUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Stub implementation of a {@link KeypleClientSync}. */
-public class StubSyncClient implements KeypleClientSync {
+public class StubSyncClientEndpoint implements KeypleClientSync {
 
+  private static final Logger logger = LoggerFactory.getLogger(StubSyncClientEndpoint.class);
   static ExecutorService taskPool = Executors.newCachedThreadPool();
 
   @Override
@@ -34,6 +37,8 @@ public class StubSyncClient implements KeypleClientSync {
 
     // serialize request
     final String request = JacksonParser.toJson(msg);
+
+    logger.trace("Sending request data to server : {}", request);
 
     try {
       responsesJson =
@@ -64,6 +69,7 @@ public class StubSyncClient implements KeypleClientSync {
     final List<KeypleMessageDto> out = new ArrayList<KeypleMessageDto>();
     for (String responseJson : responsesJson) {
       out.add(JacksonParser.fromJson(responseJson));
+      logger.trace("Received response data from server : {}", responseJson);
     }
 
     return out;

@@ -11,19 +11,22 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remotese.integration.common.app;
 
-import static org.eclipse.keyple.plugin.remotese.integration.test.BaseScenario.SERVICE_ID_1;
+import static org.eclipse.keyple.plugin.remotese.integration.test.BaseScenario.*;
 
 import org.eclipse.keyple.calypso.transaction.*;
-import org.eclipse.keyple.core.selection.SeResource;
+import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
-import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.plugin.remotese.integration.common.model.ConfigurationResult;
+import org.eclipse.keyple.plugin.remotese.integration.common.model.DeviceInput;
+import org.eclipse.keyple.plugin.remotese.integration.common.model.TransactionResult;
 import org.eclipse.keyple.plugin.remotese.integration.common.model.UserInput;
-import org.eclipse.keyple.plugin.remotese.integration.common.model.UserOutput;
-import org.eclipse.keyple.plugin.remotese.integration.common.util.CalypsoClassicInfo;
+import org.eclipse.keyple.plugin.remotese.integration.common.util.CalypsoUtilities;
+import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerObservableReader;
 import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerPlugin;
 import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerReader;
-import org.eclipse.keyple.plugin.remotese.virtualse.impl.RemoteSeServerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,11 +34,7 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
 
   private static final Logger logger = LoggerFactory.getLogger(RemoteSePluginObserver.class);
 
-  boolean isSync;
-
-  public RemoteSePluginObserver(boolean isSync) {
-    this.isSync = isSync;
-  }
+  public RemoteSePluginObserver() {}
 
   @Override
   public void update(PluginEvent event) {
@@ -50,11 +49,11 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
         // retrieve serviceId from reader
         String virtualReaderName = event.getReaderNames().first();
         RemoteSeServerPlugin plugin =
-            isSync ? RemoteSeServerUtils.getSyncPlugin() : RemoteSeServerUtils.getAsyncPlugin();
+            (RemoteSeServerPlugin) SeProxyService.getInstance().getPlugin(event.getPluginName());
         RemoteSeServerReader virtualReader = plugin.getReader(virtualReaderName);
 
         // execute the business logic based on serviceId
-        UserOutput output = executeService(virtualReader);
+        Object output = executeService(virtualReader);
 
         // terminate service
         plugin.terminateService(virtualReaderName, output);
@@ -63,53 +62,39 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
     }
   }
 
-  UserOutput executeService(RemoteSeServerReader virtualReader) {
+  Object executeService(RemoteSeServerReader virtualReader) {
     logger.info("Executing ServiceId : {}", virtualReader.getServiceId());
-    if (SERVICE_ID_1.equals(virtualReader.getServiceId())) {
 
+    // "EXECUTE_CALYPSO_SESSION_FROM_LOCAL_SELECTION"
+    if (SERVICE_ID_1.equals(virtualReader.getServiceId())) {
       UserInput userInput = virtualReader.getUserInputData(UserInput.class);
       CalypsoPo calypsoPo = virtualReader.getInitialSeContent(CalypsoPo.class);
-      // execute calypso session from a se selection
-      logger.info(
-          "Initial PO Content, atr : {}, sn : {}",
-          calypsoPo.getAtr(),
-          calypsoPo.getApplicationSerialNumber());
 
-      // Retrieve the data read from the CalyspoPo updated during the transaction process
-      ElementaryFile efEnvironmentAndHolder =
-          calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EnvironmentAndHolder);
-      String environmentAndHolder =
-          ByteArrayUtil.toHex(efEnvironmentAndHolder.getData().getContent());
+      // execute a transacation
+      CalypsoUtilities.readEventLog(calypsoPo, virtualReader, logger);
 
-      // Log the result
-      logger.info("EnvironmentAndHolder file data: {}", environmentAndHolder);
-
-      // Go on with the reading of the first record of the EventLog file
-      logger.info("= #### reading transaction of the EventLog file.");
-
-      PoTransaction poTransaction =
-          new PoTransaction(new SeResource<CalypsoPo>(virtualReader, calypsoPo));
-
-      // Prepare the reading order and keep the associated parser for later use once the
-      // transaction has been processed.
-      poTransaction.prepareReadRecordFile(
-          CalypsoClassicInfo.SFI_EventLog, CalypsoClassicInfo.RECORD_NUMBER_1);
-
-      // Actual PO communication: send the prepared read order, then close the channel with
-      // the PO
-      poTransaction.prepareReleasePoChannel();
-      poTransaction.processPoCommands();
-      logger.info("The reading of the EventLog has succeeded.");
-
-      // Retrieve the data read from the CalyspoPo updated during the transaction process
-      ElementaryFile efEventLog = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
-      String eventLog = ByteArrayUtil.toHex(efEventLog.getData().getContent());
-
-      // Log the result
-      logger.info("EventLog file data: {}", eventLog);
-
-      return new UserOutput().setUserId(userInput.getUserId()).setSuccessful(true);
+      return new TransactionResult().setUserId(userInput.getUserId()).setSuccessful(true);
     }
+
+    // CREATE_CONFIGURE_OBS_VIRTUAL_READER
+    if (SERVICE_ID_2.equals(virtualReader.getServiceId())) {
+      RemoteSeServerObservableReader observableVirtualReader =
+          (RemoteSeServerObservableReader) virtualReader;
+      DeviceInput deviceInput = observableVirtualReader.getUserInputData(DeviceInput.class);
+
+      // configure default selection on reader
+      SeSelection seSelection = CalypsoUtilities.getSeSelection();
+      observableVirtualReader.setDefaultSelectionRequest(
+          seSelection.getSelectionOperation(),
+          ObservableReader.NotificationMode.MATCHED_ONLY,
+          ObservableReader.PollingMode.REPEATING);
+      observableVirtualReader.startSeDetection(ObservableReader.PollingMode.REPEATING);
+
+      // add observer
+      observableVirtualReader.addObserver(new ReaderObserver());
+      return new ConfigurationResult().setSuccessful(true).setDeviceId(deviceInput.getDeviceId());
+    }
+
     throw new IllegalArgumentException("Service Id not recognized");
   }
 }
