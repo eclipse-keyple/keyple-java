@@ -14,15 +14,18 @@ package org.eclipse.keyple.core.command.exception;
 import org.eclipse.keyple.core.command.SeCommand;
 
 /**
- * The exception {@code KeypleSeCommandUnknownStatusException} indicates that the status code is not
- * referenced.
+ * This exception indicates that the status code is not referenced.
+ *
+ * @since 0.9
  */
 public class KeypleSeCommandUnknownStatusException extends KeypleSeCommandException {
 
   /**
-   * @param message the message to identify the exception context
-   * @param command the SE command
-   * @param statusCode the status code
+   * Constructor allowing to set a message, the command and the status code.
+   *
+   * @param message the message to identify the exception context (Should not be null)
+   * @param command the SE command  (Should not be null)
+   * @param statusCode the status code  (Should not be null)
    */
   public KeypleSeCommandUnknownStatusException(
       String message, SeCommand command, Integer statusCode) {

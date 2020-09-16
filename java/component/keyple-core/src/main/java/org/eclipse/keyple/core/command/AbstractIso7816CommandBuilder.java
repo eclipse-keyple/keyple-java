@@ -26,14 +26,18 @@ import org.eclipse.keyple.core.seproxy.message.ApduRequest;
  *   <li>the built APDURequest,
  *   <li>the corresponding AbstractApduResponseParser class.
  * </ul>
+ *
+ * @since 0.9
  */
 public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandBuilder {
 
   /**
    * Abstract constructor to build a command with a command reference and an {@link ApduRequest}.
    *
-   * @param commandReference command reference
-   * @param request ApduRequest
+   * @param commandReference The {@link SeCommand} used as Command reference (should be not null)
+   * @param request The {@link ApduRequest} used for the request (should not be null)
+   *
+   * @since 0.9
    */
   public AbstractIso7816CommandBuilder(SeCommand commandReference, ApduRequest request) {
     super(commandReference, request);
@@ -42,9 +46,12 @@ public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandB
   /**
    * Returns a byte array having the expected length determined by dataIn an le
    *
-   * @param dataIn incoming data array
-   * @param le expected outgoing length
+   * @param dataIn incoming data array (could be null)
+   * @param le expected outgoing length (could be null)
+   *
    * @return a new byte array
+   *
+   * @since 0.9
    */
   private byte[] allocateBuffer(byte[] dataIn, Byte le) {
     int length = 4; // header
@@ -81,16 +88,19 @@ public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandB
    *
    * <p>If dataIn is not null and Le &gt; 0 an IllegalArgumentException is thrown
    *
-   * @param cla class of instruction
-   * @param command instruction code
-   * @param p1 instruction parameter 1
-   * @param p2 instruction parameter 2
+   * @param cla class of instruction (should not be null)
+   * @param command {@link SeCommand} used for Instruction (INS) (should not be null)
+   * @param p1 instruction parameter 1 (should not be null)
+   * @param p2 instruction parameter 2 (should not be null)
    * @param dataIn bytes sent in the data field of the command. dataIn.limit will be Lc (Number of
-   *     bytes present in the data field of the command)
+   *     bytes present in the data field of the command).
    * @param le maximum number of bytes expected in the data field of the response to the command
    *     (set to 0 is the case where ingoing and outgoing are present. Let the lower layer to handle
-   *     the actual length [case4])
-   * @return an ApduRequest
+   *     the actual length [case4]).
+   *
+   * @return a non null value
+   *
+   * @since 0.9
    */
   protected ApduRequest setApduRequest(
       byte cla, SeCommand command, byte p1, byte p2, byte[] dataIn, Byte le) {

@@ -18,8 +18,20 @@ import org.eclipse.keyple.core.command.exception.KeypleSeCommandUnknownStatusExc
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /** Base class for parsing APDU */
+
+/**
+ * This abstract class defines the parser used to handle APDU's response.
+ *
+ * @since 0.9
+ */
 public abstract class AbstractApduResponseParser {
 
+  /**
+   * This Map stores expected status that could be .
+   * By default inited with sw1=90 and sw2=00 (Success)
+   *
+   * @since 0.9
+   */
   protected static final Map<Integer, StatusProperties> STATUS_TABLE;
 
   static {
@@ -28,41 +40,59 @@ public abstract class AbstractApduResponseParser {
     STATUS_TABLE = m;
   }
 
-  /** the byte array APDU response. */
+  /**
+   * the {@link ApduResponse} containing response.
+   *
+   * @since 0.9
+   */
   protected final ApduResponse response;
 
   /**
    * Parsers are usually created by their associated builder. The CalypsoSam field maintains a link
    * between the builder and the parser in order to allow the parser to access the builder
    * parameters that were used to create the command (e.g. SFI, registration number, etc.).
+   *
+   * @since 0.9
    */
   protected final AbstractApduCommandBuilder builder;
 
   /**
-   * the generic abstract constructor to build a parser of the APDU response.
+   * The generic abstract constructor to build a parser of the APDU response.
    *
-   * @param response response to parse
-   * @param builder the reference of the builder that created the parser
+   * @param response {@link ApduResponse} response to parse (should not be null)
+   * @param builder {@link AbstractApduCommandBuilder} the reference of the builder that created the parser
+   *
+   * @since 0.9
    */
   public AbstractApduResponseParser(ApduResponse response, AbstractApduCommandBuilder builder) {
     this.response = response;
     this.builder = builder;
   }
 
-  /** @return the internal status table */
+  /**
+   * Returns the internal status table
+   *
+   * @return A not null reference
+   *
+   * @since 0.9
+   */
   protected Map<Integer, StatusProperties> getStatusTable() {
     return STATUS_TABLE;
   }
 
   /**
-   * Build a command exception.<br>
+   * Build a command exception.
+   *
    * This method should be override in subclasses in order to create specific exceptions.
    *
    * @param exceptionClass the exception class
    * @param message the message
-   * @param commandRef the command reference
+   * @param commandRef {@link SeCommand} the command reference
    * @param statusCode the status code
-   * @return a new instance not null
+   *
+   * @return A not null value
+   *
+   * @since 0.9
    */
   protected KeypleSeCommandException buildCommandException(
       Class<? extends KeypleSeCommandException> exceptionClass,
@@ -72,24 +102,46 @@ public abstract class AbstractApduResponseParser {
     return new KeypleSeCommandUnknownStatusException(message, commandRef, statusCode);
   }
 
-  /** @return the APDU response */
+  /**
+   * Get {@link ApduResponse}
+   *
+   * @return A not null reference
+   *
+   * @since 0.9
+   */
   public final ApduResponse getApduResponse() {
     return response;
   }
 
-  /** @return the associated builder reference */
+  /**
+   * Get {@link AbstractApduCommandBuilder}, the associated builder reference
+   *
+   * @return A nullable reference
+   *
+   * @since 0.9
+   */
   public AbstractApduCommandBuilder getBuilder() {
     return builder;
   }
 
-  /** @return the properties associated to the response status code */
+  /**
+   * Get {@link StatusProperties} associated to the response status code
+   *
+   * @return A nullable reference
+   *
+   * @since 0.9
+   */
   private StatusProperties getStatusCodeProperties() {
     return getStatusTable().get(response.getStatusCode());
   }
 
   /**
-   * @return true if the status is successful from the statusTable according to the current status
-   *     code.
+   * Get true if the status is successful from the statusTable according to the current status
+   * code.
+   *
+   * @return A value
+   *
+   * @since 0.9
    */
   public boolean isSuccessful() {
     StatusProperties props = getStatusCodeProperties();
@@ -101,6 +153,8 @@ public abstract class AbstractApduResponseParser {
    * If status code is not referenced, then status is considered unsuccessful.
    *
    * @throws KeypleSeCommandException if status is not successful.
+   *
+   * @since 0.9
    */
   public void checkStatus() {
 
@@ -128,37 +182,63 @@ public abstract class AbstractApduResponseParser {
   }
 
   /**
-   * Gets the associated command reference.<br>
+   * Get the associated command reference.<br>
    * By default, the command reference is retrieved from the associated builder.
    *
    * @return a nullable command reference
+   *
+   * @since 0.9
    */
   protected SeCommand getCommandRef() {
     return builder != null ? builder.getCommandRef() : null;
   }
 
-  /** @return the ASCII message from the statusTable for the current status code. */
+  /**
+   * Get he ASCII message from the statusTable for the current status code.
+   *
+   * @return A nullable value
+   *
+   * @since 0.9
+   */
   public final String getStatusInformation() {
     StatusProperties props = getStatusCodeProperties();
     return props != null ? props.getInformation() : null;
   }
 
-  /** Status code properties */
+  /**
+   * This internal class provides Status code properties
+   *
+   * @since 0.9
+   */
   protected static class StatusProperties {
 
-    /** The status information */
+    /**
+     * The status information
+     *
+     * @since 0.9
+     */
     private final String information;
 
-    /** The successful indicator */
+    /**
+     * The successful indicator
+     *
+     * @since 0.9
+     */
     private final boolean successful;
 
-    /** The associated exception class in case of error status */
+    /**
+     * The associated exception class in case of error status
+     *
+     * @since 0.9
+     */
     private final Class<? extends KeypleSeCommandException> exceptionClass;
 
     /**
      * Create a successful status.
      *
      * @param information the status information
+     *
+     * @since 0.9
      */
     public StatusProperties(String information) {
       this.information = information;
@@ -172,6 +252,8 @@ public abstract class AbstractApduResponseParser {
      *
      * @param information the status information
      * @param exceptionClass the associated exception class
+     *
+     * @since 0.9
      */
     public StatusProperties(
         String information, Class<? extends KeypleSeCommandException> exceptionClass) {
@@ -180,17 +262,35 @@ public abstract class AbstractApduResponseParser {
       this.exceptionClass = exceptionClass;
     }
 
-    /** @return the status information */
+    /**
+     * Get information
+     *
+     * @return A nullable reference
+     *
+     * @since 0.9
+     */
     public String getInformation() {
       return information;
     }
 
-    /** @return the successful indicator */
+    /**
+     * Get successful indicator
+     *
+     * @return the successful indicator
+     *
+     * @since 0.9
+     */
     public boolean isSuccessful() {
       return successful;
     }
 
-    /** @return the nullable exception class */
+    /**
+     * Get Exception Class
+     *
+     * @return A nullable reference
+     *
+     * @since 0.9
+     */
     public Class<? extends KeypleSeCommandException> getExceptionClass() {
       return exceptionClass;
     }
