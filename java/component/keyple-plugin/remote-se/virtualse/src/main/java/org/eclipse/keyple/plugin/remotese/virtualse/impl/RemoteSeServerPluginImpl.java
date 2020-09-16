@@ -253,12 +253,14 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
    */
   private AbstractServerVirtualReader createMasterReader(KeypleMessageDto message) {
     JsonObject body = KeypleJsonParser.getParser().fromJson(message.getBody(), JsonObject.class);
-    String serviceId = body.get("serviceId").getAsString();
-    String userInputData = body.get("userInputData").toString();
-    String initialSeContent = body.get("initialSeContent").toString();
+    final String serviceId = body.get("serviceId").getAsString();
+    final String userInputData =
+        body.has("userInputData") ? body.get("userInputData").toString() : null;
+    final String initialSeContent =
+        body.has("initialSeContent") ? body.get("initialSeContent").toString() : null;
     boolean isObservable = body.has("isObservable") && body.get("isObservable").getAsBoolean();
-    String virtualReaderName = UUID.randomUUID().toString();
-    String sessionId = message.getSessionId();
+    final String virtualReaderName = UUID.randomUUID().toString();
+    final String sessionId = message.getSessionId();
 
     if (logger.isTraceEnabled()) {
       logger.trace(
@@ -293,11 +295,9 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
     ServerVirtualObservableReader virtualObservableReader =
         (ServerVirtualObservableReader) getReader(message.getVirtualReaderName());
 
-    String userInputData =
-        KeypleJsonParser.getParser()
-            .fromJson(message.getBody(), JsonObject.class)
-            .get("userInputData")
-            .getAsString();
+    JsonObject body = KeypleJsonParser.getParser().fromJson(message.getBody(), JsonObject.class);
+
+    String userInputData = body.has("userInputData") ? body.get("userInputData").toString() : null;
 
     VirtualObservableReader virtualReader =
         new VirtualObservableReader(

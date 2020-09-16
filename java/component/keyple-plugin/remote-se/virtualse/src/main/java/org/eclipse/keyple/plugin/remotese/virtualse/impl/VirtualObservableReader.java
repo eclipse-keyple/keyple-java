@@ -150,7 +150,7 @@ final class VirtualObservableReader extends AbstractVirtualReader
     Assert.getInstance().notNull(pollingMode, "Polling Mode");
     JsonObject body = new JsonObject();
 
-    body.addProperty("pollingMode", KeypleJsonParser.getParser().toJson(pollingMode));
+    body.addProperty("pollingMode", pollingMode.name());
 
     sendRequest(KeypleMessageDto.Action.START_SE_DETECTION, body);
   }
@@ -198,10 +198,10 @@ final class VirtualObservableReader extends AbstractVirtualReader
         "defaultSelectionsRequest",
         KeypleJsonParser.getParser().toJsonTree(defaultSelectionsRequest));
 
-    body.addProperty("notificationMode", KeypleJsonParser.getParser().toJson(notificationMode));
+    body.addProperty("notificationMode", notificationMode.name());
 
     if (pollingMode != null) {
-      body.addProperty("pollingMode", KeypleJsonParser.getParser().toJson(pollingMode));
+      body.addProperty("pollingMode", pollingMode.name());
     }
 
     sendRequest(KeypleMessageDto.Action.SET_DEFAULT_SELECTION, body);

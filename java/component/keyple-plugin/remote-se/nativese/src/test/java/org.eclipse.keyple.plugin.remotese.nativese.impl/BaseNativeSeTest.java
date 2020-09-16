@@ -66,7 +66,7 @@ public abstract class BaseNativeSeTest {
                     Lists.newArrayList(getASeRequest()),
                     MultiSeRequestProcessing.FIRST_MATCH,
                     ChannelControl.CLOSE_AFTER)));
-    body.addProperty("notificationMode", ObservableReader.NotificationMode.ALWAYS.name());
+    body.addProperty("notificationMode", ObservableReader.NotificationMode.MATCHED_ONLY.name());
     body.addProperty("pollingMode", ObservableReader.PollingMode.REPEATING.name());
 
     return new KeypleMessageDto()
