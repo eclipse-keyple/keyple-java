@@ -293,7 +293,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
             }
             break;
           default:
-            logger.warn("Unexpected reader event. EVENT = {}", event.getEventType().getName());
+            logger.warn("Unexpected reader event. EVENT = {}", event.getEventType().name());
             break;
         }
       }

@@ -14,38 +14,69 @@ package org.eclipse.keyple.core.seproxy.event;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 
 /**
- * The ObservablePlugin interface provides the API to observe readers in plugins.
+ * Provides the API to observe readers in plugins.
  *
- * <p>Allows subscribed observers to receive a PluginEvent when a reader is connected/disconnected
+ * <p>Allows registered observers to receive a {@link PluginEvent} when a reader is
+ * connected/disconnected
+ *
+ * @since 0.9
  */
 public interface ObservablePlugin extends ReaderPlugin {
-  /** Interface to be implemented by plugin observers. */
+
+  /**
+   * This interface has to be implemented by plugin observers.
+   *
+   * @since 0.9
+   */
   interface PluginObserver {
+
+    /**
+     * Called when a plugin event occurs.
+     *
+     * <p>Note that this method is called <b>sequentially</b> on all observers.
+     *
+     * @param event The not null {@link PluginEvent} containing all event information.
+     * @since 0.9
+     */
     void update(final PluginEvent event);
   }
 
   /**
-   * Add a plugin observer.
+   * Register a new plugin observer to be notified when a plugin event occurs.
    *
-   * <p>The observer will receive all the events produced by this plugin (reader connection,
-   * disconnection)
+   * <p>The provided observer will receive all the events produced by this plugin (reader
+   * connection, disconnection).
    *
-   * @param observer the observer object
+   * <p>It is possible to add as many observers as necessary. They will be notified of events
+   * <b>sequentially</b> in the order in which they are added.
+   *
+   * @param observer An observer object implementing the required interface (should be not null).
+   * @since 0.9
    */
   void addObserver(final PluginObserver observer);
 
   /**
-   * Remove a plugin observer.
+   * Unregister a plugin observer.
    *
    * <p>The observer will no longer receive any of the events produced by this plugin.
    *
-   * @param observer the observer object
+   * @param observer The observer object to be unregistered (should be not null).
+   * @since 0.9
    */
   void removeObserver(final PluginObserver observer);
 
-  /** Remove all observers at once */
+  /**
+   * Unregister all observers at once.
+   *
+   * @since 0.9
+   */
   void clearObservers();
 
-  /** @return the number of observers */
+  /**
+   * Provides the current number of registered observers.
+   *
+   * @return an int
+   * @since 0.9
+   */
   int countObservers();
 }

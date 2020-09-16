@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.pcsc;
 /**
  * This class defines the constants useful for setting up the PC/SC plugin.<br>
  * The current keys concern the plugin name itself and the possibility to define a pattern (regex)
- * for recognition of a player's transmission type from its name.<br>
+ * for recognition of a reader's transmission type from its name.<br>
  * These elements could possibly be used by the readers while calling getTransmissionMode if this
  * mode has not been defined otherwise.
  */
