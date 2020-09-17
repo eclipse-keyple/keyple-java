@@ -38,11 +38,6 @@ public abstract class AbstractApduCommandBuilder {
    */
   protected final SeCommand commandRef;
 
-  /**
-   * The command name (will appear in logs)
-   *
-   * @since 0.9
-   */
   private String name;
 
   /**
@@ -53,7 +48,7 @@ public abstract class AbstractApduCommandBuilder {
   protected ApduRequest request;
 
   /**
-   * the generic abstract constructor to build an APDU request with a command reference and a byte
+   * The generic abstract constructor to build an APDU request with a command reference and a byte
    * array.
    *
    * @param commandRef command reference (should not be null)
@@ -71,7 +66,7 @@ public abstract class AbstractApduCommandBuilder {
   }
 
   /**
-   * Append a string to the current name
+   * Appends a string to the current name
    *
    * @param subName the string to append
    * @since 0.9
@@ -86,7 +81,7 @@ public abstract class AbstractApduCommandBuilder {
   }
 
   /**
-   * Get {@link SeCommand} the current command identification
+   * Gets {@link SeCommand} the current command identification
    *
    * @return A non null reference
    * @since 0.9
@@ -96,7 +91,7 @@ public abstract class AbstractApduCommandBuilder {
   }
 
   /**
-   * Get the name of the APDU command from the CalypsoCommands information.
+   * Gets the name of the APDU command from the CalypsoCommands information.
    *
    * @return A non null reference
    * @since 0.9
@@ -106,7 +101,7 @@ public abstract class AbstractApduCommandBuilder {
   }
 
   /**
-   * Get {@link ApduRequest} the request
+   * Gets {@link ApduRequest} the request
    *
    * @return A nullable reference
    * @since 0.9

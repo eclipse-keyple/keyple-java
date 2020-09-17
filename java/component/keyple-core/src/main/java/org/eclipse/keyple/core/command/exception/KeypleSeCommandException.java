@@ -21,25 +21,15 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleException;
  */
 public abstract class KeypleSeCommandException extends KeypleException {
 
-  /**
-   * The SE command raising the exception
-   *
-   * @since 0.9
-   */
   private final SeCommand command;
 
-  /**
-   * The status code (optional)
-   *
-   * @since 0.9
-   */
   private final Integer statusCode;
 
   /**
    * Constructor allowing to set the error message and the reference to the command
    *
    * @param message the message to identify the exception context (Should not be null)
-   * @param command the command (Should not be null)
+   * @param command the command
    * @param statusCode the status code
    * @since 0.9
    */
@@ -50,7 +40,7 @@ public abstract class KeypleSeCommandException extends KeypleException {
   }
 
   /**
-   * Get the command
+   * Gets the command
    *
    * @return A non null reference
    * @since 0.9
@@ -60,7 +50,7 @@ public abstract class KeypleSeCommandException extends KeypleException {
   }
 
   /**
-   * Get the status code
+   * Gets the status code
    *
    * @return A nullable reference
    * @since 0.9

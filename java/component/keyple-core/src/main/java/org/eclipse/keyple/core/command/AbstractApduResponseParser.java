@@ -17,8 +17,6 @@ import org.eclipse.keyple.core.command.exception.KeypleSeCommandException;
 import org.eclipse.keyple.core.command.exception.KeypleSeCommandUnknownStatusException;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
-/** Base class for parsing APDU */
-
 /**
  * This abstract class defines the parser used to handle APDU's response.
  *
@@ -80,7 +78,7 @@ public abstract class AbstractApduResponseParser {
   }
 
   /**
-   * Build a command exception.
+   * Builds a command exception.
    *
    * <p>This method should be override in subclasses in order to create specific exceptions.
    *
@@ -100,7 +98,7 @@ public abstract class AbstractApduResponseParser {
   }
 
   /**
-   * Get {@link ApduResponse}
+   * Gets {@link ApduResponse}
    *
    * @return A not null reference
    * @since 0.9
@@ -110,7 +108,7 @@ public abstract class AbstractApduResponseParser {
   }
 
   /**
-   * Get {@link AbstractApduCommandBuilder}, the associated builder reference
+   * Gets {@link AbstractApduCommandBuilder}, the associated builder reference
    *
    * @return A nullable reference
    * @since 0.9
@@ -119,18 +117,12 @@ public abstract class AbstractApduResponseParser {
     return builder;
   }
 
-  /**
-   * Get {@link StatusProperties} associated to the response status code
-   *
-   * @return A nullable reference
-   * @since 0.9
-   */
   private StatusProperties getStatusCodeProperties() {
     return getStatusTable().get(response.getStatusCode());
   }
 
   /**
-   * Get true if the status is successful from the statusTable according to the current status code.
+   * Gets true if the status is successful from the statusTable according to the current status code.
    *
    * @return A value
    * @since 0.9
@@ -173,7 +165,7 @@ public abstract class AbstractApduResponseParser {
   }
 
   /**
-   * Get the associated command reference.<br>
+   * Gets the associated command reference.<br>
    * By default, the command reference is retrieved from the associated builder.
    *
    * @return a nullable command reference
@@ -184,7 +176,7 @@ public abstract class AbstractApduResponseParser {
   }
 
   /**
-   * Get he ASCII message from the statusTable for the current status code.
+   * Gets he ASCII message from the statusTable for the current status code.
    *
    * @return A nullable value
    * @since 0.9
@@ -201,29 +193,14 @@ public abstract class AbstractApduResponseParser {
    */
   protected static class StatusProperties {
 
-    /**
-     * The status information
-     *
-     * @since 0.9
-     */
     private final String information;
 
-    /**
-     * The successful indicator
-     *
-     * @since 0.9
-     */
     private final boolean successful;
 
-    /**
-     * The associated exception class in case of error status
-     *
-     * @since 0.9
-     */
     private final Class<? extends KeypleSeCommandException> exceptionClass;
 
     /**
-     * Create a successful status.
+     * Creates a successful status.
      *
      * @param information the status information
      * @since 0.9
@@ -235,7 +212,7 @@ public abstract class AbstractApduResponseParser {
     }
 
     /**
-     * Create an error status.<br>
+     * Creates an error status.<br>
      * If {@code exceptionClass} is null, then a successful status is created.
      *
      * @param information the status information
@@ -250,7 +227,7 @@ public abstract class AbstractApduResponseParser {
     }
 
     /**
-     * Get information
+     * Gets information
      *
      * @return A nullable reference
      * @since 0.9
@@ -260,7 +237,7 @@ public abstract class AbstractApduResponseParser {
     }
 
     /**
-     * Get successful indicator
+     * Gets successful indicator
      *
      * @return the successful indicator
      * @since 0.9
@@ -270,7 +247,7 @@ public abstract class AbstractApduResponseParser {
     }
 
     /**
-     * Get Exception Class
+     * Gets Exception Class
      *
      * @return A nullable reference
      * @since 0.9

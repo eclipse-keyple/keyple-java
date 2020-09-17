@@ -21,7 +21,7 @@ import java.io.Serializable;
 public interface SeCommand extends Serializable {
 
   /**
-   * Get command's name.
+   * Gets command's name.
    *
    * @return a String
    * @since 0.9
@@ -29,7 +29,7 @@ public interface SeCommand extends Serializable {
   String getName();
 
   /**
-   * Get Instruction Byte (INS)
+   * Gets Instruction Byte (INS)
    *
    * @return a byte.
    * @since 0.9

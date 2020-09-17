@@ -26,6 +26,7 @@ public class KeypleSeCommandUnknownStatusException extends KeypleSeCommandExcept
    * @param message the message to identify the exception context (Should not be null)
    * @param command the SE command (Should not be null)
    * @param statusCode the status code (Should not be null)
+   * @since 0.9
    */
   public KeypleSeCommandUnknownStatusException(
       String message, SeCommand command, Integer statusCode) {
