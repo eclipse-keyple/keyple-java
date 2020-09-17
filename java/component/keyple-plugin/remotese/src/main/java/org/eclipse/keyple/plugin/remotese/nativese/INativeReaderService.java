@@ -33,8 +33,7 @@ public interface INativeReaderService {
    * with an option to duplex connection
    *
    * @param localReader nativeReader to be connected to Master
-   * @param options map of parameters to set into the virtual reader see {@link
-   *     SeReader#getParameters()}
+   * @param options map of parameters to set into the virtual reader
    * @return sessionId id of the session of the virtual reader
    * @throws KeypleReaderException if reader is already connected
    */
