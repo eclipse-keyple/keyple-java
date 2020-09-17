@@ -18,10 +18,11 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
-import org.eclipse.keyple.plugin.pcsc.PcscReaderConstants;
+import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,15 +75,11 @@ public class Demo_CalypsoClassic_Pcsc {
     logger.info("SAM Reader  NAME = {}", samReader.getName());
 
     /* Set PcSc settings per reader */
-    poReader.setParameter(PcscReaderConstants.PROTOCOL_KEY, PcscReaderConstants.PROTOCOL_VAL_T1);
-    samReader.setParameter(PcscReaderConstants.PROTOCOL_KEY, PcscReaderConstants.PROTOCOL_VAL_T0);
+    ((PcscReader) poReader).setTransmissionMode(TransmissionMode.CONTACTLESS);
+    ((PcscReader) poReader).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
-    poReader.setParameter(
-        PcscReaderConstants.TRANSMISSION_MODE_KEY,
-        PcscReaderConstants.TRANSMISSION_MODE_VAL_CONTACTLESS);
-    samReader.setParameter(
-        PcscReaderConstants.TRANSMISSION_MODE_KEY,
-        PcscReaderConstants.TRANSMISSION_MODE_VAL_CONTACTS);
+    ((PcscReader) samReader).setTransmissionMode(TransmissionMode.CONTACTS);
+    ((PcscReader) samReader).setIsoProtocol(PcscReader.IsoProtocol.T0);
 
     /*
      * PC/SC card access mode:
@@ -98,20 +95,20 @@ public class Demo_CalypsoClassic_Pcsc {
      * See KEYPLE-CORE.PC.md file to learn more about this point.
      *
      */
-    samReader.setParameter(PcscReaderConstants.MODE_KEY, PcscReaderConstants.MODE_VAL_SHARED);
-    poReader.setParameter(PcscReaderConstants.MODE_KEY, PcscReaderConstants.MODE_VAL_SHARED);
+    ((PcscReader) poReader).setSharingMode(PcscReader.SharingMode.SHARED);
+    ((PcscReader) samReader).setSharingMode(PcscReader.SharingMode.SHARED);
 
     /* Set the PO reader protocol flag */
     poReader.addSeProtocolSetting(
         SeCommonProtocols.PROTOCOL_ISO14443_4,
-        PcscProtocolSetting.PCSC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+        PcscProtocolSetting.getAllSettings().get(SeCommonProtocols.PROTOCOL_ISO14443_4));
     poReader.addSeProtocolSetting(
         SeCommonProtocols.PROTOCOL_B_PRIME,
-        PcscProtocolSetting.PCSC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_B_PRIME));
+        PcscProtocolSetting.getAllSettings().get(SeCommonProtocols.PROTOCOL_B_PRIME));
 
     samReader.addSeProtocolSetting(
         SeCommonProtocols.PROTOCOL_ISO7816_3,
-        PcscProtocolSetting.PCSC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO7816_3));
+        PcscProtocolSetting.getAllSettings().get(SeCommonProtocols.PROTOCOL_ISO7816_3));
 
     /* Assign the readers to the Calypso transaction engine */
     transactionEngine.setReaders(poReader, samReader);

@@ -30,12 +30,13 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
-import org.eclipse.keyple.plugin.pcsc.PcscReaderConstants;
+import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,17 +80,13 @@ public class PoAuthentication_Pcsc {
 
     // Get and configure the PO reader
     SeReader poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
-    poReader.setParameter(
-        PcscReaderConstants.TRANSMISSION_MODE_KEY,
-        PcscReaderConstants.TRANSMISSION_MODE_VAL_CONTACTLESS);
-    poReader.setParameter(PcscReaderConstants.PROTOCOL_KEY, PcscReaderConstants.PROTOCOL_VAL_T1);
+    ((PcscReader) poReader).setTransmissionMode(TransmissionMode.CONTACTLESS);
+    ((PcscReader) poReader).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     // Get and configure the SAM reader
     SeReader samReader = readerPlugin.getReader(ReaderUtilities.getContactReaderName());
-    poReader.setParameter(
-        PcscReaderConstants.TRANSMISSION_MODE_KEY,
-        PcscReaderConstants.TRANSMISSION_MODE_VAL_CONTACTS);
-    poReader.setParameter(PcscReaderConstants.PROTOCOL_KEY, PcscReaderConstants.PROTOCOL_VAL_T0);
+    ((PcscReader) samReader).setTransmissionMode(TransmissionMode.CONTACTS);
+    ((PcscReader) samReader).setIsoProtocol(PcscReader.IsoProtocol.T0);
 
     // Create a SAM resource after selecting the SAM
     SeSelection samSelection = new SeSelection();
