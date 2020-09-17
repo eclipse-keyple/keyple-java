@@ -11,44 +11,19 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy;
 
-import java.util.Map;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 
 /**
  * (package-private)<br>
- * Allow {@link ProxyReader}s and {@link ReaderPlugin}s to receive configuration parameters.
+ * Allow {@link ProxyReader}s and {@link ReaderPlugin}s to be named.
  */
 interface ProxyElement {
-  /** @return the unique name of the item */
+
+  /**
+   * Gets the name of the element
+   *
+   * @return A not empty string.
+   * @since 0.9
+   */
   String getName();
-
-  /**
-   * Gets the parameters
-   *
-   * @return the configuration of the item
-   */
-  Map<String, String> getParameters();
-
-  /**
-   * allows to define a proprietary setting for a reader or a plugin (contactless protocols polling
-   * sequence, baud rate, ...).
-   *
-   * @param key the parameter key
-   * @param value the parameter value
-   * @throws IllegalArgumentException if the parameter or the value is not supported
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
-   */
-  void setParameter(String key, String value);
-
-  /**
-   * allows to define a set of proprietary settings for a reader or a plugin (contactless protocols
-   * polling sequence, baud rate, ...).
-   *
-   * @param parameters Parameters to setup
-   * @throws IllegalArgumentException if the parameters or the values is not supported
-   * @throws KeypleException if the parameter fails to be set up
-   */
-  void setParameters(Map<String, String> parameters);
 }
