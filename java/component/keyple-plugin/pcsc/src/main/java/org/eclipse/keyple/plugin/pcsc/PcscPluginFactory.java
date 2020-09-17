@@ -14,9 +14,18 @@ package org.eclipse.keyple.plugin.pcsc;
 import org.eclipse.keyple.core.seproxy.PluginFactory;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 
-/** Builds a {@link PcscPlugin} */
+/**
+ * Provides a factory to get the {@link PcscPlugin}.
+ *
+ * @since 0.9
+ */
 public class PcscPluginFactory implements PluginFactory {
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public String getPluginName() {
     return PcscPluginConstants.PLUGIN_NAME;
@@ -25,8 +34,9 @@ public class PcscPluginFactory implements PluginFactory {
   /**
    * Returns an instance of the {@link PcscPlugin} if the platform is ready
    *
-   * @return PcscPlugin instance
+   * @return A not null {@link PcscPlugin} instance.
    * @throws KeyplePluginInstantiationException if smartcard.io library is not ready
+   * @since 0.9
    */
   public PcscPlugin getPlugin() {
     try {

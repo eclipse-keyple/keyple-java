@@ -16,24 +16,21 @@ import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 
 /**
- * This class contains all the parameters to identify the communication protocols supported by PC/SC
+ * Contains a set of parameters to identify the communication protocols supported by the PC/SC
  * readers.
  *
- * <p>The application can choose to add all parameters or only a subset.
+ * <p>The application can choose to get all the parameters at the same time or only a subset.
  *
- * <p>Since they are based on the virtual ATR created by the reader, the protocol identification
- * values are provided as is, they may vary from one reader and SE to another.
- *
- * <p>It may be necessary to create a custom parameter set specific to the context.
+ * <p>As they are based on the virtual ATR created by the reader, the protocol identification values
+ * are provided as is and may vary from one reader and SE to another. <br>
+ * Thus, it may be necessary to create a set of context-specific custom settings.
  */
 public final class PcscProtocolSetting {
 
-  public static final Map<SeProtocol, String> PCSC_PROTOCOL_SETTING;
+  private static final Map<SeProtocol, String> PCSC_PROTOCOL_SETTING;
 
-  /**
-   * Associates a protocol and a string defining how to identify it (here a regex to be applied on
-   * the ATR)
-   */
+  // Associates a protocol and a string defining how to identify it (here a regex to be applied on
+  // the ATR)
   static {
     Map<SeProtocol, String> map = new HashMap<SeProtocol, String>();
 
@@ -58,10 +55,12 @@ public final class PcscProtocolSetting {
   private PcscProtocolSetting() {}
 
   /**
-   * Return a subset of the settings map
+   * Returns the subset of the settings map corresponding to the provided set of {@link SeProtocol}.
    *
-   * @param specificProtocols subset of protocols
-   * @return a settings map
+   * <p>This makes it possible to retrieve all desired protocol settings in a single operation.
+   *
+   * @param specificProtocols A {@link Set} of {@link SeProtocol} (should be not null)
+   * @return A {@link Map}
    */
   public static Map<SeProtocol, String> getSpecificSettings(
       Set<SeCommonProtocols> specificProtocols) {
@@ -75,7 +74,7 @@ public final class PcscProtocolSetting {
   /**
    * Return the whole settings map
    *
-   * @return a settings map
+   * @return A {@link Map}
    */
   public static Map<SeProtocol, String> getAllSettings() {
     return PCSC_PROTOCOL_SETTING;

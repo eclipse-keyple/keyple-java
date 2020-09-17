@@ -12,20 +12,14 @@
 package org.eclipse.keyple.plugin.pcsc;
 
 /**
- * This class defines the constants useful for setting up the PC/SC plugin.<br>
- * The current keys concern the plugin name itself and the possibility to define a pattern (regex)
- * for recognition of a reader's transmission type from its name.<br>
- * These elements could possibly be used by the readers while calling getTransmissionMode if this
- * mode has not been defined otherwise.
+ * Defines the constants of the PC/SC plugin.<br>
+ * (package-private)
+ *
+ * @since 0.9
  */
-public final class PcscPluginConstants {
+final class PcscPluginConstants {
   /** The plugin name */
   public static final String PLUGIN_NAME = "PcscPlugin";
-
-  /** regular expression identifying a contact reader */
-  public static final String CONTACT_READER_MATCHER_KEY = "contact_reader_regex";
-  /** regular expression identifying a contactless reader */
-  public static final String CONTACTLESS_READER_MATCHER_KEY = "contactless_reader_regex";
 
   /** (private) */
   private PcscPluginConstants() {}
