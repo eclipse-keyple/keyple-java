@@ -135,13 +135,31 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
         (AbstractServerVirtualReader) getReader(virtualReaderName);
 
     // keep virtual reader if observable and has observers
-    Boolean unregisterVirtualReader =
-        !(virtualReader instanceof RemoteSeServerObservableReader)
-            || ((RemoteSeServerObservableReader) virtualReader).countObservers() == 0;
+    Boolean unregisterVirtualReader = false;
 
-    if (unregisterVirtualReader) {
-      // remove virtual readers
+    if (!(virtualReader instanceof RemoteSeServerObservableReader)) {
+      // not a observable, remove it and unregister
+      unregisterVirtualReader = true;
       readers.remove(virtualReader.getName());
+    } else {
+      ServerVirtualObservableReader observableReader =
+          (ServerVirtualObservableReader) virtualReader;
+      if (observableReader.getMasterReader() != null) {
+        // is observer and slave, remove it
+        readers.remove(virtualReader.getName());
+        if (observableReader.countObservers() == 0) {
+          // and master has no observer, remove and unregister master
+          readers.remove(observableReader.getMasterReader().getName());
+          unregisterVirtualReader = true;
+        }
+      } else {
+        // is master
+        if (observableReader.countObservers() == 0) {
+          // has no observer, remove it, unregister
+          readers.remove(virtualReader.getName());
+          unregisterVirtualReader = true;
+        }
+      }
     }
 
     JsonObject body = new JsonObject();

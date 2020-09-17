@@ -13,6 +13,7 @@ package org.eclipse.keyple.plugin.remotese.integration.common.endpoint;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -30,11 +31,16 @@ public class StubSyncClientEndpoint implements KeypleClientSync {
 
   private static final Logger logger = LoggerFactory.getLogger(StubSyncClientEndpoint.class);
   static ExecutorService taskPool = Executors.newCachedThreadPool();
+  private final String clientId;
+
+  StubSyncClientEndpoint(){
+    clientId = UUID.randomUUID().toString();
+  }
 
   @Override
   public List<KeypleMessageDto> sendRequest(KeypleMessageDto msg) {
     final List<String> responsesJson;
-
+    msg.setClientNodeId(clientId);
     // serialize request
     final String request = JacksonParser.toJson(msg);
 
@@ -53,6 +59,7 @@ public class StubSyncClientEndpoint implements KeypleClientSync {
                               .onRequest(JacksonParser.fromJson(request));
                       List<String> responsesJson = new ArrayList<String>();
                       for (KeypleMessageDto dto : responses) {
+                        dto.setClientNodeId(clientId);
                         responsesJson.add(JacksonParser.toJson(dto));
                       }
                       return responsesJson;

@@ -214,6 +214,8 @@ public class RemoteSeServerPluginImplTest extends RemoteSeServerBaseTest {
     assertThat(terminateServiceMsg.getVirtualReaderName()).isNotEqualTo(virtualReaderName);
     assertThat(terminateServiceMsg.getSessionId()).isEqualTo(sessionId1);
     validateTerminateServiceResponse(terminateServiceMsg, false);
+
+    assertThat(remoteSePlugin.getReaders()).hasSize(1); // master reader is kept
   }
 
   @Test
@@ -247,5 +249,7 @@ public class RemoteSeServerPluginImplTest extends RemoteSeServerBaseTest {
     assertThat(terminateServiceMsg.getVirtualReaderName()).isNotEqualTo(virtualReaderName);
     assertThat(terminateServiceMsg.getSessionId()).isEqualTo(sessionId1);
     validateTerminateServiceResponse(terminateServiceMsg, true);
+
+    assertThat(remoteSePlugin.getReaders()).hasSize(0); // every reader is removed
   }
 }

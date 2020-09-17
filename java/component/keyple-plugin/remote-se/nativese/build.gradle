@@ -48,6 +48,19 @@ artifacts {
     archives sourcesJar, javadocJar
 }
 
+task jarTest (type: Jar) {
+    from sourceSets.test.output
+    classifier = 'test'
+}
+
+configurations {
+    testOutput
+}
+
+artifacts {
+    testOutput jarTest
+}
+
 //sign if needed (based on the doSign variable)
 if (project.getProperties().containsKey("doSign") && doSign=="true") {
     apply plugin: 'signing'

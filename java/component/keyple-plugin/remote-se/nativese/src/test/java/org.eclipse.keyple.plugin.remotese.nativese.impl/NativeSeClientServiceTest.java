@@ -314,12 +314,17 @@ public class NativeSeClientServiceTest extends BaseNativeSeTest {
    *
    * */
 
-  private Map<String, String> getVirtualReaders(NativeSeClientServiceImpl service)
-      throws NoSuchFieldException, IllegalAccessException {
-    Field privateStringField = null;
-    privateStringField = NativeSeClientServiceImpl.class.getDeclaredField("virtualReaders");
-    privateStringField.setAccessible(true);
-    return (Map<String, String>) privateStringField.get(service);
+  public static Map<String, String> getVirtualReaders(NativeSeClientService service) {
+    try {
+      Field privateStringField = NativeSeClientServiceImpl.class.getDeclaredField("virtualReaders");
+      privateStringField.setAccessible(true);
+      return (Map<String, String>) privateStringField.get(service);
+    } catch (IllegalAccessException e) {
+      e.printStackTrace();
+    } catch (NoSuchFieldException e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 
   class KeypleClientSyncMock implements KeypleClientSync {

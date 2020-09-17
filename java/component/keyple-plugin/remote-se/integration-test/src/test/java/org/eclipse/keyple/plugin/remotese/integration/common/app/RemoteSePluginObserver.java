@@ -15,6 +15,7 @@ import static org.eclipse.keyple.plugin.remotese.integration.test.BaseScenario.*
 
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -88,11 +89,25 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
           seSelection.getSelectionOperation(),
           ObservableReader.NotificationMode.MATCHED_ONLY,
           ObservableReader.PollingMode.REPEATING);
-      observableVirtualReader.startSeDetection(ObservableReader.PollingMode.REPEATING);
 
       // add observer
-      observableVirtualReader.addObserver(new ReaderObserver());
+      observableVirtualReader.addObserver(new VirtualReaderObserver());
       return new ConfigurationResult().setSuccessful(true).setDeviceId(deviceInput.getDeviceId());
+    }
+
+    // EXECUTE_CALYPSO_SESSION_FROM_REMOTE_SELECTION
+    if (SERVICE_ID_3.equals(virtualReader.getServiceId())) {
+      UserInput userInput = virtualReader.getUserInputData(UserInput.class);
+
+      // remote selection
+      SeSelection seSelection = CalypsoUtilities.getSeSelection();
+      SelectionsResult selectionsResult = seSelection.processExplicitSelection(virtualReader);
+      CalypsoPo calypsoPo = (CalypsoPo) selectionsResult.getActiveMatchingSe();
+
+      // execute a transacation
+      CalypsoUtilities.readEventLog(calypsoPo, virtualReader, logger);
+
+      return new TransactionResult().setUserId(userInput.getUserId()).setSuccessful(true);
     }
 
     throw new IllegalArgumentException("Service Id not recognized");

@@ -24,9 +24,10 @@ import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ReaderObserver implements ObservableReader.ReaderObserver {
+public class VirtualReaderObserver implements ObservableReader.ReaderObserver {
 
-  private static final Logger logger = LoggerFactory.getLogger(ReaderObserver.class);
+  private static final Logger logger = LoggerFactory.getLogger(VirtualReaderObserver.class);
+  private Integer eventCounter = 0;
 
   @Override
   public void update(ReaderEvent event) {
@@ -39,6 +40,7 @@ public class ReaderObserver implements ObservableReader.ReaderObserver {
 
     switch (event.getEventType()) {
       case SE_MATCHED:
+        eventCounter++;
         String virtualReaderName = event.getReaderName();
         RemoteSeServerPlugin plugin =
             (RemoteSeServerPlugin) SeProxyService.getInstance().getPlugin(event.getPluginName());
@@ -57,6 +59,11 @@ public class ReaderObserver implements ObservableReader.ReaderObserver {
         // execute a transaction
         String eventLog = CalypsoUtilities.readEventLog(calypsoPo, observableVirtualReader, logger);
 
+        // on the 2nd SE MATCHED
+        if (eventCounter == 2) {
+          // clear observers in the reader
+          observableVirtualReader.clearObservers();
+        }
         // send result
         plugin.terminateService(
             virtualReaderName,

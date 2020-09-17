@@ -12,24 +12,32 @@
 package org.eclipse.keyple.plugin.remotese.integration.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
+import java.util.UUID;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.plugin.remotese.core.KeypleClientReaderEventFilter;
 import org.eclipse.keyple.plugin.remotese.core.KeypleServerAsync;
-import org.eclipse.keyple.plugin.remotese.core.exception.KeypleDoNotPropagateEventException;
+import org.eclipse.keyple.plugin.remotese.integration.common.app.ReaderEventFilter;
 import org.eclipse.keyple.plugin.remotese.integration.common.app.RemoteSePluginObserver;
+import org.eclipse.keyple.plugin.remotese.integration.common.endpoint.StubAsyncServerEndpoint;
+import org.eclipse.keyple.plugin.remotese.integration.common.model.ConfigurationResult;
+import org.eclipse.keyple.plugin.remotese.integration.common.model.DeviceInput;
 import org.eclipse.keyple.plugin.remotese.integration.common.model.TransactionResult;
 import org.eclipse.keyple.plugin.remotese.integration.common.model.UserInput;
+import org.eclipse.keyple.plugin.remotese.integration.common.se.StubCalypsoClassic;
 import org.eclipse.keyple.plugin.remotese.integration.common.util.CalypsoUtilities;
+import org.eclipse.keyple.plugin.remotese.nativese.NativeSeClientService;
+import org.eclipse.keyple.plugin.remotese.nativese.RemoteServiceParameters;
+import org.eclipse.keyple.plugin.remotese.nativese.impl.NativeSeClientServiceTest;
 import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerPlugin;
 import org.eclipse.keyple.plugin.remotese.virtualse.impl.RemoteSeServerPluginFactory;
 import org.eclipse.keyple.plugin.remotese.virtualse.impl.RemoteSeServerUtils;
@@ -45,6 +53,7 @@ public class BaseScenario {
   public static String NATIVE_READER_NAME = "stubReader";
 
   public static String SERVICE_ID_1 = "EXECUTE_CALYPSO_SESSION_FROM_LOCAL_SELECTION";
+  public static String SERVICE_ID_3 = "EXECUTE_CALYPSO_SESSION_FROM_REMOTE_SELECTION";
   public static String SERVICE_ID_2 = "CREATE_CONFIGURE_OBS_VIRTUAL_READER";
 
   public static String USER_ID = "Alexandre3";
@@ -55,6 +64,7 @@ public class BaseScenario {
 
   RemoteSeServerPlugin remoteSePlugin;
   UserInput user1;
+
 
   /** Init native stub plugin that can work with {@link StubSecureElement} */
   void initNativeStubPlugin() {
@@ -104,19 +114,18 @@ public class BaseScenario {
 
   /**
    * Init a Async Remote Se Server Plugin with an async server endpoint
-   *
-   * @param asyncServerEndpoint async server endpoint (ie. websocket server)
    */
-  void initRemoteSePluginWithAsyncNode(KeypleServerAsync asyncServerEndpoint) {
+  void initRemoteSePluginWithAsyncNode(KeypleServerAsync serverEndpoint) {
     try {
-      remoteSePlugin = RemoteSeServerUtils.getSyncPlugin();
+      remoteSePlugin = RemoteSeServerUtils.getAsyncPlugin();
+      logger.info("RemoteSePluginServer already registered, reusing it");
     } catch (KeyplePluginNotFoundException e) {
       remoteSePlugin =
           (RemoteSeServerPlugin)
               SeProxyService.getInstance()
                   .registerPlugin(
                       RemoteSeServerPluginFactory.builder()
-                          .withAsyncNode(asyncServerEndpoint)
+                          .withAsyncNode(serverEndpoint)
                           .withPluginObserver(new RemoteSePluginObserver())
                           .usingDefaultEventNotificationPool()
                           .build());
@@ -155,34 +164,90 @@ public class BaseScenario {
     };
   }
 
-  class ReaderEventFilter implements KeypleClientReaderEventFilter {
-    TransactionResult transactionResult;
-    UserInput user;
+  void execute1_localselection_remoteTransaction_successful(NativeSeClientService nativeService) {
+    // insert stub SE into stub
+    nativeReader.insertSe(new StubCalypsoClassic());
 
-    public void setUser(UserInput user) {
-      this.user = user;
-    }
+    CalypsoPo calypsoPo = explicitPoSelection();
 
-    @Override
-    public Object beforePropagation(ReaderEvent event) throws KeypleDoNotPropagateEventException {
-      switch (event.getEventType()) {
-        case SE_MATCHED:
-          return new UserInput().setUserId(user.getUserId());
-        case SE_REMOVED:
-        case SE_INSERTED:
-        default:
-          throw new KeypleDoNotPropagateEventException("only SE Matched is propagated");
-      }
-    }
+    // execute remote service
+    TransactionResult output =
+        nativeService.executeRemoteService(
+            RemoteServiceParameters.builder(SERVICE_ID_1, nativeReader)
+                .withInitialSeContext(calypsoPo)
+                .withUserInputData(new UserInput().setUserId(user1.getUserId()))
+                .build(),
+            TransactionResult.class);
 
-    @Override
-    public Class<? extends Object> getUserOutputDataClass() {
-      return TransactionResult.class;
-    }
+    // validate result
+    assertThat(output.isSuccessful()).isTrue();
+    assertThat(output.getUserId()).isEqualTo(user1.getUserId());
+  }
 
-    @Override
-    public void afterPropagation(Object userOutputData) {
-      transactionResult = (TransactionResult) userOutputData;
-    }
-  };
+  void execute2_defaultSelection_onMatched_transaction_successful(
+      NativeSeClientService nativeService, ReaderEventFilter eventFilter) {
+    // execute remote service to create observable virtual reader
+    ConfigurationResult configurationResult =
+        nativeService.executeRemoteService(
+            RemoteServiceParameters.builder(SERVICE_ID_2, nativeReader)
+                .withUserInputData(new DeviceInput().setDeviceId(DEVICE_ID))
+                .build(),
+            ConfigurationResult.class);
+
+    assertThat(configurationResult.isSuccessful()).isTrue();
+    assertThat(configurationResult.getDeviceId()).isEqualTo(DEVICE_ID);
+
+    eventFilter.setUser(user1);
+
+    // user1 insert SE , SE event should be sent to server
+    nativeReader.insertSe(new StubCalypsoClassic());
+    logger.info(
+        "1 - Verify User Transaction is successful for first user {}",
+        eventFilter.user.getUserId());
+    // filter
+    await().atMost(2, TimeUnit.SECONDS).until(verifyUserTransaction(eventFilter, user1));
+
+    nativeReader.removeSe();
+
+    await().atMost(1, TimeUnit.SECONDS).until(seRemoved(nativeReader));
+
+    UserInput user2 = new UserInput().setUserId(UUID.randomUUID().toString());
+    eventFilter.setUser(user2);
+    eventFilter.transactionResult = null;
+
+    // user2 insert SE , SE event should be sent to server
+    nativeReader.insertSe(new StubCalypsoClassic());
+    logger.info(
+        "2 - Verify User Transaction is successful for second user {}",
+        eventFilter.user.getUserId());
+    // filter
+    await().atMost(2, TimeUnit.SECONDS).until(verifyUserTransaction(eventFilter, user2));
+
+    nativeReader.removeSe();
+    await().atMost(1, TimeUnit.SECONDS).until(seRemoved(nativeReader));
+
+    /*
+     * on the 2nd event, the virtual reader should be cleaned on native and virtual environment
+     */
+    assertThat(remoteSePlugin.getReaders()).isEmpty();
+
+    assertThat(NativeSeClientServiceTest.getVirtualReaders(nativeService)).isEmpty();
+  }
+
+  void execute3_remoteselection_remoteTransaction_successful(NativeSeClientService nativeService) {
+    // insert stub SE into stub
+    nativeReader.insertSe(new StubCalypsoClassic());
+
+    // execute remote service
+    TransactionResult output =
+        nativeService.executeRemoteService(
+            RemoteServiceParameters.builder(SERVICE_ID_3, nativeReader)
+                .withUserInputData(new UserInput().setUserId(user1.getUserId()))
+                .build(),
+            TransactionResult.class);
+
+    // validate result
+    assertThat(output.isSuccessful()).isTrue();
+    assertThat(output.getUserId()).isEqualTo(user1.getUserId());
+  }
 }
