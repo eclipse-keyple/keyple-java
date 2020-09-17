@@ -122,7 +122,8 @@ public abstract class AbstractApduResponseParser {
   }
 
   /**
-   * Gets true if the status is successful from the statusTable according to the current status code.
+   * Gets true if the status is successful from the statusTable according to the current status
+   * code.
    *
    * @return A value
    * @since 0.9
