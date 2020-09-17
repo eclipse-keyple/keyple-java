@@ -41,7 +41,6 @@ public abstract class KeypleSeCommandException extends KeypleException {
    * @param message the message to identify the exception context (Should not be null)
    * @param command the command (Should not be null)
    * @param statusCode the status code
-   *
    * @since 0.9
    */
   protected KeypleSeCommandException(String message, SeCommand command, Integer statusCode) {
@@ -52,8 +51,8 @@ public abstract class KeypleSeCommandException extends KeypleException {
 
   /**
    * Get the command
-   * @return A non null reference
    *
+   * @return A non null reference
    * @since 0.9
    */
   public SeCommand getCommand() {
@@ -61,10 +60,9 @@ public abstract class KeypleSeCommandException extends KeypleException {
   }
 
   /**
-   *  Get the status code
+   * Get the status code
    *
    * @return A nullable reference
-   *
    * @since 0.9
    */
   public Integer getStatusCode() {

@@ -27,8 +27,8 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 public abstract class AbstractApduResponseParser {
 
   /**
-   * This Map stores expected status that could be .
-   * By default inited with sw1=90 and sw2=00 (Success)
+   * This Map stores expected status that could be . By default inited with sw1=90 and sw2=00
+   * (Success)
    *
    * @since 0.9
    */
@@ -60,8 +60,8 @@ public abstract class AbstractApduResponseParser {
    * The generic abstract constructor to build a parser of the APDU response.
    *
    * @param response {@link ApduResponse} response to parse (should not be null)
-   * @param builder {@link AbstractApduCommandBuilder} the reference of the builder that created the parser
-   *
+   * @param builder {@link AbstractApduCommandBuilder} the reference of the builder that created the
+   *     parser
    * @since 0.9
    */
   public AbstractApduResponseParser(ApduResponse response, AbstractApduCommandBuilder builder) {
@@ -73,7 +73,6 @@ public abstract class AbstractApduResponseParser {
    * Returns the internal status table
    *
    * @return A not null reference
-   *
    * @since 0.9
    */
   protected Map<Integer, StatusProperties> getStatusTable() {
@@ -83,15 +82,13 @@ public abstract class AbstractApduResponseParser {
   /**
    * Build a command exception.
    *
-   * This method should be override in subclasses in order to create specific exceptions.
+   * <p>This method should be override in subclasses in order to create specific exceptions.
    *
    * @param exceptionClass the exception class
    * @param message the message
    * @param commandRef {@link SeCommand} the command reference
    * @param statusCode the status code
-   *
    * @return A not null value
-   *
    * @since 0.9
    */
   protected KeypleSeCommandException buildCommandException(
@@ -106,7 +103,6 @@ public abstract class AbstractApduResponseParser {
    * Get {@link ApduResponse}
    *
    * @return A not null reference
-   *
    * @since 0.9
    */
   public final ApduResponse getApduResponse() {
@@ -117,7 +113,6 @@ public abstract class AbstractApduResponseParser {
    * Get {@link AbstractApduCommandBuilder}, the associated builder reference
    *
    * @return A nullable reference
-   *
    * @since 0.9
    */
   public AbstractApduCommandBuilder getBuilder() {
@@ -128,7 +123,6 @@ public abstract class AbstractApduResponseParser {
    * Get {@link StatusProperties} associated to the response status code
    *
    * @return A nullable reference
-   *
    * @since 0.9
    */
   private StatusProperties getStatusCodeProperties() {
@@ -136,11 +130,9 @@ public abstract class AbstractApduResponseParser {
   }
 
   /**
-   * Get true if the status is successful from the statusTable according to the current status
-   * code.
+   * Get true if the status is successful from the statusTable according to the current status code.
    *
    * @return A value
-   *
    * @since 0.9
    */
   public boolean isSuccessful() {
@@ -153,7 +145,6 @@ public abstract class AbstractApduResponseParser {
    * If status code is not referenced, then status is considered unsuccessful.
    *
    * @throws KeypleSeCommandException if status is not successful.
-   *
    * @since 0.9
    */
   public void checkStatus() {
@@ -186,7 +177,6 @@ public abstract class AbstractApduResponseParser {
    * By default, the command reference is retrieved from the associated builder.
    *
    * @return a nullable command reference
-   *
    * @since 0.9
    */
   protected SeCommand getCommandRef() {
@@ -197,7 +187,6 @@ public abstract class AbstractApduResponseParser {
    * Get he ASCII message from the statusTable for the current status code.
    *
    * @return A nullable value
-   *
    * @since 0.9
    */
   public final String getStatusInformation() {
@@ -237,7 +226,6 @@ public abstract class AbstractApduResponseParser {
      * Create a successful status.
      *
      * @param information the status information
-     *
      * @since 0.9
      */
     public StatusProperties(String information) {
@@ -252,7 +240,6 @@ public abstract class AbstractApduResponseParser {
      *
      * @param information the status information
      * @param exceptionClass the associated exception class
-     *
      * @since 0.9
      */
     public StatusProperties(
@@ -266,7 +253,6 @@ public abstract class AbstractApduResponseParser {
      * Get information
      *
      * @return A nullable reference
-     *
      * @since 0.9
      */
     public String getInformation() {
@@ -277,7 +263,6 @@ public abstract class AbstractApduResponseParser {
      * Get successful indicator
      *
      * @return the successful indicator
-     *
      * @since 0.9
      */
     public boolean isSuccessful() {
@@ -288,7 +273,6 @@ public abstract class AbstractApduResponseParser {
      * Get Exception Class
      *
      * @return A nullable reference
-     *
      * @since 0.9
      */
     public Class<? extends KeypleSeCommandException> getExceptionClass() {

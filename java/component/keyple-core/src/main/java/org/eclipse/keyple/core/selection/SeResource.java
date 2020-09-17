@@ -13,12 +13,7 @@ package org.eclipse.keyple.core.selection;
 
 import org.eclipse.keyple.core.seproxy.SeReader;
 
-/**
- * The SeResource class groups a AbstractMatchingSe and its associated SeReader<br>
- * TODO This class should be final.<br>
- * For the moment, it is not, awaiting the rewriting of the code of a client class in
- * Keyple-Calypso.
- */
+/** The SeResource class groups a AbstractMatchingSe and its associated SeReader */
 public class SeResource<T extends AbstractMatchingSe> {
   private final SeReader seReader;
   private final T matchingSe;

@@ -36,7 +36,6 @@ public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandB
    *
    * @param commandReference The {@link SeCommand} used as Command reference (should be not null)
    * @param request The {@link ApduRequest} used for the request (should not be null)
-   *
    * @since 0.9
    */
   public AbstractIso7816CommandBuilder(SeCommand commandReference, ApduRequest request) {
@@ -48,9 +47,7 @@ public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandB
    *
    * @param dataIn incoming data array (could be null)
    * @param le expected outgoing length (could be null)
-   *
    * @return a new byte array
-   *
    * @since 0.9
    */
   private byte[] allocateBuffer(byte[] dataIn, Byte le) {
@@ -97,9 +94,7 @@ public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandB
    * @param le maximum number of bytes expected in the data field of the response to the command
    *     (set to 0 is the case where ingoing and outgoing are present. Let the lower layer to handle
    *     the actual length [case4]).
-   *
    * @return a non null value
-   *
    * @since 0.9
    */
   protected ApduRequest setApduRequest(

@@ -30,9 +30,9 @@ import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 public abstract class AbstractApduCommandBuilder {
 
   /**
-   * The reference field {@link SeCommand} is used to find the type of command concerned when manipulating a list of
-   * abstract builder objects. Unfortunately, the diversity of these objects does not allow the use
-   * of simple generic methods.
+   * The reference field {@link SeCommand} is used to find the type of command concerned when
+   * manipulating a list of abstract builder objects. Unfortunately, the diversity of these objects
+   * does not allow the use of simple generic methods.
    *
    * @since 0.9
    */
@@ -58,7 +58,6 @@ public abstract class AbstractApduCommandBuilder {
    *
    * @param commandRef command reference (should not be null)
    * @param request request
-   *
    * @since 0.9
    */
   public AbstractApduCommandBuilder(SeCommand commandRef, ApduRequest request) {
@@ -75,7 +74,6 @@ public abstract class AbstractApduCommandBuilder {
    * Append a string to the current name
    *
    * @param subName the string to append
-   *
    * @since 0.9
    */
   public final void addSubName(String subName) {
@@ -88,11 +86,9 @@ public abstract class AbstractApduCommandBuilder {
   }
 
   /**
-   *
    * Get {@link SeCommand} the current command identification
    *
    * @return A non null reference
-   *
    * @since 0.9
    */
   public SeCommand getCommandRef() {
@@ -103,7 +99,6 @@ public abstract class AbstractApduCommandBuilder {
    * Get the name of the APDU command from the CalypsoCommands information.
    *
    * @return A non null reference
-   *
    * @since 0.9
    */
   public final String getName() {
@@ -111,10 +106,9 @@ public abstract class AbstractApduCommandBuilder {
   }
 
   /**
-   *  Get {@link ApduRequest} the request
+   * Get {@link ApduRequest} the request
    *
    * @return A nullable reference
-   *
    * @since 0.9
    */
   public final ApduRequest getApduRequest() {
