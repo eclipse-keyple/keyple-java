@@ -90,7 +90,7 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
           .notNull(response, "msg") //
           .notEmpty(response.getSessionId(), "sessionId") //
           .notEmpty(response.getAction(), "action") //
-          // .notEmpty(response.getClientNodeId(), "clientNodeId") // is it necessary?
+          .notEmpty(response.getClientNodeId(), "clientNodeId") //
           .notEmpty(response.getServerNodeId(), "serverNodeId");
       return response;
     } else {
