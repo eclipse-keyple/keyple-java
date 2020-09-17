@@ -375,11 +375,6 @@ public class SamResourceManagerDefault extends SamResourceManager {
      */
 
     try {
-      /* contactless SE works with T0 protocol */
-      samReader.setParameter("protocol", "T0");
-
-      /* Shared mode */
-      samReader.setParameter("mode", "shared");
       if (samReader.isSePresent()) {
         logger.trace("Create SAM resource: {}", samReader.getName());
         synchronized (localManagedSamResources) {
