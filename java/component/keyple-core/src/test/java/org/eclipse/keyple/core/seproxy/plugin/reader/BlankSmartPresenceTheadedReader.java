@@ -84,14 +84,6 @@ public class BlankSmartPresenceTheadedReader extends AbstractObservableLocalRead
   }
 
   @Override
-  public Map<String, String> getParameters() {
-    return null;
-  }
-
-  @Override
-  public void setParameter(String key, String value) {}
-
-  @Override
   public boolean waitForCardAbsentNative() {
     if (!removedOnlyOnce) {
       removedOnlyOnce = true;

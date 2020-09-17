@@ -88,14 +88,6 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
     return null;
   }
 
-  @Override
-  public Map<String, String> getParameters() {
-    return null;
-  }
-
-  @Override
-  public void setParameter(String key, String value) {}
-
   /**
    * The purpose of this method is to provide certain test methods with public access to
    * processSeInserted that is package-private.
