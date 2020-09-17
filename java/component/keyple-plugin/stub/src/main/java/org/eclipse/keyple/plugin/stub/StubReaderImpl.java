@@ -47,8 +47,6 @@ class StubReaderImpl extends AbstractObservableLocalReader
 
   private StubSecureElement se;
 
-  private Map<String, String> parameters = new HashMap<String, String>();
-
   TransmissionMode transmissionMode = TransmissionMode.CONTACTLESS;
 
   protected final ExecutorService executorService;
@@ -161,18 +159,6 @@ class StubReaderImpl extends AbstractObservableLocalReader
   @Override
   protected synchronized boolean checkSePresence() {
     return se != null;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void setParameter(String name, String value) {
-    parameters.put(name, value);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public Map<String, String> getParameters() {
-    return parameters;
   }
 
   /** @return the current transmission mode */

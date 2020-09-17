@@ -173,22 +173,4 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
   public SeReader getReader(String name) {
     return stubPlugin.getReader(name);
   }
-
-  /** {@inheritDoc} */
-  @Override
-  public Map<String, String> getParameters() {
-    return stubPlugin.getParameters();
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void setParameter(String key, String value) {
-    stubPlugin.setParameter(key, value);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void setParameters(Map<String, String> parameters) {
-    stubPlugin.setParameters(parameters);
-  }
 }
