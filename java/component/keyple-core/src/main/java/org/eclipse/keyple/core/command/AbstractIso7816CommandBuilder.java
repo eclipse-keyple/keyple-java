@@ -35,7 +35,7 @@ public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandB
    * Abstract constructor to build a command with a command reference and an {@link ApduRequest}.
    *
    * @param commandReference The {@link SeCommand} used as Command reference (should be not null)
-   * @param request The {@link ApduRequest} used for the request (should not be null)
+   * @param request The {@link ApduRequest} used for the request
    * @since 0.9
    */
   public AbstractIso7816CommandBuilder(SeCommand commandReference, ApduRequest request) {
