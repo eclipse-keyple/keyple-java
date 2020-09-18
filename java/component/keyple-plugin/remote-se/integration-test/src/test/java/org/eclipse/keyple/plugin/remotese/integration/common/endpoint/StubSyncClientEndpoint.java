@@ -33,7 +33,7 @@ public class StubSyncClientEndpoint implements KeypleClientSync {
   static ExecutorService taskPool = Executors.newCachedThreadPool();
   private final String clientId;
 
-  StubSyncClientEndpoint(){
+  public StubSyncClientEndpoint(){
     clientId = UUID.randomUUID().toString();
   }
 

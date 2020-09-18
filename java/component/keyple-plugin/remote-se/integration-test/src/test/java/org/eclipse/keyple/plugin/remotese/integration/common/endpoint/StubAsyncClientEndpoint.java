@@ -20,12 +20,15 @@ import org.eclipse.keyple.plugin.remotese.nativese.impl.NativeSeClientUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Async client endpoint. Send and receive asynchronously {@link KeypleMessageDto} with {@link StubAsyncServerEndpoint}.
+ */
 public class StubAsyncClientEndpoint implements KeypleClientAsync {
 
   private static final Logger logger = LoggerFactory.getLogger(StubAsyncClientEndpoint.class);
   final StubAsyncServerEndpoint server;
   private final String clientNodeId;
-  private String serverSocketId;
+  private String currentSessionId;
 
   public StubAsyncClientEndpoint(StubAsyncServerEndpoint server) {
     this.server = server;
@@ -33,36 +36,40 @@ public class StubAsyncClientEndpoint implements KeypleClientAsync {
   }
 
   /**
-   * Receive serialiezed keyple message dto from the server
+   * Receive serialized keyple message dto from the server
    * @param data not null json data
    */
   void onMessage(String data) {
     logger.trace("Data received from server : {}", data);
     KeypleMessageDto message = JacksonParser.fromJson(data);
-    message.setClientNodeId(clientNodeId);
     NativeSeClientUtils.getAsyncNode().onMessage(message);
   }
 
   @Override
   public void openSession(String sessionId) {
-    serverSocketId = server.openSocket(this);
-    logger.trace("Open session {} to server with socket {}", sessionId, serverSocketId);
-    NativeSeClientUtils.getAsyncNode().onOpen(sessionId);
+    server.open(sessionId, this);
+    this.currentSessionId = sessionId;
+    logger.trace("Open session {} to server", currentSessionId);
+    NativeSeClientUtils.getAsyncNode().onOpen(currentSessionId);
   }
 
   @Override
   public void sendMessage(KeypleMessageDto msg) {
     msg.setClientNodeId(clientNodeId);
     String data = JacksonParser.toJson(msg);
-    logger.trace("Data sent to socket {} <- {}", serverSocketId, data);
-    server.onData(data, serverSocketId);
+    logger.trace("Data sent to server session {} <- {}", currentSessionId, data);
+    server.onData(data);
   }
 
   @Override
   public void closeSession(String sessionId) {
-    logger.trace("Close session {} to server with socket {}", sessionId, serverSocketId);
-    server.closeSocket(serverSocketId, sessionId);
-    serverSocketId = null;
+    logger.trace("Close session {} to server", sessionId);
+    server.close(sessionId);
+    this.currentSessionId = null;
     NativeSeClientUtils.getAsyncNode().onClose(sessionId);
+  }
+
+  public String getClientNodeId() {
+    return clientNodeId;
   }
 }

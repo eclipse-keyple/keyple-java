@@ -16,44 +16,36 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remotese.core.KeypleServerAsync;
-import org.eclipse.keyple.plugin.remotese.core.KeypleServerAsyncNode;
 import org.eclipse.keyple.plugin.remotese.integration.common.util.JacksonParser;
 import org.eclipse.keyple.plugin.remotese.virtualse.impl.RemoteSeServerUtils;
 
 public class StubAsyncServerEndpoint implements KeypleServerAsync {
 
-  final Map<String, StubAsyncClientEndpoint> sockets; // socketId_clientId
-  final Map<String, String> sessions; //sessionId_socketId
+  final Map<String, StubAsyncClientEndpoint> clients; // sessionId_client
   final ExecutorService taskPool;
-  final String serverId;
+  final String serverNodeId;
 
   public StubAsyncServerEndpoint() {
-    sockets = new HashMap<String, StubAsyncClientEndpoint>();
-    sessions = new HashMap<String, String>();
+    clients = new HashMap<String, StubAsyncClientEndpoint>();
     taskPool = Executors.newCachedThreadPool();
-    serverId = UUID.randomUUID().toString();
+    serverNodeId = UUID.randomUUID().toString();
   }
 
   /**
    * Simulate a open socket operation
-   *
-   * @return socketId
    */
-  public String openSocket(StubAsyncClientEndpoint endpoint) {
-    String socketId = UUID.randomUUID().toString();
-    sockets.put(socketId, endpoint);
-    return socketId;
+  public void open(String sessionId, StubAsyncClientEndpoint endpoint) {
+    clients.put(sessionId, endpoint);
   }
   /**
    * Simulate a close socket operation
-   *
-   * @return socketId
    */
-  public void closeSocket(String socketId, String sessionId) {
-    sockets.remove(socketId);
-    sessions.remove(sessionId);
+  public void close(String sessionId) {
+    clients.remove(sessionId);
     RemoteSeServerUtils.getAsyncNode().onClose(sessionId);
   }
 
@@ -62,13 +54,13 @@ public class StubAsyncServerEndpoint implements KeypleServerAsync {
    *
    * @param jsonData incoming json data
    */
-  public void onData(final String jsonData, final String socketId) {
+  public void onData(final String jsonData) {
+    final KeypleMessageDto message = JacksonParser.fromJson(jsonData);
+    Assert.getInstance().isTrue(clients.containsKey(message.getSessionId()), "Session is not open");
     taskPool.submit(
       new Runnable() {
         @Override
         public void run() {
-          KeypleMessageDto message = JacksonParser.fromJson(jsonData);
-          sessions.put(message.getSessionId(), socketId);
           RemoteSeServerUtils.getAsyncNode().onMessage(message);
         }
       });
@@ -77,9 +69,9 @@ public class StubAsyncServerEndpoint implements KeypleServerAsync {
   @Override
   public void sendMessage(final KeypleMessageDto msg) {
     // retrieve socket
-    final String socketId = sessions.get(msg.getSessionId());
-    final StubAsyncClientEndpoint client = sockets.get(socketId);
-    msg.setServerNodeId(serverId);
+    final StubAsyncClientEndpoint client = clients.get(msg.getSessionId());
+    msg.setServerNodeId(serverNodeId);
+    msg.setClientNodeId(client.getClientNodeId());
     taskPool.submit(
       new Runnable() {
         @Override
