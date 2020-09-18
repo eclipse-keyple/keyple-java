@@ -90,18 +90,26 @@ public class BaseScenario {
       nativeReader.addSeProtocolSetting(
           SeCommonProtocols.PROTOCOL_ISO14443_4,
           StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
-
+    }
+// nativeReader should be reset
+    try {
+      nativeReader2 = (StubReader) nativePlugin.getReader(NATIVE_READER_NAME_2);
+      assertThat(nativeReader2).isNull();
+    } catch (KeypleReaderNotFoundException e) {
       // plug a second reader
       nativePlugin.plugStubReader(NATIVE_READER_NAME_2, true);
       nativeReader2 = (StubReader) nativePlugin.getReader(NATIVE_READER_NAME_2);
       nativeReader2.addSeProtocolSetting(
-          SeCommonProtocols.PROTOCOL_ISO14443_4,
-          StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+              SeCommonProtocols.PROTOCOL_ISO14443_4,
+              StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
     }
-  }
+
+
+    }
 
   void clearNativeReader() {
     nativePlugin.unplugStubReader(NATIVE_READER_NAME, true);
+    nativePlugin.unplugStubReader(NATIVE_READER_NAME_2, true);
   }
 
   /** Init a Sync Remote Se Server Plugin (ie. http server) */
@@ -244,7 +252,7 @@ public class BaseScenario {
     logger.info(
         "1 - Verify User Transaction is successful for first user {}",
         eventFilter.user.getUserId());
-    await().atMost(1, TimeUnit.SECONDS).until(verifyUserTransaction(eventFilter, user1));
+    await().atMost(10, TimeUnit.SECONDS).until(verifyUserTransaction(eventFilter, user1));
     nativeReader.removeSe();
     await().atMost(1, TimeUnit.SECONDS).until(seRemoved(nativeReader));
 
@@ -260,7 +268,7 @@ public class BaseScenario {
     logger.info(
         "2 - Verify User Transaction is successful for second user {}",
         eventFilter.user.getUserId());
-    await().atMost(1, TimeUnit.SECONDS).until(verifyUserTransaction(eventFilter, user2));
+    await().atMost(10, TimeUnit.SECONDS).until(verifyUserTransaction(eventFilter, user2));
     nativeReader.removeSe();
     await().atMost(1, TimeUnit.SECONDS).until(seRemoved(nativeReader));
 
