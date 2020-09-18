@@ -45,9 +45,8 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
   private static final Logger logger = LoggerFactory.getLogger(PcscPluginImpl.class);
 
   private boolean scardNoServiceHackNeeded;
-
-  private String contactReaderRegexFilter = "";
-  private String contactlessReaderRegexFilter = "";
+  private String contactReaderRegexFilter;
+  private String contactlessReaderRegexFilter;
 
   /**
    * Singleton instance of SeProxyService 'volatile' qualifier ensures that read access to the
@@ -59,7 +58,10 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
   private static volatile PcscPluginImpl instance; // NOSONAR: lazy-singleton pattern.
 
   private PcscPluginImpl() {
-    super(PcscPluginConstants.PLUGIN_NAME);
+    super(PcscPluginFactory.PLUGIN_NAME);
+    scardNoServiceHackNeeded = false;
+    contactReaderRegexFilter = "";
+    contactlessReaderRegexFilter = "";
   }
 
   /**
@@ -89,6 +91,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
    */
   @Override
   public SortedSet<String> fetchNativeReadersNames() {
+
     SortedSet<String> nativeReadersNames = new ConcurrentSkipListSet<String>();
     CardTerminals terminals = getCardTerminals();
     try {
@@ -121,12 +124,12 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
    */
   @Override
   protected Map<String, SeReader> initNativeReaders() {
+
     ConcurrentMap<String, SeReader> nativeReaders = new ConcurrentHashMap<String, SeReader>();
 
-    // activate a special processing for the "SCARD_E_NO_NO_SERVICE" exception (on Windows platforms
-    // the removal of the last PC/SC reader stops the "Windows Smart Card service")
-    String OS = System.getProperty("os.name").toLowerCase();
-    scardNoServiceHackNeeded = OS.indexOf("win") >= 0;
+    /* activate a special processing for the "SCARD_E_NO_NO_SERVICE" exception (on Windows platforms the removal of the last PC/SC reader stops the "Windows Smart Card service") */
+    String os = System.getProperty("os.name").toLowerCase();
+    scardNoServiceHackNeeded = os.contains("win");
     logger.info("System detected : {}", scardNoServiceHackNeeded);
 
     // parse the current readers list to create the ProxyReader(s) associated with new reader(s)
@@ -166,13 +169,13 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
    */
   @Override
   protected SeReader fetchNativeReader(String name) {
+
     // return the current reader if it is already listed
     SeReader seReader = readers.get(name);
     if (seReader != null) {
       return seReader;
     }
-    // parse the current PC/SC readers list to create the ProxyReader(s) associated with new
-    // reader(s)
+    /* parse the current PC/SC readers list to create the ProxyReader(s) associated with new reader(s) */
     CardTerminals terminals = getCardTerminals();
     try {
       for (CardTerminal term : terminals.list()) {
@@ -194,11 +197,11 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
   }
 
   private CardTerminals getCardTerminals() {
+
     if (scardNoServiceHackNeeded) {
-      // This hack avoids the problem of stopping the Windows Smart Card service when removing the
-      // last PC/SC reader.
-      //
-      // Some SONAR warnings have been disabled.
+      /* This hack avoids the problem of stopping the Windows Smart Card service when removing the last PC/SC reader.
+
+      Some SONAR warnings have been disabled.*/
       try {
         Class<?> pcscterminal;
         pcscterminal = Class.forName("sun.security.smartcardio.PCSCTerminals");
@@ -207,17 +210,17 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
 
         if (contextId.getLong(pcscterminal) != 0L) {
           Class<?> pcsc = Class.forName("sun.security.smartcardio.PCSC");
-          Method SCardEstablishContext =
-              pcsc.getDeclaredMethod("SCardEstablishContext", new Class[] {Integer.TYPE});
-          SCardEstablishContext.setAccessible(true); // NOSONAR
+          Method sCardEstablishContext =
+              pcsc.getDeclaredMethod("SCARD_ESTABLISH_CONTEXT", new Class[] {Integer.TYPE});
+          sCardEstablishContext.setAccessible(true); // NOSONAR
 
-          Field SCARD_SCOPE_USER = pcsc.getDeclaredField("SCARD_SCOPE_USER");
-          SCARD_SCOPE_USER.setAccessible(true); // NOSONAR
+          Field sCardScopeUser = pcsc.getDeclaredField("SCARD_SCOPE_USER");
+          sCardScopeUser.setAccessible(true); // NOSONAR
 
           long newId =
               ((Long)
-                      SCardEstablishContext.invoke(
-                          pcsc, new Object[] {Integer.valueOf(SCARD_SCOPE_USER.getInt(pcsc))}))
+                      sCardEstablishContext.invoke(
+                          pcsc, new Object[] {Integer.valueOf(sCardScopeUser.getInt(pcsc))}))
                   .longValue();
           contextId.setLong(pcscterminal, newId); // NOSONAR
 
@@ -246,9 +249,12 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
    */
   @Override
   public void setReaderNameFilter(TransmissionMode transmissionMode, String readerNameFilter) {
-    Assert.getInstance().notNull(transmissionMode, "transmissionMode");
-    Assert.getInstance().notEmpty(readerNameFilter, "readerNameFilter");
-    if (TransmissionMode.CONTACTLESS.equals(transmissionMode)) {
+
+    Assert.getInstance()
+        .notNull(transmissionMode, "transmissionMode")
+        .notEmpty(readerNameFilter, "readerNameFilter");
+
+    if (transmissionMode == TransmissionMode.CONTACTLESS) {
       contactlessReaderRegexFilter = readerNameFilter;
     } else {
       contactReaderRegexFilter = readerNameFilter;
@@ -267,6 +273,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
    * @since 0.9
    */
   TransmissionMode findTransmissionMode(String readerName) {
+
     Pattern p;
     p = Pattern.compile(contactReaderRegexFilter);
     if (p.matcher(readerName).matches()) {

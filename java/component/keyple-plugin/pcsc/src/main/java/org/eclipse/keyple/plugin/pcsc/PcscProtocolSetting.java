@@ -29,8 +29,7 @@ public final class PcscProtocolSetting {
 
   private static final Map<SeProtocol, String> PCSC_PROTOCOL_SETTING;
 
-  // Associates a protocol and a string defining how to identify it (here a regex to be applied on
-  // the ATR)
+  /* Associates a protocol and a string defining how to identify it (here a regex to be applied on the ATR) */
   static {
     Map<SeProtocol, String> map = new HashMap<SeProtocol, String>();
 
@@ -64,7 +63,9 @@ public final class PcscProtocolSetting {
    */
   public static Map<SeProtocol, String> getSpecificSettings(
       Set<SeCommonProtocols> specificProtocols) {
+
     Map<SeProtocol, String> map = new HashMap<SeProtocol, String>();
+
     for (SeCommonProtocols seCommonProtocols : specificProtocols) {
       map.put(seCommonProtocols, PCSC_PROTOCOL_SETTING.get(seCommonProtocols));
     }

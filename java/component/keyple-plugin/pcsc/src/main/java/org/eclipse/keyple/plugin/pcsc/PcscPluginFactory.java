@@ -22,13 +22,19 @@ import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationExcept
 public class PcscPluginFactory implements PluginFactory {
 
   /**
+   * (package-private)<br>
+   * The plugin name
+   */
+  static final String PLUGIN_NAME = "PcscPlugin";
+
+  /**
    * {@inheritDoc}
    *
    * @since 0.9
    */
   @Override
   public String getPluginName() {
-    return PcscPluginConstants.PLUGIN_NAME;
+    return PLUGIN_NAME;
   }
 
   /**

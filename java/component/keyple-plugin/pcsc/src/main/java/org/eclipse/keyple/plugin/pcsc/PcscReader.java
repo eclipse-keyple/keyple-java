@@ -46,6 +46,7 @@ public interface PcscReader extends ObservableReader {
    * @since 1.0
    */
   enum IsoProtocol {
+
     /** to connect using any available protocol */
     ANY("*"),
     /** to connect using T=0 protocol */
@@ -87,21 +88,19 @@ public interface PcscReader extends ObservableReader {
   }
 
   /**
-   * Sets the PC/SC sharing mode.
+   * Changes the PC/SC sharing mode (default value {@link SharingMode#EXCLUSIVE}).
    *
    * <p>This mode will be used when a new {@link Card} is created.
    *
    * <p>If a SE is already inserted, changes immediately the mode in the current {@link Card}
    * object.
    *
-   * <p>The default value for this parameter if this method is not called is {@link
-   * SharingMode#EXCLUSIVE}.
-   *
    * @param sharingMode The {@link SharingMode} to use (must be not null).
+   * @return This instance.
    * @throws IllegalArgumentException if sharingMode is null
    * @since 1.0
    */
-  void setSharingMode(SharingMode sharingMode);
+  PcscReader setSharingMode(SharingMode sharingMode);
 
   /**
    * Sets the reader transmission mode.
@@ -120,27 +119,28 @@ public interface PcscReader extends ObservableReader {
    * The {@link SeReader#getTransmissionMode()} may raise an {@link IllegalStateException}.
    *
    * @param transmissionMode The {@link TransmissionMode} to use (must be not null).
+   * @return This instance.
    * @throws IllegalArgumentException if transmissionMode is null
    * @since 1.0
    */
-  void setTransmissionMode(TransmissionMode transmissionMode);
+  PcscReader setTransmissionMode(TransmissionMode transmissionMode);
 
   /**
-   * Sets the protocol to be used by the PC/SC reader when connecting to the SE ({@link
+   * Changes the protocol to be used by the PC/SC reader when connecting to the SE ({@link
    * IsoProtocol#T0}, {@link IsoProtocol#T1}, or {@link IsoProtocol#TCL}), or {@link
-   * IsoProtocol#ANY} to connect using any available protocol.
-   *
-   * <p>The default value for this parameter if this method is not called is {@link
-   * IsoProtocol#ANY}.
+   * IsoProtocol#ANY} to connect using any available protocol (default value {@link
+   * IsoProtocol#ANY}).
    *
    * @param isoProtocol The {@link IsoProtocol} to use (must be not null).
+   * @return This instance.
    * @throws IllegalArgumentException if isoProtocol is null
    * @since 1.0
    */
-  void setIsoProtocol(IsoProtocol isoProtocol);
+  PcscReader setIsoProtocol(IsoProtocol isoProtocol);
 
   /**
-   * Defines the action to be taken after disconnection.
+   * Changes the action to be taken after disconnection (default value {@link
+   * DisconnectionMode#LEAVE}).
    *
    * <p>The SE is either reset or left as is.
    *
@@ -148,7 +148,8 @@ public interface PcscReader extends ObservableReader {
    * DisconnectionMode#LEAVE}.
    *
    * @param disconnectionMode The {@link DisconnectionMode} to use (must be not null).
+   * @return This instance.
    * @throws IllegalArgumentException if disconnectionMode is null
    */
-  void setDisconnectionMode(DisconnectionMode disconnectionMode);
+  PcscReader setDisconnectionMode(DisconnectionMode disconnectionMode);
 }
