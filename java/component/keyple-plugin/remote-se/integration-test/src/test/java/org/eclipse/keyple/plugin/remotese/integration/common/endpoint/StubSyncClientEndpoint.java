@@ -26,9 +26,7 @@ import org.eclipse.keyple.plugin.remotese.virtualse.impl.RemoteSeServerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Stub implementation of a {@link KeypleClientSync}.
- */
+/** Stub implementation of a {@link KeypleClientSync}. */
 public class StubSyncClientEndpoint implements KeypleClientSync {
 
   private static final Logger logger = LoggerFactory.getLogger(StubSyncClientEndpoint.class);

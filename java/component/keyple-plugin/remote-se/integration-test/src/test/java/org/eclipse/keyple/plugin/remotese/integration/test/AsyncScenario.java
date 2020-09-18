@@ -19,7 +19,6 @@ import org.eclipse.keyple.plugin.remotese.integration.common.model.DeviceInput;
 import org.eclipse.keyple.plugin.remotese.integration.common.model.UserInput;
 import org.eclipse.keyple.plugin.remotese.nativese.NativeSeClientService;
 import org.eclipse.keyple.plugin.remotese.nativese.impl.NativeSeClientServiceFactory;
-import org.eclipse.keyple.plugin.stub.StubReader;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -126,18 +125,16 @@ public class AsyncScenario extends BaseScenario {
     execute3_remoteselection_remoteTransaction_successful(nativeService);
   }
 
-  /**
-   * Similar to scenario 3 with two concurrent clients.
-   */
+  /** Similar to scenario 3 with two concurrent clients. */
   @Test
   public void execute4_multiclient_remoteselection_remoteTransaction_successful() {
 
     NativeSeClientService nativeService =
-            new NativeSeClientServiceFactory()
-                    .builder()
-                    .withAsyncNode(clientEndpoint)
-                    .withoutReaderObservation()
-                    .getService();
+        new NativeSeClientServiceFactory()
+            .builder()
+            .withAsyncNode(clientEndpoint)
+            .withoutReaderObservation()
+            .getService();
 
     execute4_multipleclients_remoteselection_remoteTransaction_successful(nativeService);
   }

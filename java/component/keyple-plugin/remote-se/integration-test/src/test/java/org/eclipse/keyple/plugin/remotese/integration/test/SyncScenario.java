@@ -66,7 +66,6 @@ public class SyncScenario extends BaseScenario {
     clearNativeReader();
   }
 
-
   /**
    * A successful aid selection is executed locally on the terminal followed by a remoteService call
    * to launch the remote Calypso session. The SE content is sent during this first called along
@@ -139,18 +138,16 @@ public class SyncScenario extends BaseScenario {
     execute3_remoteselection_remoteTransaction_successful(nativeService);
   }
 
-  /**
-   * Similar to scenario 3 with two concurrent clients.
-   */
+  /** Similar to scenario 3 with two concurrent clients. */
   @Test
   public void execute4_multiclient_remoteselection_remoteTransaction_successful() {
 
     NativeSeClientService nativeService =
-            new NativeSeClientServiceFactory()
-                    .builder()
-                    .withSyncNode(clientSyncEndpoint)
-                    .withoutReaderObservation()
-                    .getService();
+        new NativeSeClientServiceFactory()
+            .builder()
+            .withSyncNode(clientSyncEndpoint)
+            .withoutReaderObservation()
+            .getService();
 
     execute4_multipleclients_remoteselection_remoteTransaction_successful(nativeService);
   }

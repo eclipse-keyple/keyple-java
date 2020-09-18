@@ -286,7 +286,8 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
           this.getName(),
           virtualReaderName,
           serviceId,
-          isObservable, sessionId);
+          isObservable,
+          sessionId);
     }
     if (isObservable) {
       VirtualObservableReader virtualObservableReader =

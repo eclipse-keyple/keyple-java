@@ -16,7 +16,6 @@ import static org.awaitility.Awaitility.await;
 
 import java.util.UUID;
 import java.util.concurrent.*;
-
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
@@ -60,9 +59,11 @@ public class BaseScenario {
 
   StubPlugin nativePlugin;
   StubReader nativeReader;
+  StubReader nativeReader2;
 
   RemoteSeServerPlugin remoteSePlugin;
   UserInput user1;
+  UserInput user2;
   DeviceInput device1;
 
   ExecutorService threadPool = Executors.newCachedThreadPool();
@@ -87,6 +88,13 @@ public class BaseScenario {
       nativeReader = (StubReader) nativePlugin.getReader(NATIVE_READER_NAME);
       // configure the procotol settings
       nativeReader.addSeProtocolSetting(
+          SeCommonProtocols.PROTOCOL_ISO14443_4,
+          StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+
+      // plug a second reader
+      nativePlugin.plugStubReader(NATIVE_READER_NAME_2, true);
+      nativeReader2 = (StubReader) nativePlugin.getReader(NATIVE_READER_NAME_2);
+      nativeReader2.addSeProtocolSetting(
           SeCommonProtocols.PROTOCOL_ISO14443_4,
           StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
     }
@@ -164,7 +172,10 @@ public class BaseScenario {
     };
   }
 
-  Callable<Boolean> executeTransaction(final NativeSeClientService nativeService, final StubReader nativeReader, final UserInput user){
+  Callable<Boolean> executeTransaction(
+      final NativeSeClientService nativeService,
+      final StubReader nativeReader,
+      final UserInput user) {
     return new Callable<Boolean>() {
       @Override
       public Boolean call() throws Exception {
@@ -173,11 +184,11 @@ public class BaseScenario {
 
         // execute remote service
         TransactionResult output =
-                nativeService.executeRemoteService(
-                        RemoteServiceParameters.builder(SERVICE_ID_3, nativeReader)
-                                .withUserInputData(user)
-                                .build(),
-                        TransactionResult.class);
+            nativeService.executeRemoteService(
+                RemoteServiceParameters.builder(SERVICE_ID_3, nativeReader)
+                    .withUserInputData(user)
+                    .build(),
+                TransactionResult.class);
 
         // validate result
         assertThat(output.isSuccessful()).isTrue();
@@ -191,7 +202,7 @@ public class BaseScenario {
     // insert stub SE into stub
     nativeReader.insertSe(new StubCalypsoClassic());
 
-    //execute a local selection on native reader
+    // execute a local selection on native reader
     CalypsoPo calypsoPo = explicitPoSelection();
 
     // execute remote service fed with the SE
@@ -230,7 +241,9 @@ public class BaseScenario {
      * user1 removes SE
      */
     nativeReader.insertSe(new StubCalypsoClassic());
-    logger.info("1 - Verify User Transaction is successful for first user {}", eventFilter.user.getUserId());
+    logger.info(
+        "1 - Verify User Transaction is successful for first user {}",
+        eventFilter.user.getUserId());
     await().atMost(1, TimeUnit.SECONDS).until(verifyUserTransaction(eventFilter, user1));
     nativeReader.removeSe();
     await().atMost(1, TimeUnit.SECONDS).until(seRemoved(nativeReader));
@@ -244,7 +257,9 @@ public class BaseScenario {
     UserInput user2 = new UserInput().setUserId(UUID.randomUUID().toString());
     eventFilter.setUserData(user2);
     nativeReader.insertSe(new StubCalypsoClassic());
-    logger.info("2 - Verify User Transaction is successful for second user {}", eventFilter.user.getUserId());
+    logger.info(
+        "2 - Verify User Transaction is successful for second user {}",
+        eventFilter.user.getUserId());
     await().atMost(1, TimeUnit.SECONDS).until(verifyUserTransaction(eventFilter, user2));
     nativeReader.removeSe();
     await().atMost(1, TimeUnit.SECONDS).until(seRemoved(nativeReader));
@@ -273,29 +288,29 @@ public class BaseScenario {
     assertThat(output.getUserId()).isEqualTo(user1.getUserId());
   }
 
-  void execute4_multipleclients_remoteselection_remoteTransaction_successful(NativeSeClientService nativeService) {
-    //plug a second reader
-    nativePlugin.plugStubReader(NATIVE_READER_NAME_2, true);
-    StubReader nativeReader2 = (StubReader) nativePlugin.getReader(NATIVE_READER_NAME_2);
-    nativeReader2.addSeProtocolSetting(
-            SeCommonProtocols.PROTOCOL_ISO14443_4,
-            StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
-    UserInput user2 = new UserInput().setUserId("user2");
+  void execute4_multipleclients_remoteselection_remoteTransaction_successful(
+      NativeSeClientService nativeService) {
+    user2 = new UserInput().setUserId("user2");
 
     // insert stub SE into both readers
     nativeReader.insertSe(new StubCalypsoClassic());
     nativeReader2.insertSe(new StubCalypsoClassic());
 
-    //execute remoteservice task concurrently on both readers
-    final Future<Boolean> task1 = threadPool.submit(executeTransaction(nativeService, nativeReader, user1));
-    final Future<Boolean> task2 = threadPool.submit(executeTransaction(nativeService, nativeReader2, user2));
+    // execute remoteservice task concurrently on both readers
+    final Future<Boolean> task1 =
+        threadPool.submit(executeTransaction(nativeService, nativeReader, user1));
+    final Future<Boolean> task2 =
+        threadPool.submit(executeTransaction(nativeService, nativeReader2, user2));
 
-    //wait for termination
-    await().atMost(10,TimeUnit.SECONDS).until(new Callable<Boolean>() {
-      @Override
-      public Boolean call() throws Exception {
-        return task1.isDone() && task2.isDone() && task1.get() && task2.get();
-      }
-    });
+    // wait for termination
+    await()
+        .atMost(10, TimeUnit.SECONDS)
+        .until(
+            new Callable<Boolean>() {
+              @Override
+              public Boolean call() throws Exception {
+                return task1.isDone() && task2.isDone() && task1.get() && task2.get();
+              }
+            });
   }
 }
