@@ -168,8 +168,8 @@ task installPlugin{
 dependencies {
 
     //use keyple library : core
-    //api project(path:':java:component:keyple-core')
-    api group: 'org.eclipse.keyple', name: 'keyple-java-core', version: project.version
+    api project(path:':java:component:keyple-core')
+    //api group: 'org.eclipse.keyple', name: 'keyple-java-core', version: project.version
 
     implementation "com.google.code.gson:gson:${gson_version}"
 
