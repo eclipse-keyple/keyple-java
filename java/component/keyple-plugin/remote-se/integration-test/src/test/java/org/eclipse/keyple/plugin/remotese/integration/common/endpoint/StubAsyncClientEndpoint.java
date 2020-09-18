@@ -11,8 +11,9 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remotese.integration.common.endpoint;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
-
 import org.eclipse.keyple.plugin.remotese.core.KeypleClientAsync;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remotese.integration.common.util.JacksonParser;
@@ -21,22 +22,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Async client endpoint. Send and receive asynchronously {@link KeypleMessageDto} with {@link StubAsyncServerEndpoint}.
+ * Async client endpoint. Send and receive asynchronously json serialized {@link KeypleMessageDto}
+ * with {@link StubAsyncServerEndpoint}.
  */
 public class StubAsyncClientEndpoint implements KeypleClientAsync {
 
   private static final Logger logger = LoggerFactory.getLogger(StubAsyncClientEndpoint.class);
   final StubAsyncServerEndpoint server;
   private final String clientNodeId;
-  private String currentSessionId;
+  private Set<String> currentSessionIds;
 
   public StubAsyncClientEndpoint(StubAsyncServerEndpoint server) {
     this.server = server;
     this.clientNodeId = UUID.randomUUID().toString();
+    currentSessionIds = new HashSet<String>();
   }
 
   /**
    * Receive serialized keyple message dto from the server
+   *
    * @param data not null json data
    */
   void onMessage(String data) {
@@ -48,16 +52,16 @@ public class StubAsyncClientEndpoint implements KeypleClientAsync {
   @Override
   public void openSession(String sessionId) {
     server.open(sessionId, this);
-    this.currentSessionId = sessionId;
-    logger.trace("Open session {} to server", currentSessionId);
-    NativeSeClientUtils.getAsyncNode().onOpen(currentSessionId);
+    this.currentSessionIds.add(sessionId);
+    logger.trace("Open session {} to server", sessionId);
+    NativeSeClientUtils.getAsyncNode().onOpen(sessionId);
   }
 
   @Override
   public void sendMessage(KeypleMessageDto msg) {
     msg.setClientNodeId(clientNodeId);
     String data = JacksonParser.toJson(msg);
-    logger.trace("Data sent to server session {} <- {}", currentSessionId, data);
+    logger.trace("Data sent to server session {} <- {}", msg.getSessionId(), data);
     server.onData(data);
   }
 
@@ -65,7 +69,7 @@ public class StubAsyncClientEndpoint implements KeypleClientAsync {
   public void closeSession(String sessionId) {
     logger.trace("Close session {} to server", sessionId);
     server.close(sessionId);
-    this.currentSessionId = null;
+    currentSessionIds.remove(sessionId);
     NativeSeClientUtils.getAsyncNode().onClose(sessionId);
   }
 

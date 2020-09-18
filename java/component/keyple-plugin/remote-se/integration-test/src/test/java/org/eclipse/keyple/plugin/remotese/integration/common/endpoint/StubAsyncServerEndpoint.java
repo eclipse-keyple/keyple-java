@@ -16,13 +16,16 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remotese.core.KeypleServerAsync;
 import org.eclipse.keyple.plugin.remotese.integration.common.util.JacksonParser;
 import org.eclipse.keyple.plugin.remotese.virtualse.impl.RemoteSeServerUtils;
 
+/**
+ * Simulate a async server. Send and receive asynchronously serialized {@link KeypleMessageDto} with
+ * connected {@link StubAsyncClientEndpoint}
+ */
 public class StubAsyncServerEndpoint implements KeypleServerAsync {
 
   final Map<String, StubAsyncClientEndpoint> clients; // sessionId_client
@@ -35,15 +38,11 @@ public class StubAsyncServerEndpoint implements KeypleServerAsync {
     serverNodeId = UUID.randomUUID().toString();
   }
 
-  /**
-   * Simulate a open socket operation
-   */
+  /** Simulate a open socket operation */
   public void open(String sessionId, StubAsyncClientEndpoint endpoint) {
     clients.put(sessionId, endpoint);
   }
-  /**
-   * Simulate a close socket operation
-   */
+  /** Simulate a close socket operation */
   public void close(String sessionId) {
     clients.remove(sessionId);
     RemoteSeServerUtils.getAsyncNode().onClose(sessionId);
@@ -58,12 +57,12 @@ public class StubAsyncServerEndpoint implements KeypleServerAsync {
     final KeypleMessageDto message = JacksonParser.fromJson(jsonData);
     Assert.getInstance().isTrue(clients.containsKey(message.getSessionId()), "Session is not open");
     taskPool.submit(
-      new Runnable() {
-        @Override
-        public void run() {
-          RemoteSeServerUtils.getAsyncNode().onMessage(message);
-        }
-      });
+        new Runnable() {
+          @Override
+          public void run() {
+            RemoteSeServerUtils.getAsyncNode().onMessage(message);
+          }
+        });
   }
 
   @Override
@@ -73,11 +72,11 @@ public class StubAsyncServerEndpoint implements KeypleServerAsync {
     msg.setServerNodeId(serverNodeId);
     msg.setClientNodeId(client.getClientNodeId());
     taskPool.submit(
-      new Runnable() {
-        @Override
-        public void run() {
-          client.onMessage(JacksonParser.toJson(msg));
-        }
-      });
+        new Runnable() {
+          @Override
+          public void run() {
+            client.onMessage(JacksonParser.toJson(msg));
+          }
+        });
   }
 }

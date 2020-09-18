@@ -15,9 +15,11 @@ import java.util.UUID;
 import org.eclipse.keyple.plugin.remotese.integration.common.app.ReaderEventFilter;
 import org.eclipse.keyple.plugin.remotese.integration.common.endpoint.StubAsyncClientEndpoint;
 import org.eclipse.keyple.plugin.remotese.integration.common.endpoint.StubAsyncServerEndpoint;
+import org.eclipse.keyple.plugin.remotese.integration.common.model.DeviceInput;
 import org.eclipse.keyple.plugin.remotese.integration.common.model.UserInput;
 import org.eclipse.keyple.plugin.remotese.nativese.NativeSeClientService;
 import org.eclipse.keyple.plugin.remotese.nativese.impl.NativeSeClientServiceFactory;
+import org.eclipse.keyple.plugin.stub.StubReader;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -32,33 +34,42 @@ public class AsyncScenario extends BaseScenario {
   private static StubAsyncServerEndpoint serverEndpoint;
 
   @BeforeClass
-  static public void globalSetUp() {
+  public static void globalSetUp() {
+
     /*
      * Server side :
-     * - create an isntance of the serverEndpoint
+     * <ul>
+     *   <li>create an isntance of the serverEndpoint</li>
+     * </ul>
      */
     serverEndpoint = new StubAsyncServerEndpoint();
   }
 
   @Before
   public void setUp() {
+
     /*
      * Server side :
-     * - retrieve remotese plugin if not initialized
-     * - initialize the plugin with a async node
-     * - attach the plugin observer
+     * <ul>
+     *   <li>initialize the plugin with a async server node</li>
+     *   <li>attach the plugin observer</li>
+     * </ul>
      */
     initRemoteSePluginWithAsyncNode(serverEndpoint);
 
-
     /*
-     * <p>Client side :
-     * - retrieve stub plugin if registered, retrieve stub native reader
-     * - if not, register stub plugin, create a stub virtual reader
+     * Client side :
+     * <ul>
+     *   <li>register stub plugin</li>
+     *   <li>create native stub reader</li>
+     *   <li>create an async client endpoint</li>
+     * <li>generate userId</li>
+     * </ul>
      */
-    clientEndpoint = new StubAsyncClientEndpoint(serverEndpoint);
     initNativeStubPlugin();
+    clientEndpoint = new StubAsyncClientEndpoint(serverEndpoint);
     user1 = new UserInput().setUserId(UUID.randomUUID().toString());
+    device1 = new DeviceInput().setDeviceId(DEVICE_ID);
   }
 
   @After
@@ -113,5 +124,21 @@ public class AsyncScenario extends BaseScenario {
             .getService();
 
     execute3_remoteselection_remoteTransaction_successful(nativeService);
+  }
+
+  /**
+   * Similar to scenario 3 with two concurrent clients.
+   */
+  @Test
+  public void execute4_multiclient_remoteselection_remoteTransaction_successful() {
+
+    NativeSeClientService nativeService =
+            new NativeSeClientServiceFactory()
+                    .builder()
+                    .withAsyncNode(clientEndpoint)
+                    .withoutReaderObservation()
+                    .getService();
+
+    execute4_multipleclients_remoteselection_remoteTransaction_successful(nativeService);
   }
 }

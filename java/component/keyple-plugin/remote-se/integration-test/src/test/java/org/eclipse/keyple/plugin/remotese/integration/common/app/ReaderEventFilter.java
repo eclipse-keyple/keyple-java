@@ -22,8 +22,13 @@ public class ReaderEventFilter implements KeypleClientReaderEventFilter {
   public TransactionResult transactionResult;
   public UserInput user;
 
-  public void setUser(UserInput user) {
+  public void setUserData(UserInput user) {
     this.user = user;
+  }
+
+  public boolean resetTransactionResult(){
+    transactionResult = null;
+    return true;
   }
 
   @Override

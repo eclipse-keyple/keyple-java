@@ -282,11 +282,11 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
 
     if (logger.isTraceEnabled()) {
       logger.trace(
-          "[{}] Create a virtual reader {} with serviceId:{} and isObservable:{}",
+          "[{}] Create a virtual reader {} with serviceId:{} and isObservable:{} for sessionId:",
           this.getName(),
           virtualReaderName,
           serviceId,
-          isObservable);
+          isObservable, sessionId);
     }
     if (isObservable) {
       VirtualObservableReader virtualObservableReader =

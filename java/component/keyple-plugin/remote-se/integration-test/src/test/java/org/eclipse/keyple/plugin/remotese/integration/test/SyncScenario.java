@@ -15,6 +15,7 @@ import java.util.UUID;
 import org.eclipse.keyple.plugin.remotese.core.KeypleClientSync;
 import org.eclipse.keyple.plugin.remotese.integration.common.app.ReaderEventFilter;
 import org.eclipse.keyple.plugin.remotese.integration.common.endpoint.StubSyncClientEndpoint;
+import org.eclipse.keyple.plugin.remotese.integration.common.model.DeviceInput;
 import org.eclipse.keyple.plugin.remotese.integration.common.model.UserInput;
 import org.eclipse.keyple.plugin.remotese.nativese.NativeSeClientService;
 import org.eclipse.keyple.plugin.remotese.nativese.impl.NativeSeClientServiceFactory;
@@ -26,40 +27,45 @@ import org.slf4j.LoggerFactory;
 
 public class SyncScenario extends BaseScenario {
 
-  KeypleClientSync clientSyncEndpoint;
   private static final Logger logger = LoggerFactory.getLogger(SyncScenario.class);
+
+  KeypleClientSync clientSyncEndpoint;
 
   @Before
   public void setUp() {
 
     /*
      * Server side :
-     * - retrieve remotese plugin if not initialized
-     * - initialize the plugin with a sync node
-     * attach the plugin observer
+     * <ul>
+     *   <li>initialize the plugin with a sync node</li>
+     *   <li>attach the plugin observer</li>
+     * </ul>
      */
     initRemoteSePluginWithSyncNode();
 
     /*
-     * <p>Client side : - retrieve stub plugin if registered, retrieve stub native reader - if not,
-     * register stub plugin, create a stub virtual reader
+     * Client side :
+     * <ul>
+     *   <li>register stub plugin</li>
+     *   <li>create native stub reader</li>
+     *   <li>create a sync client endpoint</li>
+     *  <li>generate userId</li>
+     * </ul>
      */
     initNativeStubPlugin();
 
     clientSyncEndpoint = new StubSyncClientEndpoint();
 
     user1 = new UserInput().setUserId(UUID.randomUUID().toString());
+    device1 = new DeviceInput().setDeviceId(DEVICE_ID);
   }
 
   @After
   public void tearDown() {
-    /** Unplug the native reader */
+    /* Unplug the native reader */
     clearNativeReader();
   }
 
-  /*
-   * Tests
-   */
 
   /**
    * A successful aid selection is executed locally on the terminal followed by a remoteService call
@@ -131,5 +137,21 @@ public class SyncScenario extends BaseScenario {
             .getService();
 
     execute3_remoteselection_remoteTransaction_successful(nativeService);
+  }
+
+  /**
+   * Similar to scenario 3 with two concurrent clients.
+   */
+  @Test
+  public void execute4_multiclient_remoteselection_remoteTransaction_successful() {
+
+    NativeSeClientService nativeService =
+            new NativeSeClientServiceFactory()
+                    .builder()
+                    .withSyncNode(clientSyncEndpoint)
+                    .withoutReaderObservation()
+                    .getService();
+
+    execute4_multipleclients_remoteselection_remoteTransaction_successful(nativeService);
   }
 }
