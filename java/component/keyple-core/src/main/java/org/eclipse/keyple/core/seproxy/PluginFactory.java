@@ -13,6 +13,7 @@ package org.eclipse.keyple.core.seproxy;
 
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 
+/** Plugin Factory interface. */
 public interface PluginFactory {
 
   /**
