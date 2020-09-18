@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class SeProxyService {
 
+  /** Field logger */
   private static final Logger logger = LoggerFactory.getLogger(SeProxyService.class);
 
   /** singleton instance of SeProxyService */
@@ -34,7 +35,7 @@ public final class SeProxyService {
   /** the list of readers’ plugins interfaced with the SE Proxy Service */
   private final Map<String, ReaderPlugin> plugins = new ConcurrentHashMap<String, ReaderPlugin>();
 
-  // this is the object we will be synchronizing on ("the monitor")
+  /** Field MONITOR, this is the object we will be synchronizing on ("the monitor") */
   private final Object MONITOR = new Object();
 
   /** Instantiates a new SeProxyService. */
@@ -138,9 +139,10 @@ public final class SeProxyService {
    * @return the version
    */
   public String getVersion() {
+    InputStream propertiesIs = null;
     try {
       // load keyple core property file
-      InputStream propertiesIs =
+      propertiesIs =
           Thread.currentThread()
               .getContextClassLoader()
               .getResourceAsStream("META-INF/keyple-core.properties");
@@ -150,9 +152,16 @@ public final class SeProxyService {
       if (version != null) {
         return version;
       }
-      propertiesIs.close();
     } catch (IOException e) {
       logger.error("Keyple core properties file not found in META_INF");
+    } finally {
+      if (propertiesIs != null) {
+        try {
+          propertiesIs.close();
+        } catch (IOException e) {
+          logger.error("IO Exception when closing properties stream", e);
+        }
+      }
     }
 
     return "no-version-found";
