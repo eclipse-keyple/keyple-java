@@ -74,8 +74,9 @@ public class Rev1Selection_Pcsc {
 
     // Get and configure the PO reader
     SeReader poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
-    ((PcscReader) poReader).setTransmissionMode(TransmissionMode.CONTACTLESS);
-    ((PcscReader) poReader).setIsoProtocol(PcscReader.IsoProtocol.T1);
+    ((PcscReader) poReader)
+        .setTransmissionMode(TransmissionMode.CONTACTLESS)
+        .setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     // Add the B Prime protocol filter
     poReader.addSeProtocolSetting(

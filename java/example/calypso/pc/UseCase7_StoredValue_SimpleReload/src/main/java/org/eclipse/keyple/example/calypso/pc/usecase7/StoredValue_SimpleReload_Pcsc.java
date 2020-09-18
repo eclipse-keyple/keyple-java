@@ -120,13 +120,15 @@ public class StoredValue_SimpleReload_Pcsc {
 
     // Get and configure the PO reader
     poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
-    ((PcscReader) poReader).setTransmissionMode(TransmissionMode.CONTACTLESS);
-    ((PcscReader) poReader).setIsoProtocol(PcscReader.IsoProtocol.T1);
+    ((PcscReader) poReader)
+        .setTransmissionMode(TransmissionMode.CONTACTLESS)
+        .setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     // Get and configure the SAM reader
     SeReader samReader = readerPlugin.getReader(ReaderUtilities.getContactReaderName());
-    ((PcscReader) samReader).setTransmissionMode(TransmissionMode.CONTACTS);
-    ((PcscReader) samReader).setIsoProtocol(PcscReader.IsoProtocol.T0);
+    ((PcscReader) samReader)
+        .setTransmissionMode(TransmissionMode.CONTACTS)
+        .setIsoProtocol(PcscReader.IsoProtocol.T0);
 
     // Create a SAM resource after selecting the SAM
     SeSelection samSelection = new SeSelection();

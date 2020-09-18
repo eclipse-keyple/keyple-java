@@ -84,8 +84,9 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
 
     // Get and configure the PO reader
     SeReader poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
-    ((PcscReader) poReader).setTransmissionMode(TransmissionMode.CONTACTLESS);
-    ((PcscReader) poReader).setIsoProtocol(PcscReader.IsoProtocol.T1);
+    ((PcscReader) poReader)
+        .setTransmissionMode(TransmissionMode.CONTACTLESS)
+        .setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     logger.info(
         "=============== UseCase Calypso #2: AID based default selection ===================");

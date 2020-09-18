@@ -75,28 +75,15 @@ public class Demo_CalypsoClassic_Pcsc {
     logger.info("SAM Reader  NAME = {}", samReader.getName());
 
     /* Set PcSc settings per reader */
-    ((PcscReader) poReader).setTransmissionMode(TransmissionMode.CONTACTLESS);
-    ((PcscReader) poReader).setIsoProtocol(PcscReader.IsoProtocol.T1);
+    ((PcscReader) poReader)
+        .setTransmissionMode(TransmissionMode.CONTACTLESS)
+        .setIsoProtocol(PcscReader.IsoProtocol.T1)
+        .setSharingMode(PcscReader.SharingMode.SHARED);
 
-    ((PcscReader) samReader).setTransmissionMode(TransmissionMode.CONTACTS);
-    ((PcscReader) samReader).setIsoProtocol(PcscReader.IsoProtocol.T0);
-
-    /*
-     * PC/SC card access mode:
-     *
-     * The SAM is left in the SHARED mode (by default) to avoid automatic resets due to the
-     * limited time between two consecutive exchanges granted by Windows.
-     *
-     * This point will be addressed in a coming release of the Keyple PcSc reader plugin.
-     *
-     * The PO reader is set to EXCLUSIVE mode to avoid side effects (on OS Windows 8+) during
-     * the selection step that may result in session failures.
-     *
-     * See KEYPLE-CORE.PC.md file to learn more about this point.
-     *
-     */
-    ((PcscReader) poReader).setSharingMode(PcscReader.SharingMode.SHARED);
-    ((PcscReader) samReader).setSharingMode(PcscReader.SharingMode.SHARED);
+    ((PcscReader) samReader)
+        .setTransmissionMode(TransmissionMode.CONTACTS)
+        .setIsoProtocol(PcscReader.IsoProtocol.T0)
+        .setSharingMode(PcscReader.SharingMode.SHARED);
 
     /* Set the PO reader protocol flag */
     poReader.addSeProtocolSetting(

@@ -54,8 +54,9 @@ public class Demo_SeProtocolDetection_Pcsc {
 
     // Get and configure the PO reader
     SeReader poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
-    ((PcscReader) poReader).setTransmissionMode(TransmissionMode.CONTACTLESS);
-    ((PcscReader) poReader).setIsoProtocol(PcscReader.IsoProtocol.T1);
+    ((PcscReader) poReader)
+        .setTransmissionMode(TransmissionMode.CONTACTLESS)
+        .setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     logger.info("PO Reader  : {}", poReader.getName());
 
@@ -65,8 +66,9 @@ public class Demo_SeProtocolDetection_Pcsc {
     observer.setReader(poReader);
 
     // configure reader
-    ((PcscReader) poReader).setTransmissionMode(TransmissionMode.CONTACTLESS);
-    ((PcscReader) poReader).setIsoProtocol(PcscReader.IsoProtocol.T1);
+    ((PcscReader) poReader)
+        .setTransmissionMode(TransmissionMode.CONTACTLESS)
+        .setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     // Protocol detection settings.
     // add 8 expected protocols with three different methods:

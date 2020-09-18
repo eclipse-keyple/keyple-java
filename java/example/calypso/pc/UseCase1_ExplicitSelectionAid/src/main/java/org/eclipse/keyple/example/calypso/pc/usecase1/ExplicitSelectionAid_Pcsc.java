@@ -68,8 +68,9 @@ public class ExplicitSelectionAid_Pcsc {
 
     // Get and configure the PO reader
     SeReader poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
-    ((PcscReader) poReader).setTransmissionMode(TransmissionMode.CONTACTLESS);
-    ((PcscReader) poReader).setIsoProtocol(PcscReader.IsoProtocol.T1);
+    ((PcscReader) poReader)
+        .setTransmissionMode(TransmissionMode.CONTACTLESS)
+        .setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     logger.info(
         "=============== UseCase Calypso #1: AID based explicit selection ==================");
