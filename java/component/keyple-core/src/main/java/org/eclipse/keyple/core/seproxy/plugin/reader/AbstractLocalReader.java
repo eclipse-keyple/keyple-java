@@ -15,6 +15,7 @@ import java.util.*;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
@@ -461,6 +462,18 @@ public abstract class AbstractLocalReader extends AbstractReader {
    */
   protected abstract boolean protocolFlagMatches(SeProtocol protocolFlag);
 
+  /**
+   * Gets the communication protocol used by the current SE.
+   *
+   * <p>This method must be implemented by the plugin which is able to determine the protocol of the
+   * SE from the technical data it has available.
+   *
+   * @return A not null reference to a {@link SeProtocol}.
+   * @throws KeypleReaderException if it is not possible to determine the protocol.
+   * @since 1.0
+   */
+  protected abstract SeProtocol getCurrentProtocol();
+
   /* ==== SeRequestSe and SeRequest transmission management ============= */
 
   /**
@@ -494,6 +507,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
       if (seSelector != null) {
         requestMatchesProtocol[requestIndex] =
             protocolFlagMatches(request.getSeSelector().getSeProtocol());
+        // getCurrentProtocol() == request.getSeSelector().getSeProtocol();
       } else {
         requestMatchesProtocol[requestIndex] = true;
       }

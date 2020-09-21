@@ -157,6 +157,11 @@ class StubReaderImpl extends AbstractObservableLocalReader
   }
 
   @Override
+  protected SeProtocol getCurrentProtocol() {
+    return null;
+  }
+
+  @Override
   protected synchronized boolean checkSePresence() {
     return se != null;
   }

@@ -57,6 +57,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   private String parameterCardProtocol;
   private boolean cardExclusiveMode;
   private boolean cardReset;
+  private SeProtocol currentProtocol;
   private TransmissionMode transmissionMode;
 
   private Card card;
@@ -94,6 +95,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     this.parameterCardProtocol = IsoProtocol.ANY.getValue();
     this.cardExclusiveMode = true;
     this.cardReset = false;
+    this.currentProtocol = null;
 
     String os = System.getProperty("os.name").toLowerCase();
     usePingPresence = os.contains("mac");
@@ -155,6 +157,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         channel = null;
         card.disconnect(cardReset);
         card = null;
+        currentProtocol = null;
       } else {
         logger.debug("[{}] closePhysicalChannel => card object is null.", this.getName());
       }
@@ -301,6 +304,42 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
       throw new KeypleReaderIOException(this.getName() + ": null channel.");
     }
     return apduResponseData.getBytes();
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The standard interface of the PC/SC readers does not allow to know directly the type of
+   * protocol used by an SE.
+   *
+   * <p>This is especially true in contactless mode. Moreover, in this mode, the Answer To Reset
+   * (ATR) returned by the reader is not produced by the SE but reconstructed by the reader from
+   * elements defined in the standard (Interoperability Specification for ICCs and Personal Computer
+   * Systems Part 3).
+   *
+   * <p>We therefore use ATR (real or reconstructed) to identify the SE protocol using regular
+   * expressions. These regular expressions are defined in {@link PcscProtocolSetting}.
+   *
+   * @return The identified {@link SeProtocol}.
+   * @throws KeypleReaderException if none of the defined regular expressions match the ATR of the
+   *     SE.
+   * @since 1.0
+   */
+  @Override
+  protected SeProtocol getCurrentProtocol() {
+
+    if (currentProtocol == null) {
+      Map<SeProtocol, String> protocolsMap = getProtocolsMap();
+      for (Map.Entry<SeProtocol, String> entry : protocolsMap.entrySet()) {
+        Pattern p = Pattern.compile(entry.getValue());
+        String atr = ByteArrayUtil.toHex(card.getATR().getBytes());
+        if (p.matcher(atr).matches()) {
+          currentProtocol = entry.getKey();
+          break;
+        }
+      }
+    }
+    return currentProtocol;
   }
 
   /**
