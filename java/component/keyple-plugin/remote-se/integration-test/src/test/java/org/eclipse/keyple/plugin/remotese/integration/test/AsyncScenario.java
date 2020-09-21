@@ -17,7 +17,6 @@ import org.eclipse.keyple.plugin.remotese.integration.common.endpoint.StubAsyncC
 import org.eclipse.keyple.plugin.remotese.integration.common.endpoint.StubAsyncServerEndpoint;
 import org.eclipse.keyple.plugin.remotese.integration.common.model.DeviceInput;
 import org.eclipse.keyple.plugin.remotese.integration.common.model.UserInput;
-import org.eclipse.keyple.plugin.remotese.nativese.NativeSeClientService;
 import org.eclipse.keyple.plugin.remotese.nativese.impl.NativeSeClientServiceFactory;
 import org.junit.After;
 import org.junit.Before;
@@ -26,7 +25,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AsyncScenario extends BaseScenario {
+public class AsyncScenario extends BaseScenario implements IntegrationScenario{
 
   StubAsyncClientEndpoint clientEndpoint;
   private static final Logger logger = LoggerFactory.getLogger(AsyncScenario.class);
@@ -77,65 +76,66 @@ public class AsyncScenario extends BaseScenario {
     clearNativeReader();
   }
 
-  /*
-   * Tests
-   */
+
+  /** {@inheritDoc} */
+  @Override
   @Test
   public void execute1_localselection_remoteTransaction_successful() {
 
-    NativeSeClientService nativeService =
+    nativeService =
         new NativeSeClientServiceFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
             .withoutReaderObservation()
             .getService();
 
-    execute1_localselection_remoteTransaction_successful(nativeService);
+    localselection_remoteTransaction_successful();
   }
 
+  /** {@inheritDoc} */
+  @Override
   @Test
   public void execute2_defaultSelection_onMatched_transaction_successful() {
 
     final ReaderEventFilter eventFilter = new ReaderEventFilter();
 
-    NativeSeClientService nativeService =
+    nativeService =
         new NativeSeClientServiceFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
             .withReaderObservation(eventFilter)
             .getService();
 
-    execute2_defaultSelection_onMatched_transaction_successful(nativeService, eventFilter);
+    defaultSelection_onMatched_transaction_successful(eventFilter);
   }
 
-  /**
-   * Similar to scenario 1 without the local aid selection. In this case, the server application is
-   * responsible for ordering the aid selection.
-   */
+  /** {@inheritDoc} */
+  @Override
   @Test
   public void execute3_remoteselection_remoteTransaction_successful() {
 
-    NativeSeClientService nativeService =
+    nativeService =
         new NativeSeClientServiceFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
             .withoutReaderObservation()
             .getService();
 
-    execute3_remoteselection_remoteTransaction_successful(nativeService);
+    remoteselection_remoteTransaction_successful();
   }
 
-  /** Similar to scenario 3 with two concurrent clients. */
+  /** {@inheritDoc} */
   @Test
+  @Override
   public void execute4_multiclient_remoteselection_remoteTransaction_successful() {
 
-    NativeSeClientService nativeService =
+    nativeService =
         new NativeSeClientServiceFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
             .withoutReaderObservation()
             .getService();
 
-    execute4_multipleclients_remoteselection_remoteTransaction_successful(nativeService);
+    multipleclients_remoteselection_remoteTransaction_successful();
   }
 }

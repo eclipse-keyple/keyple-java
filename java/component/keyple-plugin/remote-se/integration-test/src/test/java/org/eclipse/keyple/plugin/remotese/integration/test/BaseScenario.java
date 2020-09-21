@@ -57,6 +57,7 @@ public class BaseScenario {
 
   public static String DEVICE_ID = "Xo99";
 
+  NativeSeClientService nativeService;
   StubPlugin nativePlugin;
   StubReader nativeReader;
   StubReader nativeReader2;
@@ -206,7 +207,7 @@ public class BaseScenario {
     };
   }
 
-  void execute1_localselection_remoteTransaction_successful(NativeSeClientService nativeService) {
+  void localselection_remoteTransaction_successful() {
     // insert stub SE into stub
     nativeReader.insertSe(new StubCalypsoClassic());
 
@@ -227,8 +228,7 @@ public class BaseScenario {
     assertThat(output.getUserId()).isEqualTo(user1.getUserId());
   }
 
-  void execute2_defaultSelection_onMatched_transaction_successful(
-      NativeSeClientService nativeService, ReaderEventFilter eventFilter) {
+  void defaultSelection_onMatched_transaction_successful(ReaderEventFilter eventFilter) {
     // execute remote service to create observable virtual reader
     ConfigurationResult configurationResult =
         nativeService.executeRemoteService(
@@ -279,7 +279,7 @@ public class BaseScenario {
     assertThat(NativeSeClientServiceTest.getVirtualReaders(nativeService)).isEmpty();
   }
 
-  void execute3_remoteselection_remoteTransaction_successful(NativeSeClientService nativeService) {
+  void remoteselection_remoteTransaction_successful() {
     // insert stub SE into stub
     nativeReader.insertSe(new StubCalypsoClassic());
 
@@ -296,8 +296,7 @@ public class BaseScenario {
     assertThat(output.getUserId()).isEqualTo(user1.getUserId());
   }
 
-  void execute4_multipleclients_remoteselection_remoteTransaction_successful(
-      NativeSeClientService nativeService) {
+  void multipleclients_remoteselection_remoteTransaction_successful() {
     user2 = new UserInput().setUserId("user2");
 
     // insert stub SE into both readers
