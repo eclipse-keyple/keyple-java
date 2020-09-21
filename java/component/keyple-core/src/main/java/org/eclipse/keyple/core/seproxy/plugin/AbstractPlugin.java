@@ -100,18 +100,4 @@ public abstract class AbstractPlugin implements ReaderPlugin {
     }
     return seReader;
   }
-
-  /**
-   * Sets at once a set of parameters for the plugin
-   *
-   * <p>See {@link #setParameter(String, String)} for more details
-   *
-   * @param parameters a Map &lt;String, String&gt; parameter set
-   * @throws KeypleException if one of the parameters could not be set up
-   */
-  public final void setParameters(Map<String, String> parameters) {
-    for (Map.Entry<String, String> en : parameters.entrySet()) {
-      setParameter(en.getKey(), en.getValue());
-    }
-  }
 }

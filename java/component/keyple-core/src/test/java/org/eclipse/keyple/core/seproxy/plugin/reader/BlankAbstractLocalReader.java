@@ -11,7 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.plugin.reader;
 
-import java.util.Map;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 
@@ -59,12 +58,4 @@ public class BlankAbstractLocalReader extends AbstractLocalReader {
   public TransmissionMode getTransmissionMode() {
     return null;
   }
-
-  @Override
-  public Map<String, String> getParameters() {
-    return null;
-  }
-
-  @Override
-  public void setParameter(String key, String value) {}
 }

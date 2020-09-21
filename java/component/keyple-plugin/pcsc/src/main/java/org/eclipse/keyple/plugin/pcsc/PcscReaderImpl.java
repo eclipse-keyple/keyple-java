@@ -11,10 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.pcsc;
 
-import static org.eclipse.keyple.plugin.pcsc.PcscReaderConstants.*;
-
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -37,22 +34,26 @@ import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemoval;
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetect;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Package private class implementing the {@link org.eclipse.keyple.core.seproxy.SeReader} interface
+ * for PC/SC based readers.
+ *
+ * <p>A PC/SC reader is observable ({@link AbstractObservableLocalReader}), autonomous to detect the
+ * insertion of secure elements ({@link SmartInsertionReader}, able to detect the removal of a
+ * secure element prior an attempt to communicate with it ({@link SmartRemovalReader} and has
+ * specific settings ({@link PcscReader}.
+ */
 final class PcscReaderImpl extends AbstractObservableLocalReader
     implements PcscReader, SmartInsertionReader, SmartRemovalReader {
 
   private static final Logger logger = LoggerFactory.getLogger(PcscReaderImpl.class);
 
-  private static final String PROTOCOL_T0 = "T=0";
-  private static final String PROTOCOL_T1 = "T=1";
-  private static final String PROTOCOL_T_CL = "T=CL";
-  private static final String PROTOCOL_ANY = "*";
-
   private final CardTerminal terminal;
-
   private String parameterCardProtocol;
   private boolean cardExclusiveMode;
   private boolean cardReset;
@@ -78,18 +79,21 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
 
   /**
    * This constructor should only be called by PcscPlugin PCSC reader parameters are initialized
-   * with their default values as defined in setParameter. See {@link
-   * org.eclipse.keyple.core.seproxy.plugin.reader.AbstractLocalReader#setParameter(String, String)}
-   * for more details
+   * with their default values as defined in setParameter.
    *
    * @param pluginName the name of the plugin
    * @param terminal the PC/SC terminal
    */
   protected PcscReaderImpl(String pluginName, CardTerminal terminal) {
+
     super(pluginName, terminal.getName());
+
     this.terminal = terminal;
     this.card = null;
     this.channel = null;
+    this.parameterCardProtocol = IsoProtocol.ANY.getValue();
+    this.cardExclusiveMode = true;
+    this.cardReset = false;
 
     String os = System.getProperty("os.name").toLowerCase();
     usePingPresence = os.contains("mac");
@@ -99,16 +103,6 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     this.stateService = initStateService();
 
     logger.debug("[{}] constructor => using terminal ", terminal);
-
-    // Using null values to use the standard method for defining default values
-    try {
-      setParameter(TRANSMISSION_MODE_KEY, null);
-      setParameter(PROTOCOL_KEY, null);
-      setParameter(MODE_KEY, null);
-      setParameter(DISCONNECT_KEY, null);
-    } catch (KeypleException ex) {
-      // can not fail with null value
-    }
   }
 
   @Override
@@ -153,6 +147,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   /** {@inheritDoc} */
   @Override
   protected void closePhysicalChannel() {
+
     try {
       if (card != null) {
         logger.debug("[{}] closePhysicalChannel => closing the channel.", this.getName());
@@ -184,6 +179,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    */
   @Override
   public boolean waitForCardPresent() {
+
     logger.debug(
         "[{}] waitForCardPresent => loop with latency of {} ms.", this.getName(), INSERT_LATENCY);
 
@@ -237,6 +233,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    */
   @Override
   public boolean waitForCardAbsentNative() {
+
     logger.debug(
         "[{}] waitForCardAbsentNative => loop with latency of {} ms.",
         this.getName(),
@@ -287,6 +284,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   /** {@inheritDoc} */
   @Override
   protected byte[] transmitApdu(byte[] apduIn) {
+
     ResponseAPDU apduResponseData;
 
     if (channel != null) {
@@ -313,9 +311,11 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    * @param protocolFlag the protocol flag
    * @return true if the current SE matches the protocol flag
    * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @since 0.9
    */
   @Override
   protected boolean protocolFlagMatches(SeProtocol protocolFlag) {
+
     boolean result;
     // Test protocolFlag to check if ATR based protocol filtering is required
     if (protocolFlag != null) {
@@ -354,127 +354,71 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   }
 
   /**
-   * Set a parameter.
+   * {@inheritDoc}
    *
-   * <p>These are the parameters you can use with their associated values:
-   *
-   * <ul>
-   *   <li><strong>protocol</strong>:
-   *       <ul>
-   *         <li>Tx: Automatic negotiation (default)
-   *         <li>T0: T0 protocol
-   *         <li>T1: T1 protocol
-   *       </ul>
-   *   <li><strong>mode</strong>:
-   *       <ul>
-   *         <li>shared: Shared between apps and threads (default)
-   *         <li>exclusive: Exclusive to this app and the current thread
-   *       </ul>
-   *   <li><strong>disconnect</strong>:
-   *       <ul>
-   *         <li>reset: Reset the card
-   *         <li>unpower: Simply unpower it
-   *         <li>leave: Unsupported
-   *         <li>eject: Eject
-   *       </ul>
-   *   <li><strong>thread_wait_timeout</strong>: Number of milliseconds to wait
-   * </ul>
-   *
-   * @param name Parameter name
-   * @param value Parameter value
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed, when
-   *     disabling the exclusive mode as it's executed instantly
+   * @since 1.0
    */
   @Override
-  public void setParameter(String name, String value) {
+  public PcscReader setSharingMode(SharingMode sharingMode) {
 
-    logger.debug(
-        "[{}] setParameter => PCSC Reader: Set a parameter. NAME = {}, VALUE = {}",
-        this.getName(),
-        name,
-        value);
+    Assert.getInstance().notNull(sharingMode, "sharingMode");
 
-    if (name == null) {
-      throw new IllegalArgumentException("Parameter key shouldn't be null");
-    }
-    if (name.equals(TRANSMISSION_MODE_KEY)) {
-      if (value == null) {
-        transmissionMode = null;
-      } else if (value.equals(TRANSMISSION_MODE_VAL_CONTACTS)) {
-        transmissionMode = TransmissionMode.CONTACTS;
-      } else if (value.equals(TRANSMISSION_MODE_VAL_CONTACTLESS)) {
-        transmissionMode = TransmissionMode.CONTACTLESS;
-      } else {
-        throw new IllegalArgumentException("Bad tranmission mode " + name + " : " + value);
-      }
-    } else if (name.equals(PROTOCOL_KEY)) {
-      if (value == null || value.equals(PROTOCOL_VAL_TX)) {
-        parameterCardProtocol = PROTOCOL_ANY;
-      } else if (value.equals(PcscReaderConstants.PROTOCOL_VAL_T0)) {
-        parameterCardProtocol = PROTOCOL_T0;
-      } else if (value.equals(PcscReaderConstants.PROTOCOL_VAL_T1)) {
-        parameterCardProtocol = PROTOCOL_T1;
-      } else if (value.equals(PcscReaderConstants.PROTOCOL_VAL_T_CL)) {
-        parameterCardProtocol = PROTOCOL_T_CL;
-      } else {
-        throw new IllegalArgumentException("Bad protocol " + name + " : " + value);
-      }
-    } else if (name.equals(MODE_KEY)) {
-      if (value == null || value.equals(MODE_VAL_SHARED)) {
-        if (cardExclusiveMode && card != null) {
-          try {
-            card.endExclusive();
-          } catch (CardException e) {
-            throw new KeypleReaderIOException("Couldn't disable exclusive mode", e);
-          }
+    if (sharingMode == SharingMode.SHARED) {
+      // if an SE is present, change the mode immediately
+      if (card != null) {
+        try {
+          card.endExclusive();
+        } catch (CardException e) {
+          throw new KeypleReaderIOException("Couldn't disable exclusive mode", e);
         }
-        cardExclusiveMode = false;
-      } else if (value.equals(MODE_VAL_EXCLUSIVE)) {
-        cardExclusiveMode = true;
-      } else {
-        throw new IllegalArgumentException("Parameter value not supported " + name + " : " + value);
       }
-    } else if (name.equals(DISCONNECT_KEY)) {
-      if (value == null || value.equals(DISCONNECT_VAL_RESET)) {
-        cardReset = true;
-      } else if (value.equals(DISCONNECT_VAL_UNPOWER)) {
-        cardReset = false;
-      } else if (value.equals(DISCONNECT_VAL_EJECT) || value.equals(DISCONNECT_VAL_LEAVE)) {
-        throw new IllegalArgumentException(
-            "This disconnection parameter is not supported by this plugin" + name + " : " + value);
-      } else {
-        throw new IllegalArgumentException("Parameters not supported : " + name + " : " + value);
-      }
-    } else {
-      throw new IllegalArgumentException("This parameter is unknown !" + name + " : " + value);
+      cardExclusiveMode = false;
+    } else if (sharingMode == SharingMode.EXCLUSIVE) {
+      cardExclusiveMode = true;
     }
+    return this;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
-  public Map<String, String> getParameters() {
-    Map<String, String> parameters = new HashMap<String, String>();
+  public PcscReader setTransmissionMode(TransmissionMode transmissionMode) {
 
-    // Returning the protocol
-    String protocol = parameterCardProtocol;
-    if (protocol.equals(PROTOCOL_ANY)) {
-      protocol = PROTOCOL_VAL_TX;
-    } else if (protocol.equals(PROTOCOL_T0)) {
-      protocol = PcscReaderConstants.PROTOCOL_VAL_T0;
-    } else if (protocol.equals(PROTOCOL_T1)) {
-      protocol = PcscReaderConstants.PROTOCOL_VAL_T1;
-    } else if (protocol.equals(PROTOCOL_T_CL)) {
-      protocol = PcscReaderConstants.PROTOCOL_VAL_T_CL;
-    } else {
-      throw new IllegalStateException("Illegal protocol: " + protocol);
-    }
-    parameters.put(PROTOCOL_KEY, protocol);
-    parameters.put(
-        TRANSMISSION_MODE_KEY, transmissionMode != null ? transmissionMode.toString() : "UNSET");
+    Assert.getInstance().notNull(transmissionMode, "transmissionMode");
 
-    // The mode ?
-    parameters.put(MODE_KEY, cardExclusiveMode ? MODE_VAL_EXCLUSIVE : MODE_VAL_SHARED);
+    this.transmissionMode = TransmissionMode.CONTACTLESS;
+    return this;
+  }
 
-    return parameters;
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
+  @Override
+  public PcscReader setIsoProtocol(IsoProtocol isoProtocol) {
+
+    Assert.getInstance().notNull(isoProtocol, "isoProtocol");
+
+    parameterCardProtocol = isoProtocol.getValue();
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
+  @Override
+  public PcscReader setDisconnectionMode(DisconnectionMode disconnectionMode) {
+
+    Assert.getInstance().notNull(disconnectionMode, "disconnectionMode");
+
+    cardReset = disconnectionMode == DisconnectionMode.RESET;
+    return this;
   }
 
   @Override
@@ -508,8 +452,8 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    */
   @Override
   protected void openPhysicalChannel() {
-    // init of the physical SE channel: if not yet established, opening of a new physical
-    // channel
+
+    /* init of the physical SE channel: if not yet established, opening of a new physical channel */
     try {
       if (card == null) {
         this.card = this.terminal.connect(parameterCardProtocol);
@@ -540,9 +484,9 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    */
   @Override
   public TransmissionMode getTransmissionMode() {
+
     if (transmissionMode == null) {
-      // the transmission mode has not yet been determined or fixed explicitly, let's ask the plugin
-      // to determine it (only once)
+      /* the transmission mode has not yet been determined or fixed explicitly, let's ask the plugin to determine it (only once) */
       transmissionMode =
           ((PcscPluginImpl) SeProxyService.getInstance().getPlugin(getPluginName()))
               .findTransmissionMode(getName());
