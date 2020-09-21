@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AsyncScenario extends BaseScenario implements IntegrationScenario{
+public class AsyncScenario extends BaseScenario implements BaseScenario.IntegrationScenario {
 
   StubAsyncClientEndpoint clientEndpoint;
   private static final Logger logger = LoggerFactory.getLogger(AsyncScenario.class);

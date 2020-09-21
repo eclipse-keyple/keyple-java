@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SyncScenario extends BaseScenario implements IntegrationScenario {
+public class SyncScenario extends BaseScenario implements BaseScenario.IntegrationScenario {
 
   private static final Logger logger = LoggerFactory.getLogger(SyncScenario.class);
 
