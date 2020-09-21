@@ -172,7 +172,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
    */
 
   public synchronized void insertSe(StubSecureElement _se) {
-    logger.debug("Insert SE {}", _se);
+    logger.debug("Insert SE {}", _se.toString());
     /* clean channels status */
     if (isPhysicalChannelOpen()) {
       try {

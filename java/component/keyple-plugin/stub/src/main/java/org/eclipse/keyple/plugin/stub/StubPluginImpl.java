@@ -62,7 +62,7 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
   public void plugStubReader(
       String readerName, TransmissionMode transmissionMode, Boolean synchronous) {
 
-    logger.info("Plugging a new reader with readerName {}", readerName);
+    logger.debug("Plugging a new reader with readerName {}", readerName);
     /* add the native reader to the native readers list */
     Boolean exist = connectedStubNames.contains(readerName);
 
@@ -126,7 +126,7 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
         connectedStubNames.remove(readerName);
       }
       /* remove the native reader from the native readers list */
-      logger.info(
+      logger.debug(
           "Unplugged reader with name {}, connectedStubNames size {}",
           readerName,
           connectedStubNames.size());
@@ -135,7 +135,7 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
 
   @Override
   public void unplugStubReaders(Set<String> readerNames, Boolean synchronous) {
-    logger.info("Unplug {} stub readers", readerNames.size());
+    logger.debug("Unplug {} stub readers", readerNames.size());
     logger.debug("Unplug stub readers.. {}", readerNames);
     List<StubReaderImpl> readersToDelete = new ArrayList<StubReaderImpl>();
     for (String name : readerNames) {
