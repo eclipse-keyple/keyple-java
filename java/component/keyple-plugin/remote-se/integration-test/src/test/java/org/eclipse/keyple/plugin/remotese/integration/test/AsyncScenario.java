@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AsyncScenario extends BaseScenario implements BaseScenario.IntegrationScenario {
+public class AsyncScenario extends BaseScenario {
 
   StubAsyncClientEndpoint clientEndpoint;
   private static final Logger logger = LoggerFactory.getLogger(AsyncScenario.class);
@@ -75,7 +75,6 @@ public class AsyncScenario extends BaseScenario implements BaseScenario.Integrat
     /** Unplug the native reader */
     clearNativeReader();
   }
-
 
   /** {@inheritDoc} */
   @Override
@@ -137,5 +136,34 @@ public class AsyncScenario extends BaseScenario implements BaseScenario.Integrat
             .getService();
 
     multipleclients_remoteselection_remoteTransaction_successful();
+  }
+
+  /** {@inheritDoc} */
+  @Test
+  @Override
+  public void execute5_transaction_closeSession_fail() {
+    nativeService =
+            new NativeSeClientServiceFactory()
+                    .builder()
+                    .withAsyncNode(clientEndpoint)
+                    .withoutReaderObservation()
+                    .getService();
+
+    transaction_closeSession_fail();
+
+  }
+
+  /** {@inheritDoc} */
+  @Test
+  @Override
+  public void execute6_transaction_clientTimeout_fail() {
+    nativeService =
+            new NativeSeClientServiceFactory()
+                    .builder()
+                    .withAsyncNode(clientEndpoint)
+                    .withoutReaderObservation()
+                    .getService();
+
+    transaction_clientTimeout_fail();
   }
 }

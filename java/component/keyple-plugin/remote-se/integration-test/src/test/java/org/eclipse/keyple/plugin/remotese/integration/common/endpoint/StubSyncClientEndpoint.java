@@ -57,6 +57,7 @@ public class StubSyncClientEndpoint implements KeypleClientSync {
                       List<KeypleMessageDto> responses =
                           RemoteSeServerUtils.getSyncNode()
                               .onRequest(JacksonParser.fromJson(request));
+
                       List<String> responsesJson = new ArrayList<String>();
                       for (KeypleMessageDto dto : responses) {
                         dto.setClientNodeId(clientId);

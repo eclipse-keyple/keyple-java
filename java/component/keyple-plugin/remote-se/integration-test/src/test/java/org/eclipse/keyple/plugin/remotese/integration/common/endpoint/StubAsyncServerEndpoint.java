@@ -17,10 +17,13 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.util.Assert;
+import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remotese.core.KeypleServerAsync;
 import org.eclipse.keyple.plugin.remotese.integration.common.util.JacksonParser;
 import org.eclipse.keyple.plugin.remotese.virtualse.impl.RemoteSeServerUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Simulate a async server. Send and receive asynchronously serialized {@link KeypleMessageDto} with
@@ -28,13 +31,14 @@ import org.eclipse.keyple.plugin.remotese.virtualse.impl.RemoteSeServerUtils;
  */
 public class StubAsyncServerEndpoint implements KeypleServerAsync {
 
+private static final Logger logger = LoggerFactory.getLogger(StubAsyncServerEndpoint.class);
   final Map<String, StubAsyncClientEndpoint> clients; // sessionId_client
   final ExecutorService taskPool;
   final String serverNodeId;
 
   public StubAsyncServerEndpoint() {
     clients = new HashMap<String, StubAsyncClientEndpoint>();
-    taskPool = Executors.newCachedThreadPool();
+    taskPool = Executors.newCachedThreadPool(new NamedThreadFactory("server-pool"));
     serverNodeId = UUID.randomUUID().toString();
   }
 
@@ -42,6 +46,7 @@ public class StubAsyncServerEndpoint implements KeypleServerAsync {
   public void open(String sessionId, StubAsyncClientEndpoint endpoint) {
     clients.put(sessionId, endpoint);
   }
+
   /** Simulate a close socket operation */
   public void close(String sessionId) {
     clients.remove(sessionId);
@@ -75,7 +80,13 @@ public class StubAsyncServerEndpoint implements KeypleServerAsync {
         new Runnable() {
           @Override
           public void run() {
-            client.onMessage(JacksonParser.toJson(msg));
+              try{
+                  String data = JacksonParser.toJson(msg);
+                  logger.trace("Data sent to client session {} <- {}", msg.getSessionId(), data);
+                  client.onMessage(data);
+              }catch (Throwable t){
+                  RemoteSeServerUtils.getAsyncNode().onError(msg.getSessionId(), t);
+              }
           }
         });
   }

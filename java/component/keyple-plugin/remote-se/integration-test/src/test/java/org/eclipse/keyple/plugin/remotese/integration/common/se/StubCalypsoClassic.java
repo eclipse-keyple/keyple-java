@@ -18,7 +18,7 @@ import org.eclipse.keyple.plugin.stub.StubSecureElement;
  * This class is an example of a Stub Implementation of SecureElement. It works with the protocol
  * PROTOCOL_ISO14443_4 and simulates a Calypso PO with an Hoplink application
  */
-public final class StubCalypsoClassic extends StubSecureElement {
+public class StubCalypsoClassic extends StubSecureElement {
 
   private static final String SE_PROTOCOL = "PROTOCOL_ISO14443_4";
   private static final String ATR_HEX = "3B8880010000000000718100F9";
@@ -32,8 +32,6 @@ public final class StubCalypsoClassic extends StubSecureElement {
         "6F238409315449432E49434131A516BF0C13C708 0000000011223344 53070A3C23121410019000");
     /* Read Records - EnvironmentAndHolder (SFI=07)) */
     addHexCommand("00B2013C00", "24B92848080000131A50001200000000000000000000000000000000009000");
-    /* Read Records - EventLog (SFI=08, recnbr=1)) */
-    addHexCommand("00B2014400", "00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC9000");
     /* Open Secure Session V3.1 */
     addHexCommand(
         "008A0B4104C1C2C3C400",

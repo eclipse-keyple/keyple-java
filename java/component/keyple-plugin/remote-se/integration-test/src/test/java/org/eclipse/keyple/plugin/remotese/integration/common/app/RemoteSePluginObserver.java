@@ -11,7 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remotese.integration.common.app;
 
-import static org.eclipse.keyple.plugin.remotese.integration.test.BaseScenario.*;
 
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.SeSelection;
@@ -20,6 +19,7 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.plugin.remotese.integration.common.model.ConfigurationResult;
 import org.eclipse.keyple.plugin.remotese.integration.common.model.DeviceInput;
 import org.eclipse.keyple.plugin.remotese.integration.common.model.TransactionResult;
@@ -30,6 +30,9 @@ import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerPlugin;
 import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.eclipse.keyple.plugin.remotese.integration.test.BaseScenario.*;
+
 
 public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
 
@@ -64,16 +67,20 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
   }
 
   Object executeService(RemoteSeServerReader virtualReader) {
+
     logger.info("Executing ServiceId : {}", virtualReader.getServiceId());
 
     // "EXECUTE_CALYPSO_SESSION_FROM_LOCAL_SELECTION"
     if (SERVICE_ID_1.equals(virtualReader.getServiceId())) {
-      UserInput userInput = virtualReader.getUserInputData(UserInput.class);
+
       CalypsoPo calypsoPo = virtualReader.getInitialSeContent(CalypsoPo.class);
-
-      // execute a transacation
-      CalypsoUtilities.readEventLog(calypsoPo, virtualReader, logger);
-
+      UserInput userInput = virtualReader.getUserInputData(UserInput.class);
+      try {
+        // execute a transacation
+        CalypsoUtilities.readEventLog(calypsoPo, virtualReader, logger);
+      } catch (KeypleException e) {
+        return new TransactionResult().setSuccessful(false).setUserId(userInput.getUserId());
+      }
       return new TransactionResult().setUserId(userInput.getUserId()).setSuccessful(true);
     }
 
@@ -104,9 +111,12 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
       SelectionsResult selectionsResult = seSelection.processExplicitSelection(virtualReader);
       CalypsoPo calypsoPo = (CalypsoPo) selectionsResult.getActiveMatchingSe();
 
-      // execute a transacation
-      CalypsoUtilities.readEventLog(calypsoPo, virtualReader, logger);
-
+      try {
+        // execute a transacation
+        CalypsoUtilities.readEventLog(calypsoPo, virtualReader, logger);
+      } catch (KeypleException e) {
+        return new TransactionResult().setSuccessful(false).setUserId(userInput.getUserId());
+      }
       return new TransactionResult().setUserId(userInput.getUserId()).setSuccessful(true);
     }
 

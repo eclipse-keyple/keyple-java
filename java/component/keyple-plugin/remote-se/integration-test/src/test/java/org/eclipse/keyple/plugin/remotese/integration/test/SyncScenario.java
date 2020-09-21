@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SyncScenario extends BaseScenario implements BaseScenario.IntegrationScenario {
+public class SyncScenario extends BaseScenario {
 
   private static final Logger logger = LoggerFactory.getLogger(SyncScenario.class);
 
@@ -80,7 +80,6 @@ public class SyncScenario extends BaseScenario implements BaseScenario.Integrati
     localselection_remoteTransaction_successful();
   }
 
-
   /** {@inheritDoc} */
   @Override
   @Test
@@ -126,5 +125,33 @@ public class SyncScenario extends BaseScenario implements BaseScenario.Integrati
             .getService();
 
     multipleclients_remoteselection_remoteTransaction_successful();
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  @Test
+  public void execute5_transaction_closeSession_fail() {
+    nativeService =
+        new NativeSeClientServiceFactory()
+            .builder()
+            .withSyncNode(clientSyncEndpoint)
+            .withoutReaderObservation()
+            .getService();
+
+    transaction_closeSession_fail();
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  @Test
+  public void execute6_transaction_clientTimeout_fail() {
+    nativeService =
+            new NativeSeClientServiceFactory()
+                    .builder()
+                    .withSyncNode(clientSyncEndpoint)
+                    .withoutReaderObservation()
+                    .getService();
+
+    transaction_clientTimeout_fail();
   }
 }

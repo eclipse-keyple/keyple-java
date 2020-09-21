@@ -24,6 +24,8 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.eclipse.keyple.plugin.remotese.core.KeypleServerAsync;
 import org.eclipse.keyple.plugin.remotese.integration.common.app.ReaderEventFilter;
 import org.eclipse.keyple.plugin.remotese.integration.common.app.RemoteSePluginObserver;
@@ -43,52 +45,63 @@ import org.eclipse.keyple.plugin.stub.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BaseScenario {
-
-  public interface IntegrationScenario {
+public abstract class BaseScenario {
 
     /**
-     * A successful aid selection is executed locally on the terminal followed by a remoteService call
-     * to launch the remote Calypso session. The SE content is sent during this first called along
-     * with custom data. All this information is received by the server to select and execute the
-     * corresponding ticketing scenario.
+     * A successful aid selection is executed locally on the terminal followed by a remoteService
+     * call to launch the remote Calypso session. The SE content is sent during this first called
+     * along with custom data. All this information is received by the server to select and execute
+     * the corresponding ticketing scenario.
      *
      * <p>At the end of a successful calypso session, custom data is sent back to the client as a
      * final result.
      *
      * <p>This scenario can be executed on Sync node and Async node.
      */
-    void execute1_localselection_remoteTransaction_successful();
-
+    abstract void execute1_localselection_remoteTransaction_successful();
 
     /**
-     * The client application invokes the remoteService with enabling observability capabilities. As a
-     * result the server creates a Observable Virtual Reader that receives native reader events such
-     * as SE insertions and removals.
+     * The client application invokes the remoteService with enabling observability capabilities. As
+     * a result the server creates a Observable Virtual Reader that receives native reader events
+     * such as SE insertions and removals.
      *
      * <p>A SE Insertion is simulated locally followed by a SE removal 1 second later.
      *
-     * <p>The SE Insertion event is sent to the Virtual Reader whose observer starts a remote Calypso
-     * session. At the end of a successful calypso session, custom data is sent back to the client as
-     * a final result.
+     * <p>The SE Insertion event is sent to the Virtual Reader whose observer starts a remote
+     * Calypso session. At the end of a successful calypso session, custom data is sent back to the
+     * client as a final result.
      *
      * <p>The operation is executed twice with two different users.
      *
      * <p>After the second SE insertion, Virtual Reader observers are cleared to purge the server
      * virtual reader.
      */
-    void execute2_defaultSelection_onMatched_transaction_successful();
-
+    abstract void execute2_defaultSelection_onMatched_transaction_successful();
 
     /**
-     * Similar to scenario 1 without the local aid selection. In this case, the server application is
-     * responsible for ordering the aid selection.
+     * Similar to scenario 1 without the local aid selection. In this case, the server application
+     * is responsible for ordering the aid selection.
      */
-    void execute3_remoteselection_remoteTransaction_successful();
+    abstract void execute3_remoteselection_remoteTransaction_successful();
 
     /** Similar to scenario 3 with two concurrent clients. */
-    void execute4_multiclient_remoteselection_remoteTransaction_successful();
-  }
+    abstract void execute4_multiclient_remoteselection_remoteTransaction_successful();
+
+    /*
+     * error cases
+     */
+
+    /**
+     * Client application invokes remoteService which results in a remote calypso session. Native
+     * Reader throws exception in the closing operation.
+     */
+    abstract  void execute5_transaction_closeSession_fail();
+
+  /**
+   * Client application invokes remoteService which results in a remote calypso session. Native
+   * Reader throws exception in the closing operation.
+   */
+  abstract  void execute6_transaction_clientTimeout_fail();
 
   private static final Logger logger = LoggerFactory.getLogger(BaseScenario.class);
 
@@ -112,7 +125,8 @@ public class BaseScenario {
   UserInput user2;
   DeviceInput device1;
 
-  ExecutorService threadPool = Executors.newCachedThreadPool();
+  ExecutorService clientPool = Executors.newCachedThreadPool(new NamedThreadFactory("client-pool"));
+  ExecutorService serverPool = Executors.newCachedThreadPool(new NamedThreadFactory("remotese-pool"));
 
   /** Init native stub plugin that can work with {@link StubSecureElement} */
   void initNativeStubPlugin() {
@@ -137,7 +151,7 @@ public class BaseScenario {
           SeCommonProtocols.PROTOCOL_ISO14443_4,
           StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
     }
-// nativeReader should be reset
+    // nativeReader should be reset
     try {
       nativeReader2 = (StubReader) nativePlugin.getReader(NATIVE_READER_NAME_2);
       assertThat(nativeReader2).isNull();
@@ -146,12 +160,10 @@ public class BaseScenario {
       nativePlugin.plugStubReader(NATIVE_READER_NAME_2, true);
       nativeReader2 = (StubReader) nativePlugin.getReader(NATIVE_READER_NAME_2);
       nativeReader2.addSeProtocolSetting(
-              SeCommonProtocols.PROTOCOL_ISO14443_4,
-              StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+          SeCommonProtocols.PROTOCOL_ISO14443_4,
+          StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
     }
-
-
-    }
+  }
 
   void clearNativeReader() {
     nativePlugin.unplugStubReader(NATIVE_READER_NAME, true);
@@ -170,7 +182,8 @@ public class BaseScenario {
                       RemoteSeServerPluginFactory.builder()
                           .withSyncNode()
                           .withPluginObserver(new RemoteSePluginObserver())
-                          .usingDefaultEventNotificationPool()
+                          //.usingDefaultEventNotificationPool()
+                              .usingEventNotificationPool(serverPool)
                           .build());
     }
   }
@@ -188,7 +201,7 @@ public class BaseScenario {
                       RemoteSeServerPluginFactory.builder()
                           .withAsyncNode(serverEndpoint)
                           .withPluginObserver(new RemoteSePluginObserver())
-                          .usingDefaultEventNotificationPool()
+                              .usingEventNotificationPool(serverPool)
                           .build());
     }
   }
@@ -350,9 +363,9 @@ public class BaseScenario {
 
     // execute remoteservice task concurrently on both readers
     final Future<Boolean> task1 =
-        threadPool.submit(executeTransaction(nativeService, nativeReader, user1));
+        clientPool.submit(executeTransaction(nativeService, nativeReader, user1));
     final Future<Boolean> task2 =
-        threadPool.submit(executeTransaction(nativeService, nativeReader2, user2));
+        clientPool.submit(executeTransaction(nativeService, nativeReader2, user2));
 
     // wait for termination
     await()
@@ -364,5 +377,63 @@ public class BaseScenario {
                 return task1.isDone() && task2.isDone() && task1.get() && task2.get();
               }
             });
+  }
+
+  void transaction_closeSession_fail() {
+    StubCalypsoClassic failingSe = new StubCalypsoClassic();
+    // remove read record command to make the tx fail
+    failingSe.removeHexCommand("00B2014400");
+
+    nativeReader.insertSe(failingSe);
+
+    // execute remote service
+    TransactionResult output =
+        nativeService.executeRemoteService(
+            RemoteServiceParameters.builder(SERVICE_ID_3, nativeReader)
+                .withUserInputData(user1)
+                .build(),
+            TransactionResult.class);
+
+    // validate result is false
+    assertThat(output.isSuccessful()).isFalse();
+    assertThat(output.getUserId()).isEqualTo(user1.getUserId());
+  }
+
+  void transaction_clientTimeout_fail() {
+    StubSecureElement slowSe = new StubCalypsoClassic() {
+      @Override
+      public byte[] processApdu(byte[] apduIn) {
+        if("00B2014400".equals(ByteArrayUtil.toHex(apduIn))){
+          try {
+            logger.warn("Simulate a slow SE by sleeping 21seconds before sending response");
+            Thread.sleep(10000);
+            logger.warn("Send adpu");
+            return super.processApdu(apduIn);
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+          }
+        }
+        return super.processApdu(apduIn);
+      }
+    };
+
+    nativeReader.insertSe(slowSe);
+
+    try{
+      // execute remote service
+      TransactionResult output =
+              nativeService.executeRemoteService(
+                      RemoteServiceParameters.builder(SERVICE_ID_3, nativeReader)
+                              .withUserInputData(user1)
+                              .build(),
+                      TransactionResult.class);
+
+      // validate result is false
+      assertThat(output.isSuccessful()).isFalse();
+      assertThat(output.getUserId()).isEqualTo(user1.getUserId());
+    }catch (RuntimeException e){
+      assertThat(e).isNull();
+    }
+
   }
 }
