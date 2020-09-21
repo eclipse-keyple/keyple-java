@@ -130,14 +130,6 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
     return null;
   }
 
-  @Override
-  public Map<String, String> getParameters() {
-    return null;
-  }
-
-  @Override
-  public void setParameter(String key, String value) {}
-
   /*
    * @Override public boolean waitForCardPresent(long timeout) { // Obtain a number between [0 -
    * 49]. int n = new Random().nextInt(10); boolean isCardPresent = (n==2);

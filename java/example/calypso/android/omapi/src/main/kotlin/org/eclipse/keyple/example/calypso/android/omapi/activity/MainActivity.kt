@@ -14,7 +14,6 @@ package org.eclipse.keyple.example.calypso.android.omapi.activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import java.util.concurrent.ConcurrentMap
 import kotlinx.android.synthetic.main.activity_main.calypsoExampleButton
 import kotlinx.android.synthetic.main.activity_main.connectOmapiTV
 import kotlinx.android.synthetic.main.activity_main.coreExamplesButton

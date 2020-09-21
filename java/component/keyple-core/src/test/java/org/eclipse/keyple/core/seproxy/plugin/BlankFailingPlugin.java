@@ -11,7 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.plugin;
 
-import java.util.Map;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentMap;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -38,12 +37,4 @@ public class BlankFailingPlugin extends AbstractThreadedObservablePlugin {
   protected ConcurrentMap<String, SeReader> initNativeReaders() {
     throw new KeypleReaderIOException("");
   }
-
-  @Override
-  public Map<String, String> getParameters() {
-    return null;
-  }
-
-  @Override
-  public void setParameter(String key, String value) {}
 }

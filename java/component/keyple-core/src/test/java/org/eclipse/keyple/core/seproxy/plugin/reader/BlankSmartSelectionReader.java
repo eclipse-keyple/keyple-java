@@ -11,7 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.plugin.reader;
 
-import java.util.Map;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
@@ -66,12 +65,4 @@ public class BlankSmartSelectionReader extends AbstractLocalReader implements Sm
   public TransmissionMode getTransmissionMode() {
     return null;
   }
-
-  @Override
-  public Map<String, String> getParameters() {
-    return null;
-  }
-
-  @Override
-  public void setParameter(String key, String value) {}
 }

@@ -55,12 +55,4 @@ public class BlankAbstractReader extends AbstractReader {
   public TransmissionMode getTransmissionMode() {
     return null;
   }
-
-  @Override
-  public Map<String, String> getParameters() {
-    return null;
-  }
-
-  @Override
-  public void setParameter(String key, String value) {}
 }

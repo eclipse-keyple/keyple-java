@@ -23,11 +23,12 @@ import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
-import org.eclipse.keyple.plugin.pcsc.PcscReaderConstants;
+import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,10 +68,9 @@ public class ExplicitSelectionAid_Pcsc {
 
     // Get and configure the PO reader
     SeReader poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
-    poReader.setParameter(
-        PcscReaderConstants.TRANSMISSION_MODE_KEY,
-        PcscReaderConstants.TRANSMISSION_MODE_VAL_CONTACTLESS);
-    poReader.setParameter(PcscReaderConstants.PROTOCOL_KEY, PcscReaderConstants.PROTOCOL_VAL_T1);
+    ((PcscReader) poReader)
+        .setTransmissionMode(TransmissionMode.CONTACTLESS)
+        .setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     logger.info(
         "=============== UseCase Calypso #1: AID based explicit selection ==================");
