@@ -38,7 +38,6 @@ import org.eclipse.keyple.example.common.calypso.stub.StubCalypsoClassic;
 import org.eclipse.keyple.example.common.calypso.stub.StubSamCalypsoClassic;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPluginFactory;
-import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
 import org.slf4j.Logger;
@@ -98,10 +97,6 @@ public class PoAuthentication_Stub {
       throw new IllegalStateException("Bad PO or SAM reader setup");
     }
 
-    samReader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO7816_3,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO7816_3));
-
     // Create 'virtual' Calypso PO
     StubSecureElement calypsoStubSe = new StubCalypsoClassic();
 
@@ -143,10 +138,6 @@ public class PoAuthentication_Stub {
     logger.info("=============== UseCase Calypso #4: Po Authentication ==================");
     logger.info("= PO Reader  NAME = {}", poReader.getName());
     logger.info("= SAM Reader  NAME = {}", samReader.getName());
-
-    poReader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
     // Check if a PO is present in the reader
     if (poReader.isSePresent()) {

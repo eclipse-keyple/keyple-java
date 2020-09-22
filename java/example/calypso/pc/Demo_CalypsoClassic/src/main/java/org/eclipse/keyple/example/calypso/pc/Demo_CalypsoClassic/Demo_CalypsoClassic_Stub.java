@@ -23,7 +23,6 @@ import org.eclipse.keyple.example.common.calypso.stub.StubCalypsoClassic;
 import org.eclipse.keyple.example.common.calypso.stub.StubSamCalypsoClassic;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPluginFactory;
-import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
 import org.slf4j.Logger;
@@ -78,15 +77,8 @@ public class Demo_CalypsoClassic_Stub {
     logger.info("PO Reader  NAME = {}", poReader.getName());
     logger.info("SAM Reader  NAME = {}", samReader.getName());
 
-    /* Set the PO reader protocol flag */
-    poReader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
-    poReader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_B_PRIME,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_B_PRIME));
-
-    samReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO7816_3, ".*");
+    /* Activate additional protocol */
+    poReader.activateProtocol(SeCommonProtocols.PROTOCOL_B_PRIME);
 
     /* Assign readers to the Hoplink transaction engine */
     transactionEngine.setReaders(poReader, samReader);

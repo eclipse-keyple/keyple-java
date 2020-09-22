@@ -37,7 +37,6 @@ import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.common.calypso.stub.StubCalypsoClassic;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPluginFactory;
-import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
 import org.slf4j.Logger;
@@ -95,10 +94,6 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
     if (poReader == null) {
       throw new IllegalStateException("Bad PO reader setup");
     }
-
-    poReader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
     logger.info(
         "=============== UseCase Calypso #2: AID based default selection ===================");

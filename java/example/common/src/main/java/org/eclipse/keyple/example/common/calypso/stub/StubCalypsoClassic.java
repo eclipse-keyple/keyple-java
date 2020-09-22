@@ -71,7 +71,7 @@ public final class StubCalypsoClassic extends StubSecureElement {
   }
 
   @Override
-  public String getSeProcotol() {
+  public String getSeProtocol() {
     return SE_PROTOCOL;
   }
 }

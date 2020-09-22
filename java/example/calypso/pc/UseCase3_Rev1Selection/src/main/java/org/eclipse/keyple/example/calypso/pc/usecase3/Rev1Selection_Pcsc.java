@@ -29,7 +29,6 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
-import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,10 +77,8 @@ public class Rev1Selection_Pcsc {
         .setTransmissionMode(TransmissionMode.CONTACTLESS)
         .setIsoProtocol(PcscReader.IsoProtocol.T1);
 
-    // Add the B Prime protocol filter
-    poReader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_B_PRIME,
-        PcscProtocolSetting.getAllSettings().get(SeCommonProtocols.PROTOCOL_B_PRIME));
+    /* Activate additional protocol */
+    poReader.activateProtocol(SeCommonProtocols.PROTOCOL_B_PRIME);
 
     logger.info(
         "=============== UseCase Calypso #1: ATR based explicit selection (PO Rev1) ===========");
