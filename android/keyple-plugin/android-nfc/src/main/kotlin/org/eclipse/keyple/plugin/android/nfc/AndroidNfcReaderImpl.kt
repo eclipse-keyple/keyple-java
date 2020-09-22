@@ -58,6 +58,8 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
 
     private val parameters = HashMap<String, String?>()
 
+    private val protocolsMap = HashMap<SeProtocol, String?>()
+
     private val executorService: ExecutorService
 
     private const val NO_TAG = "no-tag"
@@ -289,8 +291,54 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
         }
     }
 
-    public override fun protocolFlagMatches(protocolFlag: SeProtocol?): Boolean {
-        return protocolFlag == null || protocolsMap.containsKey(protocolFlag) && protocolsMap[protocolFlag] == tagProxy?.tech
+//    public override fun protocolFlagMatches(protocolFlag: SeProtocol?): Boolean {
+//        return protocolFlag == null || protocolsMap.containsKey(protocolFlag) && protocolsMap[protocolFlag] == tagProxy?.tech
+//    }
+
+    /**
+     * Activates the provided SE protocol.
+     *
+     *
+     *  * Ask the plugin to take this protocol into account if an SE using this protocol is
+     * identified during the selection phase.
+     *  * Activates the detection of SEs using this protocol (if the plugin allows it).
+     *
+     *
+     * @param seProtocol The protocol to activate (must be not null).
+     * @throws KeypleReaderProtocolNotSupportedException if the protocol is not supported.
+     */
+    override fun activateProtocol(seProtocol: SeProtocol?) {
+        TODO("Not yet implemented")
+    }
+
+    /**
+     * Deactivates the provided SE protocol.
+     *
+     *
+     *  * Ask the plugin to ignore this protocol if an SE using this protocol is identified during
+     * the selection phase.
+     *  * Inhibits the detection of SEs using this protocol (if the plugin allows it).
+     *
+     *
+     * @param seProtocol The protocol to deactivate (must be not null).
+     */
+    override fun deactivateProtocol(seProtocol: SeProtocol?) {
+        TODO("Not yet implemented")
+    }
+
+    /**
+     * Gets the communication protocol used by the current SE.
+     *
+     *
+     * This method must be implemented by the plugin which is able to determine the protocol of the
+     * SE from the technical data it has available.
+     *
+     * @return A not null reference to a [SeProtocol].
+     * @throws KeypleReaderProtocolNotFoundException if it is not possible to determine the protocol.
+     * @since 1.0
+     */
+    override fun getCurrentProtocol(): SeProtocol {
+        TODO("Not yet implemented")
     }
 
     /**

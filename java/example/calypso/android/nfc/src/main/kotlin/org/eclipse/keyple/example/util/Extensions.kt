@@ -26,8 +26,9 @@ fun AndroidNfcReader.configFlags(presenceCheckDelay: Int? = null, noPlateformSou
     skipNdefCheck?.let { this.setParameter("FLAG_READER_SKIP_NDEF_CHECK", "$skipNdefCheck") }
 }
 
+// TODO check if this method is still needed
 fun AndroidNfcReader.configProtocol(seCommonProtocols: SeCommonProtocols) {
-    this.addSeProtocolSetting(seCommonProtocols, AndroidNfcProtocolSettings.getSetting(seCommonProtocols))
+    this.activateProtocol(seCommonProtocols)
 }
 
 fun Context.getColorResource(id: Int): Int {
