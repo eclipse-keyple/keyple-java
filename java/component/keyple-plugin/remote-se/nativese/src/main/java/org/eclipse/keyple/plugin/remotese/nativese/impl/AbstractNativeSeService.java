@@ -252,8 +252,8 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
               .fromJson(jsonObject.get("defaultSelectionsRequest"), DefaultSelectionsRequest.class);
 
       ObservableReader.NotificationMode notificationMode =
-          ObservableReader.NotificationMode.get(
-              jsonObject.getAsJsonPrimitive("notificationMode").getAsString());
+          ObservableReader.NotificationMode.valueOf(
+              jsonObject.get("notificationMode").getAsString());
 
       // Polling Mode can be set or not.
       boolean hasPollingMode = false;

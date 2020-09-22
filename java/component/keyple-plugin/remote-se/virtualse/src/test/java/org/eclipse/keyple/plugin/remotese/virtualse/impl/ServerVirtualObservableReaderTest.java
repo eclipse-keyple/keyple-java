@@ -14,7 +14,6 @@ package org.eclipse.keyple.plugin.remotese.virtualse.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
@@ -273,58 +272,6 @@ public class ServerVirtualObservableReaderTest extends RemoteSeServerBaseTest {
 
   @SuppressWarnings("ResultOfMethodCallIgnored")
   @Test
-  public void getParameters_shouldDelegateMethodToVirtualReader() {
-
-    // init response
-    Map<String, String> parameters = new HashMap<String, String>();
-    doReturn(parameters).when(virtualObservableReaderMocked).getParameters();
-
-    // execute
-    Map<String, String> result = reader.getParameters();
-
-    // verify
-    verify(virtualObservableReaderMocked).getParameters();
-    verifyNoMoreInteractions(virtualObservableReaderMocked);
-    assertThat(result).isSameAs(parameters);
-  }
-
-  @Test
-  public void setParameter_shouldDelegateMethodToVirtualReader() {
-
-    // init request
-    String key = "key1";
-    String value = "value1";
-
-    // init response
-    doNothing().when(virtualObservableReaderMocked).setParameter(key, value);
-
-    // execute
-    reader.setParameter(key, value);
-
-    // verify
-    verify(virtualObservableReaderMocked).setParameter(key, value);
-    verifyNoMoreInteractions(virtualObservableReaderMocked);
-  }
-
-  @Test
-  public void setParameters_shouldDelegateMethodToVirtualReader() {
-
-    // init request
-    Map<String, String> parameters = new HashMap<String, String>();
-
-    // init response
-    doNothing().when(virtualObservableReaderMocked).setParameters(parameters);
-
-    // execute
-    reader.setParameters(parameters);
-
-    // verify
-    verify(virtualObservableReaderMocked).setParameters(parameters);
-    verifyNoMoreInteractions(virtualObservableReaderMocked);
-  }
-
-  @SuppressWarnings("ResultOfMethodCallIgnored")
-  @Test
   public void getName_shouldDelegateMethodToVirtualReader() {
 
     // init response
@@ -572,7 +519,6 @@ public class ServerVirtualObservableReaderTest extends RemoteSeServerBaseTest {
     assertThat(result).isEqualTo(nbObservers);
   }
 
-  @SuppressWarnings("ResultOfMethodCallIgnored")
   @Test(expected = KeypleReaderIOException.class)
   public void countObservers_whenError_shouldThrowOriginalException() {
 

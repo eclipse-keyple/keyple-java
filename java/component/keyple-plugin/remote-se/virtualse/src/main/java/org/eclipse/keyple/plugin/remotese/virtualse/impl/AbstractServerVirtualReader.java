@@ -167,36 +167,6 @@ abstract class AbstractServerVirtualReader implements RemoteSeServerReader, Prox
   }
 
   /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
-  @Override
-  public Map<String, String> getParameters() {
-    return reader.getParameters();
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
-  @Override
-  public void setParameter(String key, String value) {
-    reader.setParameter(key, value);
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
-  @Override
-  public void setParameters(Map<String, String> parameters) {
-    reader.setParameters(parameters);
-  }
-
-  /**
    * (package-private)
    *
    * @return non null instance of a sessionId

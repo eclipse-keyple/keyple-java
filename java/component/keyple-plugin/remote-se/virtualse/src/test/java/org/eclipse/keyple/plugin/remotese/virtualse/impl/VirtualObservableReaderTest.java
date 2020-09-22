@@ -55,8 +55,7 @@ public class VirtualObservableReaderTest {
   static final ReaderEvent event =
       new ReaderEvent(pluginName, nativeReaderName, ReaderEvent.EventType.SE_INSERTED, null);;
   static final KeypleMessageDto response =
-      new KeypleMessageDto()
-          .setAction(KeypleMessageDto.Action.SET_DEFAULT_SELECTION_RESPONSE.name());;
+      new KeypleMessageDto().setAction(KeypleMessageDto.Action.SET_DEFAULT_SELECTION.name());;
 
   static final ExecutorService notificationPool = Executors.newCachedThreadPool();;
 

@@ -12,7 +12,6 @@
 package org.eclipse.keyple.plugin.remotese.virtualse.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -329,19 +328,6 @@ public class VirtualReaderTest {
     mockError();
     // execute
     reader.getTransmissionMode();
-  }
-
-  @Test
-  public void getParameters_shouldReturnANotNullMap() {
-    Map<String, String> result = reader.getParameters();
-    assertThat(result).isNotNull();
-  }
-
-  @Test
-  public void setParameter_shouldPutAParameter() {
-    reader.setParameter("key1", "value1");
-    Map<String, String> result = reader.getParameters();
-    assertThat(result).containsExactly(entry("key1", "value1"));
   }
 
   @Test

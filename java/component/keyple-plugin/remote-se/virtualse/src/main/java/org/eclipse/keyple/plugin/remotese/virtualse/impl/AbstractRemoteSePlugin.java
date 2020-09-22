@@ -32,7 +32,6 @@ abstract class AbstractRemoteSePlugin extends AbstractKeypleMessageHandler imple
 
   private final String name;
   protected final Map<String, SeReader> readers;
-  protected Map<String, String> parameters;
 
   /**
    * (package-private)<br>
@@ -83,38 +82,6 @@ abstract class AbstractRemoteSePlugin extends AbstractKeypleMessageHandler imple
   @Override
   public final Set<String> getReaderNames() {
     return readers.keySet();
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
-  @Override
-  public final void setParameters(Map<String, String> parameters) {
-    for (Map.Entry<String, String> en : parameters.entrySet()) {
-      setParameter(en.getKey(), en.getValue());
-    }
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
-  @Override
-  public Map<String, String> getParameters() {
-    return parameters;
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
-  @Override
-  public void setParameter(String key, String value) {
-    parameters.put(key, value);
   }
 
   /**

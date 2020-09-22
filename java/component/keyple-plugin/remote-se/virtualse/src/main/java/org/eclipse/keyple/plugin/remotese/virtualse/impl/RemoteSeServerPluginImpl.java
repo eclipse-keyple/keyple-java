@@ -62,7 +62,6 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
   RemoteSeServerPluginImpl(String name, ExecutorService eventNotificationPool) {
     super(name);
     this.eventNotificationPool = eventNotificationPool;
-    this.parameters = new HashMap<String, String>();
     this.observers = new ArrayList<PluginObserver>();
   }
 

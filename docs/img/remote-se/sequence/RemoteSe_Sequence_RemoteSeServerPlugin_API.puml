@@ -110,7 +110,7 @@ end loop
 server -> server : prepareUserOutputData ()
 server -> remoteSePlugin : terminateService (virtualReaderName, <color:purple>**userOutputData**</color>)
 activate remoteSePlugin #LightBlue
-remoteSePlugin -x virtualReader : remove virtual reader
+remoteSePlugin -x virtualReader : remove virtual reader if needed
 
 remoteSePlugin --> nativeSeService
 deactivate remoteSePlugin

@@ -1,8 +1,8 @@
 # Keyple Remote SE Plugin (Core library)
 
-The **Keyple Remote SE Plugin** allows a terminal to communicate with a "native" SE reader plugged into an another terminal.
+The **Keyple Remote SE Plugin** allows a terminal to communicate with a "native" SE reader plugged into another terminal.
 
-In a Calypso context, it is useful when your SAM reader and/or your PO reader are not connected to the same terminal. With the **Keyple Remote SE Plugin**, you can open Calypso transaction within a distributed architecture.
+In a Calypso context, it is useful when your SAM reader and/or your PO reader aren't connected to the same terminal. With the **Keyple Remote SE Plugin**, you can open Calypso transaction within a distributed architecture.
 
 ## Table of Contents
 
@@ -44,7 +44,7 @@ The **Core** library contains all the common components used by **Native SE** an
 2. Find your use case with the help of chapter [Use cases](#use-cases). This will help you determine exactly which interfaces to use.
 3. Import [Native SE](../nativese/README.md) and/or [Virtual SE](../virtualse/README.md) libraries depending on your use case.
 4. Using chapter [Network configuration](#network-configuration), you must implement the transport layer using the sequence diagram adapted to your network configuration.
-5. Implement your ticketing services using the interfaces detailed in chapter [Public API](#public-api).
+5. Implement your ticketing services using the interfaces detailed in chapter [Public API](#annexes).
 
 ## Use cases
 
@@ -78,19 +78,23 @@ Usually distributed architecture will rely on a TCP/IP network to communicate. I
 
 ### Full-Duplex Asynchronous communication
 
-If you want to implement a Full-Duplex communication protocol, such as Web Sockets for example, then you should use the `KeypleAsyncNode` node and should provide two implementations of the `KeypleAsyncMessageSender` interface, one client side, and another one server side.
+If you want to implement a Full-Duplex communication protocol, such as Web Sockets for example, then you should use:
+* on **client**, the `KeypleClientAsyncNode` node and provide an implementation of the `KeypleClientAsync` endpoint interface;
+* on **server**, the `KeypleServerAsyncNode` node and provide an implementation of the `KeypleServerAsync` endpoint interface;
 
 ![RemoteSe_Sequence_AsyncNode_API](../../../../../docs/img/remote-se/sequence/RemoteSe_Sequence_AsyncNode_API.svg)
 
 ### Client-Server Synchronous communication
 
-If you want to implement a Client-Server communication protocol, such as standard HTTP for example, then you should use client side the `KeypleClientSyncNode` node by providing an implementation of the `KeypleSyncMessageSender` interface, and server side the `KeypleServerSyncNode` node.
+If you want to implement a Client-Server communication protocol, such as standard HTTP for example, then you should use:
+* on **client**, the `KeypleClientSyncNode` node and provide an implementation of the `KeypleClientSync` endpoint interface;
+* on **server**, the `KeypleServerSyncNode` node;
 
 ![RemoteSe_Sequence_SyncNode_API](../../../../../docs/img/remote-se/sequence/RemoteSe_Sequence_SyncNode_API.svg)
 
 ## Exchanged data
 
-The POJO object `KeypleMessageDto` contains data exchanged between **Native SE** and **Virtual SE** components. It is built and processed by the plugin and you don't need to modified it.
+The POJO object `KeypleMessageDto` contains data exchanged between **Native SE** and **Virtual SE** components. It is built and processed by the plugin, and you don't need to modified it.
 
 ## Annexes
 

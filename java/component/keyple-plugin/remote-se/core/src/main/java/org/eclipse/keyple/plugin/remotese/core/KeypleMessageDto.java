@@ -39,65 +39,23 @@ public class KeypleMessageDto {
    * @since 1.0
    */
   public enum Action {
-    EXECUTE_REMOTE_SERVICE, //
-    CHECK_PLUGIN_EVENT, //
-    PLUGIN_EVENT, //
-    CHECK_READER_EVENT, //
-    READER_EVENT, //
-    TRANSMIT, //
-    TRANSMIT_RESPONSE, //
-    TRANSMIT_SET, //
-    TRANSMIT_SET_RESPONSE, //
-    SET_DEFAULT_SELECTION, //
-    SET_DEFAULT_SELECTION_RESPONSE, //
-    IS_SE_PRESENT, //
-    ADD_SE_PROTOCOL_SETTING, //
-    SET_SE_PROTOCOL_SETTING, //
-    GET_TRANSMISSION_MODE, //
-    TERMINATE_SERVICE, //
-    STOP_SE_DETECTION, //
-    START_SE_DETECTION, //
-    FINALIZE_SE_PROCESSING, //
-    ERROR;
-  }
-
-  /**
-   * Error enum (for internal use only).
-   *
-   * @since 1.0
-   */
-  public enum ErrorCode {
-    TIMEOUT_CLIENT_TASK(1), //
-    TIMEOUT_SERVER_TASK(2), //
-
-    // Core
-
-    // Plugin
-
-    // Reader
-    KeypleReaderIOException(300), //
-
-    UNKNOWN(99);
-
-    private int code;
-
-    ErrorCode(int code) {
-      this.code = code;
-    }
-
-    public String getCode() {
-      return String.valueOf(code);
-    }
-
-    public ErrorCode valueOfCode(String code) {
-      int val = Integer.parseInt(code);
-      for (ErrorCode ec : values()) {
-        if (ec.code == val) {
-          return ec;
-        }
-      }
-      return null;
-    }
+    EXECUTE_REMOTE_SERVICE,
+    CHECK_PLUGIN_EVENT,
+    PLUGIN_EVENT,
+    CHECK_READER_EVENT,
+    READER_EVENT,
+    TRANSMIT,
+    TRANSMIT_SET,
+    SET_DEFAULT_SELECTION,
+    IS_SE_PRESENT,
+    ADD_SE_PROTOCOL_SETTING,
+    SET_SE_PROTOCOL_SETTING,
+    GET_TRANSMISSION_MODE,
+    TERMINATE_SERVICE,
+    STOP_SE_DETECTION,
+    START_SE_DETECTION,
+    FINALIZE_SE_PROCESSING,
+    ERROR
   }
 
   /**

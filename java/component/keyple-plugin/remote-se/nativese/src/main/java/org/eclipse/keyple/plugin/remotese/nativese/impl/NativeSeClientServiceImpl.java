@@ -190,7 +190,7 @@ final class NativeSeClientServiceImpl extends AbstractNativeSeService
       // do not throw event
       logger.info(
           "The propagation of the reader event ["
-              + event.getEventType().getName()
+              + event.getEventType().name()
               + "] is cancelled by the user's event filter");
       return;
     }

@@ -41,8 +41,6 @@ abstract class AbstractVirtualReader extends AbstractReader {
   protected final AbstractKeypleNode node;
   protected final String nativeReaderName;
 
-  private final Map<String, String> parameters;
-
   private String sessionId;
 
   /**
@@ -58,7 +56,6 @@ abstract class AbstractVirtualReader extends AbstractReader {
     this.nativeReaderName = nativeReaderName;
     this.node = node;
     this.sessionId = null;
-    this.parameters = new HashMap<String, String>();
   }
 
   /**
@@ -174,26 +171,6 @@ abstract class AbstractVirtualReader extends AbstractReader {
 
     // Extract the response
     return KeypleJsonParser.getParser().fromJson(response.getBody(), TransmissionMode.class);
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
-  @Override
-  public Map<String, String> getParameters() {
-    return parameters;
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
-  @Override
-  public void setParameter(String key, String value) {
-    parameters.put(key, value);
   }
 
   /**
