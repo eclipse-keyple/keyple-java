@@ -368,7 +368,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
   }
 
   private void initSamReader(SeReader samReader, ReaderObserver readerObserver) {
-    samReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO7816_3, ".*");
+    samReader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3);
 
     /*
      * Specific to PCSC reader (no effect on Stub)
