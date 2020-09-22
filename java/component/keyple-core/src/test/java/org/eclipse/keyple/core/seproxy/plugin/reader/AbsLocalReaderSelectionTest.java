@@ -21,7 +21,6 @@ import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Before;
@@ -237,30 +236,6 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     r.openLogicalChannelAndSelect(seSelector);
     verify(r, times(0)).openLogicalChannel(seSelector);
-  }
-
-  /*
-   * add Se Protocol Setting
-   */
-
-  @Test
-  public void add_SeProtocolSetting() throws Exception {
-    AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
-    String protocolRule = "any";
-    r.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4, protocolRule);
-    Assert.assertEquals(
-        protocolRule, r.getProtocolsMap().get(SeCommonProtocols.PROTOCOL_ISO14443_4));
-  }
-
-  @Test
-  public void set_SeProtocolSetting() throws Exception {
-    AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
-    String protocolRule = "any";
-    Map protocols = new HashMap();
-    protocols.put(SeCommonProtocols.PROTOCOL_ISO14443_4, protocolRule);
-    r.setSeProtocolSetting(protocols);
-    Assert.assertEquals(
-        protocolRule, r.getProtocolsMap().get(SeCommonProtocols.PROTOCOL_ISO14443_4));
   }
 
   /*

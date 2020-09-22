@@ -44,8 +44,8 @@ public class BlankSmartSelectionReader extends AbstractLocalReader implements Sm
   }
 
   @Override
-  public boolean protocolFlagMatches(SeProtocol protocolFlag) {
-    return false;
+  protected SeProtocol getCurrentProtocol() {
+    return null;
   }
 
   @Override
@@ -60,6 +60,12 @@ public class BlankSmartSelectionReader extends AbstractLocalReader implements Sm
   public ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector) {
     return null;
   }
+
+  @Override
+  public void activateProtocol(SeProtocol seProtocol) {}
+
+  @Override
+  public void deactivateProtocol(SeProtocol seProtocol) {}
 
   @Override
   public TransmissionMode getTransmissionMode() {

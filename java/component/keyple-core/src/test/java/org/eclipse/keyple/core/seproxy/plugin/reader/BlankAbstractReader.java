@@ -12,7 +12,6 @@
 package org.eclipse.keyple.core.seproxy.plugin.reader;
 
 import java.util.List;
-import java.util.Map;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
@@ -46,10 +45,10 @@ public class BlankAbstractReader extends AbstractReader {
   }
 
   @Override
-  public void addSeProtocolSetting(SeProtocol seProtocol, String protocolRule) {}
+  public void activateProtocol(SeProtocol seProtocol) {}
 
   @Override
-  public void setSeProtocolSetting(Map<SeProtocol, String> protocolSetting) {}
+  public void deactivateProtocol(SeProtocol seProtocol) {}
 
   @Override
   public TransmissionMode getTransmissionMode() {

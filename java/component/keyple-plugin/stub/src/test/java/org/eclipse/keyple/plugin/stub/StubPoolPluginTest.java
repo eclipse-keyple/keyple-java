@@ -13,6 +13,7 @@ package org.eclipse.keyple.plugin.stub;
 
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.*;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -136,8 +137,8 @@ public class StubPoolPluginTest extends BaseStubTest {
         }
 
         @Override
-        public String getSeProcotol() {
-          return null;
+        public String getSeProtocol() {
+          return StubProtocolSetting.getSettings().get(SeCommonProtocols.PROTOCOL_ISO14443_4);
         }
       };
 }

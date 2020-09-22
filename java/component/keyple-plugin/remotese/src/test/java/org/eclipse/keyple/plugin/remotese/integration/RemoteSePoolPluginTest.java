@@ -13,11 +13,13 @@ package org.eclipse.keyple.plugin.remotese.integration;
 
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.RemoteSePoolPlugin;
 import org.eclipse.keyple.plugin.remotese.transport.impl.java.LocalTransportFactory;
 import org.eclipse.keyple.plugin.stub.StubPoolPlugin;
+import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
 import org.junit.After;
 import org.junit.Assert;
@@ -140,8 +142,8 @@ public class RemoteSePoolPluginTest {
         }
 
         @Override
-        public String getSeProcotol() {
-          return null;
+        public String getSeProtocol() {
+          return StubProtocolSetting.getSettings().get(SeCommonProtocols.PROTOCOL_ISO14443_4);
         }
       };
 }

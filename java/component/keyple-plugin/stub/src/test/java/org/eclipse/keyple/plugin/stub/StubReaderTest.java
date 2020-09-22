@@ -404,9 +404,7 @@ public class StubReaderTest extends BaseStubTest {
     final String poAid = "A000000291A000000191";
 
     // add Protocol flag
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4);
 
     // add observer
     readerObs =
@@ -514,11 +512,6 @@ public class StubReaderTest extends BaseStubTest {
           }
         };
 
-    // add Protocol flag
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
-
     // add observer
     reader.addObserver(readerObs);
 
@@ -560,11 +553,6 @@ public class StubReaderTest extends BaseStubTest {
 
     // CountDown lock
     final CountDownLatch lock = new CountDownLatch(1);
-
-    // add Protocol flag
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
     // add observer
     readerObs =
@@ -625,9 +613,7 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_B_PRIME,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_B_PRIME));
+    reader.activateProtocol(SeCommonProtocols.PROTOCOL_B_PRIME);
 
     // CountDown lock
     final CountDownLatch lock = new CountDownLatch(1);
@@ -694,11 +680,6 @@ public class StubReaderTest extends BaseStubTest {
     final CountDownLatch lock = new CountDownLatch(1);
     final String poAid = "A000000291A000000191";
 
-    // add Protocol flag
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
-
     // add observer
     readerObs =
         new ObservableReader.ReaderObserver() {
@@ -760,11 +741,6 @@ public class StubReaderTest extends BaseStubTest {
     // init SE
     reader.insertSe(hoplinkSE());
 
-    // add Protocol flag
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
-
     // send the selection request
     genericSelectSe(reader);
 
@@ -789,11 +765,6 @@ public class StubReaderTest extends BaseStubTest {
     // init SE
     reader.insertSe(noApduResponseSE());
 
-    // add Protocol flag
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
-
     // send the selection request
     genericSelectSe(reader);
 
@@ -814,11 +785,6 @@ public class StubReaderTest extends BaseStubTest {
 
     // init SE
     reader.insertSe(partialSE());
-
-    // add Protocol flag
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
     // send the selection request
     genericSelectSe(reader);
@@ -847,11 +813,6 @@ public class StubReaderTest extends BaseStubTest {
 
     // init SE
     reader.insertSe(partialSE());
-
-    // add Protocol flag
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
     // send the selection request
     genericSelectSe(reader);
@@ -883,11 +844,6 @@ public class StubReaderTest extends BaseStubTest {
     // init SE
     reader.insertSe(partialSE());
 
-    // add Protocol flag
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
-
     // send the selection request
     genericSelectSe(reader);
 
@@ -918,11 +874,6 @@ public class StubReaderTest extends BaseStubTest {
     // init SE
     reader.insertSe(partialSE());
 
-    // add Protocol flag
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
-
     // send the selection request
     genericSelectSe(reader);
 
@@ -952,11 +903,6 @@ public class StubReaderTest extends BaseStubTest {
     // init SE
     reader.insertSe(partialSE());
 
-    // add Protocol flag
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
-
     // send the selection request
     genericSelectSe(reader);
 
@@ -981,11 +927,6 @@ public class StubReaderTest extends BaseStubTest {
 
     // init SE
     reader.insertSe(partialSE());
-
-    // add Protocol flag
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
     // send the selection request
     genericSelectSe(reader);
@@ -1012,11 +953,6 @@ public class StubReaderTest extends BaseStubTest {
     // init SE
     reader.insertSe(partialSE());
 
-    // add Protocol flag
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
-
     // send the selection request
     genericSelectSe(reader);
 
@@ -1041,11 +977,6 @@ public class StubReaderTest extends BaseStubTest {
 
     // init SE
     reader.insertSe(partialSE());
-
-    // add Protocol flag
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
     // send the selection request
     genericSelectSe(reader);
@@ -1257,7 +1188,7 @@ public class StubReaderTest extends BaseStubTest {
       }
 
       @Override
-      public String getSeProcotol() {
+      public String getSeProtocol() {
         return "PROTOCOL_ISO14443_4";
       }
     };
@@ -1286,7 +1217,7 @@ public class StubReaderTest extends BaseStubTest {
       }
 
       @Override
-      public String getSeProcotol() {
+      public String getSeProtocol() {
         return "PROTOCOL_B_PRIME";
       }
     };
@@ -1311,7 +1242,7 @@ public class StubReaderTest extends BaseStubTest {
       }
 
       @Override
-      public String getSeProcotol() {
+      public String getSeProtocol() {
         return "PROTOCOL_ISO14443_4";
       }
     };
@@ -1337,7 +1268,7 @@ public class StubReaderTest extends BaseStubTest {
       }
 
       @Override
-      public String getSeProcotol() {
+      public String getSeProtocol() {
         return "PROTOCOL_ISO14443_4";
       }
     };
@@ -1372,7 +1303,7 @@ public class StubReaderTest extends BaseStubTest {
       }
 
       @Override
-      public String getSeProcotol() {
+      public String getSeProtocol() {
         return null;
       }
     };
