@@ -12,9 +12,7 @@
 package org.eclipse.keyple.core.seproxy.plugin.reader;
 
 import java.util.List;
-import java.util.Map;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
@@ -247,18 +245,4 @@ public abstract class AbstractReader implements ProxyReader {
    */
   protected abstract SeResponse processSeRequest(
       SeRequest seRequest, ChannelControl channelControl);
-
-  /**
-   * Sets at once a set of parameters for the reader
-   *
-   * <p>See {@link #setParameter(String, String)} for more details
-   *
-   * @param parameters a Map &lt;String, String&gt; parameter set
-   * @throws KeypleException if one of the parameters could not be set up
-   */
-  public final void setParameters(Map<String, String> parameters) {
-    for (Map.Entry<String, String> en : parameters.entrySet()) {
-      setParameter(en.getKey(), en.getValue());
-    }
-  }
 }

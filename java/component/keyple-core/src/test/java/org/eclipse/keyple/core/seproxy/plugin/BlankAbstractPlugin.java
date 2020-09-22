@@ -11,7 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.plugin;
 
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -28,13 +27,4 @@ public class BlankAbstractPlugin extends AbstractPlugin {
   protected ConcurrentMap<String, SeReader> initNativeReaders() throws KeypleReaderIOException {
     return new ConcurrentHashMap<String, SeReader>();
   }
-
-  @Override
-  public Map<String, String> getParameters() {
-    return null;
-  }
-
-  @Override
-  public void setParameter(String key, String value)
-      throws IllegalArgumentException, KeypleReaderIOException {}
 }

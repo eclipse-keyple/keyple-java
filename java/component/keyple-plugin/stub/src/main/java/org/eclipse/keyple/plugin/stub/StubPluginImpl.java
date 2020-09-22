@@ -54,19 +54,6 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
     threadWaitTimeout = 10;
   }
 
-  @Override
-  public Map<String, String> getParameters() {
-    return parameters;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void setParameter(String key, String value) {
-    parameters.put(key, value);
-  }
-
-  /** {@inheritDoc} */
-  @Override
   public void plugStubReader(String readerName, Boolean synchronous) {
     plugStubReader(readerName, TransmissionMode.CONTACTLESS, synchronous);
   }

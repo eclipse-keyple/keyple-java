@@ -41,7 +41,6 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
 
   private final VirtualReaderSessionFactory sessionManager;
   protected final DtoSender dtoSender;
-  private final Map<String, String> parameters;
   private ExecutorService executorService;
 
   /**
@@ -58,7 +57,6 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
     this.sessionManager = sessionManager;
     logger.info("Init RemoteSePlugin");
     this.dtoSender = dtoSender;
-    this.parameters = new HashMap<String, String>();
     this.rpcTimeout = rpcTimeout;
     this.executorService = executorService;
   }
@@ -196,16 +194,6 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
   @Override
   protected ConcurrentMap<String, SeReader> initNativeReaders() {
     return new ConcurrentHashMap<String, SeReader>();
-  }
-
-  @Override
-  public Map<String, String> getParameters() {
-    return parameters;
-  }
-
-  @Override
-  public void setParameter(String key, String value) {
-    parameters.put(key, value);
   }
 
   /**

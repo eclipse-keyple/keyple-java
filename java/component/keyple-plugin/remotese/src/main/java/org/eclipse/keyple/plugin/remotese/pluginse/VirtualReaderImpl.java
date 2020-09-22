@@ -178,16 +178,6 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
     logger.warn("{} setSeProtocolSetting is not implemented yet in VirtualReader", this.getName());
   }
 
-  @Override
-  public Map<String, String> getParameters() {
-    return parameters;
-  }
-
-  @Override
-  public void setParameter(String key, String value) {
-    parameters.put(key, value);
-  }
-
   /*
    * PRIVATE HELPERS
    */

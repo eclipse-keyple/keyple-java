@@ -13,9 +13,26 @@ package org.eclipse.keyple.core.command;
 
 import java.io.Serializable;
 
+/**
+ * Provides the API to get SeCommand's name and instruction byte (INS).
+ *
+ * @since 0.9
+ */
 public interface SeCommand extends Serializable {
 
+  /**
+   * Gets command's name.
+   *
+   * @return a String
+   * @since 0.9
+   */
   String getName();
 
+  /**
+   * Gets Instruction Byte (INS)
+   *
+   * @return a byte.
+   * @since 0.9
+   */
   byte getInstructionByte();
 }

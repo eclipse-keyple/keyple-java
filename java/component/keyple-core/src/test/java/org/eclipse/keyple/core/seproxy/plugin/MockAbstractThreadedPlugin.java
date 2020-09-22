@@ -11,7 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.plugin;
 
-import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -47,12 +46,4 @@ public class MockAbstractThreadedPlugin extends AbstractThreadedObservablePlugin
   protected AbstractReader fetchNativeReader(String name) {
     return null;
   }
-
-  @Override
-  public Map<String, String> getParameters() {
-    return null;
-  }
-
-  @Override
-  public void setParameter(String key, String value) {}
 }

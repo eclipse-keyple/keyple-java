@@ -153,7 +153,6 @@ public class SlaveAPITest {
     Assert.assertEquals(1, nativeReader.countObservers());
     Assert.assertEquals(0, virtualReader.countObservers());
     Assert.assertNotNull(sessionId);
-    Assert.assertEquals(virtualReader.getParameters().get(KEY), VALUE);
 
     // disconnect
     spySlaveAPI.disconnectReader("", nativeReader.getName());

@@ -91,27 +91,6 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         Assert.assertEquals(true, reader.isSePresent)
     }
 
-    @Test
-    fun getParameters() {
-        Assert.assertNotNull(reader.parameters)
-    }
-
-    @Test
-    fun setParameters() {
-        val parameters = HashMap<String, String>()
-        parameters["key1"] = "value1"
-        reader.parameters = parameters
-        Assert.assertTrue(reader.parameters.size == 1)
-        Assert.assertTrue(reader.parameters["key1"] == "value1")
-    }
-
-    @Test
-    fun setParameter() {
-        reader.setParameter("key2", "value2")
-        Assert.assertTrue(reader.parameters.size == 1)
-        Assert.assertTrue(reader.parameters["key2"] == "value2")
-    }
-
     @Test(expected = KeypleReaderIOException::class)
     fun transmitIOException() {
         nativeReader = mockReaderWithExceptionOnOpenLogicalChannel(IOException())

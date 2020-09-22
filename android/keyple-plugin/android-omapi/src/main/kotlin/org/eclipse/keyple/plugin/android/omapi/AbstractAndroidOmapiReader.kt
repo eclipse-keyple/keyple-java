@@ -11,13 +11,11 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.omapi
 
-import java.util.HashMap
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractLocalReader
 import org.eclipse.keyple.core.seproxy.plugin.reader.SmartSelectionReader
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode
-import timber.log.Timber
 
 /**
  * Communicates with Android readers throught the Open Mobile API see org.simalliance.openmobileapi.Reader
@@ -27,18 +25,6 @@ import timber.log.Timber
  * removed.
  */
 internal abstract class AbstractAndroidOmapiReader(pluginName: String, readerName: String) : AbstractLocalReader(pluginName, readerName), SmartSelectionReader {
-
-    private val parameters: MutableMap<String, String> = HashMap()
-
-    override fun getParameters(): Map<String, String> {
-        Timber.w("No parameters are supported by AndroidOmapiReader")
-        return parameters
-    }
-
-    override fun setParameter(key: String, value: String) {
-        Timber.w("No parameters are supported by AndroidOmapiReader")
-        parameters[key] = value
-    }
 
     /**
      * The transmission mode is always CONTACTS in an OMAPI reader

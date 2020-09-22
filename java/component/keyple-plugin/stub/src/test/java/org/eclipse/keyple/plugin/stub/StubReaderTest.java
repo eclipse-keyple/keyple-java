@@ -1072,21 +1072,6 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertNotNull(reader.getName());
   }
 
-  // Set correct parameters
-  @Test
-  public void testSetAllowedParameters() {
-    stubPlugin.plugStubReader("StubReaderTest", true);
-    Assert.assertEquals(1, stubPlugin.getReaders().size());
-    StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
-
-    Map<String, String> p1 = new HashMap<String, String>();
-    p1.put("aParameter", "a");
-    reader.setParameters(p1);
-
-    Map<String, String> p2 = reader.getParameters();
-    assert (p1.equals(p2));
-  }
-
   /*
    * HELPER METHODS
    */

@@ -60,14 +60,4 @@ internal abstract class AbstractAndroidOmapiPlugin<T, V> : AbstractPlugin(PLUGIN
 
         return readers
     }
-
-    override fun getParameters(): MutableMap<String, String> {
-        Timber.w("Android OMAPI Plugin does not support parameters, see OMAPINfcReader instead")
-        return params
-    }
-
-    override fun setParameter(key: String, value: String) {
-        Timber.w("Android OMAPI Plugin does not support parameters, see OMAPINfcReader instead")
-        params[key] = value
-    }
 }
