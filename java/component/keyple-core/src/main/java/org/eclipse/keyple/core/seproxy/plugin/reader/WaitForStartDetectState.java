@@ -25,16 +25,16 @@ import org.slf4j.LoggerFactory;
  *   <li>Upon START_DETECT event, the machine changes state for WAIT_FOR_SE_INSERTION.
  * </ul>
  */
-public class WaitForStartDetect extends AbstractObservableState {
+public class WaitForStartDetectState extends AbstractObservableState {
 
   /** logger */
-  private static final Logger logger = LoggerFactory.getLogger(WaitForStartDetect.class);
+  private static final Logger logger = LoggerFactory.getLogger(WaitForStartDetectState.class);
 
-  public WaitForStartDetect(AbstractObservableLocalReader reader) {
+  public WaitForStartDetectState(AbstractObservableLocalReader reader) {
     super(MonitoringState.WAIT_FOR_START_DETECTION, reader);
   }
 
-  public WaitForStartDetect(
+  public WaitForStartDetectState(
       AbstractObservableLocalReader reader,
       AbstractMonitoringJob monitoringJob,
       ExecutorService executorService) {

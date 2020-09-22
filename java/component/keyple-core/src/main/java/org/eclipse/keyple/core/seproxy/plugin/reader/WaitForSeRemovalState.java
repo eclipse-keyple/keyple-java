@@ -27,16 +27,16 @@ import org.slf4j.LoggerFactory;
  *   <li>Upon STOP_DETECT event, the machine changes state for WAIT_FOR_SE_DETECTION.
  * </ul>
  */
-public class WaitForSeRemoval extends AbstractObservableState {
+public class WaitForSeRemovalState extends AbstractObservableState {
 
   /** logger */
-  private static final Logger logger = LoggerFactory.getLogger(WaitForSeRemoval.class);
+  private static final Logger logger = LoggerFactory.getLogger(WaitForSeRemovalState.class);
 
-  public WaitForSeRemoval(AbstractObservableLocalReader reader) {
+  public WaitForSeRemovalState(AbstractObservableLocalReader reader) {
     super(MonitoringState.WAIT_FOR_SE_REMOVAL, reader);
   }
 
-  public WaitForSeRemoval(
+  public WaitForSeRemovalState(
       AbstractObservableLocalReader reader,
       AbstractMonitoringJob monitoringJob,
       ExecutorService executorService) {

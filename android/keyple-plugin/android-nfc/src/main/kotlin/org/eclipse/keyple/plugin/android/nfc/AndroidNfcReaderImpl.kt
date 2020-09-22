@@ -34,10 +34,10 @@ import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState.Mon
 import org.eclipse.keyple.core.seproxy.plugin.reader.CardAbsentPingMonitoringJob
 import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderStateService
 import org.eclipse.keyple.core.seproxy.plugin.reader.SmartRemovalMonitoringJob
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeInsertion
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeProcessing
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemoval
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetect
+import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeInsertionState
+import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeProcessingState
+import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemovalState
+import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetectState
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import timber.log.Timber
 
@@ -127,20 +127,20 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
 
         val states = HashMap<MonitoringState, AbstractObservableState>()
 
-        states[WAIT_FOR_START_DETECTION] = WaitForStartDetect(this)
-        states[WAIT_FOR_SE_INSERTION] = WaitForSeInsertion(this)
-        states[WAIT_FOR_SE_PROCESSING] = WaitForSeProcessing(this)
+        states[WAIT_FOR_START_DETECTION] = WaitForStartDetectState(this)
+        states[WAIT_FOR_SE_INSERTION] = WaitForSeInsertionState(this)
+        states[WAIT_FOR_SE_PROCESSING] = WaitForSeProcessingState(this)
         states[WAIT_FOR_SE_REMOVAL] = initWaitForRemoval()
 
         return ObservableReaderStateService(this, states, WAIT_FOR_START_DETECTION)
     }
 
-    private fun initWaitForRemoval(): WaitForSeRemoval {
+    private fun initWaitForRemoval(): WaitForSeRemovalState {
         return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            WaitForSeRemoval(this, CardAbsentPingMonitoringJob(this), executorService)
+            WaitForSeRemovalState(this, CardAbsentPingMonitoringJob(this), executorService)
         } else {
             // this.waitForCardAbsentNative will only be used on API>= N
-            WaitForSeRemoval(this, SmartRemovalMonitoringJob(this), executorService)
+            WaitForSeRemovalState(this, SmartRemovalMonitoringJob(this), executorService)
         }
     }
 

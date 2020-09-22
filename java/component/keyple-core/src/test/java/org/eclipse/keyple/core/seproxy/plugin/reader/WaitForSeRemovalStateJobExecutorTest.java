@@ -30,13 +30,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RunWith(Parameterized.class)
-public class WaitForSeRemovalJobExecutorTest extends CoreBaseTest {
+public class WaitForSeRemovalStateJobExecutorTest extends CoreBaseTest {
 
   private static final Logger logger =
-      LoggerFactory.getLogger(WaitForSeRemovalJobExecutorTest.class);
+      LoggerFactory.getLogger(WaitForSeRemovalStateJobExecutorTest.class);
 
   final String PLUGIN_NAME = "WaitForSeRemovalJobExecutorTestP";
-  final String READER_NAME = "WaitForSeRemovalJobExecutorTest";
+  final String READER_NAME = "WaitForSeRemovalStateJobExecutorTest";
 
   final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -66,13 +66,13 @@ public class WaitForSeRemovalJobExecutorTest extends CoreBaseTest {
      * SE has been removed
      */
     AbstractObservableLocalReader r = AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
-    WaitForSeRemoval waitForSeRemoval =
-        new WaitForSeRemoval(r, new CardAbsentPingMonitoringJob(r), executorService);
+    WaitForSeRemovalState waitForSeRemovalState =
+        new WaitForSeRemovalState(r, new CardAbsentPingMonitoringJob(r), executorService);
     doReturn(ObservableReader.PollingMode.SINGLESHOT).when(r).getPollingMode();
     doReturn(false).when(r).isSePresentPing();
     doNothing().when(r).processSeRemoved();
     /* test */
-    waitForSeRemoval.onActivate();
+    waitForSeRemovalState.onActivate();
 
     Thread.sleep(WAIT); // wait for the monitoring to act
 
@@ -80,7 +80,7 @@ public class WaitForSeRemovalJobExecutorTest extends CoreBaseTest {
     // Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
     verify(r, times(1)).switchState(WAIT_FOR_START_DETECTION);
 
-    waitForSeRemoval.onDeactivate();
+    waitForSeRemovalState.onDeactivate();
   }
 
   @Test
@@ -89,21 +89,21 @@ public class WaitForSeRemovalJobExecutorTest extends CoreBaseTest {
      * ------------ input polling mode is CONTINUE SE has been removed within timeout
      */
     AbstractObservableLocalReader r = AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
-    WaitForSeRemoval waitForSeRemoval =
-        new WaitForSeRemoval(r, new CardAbsentPingMonitoringJob(r), executorService);
+    WaitForSeRemovalState waitForSeRemovalState =
+        new WaitForSeRemovalState(r, new CardAbsentPingMonitoringJob(r), executorService);
     doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();
     doReturn(false).when(r).isSePresentPing();
     doNothing().when(r).processSeRemoved();
 
     /* test */
-    waitForSeRemoval.onActivate();
+    waitForSeRemovalState.onActivate();
 
     Thread.sleep(WAIT); // wait for the monitoring to act
 
     /* Assert */
     // Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentState().getMonitoringState());
     verify(r, times(1)).switchState(WAIT_FOR_SE_INSERTION);
-    waitForSeRemoval.onDeactivate();
+    waitForSeRemovalState.onDeactivate();
   }
 
   @Test
@@ -144,20 +144,20 @@ public class WaitForSeRemovalJobExecutorTest extends CoreBaseTest {
      */
     BlankSmartPresenceTheadedReader r =
         AbsSmartPresenceTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME);
-    WaitForSeRemoval waitForSeRemoval =
-        new WaitForSeRemoval(r, new SmartRemovalMonitoringJob(r), executorService);
+    WaitForSeRemovalState waitForSeRemovalState =
+        new WaitForSeRemovalState(r, new SmartRemovalMonitoringJob(r), executorService);
     doReturn(ObservableReader.PollingMode.SINGLESHOT).when(r).getPollingMode();
     doReturn(true).when(r).waitForCardAbsentNative();
     doNothing().when(r).processSeRemoved();
     /* test */
-    waitForSeRemoval.onActivate();
+    waitForSeRemovalState.onActivate();
 
     Thread.sleep(WAIT); // wait for the monitoring to act
 
     /* Assert */
     // Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
     verify(r, times(1)).switchState(WAIT_FOR_START_DETECTION);
-    waitForSeRemoval.onDeactivate();
+    waitForSeRemovalState.onDeactivate();
   }
 
   @Test
@@ -169,19 +169,19 @@ public class WaitForSeRemovalJobExecutorTest extends CoreBaseTest {
      */
     BlankSmartPresenceTheadedReader r =
         AbsSmartPresenceTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME);
-    WaitForSeRemoval waitForSeRemoval =
-        new WaitForSeRemoval(r, new SmartRemovalMonitoringJob(r), executorService);
+    WaitForSeRemovalState waitForSeRemovalState =
+        new WaitForSeRemovalState(r, new SmartRemovalMonitoringJob(r), executorService);
     doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();
     doReturn(true).when(r).waitForCardAbsentNative();
     doNothing().when(r).processSeRemoved();
     /* test */
-    waitForSeRemoval.onActivate();
+    waitForSeRemovalState.onActivate();
 
     Thread.sleep(WAIT); // wait for the monitoring to act
 
     /* Assert */
     // Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentState().getMonitoringState());
     verify(r, times(1)).switchState(WAIT_FOR_SE_INSERTION);
-    waitForSeRemoval.onDeactivate();
+    waitForSeRemovalState.onDeactivate();
   }
 }

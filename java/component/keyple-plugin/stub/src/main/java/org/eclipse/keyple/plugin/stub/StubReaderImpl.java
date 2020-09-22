@@ -27,10 +27,9 @@ import org.eclipse.keyple.core.seproxy.plugin.reader.SmartInsertionMonitoringJob
 import org.eclipse.keyple.core.seproxy.plugin.reader.SmartInsertionReader;
 import org.eclipse.keyple.core.seproxy.plugin.reader.SmartRemovalMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.reader.SmartRemovalReader;
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeInsertion;
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeProcessing;
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemoval;
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetect;
+import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeProcessingState;
+import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemovalState;
+import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetectState;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -266,19 +265,19 @@ class StubReaderImpl extends AbstractObservableLocalReader
 
     states.put(
         AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
-        new WaitForStartDetect(this));
+        new WaitForStartDetectState(this));
 
     states.put(
         AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-        new WaitForSeInsertion(this, new SmartInsertionMonitoringJob(this), executorService));
+        new WaitForStartDetectState(this, new SmartInsertionMonitoringJob(this), executorService));
 
     states.put(
         AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-        new WaitForSeProcessing(this, new SmartRemovalMonitoringJob(this), executorService));
+        new WaitForSeProcessingState(this, new SmartRemovalMonitoringJob(this), executorService));
 
     states.put(
         AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-        new WaitForSeRemoval(this, new SmartRemovalMonitoringJob(this), executorService));
+        new WaitForSeRemovalState(this, new SmartRemovalMonitoringJob(this), executorService));
 
     return new ObservableReaderStateService(
         this, states, AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION);

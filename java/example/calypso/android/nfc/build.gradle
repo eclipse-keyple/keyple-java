@@ -22,7 +22,7 @@ buildscript {
 }
 
 ext {
-    keyple_v = project.hasProperty("keyple_version") ? keyple_version : '+'
+    keyple_v = project.hasProperty("keyple_version") ? keyple_version : '1.0.0-SNAPSHOT'
 }
 
 android {

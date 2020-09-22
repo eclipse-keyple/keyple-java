@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 import javax.smartcardio.*;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.exception.*;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState;
 import org.eclipse.keyple.core.seproxy.plugin.reader.CardPresentMonitoringJob;
@@ -28,10 +28,10 @@ import org.eclipse.keyple.core.seproxy.plugin.reader.SmartInsertionMonitoringJob
 import org.eclipse.keyple.core.seproxy.plugin.reader.SmartInsertionReader;
 import org.eclipse.keyple.core.seproxy.plugin.reader.SmartRemovalMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.reader.SmartRemovalReader;
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeInsertion;
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeProcessing;
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemoval;
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetect;
+import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeInsertionState;
+import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeProcessingState;
+import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemovalState;
+import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetectState;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
@@ -120,20 +120,21 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
             AbstractObservableState.MonitoringState.class);
     states.put(
         AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
-        new WaitForStartDetect(this));
+        new WaitForStartDetectState(this));
 
     // should the SmartInsertionMonitoringJob be used?
     if (!usePingPresence) {
       // use the SmartInsertionMonitoringJob
       states.put(
           AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-          new WaitForSeInsertion(this, new SmartInsertionMonitoringJob(this), executorService));
+          new WaitForSeInsertionState(
+              this, new SmartInsertionMonitoringJob(this), executorService));
     } else {
       // use the CardPresentMonitoring job (only on Mac due to jvm crash)
       // https://github.com/eclipse/keyple-java/issues/153
       states.put(
           AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-          new WaitForSeInsertion(
+          new WaitForSeInsertionState(
               this,
               new CardPresentMonitoringJob(this, INSERT_WAIT_TIMEOUT, true),
               executorService));
@@ -141,11 +142,11 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
 
     states.put(
         AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-        new WaitForSeProcessing(this, new SmartRemovalMonitoringJob(this), executorService));
+        new WaitForSeProcessingState(this, new SmartRemovalMonitoringJob(this), executorService));
 
     states.put(
         AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-        new WaitForSeRemoval(this, new SmartRemovalMonitoringJob(this), executorService));
+        new WaitForSeRemovalState(this, new SmartRemovalMonitoringJob(this), executorService));
 
     return new ObservableReaderStateService(
         this, states, AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION);

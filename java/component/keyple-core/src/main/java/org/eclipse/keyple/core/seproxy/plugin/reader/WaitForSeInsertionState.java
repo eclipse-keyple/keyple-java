@@ -13,36 +13,37 @@ package org.eclipse.keyple.core.seproxy.plugin.reader;
 
 import java.util.concurrent.ExecutorService;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Wait for Se Processing State
+ * Wait for Se Insertion State
  *
- * <p>The state during which the SE is being processed by the application.
+ * <p>The state during which the insertion of an SE is expected.
  *
  * <ul>
- *   <li>Upon SE_PROCESSED event, the machine changes state for WAIT_FOR_SE_REMOVAL or
- *       WAIT_FOR_SE_DETECTION according to the {@link ObservableReader.PollingMode} setting.
- *   <li>Upon SE_REMOVED event, the machine changes state for WAIT_FOR_SE_INSERTION or
- *       WAIT_FOR_SE_DETECTION according to the {@link ObservableReader.PollingMode} setting.
+ *   <li>Upon SE_INSERTED event, the default selection is processed if required and if the
+ *       conditions are met (ALWAYS or SE MATCHED) the machine changes state for
+ *       WAIT_FOR_SE_PROCESSING.
  *   <li>Upon STOP_DETECT event, the machine changes state for WAIT_FOR_SE_DETECTION.
+ *   <li>Upon SE_REMOVED event, the machine changes state for WAIT_FOR_SE_DETECTION.
  * </ul>
  */
-public class WaitForSeProcessing extends AbstractObservableState {
+public class WaitForSeInsertionState extends AbstractObservableState {
 
   /** logger */
-  private static final Logger logger = LoggerFactory.getLogger(WaitForSeProcessing.class);
+  private static final Logger logger = LoggerFactory.getLogger(WaitForSeInsertionState.class);
 
-  public WaitForSeProcessing(AbstractObservableLocalReader reader) {
-    super(MonitoringState.WAIT_FOR_SE_PROCESSING, reader);
+  public WaitForSeInsertionState(AbstractObservableLocalReader reader) {
+    super(MonitoringState.WAIT_FOR_SE_INSERTION, reader);
   }
 
-  public WaitForSeProcessing(
+  public WaitForSeInsertionState(
       AbstractObservableLocalReader reader,
       AbstractMonitoringJob monitoringJob,
       ExecutorService executorService) {
-    super(MonitoringState.WAIT_FOR_SE_PROCESSING, reader, monitoringJob, executorService);
+    super(MonitoringState.WAIT_FOR_SE_INSERTION, reader, monitoringJob, executorService);
   }
 
   @Override
@@ -55,33 +56,37 @@ public class WaitForSeProcessing extends AbstractObservableState {
      * Process InternalEvent
      */
     switch (event) {
-      case SE_PROCESSED:
-        if (this.reader.getPollingMode() == ObservableReader.PollingMode.REPEATING) {
-          switchState(MonitoringState.WAIT_FOR_SE_REMOVAL);
+      case SE_INSERTED:
+        // process default selection if any, return an event, can be null
+        ReaderEvent seEvent = this.reader.processSeInserted();
+        if (seEvent != null) {
+          // switch internal state
+          switchState(MonitoringState.WAIT_FOR_SE_PROCESSING);
+          // notify the external observer of the event
+          reader.notifyObservers(seEvent);
         } else {
-          // We close the channels now and notify the application of
-          // the SE_REMOVED event.
-          this.reader.processSeRemoved();
-          switchState(MonitoringState.WAIT_FOR_START_DETECTION);
+          // if none event was sent to the application, back to SE detection
+          // stay in the same state, however switch to WAIT_FOR_SE_INSERTION to relaunch
+          // the monitoring job
+          if (logger.isTraceEnabled()) {
+            logger.trace("[{}] onEvent => Inserted SE hasn't matched", reader.getName());
+          }
+          switchState(MonitoringState.WAIT_FOR_SE_REMOVAL);
         }
         break;
 
+      case STOP_DETECT:
+        switchState(MonitoringState.WAIT_FOR_START_DETECTION);
+        break;
+
       case SE_REMOVED:
-        // the SE has been removed, we close all channels and return to
-        // the currentState of waiting
-        // for insertion
-        // We notify the application of the SE_REMOVED event.
-        reader.processSeRemoved();
+        // TODO Check if this case really happens (NFC?)
+        // SE has been removed during default selection
         if (reader.getPollingMode() == ObservableReader.PollingMode.REPEATING) {
           switchState(MonitoringState.WAIT_FOR_SE_INSERTION);
         } else {
           switchState(MonitoringState.WAIT_FOR_START_DETECTION);
         }
-        break;
-
-      case STOP_DETECT:
-        reader.processSeRemoved();
-        switchState(MonitoringState.WAIT_FOR_START_DETECTION);
         break;
 
       default:
