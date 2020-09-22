@@ -19,6 +19,7 @@ import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 
 /**
+ * (package-private)<br>
  * This class contains all the parameters to identify the communication protocols supported by STUB
  * readers.
  *
@@ -75,7 +76,7 @@ public final class StubProtocolSetting {
    *
    * @return a settings map
    */
-  public static Map<SeProtocol, String> getAllSettings() {
+  public static Map<SeProtocol, String> getSettings() {
     return STUB_PROTOCOL_SETTING;
   }
 }

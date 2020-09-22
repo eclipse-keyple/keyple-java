@@ -40,7 +40,7 @@ public abstract class StubSecureElement {
   }
 
   /** @return SE protocol supported by the SE */
-  public abstract String getSeProcotol();
+  public abstract String getSeProtocol();
 
   Map<String, String> hexCommands = new HashMap<String, String>();
 
