@@ -16,6 +16,7 @@ import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.plugin.remotese.integration.common.model.TransactionResult;
 import org.eclipse.keyple.plugin.remotese.integration.common.model.UserInput;
 import org.eclipse.keyple.plugin.remotese.integration.common.util.CalypsoUtilities;
@@ -31,21 +32,22 @@ public class VirtualReaderObserver implements ObservableReader.ReaderObserver {
 
   @Override
   public void update(ReaderEvent event) {
+    String virtualReaderName = event.getReaderName();
+    RemoteSeServerPlugin plugin =
+            (RemoteSeServerPlugin) SeProxyService.getInstance().getPlugin(event.getPluginName());
+    RemoteSeServerObservableReader observableVirtualReader =
+            (RemoteSeServerObservableReader) plugin.getReader(virtualReaderName);
     logger.info(
         "Event received {} {} {} with default selection {}",
         event.getEventType(),
         event.getPluginName(),
-        event.getReader(),
+            virtualReaderName,
         event.getDefaultSelectionsResponse());
 
     switch (event.getEventType()) {
       case SE_MATCHED:
         eventCounter++;
-        String virtualReaderName = event.getReaderName();
-        RemoteSeServerPlugin plugin =
-            (RemoteSeServerPlugin) SeProxyService.getInstance().getPlugin(event.getPluginName());
-        RemoteSeServerObservableReader observableVirtualReader =
-            (RemoteSeServerObservableReader) plugin.getReader(virtualReaderName);
+
         UserInput userInput = observableVirtualReader.getUserInputData(UserInput.class);
 
         // retrieve selection
@@ -57,19 +59,32 @@ public class VirtualReaderObserver implements ObservableReader.ReaderObserver {
                     .getActiveMatchingSe();
 
         // execute a transaction
-        String eventLog = CalypsoUtilities.readEventLog(calypsoPo, observableVirtualReader, logger);
+        try{
+          String eventLog = CalypsoUtilities.readEventLog(calypsoPo, observableVirtualReader, logger);
+          // on the 2nd SE MATCHED
+          if (eventCounter == 2) {
+            // clear observers in the reader
+            observableVirtualReader.clearObservers();
+          }
+          // send result
+          plugin.terminateService(
+              virtualReaderName,
+              new TransactionResult()
+                  .setSuccessful(!eventLog.isEmpty())
+                  .setUserId(userInput.getUserId()));
+        }catch (KeypleException e){
+          // send result
+          plugin.terminateService(
+                  virtualReaderName,
+                  new TransactionResult()
+                          .setSuccessful(false)
+                          .setUserId(userInput.getUserId()));
+          }
 
-        // on the 2nd SE MATCHED
-        if (eventCounter == 2) {
-          // clear observers in the reader
-          observableVirtualReader.clearObservers();
-        }
-        // send result
-        plugin.terminateService(
-            virtualReaderName,
-            new TransactionResult()
-                .setSuccessful(!eventLog.isEmpty())
-                .setUserId(userInput.getUserId()));
+        break;
+      case SE_REMOVED:
+        //do nothing
+        plugin.terminateService( virtualReaderName, null);
         break;
     }
   }

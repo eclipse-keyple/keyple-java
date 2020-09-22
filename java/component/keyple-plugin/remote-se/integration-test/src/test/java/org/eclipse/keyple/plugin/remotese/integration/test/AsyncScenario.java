@@ -79,7 +79,7 @@ public class AsyncScenario extends BaseScenario {
   /** {@inheritDoc} */
   @Override
   @Test
-  public void execute1_localselection_remoteTransaction_successful() {
+  public void execute_localselection_remoteTransaction_successful() {
 
     nativeService =
         new NativeSeClientServiceFactory()
@@ -91,27 +91,12 @@ public class AsyncScenario extends BaseScenario {
     localselection_remoteTransaction_successful();
   }
 
-  /** {@inheritDoc} */
-  @Override
-  @Test
-  public void execute2_defaultSelection_onMatched_transaction_successful() {
 
-    final ReaderEventFilter eventFilter = new ReaderEventFilter();
-
-    nativeService =
-        new NativeSeClientServiceFactory()
-            .builder()
-            .withAsyncNode(clientEndpoint)
-            .withReaderObservation(eventFilter)
-            .getService();
-
-    defaultSelection_onMatched_transaction_successful(eventFilter);
-  }
 
   /** {@inheritDoc} */
   @Override
   @Test
-  public void execute3_remoteselection_remoteTransaction_successful() {
+  public void execute_remoteselection_remoteTransaction_successful() {
 
     nativeService =
         new NativeSeClientServiceFactory()
@@ -126,7 +111,7 @@ public class AsyncScenario extends BaseScenario {
   /** {@inheritDoc} */
   @Test
   @Override
-  public void execute4_multiclient_remoteselection_remoteTransaction_successful() {
+  public void execute_multiclient_remoteselection_remoteTransaction_successful() {
 
     nativeService =
         new NativeSeClientServiceFactory()
@@ -141,29 +126,62 @@ public class AsyncScenario extends BaseScenario {
   /** {@inheritDoc} */
   @Test
   @Override
-  public void execute5_transaction_closeSession_fail() {
+  public void execute_transaction_closeSession_fail() {
     nativeService =
-            new NativeSeClientServiceFactory()
-                    .builder()
-                    .withAsyncNode(clientEndpoint)
-                    .withoutReaderObservation()
-                    .getService();
+        new NativeSeClientServiceFactory()
+            .builder()
+            .withAsyncNode(clientEndpoint)
+            .withoutReaderObservation()
+            .getService();
 
     transaction_closeSession_fail();
-
   }
 
   /** {@inheritDoc} */
   @Test
   @Override
-  public void execute6_transaction_clientTimeout_fail() {
+  public void execute_transaction_clientTimeout_fail() {
+    nativeService =
+        new NativeSeClientServiceFactory()
+            .builder()
+            .withAsyncNode(clientEndpoint)
+            .withoutReaderObservation()
+            .getService();
+
+    transaction_clientTimeout_fail();
+  }
+
+
+  /** {@inheritDoc} */
+  @Override
+  @Test
+  public void observable_defaultSelection_onMatched_transaction_successful() {
+
+    final ReaderEventFilter eventFilter = new ReaderEventFilter();
+
     nativeService =
             new NativeSeClientServiceFactory()
                     .builder()
                     .withAsyncNode(clientEndpoint)
-                    .withoutReaderObservation()
+                    .withReaderObservation(eventFilter)
                     .getService();
 
-    transaction_clientTimeout_fail();
+    defaultSelection_onMatched_transaction_successful(eventFilter);
+  }
+
+  /** {@inheritDoc} */
+  @Test
+  @Override
+  public void observable_onMatched_transaction_removedEarly_fail() {
+    final ReaderEventFilter eventFilter = new ReaderEventFilter();
+
+    nativeService =
+        new NativeSeClientServiceFactory()
+            .builder()
+            .withAsyncNode(clientEndpoint)
+            .withReaderObservation(eventFilter)
+            .getService();
+
+    onMatched_transaction_removedEarly_fail(eventFilter);
   }
 }

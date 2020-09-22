@@ -37,6 +37,12 @@ public abstract class AbstractKeypleMessageHandler {
 
   /**
    * (protected)<br>
+   * The bounded node.
+   */
+  protected int timeoutInSecond = 5;
+
+  /**
+   * (protected)<br>
    * Constructor.
    */
   protected AbstractKeypleMessageHandler() {}
@@ -58,7 +64,7 @@ public abstract class AbstractKeypleMessageHandler {
    * @since 1.0
    */
   public void bindClientAsyncNode(KeypleClientAsync endpoint) {
-    node = new KeypleClientAsyncNodeImpl(this, endpoint, 20);
+    node = new KeypleClientAsyncNodeImpl(this, endpoint, timeoutInSecond);
   }
 
   /**
@@ -69,7 +75,7 @@ public abstract class AbstractKeypleMessageHandler {
    * @since 1.0
    */
   public void bindServerAsyncNode(KeypleServerAsync endpoint) {
-    node = new KeypleServerAsyncNodeImpl(this, endpoint, 20);
+    node = new KeypleServerAsyncNodeImpl(this, endpoint, timeoutInSecond);
   }
 
   /**
@@ -99,7 +105,7 @@ public abstract class AbstractKeypleMessageHandler {
    * @since 1.0
    */
   public void bindServerSyncNode() {
-    node = new KeypleServerSyncNodeImpl(this, 20);
+    node = new KeypleServerSyncNodeImpl(this, timeoutInSecond);
   }
 
   /**

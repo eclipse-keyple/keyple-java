@@ -37,9 +37,10 @@ public class ReaderEventFilter implements KeypleClientReaderEventFilter {
       case SE_MATCHED:
         return new UserInput().setUserId(user.getUserId());
       case SE_REMOVED:
+        //return null;//send null to server
       case SE_INSERTED:
       default:
-        throw new KeypleDoNotPropagateEventException("only SE Matched is propagated");
+        throw new KeypleDoNotPropagateEventException("only SE_MATCHED are propagated");
     }
   }
 
@@ -50,6 +51,8 @@ public class ReaderEventFilter implements KeypleClientReaderEventFilter {
 
   @Override
   public void afterPropagation(Object userOutputData) {
-    transactionResult = (TransactionResult) userOutputData;
+    if(userOutputData!=null){
+      transactionResult = (TransactionResult) userOutputData;
+    }
   }
 };

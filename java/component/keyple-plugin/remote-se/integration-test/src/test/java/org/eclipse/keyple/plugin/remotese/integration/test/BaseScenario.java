@@ -47,61 +47,79 @@ import org.slf4j.LoggerFactory;
 
 public abstract class BaseScenario {
 
-    /**
-     * A successful aid selection is executed locally on the terminal followed by a remoteService
-     * call to launch the remote Calypso session. The SE content is sent during this first called
-     * along with custom data. All this information is received by the server to select and execute
-     * the corresponding ticketing scenario.
-     *
-     * <p>At the end of a successful calypso session, custom data is sent back to the client as a
-     * final result.
-     *
-     * <p>This scenario can be executed on Sync node and Async node.
-     */
-    abstract void execute1_localselection_remoteTransaction_successful();
+  /**
+   * A successful aid selection is executed locally on the terminal followed by a remoteService call
+   * to launch the remote Calypso session. The SE content is sent during this first called along
+   * with custom data. All this information is received by the server to select and execute the
+   * corresponding ticketing scenario.
+   *
+   * <p>At the end of a successful calypso session, custom data is sent back to the client as a
+   * final result.
+   *
+   * <p>This scenario can be executed on Sync node and Async node.
+   */
+  abstract void execute_localselection_remoteTransaction_successful();
 
-    /**
-     * The client application invokes the remoteService with enabling observability capabilities. As
-     * a result the server creates a Observable Virtual Reader that receives native reader events
-     * such as SE insertions and removals.
-     *
-     * <p>A SE Insertion is simulated locally followed by a SE removal 1 second later.
-     *
-     * <p>The SE Insertion event is sent to the Virtual Reader whose observer starts a remote
-     * Calypso session. At the end of a successful calypso session, custom data is sent back to the
-     * client as a final result.
-     *
-     * <p>The operation is executed twice with two different users.
-     *
-     * <p>After the second SE insertion, Virtual Reader observers are cleared to purge the server
-     * virtual reader.
-     */
-    abstract void execute2_defaultSelection_onMatched_transaction_successful();
+  /**
+   * The client application invokes the remoteService with enabling observability capabilities. As a
+   * result the server creates a Observable Virtual Reader that receives native reader events such
+   * as SE insertions and removals.
+   *
+   * <p>A SE Insertion is simulated locally followed by a SE removal 1 second later.
+   *
+   * <p>The SE Insertion event is sent to the Virtual Reader whose observer starts a remote Calypso
+   * session. At the end of a successful calypso session, custom data is sent back to the client as
+   * a final result.
+   *
+   * <p>The operation is executed twice with two different users.
+   *
+   * <p>After the second SE insertion, Virtual Reader observers are cleared to purge the server
+   * virtual reader.
+   */
+  abstract void observable_defaultSelection_onMatched_transaction_successful();
 
-    /**
-     * Similar to scenario 1 without the local aid selection. In this case, the server application
-     * is responsible for ordering the aid selection.
-     */
-    abstract void execute3_remoteselection_remoteTransaction_successful();
+  /**
+   * Similar to scenario 1 without the local aid selection. In this case, the server application is
+   * responsible for ordering the aid selection.
+   */
+  abstract void execute_remoteselection_remoteTransaction_successful();
 
-    /** Similar to scenario 3 with two concurrent clients. */
-    abstract void execute4_multiclient_remoteselection_remoteTransaction_successful();
+  /** Similar to scenario 3 with two concurrent clients. */
+  abstract void execute_multiclient_remoteselection_remoteTransaction_successful();
 
-    /*
-     * error cases
-     */
-
-    /**
-     * Client application invokes remoteService which results in a remote calypso session. Native
-     * Reader throws exception in the closing operation.
-     */
-    abstract  void execute5_transaction_closeSession_fail();
+  /*
+   * error cases
+   */
 
   /**
    * Client application invokes remoteService which results in a remote calypso session. Native
    * Reader throws exception in the closing operation.
    */
-  abstract  void execute6_transaction_clientTimeout_fail();
+  abstract void execute_transaction_closeSession_fail();
+
+  /**
+   * Client application invokes remoteService which results in a remote calypso session. Native
+   * Reader throws exception in the closing operation.
+   */
+  abstract void execute_transaction_clientTimeout_fail();
+
+  /**
+   * The client application invokes the remoteService with enabling observability capabilities. As a
+   * result the server creates a Observable Virtual Reader that receives native reader events such
+   * as SE insertions and removals.
+   *
+   * <p>A SE Insertion is simulated locally followed by a SE removal 1 second later.
+   *
+   * <p>The SE Insertion event is sent to the Virtual Reader whose observer starts a remote Calypso
+   * session. At the end of a successful calypso session, custom data is sent back to the client as
+   * a final result.
+   *
+   * <p>The operation is executed twice with two different users.
+   *
+   * <p>After the second SE insertion, Virtual Reader observers are cleared to purge the server
+   * virtual reader.
+   */
+  abstract void observable_onMatched_transaction_removedEarly_fail();
 
   private static final Logger logger = LoggerFactory.getLogger(BaseScenario.class);
 
@@ -126,7 +144,8 @@ public abstract class BaseScenario {
   DeviceInput device1;
 
   ExecutorService clientPool = Executors.newCachedThreadPool(new NamedThreadFactory("client-pool"));
-  ExecutorService serverPool = Executors.newCachedThreadPool(new NamedThreadFactory("remotese-pool"));
+  ExecutorService serverPool =
+      Executors.newCachedThreadPool(new NamedThreadFactory("remotese-pool"));
 
   /** Init native stub plugin that can work with {@link StubSecureElement} */
   void initNativeStubPlugin() {
@@ -182,8 +201,8 @@ public abstract class BaseScenario {
                       RemoteSeServerPluginFactory.builder()
                           .withSyncNode()
                           .withPluginObserver(new RemoteSePluginObserver())
-                          //.usingDefaultEventNotificationPool()
-                              .usingEventNotificationPool(serverPool)
+                          // .usingDefaultEventNotificationPool()
+                          .usingEventNotificationPool(serverPool)
                           .build());
     }
   }
@@ -201,7 +220,7 @@ public abstract class BaseScenario {
                       RemoteSeServerPluginFactory.builder()
                           .withAsyncNode(serverEndpoint)
                           .withPluginObserver(new RemoteSePluginObserver())
-                              .usingEventNotificationPool(serverPool)
+                          .usingEventNotificationPool(serverPool)
                           .build());
     }
   }
@@ -218,12 +237,12 @@ public abstract class BaseScenario {
   }
 
   Callable<Boolean> verifyUserTransaction(
-      final ReaderEventFilter eventFilter, final UserInput userInput) {
+      final ReaderEventFilter eventFilter, final UserInput userInput, final boolean isSucessful) {
     return new Callable<Boolean>() {
       @Override
       public Boolean call() throws Exception {
         return eventFilter.transactionResult != null
-            && eventFilter.transactionResult.isSuccessful()
+            && eventFilter.transactionResult.isSuccessful() == isSucessful
             && eventFilter.transactionResult.getUserId().equals(userInput.getUserId())
             && eventFilter.resetTransactionResult();
       }
@@ -235,6 +254,15 @@ public abstract class BaseScenario {
       @Override
       public Boolean call() throws Exception {
         return !seReader.isSePresent();
+      }
+    };
+  }
+
+  Callable<Boolean> seInserted(final SeReader seReader) {
+    return new Callable<Boolean>() {
+      @Override
+      public Boolean call() throws Exception {
+        return seReader.isSePresent();
       }
     };
   }
@@ -286,56 +314,7 @@ public abstract class BaseScenario {
     assertThat(output.getUserId()).isEqualTo(user1.getUserId());
   }
 
-  void defaultSelection_onMatched_transaction_successful(ReaderEventFilter eventFilter) {
-    // execute remote service to create observable virtual reader
-    ConfigurationResult configurationResult =
-        nativeService.executeRemoteService(
-            RemoteServiceParameters.builder(SERVICE_ID_2, nativeReader)
-                .withUserInputData(device1)
-                .build(),
-            ConfigurationResult.class);
 
-    assertThat(configurationResult.isSuccessful()).isTrue();
-    assertThat(configurationResult.getDeviceId()).isEqualTo(device1.getDeviceId());
-
-    eventFilter.setUserData(user1);
-
-    /*
-     * user1 inserts SE ,
-     * SE event is sent to server,
-     * a transaction is operated in response
-     * user1 removes SE
-     */
-    nativeReader.insertSe(new StubCalypsoClassic());
-    logger.info(
-        "1 - Verify User Transaction is successful for first user {}",
-        eventFilter.user.getUserId());
-    await().atMost(10, TimeUnit.SECONDS).until(verifyUserTransaction(eventFilter, user1));
-    nativeReader.removeSe();
-    await().atMost(1, TimeUnit.SECONDS).until(seRemoved(nativeReader));
-
-    /*
-     * user2 inserts SE ,
-     * SE event is sent to server,
-     * a transaction is operated in response
-     * user2 removes SE
-     */
-    UserInput user2 = new UserInput().setUserId(UUID.randomUUID().toString());
-    eventFilter.setUserData(user2);
-    nativeReader.insertSe(new StubCalypsoClassic());
-    logger.info(
-        "2 - Verify User Transaction is successful for second user {}",
-        eventFilter.user.getUserId());
-    await().atMost(10, TimeUnit.SECONDS).until(verifyUserTransaction(eventFilter, user2));
-    nativeReader.removeSe();
-    await().atMost(1, TimeUnit.SECONDS).until(seRemoved(nativeReader));
-
-    /*
-     * on the 2nd event, the virtual reader should be cleaned on native and virtual environment
-     */
-    assertThat(remoteSePlugin.getReaders()).isEmpty();
-    assertThat(NativeSeClientServiceTest.getVirtualReaders(nativeService)).isEmpty();
-  }
 
   void remoteselection_remoteTransaction_successful() {
     // insert stub SE into stub
@@ -400,40 +379,114 @@ public abstract class BaseScenario {
   }
 
   void transaction_clientTimeout_fail() {
-    StubSecureElement slowSe = new StubCalypsoClassic() {
-      @Override
-      public byte[] processApdu(byte[] apduIn) {
-        if("00B2014400".equals(ByteArrayUtil.toHex(apduIn))){
-          try {
-            logger.warn("Simulate a slow SE by sleeping 21seconds before sending response");
-            Thread.sleep(10000);
-            logger.warn("Send adpu");
+    StubSecureElement slowSe =
+        new StubCalypsoClassic() {
+          @Override
+          public byte[] processApdu(byte[] apduIn) {
+            if ("00B2014400".equals(ByteArrayUtil.toHex(apduIn))) {
+              try {
+                logger.warn("Simulate a slow SE by sleeping 10 seconds before sending response");
+                Thread.sleep(10000);
+                logger.warn("Send adpu");
+                //return super.processApdu(apduIn);
+                return null;
+              } catch (InterruptedException e) {
+                e.printStackTrace();
+              }
+            }
             return super.processApdu(apduIn);
-          } catch (InterruptedException e) {
-            e.printStackTrace();
           }
-        }
-        return super.processApdu(apduIn);
-      }
-    };
+        };
 
     nativeReader.insertSe(slowSe);
 
-    try{
+    try {
       // execute remote service
       TransactionResult output =
-              nativeService.executeRemoteService(
-                      RemoteServiceParameters.builder(SERVICE_ID_3, nativeReader)
-                              .withUserInputData(user1)
-                              .build(),
-                      TransactionResult.class);
+          nativeService.executeRemoteService(
+              RemoteServiceParameters.builder(SERVICE_ID_3, nativeReader)
+                  .withUserInputData(user1)
+                  .build(),
+              TransactionResult.class);
 
       // validate result is false
       assertThat(output.isSuccessful()).isFalse();
       assertThat(output.getUserId()).isEqualTo(user1.getUserId());
-    }catch (RuntimeException e){
+    } catch (RuntimeException e) {
       assertThat(e).isNull();
     }
+  }
+
+  void defaultSelection_onMatched_transaction_successful(ReaderEventFilter eventFilter) {
+    // execute remote service to create observable virtual reader
+    ConfigurationResult configurationResult =
+            nativeService.executeRemoteService(
+                    RemoteServiceParameters.builder(SERVICE_ID_2, nativeReader)
+                            .withUserInputData(device1)
+                            .build(),
+                    ConfigurationResult.class);
+
+    assertThat(configurationResult.isSuccessful()).isTrue();
+    assertThat(configurationResult.getDeviceId()).isEqualTo(device1.getDeviceId());
+
+    eventFilter.setUserData(user1);
+
+    /*
+     * user1 inserts SE ,
+     * SE event is sent to server,
+     * a transaction is operated in response
+     * user1 removes SE
+     */
+    nativeReader.insertSe(new StubCalypsoClassic());
+    logger.info(
+            "1 - Verify User Transaction is successful for first user {}",
+            eventFilter.user.getUserId());
+    await().atMost(10, TimeUnit.SECONDS).until(verifyUserTransaction(eventFilter, user1, true));
+    nativeReader.removeSe();
+    await().atMost(1, TimeUnit.SECONDS).until(seRemoved(nativeReader));
+
+    /*
+     * user2 inserts SE ,
+     * SE event is sent to server,
+     * a transaction is operated in response
+     * user2 removes SE
+     */
+    UserInput user2 = new UserInput().setUserId(UUID.randomUUID().toString());
+    eventFilter.setUserData(user2);
+    nativeReader.insertSe(new StubCalypsoClassic());
+    logger.info(
+            "2 - Verify User Transaction is successful for second user {}",
+            eventFilter.user.getUserId());
+    await().atMost(10, TimeUnit.SECONDS).until(verifyUserTransaction(eventFilter, user2,true));
+    nativeReader.removeSe();
+    await().atMost(1, TimeUnit.SECONDS).until(seRemoved(nativeReader));
+
+    /*
+     * on the 2nd event, the virtual reader should be cleaned on native and virtual environment
+     */
+    assertThat(remoteSePlugin.getReaders()).isEmpty();
+    assertThat(NativeSeClientServiceTest.getVirtualReaders(nativeService)).isEmpty();
+  }
+
+  void onMatched_transaction_removedEarly_fail(ReaderEventFilter eventFilter) {
+    // execute remote service to create observable virtual reader
+    ConfigurationResult configurationResult =
+        nativeService.executeRemoteService(
+            RemoteServiceParameters.builder(SERVICE_ID_2, nativeReader)
+                .withUserInputData(device1)
+                .build(),
+            ConfigurationResult.class);
+
+    assertThat(configurationResult.isSuccessful()).isTrue();
+    assertThat(configurationResult.getDeviceId()).isEqualTo(device1.getDeviceId());
+
+    eventFilter.setUserData(user1);
+
+    nativeReader.insertSe(new StubCalypsoClassic());
+    logger.info( "Verify User Transaction is successful for user {}", eventFilter.user.getUserId());
+    await().atMost(100, TimeUnit.MILLISECONDS);
+    nativeReader.removeSe();
+    await().atMost(10, TimeUnit.SECONDS).until(verifyUserTransaction(eventFilter, user1,false));
 
   }
 }
