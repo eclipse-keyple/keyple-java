@@ -16,6 +16,7 @@ import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 
 /**
+ * (package-private)<br>
  * Contains a set of parameters to identify the communication protocols supported by the PC/SC
  * readers.
  *
@@ -25,7 +26,7 @@ import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
  * are provided as is and may vary from one reader and SE to another. <br>
  * Thus, it may be necessary to create a set of context-specific custom settings.
  */
-public final class PcscProtocolSetting {
+final class PcscProtocolSetting {
 
   private static final Map<SeProtocol, String> PCSC_PROTOCOL_SETTING;
 
@@ -77,7 +78,7 @@ public final class PcscProtocolSetting {
    *
    * @return A {@link Map}
    */
-  public static Map<SeProtocol, String> getAllSettings() {
+  public static Map<SeProtocol, String> getSettings() {
     return PCSC_PROTOCOL_SETTING;
   }
 }

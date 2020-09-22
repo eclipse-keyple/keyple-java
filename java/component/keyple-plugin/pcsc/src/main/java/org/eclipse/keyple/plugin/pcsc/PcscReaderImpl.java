@@ -12,6 +12,7 @@
 package org.eclipse.keyple.plugin.pcsc;
 
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,6 +33,7 @@ import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeInsertion;
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeProcessing;
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemoval;
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetect;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.Assert;
@@ -77,6 +79,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   private final AtomicBoolean loopWaitSeRemoval = new AtomicBoolean();
 
   private final boolean usePingPresence;
+  private final Map<SeProtocol, String> protocolsMap;
 
   /**
    * This constructor should only be called by PcscPlugin PCSC reader parameters are initialized
@@ -96,6 +99,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     this.cardExclusiveMode = true;
     this.cardReset = false;
     this.currentProtocol = null;
+    this.protocolsMap = new HashMap<SeProtocol, String>();
 
     String os = System.getProperty("os.name").toLowerCase();
     usePingPresence = os.contains("mac");
@@ -103,6 +107,10 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         "System detected : {}, is macOs checkPresence ping activated {}", os, usePingPresence);
 
     this.stateService = initStateService();
+
+    // activates ISO protocols by default
+    activateProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3);
+    activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4);
 
     logger.debug("[{}] constructor => using terminal ", terminal);
   }
@@ -309,87 +317,102 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   /**
    * {@inheritDoc}
    *
+   * <p>In the PC/SC case, this method fills the internal protocols map with the provided protocol
+   * and its associated rule (regular expression).
+   *
+   * <p>The full ISO protocols (ISO7816-3 and ISO14443-4) are activated by default (see {@link
+   * PcscReaderImpl#PcscReaderImpl(String, CardTerminal)}.
+   *
+   * @throws IllegalArgumentException if seProtocol is null.
+   * @since 1.0
+   */
+  @Override
+  public void activateProtocol(SeProtocol seProtocol) {
+
+    Assert.getInstance().notNull(seProtocol, "seProtocol");
+
+    String protocolRule = PcscProtocolSetting.getSettings().get(seProtocol);
+
+    if (protocolRule == null || protocolRule.isEmpty()) {
+      throw new KeypleReaderProtocolNotSupportedException(seProtocol);
+    }
+
+    if (logger.isInfoEnabled()) {
+      logger.info(
+          "{}: Activate protocol {} with rule \"{}\".",
+          getName(),
+          seProtocol.getName(),
+          protocolRule);
+    }
+    protocolsMap.put(seProtocol, protocolRule);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>Remove the protocol from the active protocols list.<br>
+   * Does nothing if the provided protocol is not active.
+   *
+   * @since 1.0
+   * @throws IllegalArgumentException if seProtocol is null.
+   */
+  @Override
+  public void deactivateProtocol(SeProtocol seProtocol) {
+
+    Assert.getInstance().notNull(seProtocol, "seProtocol");
+
+    if (logger.isInfoEnabled()) {
+      logger.info("{}: Deactivate protocol {}.", getName(), seProtocol.getName());
+    }
+    if (protocolsMap.remove(seProtocol) == null && logger.isInfoEnabled()) {
+      logger.info("{}: Protocol {} was not active", getName(), seProtocol.getName());
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   *
    * <p>The standard interface of the PC/SC readers does not allow to know directly the type of
    * protocol used by an SE.
    *
    * <p>This is especially true in contactless mode. Moreover, in this mode, the Answer To Reset
-   * (ATR) returned by the reader is not produced by the SE but reconstructed by the reader from
-   * elements defined in the standard (Interoperability Specification for ICCs and Personal Computer
-   * Systems Part 3).
+   * (ATR) returned by the reader is not produced by the SE but reconstructed by the reader from low
+   * level internal data and with elements defined in the standard (see <b>Interoperability
+   * Specification for ICCs and Personal Computer Systems</b>, Part 3).
    *
    * <p>We therefore use ATR (real or reconstructed) to identify the SE protocol using regular
    * expressions. These regular expressions are defined in {@link PcscProtocolSetting}.
    *
+   * <p>The protocol is determined once per SE communication session. If this method is called
+   * several times, the last determined protocol is returned.
+   *
    * @return The identified {@link SeProtocol}.
-   * @throws KeypleReaderException if none of the defined regular expressions match the ATR of the
-   *     SE.
+   * @throws KeypleReaderProtocolNotFoundException if none of the defined regular expressions match
+   *     the ATR of the SE.
    * @since 1.0
    */
   @Override
   protected SeProtocol getCurrentProtocol() {
 
     if (currentProtocol == null) {
-      Map<SeProtocol, String> protocolsMap = getProtocolsMap();
+      // open physical channel if needed
+      if (!isPhysicalChannelOpen()) {
+        openPhysicalChannel();
+      }
+      String atr = ByteArrayUtil.toHex(card.getATR().getBytes());
       for (Map.Entry<SeProtocol, String> entry : protocolsMap.entrySet()) {
         Pattern p = Pattern.compile(entry.getValue());
-        String atr = ByteArrayUtil.toHex(card.getATR().getBytes());
         if (p.matcher(atr).matches()) {
           currentProtocol = entry.getKey();
           break;
         }
       }
+      if (currentProtocol == null) {
+        // none of the entries in the map correspond to the current ATR
+        throw new KeypleReaderProtocolNotFoundException(atr);
+      }
     }
     return currentProtocol;
-  }
-
-  /**
-   * Tells if the current SE protocol matches the provided protocol flag. If the protocol flag is
-   * not defined (null), we consider here that it matches. An exception is returned when the
-   * provided protocolFlag is not found in the current protocolMap.
-   *
-   * @param protocolFlag the protocol flag
-   * @return true if the current SE matches the protocol flag
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
-   * @since 0.9
-   */
-  @Override
-  protected boolean protocolFlagMatches(SeProtocol protocolFlag) {
-
-    boolean result;
-    // Test protocolFlag to check if ATR based protocol filtering is required
-    if (protocolFlag != null) {
-      if (!isPhysicalChannelOpen()) {
-        openPhysicalChannel();
-      }
-      // the request will be executed only if the protocol match the requestElement
-      String selectionMask = getProtocolsMap().get(protocolFlag);
-      if (selectionMask == null) {
-        throw new KeypleReaderIOException("Target selector mask not found: " + protocolFlag, null);
-      }
-      Pattern p = Pattern.compile(selectionMask);
-      String atr = ByteArrayUtil.toHex(card.getATR().getBytes());
-      if (!p.matcher(atr).matches()) {
-        logger.debug(
-            "[{}] protocolFlagMatches => unmatching SE. PROTOCOLFLAG = {}, ATR = {}, MASK = {}",
-            this.getName(),
-            protocolFlag,
-            atr,
-            selectionMask);
-
-        result = false;
-      } else {
-        logger.debug(
-            "[{}] protocolFlagMatches => matching SE. PROTOCOLFLAG = {}",
-            this.getName(),
-            protocolFlag);
-
-        result = true;
-      }
-    } else {
-      // no protocol defined returns true
-      result = true;
-    }
-    return result;
   }
 
   /**
