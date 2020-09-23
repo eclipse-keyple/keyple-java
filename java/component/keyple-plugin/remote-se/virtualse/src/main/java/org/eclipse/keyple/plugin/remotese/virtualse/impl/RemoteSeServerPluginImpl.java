@@ -172,6 +172,7 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
             .setAction(KeypleMessageDto.Action.TERMINATE_SERVICE.name()) //
             .setVirtualReaderName(virtualReaderName) //
             .setSessionId(virtualReader.getSessionId()) //
+            .setClientNodeId(virtualReader.getClientNodeId())//
             .setBody(body.toString());
 
     // Send the message
@@ -270,7 +271,7 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
    * @return non null instance of AbstractServerVirtualReader
    */
   private AbstractServerVirtualReader createMasterReader(KeypleMessageDto message) {
-    JsonObject body = KeypleJsonParser.getParser().fromJson(message.getBody(), JsonObject.class);
+    final JsonObject body = KeypleJsonParser.getParser().fromJson(message.getBody(), JsonObject.class);
     final String serviceId = body.get("serviceId").getAsString();
     final String userInputData =
         body.has("userInputData") ? body.get("userInputData").toString() : null;
@@ -279,15 +280,17 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
     boolean isObservable = body.has("isObservable") && body.get("isObservable").getAsBoolean();
     final String virtualReaderName = UUID.randomUUID().toString();
     final String sessionId = message.getSessionId();
+    final String clientNodeId = message.getClientNodeId();
 
     if (logger.isTraceEnabled()) {
       logger.trace(
-          "[{}] Create a virtual reader {} with serviceId:{} and isObservable:{} for sessionId:",
+          "[{}] Create a virtual reader {} with serviceId:{} and isObservable:{} for sessionId:{} for clientNodeId:{}",
           this.getName(),
           virtualReaderName,
           serviceId,
           isObservable,
-          sessionId);
+          sessionId,
+          clientNodeId);
     }
     if (isObservable) {
       VirtualObservableReader virtualObservableReader =
@@ -295,11 +298,11 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
               getName(), virtualReaderName, getNode(), eventNotificationPool);
       virtualObservableReader.setSessionId(sessionId);
       return new ServerVirtualObservableReader(
-          virtualObservableReader, serviceId, userInputData, initialSeContent, null);
+          virtualObservableReader, clientNodeId, serviceId, userInputData, initialSeContent, null);
     } else {
       VirtualReader virtualReader = new VirtualReader(getName(), virtualReaderName, getNode());
       virtualReader.setSessionId(sessionId);
-      return new ServerVirtualReader(virtualReader, serviceId, userInputData, initialSeContent);
+      return new ServerVirtualReader(virtualReader, clientNodeId, serviceId, userInputData, initialSeContent);
     }
   }
 
@@ -311,10 +314,10 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
    * @return non null instance of a ServerVirtualObservableReader
    */
   private ServerVirtualObservableReader createSlaveReader(KeypleMessageDto message) {
-    ServerVirtualObservableReader virtualObservableReader =
+    final ServerVirtualObservableReader virtualObservableReader =
         (ServerVirtualObservableReader) getReader(message.getVirtualReaderName());
-
-    JsonObject body = KeypleJsonParser.getParser().fromJson(message.getBody(), JsonObject.class);
+    final String clientNodeId = message.getClientNodeId();
+    final JsonObject body = KeypleJsonParser.getParser().fromJson(message.getBody(), JsonObject.class);
 
     String userInputData = body.has("userInputData") ? body.get("userInputData").toString() : null;
 
@@ -324,6 +327,6 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
     virtualReader.setSessionId(message.getSessionId());
     // create a temporary virtual reader for this event
     return new ServerVirtualObservableReader(
-        virtualReader, null, userInputData, null, virtualObservableReader);
+        virtualReader, clientNodeId, null, userInputData, null, virtualObservableReader);
   }
 }

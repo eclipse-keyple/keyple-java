@@ -34,17 +34,15 @@ public class StubAsyncServerEndpoint implements KeypleServerAsync {
 private static final Logger logger = LoggerFactory.getLogger(StubAsyncServerEndpoint.class);
   final Map<String, StubAsyncClientEndpoint> clients; // sessionId_client
   final ExecutorService taskPool;
-  final String serverNodeId;
 
   public StubAsyncServerEndpoint() {
     clients = new HashMap<String, StubAsyncClientEndpoint>();
     taskPool = Executors.newCachedThreadPool(new NamedThreadFactory("server-pool"));
-    serverNodeId = UUID.randomUUID().toString();
   }
 
   /** Simulate a open socket operation */
   public void open(String sessionId, StubAsyncClientEndpoint endpoint) {
-    clients.put(sessionId, endpoint);
+      clients.put(sessionId, endpoint);
   }
 
   /** Simulate a close socket operation */
@@ -74,8 +72,6 @@ private static final Logger logger = LoggerFactory.getLogger(StubAsyncServerEndp
   public void sendMessage(final KeypleMessageDto msg) {
     // retrieve socket
     final StubAsyncClientEndpoint client = clients.get(msg.getSessionId());
-    msg.setServerNodeId(serverNodeId);
-    msg.setClientNodeId(client.getClientNodeId());
     taskPool.submit(
         new Runnable() {
           @Override

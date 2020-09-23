@@ -98,8 +98,7 @@ public abstract class BaseScenario {
   abstract void execute_transaction_closeSession_fail();
 
   /**
-   * Client application invokes remoteService which results in a remote calypso session. Native
-   * Reader throws exception in the closing operation.
+   * Client application invokes remoteService which results in a remote calypso session.
    */
   abstract void execute_transaction_clientTimeout_fail();
 
@@ -120,6 +119,14 @@ public abstract class BaseScenario {
    * virtual reader.
    */
   abstract void observable_onMatched_transaction_removedEarly_fail();
+
+
+  //timeout reseau le serveur s'est barré
+
+  //timeout reseau le client s'est barré
+
+  //async, time out transaction.
+
 
   private static final Logger logger = LoggerFactory.getLogger(BaseScenario.class);
 

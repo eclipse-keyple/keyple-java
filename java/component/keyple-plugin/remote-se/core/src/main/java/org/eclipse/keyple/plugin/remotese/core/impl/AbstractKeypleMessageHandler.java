@@ -37,9 +37,9 @@ public abstract class AbstractKeypleMessageHandler {
 
   /**
    * (protected)<br>
-   * The bounded node.
+   * Timeout for a request execution
    */
-  protected int timeoutInSecond = 5;
+  protected int timeoutInSecond = 20;
 
   /**
    * (protected)<br>

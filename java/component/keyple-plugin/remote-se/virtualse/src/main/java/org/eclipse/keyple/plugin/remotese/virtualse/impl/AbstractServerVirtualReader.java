@@ -36,22 +36,26 @@ abstract class AbstractServerVirtualReader implements RemoteSeServerReader, Prox
   private final String serviceId;
   private final String initialSeContentJson;
   private final String userInputDataJson;
+  private final String clientNodeId;
 
   /**
    * (package-private)<br>
    * Constructor
    *
    * @param reader The reader to decorate (must be not null).
+   * @param clientNodeId The client node Id (must be not null).
    * @param serviceId The service id (must be not null).
    * @param userInputDataJson The user input data as a JSON string (optional).
    * @param initialSeContentJson The initial SE content as a JSON string (optional).
    */
   AbstractServerVirtualReader(
       AbstractVirtualReader reader,
+      String clientNodeId,
       String serviceId,
       String userInputDataJson,
       String initialSeContentJson) {
     this.reader = reader;
+    this.clientNodeId = clientNodeId;
     this.serviceId = serviceId;
     this.userInputDataJson = userInputDataJson;
     this.initialSeContentJson = initialSeContentJson;
@@ -173,5 +177,9 @@ abstract class AbstractServerVirtualReader implements RemoteSeServerReader, Prox
    */
   String getSessionId() {
     return this.reader.getSessionId();
+  }
+
+  String getClientNodeId() {
+    return clientNodeId;
   }
 }

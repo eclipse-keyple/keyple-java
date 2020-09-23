@@ -67,7 +67,6 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
   }
 
   Object executeService(RemoteSeServerReader virtualReader) {
-
     logger.info("Executing ServiceId : {}", virtualReader.getServiceId());
 
     // "EXECUTE_CALYPSO_SESSION_FROM_LOCAL_SELECTION"
@@ -76,12 +75,12 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
       CalypsoPo calypsoPo = virtualReader.getInitialSeContent(CalypsoPo.class);
       UserInput userInput = virtualReader.getUserInputData(UserInput.class);
       try {
-        // execute a transacation
+        // execute a transaction
         CalypsoUtilities.readEventLog(calypsoPo, virtualReader, logger);
+        return new TransactionResult().setUserId(userInput.getUserId()).setSuccessful(true);
       } catch (KeypleException e) {
         return new TransactionResult().setSuccessful(false).setUserId(userInput.getUserId());
       }
-      return new TransactionResult().setUserId(userInput.getUserId()).setSuccessful(true);
     }
 
     // CREATE_CONFIGURE_OBS_VIRTUAL_READER
@@ -112,12 +111,12 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
       CalypsoPo calypsoPo = (CalypsoPo) selectionsResult.getActiveMatchingSe();
 
       try {
-        // execute a transacation
+        // execute a transaction
         CalypsoUtilities.readEventLog(calypsoPo, virtualReader, logger);
+        return new TransactionResult().setUserId(userInput.getUserId()).setSuccessful(true);
       } catch (KeypleException e) {
         return new TransactionResult().setSuccessful(false).setUserId(userInput.getUserId());
       }
-      return new TransactionResult().setUserId(userInput.getUserId()).setSuccessful(true);
     }
 
     throw new IllegalArgumentException("Service Id not recognized");
