@@ -52,9 +52,10 @@ final class VirtualObservableReader extends AbstractVirtualReader
   VirtualObservableReader(
       String pluginName,
       String nativeReaderName,
+      String clientNodeId,
       AbstractKeypleNode node,
       ExecutorService eventNotificationPool) {
-    super(pluginName, nativeReaderName, node);
+    super(pluginName, nativeReaderName, node, clientNodeId);
     this.observers = new ArrayList<ReaderObserver>();
     this.eventNotificationPool = eventNotificationPool;
   }

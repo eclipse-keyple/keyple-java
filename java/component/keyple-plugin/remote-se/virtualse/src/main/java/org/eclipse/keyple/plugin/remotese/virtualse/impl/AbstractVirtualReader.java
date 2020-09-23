@@ -42,6 +42,7 @@ abstract class AbstractVirtualReader extends AbstractReader {
   protected final String nativeReaderName;
 
   private String sessionId;
+  private String clientNodeId;
 
   /**
    * (package-private)<br>
@@ -51,11 +52,13 @@ abstract class AbstractVirtualReader extends AbstractReader {
    * @param nativeReaderName The name of the native reader (must be not null).
    * @param node The associated node (must be not null).
    */
-  AbstractVirtualReader(String pluginName, String nativeReaderName, AbstractKeypleNode node) {
+  AbstractVirtualReader(String pluginName, String nativeReaderName, AbstractKeypleNode node, String clientNodeId) {
     super(pluginName, UUID.randomUUID().toString());
     this.nativeReaderName = nativeReaderName;
     this.node = node;
     this.sessionId = null;
+    this.clientNodeId = clientNodeId;
+
   }
 
   /**
@@ -192,6 +195,7 @@ abstract class AbstractVirtualReader extends AbstractReader {
             .setAction(action.name()) //
             .setVirtualReaderName(getName()) //
             .setNativeReaderName(nativeReaderName) //
+            .setClientNodeId(clientNodeId)//
             .setBody(body != null ? body.toString() : null);
 
     // Send the message as a request
@@ -233,5 +237,9 @@ abstract class AbstractVirtualReader extends AbstractReader {
    */
   void setSessionId(String sessionId) {
     this.sessionId = sessionId;
+  }
+
+  String getClientNodeId() {
+    return clientNodeId;
   }
 }

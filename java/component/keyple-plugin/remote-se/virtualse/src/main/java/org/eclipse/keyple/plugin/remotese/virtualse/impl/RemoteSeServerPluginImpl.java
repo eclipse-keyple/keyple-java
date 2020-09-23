@@ -295,14 +295,14 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
     if (isObservable) {
       VirtualObservableReader virtualObservableReader =
           new VirtualObservableReader(
-              getName(), virtualReaderName, getNode(), eventNotificationPool);
+              getName(), virtualReaderName, clientNodeId, getNode(), eventNotificationPool);
       virtualObservableReader.setSessionId(sessionId);
       return new ServerVirtualObservableReader(
-          virtualObservableReader, clientNodeId, serviceId, userInputData, initialSeContent, null);
+          virtualObservableReader,  serviceId, userInputData, initialSeContent, null);
     } else {
-      VirtualReader virtualReader = new VirtualReader(getName(), virtualReaderName, getNode());
+      VirtualReader virtualReader = new VirtualReader(getName(), virtualReaderName, clientNodeId,getNode());
       virtualReader.setSessionId(sessionId);
-      return new ServerVirtualReader(virtualReader, clientNodeId, serviceId, userInputData, initialSeContent);
+      return new ServerVirtualReader(virtualReader,  serviceId, userInputData, initialSeContent);
     }
   }
 
@@ -323,10 +323,10 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
 
     VirtualObservableReader virtualReader =
         new VirtualObservableReader(
-            getName(), UUID.randomUUID().toString(), getNode(), eventNotificationPool);
+            getName(), UUID.randomUUID().toString(),clientNodeId, getNode(), eventNotificationPool);
     virtualReader.setSessionId(message.getSessionId());
     // create a temporary virtual reader for this event
     return new ServerVirtualObservableReader(
-        virtualReader, clientNodeId, null, userInputData, null, virtualObservableReader);
+        virtualReader,  null, userInputData, null, virtualObservableReader);
   }
 }

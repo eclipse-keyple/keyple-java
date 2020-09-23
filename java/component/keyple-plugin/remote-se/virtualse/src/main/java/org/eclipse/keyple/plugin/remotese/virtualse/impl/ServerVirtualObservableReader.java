@@ -33,19 +33,17 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
    * Constructor
    *
    * @param reader The reader to decorate (must be not null).
-   * @param clientNodeId The client node Id (must be not null).
    * @param serviceId The service id (nullable only if this instance is a slave reader).
    * @param userInputDataJson The user input data as a JSON string (optional).
    * @param initialSeContentJson The initial SE content as a JSON string (optional).
    */
   ServerVirtualObservableReader(
       VirtualObservableReader reader,
-      String clientNodeId,
       String serviceId,
       String userInputDataJson,
       String initialSeContentJson,
       ServerVirtualObservableReader masterReader) {
-    super(reader,clientNodeId, serviceId, userInputDataJson, initialSeContentJson);
+    super(reader, serviceId, userInputDataJson, initialSeContentJson);
     this.reader = reader;
     this.masterReader = masterReader;
   }
