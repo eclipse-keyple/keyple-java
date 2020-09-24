@@ -46,12 +46,14 @@ public abstract class AbstractReader implements ProxyReader {
    * Reader constructor taking the name of the plugin that instantiated the reader and the name of
    * the reader in argument.
    *
-   * <p>Note: the time measurement is initialized.
+   * <p>Initializes the time measurement at {@link SeRequest} level.
    *
    * @param pluginName A not empty string.
    * @param name A not empty string.
+   * @since 0.9
    */
   protected AbstractReader(String pluginName, String name) {
+
     this.name = name;
     this.pluginName = pluginName;
     this.before = System.nanoTime(); /*

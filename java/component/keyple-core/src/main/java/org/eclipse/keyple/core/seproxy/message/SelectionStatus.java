@@ -44,12 +44,20 @@ public class SelectionStatus implements Serializable {
    *       currently open, false otherwise.
    * </ul>
    *
+   * Note: ATR and FCI are optional but cannot both be absent when the selection status is
+   * successful.
+   *
    * @param atr A nullable {@link AnswerToReset} reference.
    * @param fci A nullable {@link ApduResponse} reference.
    * @param isMatching A boolean.
+   * @throws IllegalArgumentException if ATR and FCI are both null while isMatching is true.
    * @since 0.9
    */
   public SelectionStatus(AnswerToReset atr, ApduResponse fci, boolean isMatching) {
+    if (atr == null && fci == null && isMatching) {
+      throw new IllegalArgumentException(
+          "Atr and Fci can't be null at the same time for a matching selection.");
+    }
     this.atr = atr;
     this.fci = fci;
     this.isMatching = isMatching;

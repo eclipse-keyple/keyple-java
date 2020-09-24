@@ -25,12 +25,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A local reader. <code>AbstractLocalReader</code> implements the algorithms of the methods defined
- * by the {@link org.eclipse.keyple.core.seproxy.SeReader} and {@link ProxyReader} interfaces for a
- * local reader.<br>
- * It also defines a set of abstract methods to be implemented by the reader plugins.
+ * A local reader. <code>AbstractLocalReader</code> implements the methods defined by the {@link
+ * org.eclipse.keyple.core.seproxy.SeReader} and {@link ProxyReader} interfaces for a local reader.
+ * <br>
+ * It also defines a set of abstract methods to be implemented by the reader plugins in order to
+ * take into account the specific needs of the hardware.
  */
-@SuppressWarnings({"PMD.TooManyMethods", "PMD.CyclomaticComplexity"})
 public abstract class AbstractLocalReader extends AbstractReader {
 
   /** logger */
@@ -45,19 +45,18 @@ public abstract class AbstractLocalReader extends AbstractReader {
   /** Timestamp recorder */
   private long before;
 
-  /** ==== Constructor =================================================== */
-
   /**
    * Reader constructor
    *
-   * <p>Force the definition of a name through the use of super method.
+   * <p>Defines the plugin and reader names.
    *
-   * <p>Initialize the time measurement
+   * <p>Initializes the time measurement at {@link ApduRequest} level.
    *
    * @param pluginName the name of the plugin that instantiated the reader
    * @param readerName the name of the reader
    */
   public AbstractLocalReader(String pluginName, String readerName) {
+
     super(pluginName, readerName);
     this.before = System.nanoTime(); /*
                                           * provides an initial value for measuring the
@@ -65,9 +64,6 @@ public abstract class AbstractLocalReader extends AbstractReader {
                                           * time elapsed since the plugin was loaded.
                                           */
   }
-
-  /** ==== Card presence management ====================================== */
-
   /**
    * Check the presence of a SE
    *
@@ -97,10 +93,9 @@ public abstract class AbstractLocalReader extends AbstractReader {
    */
   protected abstract boolean checkSePresence();
 
-  /* ==== Physical and logical channels management ====================== */
-
   /** Close both logical and physical channels */
   protected void closeLogicalAndPhysicalChannels() {
+
     closeLogicalChannel();
     try {
       closePhysicalChannel();
@@ -118,29 +113,30 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * This abstract method must be implemented by the derived class in order to provide the SE ATR
    * when available.
    *
-   * <p>Gets the SE Answer to reset
+   * <p>Gets the ATR returned by the SE or reconstructed by the reader (contactless). Can be null if
+   * the plugin does not provide ATR.
    *
-   * @return ATR returned by the SE or reconstructed by the reader (contactless)
+   * @return A nullable byte array.
    */
   protected abstract byte[] getATR();
-
-  /* ==== Physical and logical channels management ====================== */
-  /* Selection management */
 
   /**
    * This method is dedicated to the case where no FCI data is available in return for the select
    * command.
    *
-   * <p>
+   * <p>A specific APDU is sent to the SE retrieve the FCI data and returns it in an {@link
+   * ApduResponse}.<br>
+   * The provided AidSelector is used to check the response's status codes.
    *
-   * @param aidSelector used to retrieve the successful status codes from the main AidSelector
-   * @return a ApduResponse containing the FCI
+   * @param aidSelector A {@link SeSelector.AidSelector} (must be not null).
+   * @return A {@link ApduResponse} containing the FCI.
    * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
    */
   private ApduResponse recoverSelectionFciData(SeSelector.AidSelector aidSelector) {
+
     ApduResponse fciResponse;
     // Get Data APDU: CLA, INS, P1: always 0, P2: 0x6F FCI for the current DF, LC: 0
-    byte[] getDataCommand = {(byte) 0x00, (byte) 0xCA, (byte) 0x00, (byte) 0x6F, (byte) 0x00};
+    final byte[] getDataCommand = {(byte) 0x00, (byte) 0xCA, (byte) 0x00, (byte) 0x6F, (byte) 0x00};
 
     /*
      * The successful status codes list for this command is provided.
@@ -161,14 +157,15 @@ public abstract class AbstractLocalReader extends AbstractReader {
   }
 
   /**
-   * Executes the selection application command and returns the requested data according to
-   * AidSelector attributes.
+   * Sends the select application command to the SE and returns the requested data according to
+   * AidSelector attributes (ISO7816-4 selection data) into an {@link ApduResponse}.
    *
-   * @param aidSelector the selection parameters
-   * @return the response to the select application command
+   * @param aidSelector A not null {@link SeSelector.AidSelector}
+   * @return A not null {@link ApduResponse}.
    * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
    */
   private ApduResponse processExplicitAidSelection(SeSelector.AidSelector aidSelector) {
+
     ApduResponse fciResponse;
     final byte[] aid = aidSelector.getAidToSelect();
     if (aid == null) {
@@ -360,7 +357,8 @@ public abstract class AbstractLocalReader extends AbstractReader {
   }
 
   /**
-   * Local implementation of {@link AbstractReader#processSeRequests(List, MultiSeRequestProcessing, ChannelControl)}
+   * Local implementation of {@link AbstractReader#processSeRequests(List, MultiSeRequestProcessing,
+   * ChannelControl)}
    *
    * <p>{@inheritDoc}<br>
    *
@@ -386,9 +384,29 @@ public abstract class AbstractLocalReader extends AbstractReader {
     }
 
     /* loop over all SeRequest provided in the list */
-    for (SeRequest request : seRequests) {
+    for (SeRequest seRequest : seRequests) {
       /* process the SeRequest and append the SeResponse list */
-      seResponses.add(processSeRequestLogical(request));
+      SeResponse seResponse;
+      try {
+        seResponse = processSeRequestLogical(seRequest);
+      } catch (KeypleReaderIOException ex) {
+        /*
+         * The process has been interrupted. We launch a KeypleReaderException with
+         * the responses collected so far.
+         * Add the latest (and partial) SeResponse to the current list.
+         */
+        seResponses.add(ex.getSeResponse());
+        /* Build a List of SeResponse with the available data. */
+        ex.setSeResponses(seResponses);
+        if (logger.isDebugEnabled()) {
+          logger.debug(
+              "[{}] processSeRequests => transmit : process interrupted, collect previous responses {}",
+              this.getName(),
+              seResponses);
+        }
+        throw ex;
+      }
+      seResponses.add(seResponse);
       if (multiSeRequestProcessing == MultiSeRequestProcessing.PROCESS_ALL) {
         /* multi SeRequest case: just close the logical channel and go on with the next selection. */
         closeLogicalChannel();
@@ -428,7 +446,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
     SeResponse seResponse;
     if (seRequest != null) {
       /* process the SeRequest and keep the SeResponse */
-       seResponse = processSeRequestLogical(seRequest);
+      seResponse = processSeRequestLogical(seRequest);
       /* handle the communication closing according to the provided ChannelControl parameter */
       processChannelControl(channelControl);
     } else {
@@ -680,6 +698,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * @param originalStatusCode the status code of the command that didn't returned data
    * @return ApduResponse the response to the get response command
    * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @since 0.9
    */
   private ApduResponse case4HackGetResponse(int originalStatusCode) {
 
@@ -721,15 +740,17 @@ public abstract class AbstractLocalReader extends AbstractReader {
   }
 
   /**
-   * Transmits a single APDU and receives its response.
+   * Transmits a single APDU and receives its response. Both are in the form of an array of bytes.
    *
-   * <p>This abstract method must be implemented by the ProxyReader plugin (e.g. Pcsc, Nfc). The
-   * implementation must handle the case where the SE response is 61xy and execute the appropriate
-   * get response command.
+   * <p>This abstract method must be implemented by the ProxyReader plugin (e.g. Pcsc, Nfc).
    *
-   * @param apduIn byte buffer containing the ingoing data
+   * <p><b>Caution: the implementation must handle the case where the SE response is 61xy and
+   * execute the appropriate get response command.</b>
+   *
+   * @param apduIn byte buffer containing the ingoing data (should be not null).
    * @return apduResponse byte buffer containing the outgoing data.
    * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @since 0.9
    */
   protected abstract byte[] transmitApdu(byte[] apduIn);
 
@@ -737,6 +758,8 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * Method to be implemented by child classes in order to handle the needed actions when
    * terminating the communication with a SE (closing of the physical channel, initiating a removal
    * sequence, etc.)
+   *
+   * @since 0.9
    */
   abstract void terminateSeCommunication();
 }

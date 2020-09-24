@@ -107,13 +107,13 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException::class)
     fun transmitNoSuchElementException() {
         nativeReader = mockReaderWithExceptionOnOpenLogicalChannel(NoSuchElementException())
         reader = buildOmapiReaderImpl(nativeReader)
         // test
         val seResponseList = reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
-        Assert.assertNull(seResponseList[0]) // If container is not found a null responsed is returned
+        Assert.assertFalse(seResponseList[0].selectionStatus.hasMatched()) // If container is not found a null responsed is returned
     }
 
     @Test(expected = KeypleReaderIOException::class)
@@ -124,7 +124,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
-    @Test(expected = KeypleReaderIOException::class)
+    @Test(expected = IllegalArgumentException::class)
     fun transmitNoAidOpenChannelFailed() {
         nativeReader = mockReaderWithNullOnOpenBasicChannel()
         reader = buildOmapiReaderImpl(nativeReader)
@@ -132,7 +132,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader.transmitSeRequests(getNoAidSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
-    @Test(expected = KeypleReaderIOException::class)
+    @Test(expected = IllegalArgumentException::class)
     fun transmitNoAidIOException() {
         nativeReader = mockReaderWithExceptionOnOpenBasicChannel(IOException())
         reader = buildOmapiReaderImpl(nativeReader)
@@ -140,7 +140,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader.transmitSeRequests(getNoAidSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
-    @Test(expected = KeypleReaderIOException::class)
+    @Test(expected = IllegalArgumentException::class)
     fun transmitNoAidSecurityException() {
         nativeReader = mockReaderWithExceptionOnOpenBasicChannel(SecurityException())
         reader = buildOmapiReaderImpl(nativeReader)
@@ -148,7 +148,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader.transmitSeRequests(getNoAidSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException::class)
     fun transmitNoAid() {
 
         // init
@@ -159,7 +159,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         val seResponseList = reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
 
         // assert
-        Assert.assertNull(seResponseList[0])
+        Assert.assertFalse(seResponseList[0].selectionStatus.hasMatched())
     }
 
     @Test
@@ -179,7 +179,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         val seResponseList = reader.transmitSeRequests(seRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
 
         // assert
-        Assert.assertNull(seResponseList[0])
+        Assert.assertFalse(seResponseList[0].selectionStatus.hasMatched())
     }
 
     @Test(expected = KeypleReaderException::class)

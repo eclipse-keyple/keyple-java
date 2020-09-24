@@ -11,9 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.plugin.reader;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.*;
@@ -23,7 +22,6 @@ import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -62,7 +60,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
     when(r.checkSePresence()).thenReturn(false);
     // test
-    Assert.assertFalse(r.isSePresent());
+    assertThat(r.isSePresent()).isFalse();
   }
 
   @Test
@@ -70,7 +68,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
     when(r.checkSePresence()).thenReturn(true);
     // test
-    Assert.assertTrue(r.isSePresent());
+    assertThat(r.isSePresent()).isTrue();
   }
 
   /*
@@ -85,12 +83,13 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     SeSelector seSelector = getAtrSelector();
 
-    SelectionStatus status = r.openLogicalChannel(seSelector);
-    Assert.assertEquals(true, status.hasMatched());
+    SeRequest seRequest = new SeRequest(seSelector, new ArrayList<ApduRequest>());
 
-    // TODO OD : hard to understand why isLogicalChannelOpen is false after openLogicalChannel
-    Assert.assertEquals(false, r.isLogicalChannelOpen()); // channel is open only when
-    // processSeRequest
+    SeResponse seResponse = r.processSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+
+    assertThat(seResponse.getSelectionStatus().hasMatched()).isTrue();
+
+    assertThat(r.isLogicalChannelOpen()).isTrue();
   }
 
   @Test
@@ -101,11 +100,14 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     SeSelector seSelector = getAtrSelector();
 
-    SelectionStatus status = r.openLogicalChannel(seSelector);
-    Assert.assertEquals(false, status.hasMatched());
+    SeRequest seRequest = new SeRequest(seSelector, new ArrayList<ApduRequest>());
+
+    SeResponse seResponse = r.processSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+
+    assertThat(seResponse.getSelectionStatus().hasMatched()).isFalse();
   }
 
-  @Test(expected = KeypleReaderIOException.class)
+  @Test(expected = IllegalStateException.class)
   public void select_byAtr_null() throws Exception {
     AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
     // mock ATR
@@ -113,7 +115,9 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     SeSelector seSelector = getAtrSelector();
 
-    r.openLogicalChannel(seSelector);
+    SeRequest seRequest = new SeRequest(seSelector, new ArrayList<ApduRequest>());
+
+    SeResponse seResponse = r.processSeRequest(seRequest, ChannelControl.KEEP_OPEN);
     // expected exception
   }
 
@@ -128,8 +132,11 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     SeSelector seSelector = getAidSelector();
 
-    SelectionStatus status = r.openLogicalChannel(seSelector);
-    Assert.assertEquals(true, status.hasMatched());
+    SeRequest seRequest = new SeRequest(seSelector, new ArrayList<ApduRequest>());
+
+    SeResponse seResponse = r.processSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+
+    assertThat(seResponse.getSelectionStatus().hasMatched()).isTrue();
   }
 
   @Test
@@ -139,8 +146,11 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     SeSelector seSelector = getAidSelector();
 
-    SelectionStatus status = r.openLogicalChannel(seSelector);
-    Assert.assertEquals(false, status.hasMatched());
+    SeRequest seRequest = new SeRequest(seSelector, new ArrayList<ApduRequest>());
+
+    SeResponse seResponse = r.processSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+
+    assertThat(seResponse.getSelectionStatus().hasMatched()).isFalse();
   }
 
   /*
@@ -158,8 +168,11 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     SeSelector seSelector = getAidSelector();
 
-    SelectionStatus status = r.openLogicalChannel(seSelector);
-    Assert.assertEquals(true, status.hasMatched());
+    SeRequest seRequest = new SeRequest(seSelector, new ArrayList<ApduRequest>());
+
+    SeResponse seResponse = r.processSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+
+    assertThat(seResponse.getSelectionStatus().hasMatched()).isTrue();
   }
 
   /*
@@ -185,8 +198,11 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     SeSelector seSelector =
         SeSelector.builder().atrFilter(atrFilter).aidSelector(aidSelector).build();
 
-    SelectionStatus status = r.openLogicalChannel(seSelector);
-    Assert.assertEquals(true, status.hasMatched());
+    SeRequest seRequest = new SeRequest(seSelector, new ArrayList<ApduRequest>());
+
+    SeResponse seResponse = r.processSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+
+    assertThat(seResponse.getSelectionStatus().hasMatched()).isTrue();
   }
 
   /*
@@ -200,44 +216,47 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     SeSelector seSelector = SeSelector.builder().build();
 
-    SelectionStatus status = r.openLogicalChannel(seSelector);
-    Assert.assertEquals(true, status.hasMatched());
+    SeRequest seRequest = new SeRequest(seSelector, new ArrayList<ApduRequest>());
+
+    SeResponse seResponse = r.processSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+
+    assertThat(seResponse.getSelectionStatus().hasMatched()).isTrue();
   }
 
   /*
    * open logical channel
    */
 
-  @Test(expected = IllegalArgumentException.class)
-  public void open_channel_null() throws Exception {
-    AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
-    r.openLogicalChannelAndSelect(null);
-    // expected exception
-  }
+  //  @Test(expected = IllegalArgumentException.class)
+  //  public void open_channel_null() throws Exception {
+  //    AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
+  //    r.openLogicalChannelAndSelect(null);
+  //    // expected exception
+  //  }
 
-  @Test
-  public void open_logical_channel_success() throws Exception {
-    AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
-    when(r.getATR()).thenReturn(ByteArrayUtil.fromHex(ATR));
-    when(r.isPhysicalChannelOpen()).thenReturn(true);
-
-    SeSelector seSelector = getAtrSelector();
-
-    r.openLogicalChannelAndSelect(seSelector);
-    verify(r, times(1)).openLogicalChannel(seSelector);
-  }
-
-  @Test(expected = KeypleReaderIOException.class)
-  public void open_channel_fail() throws Exception {
-    AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
-    when(r.getATR()).thenReturn(ByteArrayUtil.fromHex(ATR));
-    when(r.isPhysicalChannelOpen()).thenReturn(false); // does not open
-
-    SeSelector seSelector = getAtrSelector();
-
-    r.openLogicalChannelAndSelect(seSelector);
-    verify(r, times(0)).openLogicalChannel(seSelector);
-  }
+  //  @Test
+  //  public void open_logical_channel_success() throws Exception {
+  //    AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
+  //    when(r.getATR()).thenReturn(ByteArrayUtil.fromHex(ATR));
+  //    when(r.isPhysicalChannelOpen()).thenReturn(true);
+  //
+  //    SeSelector seSelector = getAtrSelector();
+  //
+  //    r.openLogicalChannelAndSelect(seSelector);
+  //    verify(r, times(1)).openLogicalChannel(seSelector);
+  //  }
+  //
+  //  @Test(expected = KeypleReaderIOException.class)
+  //  public void open_channel_fail() throws Exception {
+  //    AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
+  //    when(r.getATR()).thenReturn(ByteArrayUtil.fromHex(ATR));
+  //    when(r.isPhysicalChannelOpen()).thenReturn(false); // does not open
+  //
+  //    SeSelector seSelector = getAtrSelector();
+  //
+  //    r.openLogicalChannelAndSelect(seSelector);
+  //    verify(r, times(0)).openLogicalChannel(seSelector);
+  //  }
 
   /*
    * add Se Protocol Setting
@@ -248,8 +267,8 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
     String protocolRule = "any";
     r.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4, protocolRule);
-    Assert.assertEquals(
-        protocolRule, r.getProtocolsMap().get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+    assertThat(protocolRule)
+        .isEqualTo(r.getProtocolsMap().get(SeCommonProtocols.PROTOCOL_ISO14443_4));
   }
 
   @Test
@@ -259,8 +278,8 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     Map protocols = new HashMap();
     protocols.put(SeCommonProtocols.PROTOCOL_ISO14443_4, protocolRule);
     r.setSeProtocolSetting(protocols);
-    Assert.assertEquals(
-        protocolRule, r.getProtocolsMap().get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+    assertThat(protocolRule)
+        .isEqualTo(r.getProtocolsMap().get(SeCommonProtocols.PROTOCOL_ISO14443_4));
   }
 
   /*

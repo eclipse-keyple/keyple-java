@@ -70,10 +70,13 @@ public class AbsReaderTest extends CoreBaseTest {
         .transmitSeRequests(null, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void ts_transmit2_null() throws Exception {
     AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
     r.transmitSeRequests(null, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+    // we're just waiting right here for no exceptions to be thrown.
+    verify(r, times(1))
+        .transmitSeRequests(null, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
   }
 
   @Test
@@ -101,10 +104,12 @@ public class AbsReaderTest extends CoreBaseTest {
     verify(r, times(1)).transmitSeRequest(null, ChannelControl.CLOSE_AFTER);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void transmit2_null() throws Exception {
     AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
     r.transmitSeRequest(null, ChannelControl.KEEP_OPEN);
+    // we're just waiting right here for no exceptions to be thrown.
+    verify(r, times(1)).transmitSeRequest(null, ChannelControl.KEEP_OPEN);
   }
 
   @Test

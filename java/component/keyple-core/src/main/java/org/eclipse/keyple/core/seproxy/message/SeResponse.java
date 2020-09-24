@@ -16,9 +16,21 @@ import java.util.List;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /**
- * Group of SE responses received in response to a {@link SeRequest}.
+ * This POJO is used to transport data from a secure element obtained in response to a {@link
+ * SeRequest}..
  *
- * @see SeRequest
+ * <p>It includes elements related to the selection of the SE.
+ *
+ * <ul>
+ *   <li><code>logicalChannelIsOpen</code> tells if a logical channel is currently open.
+ *   <li><code>channelPreviouslyOpen</code> tells if a logical channel wa already open prior the
+ *       latest {@link SeRequest}.
+ *   <li><code>selectionStatus</code>another POJO carrying ATR, FCI and a selection result boolean
+ *       (may be null)
+ * </ul>
+ *
+ * It also includes a list of {@link ApduResponse} corresponding to the list of {@link ApduRequest}
+ * present in the original {@link SeRequest}.
  */
 @SuppressWarnings("PMD.NPathComplexity")
 public final class SeResponse implements Serializable {
@@ -32,26 +44,29 @@ public final class SeResponse implements Serializable {
   /** true if the channel is open */
   private final boolean logicalChannelIsOpen;
 
+  /** POJO possibly including ATR, FCI and matching flag */
   private final SelectionStatus selectionStatus;
 
-  /**
-   * could contain a group of APDUResponse returned by the selected SE application on the SE reader.
-   */
+  /** List of {@link ApduResponse} returned by the selected SE application. */
   private final List<ApduResponse> apduResponses;
 
   /**
-   * the constructor called by a ProxyReader during the processing of the ‘transmit’ method.
+   * Constructor.
    *
-   * @param logicalChannelIsOpen the current channel status
-   * @param channelPreviouslyOpen the channel previously open
-   * @param selectionStatus the SE selection status
-   * @param apduResponses the apdu responses
+   * <p>selectionStatus may be null (response to a non-selecting request)<br>
+   * apduResponses may be empty but should not be null.
+   *
+   * @param logicalChannelIsOpen A boolean (true if the current channel is open).
+   * @param channelPreviouslyOpen A boolean (true if the channel was previously open)
+   * @param selectionStatus A nullable {@link SelectionStatus}.
+   * @param apduResponses A list of {@link ApduResponse} (must be not null).
    */
   public SeResponse(
       boolean logicalChannelIsOpen,
       boolean channelPreviouslyOpen,
       SelectionStatus selectionStatus,
       List<ApduResponse> apduResponses) {
+
     this.logicalChannelIsOpen = logicalChannelIsOpen;
     this.channelPreviouslyOpen = channelPreviouslyOpen;
     this.selectionStatus = selectionStatus;
@@ -59,9 +74,9 @@ public final class SeResponse implements Serializable {
   }
 
   /**
-   * Was channel previously open.
+   * Tells if the channel was previously open.
    *
-   * @return the previous currentState of the logical channel.
+   * @return True or false.
    */
   public boolean wasChannelPreviouslyOpen() {
     return channelPreviouslyOpen;
@@ -70,7 +85,7 @@ public final class SeResponse implements Serializable {
   /**
    * Get the logical channel status
    *
-   * @return true if the logical channel is open
+   * @return True if the logical channel is open, false if not.
    */
   public boolean isLogicalChannelOpen() {
     return logicalChannelIsOpen;
@@ -79,7 +94,7 @@ public final class SeResponse implements Serializable {
   /**
    * Gets the selection status and its associated data.
    *
-   * @return a {@link SelectionStatus} object.
+   * @return A nullable {@link SelectionStatus}.
    */
   public SelectionStatus getSelectionStatus() {
     return this.selectionStatus;
@@ -88,8 +103,7 @@ public final class SeResponse implements Serializable {
   /**
    * Gets the apdu responses.
    *
-   * @return the group of APDUs responses returned by the SE application for this instance of
-   *     SEResponse.
+   * @return A list of {@link ApduResponse} (may be empty).
    */
   public List<ApduResponse> getApduResponses() {
     return apduResponses;
