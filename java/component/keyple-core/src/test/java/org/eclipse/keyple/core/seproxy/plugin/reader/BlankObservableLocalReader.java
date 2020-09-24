@@ -11,8 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.plugin.reader;
 
-import java.util.HashMap;
-import java.util.Map;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 
 public class BlankObservableLocalReader extends AbstractObservableLocalReader {
@@ -32,23 +30,13 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
   @Override
   public final ObservableReaderStateService initStateService() {
 
-    Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
-        new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-        new WaitForSeInsertionState(this));
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-        new WaitForSeProcessingState(this));
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-        new WaitForSeRemovalState(this));
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
-        new WaitForStartDetectState(this));
-
-    return new ObservableReaderStateService(
-        this, states, AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION);
+    return new ObservableReaderStateService.Builder(this)
+        .startWithWaitForStart()
+        .waitForSeInsertion()
+        .withNativeDetection()
+        .waitForSeRemoval()
+        .withNativeDetection()
+        .build();
   }
 
   @Override

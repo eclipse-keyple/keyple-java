@@ -11,8 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.pcsc;
 
-import java.util.EnumMap;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -21,17 +19,9 @@ import javax.smartcardio.*;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableLocalReader;
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState;
-import org.eclipse.keyple.core.seproxy.plugin.reader.CardPresentMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderStateService;
-import org.eclipse.keyple.core.seproxy.plugin.reader.SmartInsertionMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.reader.SmartInsertionReader;
-import org.eclipse.keyple.core.seproxy.plugin.reader.SmartRemovalMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.reader.SmartRemovalReader;
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeInsertionState;
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeProcessingState;
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemovalState;
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetectState;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
@@ -115,41 +105,29 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   @Override
   public ObservableReaderStateService initStateService() {
 
-    Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
-        new EnumMap<AbstractObservableState.MonitoringState, AbstractObservableState>(
-            AbstractObservableState.MonitoringState.class);
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
-        new WaitForStartDetectState(this));
+    ObservableReaderStateService observableReaderStateService = null;
 
-    // should the SmartInsertionMonitoringJob be used?
     if (!usePingPresence) {
-      // use the SmartInsertionMonitoringJob
-      states.put(
-          AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-          new WaitForSeInsertionState(
-              this, new SmartInsertionMonitoringJob(this), executorService));
+      observableReaderStateService =
+          new ObservableReaderStateService.Builder(this)
+              .startWithWaitForStart()
+              .waitForSeInsertion()
+              .withSmartDetection()
+              .waitForSeRemoval()
+              .withSmartDetection()
+              .build();
     } else {
-      // use the CardPresentMonitoring job (only on Mac due to jvm crash)
-      // https://github.com/eclipse/keyple-java/issues/153
-      states.put(
-          AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-          new WaitForSeInsertionState(
-              this,
-              new CardPresentMonitoringJob(this, INSERT_WAIT_TIMEOUT, true),
-              executorService));
+      observableReaderStateService =
+          new ObservableReaderStateService.Builder(this)
+              .startWithWaitForStart()
+              .waitForSeInsertion()
+              .withPollingDetection()
+              .waitForSeRemoval()
+              .withSmartDetection()
+              .build();
     }
 
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-        new WaitForSeProcessingState(this, new SmartRemovalMonitoringJob(this), executorService));
-
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-        new WaitForSeRemovalState(this, new SmartRemovalMonitoringJob(this), executorService));
-
-    return new ObservableReaderStateService(
-        this, states, AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION);
+    return observableReaderStateService;
   }
 
   /**

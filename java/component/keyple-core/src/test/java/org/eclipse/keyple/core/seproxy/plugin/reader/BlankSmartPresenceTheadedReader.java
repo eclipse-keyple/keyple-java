@@ -11,8 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.plugin.reader;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.slf4j.Logger;
@@ -111,25 +109,12 @@ public class BlankSmartPresenceTheadedReader extends AbstractObservableLocalRead
   @Override
   public ObservableReaderStateService initStateService() {
 
-    Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
-        new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
-        new WaitForStartDetectState(this));
-
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-        new WaitForSeInsertionState(this, new SmartInsertionMonitoringJob(this), executorService));
-
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-        new WaitForSeProcessingState(this, new SmartRemovalMonitoringJob(this), executorService));
-
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-        new WaitForSeRemovalState(this, new SmartRemovalMonitoringJob(this), executorService));
-
-    return new ObservableReaderStateService(
-        this, states, AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION);
+    return new ObservableReaderStateService.Builder(this)
+        .startWithWaitForSeInsertion()
+        .waitForSeInsertion()
+        .withSmartDetection()
+        .waitForSeRemoval()
+        .withSmartDetection()
+        .build();
   }
 }

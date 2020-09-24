@@ -25,19 +25,7 @@ import java.util.concurrent.Executors
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableLocalReader
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState.MonitoringState
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION
-import org.eclipse.keyple.core.seproxy.plugin.reader.CardAbsentPingMonitoringJob
 import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderStateService
-import org.eclipse.keyple.core.seproxy.plugin.reader.SmartRemovalMonitoringJob
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeInsertionState
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeProcessingState
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemovalState
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetectState
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import timber.log.Timber
 
@@ -125,22 +113,22 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
 
     override fun initStateService(): ObservableReaderStateService {
 
-        val states = HashMap<MonitoringState, AbstractObservableState>()
-
-        states[WAIT_FOR_START_DETECTION] = WaitForStartDetectState(this)
-        states[WAIT_FOR_SE_INSERTION] = WaitForSeInsertionState(this)
-        states[WAIT_FOR_SE_PROCESSING] = WaitForSeProcessingState(this)
-        states[WAIT_FOR_SE_REMOVAL] = initWaitForRemoval()
-
-        return ObservableReaderStateService(this, states, WAIT_FOR_START_DETECTION)
-    }
-
-    private fun initWaitForRemoval(): WaitForSeRemovalState {
         return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            WaitForSeRemovalState(this, CardAbsentPingMonitoringJob(this), executorService)
+            ObservableReaderStateService.Builder(this)
+                    .startWithWaitForStart()
+                    .waitForSeInsertion()
+                    .withNativeDetection()
+                    .waitForSeRemoval()
+                    .withPollingDetection()
+                    .build()
         } else {
-            // this.waitForCardAbsentNative will only be used on API>= N
-            WaitForSeRemovalState(this, SmartRemovalMonitoringJob(this), executorService)
+            ObservableReaderStateService.Builder(this)
+                    .startWithWaitForStart()
+                    .waitForSeInsertion()
+                    .withNativeDetection()
+                    .waitForSeRemoval()
+                    .withSmartDetection()
+                    .build()
         }
     }
 

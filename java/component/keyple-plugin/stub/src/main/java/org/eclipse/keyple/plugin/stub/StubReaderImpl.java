@@ -242,6 +242,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
 
     ObservableReaderStateService observableReaderStateService =
         new ObservableReaderStateService.Builder(this)
+            .startWithWaitForSeInsertion()
             .waitForSeInsertion()
             .withNativeDetection()
             .waitForSeRemoval()

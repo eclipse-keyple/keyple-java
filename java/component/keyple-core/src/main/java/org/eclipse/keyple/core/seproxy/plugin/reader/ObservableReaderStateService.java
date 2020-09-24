@@ -112,6 +112,12 @@ public class ObservableReaderStateService {
     return this.currentState.getMonitoringState();
   }
 
+  public interface StartWithStep {
+    public WaitForStep startWithWaitForStart();
+
+    public WaitForStep startWithWaitForSeInsertion();
+  }
+
   public interface WaitForStep {
     public DetectionStep waitForSeInsertion();
 
@@ -128,12 +134,13 @@ public class ObservableReaderStateService {
     public WaitForStep withPollingDetection();
   }
 
-  public static class Builder implements WaitForStep, DetectionStep {
+  public static class Builder implements StartWithStep, WaitForStep, DetectionStep {
 
     private Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
         new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
 
     private ObservableReader reader;
+    private AbstractObservableState.MonitoringState startState;
     private AbstractObservableState.MonitoringState bufferedState;
 
     public Builder(ObservableReader reader) {
@@ -144,6 +151,18 @@ public class ObservableReaderStateService {
       this.states.put(
           AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
           new WaitForSeProcessingState((AbstractObservableLocalReader) this.reader));
+    }
+
+    @Override
+    public WaitForStep startWithWaitForStart() {
+      startState = AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION;
+      return this;
+    }
+
+    @Override
+    public WaitForStep startWithWaitForSeInsertion() {
+      startState = AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION;
+      return this;
     }
 
     @Override
@@ -247,10 +266,11 @@ public class ObservableReaderStateService {
 
     @Override
     public ObservableReaderStateService build() {
+      if (startState == null) {
+        startState = AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION;
+      }
       return new ObservableReaderStateService(
-          (AbstractObservableLocalReader) this.reader,
-          states,
-          AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION);
+          (AbstractObservableLocalReader) reader, states, startState);
     }
   }
 }
