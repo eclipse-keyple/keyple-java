@@ -51,6 +51,7 @@ abstract class AbstractVirtualReader extends AbstractReader {
    * @param pluginName The name of the plugin (must be not null).
    * @param nativeReaderName The name of the native reader (must be not null).
    * @param node The associated node (must be not null).
+   * @param clientNodeId Associated client node Id (required only when created by Server Sync Node)
    */
   AbstractVirtualReader(
       String pluginName, String nativeReaderName, AbstractKeypleNode node, String clientNodeId) {

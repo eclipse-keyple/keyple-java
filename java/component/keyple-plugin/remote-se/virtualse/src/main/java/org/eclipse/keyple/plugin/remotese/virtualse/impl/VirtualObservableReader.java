@@ -47,13 +47,14 @@ final class VirtualObservableReader extends AbstractVirtualReader
    * @param pluginName The name of the plugin (must be not null).
    * @param nativeReaderName The name of the native reader (must be not null).
    * @param node The associated node (must be not null).
+   * @param clientNodeId Associated client node Id (required only when created by Server Sync Node)
    * @param eventNotificationPool The thread pool used to notify ReaderEvent (must be not null).
    */
   VirtualObservableReader(
       String pluginName,
       String nativeReaderName,
-      String clientNodeId,
       AbstractKeypleNode node,
+      String clientNodeId,
       ExecutorService eventNotificationPool) {
     super(pluginName, nativeReaderName, node, clientNodeId);
     this.observers = new ArrayList<ReaderObserver>();

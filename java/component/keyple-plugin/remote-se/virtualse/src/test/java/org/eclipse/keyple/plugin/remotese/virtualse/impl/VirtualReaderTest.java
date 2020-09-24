@@ -44,7 +44,7 @@ public class VirtualReaderTest {
   @Before
   public void setUp() {
     node = mock(AbstractKeypleNode.class);
-    reader = new VirtualReader(pluginName, nativeReaderName, node);
+    reader = new VirtualReader(pluginName, nativeReaderName, node,null);
   }
 
   @Test

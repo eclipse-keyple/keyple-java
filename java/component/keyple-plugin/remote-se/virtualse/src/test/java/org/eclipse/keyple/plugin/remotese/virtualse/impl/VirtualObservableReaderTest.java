@@ -67,7 +67,7 @@ public class VirtualObservableReaderTest {
     node = Mockito.mock(AbstractKeypleNode.class);
     doReturn(response).when(node).sendRequest(any(KeypleMessageDto.class));
     observer = new MockObserver();
-    reader = new VirtualObservableReader(pluginName, nativeReaderName, node, notificationPool);
+    reader = new VirtualObservableReader(pluginName, nativeReaderName, node, null, notificationPool);
   }
 
   @Test

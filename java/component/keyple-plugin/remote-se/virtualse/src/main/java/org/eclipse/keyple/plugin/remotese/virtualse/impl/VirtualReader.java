@@ -26,9 +26,10 @@ final class VirtualReader extends AbstractVirtualReader {
    * @param pluginName The name of the plugin (must be not null).
    * @param nativeReaderName The name of the native reader (must be not null).
    * @param node The associated node (must be not null).
+   * @param clientNodeId Associated client node Id (required only when created by Server Sync Node)
    */
   VirtualReader(
-      String pluginName, String nativeReaderName, String clientNodeId, AbstractKeypleNode node) {
+      String pluginName, String nativeReaderName, AbstractKeypleNode node, String clientNodeId) {
     super(pluginName, nativeReaderName, node, clientNodeId);
   }
 }
