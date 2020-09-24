@@ -123,6 +123,7 @@ public class NativeSeClientServiceTest extends BaseNativeSeTest {
         new NativeSeClientServiceFactory()
             .builder()
             .withAsyncNode(asyncClient)
+            .useDefaultTimeout()
             .withoutReaderObservation()
             .getService();
 

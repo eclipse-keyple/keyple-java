@@ -37,12 +37,6 @@ public abstract class AbstractKeypleMessageHandler {
 
   /**
    * (protected)<br>
-   * Timeout for a request execution
-   */
-  protected int timeoutInSecond = 20;
-
-  /**
-   * (protected)<br>
    * Constructor.
    */
   protected AbstractKeypleMessageHandler() {}
@@ -61,9 +55,10 @@ public abstract class AbstractKeypleMessageHandler {
    * It must be called by the factory during the initialization phase.
    *
    * @param endpoint The {@link KeypleClientAsync} endpoint.
+   * @param timeoutInSecond
    * @since 1.0
    */
-  public void bindClientAsyncNode(KeypleClientAsync endpoint) {
+  public void bindClientAsyncNode(KeypleClientAsync endpoint, int timeoutInSecond) {
     node = new KeypleClientAsyncNodeImpl(this, endpoint, timeoutInSecond);
   }
 
@@ -75,7 +70,7 @@ public abstract class AbstractKeypleMessageHandler {
    * @since 1.0
    */
   public void bindServerAsyncNode(KeypleServerAsync endpoint) {
-    node = new KeypleServerAsyncNodeImpl(this, endpoint, timeoutInSecond);
+    node = new KeypleServerAsyncNodeImpl(this, endpoint, 20);
   }
 
   /**
@@ -105,7 +100,7 @@ public abstract class AbstractKeypleMessageHandler {
    * @since 1.0
    */
   public void bindServerSyncNode() {
-    node = new KeypleServerSyncNodeImpl(this, timeoutInSecond);
+    node = new KeypleServerSyncNodeImpl(this, 20);
   }
 
   /**

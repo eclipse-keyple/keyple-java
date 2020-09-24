@@ -194,16 +194,14 @@ public final class KeypleServerSyncNodeImpl extends AbstractKeypleNode
    */
   private void processSendMessage(KeypleMessageDto msg) {
     SessionManager manager = sessionManagers.get(msg.getSessionId());
-      if(manager ==null){
-        throw new IllegalStateException("Session is closed");
-        }
+    if (manager == null) {
+      throw new IllegalStateException("Session is closed");
+    }
     try {
-        manager.sendMessage(msg);
-        } finally {
-          sessionManagers.remove(msg.getSessionId());
-        }
-
-
+      manager.sendMessage(msg);
+    } finally {
+      sessionManagers.remove(msg.getSessionId());
+    }
   }
 
   /**

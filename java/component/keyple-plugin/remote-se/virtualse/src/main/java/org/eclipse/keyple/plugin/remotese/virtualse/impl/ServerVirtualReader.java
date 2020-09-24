@@ -32,6 +32,6 @@ final class ServerVirtualReader extends AbstractServerVirtualReader {
       String serviceId,
       String userInputDataJson,
       String initialSeContentJson) {
-    super(reader,  serviceId, userInputDataJson, initialSeContentJson);
+    super(reader, serviceId, userInputDataJson, initialSeContentJson);
   }
 }

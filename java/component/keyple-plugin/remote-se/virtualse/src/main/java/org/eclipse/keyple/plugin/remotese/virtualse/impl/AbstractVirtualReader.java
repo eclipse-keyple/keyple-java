@@ -52,13 +52,13 @@ abstract class AbstractVirtualReader extends AbstractReader {
    * @param nativeReaderName The name of the native reader (must be not null).
    * @param node The associated node (must be not null).
    */
-  AbstractVirtualReader(String pluginName, String nativeReaderName, AbstractKeypleNode node, String clientNodeId) {
+  AbstractVirtualReader(
+      String pluginName, String nativeReaderName, AbstractKeypleNode node, String clientNodeId) {
     super(pluginName, UUID.randomUUID().toString());
     this.nativeReaderName = nativeReaderName;
     this.node = node;
     this.sessionId = null;
     this.clientNodeId = clientNodeId;
-
   }
 
   /**
@@ -134,8 +134,7 @@ abstract class AbstractVirtualReader extends AbstractReader {
 
     // Build the message
     JsonObject body = new JsonObject();
-    body.addProperty(
-        "seProtocol", KeypleJsonParser.getParser().toJson(seProtocol, SeProtocol.class));
+    body.addProperty("seProtocol", seProtocol.getName());
     body.addProperty("protocolRule", protocolRule);
 
     // Send the message as a request even if no return is expected
@@ -195,7 +194,7 @@ abstract class AbstractVirtualReader extends AbstractReader {
             .setAction(action.name()) //
             .setVirtualReaderName(getName()) //
             .setNativeReaderName(nativeReaderName) //
-            .setClientNodeId(clientNodeId)//
+            .setClientNodeId(clientNodeId) //
             .setBody(body != null ? body.toString() : null);
 
     // Send the message as a request
