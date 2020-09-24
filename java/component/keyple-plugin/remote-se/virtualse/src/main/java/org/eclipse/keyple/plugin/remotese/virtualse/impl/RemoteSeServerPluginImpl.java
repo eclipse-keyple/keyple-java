@@ -296,7 +296,7 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
     if (isObservable) {
       VirtualObservableReader virtualObservableReader =
           new VirtualObservableReader(
-              getName(), virtualReaderName, getNode(),clientNodeId, eventNotificationPool);
+              getName(), virtualReaderName, getNode(), clientNodeId, eventNotificationPool);
       virtualObservableReader.setSessionId(sessionId);
       return new ServerVirtualObservableReader(
           virtualObservableReader, serviceId, userInputData, initialSeContent, null);

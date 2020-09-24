@@ -55,7 +55,7 @@ public abstract class AbstractKeypleMessageHandler {
    * It must be called by the factory during the initialization phase.
    *
    * @param endpoint The {@link KeypleClientAsync} endpoint.
-   * @param timeoutInSecond
+   * @param timeoutInSecond Time to wait for the answer to transmit a request.
    * @since 1.0
    */
   public void bindClientAsyncNode(KeypleClientAsync endpoint, int timeoutInSecond) {
