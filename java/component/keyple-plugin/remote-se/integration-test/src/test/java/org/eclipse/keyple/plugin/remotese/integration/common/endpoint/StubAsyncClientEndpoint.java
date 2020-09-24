@@ -11,9 +11,10 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remotese.integration.common.endpoint;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.eclipse.keyple.plugin.remotese.core.KeypleClientAsync;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remotese.integration.common.util.JacksonParser;
@@ -29,13 +30,15 @@ public class StubAsyncClientEndpoint implements KeypleClientAsync {
 
   private static final Logger logger = LoggerFactory.getLogger(StubAsyncClientEndpoint.class);
   final StubAsyncServerEndpoint server;
-  private final String clientNodeId;
-  private Set<String> currentSessionIds;
+  final ExecutorService taskPool;
+  final Boolean simulateConnectionError;
+  final AtomicInteger messageSent = new AtomicInteger();
 
-  public StubAsyncClientEndpoint(StubAsyncServerEndpoint server) {
+  public StubAsyncClientEndpoint(StubAsyncServerEndpoint server, Boolean simulateConnectionError) {
     this.server = server;
-    this.clientNodeId = UUID.randomUUID().toString();
-    currentSessionIds = new HashSet<String>();
+    this.taskPool = Executors.newCachedThreadPool(new NamedThreadFactory("client-async-pool"));
+    this.simulateConnectionError = simulateConnectionError;
+    messageSent.set(0);
   }
 
   /**
@@ -43,35 +46,47 @@ public class StubAsyncClientEndpoint implements KeypleClientAsync {
    *
    * @param data not null json data
    */
-  void onMessage(String data) {
-    //creer task
-    logger.trace("Data received from server : {}", data);
-    KeypleMessageDto message = JacksonParser.fromJson(data);
-    NativeSeClientUtils.getAsyncNode().onMessage(message);
+  void onMessage(final String data) {
+    taskPool.submit(
+        new Runnable() {
+          @Override
+          public void run() {
+            // creer task
+            logger.trace("Data received from server : {}", data);
+            KeypleMessageDto message = JacksonParser.fromJson(data);
+            NativeSeClientUtils.getAsyncNode().onMessage(message);
+          }
+        });
   }
 
   @Override
   public void openSession(String sessionId) {
-    server.open(sessionId, this);//enlever sessionId
-    //this.currentSessionIds.add(sessionId);
-    logger.trace("Open session {} to server", sessionId);
     NativeSeClientUtils.getAsyncNode().onOpen(sessionId);
   }
 
   @Override
-  public void sendMessage(KeypleMessageDto msg) {
-    //creer task
-    msg.setClientNodeId(clientNodeId);
-    String data = JacksonParser.toJson(msg);
-    logger.trace("Data sent to server session {} <- {}", msg.getSessionId(), data);
-    server.onData(data);
+  public void sendMessage(final KeypleMessageDto msg) {
+    final StubAsyncClientEndpoint thisClient = this;
+    if (messageSent.incrementAndGet() == 2 && simulateConnectionError) {
+      throw new StubNetworkConnectionException("Simulate a unreachable server exception");
+    }
+    // creer task
+    taskPool.submit(
+        new Runnable() {
+          @Override
+          public void run() {
+            String data = JacksonParser.toJson(msg);
+            logger.trace("Data sent to server session {} <- {}", msg.getSessionId(), data);
+            server.onData(data, thisClient);
+          }
+        });
   }
 
   @Override
   public void closeSession(String sessionId) {
     logger.trace("Close session {} to server", sessionId);
     server.close(sessionId);
-    //currentSessionIds.remove(sessionId);
+    // currentSessionIds.remove(sessionId);
     NativeSeClientUtils.getAsyncNode().onClose(sessionId);
   }
 }

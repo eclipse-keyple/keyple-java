@@ -14,6 +14,7 @@ package org.eclipse.keyple.plugin.remotese.integration.test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
+import java.lang.reflect.Field;
 import java.util.UUID;
 import java.util.concurrent.*;
 import org.eclipse.keyple.calypso.transaction.*;
@@ -24,9 +25,9 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.eclipse.keyple.plugin.remotese.core.KeypleServerAsync;
+import org.eclipse.keyple.plugin.remotese.core.impl.AbstractKeypleNode;
 import org.eclipse.keyple.plugin.remotese.integration.common.app.ReaderEventFilter;
 import org.eclipse.keyple.plugin.remotese.integration.common.app.RemoteSePluginObserver;
 import org.eclipse.keyple.plugin.remotese.integration.common.model.ConfigurationResult;
@@ -87,6 +88,11 @@ public abstract class BaseScenario {
   /** Similar to scenario 3 with two concurrent clients. */
   abstract void execute_multiclient_remoteselection_remoteTransaction_successful();
 
+  /** Client application invokes remoteService which results in a remote calypso session. */
+  abstract void execute_transaction_slowSe_success();
+
+  abstract void execute_all_methods();
+
   /*
    * error cases
    */
@@ -95,38 +101,15 @@ public abstract class BaseScenario {
    * Client application invokes remoteService which results in a remote calypso session. Native
    * Reader throws exception in the closing operation.
    */
-  abstract void execute_transaction_closeSession_fail();
+  abstract void execute_transaction_closeSession_SE_error();
 
-  /**
-   * Client application invokes remoteService which results in a remote calypso session.
-   */
-  abstract void execute_transaction_clientTimeout_fail();
+  abstract void execute_transaction_host_network_error();
 
-  /**
-   * The client application invokes the remoteService with enabling observability capabilities. As a
-   * result the server creates a Observable Virtual Reader that receives native reader events such
-   * as SE insertions and removals.
-   *
-   * <p>A SE Insertion is simulated locally followed by a SE removal 1 second later.
-   *
-   * <p>The SE Insertion event is sent to the Virtual Reader whose observer starts a remote Calypso
-   * session. At the end of a successful calypso session, custom data is sent back to the client as
-   * a final result.
-   *
-   * <p>The operation is executed twice with two different users.
-   *
-   * <p>After the second SE insertion, Virtual Reader observers are cleared to purge the server
-   * virtual reader.
-   */
-  abstract void observable_onMatched_transaction_removedEarly_fail();
+  abstract void execute_transaction_client_network_error();
 
+  // timeout reseau le client s'est barré
 
-  //timeout reseau le serveur s'est barré
-
-  //timeout reseau le client s'est barré
-
-  //async, time out transaction.
-
+  // async, time out transaction.
 
   private static final Logger logger = LoggerFactory.getLogger(BaseScenario.class);
 
@@ -135,8 +118,9 @@ public abstract class BaseScenario {
   public static String NATIVE_READER_NAME_2 = "stubReader2";
 
   public static String SERVICE_ID_1 = "EXECUTE_CALYPSO_SESSION_FROM_LOCAL_SELECTION";
-  public static String SERVICE_ID_3 = "EXECUTE_CALYPSO_SESSION_FROM_REMOTE_SELECTION";
   public static String SERVICE_ID_2 = "CREATE_CONFIGURE_OBS_VIRTUAL_READER";
+  public static String SERVICE_ID_3 = "EXECUTE_CALYPSO_SESSION_FROM_REMOTE_SELECTION";
+  public static String SERVICE_ID_4 = "EXECUTE_ALL_METHODS";
 
   public static String DEVICE_ID = "Xo99";
 
@@ -232,6 +216,20 @@ public abstract class BaseScenario {
     }
   }
 
+  StubCalypsoClassic getSlowSe() {
+    return new StubCalypsoClassic() {
+      @Override
+      public byte[] processApdu(byte[] apduIn) {
+        try {
+          logger.warn("Simulate a slow SE by sleeping 1 second before sending response");
+          Thread.sleep(1000);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+        return super.processApdu(apduIn);
+      }
+    };
+  }
   /**
    * Perform a calypso PO selection
    *
@@ -321,8 +319,6 @@ public abstract class BaseScenario {
     assertThat(output.getUserId()).isEqualTo(user1.getUserId());
   }
 
-
-
   void remoteselection_remoteTransaction_successful() {
     // insert stub SE into stub
     nativeReader.insertSe(new StubCalypsoClassic());
@@ -385,27 +381,9 @@ public abstract class BaseScenario {
     assertThat(output.getUserId()).isEqualTo(user1.getUserId());
   }
 
-  void transaction_clientTimeout_fail() {
-    StubSecureElement slowSe =
-        new StubCalypsoClassic() {
-          @Override
-          public byte[] processApdu(byte[] apduIn) {
-            if ("00B2014400".equals(ByteArrayUtil.toHex(apduIn))) {
-              try {
-                logger.warn("Simulate a slow SE by sleeping 10 seconds before sending response");
-                Thread.sleep(10000);
-                logger.warn("Send adpu");
-                //return super.processApdu(apduIn);
-                return null;
-              } catch (InterruptedException e) {
-                e.printStackTrace();
-              }
-            }
-            return super.processApdu(apduIn);
-          }
-        };
+  void transaction_slowSe_success() {
 
-    nativeReader.insertSe(slowSe);
+    nativeReader.insertSe(getSlowSe());
 
     try {
       // execute remote service
@@ -417,7 +395,7 @@ public abstract class BaseScenario {
               TransactionResult.class);
 
       // validate result is false
-      assertThat(output.isSuccessful()).isFalse();
+      assertThat(output.isSuccessful()).isTrue();
       assertThat(output.getUserId()).isEqualTo(user1.getUserId());
     } catch (RuntimeException e) {
       assertThat(e).isNull();
@@ -427,11 +405,11 @@ public abstract class BaseScenario {
   void defaultSelection_onMatched_transaction_successful(ReaderEventFilter eventFilter) {
     // execute remote service to create observable virtual reader
     ConfigurationResult configurationResult =
-            nativeService.executeRemoteService(
-                    RemoteServiceParameters.builder(SERVICE_ID_2, nativeReader)
-                            .withUserInputData(device1)
-                            .build(),
-                    ConfigurationResult.class);
+        nativeService.executeRemoteService(
+            RemoteServiceParameters.builder(SERVICE_ID_2, nativeReader)
+                .withUserInputData(device1)
+                .build(),
+            ConfigurationResult.class);
 
     assertThat(configurationResult.isSuccessful()).isTrue();
     assertThat(configurationResult.getDeviceId()).isEqualTo(device1.getDeviceId());
@@ -446,8 +424,8 @@ public abstract class BaseScenario {
      */
     nativeReader.insertSe(new StubCalypsoClassic());
     logger.info(
-            "1 - Verify User Transaction is successful for first user {}",
-            eventFilter.user.getUserId());
+        "1 - Verify User Transaction is successful for first user {}",
+        eventFilter.user.getUserId());
     await().atMost(10, TimeUnit.SECONDS).until(verifyUserTransaction(eventFilter, user1, true));
     nativeReader.removeSe();
     await().atMost(1, TimeUnit.SECONDS).until(seRemoved(nativeReader));
@@ -462,9 +440,9 @@ public abstract class BaseScenario {
     eventFilter.setUserData(user2);
     nativeReader.insertSe(new StubCalypsoClassic());
     logger.info(
-            "2 - Verify User Transaction is successful for second user {}",
-            eventFilter.user.getUserId());
-    await().atMost(10, TimeUnit.SECONDS).until(verifyUserTransaction(eventFilter, user2,true));
+        "2 - Verify User Transaction is successful for second user {}",
+        eventFilter.user.getUserId());
+    await().atMost(10, TimeUnit.SECONDS).until(verifyUserTransaction(eventFilter, user2, true));
     nativeReader.removeSe();
     await().atMost(1, TimeUnit.SECONDS).until(seRemoved(nativeReader));
 
@@ -475,25 +453,45 @@ public abstract class BaseScenario {
     assertThat(NativeSeClientServiceTest.getVirtualReaders(nativeService)).isEmpty();
   }
 
-  void onMatched_transaction_removedEarly_fail(ReaderEventFilter eventFilter) {
-    // execute remote service to create observable virtual reader
-    ConfigurationResult configurationResult =
+  void remoteselection_remoteTransaction() {
+    // insert stub SE into stub
+    nativeReader.insertSe(new StubCalypsoClassic());
+
+    // execute remote service
+    TransactionResult output =
         nativeService.executeRemoteService(
-            RemoteServiceParameters.builder(SERVICE_ID_2, nativeReader)
+            RemoteServiceParameters.builder(SERVICE_ID_3, nativeReader)
+                .withUserInputData(user1)
+                .build(),
+            TransactionResult.class);
+  }
+
+  void all_methods() {
+    // insert stub SE into stub
+    nativeReader.insertSe(new StubCalypsoClassic());
+
+    // execute remote service
+    TransactionResult output =
+        nativeService.executeRemoteService(
+            RemoteServiceParameters.builder(SERVICE_ID_4, nativeReader)
                 .withUserInputData(device1)
                 .build(),
-            ConfigurationResult.class);
+            TransactionResult.class);
 
-    assertThat(configurationResult.isSuccessful()).isTrue();
-    assertThat(configurationResult.getDeviceId()).isEqualTo(device1.getDeviceId());
+    // validate result
+    assertThat(output.isSuccessful()).isTrue();
+  }
 
-    eventFilter.setUserData(user1);
-
-    nativeReader.insertSe(new StubCalypsoClassic());
-    logger.info( "Verify User Transaction is successful for user {}", eventFilter.user.getUserId());
-    await().atMost(100, TimeUnit.MILLISECONDS);
-    nativeReader.removeSe();
-    await().atMost(10, TimeUnit.SECONDS).until(verifyUserTransaction(eventFilter, user1,false));
-
+  void setTimeoutInNode(AbstractKeypleNode node, Integer timeoutInMilliseconds) {
+    try {
+      Class classT = node.getClass();
+      Field field = classT.getDeclaredField("timeout");
+      field.setAccessible(true);
+      field.set(node, timeoutInMilliseconds);
+    } catch (NoSuchFieldException e) {
+      e.printStackTrace();
+    } catch (IllegalAccessException e) {
+      e.printStackTrace();
+    }
   }
 }

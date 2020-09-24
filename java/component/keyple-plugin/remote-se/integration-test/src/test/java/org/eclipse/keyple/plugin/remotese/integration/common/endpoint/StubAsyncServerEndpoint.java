@@ -13,10 +13,8 @@ package org.eclipse.keyple.plugin.remotese.integration.common.endpoint;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remotese.core.KeypleServerAsync;
@@ -31,22 +29,23 @@ import org.slf4j.LoggerFactory;
  */
 public class StubAsyncServerEndpoint implements KeypleServerAsync {
 
-private static final Logger logger = LoggerFactory.getLogger(StubAsyncServerEndpoint.class);
+  private static final Logger logger = LoggerFactory.getLogger(StubAsyncServerEndpoint.class);
   final Map<String, StubAsyncClientEndpoint> clients; // sessionId_client
+  final Map<String, Integer> messageCounts; // sessionId_counts
   final ExecutorService taskPool;
+
+  boolean simulateConnectionError;
 
   public StubAsyncServerEndpoint() {
     clients = new HashMap<String, StubAsyncClientEndpoint>();
-    taskPool = Executors.newCachedThreadPool(new NamedThreadFactory("server-pool"));
-  }
-
-  /** Simulate a open socket operation */
-  public void open(String sessionId, StubAsyncClientEndpoint endpoint) {
-      clients.put(sessionId, endpoint);
+    messageCounts = new HashMap<String, Integer>();
+    taskPool = Executors.newCachedThreadPool(new NamedThreadFactory("server-async-pool"));
+    simulateConnectionError = false;
   }
 
   /** Simulate a close socket operation */
   public void close(String sessionId) {
+    messageCounts.remove(sessionId);
     clients.remove(sessionId);
     RemoteSeServerUtils.getAsyncNode().onClose(sessionId);
   }
@@ -56,9 +55,9 @@ private static final Logger logger = LoggerFactory.getLogger(StubAsyncServerEndp
    *
    * @param jsonData incoming json data
    */
-  public void onData(final String jsonData) {
+  public void onData(final String jsonData, final StubAsyncClientEndpoint client) {
     final KeypleMessageDto message = JacksonParser.fromJson(jsonData);
-    Assert.getInstance().isTrue(clients.containsKey(message.getSessionId()), "Session is not open");
+    clients.put(message.getSessionId(), client);
     taskPool.submit(
         new Runnable() {
           @Override
@@ -70,20 +69,33 @@ private static final Logger logger = LoggerFactory.getLogger(StubAsyncServerEndp
 
   @Override
   public void sendMessage(final KeypleMessageDto msg) {
-    // retrieve socket
+    final String data = JacksonParser.toJson(msg);
+    logger.trace("Data sent to client {}", data);
+    if (incrementCountInSession(msg.getSessionId()) == 2 && simulateConnectionError) {
+      simulateConnectionError = false; // reinit flag
+      throw new StubNetworkConnectionException("Simulate a unreachable client exception");
+    }
     final StubAsyncClientEndpoint client = clients.get(msg.getSessionId());
     taskPool.submit(
         new Runnable() {
           @Override
           public void run() {
-              try{
-                  String data = JacksonParser.toJson(msg);
-                  logger.trace("Data sent to client session {} <- {}", msg.getSessionId(), data);
-                  client.onMessage(data);
-              }catch (Throwable t){
-                  RemoteSeServerUtils.getAsyncNode().onError(msg.getSessionId(), t);
-              }
+            try {
+              client.onMessage(data);
+            } catch (Throwable t) {
+              RemoteSeServerUtils.getAsyncNode().onError(msg.getSessionId(), t);
+            }
           }
         });
+  }
+
+  public void setSimulateConnectionError(Boolean simulateConnectionError) {
+    this.simulateConnectionError = simulateConnectionError;
+  }
+
+  Integer incrementCountInSession(String sessionId) {
+    messageCounts.put(
+        sessionId, messageCounts.get(sessionId) == null ? 1 : messageCounts.get(sessionId) + 1);
+    return messageCounts.get(sessionId);
   }
 }

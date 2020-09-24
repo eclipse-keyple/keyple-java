@@ -11,7 +11,10 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remotese.integration.common.app;
 
+import static org.eclipse.keyple.plugin.remotese.integration.test.BaseScenario.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
@@ -20,6 +23,8 @@ import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.integration.common.model.ConfigurationResult;
 import org.eclipse.keyple.plugin.remotese.integration.common.model.DeviceInput;
 import org.eclipse.keyple.plugin.remotese.integration.common.model.TransactionResult;
@@ -28,11 +33,9 @@ import org.eclipse.keyple.plugin.remotese.integration.common.util.CalypsoUtiliti
 import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerObservableReader;
 import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerPlugin;
 import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerReader;
+import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.eclipse.keyple.plugin.remotese.integration.test.BaseScenario.*;
-
 
 public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
 
@@ -117,6 +120,27 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
       } catch (KeypleException e) {
         return new TransactionResult().setSuccessful(false).setUserId(userInput.getUserId());
       }
+    }
+
+    // EXECUTE ALL METHODS
+    if (SERVICE_ID_4.equals(virtualReader.getServiceId())) {
+
+      RemoteSeServerObservableReader observableVirtualReader =
+          (RemoteSeServerObservableReader) virtualReader;
+      DeviceInput deviceInput = observableVirtualReader.getUserInputData(DeviceInput.class);
+
+      observableVirtualReader.startSeDetection(ObservableReader.PollingMode.REPEATING);
+      observableVirtualReader.addSeProtocolSetting(
+          SeCommonProtocols.PROTOCOL_ISO14443_4,
+          StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+      TransmissionMode transmissionMode = observableVirtualReader.getTransmissionMode();
+      observableVirtualReader.isSePresent();
+      String protocolRule = "any";
+      Map protocols = new HashMap();
+      protocols.put(SeCommonProtocols.PROTOCOL_ISO14443_4, protocolRule);
+      observableVirtualReader.setSeProtocolSetting(protocols);
+      observableVirtualReader.stopSeDetection();
+      return new ConfigurationResult().setDeviceId(deviceInput.getDeviceId()).setSuccessful(true);
     }
 
     throw new IllegalArgumentException("Service Id not recognized");

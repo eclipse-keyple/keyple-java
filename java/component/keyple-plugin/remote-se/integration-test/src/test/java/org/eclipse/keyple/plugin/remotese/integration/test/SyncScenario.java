@@ -14,6 +14,7 @@ package org.eclipse.keyple.plugin.remotese.integration.test;
 import java.util.UUID;
 import org.eclipse.keyple.plugin.remotese.core.KeypleClientSync;
 import org.eclipse.keyple.plugin.remotese.integration.common.app.ReaderEventFilter;
+import org.eclipse.keyple.plugin.remotese.integration.common.endpoint.StubNetworkConnectionException;
 import org.eclipse.keyple.plugin.remotese.integration.common.endpoint.StubSyncClientEndpoint;
 import org.eclipse.keyple.plugin.remotese.integration.common.model.DeviceInput;
 import org.eclipse.keyple.plugin.remotese.integration.common.model.UserInput;
@@ -53,7 +54,7 @@ public class SyncScenario extends BaseScenario {
      */
     initNativeStubPlugin();
 
-    clientSyncEndpoint = new StubSyncClientEndpoint();
+    clientSyncEndpoint = new StubSyncClientEndpoint(false);
 
     user1 = new UserInput().setUserId(UUID.randomUUID().toString());
     device1 = new DeviceInput().setDeviceId(DEVICE_ID);
@@ -79,8 +80,6 @@ public class SyncScenario extends BaseScenario {
 
     localselection_remoteTransaction_successful();
   }
-
-
 
   /** {@inheritDoc} */
   @Override
@@ -115,7 +114,7 @@ public class SyncScenario extends BaseScenario {
   /** {@inheritDoc} */
   @Override
   @Test
-  public void execute_transaction_closeSession_fail() {
+  public void execute_transaction_closeSession_SE_error() {
     nativeService =
         new NativeSeClientServiceFactory()
             .builder()
@@ -128,8 +127,10 @@ public class SyncScenario extends BaseScenario {
 
   /** {@inheritDoc} */
   @Override
-  @Test
-  public void execute_transaction_clientTimeout_fail() {
+  @Test(expected = StubNetworkConnectionException.class)
+  public void execute_transaction_host_network_error() {
+    clientSyncEndpoint = new StubSyncClientEndpoint(true);
+
     nativeService =
         new NativeSeClientServiceFactory()
             .builder()
@@ -137,9 +138,43 @@ public class SyncScenario extends BaseScenario {
             .withoutReaderObservation()
             .getService();
 
-    transaction_clientTimeout_fail();
+    remoteselection_remoteTransaction();
+    // throw exception
   }
 
+  @Test
+  @Override
+  public void execute_transaction_client_network_error() {
+    // not needed for sync node
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  @Test
+  public void execute_transaction_slowSe_success() {
+    nativeService =
+        new NativeSeClientServiceFactory()
+            .builder()
+            .withSyncNode(clientSyncEndpoint)
+            .withoutReaderObservation()
+            .getService();
+
+    transaction_slowSe_success();
+  }
+
+  @Test
+  @Override
+  public void execute_all_methods() {
+    final ReaderEventFilter eventFilter = new ReaderEventFilter();
+
+    nativeService =
+        new NativeSeClientServiceFactory()
+            .builder()
+            .withSyncNode(clientSyncEndpoint)
+            .withReaderObservation(eventFilter)
+            .getService();
+    all_methods();
+  }
 
   /** {@inheritDoc} */
   @Override
@@ -149,28 +184,12 @@ public class SyncScenario extends BaseScenario {
     final ReaderEventFilter eventFilter = new ReaderEventFilter();
 
     nativeService =
-            new NativeSeClientServiceFactory()
-                    .builder()
-                    .withSyncNode(clientSyncEndpoint)
-                    .withReaderObservation(eventFilter)
-                    .getService();
-
-    defaultSelection_onMatched_transaction_successful(eventFilter);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  @Test
-  public void observable_onMatched_transaction_removedEarly_fail() {
-    final ReaderEventFilter eventFilter = new ReaderEventFilter();
-
-    nativeService =
         new NativeSeClientServiceFactory()
             .builder()
             .withSyncNode(clientSyncEndpoint)
             .withReaderObservation(eventFilter)
             .getService();
 
-    onMatched_transaction_removedEarly_fail(eventFilter);
+    defaultSelection_onMatched_transaction_successful(eventFilter);
   }
 }

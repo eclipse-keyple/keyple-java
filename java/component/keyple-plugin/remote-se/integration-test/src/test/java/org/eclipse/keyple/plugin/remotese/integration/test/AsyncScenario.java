@@ -12,12 +12,16 @@
 package org.eclipse.keyple.plugin.remotese.integration.test;
 
 import java.util.UUID;
+import org.eclipse.keyple.plugin.remotese.core.exception.KeypleTimeoutException;
+import org.eclipse.keyple.plugin.remotese.core.impl.AbstractKeypleNode;
 import org.eclipse.keyple.plugin.remotese.integration.common.app.ReaderEventFilter;
 import org.eclipse.keyple.plugin.remotese.integration.common.endpoint.StubAsyncClientEndpoint;
 import org.eclipse.keyple.plugin.remotese.integration.common.endpoint.StubAsyncServerEndpoint;
+import org.eclipse.keyple.plugin.remotese.integration.common.endpoint.StubNetworkConnectionException;
 import org.eclipse.keyple.plugin.remotese.integration.common.model.DeviceInput;
 import org.eclipse.keyple.plugin.remotese.integration.common.model.UserInput;
 import org.eclipse.keyple.plugin.remotese.nativese.impl.NativeSeClientServiceFactory;
+import org.eclipse.keyple.plugin.remotese.nativese.impl.NativeSeClientUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -65,7 +69,7 @@ public class AsyncScenario extends BaseScenario {
      * </ul>
      */
     initNativeStubPlugin();
-    clientEndpoint = new StubAsyncClientEndpoint(serverEndpoint);
+    clientEndpoint = new StubAsyncClientEndpoint(serverEndpoint, false);
     user1 = new UserInput().setUserId(UUID.randomUUID().toString());
     device1 = new DeviceInput().setDeviceId(DEVICE_ID);
   }
@@ -85,13 +89,12 @@ public class AsyncScenario extends BaseScenario {
         new NativeSeClientServiceFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
+            .useDefaultTimeout()
             .withoutReaderObservation()
             .getService();
 
     localselection_remoteTransaction_successful();
   }
-
-
 
   /** {@inheritDoc} */
   @Override
@@ -102,6 +105,7 @@ public class AsyncScenario extends BaseScenario {
         new NativeSeClientServiceFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
+            .useDefaultTimeout()
             .withoutReaderObservation()
             .getService();
 
@@ -117,6 +121,7 @@ public class AsyncScenario extends BaseScenario {
         new NativeSeClientServiceFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
+            .useDefaultTimeout()
             .withoutReaderObservation()
             .getService();
 
@@ -126,11 +131,12 @@ public class AsyncScenario extends BaseScenario {
   /** {@inheritDoc} */
   @Test
   @Override
-  public void execute_transaction_closeSession_fail() {
+  public void execute_transaction_closeSession_SE_error() {
     nativeService =
         new NativeSeClientServiceFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
+            .useDefaultTimeout()
             .withoutReaderObservation()
             .getService();
 
@@ -138,19 +144,69 @@ public class AsyncScenario extends BaseScenario {
   }
 
   /** {@inheritDoc} */
-  @Test
+  @Test(expected = StubNetworkConnectionException.class)
   @Override
-  public void execute_transaction_clientTimeout_fail() {
+  public void execute_transaction_host_network_error() {
+    clientEndpoint = new StubAsyncClientEndpoint(serverEndpoint, true);
+
     nativeService =
         new NativeSeClientServiceFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
+            .useDefaultTimeout()
+            .withoutReaderObservation()
+            .getService();
+    remoteselection_remoteTransaction();
+    // throw exception
+  }
+
+  @Test(expected = KeypleTimeoutException.class)
+  @Override
+  public void execute_transaction_client_network_error() {
+    serverEndpoint.setSimulateConnectionError(true);
+    nativeService =
+        new NativeSeClientServiceFactory()
+            .builder()
+            .withAsyncNode(clientEndpoint)
+            .useCustomTimeout(2)
             .withoutReaderObservation()
             .getService();
 
-    transaction_clientTimeout_fail();
+    setTimeoutInNode((AbstractKeypleNode) NativeSeClientUtils.getAsyncNode(), 2000);
+
+    remoteselection_remoteTransaction();
   }
 
+  /** {@inheritDoc} */
+  @Test
+  @Override
+  public void execute_transaction_slowSe_success() {
+    nativeService =
+        new NativeSeClientServiceFactory()
+            .builder()
+            .withAsyncNode(clientEndpoint)
+            .useDefaultTimeout()
+            .withoutReaderObservation()
+            .getService();
+
+    transaction_slowSe_success();
+  }
+
+  @Override
+  @Test
+  public void execute_all_methods() {
+    final ReaderEventFilter eventFilter = new ReaderEventFilter();
+
+    nativeService =
+        new NativeSeClientServiceFactory()
+            .builder()
+            .withAsyncNode(clientEndpoint)
+            .useDefaultTimeout()
+            .withReaderObservation(eventFilter)
+            .getService();
+
+    all_methods();
+  }
 
   /** {@inheritDoc} */
   @Override
@@ -160,28 +216,13 @@ public class AsyncScenario extends BaseScenario {
     final ReaderEventFilter eventFilter = new ReaderEventFilter();
 
     nativeService =
-            new NativeSeClientServiceFactory()
-                    .builder()
-                    .withAsyncNode(clientEndpoint)
-                    .withReaderObservation(eventFilter)
-                    .getService();
-
-    defaultSelection_onMatched_transaction_successful(eventFilter);
-  }
-
-  /** {@inheritDoc} */
-  @Test
-  @Override
-  public void observable_onMatched_transaction_removedEarly_fail() {
-    final ReaderEventFilter eventFilter = new ReaderEventFilter();
-
-    nativeService =
         new NativeSeClientServiceFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
+            .useDefaultTimeout()
             .withReaderObservation(eventFilter)
             .getService();
 
-    onMatched_transaction_removedEarly_fail(eventFilter);
+    defaultSelection_onMatched_transaction_successful(eventFilter);
   }
 }

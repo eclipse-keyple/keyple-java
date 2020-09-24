@@ -34,14 +34,14 @@ public class VirtualReaderObserver implements ObservableReader.ReaderObserver {
   public void update(ReaderEvent event) {
     String virtualReaderName = event.getReaderName();
     RemoteSeServerPlugin plugin =
-            (RemoteSeServerPlugin) SeProxyService.getInstance().getPlugin(event.getPluginName());
+        (RemoteSeServerPlugin) SeProxyService.getInstance().getPlugin(event.getPluginName());
     RemoteSeServerObservableReader observableVirtualReader =
-            (RemoteSeServerObservableReader) plugin.getReader(virtualReaderName);
+        (RemoteSeServerObservableReader) plugin.getReader(virtualReaderName);
     logger.info(
         "Event received {} {} {} with default selection {}",
         event.getEventType(),
         event.getPluginName(),
-            virtualReaderName,
+        virtualReaderName,
         event.getDefaultSelectionsResponse());
 
     switch (event.getEventType()) {
@@ -59,8 +59,9 @@ public class VirtualReaderObserver implements ObservableReader.ReaderObserver {
                     .getActiveMatchingSe();
 
         // execute a transaction
-        try{
-          String eventLog = CalypsoUtilities.readEventLog(calypsoPo, observableVirtualReader, logger);
+        try {
+          String eventLog =
+              CalypsoUtilities.readEventLog(calypsoPo, observableVirtualReader, logger);
           // on the 2nd SE MATCHED
           if (eventCounter == 2) {
             // clear observers in the reader
@@ -72,19 +73,17 @@ public class VirtualReaderObserver implements ObservableReader.ReaderObserver {
               new TransactionResult()
                   .setSuccessful(!eventLog.isEmpty())
                   .setUserId(userInput.getUserId()));
-        }catch (KeypleException e){
+        } catch (KeypleException e) {
           // send result
           plugin.terminateService(
-                  virtualReaderName,
-                  new TransactionResult()
-                          .setSuccessful(false)
-                          .setUserId(userInput.getUserId()));
-          }
+              virtualReaderName,
+              new TransactionResult().setSuccessful(false).setUserId(userInput.getUserId()));
+        }
 
         break;
       case SE_REMOVED:
-        //do nothing
-        plugin.terminateService( virtualReaderName, null);
+        // do nothing
+        plugin.terminateService(virtualReaderName, null);
         break;
     }
   }

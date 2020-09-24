@@ -14,10 +14,9 @@ package org.eclipse.keyple.plugin.remotese.integration.common.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import org.eclipse.keyple.core.seproxy.exception.KeypleRuntimeException;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
-
-import java.util.List;
 
 public class JacksonParser {
 
@@ -49,7 +48,7 @@ public class JacksonParser {
 
   public static List<KeypleMessageDto> fromJsonList(String data) {
     try {
-      return parser.readValue(data, new TypeReference<List<KeypleMessageDto>>(){});
+      return parser.readValue(data, new TypeReference<List<KeypleMessageDto>>() {});
     } catch (JsonProcessingException e) {
       throw new KeypleRuntimeException("Error while deserializing dto", e);
     }

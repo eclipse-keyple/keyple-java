@@ -32,14 +32,21 @@ import org.slf4j.LoggerFactory;
 public class StubSyncClientEndpoint implements KeypleClientSync {
 
   private static final Logger logger = LoggerFactory.getLogger(StubSyncClientEndpoint.class);
-  static ExecutorService taskPool =
-      Executors.newCachedThreadPool(new NamedThreadFactory("syncPool"));
+  static final ExecutorService taskPool =
+      Executors.newCachedThreadPool(new NamedThreadFactory("syncPool"));;
+  private final Boolean simulateConnectionError;
+  int messageSent = 0;
 
-  public StubSyncClientEndpoint() {
+  public StubSyncClientEndpoint(Boolean simulateConnectionError) {
+    this.simulateConnectionError = simulateConnectionError;
   }
 
   @Override
   public List<KeypleMessageDto> sendRequest(KeypleMessageDto msg) {
+    if (messageSent++ == 2 && simulateConnectionError) {
+      throw new StubNetworkConnectionException("Simulate a host unreacheable error");
+    }
+
     final String responsesJson;
     // serialize request
     final String request = JacksonParser.toJson(msg);
