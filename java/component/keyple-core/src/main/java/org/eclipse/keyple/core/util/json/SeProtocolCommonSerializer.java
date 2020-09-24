@@ -17,26 +17,11 @@ import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 
 /** Gson Adapter to serialize and deserialize {@link SeProtocol} */
-public class SeProtocolTypeAdapter
-    implements JsonDeserializer<SeProtocol>, JsonSerializer<SeProtocol> {
+public class SeProtocolCommonSerializer implements JsonSerializer<SeCommonProtocols> {
 
   @Override
-  public JsonElement serialize(SeProtocol src, Type typeOfSrc, JsonSerializationContext context) {
+  public JsonElement serialize(
+      SeCommonProtocols src, Type typeOfSrc, JsonSerializationContext context) {
     return new JsonPrimitive(src.getName());
-  }
-
-  @Override
-  public SeProtocol deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-      throws JsonParseException {
-
-    String value = json.getAsString();
-
-    for (SeCommonProtocols p : SeCommonProtocols.values()) {
-      if (p.getName().equals(value)) {
-        return p;
-      }
-    }
-
-    throw new JsonParseException("Value of SeProtocol not found : " + value);
   }
 }

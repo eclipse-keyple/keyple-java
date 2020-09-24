@@ -316,7 +316,7 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
 
       SeProtocol seProtocol =
           KeypleJsonParser.getParser()
-              .fromJson(bodyObject.get("seProtocol").getAsString(), SeProtocol.class);
+              .fromJson(bodyObject.get("seProtocol").toString(), SeProtocol.class);
 
       String protocolRule = bodyObject.get("protocolRule").getAsString();
 
