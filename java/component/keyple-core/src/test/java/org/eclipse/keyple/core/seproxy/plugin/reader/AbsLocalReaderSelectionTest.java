@@ -224,41 +224,6 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
   }
 
   /*
-   * open logical channel
-   */
-
-  //  @Test(expected = IllegalArgumentException.class)
-  //  public void open_channel_null() throws Exception {
-  //    AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
-  //    r.openLogicalChannelAndSelect(null);
-  //    // expected exception
-  //  }
-
-  //  @Test
-  //  public void open_logical_channel_success() throws Exception {
-  //    AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
-  //    when(r.getATR()).thenReturn(ByteArrayUtil.fromHex(ATR));
-  //    when(r.isPhysicalChannelOpen()).thenReturn(true);
-  //
-  //    SeSelector seSelector = getAtrSelector();
-  //
-  //    r.openLogicalChannelAndSelect(seSelector);
-  //    verify(r, times(1)).openLogicalChannel(seSelector);
-  //  }
-  //
-  //  @Test(expected = KeypleReaderIOException.class)
-  //  public void open_channel_fail() throws Exception {
-  //    AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
-  //    when(r.getATR()).thenReturn(ByteArrayUtil.fromHex(ATR));
-  //    when(r.isPhysicalChannelOpen()).thenReturn(false); // does not open
-  //
-  //    SeSelector seSelector = getAtrSelector();
-  //
-  //    r.openLogicalChannelAndSelect(seSelector);
-  //    verify(r, times(0)).openLogicalChannel(seSelector);
-  //  }
-
-  /*
    * add Se Protocol Setting
    */
 
