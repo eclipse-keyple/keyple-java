@@ -109,10 +109,12 @@ public final class SeResponse implements Serializable {
               "SeResponse:{RESPONSES = %s, ATR = %s, FCI = %s, HASMATCHED = %b CHANNELWASOPEN = %b "
                   + "LOGICALCHANNEL = %s}",
               getApduResponses(),
-              selectionStatus.getAtr().getBytes() == null
+              selectionStatus.getAtr() == null
                   ? "null"
                   : ByteArrayUtil.toHex(selectionStatus.getAtr().getBytes()),
-              ByteArrayUtil.toHex(selectionStatus.getFci().getBytes()),
+              selectionStatus.getFci() == null
+                  ? "null"
+                  : ByteArrayUtil.toHex(selectionStatus.getFci().getBytes()),
               selectionStatus.hasMatched(),
               wasChannelPreviouslyOpen(),
               logicalChannelIsOpen ? "OPEN" : "CLOSED");
