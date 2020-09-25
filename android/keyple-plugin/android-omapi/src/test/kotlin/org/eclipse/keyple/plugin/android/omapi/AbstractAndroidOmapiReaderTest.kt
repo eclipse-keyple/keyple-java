@@ -124,7 +124,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test(expected = KeypleReaderIOException::class)
     fun transmitNoAidOpenChannelFailed() {
         nativeReader = mockReaderWithNullOnOpenBasicChannel()
         reader = buildOmapiReaderImpl(nativeReader)
@@ -132,7 +132,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader.transmitSeRequests(getNoAidSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test(expected = KeypleReaderIOException::class)
     fun transmitNoAidIOException() {
         nativeReader = mockReaderWithExceptionOnOpenBasicChannel(IOException())
         reader = buildOmapiReaderImpl(nativeReader)
@@ -140,7 +140,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader.transmitSeRequests(getNoAidSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test(expected = KeypleReaderIOException::class)
     fun transmitNoAidSecurityException() {
         nativeReader = mockReaderWithExceptionOnOpenBasicChannel(SecurityException())
         reader = buildOmapiReaderImpl(nativeReader)
