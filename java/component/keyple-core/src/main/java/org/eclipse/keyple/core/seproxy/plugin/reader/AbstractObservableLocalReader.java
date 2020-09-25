@@ -18,7 +18,6 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
@@ -343,22 +342,6 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
 
   /**
    * (package-private)<br>
-   * This method initiates the SE removal sequence.
-   *
-   * <p>The reader will remain in the WAIT_FOR_SE_REMOVAL state as long as the SE is present. It
-   * will change to the WAIT_FOR_START_DETECTION or WAIT_FOR_SE_INSERTION state depending on what
-   * was set when the detection was started.
-   */
-  @Override
-  final void terminateSeCommunication() {
-    if (logger.isTraceEnabled()) {
-      logger.trace("[{}] start removal sequence of the reader", getName());
-    }
-    this.stateService.onEvent(InternalEvent.SE_PROCESSED);
-  }
-
-  /**
-   * (package-private)<br>
    * This method is invoked when a SE is inserted in the case of an observable reader.
    *
    * <p>e.g. from the monitoring thread in the case of a Pcsc plugin or from the NfcAdapter callback
@@ -567,8 +550,9 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
   /** {@inheritDoc} */
   @Override
   public final void finalizeSeProcessing() {
-    if (isPhysicalChannelOpen()) {
-      transmitSeRequest(null, ChannelControl.CLOSE_AFTER);
+    if (logger.isTraceEnabled()) {
+      logger.trace("[{}] start removal sequence of the reader", getName());
     }
+    this.stateService.onEvent(InternalEvent.SE_PROCESSED);
   }
 }

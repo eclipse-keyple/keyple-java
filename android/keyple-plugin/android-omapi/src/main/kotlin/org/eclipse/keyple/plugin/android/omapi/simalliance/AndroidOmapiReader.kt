@@ -142,6 +142,11 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
         }
     }
 
+    /** Closes the logical channel explicitly.  */
+    override fun closeLogicalChannel() {
+        session?.closeChannels()
+    }
+
     /**
      * Transmit an APDU command (as per ISO/IEC 7816) to the SE see org.simalliance.openmobileapi.Channel#transmit(byte[])
      *

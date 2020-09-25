@@ -97,22 +97,6 @@ public class AbsReaderTest extends CoreBaseTest {
    */
 
   @Test
-  public void transmit_null() throws Exception {
-    AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
-    r.transmitSeRequest(null, ChannelControl.CLOSE_AFTER);
-    // we're just waiting right here for no exceptions to be thrown.
-    verify(r, times(1)).transmitSeRequest(null, ChannelControl.CLOSE_AFTER);
-  }
-
-  @Test
-  public void transmit2_null() throws Exception {
-    AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
-    r.transmitSeRequest(null, ChannelControl.KEEP_OPEN);
-    // we're just waiting right here for no exceptions to be thrown.
-    verify(r, times(1)).transmitSeRequest(null, ChannelControl.KEEP_OPEN);
-  }
-
-  @Test
   public void transmit() throws Exception {
     AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
     SeRequest request = SeRequestTest.getSeRequestSample();

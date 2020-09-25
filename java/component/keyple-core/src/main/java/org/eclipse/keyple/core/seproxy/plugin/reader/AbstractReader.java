@@ -46,7 +46,8 @@ public abstract class AbstractReader implements ProxyReader {
    * Reader constructor taking the name of the plugin that instantiated the reader and the name of
    * the reader in argument.
    *
-   * <p>Initializes the time measurement at {@link SeRequest} level.
+   * <p>Initializes the time measurement log at {@link SeRequest} level. The first measurement gives
+   * the time elapsed since the plugin was loaded.
    *
    * @param pluginName A not empty string.
    * @param name A not empty string.
@@ -56,11 +57,9 @@ public abstract class AbstractReader implements ProxyReader {
 
     this.name = name;
     this.pluginName = pluginName;
-    this.before = System.nanoTime(); /*
-                                          * provides an initial value for measuring the
-                                          * inter-exchange time. The first measurement gives the
-                                          * time elapsed since the plugin was loaded.
-                                          */
+    if (logger.isDebugEnabled()) {
+      this.before = System.nanoTime();
+    }
   }
 
   /**
@@ -147,7 +146,7 @@ public abstract class AbstractReader implements ProxyReader {
    * @param multiSeRequestProcessing The multi se processing flag (must be not null).
    * @param channelControl indicates if the physical channel has to be closed at the end of the
    *     processing (must be not null).
-   * @return A not null response list (can be empty).
+   * @return A not empty response list (can be empty).
    * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
    * @throws IllegalArgumentException if one of the arguments is null.
    * @see ProxyReader#transmitSeRequests(List, MultiSeRequestProcessing, ChannelControl)

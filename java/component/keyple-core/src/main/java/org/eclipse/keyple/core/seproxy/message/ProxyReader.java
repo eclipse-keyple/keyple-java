@@ -49,7 +49,7 @@ public interface ProxyReader extends SeReader {
    * The physical channel is managed by the ChannelControl parameter as in {@link
    * #transmitSeRequest(SeRequest, ChannelControl)}.
    *
-   * @param seRequests A not empty list of not null {@link SeRequest}.
+   * @param seRequests A not empty SeRequest list.
    * @param multiSeRequestProcessing The multi se processing flag (must be not null).
    * @param channelControl indicates if the physical channel has to be closed at the end of the
    *     processing (must be not null).
@@ -89,19 +89,16 @@ public interface ProxyReader extends SeReader {
    *       ChannelControl#CLOSE_AFTER}.
    *   <li>Returns a {@link SeResponse} containing:
    *       <ul>
-   *         <li>a boolean giving the current selection status.
-   *         <li>a boolean giving the previous selection status.
+   *         <li>a boolean giving the current logical channel status.
+   *         <li>a boolean giving the previous logical channel status.
    *         <li>if a selection has been made ({@link SeSelector } not null) a {@link
    *             SelectionStatus} object containing the elements resulting from the selection.
    *         <li>if APDUs have been transmitted to the SE, the list of responses to these APDUs.
    *       </ul>
    * </ul>
    *
-   * Note 1: to only close the channel, the seRequest argument can be set to null, in this case the
-   * channel control must be forced internally to {@link ChannelControl#CLOSE_AFTER}.<br>
-   * Note 2: in case of a communication error when sending an APDU an {@link
-   * KeypleReaderIOException} exception is thrown. Responses to previous APDUs are attached to this
-   * exception.<br>
+   * Note: in case of a communication error when sending an APDU an {@link KeypleReaderIOException}
+   * exception is thrown. Responses to previous APDUs are attached to this exception.<br>
    * This allows the calling application to be tolerant to SE tearing and to recover a partial
    * response to the {@link SeRequest}.
    *
@@ -114,4 +111,13 @@ public interface ProxyReader extends SeReader {
    * @since 0.9
    */
   SeResponse transmitSeRequest(SeRequest seRequest, ChannelControl channelControl);
+
+  /**
+   * Release the communication channel previously established with the SE.
+   *
+   * <p>If the ProxyReader is .
+   *
+   * @since 1.0
+   */
+  void releaseChannel();
 }

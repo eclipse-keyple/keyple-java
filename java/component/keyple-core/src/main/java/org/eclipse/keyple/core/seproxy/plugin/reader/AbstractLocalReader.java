@@ -19,7 +19,6 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +49,8 @@ public abstract class AbstractLocalReader extends AbstractReader {
    *
    * <p>Defines the plugin and reader names.
    *
-   * <p>Initializes the time measurement at {@link ApduRequest} level.
+   * <p>Initializes the time measurement log at {@link ApduRequest} level. The first measurement
+   * gives the time elapsed since the plugin was loaded.
    *
    * @param pluginName the name of the plugin that instantiated the reader
    * @param readerName the name of the reader
@@ -58,11 +58,9 @@ public abstract class AbstractLocalReader extends AbstractReader {
   public AbstractLocalReader(String pluginName, String readerName) {
 
     super(pluginName, readerName);
-    this.before = System.nanoTime(); /*
-                                          * provides an initial value for measuring the
-                                          * inter-exchange time. The first measurement gives the
-                                          * time elapsed since the plugin was loaded.
-                                          */
+    if (logger.isDebugEnabled()) {
+      this.before = System.nanoTime();
+    }
   }
   /**
    * Check the presence of a SE
@@ -102,7 +100,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
     } catch (KeypleReaderIOException e) {
       if (logger.isDebugEnabled()) {
         logger.debug(
-            "[{}] Exception occurred in closeLogicalAndPhysicalChannels. Message: {}",
+            "[{}] Exception occurred in releaseSeChannel. Message: {}",
             this.getName(),
             e.getMessage());
       }
@@ -110,13 +108,15 @@ public abstract class AbstractLocalReader extends AbstractReader {
   }
 
   /**
-   * This abstract method must be implemented by the derived class in order to provide the SE ATR
-   * when available.
+   * This abstract method must be implemented by the derived class in order to provide the
+   * information retrieved when powering up the secure element.
    *
-   * <p>Gets the ATR returned by the SE or reconstructed by the reader (contactless). Can be null if
-   * the plugin does not provide ATR.
+   * <p>In contact mode, ATR data is the data returned by the Secure Element.
    *
-   * @return A nullable byte array.
+   * <p>In contactless mode, as the ATR is not provided by the secured element, it can vary from one
+   * plugin to another
+   *
+   * @return A byte array (must be not null).
    */
   protected abstract byte[] getATR();
 
@@ -265,6 +265,10 @@ public abstract class AbstractLocalReader extends AbstractReader {
     if (logger.isTraceEnabled()) {
       logger.trace("[{}] closeLogicalChannel => Closing of the logical channel.", this.getName());
     }
+    if (this instanceof SmartSelectionReader) {
+      /* SmartSelectionReaders have an explicit method for closing channels */
+      ((SmartSelectionReader) this).closeLogicalChannel();
+    }
     logicalChannelIsOpen = false;
   }
 
@@ -329,30 +333,28 @@ public abstract class AbstractLocalReader extends AbstractReader {
   protected abstract boolean protocolFlagMatches(SeProtocol protocolFlag);
 
   /**
-   * Executes the ChannelControl instruction.
+   * {@inheritDoc}
    *
-   * <p>Does nothing if channelControl is {@link ChannelControl#KEEP_OPEN}<br>
-   * Otherwise, closes the logical channel and initiates the closure of the physical channel.
-   * Instantly if the reader is not observed or by the removal sequence if it is.
-   *
-   * @param channelControl The channel control.
+   * @since 1.0
    */
-  private void processChannelControl(ChannelControl channelControl) {
+  @Override
+  public void releaseChannel() {
 
-    if (channelControl != ChannelControl.KEEP_OPEN) {
-      // close logical channel unconditionally
-      closeLogicalChannel();
-      if (!(this instanceof ObservableReader)
-          || (((ObservableReader) this).countObservers() == 0)) {
-        /* Not observable/observed: close immediately the physical channel if requested */
+    // close logical channel unconditionally
+    closeLogicalChannel();
+    if (this instanceof ObservableReader) {
+      if ((((ObservableReader) this).countObservers() != 0)) {
+        /*
+         * request the removal sequence
+         */
+        ((ObservableReader) this).finalizeSeProcessing();
+      } else {
+        /* Not observed: close immediately the physical channel if requested */
         closePhysicalChannel();
       }
-      if (this instanceof AbstractObservableLocalReader) {
-        /*
-         * request the removal sequence when the reader is monitored by a thread
-         */
-        this.terminateSeCommunication();
-      }
+    } else {
+      /* Not observable: close immediately the physical channel if requested */
+      closePhysicalChannel();
     }
   }
 
@@ -369,12 +371,6 @@ public abstract class AbstractLocalReader extends AbstractReader {
       List<SeRequest> seRequests,
       MultiSeRequestProcessing multiSeRequestProcessing,
       ChannelControl channelControl) {
-
-    // check seRequests, multiSeRequestProcessing and channelControl
-    Assert.getInstance()
-        .notNull(seRequests, "seRequests")
-        .notNull(multiSeRequestProcessing, "multiSeRequestProcessing")
-        .notNull(channelControl, "channelControl");
 
     List<SeResponse> seResponses = new ArrayList<SeResponse>();
 
@@ -418,8 +414,10 @@ public abstract class AbstractLocalReader extends AbstractReader {
       }
     }
 
-    /* handle the communication closing according to the provided ChannelControl parameter */
-    processChannelControl(channelControl);
+    /* close the channel if requested */
+    if (channelControl == ChannelControl.CLOSE_AFTER) {
+      releaseChannel();
+    }
 
     return seResponses;
   }
@@ -435,25 +433,19 @@ public abstract class AbstractLocalReader extends AbstractReader {
   @Override
   protected final SeResponse processSeRequest(SeRequest seRequest, ChannelControl channelControl) {
 
-    // check channelControl, seRequest can be null
-    Assert.getInstance().notNull(channelControl, "channelControl");
-
     /* Open the physical channel if needed */
     if (!isPhysicalChannelOpen()) {
       openPhysicalChannel();
     }
 
     SeResponse seResponse;
-    if (seRequest != null) {
-      /* process the SeRequest and keep the SeResponse */
-      seResponse = processSeRequestLogical(seRequest);
-      /* handle the communication closing according to the provided ChannelControl parameter */
-      processChannelControl(channelControl);
-    } else {
-      /* seRequest is null, force the channel closing whatever the channel control */
-      processChannelControl(ChannelControl.CLOSE_AFTER);
-      /* returns an empty response with channel status */
-      seResponse = new SeResponse(logicalChannelIsOpen, true, null, new ArrayList<ApduResponse>());
+
+    /* process the SeRequest and keep the SeResponse */
+    seResponse = processSeRequestLogical(seRequest);
+
+    /* close the channel if requested */
+    if (channelControl == ChannelControl.CLOSE_AFTER) {
+      releaseChannel();
     }
 
     return seResponse;
@@ -462,7 +454,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
   /**
    * Checks the provided ATR with the AtrFilter.
    *
-   * <p>Returns true if the ATR is accepted by the filter or if no filter is set.
+   * <p>Returns true if the ATR is accepted by the filter.
    *
    * @param atr A byte array.
    * @param atrFilter A not null {@link org.eclipse.keyple.core.seproxy.SeSelector.AtrFilter}
@@ -472,14 +464,6 @@ public abstract class AbstractLocalReader extends AbstractReader {
    */
   private boolean checkAtr(byte[] atr, SeSelector.AtrFilter atrFilter) {
 
-    if (atrFilter == null) {
-      // no filter
-      return true;
-    }
-    if (atr == null) {
-      // no ATR
-      throw new IllegalStateException("No ATR available while an AtrFilter is set.");
-    }
     if (logger.isDebugEnabled()) {
       logger.debug("[{}] openLogicalChannel => ATR = {}", this.getName(), ByteArrayUtil.toHex(atr));
     }
@@ -541,6 +525,9 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * AID.<br>
    * As soon as one of these operations fails, the method returns with a failed selection status.
    *
+   * <p>Conversely, the selection is considered successful if none of the filters have rejected the
+   * SE, even if none of the filters are active.
+   *
    * @param seSelector A not null {@link SeSelector}.
    * @return A not null {@link SelectionStatus}.
    * @see #processSeRequestLogical(SeRequest)
@@ -558,19 +545,15 @@ public abstract class AbstractLocalReader extends AbstractReader {
       hasMatched = false;
     } else {
       // protocol check succeeded, check ATR if enabled
-      SeSelector.AtrFilter atrFilter = seSelector.getAtrFilter();
       byte[] atr = getATR();
-      if (atr != null) {
-        answerToReset = new AnswerToReset(atr);
-      } else {
-        answerToReset = null;
-      }
-      if (!checkAtr(atr, atrFilter)) {
+      answerToReset = new AnswerToReset(atr);
+      SeSelector.AtrFilter atrFilter = seSelector.getAtrFilter();
+      if (atrFilter != null && !checkAtr(atr, atrFilter)) {
         // check failed
         hasMatched = false;
         fciResponse = null;
       } else {
-        // ATR check succeeded, select by AID if enabled.
+        // no ATR filter or ATR check succeeded, select by AID if enabled.
         SeSelector.AidSelector aidSelector = seSelector.getAidSelector();
         if (aidSelector != null) {
           fciResponse = selectByAid(aidSelector);
@@ -589,10 +572,9 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * <p>The complete description of the process of transmitting an {@link SeRequest} is described in
    * {{@link ProxyReader#transmitSeRequest(SeRequest, ChannelControl)}}
    *
-   * @param seRequest The {@link SeRequest} to be processed (may be null).
+   * @param seRequest The {@link SeRequest} to be processed (must be not null).
    * @return seResponse A not null {@link SeResponse}.
    * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
-   * @throws IllegalArgumentException if seRequest is null
    * @see #processSeRequests(List, MultiSeRequestProcessing, ChannelControl)
    * @see #processSeRequest(SeRequest, ChannelControl)
    * @since 0.9
@@ -753,13 +735,4 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * @since 0.9
    */
   protected abstract byte[] transmitApdu(byte[] apduIn);
-
-  /**
-   * Method to be implemented by child classes in order to handle the needed actions when
-   * terminating the communication with a SE (closing of the physical channel, initiating a removal
-   * sequence, etc.)
-   *
-   * @since 0.9
-   */
-  abstract void terminateSeCommunication();
 }

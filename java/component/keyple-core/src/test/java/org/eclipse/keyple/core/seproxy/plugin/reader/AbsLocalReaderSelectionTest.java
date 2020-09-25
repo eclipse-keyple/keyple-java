@@ -107,20 +107,6 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     assertThat(seResponse.getSelectionStatus().hasMatched()).isFalse();
   }
 
-  @Test(expected = IllegalStateException.class)
-  public void select_byAtr_null() throws Exception {
-    AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
-    // mock ATR
-    when(r.getATR()).thenReturn(null);
-
-    SeSelector seSelector = getAtrSelector();
-
-    SeRequest seRequest = new SeRequest(seSelector, new ArrayList<ApduRequest>());
-
-    SeResponse seResponse = r.processSeRequest(seRequest, ChannelControl.KEEP_OPEN);
-    // expected exception
-  }
-
   /*
    * Select by AID
    */
