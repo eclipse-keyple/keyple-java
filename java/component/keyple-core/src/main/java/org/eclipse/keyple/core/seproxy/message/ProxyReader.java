@@ -29,6 +29,9 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
  * ChannelControl)} allowing applications to provide several selection patterns with various
  * options.
  *
+ * <p>{@link #releaseChannel()} is used to control the closing of logical and physical channels
+ * taking into account the observation mechanisms potentially in progress.
+ *
  * @since 0.9
  */
 public interface ProxyReader extends SeReader {
@@ -102,7 +105,7 @@ public interface ProxyReader extends SeReader {
    * This allows the calling application to be tolerant to SE tearing and to recover a partial
    * response to the {@link SeRequest}.
    *
-   * @param seRequest The {@link SeRequest} to be processed (may be null).
+   * @param seRequest The {@link SeRequest} to be processed (must be not null).
    * @return seResponse A not null {@link SeResponse}.
    * @param channelControl indicates if the physical channel has to be closed at the end of the
    *     processing (must be not null).
@@ -115,7 +118,10 @@ public interface ProxyReader extends SeReader {
   /**
    * Release the communication channel previously established with the SE.
    *
-   * <p>If the ProxyReader is .
+   * <p>If the ProxyReader is not observable the logical and physical channels must be instantly.
+   * <br>
+   * If the ProxyReader is observable, the closure of both channels must be the result of the
+   * completion of a removal sequence.
    *
    * @since 1.0
    */
