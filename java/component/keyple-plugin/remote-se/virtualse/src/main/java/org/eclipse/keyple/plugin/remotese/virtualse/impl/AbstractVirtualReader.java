@@ -51,14 +51,19 @@ abstract class AbstractVirtualReader extends AbstractReader {
    * @param pluginName The name of the plugin (must be not null).
    * @param nativeReaderName The name of the native reader (must be not null).
    * @param node The associated node (must be not null).
-   * @param clientNodeId Client node Id (required only when created by Server Sync Node)
+   * @param sessionId Session Id (can be null)
+   * @param clientNodeId Client node Id (can be null)
    */
   AbstractVirtualReader(
-      String pluginName, String nativeReaderName, AbstractKeypleNode node, String clientNodeId) {
+      String pluginName,
+      String nativeReaderName,
+      AbstractKeypleNode node,
+      String sessionId,
+      String clientNodeId) {
     super(pluginName, UUID.randomUUID().toString());
     this.nativeReaderName = nativeReaderName;
     this.node = node;
-    this.sessionId = null;
+    this.sessionId = sessionId;
     this.clientNodeId = clientNodeId;
   }
 
@@ -191,7 +196,7 @@ abstract class AbstractVirtualReader extends AbstractReader {
     // Build the message
     KeypleMessageDto message =
         new KeypleMessageDto() //
-            .setSessionId(getSessionId()) //
+            .setSessionId(sessionId != null ? sessionId : UUID.randomUUID().toString()) //
             .setAction(action.name()) //
             .setVirtualReaderName(getName()) //
             .setNativeReaderName(nativeReaderName) //
@@ -221,24 +226,20 @@ abstract class AbstractVirtualReader extends AbstractReader {
 
   /**
    * (package-private)<br>
-   * Gets the current session id or generate a new one if is not set.
+   * Gets the current session id
    *
-   * @return a not null value.
+   * @return a nullable value.
    */
   String getSessionId() {
-    return sessionId != null ? sessionId : UUID.randomUUID().toString();
+    return sessionId;
   }
 
   /**
    * (package-private)<br>
-   * Sets the session id.
+   * Gets the current client id
    *
-   * @param sessionId The session id (optional)
+   * @return a nullable value.
    */
-  void setSessionId(String sessionId) {
-    this.sessionId = sessionId;
-  }
-
   String getClientNodeId() {
     return clientNodeId;
   }

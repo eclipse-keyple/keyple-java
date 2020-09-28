@@ -296,14 +296,17 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
     if (isObservable) {
       VirtualObservableReader virtualObservableReader =
           new VirtualObservableReader(
-              getName(), virtualReaderName, getNode(), clientNodeId, eventNotificationPool);
-      virtualObservableReader.setSessionId(sessionId);
+              getName(),
+              virtualReaderName,
+              getNode(),
+              sessionId,
+              clientNodeId,
+              eventNotificationPool);
       return new ServerVirtualObservableReader(
           virtualObservableReader, serviceId, userInputData, initialSeContent, null);
     } else {
       VirtualReader virtualReader =
-          new VirtualReader(getName(), virtualReaderName, getNode(), clientNodeId);
-      virtualReader.setSessionId(sessionId);
+          new VirtualReader(getName(), virtualReaderName, getNode(), sessionId, clientNodeId);
       return new ServerVirtualReader(virtualReader, serviceId, userInputData, initialSeContent);
     }
   }
@@ -318,7 +321,6 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
   private ServerVirtualObservableReader createSlaveReader(KeypleMessageDto message) {
     final ServerVirtualObservableReader virtualObservableReader =
         (ServerVirtualObservableReader) getReader(message.getVirtualReaderName());
-    final String clientNodeId = message.getClientNodeId();
     final JsonObject body =
         KeypleJsonParser.getParser().fromJson(message.getBody(), JsonObject.class);
 
@@ -329,9 +331,9 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
             getName(),
             UUID.randomUUID().toString(),
             getNode(),
-            clientNodeId,
+            message.getSessionId(),
+            message.getClientNodeId(),
             eventNotificationPool);
-    virtualReader.setSessionId(message.getSessionId());
     // create a temporary virtual reader for this event
     return new ServerVirtualObservableReader(
         virtualReader, null, userInputData, null, virtualObservableReader);

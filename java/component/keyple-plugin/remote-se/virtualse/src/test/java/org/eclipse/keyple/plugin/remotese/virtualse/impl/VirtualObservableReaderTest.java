@@ -68,7 +68,8 @@ public class VirtualObservableReaderTest {
     doReturn(response).when(node).sendRequest(any(KeypleMessageDto.class));
     observer = new MockObserver();
     reader =
-        new VirtualObservableReader(pluginName, nativeReaderName, node, null, notificationPool);
+        new VirtualObservableReader(
+            pluginName, nativeReaderName, node, "sessionId", null, notificationPool);
   }
 
   @Test

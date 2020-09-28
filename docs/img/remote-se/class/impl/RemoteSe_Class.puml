@@ -1,6 +1,6 @@
 @startuml
 title
-    Keyple Plugin Remote SE (01/09/2020)
+    Keyple Plugin Remote SE (28/09/2020)
 end title
 
 ' == THEME ==
@@ -346,17 +346,18 @@ package org.eclipse.keyple.plugin.remotese {
             ~abstract "<< <back:#D0ECE7>AbstractReader</back> >>\nAbstractVirtualReader" as AbstractVirtualReader {
                 # String nativeReaderName
                 - String sessionId
+                - String clientNodeId
                 __
-                ~ AbstractVirtualReader (String pluginName,\n String name,\n String nativeReaderName,\n AbstractKeypleNode node)
+                ~ AbstractVirtualReader (String pluginName,\n String name,\n String nativeReaderName,\n AbstractKeypleNode node,\n String sessionId,\n String clientNodeId)
                 ..
                 ~ String getSessionId ()
-                ~ void setSessionId (String sessionId)
+                ~ String getClientNodeId ()
             }
             ~class "**final** VirtualReader" as VirtualReader extends AbstractVirtualReader {
-                ~ VirtualReader (String pluginName,\n String nativeReaderName,\n AbstractKeypleNode node)
+                ~ VirtualReader (String pluginName,\n String nativeReaderName,\n AbstractKeypleNode node,\n String sessionId,\n String clientNodeId)
             }
             ~class "<< <back:#FDEBD0>ObservableReaderNotifier</back> >>\n**final** VirtualObservableReader" as VirtualObservableReader extends AbstractVirtualReader {
-                ~ VirtualObservableReader (String pluginName,\n String nativeReaderName,\n AbstractKeypleNode node,\n ExecutorService eventNotificationPool)
+                ~ VirtualObservableReader (String pluginName,\n String nativeReaderName,\n AbstractKeypleNode node,\n ExecutorService eventNotificationPool,\n String sessionId,\n String clientNodeId)
             }
             ' Server Readers
             ~abstract "<< <back:#D0ECE7>ProxyReader</back> >>\nAbstractServerVirtualReader" as AbstractServerVirtualReader implements RemoteSeServerReader {
