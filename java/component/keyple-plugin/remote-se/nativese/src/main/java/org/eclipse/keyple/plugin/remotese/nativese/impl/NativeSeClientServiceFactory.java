@@ -54,7 +54,7 @@ public class NativeSeClientServiceFactory {
      *
      * @return next configuration step
      */
-    ReaderStep useDefaultTimeout();
+    ReaderStep usingDefaultTimeout();
 
     /**
      * Configure the service with a custom timeout. This timeout defines how long the client waits
@@ -63,7 +63,7 @@ public class NativeSeClientServiceFactory {
      * @param timeoutInSeconds timeout in seconds
      * @return next configuration step
      */
-    ReaderStep useCustomTimeout(int timeoutInSeconds);
+    ReaderStep usingCustomTimeout(int timeoutInSeconds);
   }
 
   public interface NodeStep {
@@ -162,13 +162,13 @@ public class NativeSeClientServiceFactory {
     }
 
     @Override
-    public ReaderStep useDefaultTimeout() {
+    public ReaderStep usingDefaultTimeout() {
       timeoutInSec = DEFAULT_TIMEOUT;
       return this;
     }
 
     @Override
-    public ReaderStep useCustomTimeout(int timeoutInSeconds) {
+    public ReaderStep usingCustomTimeout(int timeoutInSeconds) {
       timeoutInSec = timeoutInSeconds;
       return this;
     }

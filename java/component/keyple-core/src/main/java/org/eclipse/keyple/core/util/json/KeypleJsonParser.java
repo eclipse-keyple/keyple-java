@@ -57,7 +57,7 @@ public final class KeypleJsonParser {
             new SeProtocolSettingSerializer())
         .registerTypeAdapter(byte[].class, new HexArrayTypeAdapter())
         .registerTypeAdapter(SeCommand.class, new SeCommandTypeAdapter())
-        .registerTypeAdapter(SeCommonProtocols.class, new SeProtocolCommonSerializer())
+        .registerTypeAdapter(SeCommonProtocols.class, new SeCommonProtocolsSerializer())
         .registerTypeAdapter(BodyError.class, new BodyErrorSerializer())
         .registerTypeHierarchyAdapter(Throwable.class, new ThrowableSerializer())
         .registerTypeAdapter(KeypleReaderIOException.class, new KeypleReaderIOExceptionSerializer())

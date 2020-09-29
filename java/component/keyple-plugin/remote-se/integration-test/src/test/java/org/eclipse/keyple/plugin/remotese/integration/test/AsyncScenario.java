@@ -89,7 +89,7 @@ public class AsyncScenario extends BaseScenario {
         new NativeSeClientServiceFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
-            .useDefaultTimeout()
+            .usingDefaultTimeout()
             .withoutReaderObservation()
             .getService();
 
@@ -105,7 +105,7 @@ public class AsyncScenario extends BaseScenario {
         new NativeSeClientServiceFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
-            .useDefaultTimeout()
+            .usingDefaultTimeout()
             .withoutReaderObservation()
             .getService();
 
@@ -121,7 +121,7 @@ public class AsyncScenario extends BaseScenario {
         new NativeSeClientServiceFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
-            .useDefaultTimeout()
+            .usingDefaultTimeout()
             .withoutReaderObservation()
             .getService();
 
@@ -136,7 +136,7 @@ public class AsyncScenario extends BaseScenario {
         new NativeSeClientServiceFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
-            .useDefaultTimeout()
+            .usingDefaultTimeout()
             .withoutReaderObservation()
             .getService();
 
@@ -153,7 +153,7 @@ public class AsyncScenario extends BaseScenario {
         new NativeSeClientServiceFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
-            .useDefaultTimeout()
+            .usingDefaultTimeout()
             .withoutReaderObservation()
             .getService();
     remoteselection_remoteTransaction();
@@ -168,7 +168,7 @@ public class AsyncScenario extends BaseScenario {
         new NativeSeClientServiceFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
-            .useCustomTimeout(2)
+            .usingCustomTimeout(2)
             .withoutReaderObservation()
             .getService();
 
@@ -185,7 +185,7 @@ public class AsyncScenario extends BaseScenario {
         new NativeSeClientServiceFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
-            .useDefaultTimeout()
+            .usingDefaultTimeout()
             .withoutReaderObservation()
             .getService();
 
@@ -201,7 +201,7 @@ public class AsyncScenario extends BaseScenario {
         new NativeSeClientServiceFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
-            .useDefaultTimeout()
+            .usingDefaultTimeout()
             .withReaderObservation(eventFilter)
             .getService();
 
@@ -219,7 +219,7 @@ public class AsyncScenario extends BaseScenario {
         new NativeSeClientServiceFactory()
             .builder()
             .withAsyncNode(clientEndpoint)
-            .useDefaultTimeout()
+            .usingDefaultTimeout()
             .withReaderObservation(eventFilter)
             .getService();
 

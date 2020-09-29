@@ -17,7 +17,7 @@ import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 
 /** Gson Adapter to serialize and deserialize {@link SeProtocol} */
-public class SeProtocolCommonSerializer implements JsonSerializer<SeCommonProtocols> {
+public class SeCommonProtocolsSerializer implements JsonSerializer<SeCommonProtocols> {
 
   @Override
   public JsonElement serialize(

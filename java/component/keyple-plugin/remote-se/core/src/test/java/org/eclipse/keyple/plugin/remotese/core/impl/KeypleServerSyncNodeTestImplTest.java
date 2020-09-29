@@ -544,7 +544,7 @@ public class KeypleServerSyncNodeTestImplTest extends AbstractKeypleSyncNodeTest
   }
 
   @Test(expected = IllegalStateException.class)
-  public void sendMessage_whenNoPendingClientTaskAndNoClientTimeout_shouldThrowNPE() {
+  public void sendMessage_whenNoPendingClientTaskAndNoClientTimeout_shouldThrowISE() {
     node.sendMessage(msg);
   }
 
