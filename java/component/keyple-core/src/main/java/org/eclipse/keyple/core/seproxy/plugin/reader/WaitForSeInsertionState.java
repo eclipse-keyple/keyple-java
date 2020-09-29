@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  *   <li>Upon SE_REMOVED event, the machine changes state for WAIT_FOR_SE_DETECTION.
  * </ul>
  */
-public class WaitForSeInsertionState extends AbstractObservableState {
+class WaitForSeInsertionState extends AbstractObservableState {
 
   /** logger */
   private static final Logger logger = LoggerFactory.getLogger(WaitForSeInsertionState.class);

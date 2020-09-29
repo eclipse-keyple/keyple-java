@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  *   <li>Upon STOP_DETECT event, the machine changes state for WAIT_FOR_SE_DETECTION.
  * </ul>
  */
-public class WaitForSeProcessingState extends AbstractObservableState {
+class WaitForSeProcessingState extends AbstractObservableState {
 
   /** logger */
   private static final Logger logger = LoggerFactory.getLogger(WaitForSeProcessingState.class);

@@ -239,16 +239,11 @@ class StubReaderImpl extends AbstractObservableLocalReader
 
   @Override
   protected final ObservableReaderStateService initStateService() {
-
-    ObservableReaderStateService observableReaderStateService =
-        new ObservableReaderStateService.Builder(this)
-            .startWithWaitForSeInsertion()
-            .waitForSeInsertion()
-            .withNativeDetection()
-            .waitForSeRemoval()
-            .withSmartDetection()
-            .build();
-
-    return observableReaderStateService;
+    return ObservableReaderStateService.builder(this)
+        .startWithStateWaitForSeInsertion()
+        .waitForSeInsertionWithSmartDetection()
+        .waitForSeProcessingWithSmartDetection()
+        .waitForSeRemovalWithSmartDetection()
+        .build();
   }
 }

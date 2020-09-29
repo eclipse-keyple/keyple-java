@@ -30,12 +30,11 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
   @Override
   public final ObservableReaderStateService initStateService() {
 
-    return new ObservableReaderStateService.Builder(this)
-        .startWithWaitForStart()
-        .waitForSeInsertion()
-        .withNativeDetection()
-        .waitForSeRemoval()
-        .withNativeDetection()
+    return ObservableReaderStateService.builder(this)
+        .startWithStateWaitForStart()
+        .waitForSeInsertionWithNativeDetection()
+        .waitForSeProcessingWithNativeDetection()
+        .waitForSeRemovalWithNativeDetection()
         .build();
   }
 

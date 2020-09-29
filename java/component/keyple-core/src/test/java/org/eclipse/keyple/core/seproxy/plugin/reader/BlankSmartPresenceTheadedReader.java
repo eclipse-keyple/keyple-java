@@ -108,13 +108,11 @@ public class BlankSmartPresenceTheadedReader extends AbstractObservableLocalRead
 
   @Override
   public ObservableReaderStateService initStateService() {
-
-    return new ObservableReaderStateService.Builder(this)
-        .startWithWaitForSeInsertion()
-        .waitForSeInsertion()
-        .withSmartDetection()
-        .waitForSeRemoval()
-        .withSmartDetection()
+    return ObservableReaderStateService.builder(this)
+        .startWithStateWaitForSeInsertion()
+        .waitForSeInsertionWithSmartDetection()
+        .waitForSeProcessingWithSmartDetection()
+        .waitForSeRemovalWithSmartDetection()
         .build();
   }
 }

@@ -20,8 +20,6 @@ import android.os.Build
 import android.os.Bundle
 import java.io.IOException
 import java.util.HashMap
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableLocalReader
@@ -105,29 +103,24 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
      */
     init {
         Timber.i("Init NFC Reader")
-
-        executorService = Executors.newSingleThreadExecutor()
-
         stateService = initStateService()
     }
 
     override fun initStateService(): ObservableReaderStateService {
 
         return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            ObservableReaderStateService.Builder(this)
-                    .startWithWaitForStart()
-                    .waitForSeInsertion()
-                    .withNativeDetection()
-                    .waitForSeRemoval()
-                    .withPollingDetection()
+            ObservableReaderStateService.builder(this)
+                    .startWithStateWaitForStart()
+                    .waitForSeInsertionWithNativeDetection()
+                    .waitForSeProcessingWithNativeDetection()
+                    .waitForSeRemovalWithPollingDetection()
                     .build()
         } else {
-            ObservableReaderStateService.Builder(this)
-                    .startWithWaitForStart()
-                    .waitForSeInsertion()
-                    .withNativeDetection()
-                    .waitForSeRemoval()
-                    .withSmartDetection()
+            ObservableReaderStateService.builder(this)
+                    .startWithStateWaitForStart()
+                    .waitForSeInsertionWithNativeDetection()
+                    .waitForSeProcessingWithNativeDetection()
+                    .waitForSeRemovalWithSmartDetection()
                     .build()
         }
     }

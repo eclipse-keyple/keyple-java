@@ -11,8 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.pcsc;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 import javax.smartcardio.*;
@@ -58,9 +56,6 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   // the thread (see cancel method of the Future object)
   private static final long INSERT_LATENCY = 500;
   private static final long REMOVAL_LATENCY = 500;
-
-  private static final long INSERT_WAIT_TIMEOUT = 200;
-  private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
   private final AtomicBoolean loopWaitSe = new AtomicBoolean();
   private final AtomicBoolean loopWaitSeRemoval = new AtomicBoolean();
@@ -109,21 +104,19 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
 
     if (!usePingPresence) {
       observableReaderStateService =
-          new ObservableReaderStateService.Builder(this)
-              .startWithWaitForStart()
-              .waitForSeInsertion()
-              .withSmartDetection()
-              .waitForSeRemoval()
-              .withSmartDetection()
+          ObservableReaderStateService.builder(this)
+              .startWithStateWaitForStart()
+              .waitForSeInsertionWithSmartDetection()
+              .waitForSeProcessingWithSmartDetection()
+              .waitForSeRemovalWithSmartDetection()
               .build();
     } else {
       observableReaderStateService =
-          new ObservableReaderStateService.Builder(this)
-              .startWithWaitForStart()
-              .waitForSeInsertion()
-              .withPollingDetection()
-              .waitForSeRemoval()
-              .withSmartDetection()
+          ObservableReaderStateService.builder(this)
+              .startWithStateWaitForStart()
+              .waitForSeInsertionWithPollingDetection()
+              .waitForSeProcessingWithSmartDetection()
+              .waitForSeRemovalWithSmartDetection()
               .build();
     }
 
