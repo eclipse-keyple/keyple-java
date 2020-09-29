@@ -181,8 +181,7 @@ task installPlugin{
 dependencies {
 
     //use keyple library : core
-    api project(path:':java:component:keyple-plugin:remote-se:keyple-plugin-remotese-core')
-    //api group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remotese-core', version: project.version
+    api group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remotese-core', version: project.version
 
     implementation "com.google.code.gson:gson:${gson_version}"
 

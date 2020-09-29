@@ -14,18 +14,16 @@ dependencies {
      */
 
     implementation project(path:':java:component:keyple-plugin:remote-se:keyple-plugin-remotese-core')
-    //testImplementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remotese-core', version: project.version
 
     implementation project(path:':java:component:keyple-plugin:remote-se:keyple-plugin-remotese-nativese')
-    //testImplementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remotese-nativese', version: project.version
+
     implementation project(path:':java:component:keyple-plugin:remote-se:keyple-plugin-remotese-nativese', configuration: 'testOutput')
 
     implementation project(path:':java:component:keyple-plugin:remote-se:keyple-plugin-remotese-virtualse')
-    //testImplementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remotese-virtualse', version: project.version
 
-    implementation project(path:':java:component:keyple-plugin:keyple-plugin-stub')
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-stub', version: project.version
 
-    implementation project(path:':java:component:keyple-calypso')
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: project.version
 
     testImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.11.2"
 
