@@ -305,7 +305,7 @@ public class ObservableReaderStateService {
     @Override
     public BuilderStep waitForSeRemovalWithNativeDetection() {
       states.put(
-          AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
+          AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
           new WaitForSeRemovalState(this.reader));
       return this;
     }
