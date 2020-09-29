@@ -54,6 +54,9 @@ public class BlankSmartSelectionReader extends AbstractLocalReader implements Sm
   }
 
   @Override
+  void terminateSeCommunication() {}
+
+  @Override
   public ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector) {
     return null;
   }
