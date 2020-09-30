@@ -30,11 +30,11 @@ class WaitForStartDetectState extends AbstractObservableState {
   /** logger */
   private static final Logger logger = LoggerFactory.getLogger(WaitForStartDetectState.class);
 
-  public WaitForStartDetectState(AbstractObservableLocalReader reader) {
+  WaitForStartDetectState(AbstractObservableLocalReader reader) {
     super(MonitoringState.WAIT_FOR_START_DETECTION, reader);
   }
 
-  public WaitForStartDetectState(
+  WaitForStartDetectState(
       AbstractObservableLocalReader reader,
       AbstractMonitoringJob monitoringJob,
       ExecutorService executorService) {

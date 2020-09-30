@@ -35,11 +35,11 @@ class WaitForSeInsertionState extends AbstractObservableState {
   /** logger */
   private static final Logger logger = LoggerFactory.getLogger(WaitForSeInsertionState.class);
 
-  public WaitForSeInsertionState(AbstractObservableLocalReader reader) {
+  WaitForSeInsertionState(AbstractObservableLocalReader reader) {
     super(MonitoringState.WAIT_FOR_SE_INSERTION, reader);
   }
 
-  public WaitForSeInsertionState(
+  WaitForSeInsertionState(
       AbstractObservableLocalReader reader,
       AbstractMonitoringJob monitoringJob,
       ExecutorService executorService) {

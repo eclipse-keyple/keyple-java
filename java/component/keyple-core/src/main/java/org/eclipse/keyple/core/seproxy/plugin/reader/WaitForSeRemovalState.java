@@ -32,11 +32,11 @@ class WaitForSeRemovalState extends AbstractObservableState {
   /** logger */
   private static final Logger logger = LoggerFactory.getLogger(WaitForSeRemovalState.class);
 
-  public WaitForSeRemovalState(AbstractObservableLocalReader reader) {
+  WaitForSeRemovalState(AbstractObservableLocalReader reader) {
     super(MonitoringState.WAIT_FOR_SE_REMOVAL, reader);
   }
 
-  public WaitForSeRemovalState(
+  WaitForSeRemovalState(
       AbstractObservableLocalReader reader,
       AbstractMonitoringJob monitoringJob,
       ExecutorService executorService) {

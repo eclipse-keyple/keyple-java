@@ -34,11 +34,11 @@ class WaitForSeProcessingState extends AbstractObservableState {
   /** logger */
   private static final Logger logger = LoggerFactory.getLogger(WaitForSeProcessingState.class);
 
-  public WaitForSeProcessingState(AbstractObservableLocalReader reader) {
+  WaitForSeProcessingState(AbstractObservableLocalReader reader) {
     super(MonitoringState.WAIT_FOR_SE_PROCESSING, reader);
   }
 
-  public WaitForSeProcessingState(
+  WaitForSeProcessingState(
       AbstractObservableLocalReader reader,
       AbstractMonitoringJob monitoringJob,
       ExecutorService executorService) {
