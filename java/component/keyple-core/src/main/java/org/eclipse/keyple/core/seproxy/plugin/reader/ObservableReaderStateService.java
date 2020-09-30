@@ -134,10 +134,29 @@ public class ObservableReaderStateService {
    * @since 1.0
    */
   public interface SeInsertionStep {
+    /**
+     * Set up SeInsertionDetection with Native reader ability
+     *
+     * @return A non null reference
+     * @since 1.0
+     */
     SeProcessingStep waitForSeInsertionWithNativeDetection();
 
+    /**
+     * Set up SeInsertionDetection with SmartInsertionMonitoringJob
+     *
+     * @return A non null reference
+     * @throws KeypleReaderIOException if reader does not implements SmartInsertionReader
+     * @since 1.0
+     */
     SeProcessingStep waitForSeInsertionWithSmartDetection();
 
+    /**
+     * Set up SeRemovalDetection with CardPresentMonitoringJob
+     *
+     * @return A non null reference
+     * @since 1.0
+     */
     SeProcessingStep waitForSeInsertionWithPollingDetection();
   }
 
@@ -147,8 +166,21 @@ public class ObservableReaderStateService {
    * @since 1.0
    */
   public interface SeProcessingStep {
+    /**
+     * Set up SeProcessingDetection with Native reader ability
+     *
+     * @return A non null reference
+     * @since 1.0
+     */
     SeRemovalStep waitForSeProcessingWithNativeDetection();
 
+    /**
+     * Set up SeProcessingDetection with SmartRemovalMonitoringJob
+     *
+     * @return A non null reference
+     * @throws KeypleReaderIOException if reader does not implements SmartRemovalReader
+     * @since 1.0
+     */
     SeRemovalStep waitForSeProcessingWithSmartDetection();
   }
 
@@ -158,10 +190,29 @@ public class ObservableReaderStateService {
    * @since 1.0
    */
   public interface SeRemovalStep {
+    /**
+     * Set up SeRemovalDetection with Native reader ability
+     *
+     * @return A non null reference
+     * @since 1.0
+     */
     BuilderStep waitForSeRemovalWithNativeDetection();
 
+    /**
+     * Set up SeRemovalDetection with SmartRemovalMonitoringJob
+     *
+     * @return A non null reference
+     * @throws KeypleReaderIOException if reader does not implements SmartRemovalReader
+     * @since 1.0
+     */
     BuilderStep waitForSeRemovalWithSmartDetection();
 
+    /**
+     * Set up SeRemovalDetection with CardAbsentPingMonitoringJob
+     *
+     * @return A non null reference
+     * @since 1.0
+     */
     BuilderStep waitForSeRemovalWithPollingDetection();
   }
 
@@ -171,6 +222,11 @@ public class ObservableReaderStateService {
    * @since 1.0
    */
   public interface BuilderStep {
+    /**
+     * Build instance of ObservableReaderStateService
+     *
+     * @since 1.0
+     */
     ObservableReaderStateService build();
   }
 
@@ -189,12 +245,7 @@ public class ObservableReaderStateService {
           new WaitForStartDetectState(this.reader));
     }
 
-    /**
-     * Set up SeInsertionDetection with Native reader ability
-     *
-     * @return A non null reference
-     * @since 1.0
-     */
+    /** @see SeInsertionStep#waitForSeInsertionWithNativeDetection() */
     @Override
     public SeProcessingStep waitForSeInsertionWithNativeDetection() {
       states.put(
@@ -203,12 +254,7 @@ public class ObservableReaderStateService {
       return this;
     }
 
-    /**
-     * Set up SeRemovalDetection with CardPresentMonitoringJob
-     *
-     * @return A non null reference
-     * @since 1.0
-     */
+    /** @see SeInsertionStep#waitForSeInsertionWithPollingDetection() */
     @Override
     public SeProcessingStep waitForSeInsertionWithPollingDetection() {
       CardPresentMonitoringJob cardPresentMonitoringJob =
@@ -219,13 +265,7 @@ public class ObservableReaderStateService {
       return this;
     }
 
-    /**
-     * Set up SeInsertionDetection with SmartInsertionMonitoringJob
-     *
-     * @return A non null reference
-     * @throws KeypleReaderIOException if reader does not implements SmartInsertionReader
-     * @since 1.0
-     */
+    /** @see SeInsertionStep#waitForSeInsertionWithSmartDetection() */
     @Override
     public SeProcessingStep waitForSeInsertionWithSmartDetection() {
       if (!(reader instanceof SmartInsertionReader))
@@ -238,12 +278,7 @@ public class ObservableReaderStateService {
       return this;
     }
 
-    /**
-     * Set up SeProcessingDetection with Native reader ability
-     *
-     * @return A non null reference
-     * @since 1.0
-     */
+    /** @see SeProcessingStep#waitForSeProcessingWithNativeDetection() */
     @Override
     public SeRemovalStep waitForSeProcessingWithNativeDetection() {
       this.states.put(
@@ -252,13 +287,7 @@ public class ObservableReaderStateService {
       return this;
     }
 
-    /**
-     * Set up SeProcessingDetection with SmartRemovalMonitoringJob
-     *
-     * @return A non null reference
-     * @throws KeypleReaderIOException if reader does not implements SmartRemovalReader
-     * @since 1.0
-     */
+    /** @see SeProcessingStep#waitForSeProcessingWithSmartDetection() */
     @Override
     public SeRemovalStep waitForSeProcessingWithSmartDetection() {
       if (!(reader instanceof SmartRemovalReader))
@@ -271,12 +300,7 @@ public class ObservableReaderStateService {
       return this;
     }
 
-    /**
-     * Set up SeRemovalDetection with Native reader ability
-     *
-     * @return A non null reference
-     * @since 1.0
-     */
+    /** @see SeRemovalStep#waitForSeRemovalWithNativeDetection() */
     @Override
     public BuilderStep waitForSeRemovalWithNativeDetection() {
       states.put(
@@ -285,12 +309,7 @@ public class ObservableReaderStateService {
       return this;
     }
 
-    /**
-     * Set up SeRemovalDetection with CardAbsentPingMonitoringJob
-     *
-     * @return A non null reference
-     * @since 1.0
-     */
+    /** @see SeRemovalStep#waitForSeRemovalWithPollingDetection() */
     @Override
     public BuilderStep waitForSeRemovalWithPollingDetection() {
       CardAbsentPingMonitoringJob cardAbsentPingMonitoringJob =
@@ -301,13 +320,7 @@ public class ObservableReaderStateService {
       return this;
     }
 
-    /**
-     * Set up SeRemovalDetection with SmartRemovalMonitoringJob
-     *
-     * @return A non null reference
-     * @throws KeypleReaderIOException if reader does not implements SmartRemovalReader
-     * @since 1.0
-     */
+    /** @see SeRemovalStep#waitForSeRemovalWithSmartDetection() */
     @Override
     public BuilderStep waitForSeRemovalWithSmartDetection() {
       if (!(reader instanceof SmartRemovalReader))
@@ -320,11 +333,7 @@ public class ObservableReaderStateService {
       return this;
     }
 
-    /**
-     * Build instance of ObservableReaderStateService
-     *
-     * @since 1.0
-     */
+    /** @see BuilderStep#build() */
     @Override
     public ObservableReaderStateService build() {
       return new ObservableReaderStateService(

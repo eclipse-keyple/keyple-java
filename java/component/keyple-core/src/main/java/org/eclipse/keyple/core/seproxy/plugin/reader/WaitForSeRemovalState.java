@@ -44,7 +44,7 @@ class WaitForSeRemovalState extends AbstractObservableState {
   }
 
   @Override
-  public void onEvent(AbstractObservableLocalReader.InternalEvent event) {
+  void onEvent(AbstractObservableLocalReader.InternalEvent event) {
     if (logger.isTraceEnabled()) {
       logger.trace(
           "[{}] onEvent => Event {} received in currentState {}", reader.getName(), event, state);

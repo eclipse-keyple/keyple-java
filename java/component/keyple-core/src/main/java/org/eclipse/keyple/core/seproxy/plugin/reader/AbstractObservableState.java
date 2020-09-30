@@ -101,10 +101,10 @@ public abstract class AbstractObservableState {
    *
    * @param event internal event received by reader
    */
-  public abstract void onEvent(AbstractObservableLocalReader.InternalEvent event);
+  abstract void onEvent(AbstractObservableLocalReader.InternalEvent event);
 
   /** Invoked when activated, a custom behaviour can be added here */
-  public void onActivate() {
+  void onActivate() {
     if (logger.isTraceEnabled()) {
       logger.trace("[{}] onActivate => {}", this.reader.getName(), this.getMonitoringState());
     }
@@ -118,7 +118,7 @@ public abstract class AbstractObservableState {
   }
 
   /** Invoked when deactivated */
-  public void onDeactivate() {
+  void onDeactivate() {
     if (logger.isTraceEnabled()) {
       logger.trace("[{}] onDeactivate => {}", this.reader.getName(), this.getMonitoringState());
     }
