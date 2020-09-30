@@ -110,14 +110,12 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
 
         return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             ObservableReaderStateService.builder(this)
-                    .startWithStateWaitForStart()
                     .waitForSeInsertionWithNativeDetection()
                     .waitForSeProcessingWithNativeDetection()
                     .waitForSeRemovalWithPollingDetection()
                     .build()
         } else {
             ObservableReaderStateService.builder(this)
-                    .startWithStateWaitForStart()
                     .waitForSeInsertionWithNativeDetection()
                     .waitForSeProcessingWithNativeDetection()
                     .waitForSeRemovalWithSmartDetection()

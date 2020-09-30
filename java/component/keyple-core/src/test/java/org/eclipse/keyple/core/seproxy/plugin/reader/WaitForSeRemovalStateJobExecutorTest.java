@@ -169,6 +169,7 @@ public class WaitForSeRemovalStateJobExecutorTest extends CoreBaseTest {
      */
     BlankSmartPresenceTheadedReader r =
         AbsSmartPresenceTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME);
+    // r.startSeDetection(ObservableReader.PollingMode.REPEATING);
     WaitForSeRemovalState waitForSeRemovalState =
         new WaitForSeRemovalState(r, new SmartRemovalMonitoringJob(r), executorService);
     doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();

@@ -47,6 +47,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
     super(pluginName, readerName);
 
     stateService = initStateService();
+    this.startSeDetection(PollingMode.REPEATING);
   }
 
   /**
@@ -240,7 +241,6 @@ class StubReaderImpl extends AbstractObservableLocalReader
   @Override
   protected final ObservableReaderStateService initStateService() {
     return ObservableReaderStateService.builder(this)
-        .startWithStateWaitForSeInsertion()
         .waitForSeInsertionWithSmartDetection()
         .waitForSeProcessingWithSmartDetection()
         .waitForSeRemovalWithSmartDetection()

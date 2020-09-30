@@ -48,7 +48,6 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
   public final ObservableReaderStateService initStateService() {
 
     return ObservableReaderStateService.builder(this)
-        .startWithStateWaitForStart()
         .waitForSeInsertionWithSmartDetection()
         .waitForSeProcessingWithNativeDetection()
         .waitForSeRemovalWithPollingDetection()

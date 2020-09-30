@@ -118,24 +118,14 @@ public class ObservableReaderStateService {
   }
 
   /**
-   * Builder porividing steps to configure ObservableReaderStateService
+   * Builder prividing steps to configure ObservableReaderStateService
    *
+   * @param reader: Not null instance of {@link AbstractObservableLocalReader}
+   * @return A non null instance
    * @since 1.0
    */
-  public static StartWithStep builder(AbstractObservableLocalReader reader) {
+  public static SeInsertionStep builder(AbstractObservableLocalReader reader) {
     return new Builder(reader);
-  }
-
-  /**
-   * Provide step to setup starting state. Will be replaced soon
-   *
-   * @deprecated
-   * @since 1.0
-   */
-  public interface StartWithStep {
-    SeInsertionStep startWithStateWaitForStart();
-
-    SeInsertionStep startWithStateWaitForSeInsertion();
   }
 
   /**
@@ -185,33 +175,18 @@ public class ObservableReaderStateService {
   }
 
   private static class Builder
-      implements SeInsertionStep, SeProcessingStep, SeRemovalStep, BuilderStep, StartWithStep {
+      implements SeInsertionStep, SeProcessingStep, SeRemovalStep, BuilderStep {
 
     private Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
         new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
 
     private AbstractObservableLocalReader reader;
-    private AbstractObservableState.MonitoringState startState;
 
     private Builder(AbstractObservableLocalReader reader) {
       this.reader = reader;
       this.states.put(
           AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
           new WaitForStartDetectState(this.reader));
-    }
-
-    /** @since 1.0 */
-    @Override
-    public SeInsertionStep startWithStateWaitForStart() {
-      startState = AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION;
-      return this;
-    }
-
-    /** @since 1.0 */
-    @Override
-    public SeInsertionStep startWithStateWaitForSeInsertion() {
-      startState = AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION;
-      return this;
     }
 
     /**
@@ -352,10 +327,8 @@ public class ObservableReaderStateService {
      */
     @Override
     public ObservableReaderStateService build() {
-      if (startState == null) {
-        startState = AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION;
-      }
-      return new ObservableReaderStateService(reader, states, startState);
+      return new ObservableReaderStateService(
+          reader, states, AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION);
     }
   }
 }
