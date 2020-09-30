@@ -44,7 +44,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
 
   private static final Logger logger = LoggerFactory.getLogger(PcscPluginImpl.class);
 
-  private boolean scardNoServiceHackNeeded;
+  private Boolean scardNoServiceHackNeeded;
   private String contactReaderRegexFilter;
   private String contactlessReaderRegexFilter;
 
@@ -59,9 +59,9 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
 
   private PcscPluginImpl() {
     super(PcscPluginFactory.PLUGIN_NAME);
-    scardNoServiceHackNeeded = false;
     contactReaderRegexFilter = "";
     contactlessReaderRegexFilter = "";
+    scardNoServiceHackNeeded = null;
   }
 
   /**
@@ -126,11 +126,6 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
   protected Map<String, SeReader> initNativeReaders() {
 
     ConcurrentMap<String, SeReader> nativeReaders = new ConcurrentHashMap<String, SeReader>();
-
-    /* activate a special processing for the "SCARD_E_NO_NO_SERVICE" exception (on Windows platforms the removal of the last PC/SC reader stops the "Windows Smart Card service") */
-    String os = System.getProperty("os.name").toLowerCase();
-    scardNoServiceHackNeeded = os.contains("win");
-    logger.info("System detected : {}", scardNoServiceHackNeeded);
 
     // parse the current readers list to create the ProxyReader(s) associated with new reader(s)
     CardTerminals terminals = getCardTerminals();
@@ -198,7 +193,14 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
 
   private CardTerminals getCardTerminals() {
 
-    if (scardNoServiceHackNeeded) {
+    if (scardNoServiceHackNeeded == null) {
+      /* First time init: activate a special processing for the "SCARD_E_NO_NO_SERVICE" exception (on Windows platforms the removal of the last PC/SC reader stops the "Windows Smart Card service") */
+      String os = System.getProperty("os.name").toLowerCase();
+      scardNoServiceHackNeeded = os.contains("win");
+      logger.info("Windows System detected, SCARD_E_NO_NO_SERVICE management activated.");
+    }
+
+    if (scardNoServiceHackNeeded.equals(Boolean.TRUE)) {
       /* This hack avoids the problem of stopping the Windows Smart Card service when removing the last PC/SC reader.
 
       Some SONAR warnings have been disabled.*/
@@ -211,7 +213,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
         if (contextId.getLong(pcscterminal) != 0L) {
           Class<?> pcsc = Class.forName("sun.security.smartcardio.PCSC");
           Method sCardEstablishContext =
-              pcsc.getDeclaredMethod("SCARD_ESTABLISH_CONTEXT", new Class[] {Integer.TYPE});
+              pcsc.getDeclaredMethod("SCardEstablishContext", new Class[] {Integer.TYPE});
           sCardEstablishContext.setAccessible(true); // NOSONAR
 
           Field sCardScopeUser = pcsc.getDeclaredField("SCARD_SCOPE_USER");
