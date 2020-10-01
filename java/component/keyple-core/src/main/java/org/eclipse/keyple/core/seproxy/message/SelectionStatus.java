@@ -23,8 +23,7 @@ import java.io.Serializable;
  *   <li>the File Control Information (FCI) obtained in response to the SELECT command if present.
  * </ul>
  *
- * Note: when Answer To Reset or FCI are not present they are returned with a null value. Both
- * cannot be null at the same time.
+ * Note: when Answer To Reset or FCI are not present they are returned with a null value.
  *
  * @since 0.9
  */
@@ -49,7 +48,6 @@ public class SelectionStatus implements Serializable {
    * @param atr A not null {@link AnswerToReset} reference.
    * @param fci A nullable {@link ApduResponse} reference.
    * @param isMatching A boolean.
-   * @throws IllegalArgumentException if ATR and FCI are both null while isMatching is true.
    * @since 0.9
    */
   public SelectionStatus(AnswerToReset atr, ApduResponse fci, boolean isMatching) {
@@ -66,6 +64,7 @@ public class SelectionStatus implements Serializable {
    * null.
    *
    * @return A nullable {@link AnswerToReset}.
+   * @since 0.9
    */
   public AnswerToReset getAtr() {
     return atr;
@@ -78,6 +77,7 @@ public class SelectionStatus implements Serializable {
    * method returns null.
    *
    * @return A nullable {@link ApduResponse}.
+   * @since 0.9
    */
   public ApduResponse getFci() {
     return fci;
@@ -87,6 +87,7 @@ public class SelectionStatus implements Serializable {
    * Tells if the selection process has been successful.
    *
    * @return True or False.
+   * @since 0.9
    */
   public boolean hasMatched() {
     return isMatching;

@@ -31,6 +31,7 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
  *
  * It also includes a list of {@link ApduResponse} corresponding to the list of {@link ApduRequest}
  * present in the original {@link SeRequest}.
+ * @since 0.9
  */
 @SuppressWarnings("PMD.NPathComplexity")
 public final class SeResponse implements Serializable {
@@ -60,6 +61,7 @@ public final class SeResponse implements Serializable {
    * @param channelPreviouslyOpen A boolean (true if the channel was previously open)
    * @param selectionStatus A nullable {@link SelectionStatus}.
    * @param apduResponses A list of {@link ApduResponse} (must be not null).
+   * @since 0.9
    */
   public SeResponse(
       boolean logicalChannelIsOpen,
@@ -77,6 +79,7 @@ public final class SeResponse implements Serializable {
    * Tells if the channel was previously open.
    *
    * @return True or false.
+   * @since 0.9
    */
   public boolean wasChannelPreviouslyOpen() {
     return channelPreviouslyOpen;
@@ -86,6 +89,7 @@ public final class SeResponse implements Serializable {
    * Get the logical channel status
    *
    * @return True if the logical channel is open, false if not.
+   * @since 0.9
    */
   public boolean isLogicalChannelOpen() {
     return logicalChannelIsOpen;
@@ -95,6 +99,7 @@ public final class SeResponse implements Serializable {
    * Gets the selection status and its associated data.
    *
    * @return A nullable {@link SelectionStatus}.
+   * @since 0.9
    */
   public SelectionStatus getSelectionStatus() {
     return this.selectionStatus;
@@ -104,6 +109,7 @@ public final class SeResponse implements Serializable {
    * Gets the apdu responses.
    *
    * @return A list of {@link ApduResponse} (may be empty).
+   * @since 0.9
    */
   public List<ApduResponse> getApduResponses() {
     return apduResponses;

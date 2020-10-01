@@ -16,22 +16,27 @@ import java.util.Iterator;
 import java.util.Set;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
-/** Single APDU request wrapper */
+/** This POJO wraps a data set related to an ISO-7816 APDU.
+ * <ul>
+ *     <li>A byte array containing the raw APDU data.
+ *     <li>A flag indicating if the APDU is of type 4 (ingoing and outgoing data).
+ *     <li>A set of integers corresponding to valid status codes in addition to the standard 9000h status word.
+ * </ul>
+ * @since 0.9
+ */
 public final class ApduRequest implements Serializable {
 
   /** Buffer of the APDU Request */
   private final byte[] bytes;
 
   /**
-   * a ‘case 4’ flag in order to explicitly specify, if it’s expected that the APDU command returns
-   * data → this flag is required to manage revision 2.4 Calypso Portable Objects and ‘S1Dx’ SAMs
-   * that presents a behaviour not compliant with ISO 7816-3 in contacts mode (not returning the
+   * This flag is required to manage cards that presents a behaviour not compliant with ISO 7816-3 in contacts mode (not returning the
    * 61XYh status).
    */
   private final boolean case4;
 
   /**
-   * List of status codes that should be considered successful although they are different from 9000
+   * List of status codes that should be considered successful although they are different from 9000h
    */
   private final Set<Integer> successfulStatusCodes;
 
@@ -45,7 +50,8 @@ public final class ApduRequest implements Serializable {
    * @param buffer Buffer of the APDU request
    * @param case4 the case 4
    * @param successfulStatusCodes the list of status codes to be considered as successful although
-   *     different from 9000
+   *     different from 9000h
+   * @since 0.9
    */
   public ApduRequest(byte[] buffer, boolean case4, Set<Integer> successfulStatusCodes) {
     this.bytes = buffer;
@@ -60,7 +66,8 @@ public final class ApduRequest implements Serializable {
    * @param buffer data buffer
    * @param case4 case 4 flag (true if case 4)
    * @param successfulStatusCodes the list of status codes to be considered as successful although
-   *     different from 9000
+   *     different from 9000h
+   * @since 0.9
    */
   public ApduRequest(
       String name, byte[] buffer, boolean case4, Set<Integer> successfulStatusCodes) {
@@ -73,6 +80,7 @@ public final class ApduRequest implements Serializable {
    *
    * @param buffer data buffer
    * @param case4 case 4 flag (true if case 4)
+   * @since 0.9
    */
   public ApduRequest(byte[] buffer, boolean case4) {
     this(buffer, case4, null);
@@ -84,6 +92,7 @@ public final class ApduRequest implements Serializable {
    * @param name name to be printed (e.g. in logs)
    * @param buffer data buffer
    * @param case4 case 4 flag (true if case 4)
+   * @since 0.9
    */
   public ApduRequest(String name, byte[] buffer, boolean case4) {
     this(buffer, case4, null);
@@ -91,9 +100,10 @@ public final class ApduRequest implements Serializable {
   }
 
   /**
-   * Checks if is case 4.
+   * Indicates if the APDU is type 4.
    *
-   * @return the case4 flag.
+   * @return True if the APDU is type 4, false if not.
+   * @since 0.9
    */
   public boolean isCase4() {
     return case4;
@@ -102,16 +112,18 @@ public final class ApduRequest implements Serializable {
   /**
    * Name this APDU request
    *
-   * @param name Name of the APDU request
+   * @param name A not null String.
+   * @since 0.9
    */
   public void setName(final String name) {
     this.name = name;
   }
 
   /**
-   * Get the list of successful status codes for the request
+   * Get the list of valid status codes for the request.
    *
-   * @return the list of status codes
+   * @return A Set of Integer (can be null).
+   * @since 0.9
    */
   public Set<Integer> getSuccessfulStatusCodes() {
     return successfulStatusCodes;
@@ -120,16 +132,18 @@ public final class ApduRequest implements Serializable {
   /**
    * Get the name of this APDU request
    *
-   * @return Name of the APDU request
+   * @return A not null String.
+   * @since 0.9
    */
   public String getName() {
     return name;
   }
 
   /**
-   * Get the buffer of this APDU
+   * Gets the APDU buffer byte array.
    *
-   * @return Name of the APDU request
+   * @return A not null byte array.
+   * @since 0.9
    */
   public byte[] getBytes() {
     return this.bytes;
