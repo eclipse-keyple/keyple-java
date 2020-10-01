@@ -260,6 +260,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         .setDefaultSelectionRequest(
             seSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
 
+    nativeReader.startSeDetection(ObservableReader.PollingMode.REPEATING);
+
     // wait 1 second
     Thread.sleep(1000);
 

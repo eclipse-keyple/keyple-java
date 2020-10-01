@@ -47,7 +47,6 @@ class StubReaderImpl extends AbstractObservableLocalReader
     super(pluginName, readerName);
 
     stateService = initStateService();
-    this.startSeDetection(PollingMode.REPEATING);
   }
 
   /**

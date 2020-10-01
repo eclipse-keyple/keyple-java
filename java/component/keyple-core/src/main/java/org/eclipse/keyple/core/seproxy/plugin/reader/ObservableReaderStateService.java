@@ -262,7 +262,7 @@ public class ObservableReaderStateService {
           new CardPresentMonitoringJob(reader, 200, true);
       states.put(
           AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-          new WaitForStartDetectState(this.reader, cardPresentMonitoringJob, executorService));
+          new WaitForSeInsertionState(this.reader, cardPresentMonitoringJob, executorService));
       return this;
     }
 
@@ -275,7 +275,7 @@ public class ObservableReaderStateService {
           new SmartInsertionMonitoringJob((SmartInsertionReader) reader);
       states.put(
           AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-          new WaitForStartDetectState(this.reader, smartInsertionMonitoringJob, executorService));
+          new WaitForSeInsertionState(this.reader, smartInsertionMonitoringJob, executorService));
       return this;
     }
 
