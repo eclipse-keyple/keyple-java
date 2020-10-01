@@ -225,6 +225,7 @@ public class ObservableReaderStateService {
     /**
      * Build instance of ObservableReaderStateService
      *
+     * @return A non null instance
      * @since 1.0
      */
     ObservableReaderStateService build();
