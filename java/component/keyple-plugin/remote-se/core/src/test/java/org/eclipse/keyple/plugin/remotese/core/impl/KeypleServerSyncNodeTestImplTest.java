@@ -543,8 +543,8 @@ public class KeypleServerSyncNodeTestImplTest extends AbstractKeypleSyncNodeTest
     node.sendMessage(msg2);
   }
 
-  @Test(expected = NullPointerException.class)
-  public void sendMessage_whenNoPendingClientTaskAndNoClientTimeout_shouldThrowNPE() {
+  @Test(expected = IllegalStateException.class)
+  public void sendMessage_whenNoPendingClientTaskAndNoClientTimeout_shouldThrowISE() {
     node.sendMessage(msg);
   }
 

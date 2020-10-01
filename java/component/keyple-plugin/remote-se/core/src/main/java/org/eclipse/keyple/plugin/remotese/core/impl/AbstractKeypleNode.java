@@ -229,6 +229,8 @@ public abstract class AbstractKeypleNode {
      */
     private void timeoutOccurred() {
       state = SessionManagerState.ABORTED_SESSION;
+      logger.error(
+          "Timeout occurs for the task associated with the node's session [" + sessionId + "]");
       throw new KeypleTimeoutException(
           "Timeout occurs for the task associated with the node's session [" + sessionId + "]");
     }

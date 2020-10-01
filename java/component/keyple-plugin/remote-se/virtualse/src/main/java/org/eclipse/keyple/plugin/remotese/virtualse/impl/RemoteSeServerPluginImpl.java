@@ -135,13 +135,31 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
         (AbstractServerVirtualReader) getReader(virtualReaderName);
 
     // keep virtual reader if observable and has observers
-    Boolean unregisterVirtualReader =
-        !(virtualReader instanceof RemoteSeServerObservableReader)
-            || ((RemoteSeServerObservableReader) virtualReader).countObservers() == 0;
+    Boolean unregisterVirtualReader = false;
 
-    if (unregisterVirtualReader) {
-      // remove virtual readers
+    if (!(virtualReader instanceof RemoteSeServerObservableReader)) {
+      // not a observable, remove it and unregister
+      unregisterVirtualReader = true;
       readers.remove(virtualReader.getName());
+    } else {
+      ServerVirtualObservableReader observableReader =
+          (ServerVirtualObservableReader) virtualReader;
+      if (observableReader.getMasterReader() != null) {
+        // is observer and slave, remove it
+        readers.remove(virtualReader.getName());
+        if (observableReader.countObservers() == 0) {
+          // and master has no observer, remove and unregister master
+          readers.remove(observableReader.getMasterReader().getName());
+          unregisterVirtualReader = true;
+        }
+      } else {
+        // is master
+        if (observableReader.countObservers() == 0) {
+          // has no observer, remove it, unregister
+          readers.remove(virtualReader.getName());
+          unregisterVirtualReader = true;
+        }
+      }
     }
 
     JsonObject body = new JsonObject();
@@ -154,6 +172,7 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
             .setAction(KeypleMessageDto.Action.TERMINATE_SERVICE.name()) //
             .setVirtualReaderName(virtualReaderName) //
             .setSessionId(virtualReader.getSessionId()) //
+            .setClientNodeId(virtualReader.getClientNodeId()) //
             .setBody(body.toString());
 
     // Send the message
@@ -252,32 +271,42 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
    * @return non null instance of AbstractServerVirtualReader
    */
   private AbstractServerVirtualReader createMasterReader(KeypleMessageDto message) {
-    JsonObject body = KeypleJsonParser.getParser().fromJson(message.getBody(), JsonObject.class);
-    String serviceId = body.get("serviceId").getAsString();
-    String userInputData = body.get("userInputData").getAsString();
-    String initialSeContent = body.get("initialSeContent").getAsString();
+    final JsonObject body =
+        KeypleJsonParser.getParser().fromJson(message.getBody(), JsonObject.class);
+    final String serviceId = body.get("serviceId").getAsString();
+    final String userInputData =
+        body.has("userInputData") ? body.get("userInputData").toString() : null;
+    final String initialSeContent =
+        body.has("initialSeContent") ? body.get("initialSeContent").toString() : null;
     boolean isObservable = body.has("isObservable") && body.get("isObservable").getAsBoolean();
-    String virtualReaderName = UUID.randomUUID().toString();
-    String sessionId = message.getSessionId();
+    final String virtualReaderName = UUID.randomUUID().toString();
+    final String sessionId = message.getSessionId();
+    final String clientNodeId = message.getClientNodeId();
 
     if (logger.isTraceEnabled()) {
       logger.trace(
-          "[{}] Create a virtual reader {} with serviceId:{} and isObservable:{}",
+          "[{}] Create a virtual reader {} with serviceId:{} and isObservable:{} for sessionId:{} for clientNodeId:{}",
           this.getName(),
           virtualReaderName,
           serviceId,
-          isObservable);
+          isObservable,
+          sessionId,
+          clientNodeId);
     }
     if (isObservable) {
       VirtualObservableReader virtualObservableReader =
           new VirtualObservableReader(
-              getName(), virtualReaderName, getNode(), eventNotificationPool);
-      virtualObservableReader.setSessionId(sessionId);
+              getName(),
+              virtualReaderName,
+              getNode(),
+              sessionId,
+              clientNodeId,
+              eventNotificationPool);
       return new ServerVirtualObservableReader(
           virtualObservableReader, serviceId, userInputData, initialSeContent, null);
     } else {
-      VirtualReader virtualReader = new VirtualReader(getName(), virtualReaderName, getNode());
-      virtualReader.setSessionId(sessionId);
+      VirtualReader virtualReader =
+          new VirtualReader(getName(), virtualReaderName, getNode(), sessionId, clientNodeId);
       return new ServerVirtualReader(virtualReader, serviceId, userInputData, initialSeContent);
     }
   }
@@ -290,19 +319,21 @@ final class RemoteSeServerPluginImpl extends AbstractRemoteSePlugin
    * @return non null instance of a ServerVirtualObservableReader
    */
   private ServerVirtualObservableReader createSlaveReader(KeypleMessageDto message) {
-    ServerVirtualObservableReader virtualObservableReader =
+    final ServerVirtualObservableReader virtualObservableReader =
         (ServerVirtualObservableReader) getReader(message.getVirtualReaderName());
+    final JsonObject body =
+        KeypleJsonParser.getParser().fromJson(message.getBody(), JsonObject.class);
 
-    String userInputData =
-        KeypleJsonParser.getParser()
-            .fromJson(message.getBody(), JsonObject.class)
-            .get("userInputData")
-            .getAsString();
+    String userInputData = body.has("userInputData") ? body.get("userInputData").toString() : null;
 
     VirtualObservableReader virtualReader =
         new VirtualObservableReader(
-            getName(), UUID.randomUUID().toString(), getNode(), eventNotificationPool);
-    virtualReader.setSessionId(message.getSessionId());
+            getName(),
+            UUID.randomUUID().toString(),
+            getNode(),
+            message.getSessionId(),
+            message.getClientNodeId(),
+            eventNotificationPool);
     // create a temporary virtual reader for this event
     return new ServerVirtualObservableReader(
         virtualReader, null, userInputData, null, virtualObservableReader);

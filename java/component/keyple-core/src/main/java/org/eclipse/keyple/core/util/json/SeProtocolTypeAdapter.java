@@ -32,7 +32,7 @@ public class SeProtocolTypeAdapter
     String value = json.getAsString();
 
     for (SeCommonProtocols p : SeCommonProtocols.values()) {
-      if (p.name().equals(value)) {
+      if (p.getName().equals(value)) {
         return p;
       }
     }

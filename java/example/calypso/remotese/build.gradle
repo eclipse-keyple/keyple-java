@@ -11,6 +11,10 @@ task ('printJavaHome') {
     println "Java HOME : " + System.getProperty("java.home")
 }
 
+ext {
+    //if a property keyple_version is specified, this version will be taken, else the '+' latest version will be taken
+    keyple_v = project.hasProperty("keyple_version") ? keyple_version : '+'
+}
 mainClassName = 'org.eclipse.keyple.example.remote.application.Demo_Webservice_MasterClient'
 
 task('runWS_MasterClient', dependsOn: 'classes', type: JavaExec, group:'keyple') {
@@ -37,7 +41,7 @@ task('runWsK_MasterServer', dependsOn: 'classes', type: JavaExec, group:'keyple'
 }
 
 compileJava.doFirst {
-    println "Using keyple_v parameter with value " + keyple_version
+    println "Using keyple_v parameter with value " + keyple_v
 }
 
 
@@ -57,11 +61,11 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: keyple_version
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: keyple_version
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-stub', version: keyple_version
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remotese', version: keyple_version
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-pcsc', version: keyple_version
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: keyple_v
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: keyple_v
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-stub', version: keyple_v
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remotese', version: keyple_v
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-pcsc', version: keyple_v
 
     implementation "org.slf4j:slf4j-simple:1.7.25"
     implementation "org.slf4j:slf4j-ext:1.7.25"

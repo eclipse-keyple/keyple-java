@@ -62,7 +62,7 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
       try {
         if (logger.isTraceEnabled()) {
           logger.trace(
-              "Try to find local reader '{}' in plugin {}", nativeReaderName, plugin.getName());
+              "Try to find local reader '{}' in plugin '{}'", nativeReaderName, plugin.getName());
         }
         return (ProxyReader) plugin.getReader(nativeReaderName);
       } catch (KeypleReaderNotFoundException e) {
@@ -244,22 +244,21 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
       ObservableReader reader = (ObservableReader) this.reader;
 
       // Extract info from the message
-      JsonObject jsonObject =
-          KeypleJsonParser.getParser().fromJson(msg.getBody(), JsonObject.class);
+      JsonObject body = KeypleJsonParser.getParser().fromJson(msg.getBody(), JsonObject.class);
 
       DefaultSelectionsRequest defaultSelectionsRequest =
           KeypleJsonParser.getParser()
-              .fromJson(jsonObject.get("defaultSelectionsRequest"), DefaultSelectionsRequest.class);
+              .fromJson(body.get("defaultSelectionsRequest"), DefaultSelectionsRequest.class);
 
       ObservableReader.NotificationMode notificationMode =
-          ObservableReader.NotificationMode.valueOf(
-              jsonObject.get("notificationMode").getAsString());
+          ObservableReader.NotificationMode.valueOf(body.get("notificationMode").getAsString());
 
       // Polling Mode can be set or not.
       boolean hasPollingMode = false;
       ObservableReader.PollingMode pollingMode = null;
 
-      String pollingModeJson = jsonObject.get("pollingMode").getAsString();
+      String pollingModeJson =
+          body.has("pollingMode") ? body.get("pollingMode").getAsString() : null;
       if (pollingModeJson != null) {
         hasPollingMode = true;
         pollingMode = ObservableReader.PollingMode.valueOf(pollingModeJson);
@@ -270,8 +269,8 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
             "Execute locally set DefaultSelectionExecutor on reader : {} with params {} {} {}",
             reader.getName(),
             defaultSelectionsRequest,
-            notificationMode,
-            hasPollingMode ? pollingMode : "no-polling-mode");
+            notificationMode != null ? notificationMode : "no-notificationMode",
+            hasPollingMode ? pollingMode : "no-pollingMode");
       }
 
       // Execute the action on the reader
@@ -317,7 +316,7 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
 
       SeProtocol seProtocol =
           KeypleJsonParser.getParser()
-              .fromJson(bodyObject.get("seProtocol").getAsString(), SeProtocol.class);
+              .fromJson(bodyObject.get("seProtocol").toString(), SeProtocol.class);
 
       String protocolRule = bodyObject.get("protocolRule").getAsString();
 
@@ -384,8 +383,7 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
       JsonObject body = KeypleJsonParser.getParser().fromJson(msg.getBody(), JsonObject.class);
 
       ObservableReader.PollingMode pollingMode =
-          KeypleJsonParser.getParser()
-              .fromJson(body.get("pollingMode"), ObservableReader.PollingMode.class);
+          ObservableReader.PollingMode.valueOf(body.get("pollingMode").getAsString());
 
       // Execute the action on the reader
       ((ObservableReader) reader).startSeDetection(pollingMode);

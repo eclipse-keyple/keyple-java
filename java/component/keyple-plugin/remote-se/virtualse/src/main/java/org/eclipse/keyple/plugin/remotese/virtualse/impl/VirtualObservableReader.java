@@ -47,14 +47,18 @@ final class VirtualObservableReader extends AbstractVirtualReader
    * @param pluginName The name of the plugin (must be not null).
    * @param nativeReaderName The name of the native reader (must be not null).
    * @param node The associated node (must be not null).
+   * @param sessionId Associated session Id (can be null)
+   * @param clientNodeId Associated client node Id (can be null)
    * @param eventNotificationPool The thread pool used to notify ReaderEvent (must be not null).
    */
   VirtualObservableReader(
       String pluginName,
       String nativeReaderName,
       AbstractKeypleNode node,
+      String sessionId,
+      String clientNodeId,
       ExecutorService eventNotificationPool) {
-    super(pluginName, nativeReaderName, node);
+    super(pluginName, nativeReaderName, node, sessionId, clientNodeId);
     this.observers = new ArrayList<ReaderObserver>();
     this.eventNotificationPool = eventNotificationPool;
   }
@@ -150,7 +154,7 @@ final class VirtualObservableReader extends AbstractVirtualReader
     Assert.getInstance().notNull(pollingMode, "Polling Mode");
     JsonObject body = new JsonObject();
 
-    body.addProperty("pollingMode", KeypleJsonParser.getParser().toJson(pollingMode));
+    body.addProperty("pollingMode", pollingMode.name());
 
     sendRequest(KeypleMessageDto.Action.START_SE_DETECTION, body);
   }
@@ -198,10 +202,10 @@ final class VirtualObservableReader extends AbstractVirtualReader
         "defaultSelectionsRequest",
         KeypleJsonParser.getParser().toJsonTree(defaultSelectionsRequest));
 
-    body.addProperty("notificationMode", KeypleJsonParser.getParser().toJson(notificationMode));
+    body.addProperty("notificationMode", notificationMode.name());
 
     if (pollingMode != null) {
-      body.addProperty("pollingMode", KeypleJsonParser.getParser().toJson(pollingMode));
+      body.addProperty("pollingMode", pollingMode.name());
     }
 
     sendRequest(KeypleMessageDto.Action.SET_DEFAULT_SELECTION, body);

@@ -44,7 +44,7 @@ public class VirtualReaderTest {
   @Before
   public void setUp() {
     node = mock(AbstractKeypleNode.class);
-    reader = new VirtualReader(pluginName, nativeReaderName, node);
+    reader = new VirtualReader(pluginName, nativeReaderName, node, "val1", null);
   }
 
   @Test
@@ -332,18 +332,8 @@ public class VirtualReaderTest {
 
   @Test
   public void getSessionId_whenIsSet_shouldReturnCurrentValue() {
-    reader.setSessionId("val1");
     String sessionId = reader.getSessionId();
     assertThat(sessionId).isEqualTo("val1");
-  }
-
-  @Test
-  public void getSessionId_whenIsNotSet_shouldReturnNewValue() {
-    String sessionId1 = reader.getSessionId();
-    String sessionId2 = reader.getSessionId();
-    assertThat(sessionId1).isNotEmpty();
-    assertThat(sessionId2).isNotEmpty();
-    assertThat(sessionId2).isNotEqualTo(sessionId1);
   }
 
   private void mockTimeout() {

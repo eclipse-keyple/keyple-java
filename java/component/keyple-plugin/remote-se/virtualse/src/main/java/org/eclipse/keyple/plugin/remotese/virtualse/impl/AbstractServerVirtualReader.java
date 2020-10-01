@@ -172,6 +172,15 @@ abstract class AbstractServerVirtualReader implements RemoteSeServerReader, Prox
    * @return non null instance of a sessionId
    */
   String getSessionId() {
-    return this.reader.getSessionId();
+    return reader.getSessionId();
+  }
+
+  /**
+   * (package-private)
+   *
+   * @return non null instance of a sessionId
+   */
+  String getClientNodeId() {
+    return reader.getClientNodeId();
   }
 }

@@ -123,6 +123,7 @@ public class NativeSeClientServiceTest extends BaseNativeSeTest {
         new NativeSeClientServiceFactory()
             .builder()
             .withAsyncNode(asyncClient)
+            .usingDefaultTimeout()
             .withoutReaderObservation()
             .getService();
 
@@ -314,12 +315,17 @@ public class NativeSeClientServiceTest extends BaseNativeSeTest {
    *
    * */
 
-  private Map<String, String> getVirtualReaders(NativeSeClientServiceImpl service)
-      throws NoSuchFieldException, IllegalAccessException {
-    Field privateStringField = null;
-    privateStringField = NativeSeClientServiceImpl.class.getDeclaredField("virtualReaders");
-    privateStringField.setAccessible(true);
-    return (Map<String, String>) privateStringField.get(service);
+  public static Map<String, String> getVirtualReaders(NativeSeClientService service) {
+    try {
+      Field privateStringField = NativeSeClientServiceImpl.class.getDeclaredField("virtualReaders");
+      privateStringField.setAccessible(true);
+      return (Map<String, String>) privateStringField.get(service);
+    } catch (IllegalAccessException e) {
+      e.printStackTrace();
+    } catch (NoSuchFieldException e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 
   class KeypleClientSyncMock implements KeypleClientSync {
@@ -407,8 +413,8 @@ public class NativeSeClientServiceTest extends BaseNativeSeTest {
 
   public KeypleMessageDto getTerminateDto(String sessionId, boolean unregister) {
     JsonObject body = new JsonObject();
-    body.add("userOutputData", parser.toJsonTree(outputData, MyKeypleUserData.class));
-    body.add("unregisterVirtualReader", parser.toJsonTree(unregister, Boolean.class));
+    body.addProperty("userOutputData", parser.toJson(outputData, MyKeypleUserData.class));
+    body.addProperty("unregisterVirtualReader", parser.toJson(unregister, Boolean.class));
     return new KeypleMessageDto()
         .setSessionId(sessionId) //
         .setAction(KeypleMessageDto.Action.TERMINATE_SERVICE.name()) //

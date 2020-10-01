@@ -66,7 +66,7 @@ public abstract class BaseNativeSeTest {
                     Lists.newArrayList(getASeRequest()),
                     MultiSeRequestProcessing.FIRST_MATCH,
                     ChannelControl.CLOSE_AFTER)));
-    body.addProperty("notificationMode", ObservableReader.NotificationMode.ALWAYS.name());
+    body.addProperty("notificationMode", ObservableReader.NotificationMode.MATCHED_ONLY.name());
     body.addProperty("pollingMode", ObservableReader.PollingMode.REPEATING.name());
 
     return new KeypleMessageDto()
@@ -134,22 +134,7 @@ public abstract class BaseNativeSeTest {
 
   public static KeypleMessageDto getAddSeProtocolSettingDto(String sessionId) {
     JsonObject body = new JsonObject();
-    body.addProperty(
-        "seProtocol",
-        KeypleJsonParser.getParser()
-            .toJson(
-                new SeProtocol() {
-                  @Override
-                  public String getName() {
-                    return SeCommonProtocols.PROTOCOL_ISO14443_4.name();
-                  }
-
-                  @Override
-                  public TransmissionMode getTransmissionMode() {
-                    return TransmissionMode.CONTACTS;
-                  }
-                },
-                SeProtocol.class));
+    body.addProperty("seProtocol", SeCommonProtocols.PROTOCOL_ISO14443_4.getName());
     body.addProperty("protocolRule", "protocolRule");
     return new KeypleMessageDto() //
         .setSessionId(sessionId) //
@@ -165,7 +150,7 @@ public abstract class BaseNativeSeTest {
         new SeProtocol() {
           @Override
           public String getName() {
-            return SeCommonProtocols.PROTOCOL_ISO14443_4.name();
+            return SeCommonProtocols.PROTOCOL_ISO14443_4.getName();
           }
 
           @Override

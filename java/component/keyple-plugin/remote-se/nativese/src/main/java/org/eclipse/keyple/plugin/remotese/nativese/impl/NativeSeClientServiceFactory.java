@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 public class NativeSeClientServiceFactory {
 
   private static final Logger logger = LoggerFactory.getLogger(NativeSeClientServiceFactory.class);
+  private static final int DEFAULT_TIMEOUT = 5;
 
   /**
    * Init the builder
@@ -46,6 +47,25 @@ public class NativeSeClientServiceFactory {
     NativeSeClientService getService();
   }
 
+  public interface TimeoutStep {
+    /**
+     * Use the default timeout of 5 seconds. This timeout defines how long the client waits for a
+     * server order before cancelling the global transaction.
+     *
+     * @return next configuration step
+     */
+    ReaderStep usingDefaultTimeout();
+
+    /**
+     * Configure the service with a custom timeout. This timeout defines how long the client waits
+     * for a server order before cancelling the global transaction.
+     *
+     * @param timeoutInSeconds timeout in seconds
+     * @return next configuration step
+     */
+    ReaderStep usingCustomTimeout(int timeoutInSeconds);
+  }
+
   public interface NodeStep {
     /**
      * Configure the service with an async Client
@@ -53,7 +73,7 @@ public class NativeSeClientServiceFactory {
      * @param asyncClient non nullable instance of an async client
      * @return next configuration step
      */
-    ReaderStep withAsyncNode(KeypleClientAsync asyncClient);
+    TimeoutStep withAsyncNode(KeypleClientAsync asyncClient);
 
     /**
      * Configure the service with a sync Client
@@ -81,17 +101,18 @@ public class NativeSeClientServiceFactory {
     BuilderStep withoutReaderObservation();
   }
 
-  private static class Step implements NodeStep, ReaderStep, BuilderStep {
+  private static class Step implements NodeStep, ReaderStep, BuilderStep, TimeoutStep {
 
     private KeypleClientAsync asyncEndpoint;
     private KeypleClientSync syncEndpoint;
     private Boolean withReaderObservation;
     private KeypleClientReaderEventFilter eventFilter;
+    private int timeoutInSec;
 
     private Step() {}
 
     @Override
-    public ReaderStep withAsyncNode(KeypleClientAsync endpoint) {
+    public TimeoutStep withAsyncNode(KeypleClientAsync endpoint) {
       Assert.getInstance().notNull(endpoint, "endpoint");
       this.asyncEndpoint = endpoint;
       return this;
@@ -130,7 +151,7 @@ public class NativeSeClientServiceFactory {
         logger.info(
             "Create a new NativeSeClientServiceImpl with a async client and params withReaderObservation:{}",
             withReaderObservation);
-        service.bindClientAsyncNode(asyncEndpoint);
+        service.bindClientAsyncNode(asyncEndpoint, timeoutInSec);
       } else {
         logger.info(
             "Create a new NativeSeClientServiceImpl with a sync client and params withReaderObservation:{}",
@@ -138,6 +159,18 @@ public class NativeSeClientServiceFactory {
         service.bindClientSyncNode(syncEndpoint, null, null);
       }
       return service;
+    }
+
+    @Override
+    public ReaderStep usingDefaultTimeout() {
+      timeoutInSec = DEFAULT_TIMEOUT;
+      return this;
+    }
+
+    @Override
+    public ReaderStep usingCustomTimeout(int timeoutInSeconds) {
+      timeoutInSec = timeoutInSeconds;
+      return this;
     }
   }
 }

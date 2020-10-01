@@ -36,3 +36,6 @@ project(':java:component:keyple-plugin:remote-se:nativese').name = "keyple-plugi
 include ':java:component:keyple-plugin:remote-se:virtualse'
 project(':java:component:keyple-plugin:remote-se:virtualse').name = "keyple-plugin-remotese-virtualse"
 
+include ':java:component:keyple-plugin:remote-se:integration-test'
+project(':java:component:keyple-plugin:remote-se:integration-test').name = "keyple-plugin-remotese-integration-test"
+
