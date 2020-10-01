@@ -31,6 +31,7 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
  *
  * It also includes a list of {@link ApduResponse} corresponding to the list of {@link ApduRequest}
  * present in the original {@link SeRequest}.
+ *
  * @since 0.9
  */
 @SuppressWarnings("PMD.NPathComplexity")

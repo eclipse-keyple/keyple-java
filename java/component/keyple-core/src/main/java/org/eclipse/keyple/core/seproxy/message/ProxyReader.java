@@ -118,11 +118,12 @@ public interface ProxyReader extends SeReader {
   /**
    * Release the communication channel previously established with the SE.
    *
-   * <p>If the ProxyReader is not observable the logical and physical channels must be closed instantly.
-   * <br>
+   * <p>If the ProxyReader is not observable the logical and physical channels must be closed
+   * instantly. <br>
    * If the ProxyReader is observable, the closure of both channels must be the result of the
-   * completion of a removal sequence.
-   * TODO check how to make this conditional on the WAIT_FOR_SE_PROCESSING state.
+   * completion of a removal sequence. TODO check how to make this conditional on the
+   * WAIT_FOR_SE_PROCESSING state.
+   *
    * @since 1.0
    */
   void releaseChannel();

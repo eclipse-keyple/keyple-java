@@ -16,9 +16,15 @@ import java.util.Arrays;
 
 /**
  * This POJO carries the data retrieved from the card after the power on sequence.
- * <p>In the case of an ISO-7816 card (with contacts), these data are the ATR (Answer To Reset) bytes as defined by the standard.<br>
- * However, in the case of another type of card, this data may be specific to the card reader (e.g. reconstructed ATR for a PC/SC reader, low-level protocol information for other card readers, etc).
+ *
+ * <p>In the case of an ISO-7816 card (with contacts), these data are the ATR (Answer To Reset)
+ * bytes as defined by the standard.<br>
+ * However, in the case of another type of card, this data may be specific to the card reader (e.g.
+ * reconstructed ATR for a PC/SC reader, low-level protocol information for other card readers,
+ * etc).
+ *
  * <p>(May be enhanced to provide analysis methods)
+ *
  * @since 0.9
  */
 public class AnswerToReset implements Serializable {
@@ -26,6 +32,7 @@ public class AnswerToReset implements Serializable {
 
   /**
    * Build from a byte array containing the power on data.
+   *
    * @param atrBytes A not null byte array.
    */
   public AnswerToReset(byte[] atrBytes) {
@@ -34,6 +41,7 @@ public class AnswerToReset implements Serializable {
 
   /**
    * Gets the data
+   *
    * @return A not null byte array.
    */
   public byte[] getBytes() {

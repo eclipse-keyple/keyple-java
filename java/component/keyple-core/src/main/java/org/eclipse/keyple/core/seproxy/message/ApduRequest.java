@@ -16,12 +16,16 @@ import java.util.Iterator;
 import java.util.Set;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
-/** This POJO wraps a data set related to an ISO-7816 APDU.
+/**
+ * This POJO wraps a data set related to an ISO-7816 APDU.
+ *
  * <ul>
- *     <li>A byte array containing the raw APDU data.
- *     <li>A flag indicating if the APDU is of type 4 (ingoing and outgoing data).
- *     <li>A set of integers corresponding to valid status codes in addition to the standard 9000h status word.
+ *   <li>A byte array containing the raw APDU data.
+ *   <li>A flag indicating if the APDU is of type 4 (ingoing and outgoing data).
+ *   <li>A set of integers corresponding to valid status codes in addition to the standard 9000h
+ *       status word.
  * </ul>
+ *
  * @since 0.9
  */
 public final class ApduRequest implements Serializable {
@@ -30,13 +34,14 @@ public final class ApduRequest implements Serializable {
   private final byte[] bytes;
 
   /**
-   * This flag is required to manage cards that presents a behaviour not compliant with ISO 7816-3 in contacts mode (not returning the
-   * 61XYh status).
+   * This flag is required to manage cards that presents a behaviour not compliant with ISO 7816-3
+   * in contacts mode (not returning the 61XYh status).
    */
   private final boolean case4;
 
   /**
-   * List of status codes that should be considered successful although they are different from 9000h
+   * List of status codes that should be considered successful although they are different from
+   * 9000h
    */
   private final Set<Integer> successfulStatusCodes;
 
