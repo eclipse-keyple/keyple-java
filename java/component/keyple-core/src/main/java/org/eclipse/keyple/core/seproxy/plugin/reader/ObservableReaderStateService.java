@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,7 +119,7 @@ public class ObservableReaderStateService {
   }
 
   /**
-   * Builder prividing steps to configure ObservableReaderStateService
+   * Builder providing steps to configure ObservableReaderStateService
    *
    * @param reader: Not null instance of {@link AbstractObservableLocalReader}
    * @return A non null instance
@@ -143,7 +144,8 @@ public class ObservableReaderStateService {
     SeProcessingStep waitForSeInsertionWithNativeDetection();
 
     /**
-     * Set up SeInsertionDetection with SmartInsertionMonitoringJob
+     * Set up SeInsertionDetection to detect the SE insertion thanks to the method {@link
+     * SmartInsertionReader#waitForCardPresent()}.
      *
      * @return A non null reference
      * @throws KeypleReaderIOException if reader does not implements SmartInsertionReader
@@ -152,7 +154,8 @@ public class ObservableReaderStateService {
     SeProcessingStep waitForSeInsertionWithSmartDetection();
 
     /**
-     * Set up SeRemovalDetection with CardPresentMonitoringJob
+     * Set up SeInsertionDetection to use polling of the {@link SeReader#isSePresent()} method to
+     * detect SE_INSERTED
      *
      * @return A non null reference
      * @since 1.0
@@ -175,7 +178,8 @@ public class ObservableReaderStateService {
     SeRemovalStep waitForSeProcessingWithNativeDetection();
 
     /**
-     * Set up SeProcessingDetection with SmartRemovalMonitoringJob
+     * Set up SeProcessingDetection to detect processing thanks to the method {@link
+     * SmartRemovalReader#waitForCardAbsentNative()}.
      *
      * @return A non null reference
      * @throws KeypleReaderIOException if reader does not implements SmartRemovalReader
@@ -199,7 +203,8 @@ public class ObservableReaderStateService {
     BuilderStep waitForSeRemovalWithNativeDetection();
 
     /**
-     * Set up SeRemovalDetection with SmartRemovalMonitoringJob
+     * Set up SeRemovalDetection to detect processing thanks to the method {@link
+     * SmartRemovalReader#waitForCardAbsentNative()}.
      *
      * @return A non null reference
      * @throws KeypleReaderIOException if reader does not implements SmartRemovalReader
@@ -208,7 +213,8 @@ public class ObservableReaderStateService {
     BuilderStep waitForSeRemovalWithSmartDetection();
 
     /**
-     * Set up SeRemovalDetection with CardAbsentPingMonitoringJob
+     * Set up SeRemovalDetection with to use polling of the {@link SeReader#isSePresent()} method to
+     * detect SE_REMOVED
      *
      * @return A non null reference
      * @since 1.0
