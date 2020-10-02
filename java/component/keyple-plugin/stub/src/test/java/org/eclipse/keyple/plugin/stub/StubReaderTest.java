@@ -1257,7 +1257,7 @@ public class StubReaderTest extends BaseStubTest {
       }
 
       @Override
-      public String getSeProcotol() {
+      public String getSeProtocol() {
         return "PROTOCOL_ISO14443_4";
       }
     };
@@ -1286,7 +1286,7 @@ public class StubReaderTest extends BaseStubTest {
       }
 
       @Override
-      public String getSeProcotol() {
+      public String getSeProtocol() {
         return "PROTOCOL_B_PRIME";
       }
     };
@@ -1311,7 +1311,7 @@ public class StubReaderTest extends BaseStubTest {
       }
 
       @Override
-      public String getSeProcotol() {
+      public String getSeProtocol() {
         return "PROTOCOL_ISO14443_4";
       }
     };
@@ -1337,7 +1337,7 @@ public class StubReaderTest extends BaseStubTest {
       }
 
       @Override
-      public String getSeProcotol() {
+      public String getSeProtocol() {
         return "PROTOCOL_ISO14443_4";
       }
     };
@@ -1372,7 +1372,7 @@ public class StubReaderTest extends BaseStubTest {
       }
 
       @Override
-      public String getSeProcotol() {
+      public String getSeProtocol() {
         return null;
       }
     };

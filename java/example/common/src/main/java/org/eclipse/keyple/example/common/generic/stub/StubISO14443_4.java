@@ -68,7 +68,7 @@ public class StubISO14443_4 extends StubSecureElement {
   }
 
   @Override
-  public String getSeProcotol() {
+  public String getSeProtocol() {
     return seProtocol;
   }
 }

@@ -136,7 +136,7 @@ public class StubPoolPluginTest extends BaseStubTest {
         }
 
         @Override
-        public String getSeProcotol() {
+        public String getSeProtocol() {
           return null;
         }
       };

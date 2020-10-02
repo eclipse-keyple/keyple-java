@@ -135,7 +135,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
         throw new KeypleReaderIOException("Target selector mask not found!", null);
       }
       Pattern p = Pattern.compile(selectionMask);
-      String protocol = se.getSeProcotol();
+      String protocol = se.getSeProtocol();
       if (!p.matcher(protocol).matches()) {
         logger.trace(
             "[{}] protocolFlagMatches => unmatching SE. PROTOCOLFLAG = {}",
