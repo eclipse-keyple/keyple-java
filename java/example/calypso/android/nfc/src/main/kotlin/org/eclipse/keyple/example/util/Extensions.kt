@@ -27,7 +27,7 @@ fun AndroidNfcReader.configFlags(presenceCheckDelay: Int? = null, noPlateformSou
 }
 
 fun AndroidNfcReader.configProtocol(seCommonProtocols: SeCommonProtocols) {
-    this.addSeProtocolSetting(seCommonProtocols, AndroidNfcProtocolSettings.getSetting(seCommonProtocols))
+    this.activateProtocol(seCommonProtocols)
 }
 
 fun Context.getColorResource(id: Int): Int {
