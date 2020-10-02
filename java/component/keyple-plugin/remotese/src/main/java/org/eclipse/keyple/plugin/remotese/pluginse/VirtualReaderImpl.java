@@ -195,4 +195,7 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
       return new KeypleReaderIOException(e.getMessage());
     }
   }
+
+  @Override
+  public void releaseChannel() {}
 }

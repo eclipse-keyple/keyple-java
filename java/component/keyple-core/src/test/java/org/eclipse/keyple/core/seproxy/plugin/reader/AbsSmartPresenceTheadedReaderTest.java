@@ -76,7 +76,7 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
     r.addObserver(getObs());
     Thread.sleep(100);
 
-    r.terminateSeCommunication();
+    r.finalizeSeProcessing();
     Thread.sleep(100);
 
     // does nothing
@@ -94,7 +94,7 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
     r.startSeDetection(ObservableReader.PollingMode.REPEATING); // WAIT_FOR_SE_INSERTION
     Thread.sleep(100);
 
-    r.terminateSeCommunication();
+    r.finalizeSeProcessing();
     Thread.sleep(100);
 
     Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentMonitoringState());
@@ -111,7 +111,7 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
     r.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
     Thread.sleep(100);
 
-    r.terminateSeCommunication();
+    r.finalizeSeProcessing();
     Thread.sleep(100);
 
     Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentMonitoringState());
@@ -129,7 +129,7 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
     r.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
     Thread.sleep(100);
 
-    r.terminateSeCommunication();
+    r.finalizeSeProcessing();
     Thread.sleep(100);
 
     Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentMonitoringState());

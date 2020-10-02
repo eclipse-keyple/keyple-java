@@ -47,7 +47,9 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
         every { session.openLogicalChannel(ByteArrayUtil.fromHex(PO_AID), 0x00.toByte()) } returns channel
         every { session.isClosed } returns false
         every { seService.version } returns version
-        every { session.atr } returns null
+        every { seService.isConnected } returns true
+        every { session.atr } returns ByteArrayUtil.fromHex("")
+        every { session.closeChannels() } returns Unit
         every { channel.selectResponse } returns ByteArrayUtil.fromHex(PO_AID_RESPONSE)
         every { channel.session } returns session
         every { channel.session.close() } returns Unit
@@ -66,7 +68,8 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
         every { nativeReader.name } returns "SIM1"
         every { nativeReader.isSecureElementPresent } returns true
         every { session.isClosed } returns false
-        every { session.atr } returns null
+        every { session.atr } returns ByteArrayUtil.fromHex("")
+        every { session.closeChannels() } returns Unit
         every { session.openLogicalChannel(ByteArrayUtil.fromHex(PO_AID), 0) } throws NoSuchElementException("")
         every { nativeReader.seService } returns seService
         every { nativeReader.openSession() } returns session
@@ -78,12 +81,15 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
 
         val nativeReader = mockk<Reader>()
         val session = mockk<Session>()
+        val seService = mockk<SEService>()
 
         every { nativeReader.name } returns "SIM1"
         every { session.isClosed } returns false
-        every { session.atr } returns null
+        every { session.atr } returns ByteArrayUtil.fromHex("")
+        every { session.closeChannels() } returns Unit
         every { session.openLogicalChannel(ByteArrayUtil.fromHex(PO_AID), 0) } returns null
         every { nativeReader.openSession() } returns session
+        every { seService.isConnected } returns true
         return nativeReader
     }
 
@@ -91,12 +97,15 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
 
         val nativeReader = mockk<Reader>()
         val session = mockk<Session>()
+        val seService = mockk<SEService>()
 
         every { nativeReader.name } returns "SIM1"
         every { session.isClosed } returns false
-        every { session.atr } returns null
+        every { session.atr } returns ByteArrayUtil.fromHex("")
+        every { session.closeChannels() } returns Unit
         every { session.openLogicalChannel(ByteArrayUtil.fromHex(PO_AID), 0) } throws throwable
         every { nativeReader.openSession() } returns session
+        every { seService.isConnected } returns true
         return nativeReader
     }
 
@@ -104,12 +113,15 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
 
         val nativeReader = mockk<Reader>()
         val session = mockk<Session>()
+        val seService = mockk<SEService>()
 
         every { nativeReader.name } returns "SIM1"
         every { session.isClosed } returns false
-        every { session.atr } returns null
+        every { session.atr } returns ByteArrayUtil.fromHex("")
+        every { session.closeChannels() } returns Unit
         every { session.openBasicChannel(null) } returns null
         every { nativeReader.openSession() } returns session
+        every { seService.isConnected } returns true
         return nativeReader
     }
 
@@ -117,12 +129,15 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
 
         val nativeReader = mockk<Reader>()
         val session = mockk<Session>()
+        val seService = mockk<SEService>()
 
         every { nativeReader.name } returns "SIM1"
         every { session.isClosed } returns false
-        every { session.atr } returns null
+        every { session.atr } returns ByteArrayUtil.fromHex("")
+        every { session.closeChannels() } returns Unit
         every { session.openBasicChannel(null) } throws throwable
         every { nativeReader.openSession() } returns session
+        every { seService.isConnected } returns true
         return nativeReader
     }
 
@@ -149,7 +164,9 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
         every { session.openLogicalChannel(ByteArrayUtil.fromHex(PO_AID), 0x00.toByte()) } returns channel
         every { session.isClosed } returns false
         every { seService.version } returns version
-        every { session.atr } returns null
+        every { seService.isConnected } returns true
+        every { session.atr } returns ByteArrayUtil.fromHex("")
+        every { session.closeChannels() } returns Unit
         every { channel.selectResponse } returns ByteArrayUtil.fromHex(PO_AID_RESPONSE)
         every { channel.session } returns session
         every { channel.session.close() } throws throwable
@@ -172,7 +189,9 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
         every { session.openLogicalChannel(any(), any()) } returns channel
         every { session.isClosed } returns false
         every { seService.version } returns version
-        every { session.atr } returns null
+        every { seService.isConnected } returns true
+        every { session.atr } returns ByteArrayUtil.fromHex("")
+        every { session.closeChannels() } returns Unit
         every { channel.selectResponse } returns ByteArrayUtil.fromHex(PO_AID_RESPONSE)
         every { channel.session } returns session
         every { channel.session.close() } returns Unit

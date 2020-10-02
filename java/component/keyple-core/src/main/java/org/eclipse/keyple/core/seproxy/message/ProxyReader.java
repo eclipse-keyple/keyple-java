@@ -14,52 +14,52 @@ package org.eclipse.keyple.core.seproxy.message;
 import java.util.List;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 
 /**
- * ProxyReader interface
+ * A {@link ProxyReader} is an {@link SeReader} with methods for communicating with SEs.
  *
- * <ul>
- *   <li>To operate the transmission of Set of SeRequest, a specific local reader processes the
- *       sorted list of SeRequest.
- *   <li>According to SeRequest protocolFlag and to the current status of the reader (RF protocol
- *       involved / current ATR) the processing of a specific SeRequest could be skipped.
- *   <li>When processing a SeRequest
- *   <li>if necessary a new logical channel is open (for a specific AID if defined)
- *   <li>and ApduRequest are transmited one by one
- * </ul>
+ * <p>Exchanges are made using {@link SeRequest} which in return result in {@link SeResponse}.<br>
+ * The {@link SeRequest} optionally carries SE selection data and an APDU list.<br>
+ * The {@link SeResponse} contains the result of the selection and the responses to the APDUs.
  *
- * This interface should be implemented by any specific reader plugin.
+ * <p>The {@link SeRequest} are transmitted individually ({@link #transmitSeRequest(SeRequest,
+ * ChannelControl)} or by a list {@link #transmitSeRequests(List, MultiSeRequestProcessing,
+ * ChannelControl)} allowing applications to provide several selection patterns with various
+ * options.
+ *
+ * <p>{@link #releaseChannel()} is used to control the closing of logical and physical channels
+ * taking into account the observation mechanisms potentially in progress.
+ *
+ * @since 0.9
  */
 public interface ProxyReader extends SeReader {
 
   /**
-   * Transmits a Set of {@link SeRequest} (list of {@link SeRequest}) to a SE application and get
-   * back the corresponding a List of {@link SeResponse}.
+   * Transmits the list of {@link SeRequest } and gets in return a list of {@link SeResponse}.
    *
-   * <p>The usage of this method is conditioned to the presence of a SE in the selected reader.
+   * <p>The actual processing of each {@link SeRequest} is similar to that performed by {@link
+   * #transmitSeRequest(SeRequest, ChannelControl)} (see this method for further explanation of how
+   * the process works).<br>
+   * If the multiSeRequestProcessing parameter equals to {@link
+   * MultiSeRequestProcessing#FIRST_MATCH}, the iteration over the {@link SeRequest} list is
+   * interrupted at the first processing that leads to an open logical channel state. In this case,
+   * the list of {@link SeResponse} may be shorter than the list of SeRequests provided as input.
+   * <br>
+   * If it equals to {@link MultiSeRequestProcessing#PROCESS_ALL}, all the {@link SeRequest} are
+   * processed and the logical channel is closed after each process.<br>
+   * The physical channel is managed by the ChannelControl parameter as in {@link
+   * #transmitSeRequest(SeRequest, ChannelControl)}.
    *
-   * <p>All the {@link SeRequest} are processed consecutively. The received {@link SeResponse} and
-   * placed in the List of {@link SeResponse}.
-   *
-   * <p>If the protocol flag set in the request match the current SE protocol and the
-   * keepChannelOpen flag is set to true, the transmit method returns immediately with a List of
-   * {@link SeResponse}. This response contains the received response from the matching SE in the
-   * last position of set. The previous one are set to null, the logical channel is open.
-   *
-   * <p>If the protocol flag set in the request match the current SE protocol and the
-   * keepChannelOpen flag is set to false, the transmission go on for the next {@link SeRequest}.
-   * The channel is left closed.
-   *
-   * <p>This method could also fail in case of IO error or wrong card currentState &rarr; some
-   * reader’s exception (SE missing, IO error, wrong card currentState, timeout) have to be caught
-   * during the processing of the SE request transmission.
-   *
-   * @param seRequests a {@link List} of application requests
-   * @param multiSeRequestProcessing the multi se processing mode
-   * @param channelControl indicates if the channel has to be closed at the end of the transmission
-   * @return the SE response
+   * @param seRequests A not empty SeRequest list.
+   * @param multiSeRequestProcessing The multi se processing flag (must be not null).
+   * @param channelControl indicates if the physical channel has to be closed at the end of the
+   *     processing (must be not null).
+   * @return A not null response list (can be empty).
    * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws IllegalArgumentException if one of the arguments is null.
+   * @since 0.9
    */
   List<SeResponse> transmitSeRequests(
       List<SeRequest> seRequests,
@@ -67,23 +67,64 @@ public interface ProxyReader extends SeReader {
       ChannelControl channelControl);
 
   /**
-   * Transmits a single {@link SeRequest} (list of {@link ApduRequest}) and get back the
-   * corresponding {@link SeResponse}
+   * Transmits a single {@link SeRequest} passed as an argument and returns a {@link SeResponse}.
    *
-   * <p>The usage of this method is conditioned to the presence of a SE in the selected reader.
+   * <p>The process includes the following steps:
    *
-   * <p>The {@link SeRequest} is processed and the received {@link SeResponse} is returned.
+   * <ul>
+   *   <li>Open the physical channel if it is not already open.
+   *   <li>If the {@link SeRequest} contains a non null {@link SeSelector}. The 3 following
+   *       operations are performed in this order:
+   *       <ol>
+   *         <li>If specified, check SE protocol (compare the specified protocol with the current
+   *             protocol).
+   *         <li>If specified, check the ATR (test the received ATR with the regular expression from
+   *             the filter)
+   *         <li>If specified, select the application by AID
+   *       </ol>
+   *       If one of the 3 operations fails, then an empty response containing the selection status
+   *       is returned.<br>
+   *       If all executed operations are successful then a selection status is created with the
+   *       corresponding data (ATR and/or FCI) and the hasMatched flag true.
+   *   <li>If the {@link SeRequest} contains a list of APDUs to send ({@link ApduRequest}) then each
+   *       APDU is sent to the SE and its response ({@link ApduResponse} is added to a new list.
+   *   <li>Closes the physical channel if the {@link ChannelControl} is {@link
+   *       ChannelControl#CLOSE_AFTER}.
+   *   <li>Returns a {@link SeResponse} containing:
+   *       <ul>
+   *         <li>a boolean giving the current logical channel status.
+   *         <li>a boolean giving the previous logical channel status.
+   *         <li>if a selection has been made ({@link SeSelector } not null) a {@link
+   *             SelectionStatus} object containing the elements resulting from the selection.
+   *         <li>if APDUs have been transmitted to the SE, the list of responses to these APDUs.
+   *       </ul>
+   * </ul>
    *
-   * <p>The logical channel is set according to the keepChannelOpen flag.
+   * Note: in case of a communication error when sending an APDU an {@link KeypleReaderIOException}
+   * exception is thrown. Responses to previous APDUs are attached to this exception.<br>
+   * This allows the calling application to be tolerant to SE tearing and to recover a partial
+   * response to the {@link SeRequest}.
    *
-   * <p>This method could also fail in case of IO error or wrong card currentState &rarr; some
-   * reader’s exception (SE missing, IO error, wrong card currentState, timeout) have to be caught
-   * during the processing of the SE request transmission. *
-   *
-   * @param seRequest the SeRequest to transmit
-   * @param channelControl a flag to tell if the channel has to be closed at the end
-   * @return SeResponse the response to the SeRequest
+   * @param seRequest The {@link SeRequest} to be processed (must be not null).
+   * @return seResponse A not null {@link SeResponse}.
+   * @param channelControl indicates if the physical channel has to be closed at the end of the
+   *     processing (must be not null).
    * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws IllegalArgumentException if one of the arguments is null.
+   * @since 0.9
    */
   SeResponse transmitSeRequest(SeRequest seRequest, ChannelControl channelControl);
+
+  /**
+   * Release the communication channel previously established with the SE.
+   *
+   * <p>If the ProxyReader is not observable the logical and physical channels must be closed
+   * instantly. <br>
+   * If the ProxyReader is observable, the closure of both channels must be the result of the
+   * completion of a removal sequence. TODO check how to make this conditional on the
+   * WAIT_FOR_SE_PROCESSING state.
+   *
+   * @since 1.0
+   */
+  void releaseChannel();
 }
