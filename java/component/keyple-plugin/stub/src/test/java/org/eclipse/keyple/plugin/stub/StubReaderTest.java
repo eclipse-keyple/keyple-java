@@ -177,7 +177,7 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(0, insertLock.getCount()); // should be 0 because insertLock is
     // countDown by obs
 
-    ((ProxyReader) reader).transmitSeRequest(null, ChannelControl.CLOSE_AFTER);
+    ((ProxyReader) reader).releaseChannel();
     reader.removeSe();
 
     // lock thread for 2 seconds max to wait for the event SE_REMOVED
@@ -262,7 +262,7 @@ public class StubReaderTest extends BaseStubTest {
     // countDown by obs
     // Thread.sleep(1000);
 
-    ((ProxyReader) reader).transmitSeRequest(null, ChannelControl.CLOSE_AFTER);
+    ((ProxyReader) reader).releaseChannel();
     reader.removeSe();
 
     // lock thread for 2 seconds max to wait for the event SE_REMOVED
@@ -284,7 +284,7 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(0, secondInsertLock.getCount()); // should be 0 because insertLock is
     // countDown by obs
 
-    ((ProxyReader) reader).transmitSeRequest(null, ChannelControl.CLOSE_AFTER);
+    ((ProxyReader) reader).releaseChannel();
 
     // Thread.sleep(1000);
     reader.removeSe();
@@ -362,7 +362,7 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(0, firstInsertLock.getCount()); // should be 0 because insertLock is
     // countDown by obs
 
-    ((ProxyReader) reader).transmitSeRequest(null, ChannelControl.CLOSE_AFTER);
+    ((ProxyReader) reader).releaseChannel();
     reader.removeSe();
 
     // lock thread for 2 seconds max to wait for the event SE_REMOVED
@@ -382,7 +382,7 @@ public class StubReaderTest extends BaseStubTest {
 
     Assert.assertEquals(0, secondInsertLock.getCount()); // should be 0 because insertLock is
     // countDown by obs
-    ((ProxyReader) reader).transmitSeRequest(null, ChannelControl.CLOSE_AFTER);
+    ((ProxyReader) reader).releaseChannel();
     reader.removeSe();
 
     // lock thread for 2 seconds max to wait for the event SE_REMOVED
@@ -708,7 +708,7 @@ public class StubReaderTest extends BaseStubTest {
             if (ReaderEvent.EventType.SE_MATCHED == event.getEventType()) {
               logger.info("SE_MATCHED event received");
               logger.info("Notify SE processed after 0ms");
-              ((ProxyReader) reader).transmitSeRequest(null, ChannelControl.CLOSE_AFTER);
+              ((ProxyReader) reader).releaseChannel();
               lock.countDown();
             }
           }

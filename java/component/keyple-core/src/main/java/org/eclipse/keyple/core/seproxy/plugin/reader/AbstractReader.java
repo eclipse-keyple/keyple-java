@@ -22,13 +22,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Abstract definition of an observable reader.
+ * A generic reader. <code>AbstractReader</code> describes the high-level interface to a {@link
+ * ProxyReader} made available by the underlying system.
  *
- * <ul>
- *   <li>High level logging and benchmarking of Set of SeRequest and SeRequest transmission
- *   <li>Name-based comparison of ProxyReader (required for SortedSet&lt;ProxyReader&gt;)
- *   <li>Plugin naming management
- * </ul>
+ * <p><code>AbstractReader</code> defines the minimum required functionality for a local or remote
+ * reader and provides some logging facilities.
  */
 public abstract class AbstractReader implements ProxyReader {
 
@@ -45,24 +43,30 @@ public abstract class AbstractReader implements ProxyReader {
   private final String pluginName;
 
   /**
-   * Reader constructor
+   * Reader constructor taking the name of the plugin that instantiated the reader and the name of
+   * the reader in argument.
    *
-   * <p>Initialize the time measurement
+   * <p>Initializes the time measurement log at {@link SeRequest} level. The first measurement gives
+   * the time elapsed since the plugin was loaded.
    *
-   * @param pluginName the name of the plugin that instantiated the reader
-   * @param name the name of the reader
+   * @param pluginName A not empty string.
+   * @param name A not empty string.
+   * @since 0.9
    */
   protected AbstractReader(String pluginName, String name) {
+
     this.name = name;
     this.pluginName = pluginName;
-    this.before = System.nanoTime(); /*
-                                          * provides an initial value for measuring the
-                                          * inter-exchange time. The first measurement gives the
-                                          * time elapsed since the plugin was loaded.
-                                          */
+    if (logger.isDebugEnabled()) {
+      this.before = System.nanoTime();
+    }
   }
 
-  /** @return the name of the reader */
+  /**
+   * Gets the name of the reader.
+   *
+   * @return A not empty string.
+   */
   public final String getName() {
     return name;
   }
@@ -70,46 +74,26 @@ public abstract class AbstractReader implements ProxyReader {
   /**
    * Gets the name of plugin provided in the constructor.
    *
-   * <p>The method will be used particularly for logging purposes. The plugin name is also part of
-   * the ReaderEvent and PluginEvent objects.
-   *
-   * @return the plugin name String
+   * @return A not empty string.
    */
   public final String getPluginName() {
     return pluginName;
   }
 
   /**
-   * Execute the transmission of a list of {@link SeRequest} and returns a list of {@link
-   * SeResponse}
+   * {@inheritDoc}
    *
-   * <p>The {@link MultiSeRequestProcessing} parameter indicates whether all requests are to be sent
-   * regardless of their result (PROCESS_ALL) or whether the process should stop at the first
-   * request whose result is a success (FIRST_MATCH).
-   *
-   * <p>The {@link ChannelControl} parameter specifies whether the physical channel should be closed
-   * (CLOSE_AFTER) or not (KEEP_OPEN) after all requests have been transmitted.
-   *
-   * <p>The global execution time (inter-exchange and communication) and the Set of SeRequest
-   * content is logged (DEBUG level).
-   *
-   * <p>As the method is final, it cannot be extended.
-   *
-   * @param seRequests the request set
-   * @param multiSeRequestProcessing the multi SE request processing mode
-   * @param channelControl the channel control indicator
-   * @return the response set
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * <p>This implementation of {@link ProxyReader#transmitSeRequests(List, MultiSeRequestProcessing,
+   * ChannelControl)} is based on {@link #processSeRequests(List, MultiSeRequestProcessing,
+   * ChannelControl)}.<br>
+   * It adds a logging of exchanges including a measure of execution time, available at the debug
+   * level.
    */
   @Override
   public final List<SeResponse> transmitSeRequests(
       List<SeRequest> seRequests,
       MultiSeRequestProcessing multiSeRequestProcessing,
       ChannelControl channelControl) {
-    if (seRequests == null && channelControl == ChannelControl.KEEP_OPEN) {
-      throw new IllegalArgumentException(
-          "The request list must not be null when the channel is to remain open.");
-    }
 
     List<SeResponse> seResponses;
 
@@ -154,15 +138,19 @@ public abstract class AbstractReader implements ProxyReader {
   }
 
   /**
-   * Abstract method implemented by the AbstractLocalReader and VirtualReader classes.
+   * This method is the actual implementation of the process of transmitting a list of {@link
+   * SeRequest} as defined by {@link ProxyReader#transmitSeRequests(List, MultiSeRequestProcessing,
+   * ChannelControl)}.
    *
-   * <p>This method is handled by transmitSet.
-   *
-   * @param seRequests a {@link List} of {@link SeRequest} to be processed
-   * @param multiSeRequestProcessing the multi se processing mode
-   * @param channelControl indicates if the channel has to be closed at the end of the processing
-   * @return the List of {@link SeResponse} (responses to the Set of {@link SeRequest})
+   * @param seRequests A not empty list of not null {@link SeRequest}.
+   * @param multiSeRequestProcessing The multi se processing flag (must be not null).
+   * @param channelControl indicates if the physical channel has to be closed at the end of the
+   *     processing (must be not null).
+   * @return A not empty response list (can be empty).
    * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws IllegalArgumentException if one of the arguments is null.
+   * @see ProxyReader#transmitSeRequests(List, MultiSeRequestProcessing, ChannelControl)
+   * @since 0.9
    */
   protected abstract List<SeResponse> processSeRequests(
       List<SeRequest> seRequests,
@@ -170,24 +158,15 @@ public abstract class AbstractReader implements ProxyReader {
       ChannelControl channelControl);
 
   /**
-   * Execute the transmission of a {@link SeRequest} and returns a {@link SeResponse}
+   * {@inheritDoc}
    *
-   * <p>The individual execution time (inter-exchange and communication) and the {@link SeRequest}
-   * content is logged (DEBUG level).
-   *
-   * <p>As the method is final, it cannot be extended.
-   *
-   * @param seRequest the request to be transmitted
-   * @param channelControl indicates if the channel has to be closed at the end of the processing
-   * @return the received response
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * <p>This implementation of {@link ProxyReader#transmitSeRequest(SeRequest, ChannelControl)} is
+   * based on {@link #processSeRequest(SeRequest, ChannelControl)}.<br>
+   * It adds a logging of exchanges including a measure of execution time, available at the debug
+   * level.
    */
   @Override
   public final SeResponse transmitSeRequest(SeRequest seRequest, ChannelControl channelControl) {
-    if (seRequest == null && channelControl == ChannelControl.KEEP_OPEN) {
-      throw new IllegalArgumentException(
-          "The request must not be null when the channel is to remain open.");
-    }
 
     SeResponse seResponse;
 
@@ -214,7 +193,7 @@ public abstract class AbstractReader implements ProxyReader {
             this.getName(),
             elapsed10ms / 10.0);
       }
-      /* Throw an exception with the responses collected so far (ex.getSeResponse()). */
+      /* Forward the exception. */
       throw ex;
     }
 
@@ -233,15 +212,17 @@ public abstract class AbstractReader implements ProxyReader {
   }
 
   /**
-   * Abstract method implemented by the AbstractLocalReader and VirtualReader classes.
+   * This method is the actual implementation of the process of a {@link SeRequest} as defined by
+   * {@link ProxyReader#transmitSeRequest(SeRequest, ChannelControl)}
    *
-   * <p>This method is handled by transmit.
-   *
-   * @param seRequest the {@link SeRequest} to be processed
-   * @param channelControl a flag indicating if the channel has to be closed after the processing of
-   *     the {@link SeRequest}
-   * @return the {@link SeResponse} (responses to the {@link SeRequest})
+   * @param seRequest The {@link SeRequest} to be processed (can be null).
+   * @return seResponse A not null {@link SeResponse}.
+   * @param channelControl indicates if the physical channel has to be closed at the end of the
+   *     processing (must be not null).
    * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws IllegalArgumentException if one of the arguments is null.
+   * @see ProxyReader#transmitSeRequest(SeRequest, ChannelControl)
+   * @since 0.9
    */
   protected abstract SeResponse processSeRequest(
       SeRequest seRequest, ChannelControl channelControl);

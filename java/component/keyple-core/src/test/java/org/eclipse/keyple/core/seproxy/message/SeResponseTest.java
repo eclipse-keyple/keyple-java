@@ -78,13 +78,6 @@ public class SeResponseTest {
     Assert.assertNotNull(response);
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void constructorFCIAndATRNull() {
-    SeResponse response =
-        new SeResponse(
-            true, true, new SelectionStatus(null, null, true), ApduResponseTest.getAListOfAPDUs());
-  }
-
   /*
    * HELPERS
    */
