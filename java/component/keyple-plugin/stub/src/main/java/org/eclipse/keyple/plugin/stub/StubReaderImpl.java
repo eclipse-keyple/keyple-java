@@ -19,6 +19,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotFoundException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotSupportedException;
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState;
 import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderStateService;
@@ -30,8 +32,10 @@ import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeInsertion;
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeProcessing;
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemoval;
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetect;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,8 +50,9 @@ class StubReaderImpl extends AbstractObservableLocalReader
   private static final Logger logger = LoggerFactory.getLogger(StubReaderImpl.class);
 
   private StubSecureElement se;
-
+  private SeProtocol currentProtocol;
   TransmissionMode transmissionMode = TransmissionMode.CONTACTLESS;
+  private final Map<SeProtocol, String> protocolsMap;
 
   protected final ExecutorService executorService;
 
@@ -67,6 +72,12 @@ class StubReaderImpl extends AbstractObservableLocalReader
         Executors.newSingleThreadExecutor(new NamedThreadFactory("MonitoringThread-" + readerName));
 
     stateService = initStateService();
+
+    protocolsMap = new HashMap<SeProtocol, String>();
+
+    // activates ISO protocols by default
+    activateProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3);
+    activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4);
   }
 
   /**
@@ -117,48 +128,48 @@ class StubReaderImpl extends AbstractObservableLocalReader
     return se.processApdu(apduIn);
   }
 
-  /** {@inheritDoc} */
   @Override
-  protected boolean protocolFlagMatches(SeProtocol protocolFlag) {
-    boolean result;
-    if (se == null) {
-      throw new KeypleReaderIOException("No SE available.");
-    }
-    // Test protocolFlag to check if ATR based protocol filtering is required
-    if (protocolFlag != null) {
-      if (!isPhysicalChannelOpen()) {
-        openPhysicalChannel();
-      }
-      // the request will be executed only if the protocol match the requestElement
-      String selectionMask = getProtocolsMap().get(protocolFlag);
-      if (selectionMask == null) {
-        throw new KeypleReaderIOException("Target selector mask not found!", null);
-      }
-      Pattern p = Pattern.compile(selectionMask);
-      String protocol = se.getSeProtocol();
-      if (!p.matcher(protocol).matches()) {
-        logger.trace(
-            "[{}] protocolFlagMatches => unmatching SE. PROTOCOLFLAG = {}",
-            this.getName(),
-            protocolFlag);
-        result = false;
-      } else {
-        logger.trace(
-            "[{}] protocolFlagMatches => matching SE. PROTOCOLFLAG = {}",
-            this.getName(),
-            protocolFlag);
-        result = true;
-      }
-    } else {
-      // no protocol defined returns true
-      result = true;
-    }
-    return result;
+  protected SeProtocol getCurrentProtocol() {
+    return currentProtocol;
   }
 
   @Override
   protected synchronized boolean checkSePresence() {
     return se != null;
+  }
+
+  @Override
+  public final void activateProtocol(SeProtocol seProtocol) {
+
+    Assert.getInstance().notNull(seProtocol, "seProtocol");
+
+    String protocolRule = StubProtocolSetting.getSettings().get(seProtocol);
+
+    if (protocolRule == null || protocolRule.isEmpty()) {
+      throw new KeypleReaderProtocolNotSupportedException(seProtocol);
+    }
+
+    if (logger.isInfoEnabled()) {
+      logger.info(
+          "{}: Activate protocol {} with rule \"{}\".",
+          getName(),
+          seProtocol.getName(),
+          protocolRule);
+    }
+    protocolsMap.put(seProtocol, protocolRule);
+  }
+
+  @Override
+  public final void deactivateProtocol(SeProtocol seProtocol) {
+
+    Assert.getInstance().notNull(seProtocol, "seProtocol");
+
+    if (logger.isInfoEnabled()) {
+      logger.info("{}: Deactivate protocol {}.", getName(), seProtocol.getName());
+    }
+    if (protocolsMap.remove(seProtocol) == null && logger.isInfoEnabled()) {
+      logger.info("{}: Protocol {} was not active", getName(), seProtocol.getName());
+    }
   }
 
   /** @return the current transmission mode */
@@ -171,6 +182,12 @@ class StubReaderImpl extends AbstractObservableLocalReader
    * STATE CONTROLLERS FOR INSERTING AND REMOVING SECURE ELEMENT
    */
 
+  /**
+   * Inserts the provided SE.<br>
+   *
+   * @param _se stub secure element to be inserted in the reader
+   * @throws KeypleReaderProtocolNotFoundException if the SE protocol is not found
+   */
   public synchronized void insertSe(StubSecureElement _se) {
     logger.debug("Insert SE {}", _se);
     /* clean channels status */
@@ -183,12 +200,23 @@ class StubReaderImpl extends AbstractObservableLocalReader
     }
     if (_se != null) {
       se = _se;
+      for (Map.Entry<SeProtocol, String> entry : protocolsMap.entrySet()) {
+        Pattern p = Pattern.compile(entry.getValue());
+        if (p.matcher(se.getSeProtocol()).matches()) {
+          currentProtocol = entry.getKey();
+          break;
+        }
+      }
+      if (currentProtocol == null) {
+        // none of the entries in the map correspond to the current SE protocol
+        throw new KeypleReaderProtocolNotFoundException(se.getSeProtocol());
+      }
     }
   }
 
   public synchronized void removeSe() {
     logger.debug("Remove SE {}", se != null ? se : "none");
-
+    currentProtocol = null;
     se = null;
   }
 

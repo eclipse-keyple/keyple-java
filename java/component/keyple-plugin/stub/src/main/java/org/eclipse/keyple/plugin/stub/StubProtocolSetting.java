@@ -75,7 +75,7 @@ public final class StubProtocolSetting {
    *
    * @return a settings map
    */
-  public static Map<SeProtocol, String> getAllSettings() {
+  public static Map<SeProtocol, String> getSettings() {
     return STUB_PROTOCOL_SETTING;
   }
 }

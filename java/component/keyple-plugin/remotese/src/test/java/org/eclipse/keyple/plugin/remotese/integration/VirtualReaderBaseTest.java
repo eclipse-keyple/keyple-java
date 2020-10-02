@@ -109,9 +109,8 @@ public class VirtualReaderBaseTest {
     StubReader nativeReader =
         (StubReader) Integration.createStubReader(readerName, transmissionMode);
 
-    nativeReader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+    // activate PROTOCOL_ISO14443_4
+    nativeReader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4);
 
     this.slaveAPI.connectReader(nativeReader);
     return nativeReader;

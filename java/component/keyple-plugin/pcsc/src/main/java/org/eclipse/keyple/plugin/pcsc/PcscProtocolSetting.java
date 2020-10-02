@@ -77,7 +77,7 @@ public final class PcscProtocolSetting {
    *
    * @return A {@link Map}
    */
-  public static Map<SeProtocol, String> getAllSettings() {
+  public static Map<SeProtocol, String> getSettings() {
     return PCSC_PROTOCOL_SETTING;
   }
 }
