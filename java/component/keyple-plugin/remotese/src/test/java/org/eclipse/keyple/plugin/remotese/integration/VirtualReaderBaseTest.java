@@ -13,8 +13,7 @@ package org.eclipse.keyple.plugin.remotese.integration;
 
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.core.util.SeCommonProtocols;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
@@ -103,14 +102,13 @@ public class VirtualReaderBaseTest {
     }
   }
 
-  protected StubReader connectStubReader(
-      String readerName, String nodeId, TransmissionMode transmissionMode) throws Exception {
+  protected StubReader connectStubReader(String readerName, String nodeId, boolean isContactless)
+      throws Exception {
     // configure native reader
-    StubReader nativeReader =
-        (StubReader) Integration.createStubReader(readerName, transmissionMode);
+    StubReader nativeReader = (StubReader) Integration.createStubReader(readerName, isContactless);
 
     // activate PROTOCOL_ISO14443_4
-    nativeReader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4);
+    nativeReader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
 
     this.slaveAPI.connectReader(nativeReader);
     return nativeReader;

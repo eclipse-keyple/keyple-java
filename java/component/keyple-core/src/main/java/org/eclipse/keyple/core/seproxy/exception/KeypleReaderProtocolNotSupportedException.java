@@ -11,8 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.exception;
 
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-
 /**
  * The exception {@code KeypleReaderNotFoundException} indicates that the current SE protocol is not
  * supported by the plugin.
@@ -20,7 +18,7 @@ import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 public class KeypleReaderProtocolNotSupportedException extends KeypleReaderException {
 
   /** @param seProtocol the identification data used to identify the SE */
-  public KeypleReaderProtocolNotSupportedException(SeProtocol seProtocol) {
-    super("The SE protocol " + seProtocol.getName() + " is not supported.");
+  public KeypleReaderProtocolNotSupportedException(String seProtocol) {
+    super("The SE protocol " + seProtocol + " is not supported.");
   }
 }

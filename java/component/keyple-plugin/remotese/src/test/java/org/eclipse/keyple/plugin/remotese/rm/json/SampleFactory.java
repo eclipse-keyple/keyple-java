@@ -20,8 +20,8 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.core.util.SeCommonProtocols;
 
 public class SampleFactory {
 
@@ -58,7 +58,7 @@ public class SampleFactory {
     SeSelector seSelector =
         SeSelector.builder()
             .aidSelector(aidSelector)
-            .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+            .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
             .build();
 
     SeRequest seRequest = new SeRequest(seSelector, poApduRequests);
@@ -97,7 +97,7 @@ public class SampleFactory {
     SeSelector seSelector =
         SeSelector.builder()
             .aidSelector(aidSelector)
-            .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+            .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
             .build();
 
     SeRequest seRequest = new SeRequest(seSelector, poApduRequests);
@@ -127,7 +127,7 @@ public class SampleFactory {
     SeSelector aidSeSelector =
         SeSelector.builder()
             .aidSelector(aidSelector)
-            .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+            .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
             .build();
 
     SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter("/regex/");
@@ -135,7 +135,7 @@ public class SampleFactory {
     SeSelector seAtrSelector =
         SeSelector.builder()
             .atrFilter(atrFilter)
-            .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
+            .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3.getDescriptor())
             .build();
 
     SeRequest seRequest = new SeRequest(aidSeSelector, poApduRequests);

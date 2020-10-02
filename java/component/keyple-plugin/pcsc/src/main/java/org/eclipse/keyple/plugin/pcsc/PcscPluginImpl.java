@@ -29,7 +29,6 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractReader;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -250,13 +249,11 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
    * @since 1.0
    */
   @Override
-  public void setReaderNameFilter(TransmissionMode transmissionMode, String readerNameFilter) {
+  public void setReaderNameFilter(boolean contactlessMode, String readerNameFilter) {
 
-    Assert.getInstance()
-        .notNull(transmissionMode, "transmissionMode")
-        .notEmpty(readerNameFilter, "readerNameFilter");
+    Assert.getInstance().notEmpty(readerNameFilter, "readerNameFilter");
 
-    if (transmissionMode == TransmissionMode.CONTACTLESS) {
+    if (contactlessMode) {
       contactlessReaderRegexFilter = readerNameFilter;
     } else {
       contactReaderRegexFilter = readerNameFilter;
@@ -267,23 +264,23 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
    * (package-private)<br>
    * Attempts to determine the transmission mode of the reader whose name is provided.<br>
    * This determination is made by a test based on regular expressions provided by the application
-   * in parameter to the plugin (see {@link #setReaderNameFilter(TransmissionMode, String)})
+   * in parameter to the plugin (see {@link #setReaderNameFilter(boolean, String)})
    *
    * @param readerName A string containing the reader name (must be not empty).
-   * @return The {@link TransmissionMode}.
+   * @return True if the reader is contactless, false if not.
    * @throws IllegalStateException if the mode of transmission could not be determined
    * @since 0.9
    */
-  TransmissionMode findTransmissionMode(String readerName) {
+  boolean isContactless(String readerName) {
 
     Pattern p;
     p = Pattern.compile(contactReaderRegexFilter);
     if (p.matcher(readerName).matches()) {
-      return TransmissionMode.CONTACTS;
+      return false;
     }
     p = Pattern.compile(contactlessReaderRegexFilter);
     if (p.matcher(readerName).matches()) {
-      return TransmissionMode.CONTACTLESS;
+      return true;
     }
     throw new IllegalStateException(
         "Unable to determine the transmission mode for reader " + readerName);

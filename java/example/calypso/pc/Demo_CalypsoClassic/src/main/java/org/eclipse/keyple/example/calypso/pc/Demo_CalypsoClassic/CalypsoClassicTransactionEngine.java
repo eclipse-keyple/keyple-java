@@ -36,8 +36,8 @@ import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.core.util.SeCommonProtocols;
 import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.common.generic.AbstractReaderObserverAsynchronousEngine;
@@ -337,7 +337,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
     seSelection.prepareSelection(
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME)
+                .seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME.getDescriptor())
                 .aidSelector(AidSelector.builder().aidToSelect(poFakeAid2).build())
                 .invalidatedPo(InvalidatedPo.REJECT)
                 .build()));
@@ -348,7 +348,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
     seSelection.prepareSelection(
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME)
+                .seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME.getDescriptor())
                 .atrFilter(new PoSelector.AtrFilter(CalypsoClassicInfo.ATR_REV1_REGEX))
                 .invalidatedPo(InvalidatedPo.REJECT)
                 .build()));

@@ -20,8 +20,8 @@ import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.core.util.SeCommonProtocols;
 import org.junit.Test;
 
 public class AbstractSeSelectionRequestTest {
@@ -33,7 +33,7 @@ public class AbstractSeSelectionRequestTest {
   public void testGetSeSelector() {
     SeSelector seSelector =
         SeSelector.builder()
-            .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+            .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
             .aidSelector(SeSelector.AidSelector.builder().aidToSelect(AID).build())
             .build();
     TestSeSelectionRequest testSeSelectionRequest = new TestSeSelectionRequest(seSelector);
@@ -44,7 +44,7 @@ public class AbstractSeSelectionRequestTest {
   public void testAddCommandBuilder_GetCommandBuilders_getSelectionRequest() {
     SeSelector seSelector =
         SeSelector.builder()
-            .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+            .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
             .aidSelector(SeSelector.AidSelector.builder().aidToSelect(AID).build())
             .build();
     TestSeSelectionRequest testSeSelectionRequest = new TestSeSelectionRequest(seSelector);

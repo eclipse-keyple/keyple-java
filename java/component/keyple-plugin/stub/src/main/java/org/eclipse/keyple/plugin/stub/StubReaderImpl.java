@@ -32,11 +32,9 @@ import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeInsertion;
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeProcessing;
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemoval;
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetect;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
+import org.eclipse.keyple.core.util.SeCommonProtocols;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,9 +48,9 @@ class StubReaderImpl extends AbstractObservableLocalReader
   private static final Logger logger = LoggerFactory.getLogger(StubReaderImpl.class);
 
   private StubSecureElement se;
-  private SeProtocol currentProtocol;
-  TransmissionMode transmissionMode = TransmissionMode.CONTACTLESS;
-  private final Map<SeProtocol, String> protocolsMap;
+  private String currentProtocol;
+  boolean isContactless = true;
+  private final Map<String, String> protocolsMap;
 
   protected final ExecutorService executorService;
 
@@ -73,11 +71,11 @@ class StubReaderImpl extends AbstractObservableLocalReader
 
     stateService = initStateService();
 
-    protocolsMap = new HashMap<SeProtocol, String>();
+    protocolsMap = new HashMap<String, String>();
 
     // activates ISO protocols by default
-    activateProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3);
-    activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4);
+    activateProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3.getDescriptor());
+    activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
   }
 
   /**
@@ -85,11 +83,11 @@ class StubReaderImpl extends AbstractObservableLocalReader
    *
    * @param pluginName
    * @param name
-   * @param transmissionMode
+   * @param isContactless
    */
-  StubReaderImpl(String pluginName, String name, TransmissionMode transmissionMode) {
+  StubReaderImpl(String pluginName, String name, boolean isContactless) {
     this(pluginName, name);
-    this.transmissionMode = transmissionMode;
+    this.isContactless = isContactless;
   }
 
   @Override
@@ -129,7 +127,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
   }
 
   @Override
-  protected SeProtocol getCurrentProtocol() {
+  protected String getCurrentProtocol() {
     return currentProtocol;
   }
 
@@ -139,7 +137,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
   }
 
   @Override
-  public final void activateProtocol(SeProtocol seProtocol) {
+  public final void activateProtocol(String seProtocol) {
 
     Assert.getInstance().notNull(seProtocol, "seProtocol");
 
@@ -151,31 +149,28 @@ class StubReaderImpl extends AbstractObservableLocalReader
 
     if (logger.isInfoEnabled()) {
       logger.info(
-          "{}: Activate protocol {} with rule \"{}\".",
-          getName(),
-          seProtocol.getName(),
-          protocolRule);
+          "{}: Activate protocol {} with rule \"{}\".", getName(), seProtocol, protocolRule);
     }
     protocolsMap.put(seProtocol, protocolRule);
   }
 
   @Override
-  public final void deactivateProtocol(SeProtocol seProtocol) {
+  public final void deactivateProtocol(String seProtocol) {
 
     Assert.getInstance().notNull(seProtocol, "seProtocol");
 
     if (logger.isInfoEnabled()) {
-      logger.info("{}: Deactivate protocol {}.", getName(), seProtocol.getName());
+      logger.info("{}: Deactivate protocol {}.", getName(), seProtocol);
     }
     if (protocolsMap.remove(seProtocol) == null && logger.isInfoEnabled()) {
-      logger.info("{}: Protocol {} was not active", getName(), seProtocol.getName());
+      logger.info("{}: Protocol {} was not active", getName(), seProtocol);
     }
   }
 
   /** @return the current transmission mode */
   @Override
-  public TransmissionMode getTransmissionMode() {
-    return transmissionMode;
+  public boolean isContactless() {
+    return isContactless;
   }
 
   /*
@@ -200,7 +195,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
     }
     if (_se != null) {
       se = _se;
-      for (Map.Entry<SeProtocol, String> entry : protocolsMap.entrySet()) {
+      for (Map.Entry<String, String> entry : protocolsMap.entrySet()) {
         Pattern p = Pattern.compile(entry.getValue());
         if (p.matcher(se.getSeProtocol()).matches()) {
           currentProtocol = entry.getKey();

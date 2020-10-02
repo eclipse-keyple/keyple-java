@@ -15,8 +15,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
+import org.eclipse.keyple.core.util.SeCommonProtocols;
 
 /**
  * This class contains all the parameters to identify the communication protocols supported by STUB
@@ -26,7 +25,7 @@ import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
  */
 public final class StubProtocolSetting {
 
-  public static final Map<SeProtocol, String> STUB_PROTOCOL_SETTING;
+  public static final Map<String, String> STUB_PROTOCOL_SETTING;
 
   /** (private) */
   private StubProtocolSetting() {}
@@ -36,21 +35,21 @@ public final class StubProtocolSetting {
    * the ATR)
    */
   static {
-    Map<SeProtocol, String> map = new HashMap<SeProtocol, String>();
+    Map<String, String> map = new HashMap<String, String>();
 
-    map.put(SeCommonProtocols.PROTOCOL_ISO14443_4, "PROTOCOL_ISO14443_4");
+    map.put(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor(), "PROTOCOL_ISO14443_4");
 
-    map.put(SeCommonProtocols.PROTOCOL_B_PRIME, "PROTOCOL_B_PRIME");
+    map.put(SeCommonProtocols.PROTOCOL_B_PRIME.getDescriptor(), "PROTOCOL_B_PRIME");
 
-    map.put(SeCommonProtocols.PROTOCOL_MIFARE_UL, "PROTOCOL_MIFARE_UL");
+    map.put(SeCommonProtocols.PROTOCOL_MIFARE_UL.getDescriptor(), "PROTOCOL_MIFARE_UL");
 
-    map.put(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC, "PROTOCOL_MIFARE_CLASSIC");
+    map.put(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC.getDescriptor(), "PROTOCOL_MIFARE_CLASSIC");
 
-    map.put(SeCommonProtocols.PROTOCOL_MIFARE_DESFIRE, "PROTOCOL_MIFARE_DESFIRE");
+    map.put(SeCommonProtocols.PROTOCOL_MIFARE_DESFIRE.getDescriptor(), "PROTOCOL_MIFARE_DESFIRE");
 
-    map.put(SeCommonProtocols.PROTOCOL_MEMORY_ST25, "PROTOCOL_MEMORY_ST25");
+    map.put(SeCommonProtocols.PROTOCOL_MEMORY_ST25.getDescriptor(), "PROTOCOL_MEMORY_ST25");
 
-    map.put(SeCommonProtocols.PROTOCOL_ISO7816_3, "PROTOCOL_ISO7816_3");
+    map.put(SeCommonProtocols.PROTOCOL_ISO7816_3.getDescriptor(), "PROTOCOL_ISO7816_3");
 
     STUB_PROTOCOL_SETTING = Collections.unmodifiableMap(map);
   }
@@ -61,11 +60,10 @@ public final class StubProtocolSetting {
    * @param specificProtocols subset of protocols
    * @return a settings map
    */
-  public static Map<SeProtocol, String> getSpecificSettings(
-      Set<SeCommonProtocols> specificProtocols) {
-    Map<SeProtocol, String> map = new HashMap<SeProtocol, String>();
+  public static Map<String, String> getSpecificSettings(Set<SeCommonProtocols> specificProtocols) {
+    Map<String, String> map = new HashMap<String, String>();
     for (SeCommonProtocols seCommonProtocols : specificProtocols) {
-      map.put(seCommonProtocols, STUB_PROTOCOL_SETTING.get(seCommonProtocols));
+      map.put(seCommonProtocols.getDescriptor(), STUB_PROTOCOL_SETTING.get(seCommonProtocols));
     }
     return map;
   }
@@ -75,7 +73,7 @@ public final class StubProtocolSetting {
    *
    * @return a settings map
    */
-  public static Map<SeProtocol, String> getSettings() {
+  public static Map<String, String> getSettings() {
     return STUB_PROTOCOL_SETTING;
   }
 }

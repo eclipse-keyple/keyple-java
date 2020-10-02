@@ -11,8 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
-import java.util.EnumSet
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
+import org.eclipse.keyple.core.util.SeCommonProtocols
 import org.junit.Assert
 import org.junit.Test
 
@@ -20,24 +19,24 @@ class AndroidNfcProtocolSettingsTest {
 
     @Test
     fun getSpecificSettings() {
-        val specificSettings = AndroidNfcProtocolSettings.getSpecificSettings(EnumSet.of(SeCommonProtocols.PROTOCOL_ISO14443_4, SeCommonProtocols.PROTOCOL_ISO14443_3A, SeCommonProtocols.PROTOCOL_ISO14443_3B))
+        val specificSettings = AndroidNfcProtocolSettings.getSpecificSettings(setOf(SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor, SeCommonProtocols.PROTOCOL_ISO14443_3A.descriptor, SeCommonProtocols.PROTOCOL_ISO14443_3B.descriptor))
         Assert.assertEquals(3, specificSettings.count())
-        Assert.assertEquals("android.nfc.tech.IsoDep", specificSettings[SeCommonProtocols.PROTOCOL_ISO14443_4])
-        Assert.assertEquals("android.nfc.tech.NfcA", specificSettings[SeCommonProtocols.PROTOCOL_ISO14443_3A])
-        Assert.assertEquals("android.nfc.tech.NfcB", specificSettings[SeCommonProtocols.PROTOCOL_ISO14443_3B])
+        Assert.assertEquals("android.nfc.tech.IsoDep", specificSettings[SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor])
+        Assert.assertEquals("android.nfc.tech.NfcA", specificSettings[SeCommonProtocols.PROTOCOL_ISO14443_3A.descriptor])
+        Assert.assertEquals("android.nfc.tech.NfcB", specificSettings[SeCommonProtocols.PROTOCOL_ISO14443_3B.descriptor])
     }
 
     @Test
     fun getSetting() {
-        Assert.assertEquals(AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4), "android.nfc.tech.IsoDep")
-        Assert.assertEquals(AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_3A), "android.nfc.tech.NfcA")
-        Assert.assertEquals(AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_3B), "android.nfc.tech.NfcB")
-        Assert.assertEquals(AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_JIS_6319_4), "android.nfc.tech.NfcF")
-        Assert.assertEquals(AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO15693), "android.nfc.tech.NfcV")
-        Assert.assertEquals(AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_NDEF), "android.nfc.tech.Ndef")
-        Assert.assertEquals(AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_NDEF_FORMATABLE), "android.nfc.tech.NdefFormatable")
-        Assert.assertEquals(AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_NFC_BARCODE), "android.nfc.tech.NfcBarcode")
-        Assert.assertEquals(AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL), "android.nfc.tech.MifareUltralight")
-        Assert.assertEquals(AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC), "android.nfc.tech.MifareClassic")
+        Assert.assertEquals(AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor), "android.nfc.tech.IsoDep")
+        Assert.assertEquals(AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_3A.descriptor), "android.nfc.tech.NfcA")
+        Assert.assertEquals(AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_3B.descriptor), "android.nfc.tech.NfcB")
+        Assert.assertEquals(AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_JIS_6319_4.descriptor), "android.nfc.tech.NfcF")
+        Assert.assertEquals(AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO15693.descriptor), "android.nfc.tech.NfcV")
+        Assert.assertEquals(AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_NDEF.descriptor), "android.nfc.tech.Ndef")
+        Assert.assertEquals(AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_NDEF_FORMATABLE.descriptor), "android.nfc.tech.NdefFormatable")
+        Assert.assertEquals(AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_NFC_BARCODE.descriptor), "android.nfc.tech.NfcBarcode")
+        Assert.assertEquals(AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL.descriptor), "android.nfc.tech.MifareUltralight")
+        Assert.assertEquals(AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC.descriptor), "android.nfc.tech.MifareClassic")
     }
 }

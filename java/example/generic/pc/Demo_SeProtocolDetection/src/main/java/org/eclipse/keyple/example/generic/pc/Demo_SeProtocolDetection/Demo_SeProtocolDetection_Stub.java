@@ -16,7 +16,7 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.util.SeCommonProtocols;
 import org.eclipse.keyple.example.common.generic.stub.StubMifareClassic;
 import org.eclipse.keyple.example.common.generic.stub.StubMifareDesfire;
 import org.eclipse.keyple.example.common.generic.stub.StubMifareUL;
@@ -68,8 +68,8 @@ public class Demo_SeProtocolDetection_Stub {
     observer.setReader(poReader);
 
     /* Activate additional protocol */
-    poReader.activateProtocol(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC);
-    poReader.activateProtocol(SeCommonProtocols.PROTOCOL_MEMORY_ST25);
+    poReader.activateProtocol(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC.getDescriptor());
+    poReader.activateProtocol(SeCommonProtocols.PROTOCOL_MEMORY_ST25.getDescriptor());
 
     // Set terminal as Observer of the first reader
     poReader.addObserver(observer);

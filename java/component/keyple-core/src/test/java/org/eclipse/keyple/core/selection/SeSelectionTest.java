@@ -21,8 +21,8 @@ import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.core.util.SeCommonProtocols;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -265,7 +265,7 @@ public class SeSelectionTest extends CoreBaseTest {
             .build();
     SeSelector seSelector1 =
         SeSelector.builder()
-            .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+            .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
             .aidSelector(aidSelector)
             .build();
 
@@ -292,7 +292,7 @@ public class SeSelectionTest extends CoreBaseTest {
 
     SeSelector seSelector2 =
         SeSelector.builder()
-            .seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME)
+            .seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME.getDescriptor())
             .atrFilter(new SeSelector.AtrFilter(".*"))
             .aidSelector(aidSelector)
             .build();

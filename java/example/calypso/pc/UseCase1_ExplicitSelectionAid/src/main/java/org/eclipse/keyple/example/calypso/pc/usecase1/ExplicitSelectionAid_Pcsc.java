@@ -23,7 +23,6 @@ import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
@@ -68,9 +67,7 @@ public class ExplicitSelectionAid_Pcsc {
 
     // Get and configure the PO reader
     SeReader poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
-    ((PcscReader) poReader)
-        .setTransmissionMode(TransmissionMode.CONTACTLESS)
-        .setIsoProtocol(PcscReader.IsoProtocol.T1);
+    ((PcscReader) poReader).setContaclessMode(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     logger.info(
         "=============== UseCase Calypso #1: AID based explicit selection ==================");

@@ -18,12 +18,12 @@ import androidx.annotation.RequiresApi
 import java.io.IOException
 import java.util.NoSuchElementException
 import kotlin.experimental.or
+import kotlinx.android.synthetic.*
 import org.eclipse.keyple.core.seproxy.SeSelector
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.seproxy.message.ApduResponse
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol
 import org.eclipse.keyple.core.util.ByteArrayUtil
+import org.eclipse.keyple.core.util.SeCommonProtocols
 import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiReader
 import timber.log.Timber
 
@@ -136,10 +136,10 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
      *  * Activates the detection of SEs using this protocol (if the plugin allows it).
      *
      *
-     * @param seProtocol The protocol to activate (must be not null).
+     * @param seProtocol The protocol to activate (a not empty String).
      * @throws KeypleReaderProtocolNotSupportedException if the protocol is not supported.
      */
-    override fun activateProtocol(seProtocol: SeProtocol?) {
+    override fun activateProtocol(seProtocol: String?) {
         TODO("Not yet implemented")
     }
 
@@ -152,9 +152,9 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
      *  * Inhibits the detection of SEs using this protocol (if the plugin allows it).
      *
      *
-     * @param seProtocol The protocol to deactivate (must be not null).
+     * @param seProtocol The protocol to deactivate (a not empty String).
      */
-    override fun deactivateProtocol(seProtocol: SeProtocol?) {
+    override fun deactivateProtocol(seProtocol: String?) {
         TODO("Not yet implemented")
     }
 
@@ -169,8 +169,8 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
      * @throws KeypleReaderProtocolNotFoundException if it is not possible to determine the protocol.
      * @since 1.0
      */
-    override fun getCurrentProtocol(): SeProtocol {
-        return SeCommonProtocols.PROTOCOL_ISO7816_3 // TODO check this
+    override fun getCurrentProtocol(): String {
+        return SeCommonProtocols.PROTOCOL_ISO7816_3.descriptor // TODO check this
     }
 
     /** Closes the logical channel explicitly.  */

@@ -30,7 +30,6 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
@@ -88,15 +87,11 @@ public class MultipleSession_Pcsc {
 
     // Get and configure the PO reader
     SeReader poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
-    ((PcscReader) poReader)
-        .setTransmissionMode(TransmissionMode.CONTACTLESS)
-        .setIsoProtocol(PcscReader.IsoProtocol.T1);
+    ((PcscReader) poReader).setContaclessMode(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     // Get and configure the SAM reader
     SeReader samReader = readerPlugin.getReader(ReaderUtilities.getContactReaderName());
-    ((PcscReader) samReader)
-        .setTransmissionMode(TransmissionMode.CONTACTS)
-        .setIsoProtocol(PcscReader.IsoProtocol.T0);
+    ((PcscReader) samReader).setContaclessMode(false).setIsoProtocol(PcscReader.IsoProtocol.T0);
 
     // Create a SAM resource after selecting the SAM
     SeSelection samSelection = new SeSelection();

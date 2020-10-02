@@ -38,10 +38,8 @@ import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeInsertion
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeProcessing
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemoval
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetect
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode
 import org.eclipse.keyple.core.util.ByteArrayUtil
+import org.eclipse.keyple.core.util.SeCommonProtocols
 import timber.log.Timber
 
 /**
@@ -58,7 +56,7 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
 
     private val parameters = HashMap<String, String?>()
 
-    private val protocolsMap = HashMap<SeProtocol, String?>()
+    private val protocolsMap = HashMap<String, String?>()
 
     private val executorService: ExecutorService
 
@@ -89,9 +87,9 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
                 flags = flags or NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS
             }
             for (seProtocol in this.protocolsMap.keys) {
-                if (SeCommonProtocols.PROTOCOL_ISO14443_4 == seProtocol) {
+                if (SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor.equals(seProtocol)) {
                     flags = flags or NfcAdapter.FLAG_READER_NFC_B or NfcAdapter.FLAG_READER_NFC_A
-                } else if (seProtocol === SeCommonProtocols.PROTOCOL_MIFARE_UL || seProtocol === SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC) {
+                } else if (SeCommonProtocols.PROTOCOL_MIFARE_UL.descriptor.equals(seProtocol) || SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC.descriptor.equals(seProtocol)) {
                     flags = flags or NfcAdapter.FLAG_READER_NFC_A
                 }
             }
@@ -191,10 +189,10 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
     /**
      * The transmission mode is always CONTACTLESS in a NFC reader
      *
-     * @return the current transmission mode
+     * @return Always true.
      */
-    override fun getTransmissionMode(): TransmissionMode {
-        return TransmissionMode.CONTACTLESS
+    override fun isContactless(): Boolean {
+        return true
     }
 
     /**
@@ -303,7 +301,7 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
      * @param seProtocol The protocol to activate (must be not null).
      * @throws KeypleReaderProtocolNotSupportedException if the protocol is not supported.
      */
-    override fun activateProtocol(seProtocol: SeProtocol?) {
+    override fun activateProtocol(seProtocol: String?) {
         TODO("Not yet implemented")
     }
 
@@ -318,7 +316,7 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
      *
      * @param seProtocol The protocol to deactivate (must be not null).
      */
-    override fun deactivateProtocol(seProtocol: SeProtocol?) {
+    override fun deactivateProtocol(seProtocol: String?) {
         TODO("Not yet implemented")
     }
 
@@ -329,11 +327,11 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
      * This method must be implemented by the plugin which is able to determine the protocol of the
      * SE from the technical data it has available.
      *
-     * @return A not null reference to a [SeProtocol].
+     * @return A not empty String.
      * @throws KeypleReaderProtocolNotFoundException if it is not possible to determine the protocol.
      * @since 1.0
      */
-    override fun getCurrentProtocol(): SeProtocol {
+    override fun getCurrentProtocol(): String {
         TODO("Not yet implemented")
     }
 

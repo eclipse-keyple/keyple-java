@@ -13,8 +13,6 @@ package org.eclipse.keyple.core.seproxy;
 
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotSupportedException;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 
 /**
  * SeReader interface
@@ -53,7 +51,7 @@ public interface SeReader extends ProxyElement {
    * @throws KeypleReaderProtocolNotSupportedException if the protocol is not supported.
    * @since 1.0
    */
-  void activateProtocol(SeProtocol seProtocol);
+  void activateProtocol(String seProtocol);
 
   /**
    * Deactivates the provided SE protocol.
@@ -67,8 +65,13 @@ public interface SeReader extends ProxyElement {
    * @param seProtocol The protocol to deactivate (must be not null).
    * @since 1.0
    */
-  void deactivateProtocol(SeProtocol seProtocol);
+  void deactivateProtocol(String seProtocol);
 
-  /** @return the transmission mode in use with this SE reader */
-  TransmissionMode getTransmissionMode();
+  /**
+   * Tells if the current card communication is contactless.
+   *
+   * @return True if the communication is contactless, false if not.
+   * @since 1.0
+   */
+  boolean isContactless();
 }

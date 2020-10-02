@@ -19,8 +19,7 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.core.util.SeCommonProtocols;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -52,9 +51,7 @@ public class Demo_SeProtocolDetection_Pcsc {
 
     // Get and configure the PO reader
     SeReader poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
-    ((PcscReader) poReader)
-        .setTransmissionMode(TransmissionMode.CONTACTLESS)
-        .setIsoProtocol(PcscReader.IsoProtocol.T1);
+    ((PcscReader) poReader).setContaclessMode(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     logger.info("PO Reader  : {}", poReader.getName());
 
@@ -64,13 +61,11 @@ public class Demo_SeProtocolDetection_Pcsc {
     observer.setReader(poReader);
 
     // configure reader
-    ((PcscReader) poReader)
-        .setTransmissionMode(TransmissionMode.CONTACTLESS)
-        .setIsoProtocol(PcscReader.IsoProtocol.T1);
+    ((PcscReader) poReader).setContaclessMode(false).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     /* Activate additional protocol */
-    poReader.activateProtocol(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC);
-    poReader.activateProtocol(SeCommonProtocols.PROTOCOL_MEMORY_ST25);
+    poReader.activateProtocol(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC.getDescriptor());
+    poReader.activateProtocol(SeCommonProtocols.PROTOCOL_MEMORY_ST25.getDescriptor());
 
     // Set terminal as Observer of the first reader
     ((ObservableReader) poReader).addObserver(observer);

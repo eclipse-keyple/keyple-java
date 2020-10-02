@@ -13,8 +13,6 @@ package org.eclipse.keyple.core.seproxy.plugin.reader;
 
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 
 public class BlankSmartSelectionReader extends AbstractLocalReader implements SmartSelectionReader {
 
@@ -60,18 +58,18 @@ public class BlankSmartSelectionReader extends AbstractLocalReader implements Sm
   public void closeLogicalChannel() {}
 
   @Override
-  protected SeProtocol getCurrentProtocol() {
+  protected String getCurrentProtocol() {
     return null;
   }
 
   @Override
-  public void activateProtocol(SeProtocol seProtocol) {}
+  public void activateProtocol(String seProtocol) {}
 
   @Override
-  public void deactivateProtocol(SeProtocol seProtocol) {}
+  public void deactivateProtocol(String seProtocol) {}
 
   @Override
-  public TransmissionMode getTransmissionMode() {
-    return null;
+  public boolean isContactless() {
+    return true;
   }
 }

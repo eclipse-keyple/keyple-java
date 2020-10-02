@@ -11,9 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
-import java.util.EnumSet
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol
+import org.eclipse.keyple.core.util.SeCommonProtocols
 
 /**
  * This class contains all the parameters to identify the communication protocols supported by NFC
@@ -28,17 +26,17 @@ object AndroidNfcProtocolSettings {
      * Associates a protocol and a string defining how to identify it (here a regex to be applied on
      * the ATR)
      */
-    private val allSettings: Map<SeProtocol, String> = mapOf(
-        SeCommonProtocols.PROTOCOL_ISO14443_4 to "android.nfc.tech.IsoDep",
-        SeCommonProtocols.PROTOCOL_ISO14443_3A to "android.nfc.tech.NfcA",
-        SeCommonProtocols.PROTOCOL_ISO14443_3B to "android.nfc.tech.NfcB",
-        SeCommonProtocols.PROTOCOL_JIS_6319_4 to "android.nfc.tech.NfcF",
-        SeCommonProtocols.PROTOCOL_ISO15693 to "android.nfc.tech.NfcV",
-        SeCommonProtocols.PROTOCOL_NDEF to "android.nfc.tech.Ndef",
-        SeCommonProtocols.PROTOCOL_NDEF_FORMATABLE to "android.nfc.tech.NdefFormatable",
-        SeCommonProtocols.PROTOCOL_NFC_BARCODE to "android.nfc.tech.NfcBarcode",
-        SeCommonProtocols.PROTOCOL_MIFARE_UL to "android.nfc.tech.MifareUltralight",
-        SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC to "android.nfc.tech.MifareClassic")
+    private val allSettings: Map<String, String> = mapOf(
+        SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor to "android.nfc.tech.IsoDep",
+        SeCommonProtocols.PROTOCOL_ISO14443_3A.descriptor to "android.nfc.tech.NfcA",
+        SeCommonProtocols.PROTOCOL_ISO14443_3B.descriptor to "android.nfc.tech.NfcB",
+        SeCommonProtocols.PROTOCOL_JIS_6319_4.descriptor to "android.nfc.tech.NfcF",
+        SeCommonProtocols.PROTOCOL_ISO15693.descriptor to "android.nfc.tech.NfcV",
+        SeCommonProtocols.PROTOCOL_NDEF.descriptor to "android.nfc.tech.Ndef",
+        SeCommonProtocols.PROTOCOL_NDEF_FORMATABLE.descriptor to "android.nfc.tech.NdefFormatable",
+        SeCommonProtocols.PROTOCOL_NFC_BARCODE.descriptor to "android.nfc.tech.NfcBarcode",
+        SeCommonProtocols.PROTOCOL_MIFARE_UL.descriptor to "android.nfc.tech.MifareUltralight",
+        SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC.descriptor to "android.nfc.tech.MifareClassic")
 
     /**
      * Return a subset of the settings map
@@ -47,8 +45,8 @@ object AndroidNfcProtocolSettings {
      * @return a settings map
      */
     @Throws(NoSuchElementException::class)
-    fun getSpecificSettings(specificProtocols: EnumSet<SeCommonProtocols>):
-            Map<SeProtocol, String> {
+    fun getSpecificSettings(specificProtocols: Set<String>):
+            Map<String, String> {
         return specificProtocols.filter { allSettings[it] != null }.associateBy({ it }, { getSetting(it) })
     }
 
@@ -60,7 +58,7 @@ object AndroidNfcProtocolSettings {
      * @throws No such Element Exception if protocol not found in settings
      */
     @Throws(NoSuchElementException::class)
-    fun getSetting(seProtocol: SeProtocol): String {
+    fun getSetting(seProtocol: String): String {
         return allSettings.getValue(seProtocol)
     }
 }

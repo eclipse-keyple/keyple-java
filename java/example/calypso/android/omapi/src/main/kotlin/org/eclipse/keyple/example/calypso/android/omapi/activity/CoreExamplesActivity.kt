@@ -23,8 +23,8 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.message.ChannelControl
 import org.eclipse.keyple.core.seproxy.message.ProxyReader
 import org.eclipse.keyple.core.seproxy.message.SeRequest
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
+import org.eclipse.keyple.core.util.SeCommonProtocols
 import org.eclipse.keyple.example.calypso.android.omapi.R
 import org.eclipse.keyple.example.calypso.android.omapi.utils.AidEnum
 import org.eclipse.keyple.example.calypso.android.omapi.utils.GenericSeSelectionRequest
@@ -73,7 +73,7 @@ class CoreExamplesActivity : ExamplesActivity() {
                     addHeaderEvent("Starting explicitAidSelection with $poAid on Reader ${it.key}")
 
                     val seSelector = SeSelector.builder()
-                            .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
+                            .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3.descriptor)
                             .aidSelector(AidSelector.builder().aidToSelect(poAid).build())
                             .build()
                     val seRequest = SeRequest(seSelector, null)
@@ -114,7 +114,7 @@ class CoreExamplesActivity : ExamplesActivity() {
         /* AID based selection (1st selection, later indexed 0) */
         seSelection.prepareSelection(GenericSeSelectionRequest(
                 SeSelector.builder()
-                        .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
+                        .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3.descriptor)
                         .aidSelector(AidSelector.builder()
                                 .aidToSelect(seAidPrefix)
                                 .fileOccurrence(AidSelector.FileOccurrence.FIRST)
@@ -124,7 +124,7 @@ class CoreExamplesActivity : ExamplesActivity() {
         /* next selection (2nd selection, later indexed 1) */
         seSelection.prepareSelection(GenericSeSelectionRequest(
                 SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3.descriptor)
                 .aidSelector(AidSelector.builder()
                         .aidToSelect(seAidPrefix)
                         .fileOccurrence(AidSelector.FileOccurrence.NEXT)
@@ -134,7 +134,7 @@ class CoreExamplesActivity : ExamplesActivity() {
         /* next selection (3rd selection, later indexed 2) */
         seSelection.prepareSelection(GenericSeSelectionRequest(
                 SeSelector.builder()
-                        .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
+                        .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3.descriptor)
                         .aidSelector(AidSelector.builder()
                                 .aidToSelect(seAidPrefix)
                                 .fileOccurrence(AidSelector.FileOccurrence.NEXT)
@@ -197,7 +197,7 @@ class CoreExamplesActivity : ExamplesActivity() {
                      */
                     seSelection.prepareSelection(GenericSeSelectionRequest(
                             SeSelector.builder()
-                                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor)
                                     .aidSelector(AidSelector.builder()
                                             .aidToSelect(seAidPrefix)
                                             .fileOccurrence(AidSelector.FileOccurrence.FIRST)
@@ -217,7 +217,7 @@ class CoreExamplesActivity : ExamplesActivity() {
 
                     seSelection.prepareSelection(GenericSeSelectionRequest(
                             SeSelector.builder()
-                                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor)
                                     .aidSelector(AidSelector.builder()
                                             .aidToSelect(seAidPrefix)
                                             .fileOccurrence(AidSelector.FileOccurrence.NEXT)

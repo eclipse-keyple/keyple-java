@@ -27,8 +27,8 @@ import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.core.util.SeCommonProtocols;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -215,13 +215,13 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter(ATR);
     SeSelector selector =
         SeSelector.builder()
-            .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+            .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
             .atrFilter(atrFilter)
             .build();
 
     SeSelector failSelector =
         SeSelector.builder()
-            .seProtocol(SeCommonProtocols.PROTOCOL_MIFARE_UL)
+            .seProtocol(SeCommonProtocols.PROTOCOL_MIFARE_UL.getDescriptor())
             .atrFilter(atrFilter)
             .build();
 
@@ -358,7 +358,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
   public static void configure(AbstractLocalReader r) {
 
     // accept PROTOCOL_ISO14443_4
-    when(r.getCurrentProtocol()).thenReturn(SeCommonProtocols.PROTOCOL_ISO14443_4);
+    when(r.getCurrentProtocol()).thenReturn(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
 
     // return art
     when(r.getATR()).thenReturn(ByteArrayUtil.fromHex(ATR));

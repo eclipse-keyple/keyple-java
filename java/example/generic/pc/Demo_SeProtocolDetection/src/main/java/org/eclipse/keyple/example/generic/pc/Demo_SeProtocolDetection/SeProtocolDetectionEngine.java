@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.util.SeCommonProtocols;
 import org.eclipse.keyple.example.common.generic.AbstractReaderObserverAsynchronousEngine;
 import org.eclipse.keyple.example.common.generic.GenericSeSelectionRequest;
 
@@ -66,7 +66,7 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverAsynchronou
           PoSelectionRequest poSelectionRequest =
               new PoSelectionRequest(
                   PoSelector.builder()
-                      .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                      .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
                       .aidSelector(AidSelector.builder().aidToSelect(HoplinkAID).build())
                       .invalidatedPo(InvalidatedPo.REJECT)
                       .build());
@@ -87,7 +87,7 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverAsynchronou
           seSelection.prepareSelection(
               new GenericSeSelectionRequest(
                   SeSelector.builder()
-                      .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                      .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
                       .atrFilter(new SeSelector.AtrFilter(".*"))
                       .build()));
           break;

@@ -18,8 +18,8 @@ import android.nfc.tech.MifareUltralight
 import android.nfc.tech.TagTechnology
 import java.io.IOException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
+import org.eclipse.keyple.core.util.SeCommonProtocols
 import org.slf4j.LoggerFactory
 
 /**
@@ -40,9 +40,9 @@ internal class TagProxy private constructor(private val tagTechnology: TagTechno
     val atr: ByteArray?
         @Throws(IOException::class, NoSuchElementException::class)
         get() = when (tech) {
-            AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC) -> ByteArrayUtil.fromHex("3B8F8001804F0CA000000306030001000000006A")
-            AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL) -> ByteArrayUtil.fromHex("3B8F8001804F0CA0000003060300030000000068")
-            AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4) ->
+            AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC.descriptor) -> ByteArrayUtil.fromHex("3B8F8001804F0CA000000306030001000000006A")
+            AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL.descriptor) -> ByteArrayUtil.fromHex("3B8F8001804F0CA0000003060300030000000068")
+            AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor) ->
                 if ((tagTechnology as IsoDep).hiLayerResponse != null)
                     tagTechnology.hiLayerResponse
                 else
@@ -56,9 +56,9 @@ internal class TagProxy private constructor(private val tagTechnology: TagTechno
     @Throws(IOException::class, NoSuchElementException::class)
     fun transceive(data: ByteArray): ByteArray {
         return when (tech) {
-            AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC) -> (tagTechnology as MifareClassic).transceive(data)
-            AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL) -> (tagTechnology as MifareUltralight).transceive(data)
-            AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4) -> (tagTechnology as IsoDep).transceive(data)
+            AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC.descriptor) -> (tagTechnology as MifareClassic).transceive(data)
+            AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL.descriptor) -> (tagTechnology as MifareUltralight).transceive(data)
+            AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor) -> (tagTechnology as IsoDep).transceive(data)
             else -> throw NoSuchElementException("Protocol $tech not found in plugin's settings.")
         }
     }
@@ -98,31 +98,31 @@ internal class TagProxy private constructor(private val tagTechnology: TagTechno
             LOG.info("Matching Tag Type : $tag")
 
             return tag.techList.firstOrNull {
-                it == AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC) ||
-                        it == AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL) ||
-                        it == AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                it == AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC.descriptor) ||
+                        it == AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL.descriptor) ||
+                        it == AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor)
             }.let {
                 when (it) {
-                    AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC) -> {
+                    AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC.descriptor) -> {
                         LOG.debug("Tag embedded into MifareClassic")
                         TagProxy(MifareClassic.get(tag),
-                                AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC))
+                                AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC.descriptor))
                     }
-                    AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL) -> {
+                    AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL.descriptor) -> {
                         LOG.debug("Tag embedded into MifareUltralight")
                         TagProxy(MifareUltralight.get(tag),
-                                AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL))
+                                AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL.descriptor))
                     }
-                    AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4) -> {
+                    AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor) -> {
                         LOG.debug("Tag embedded into IsoDep")
                         TagProxy(IsoDep.get(tag),
-                                AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4))
+                                AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor))
                     }
                     else -> {
                         throw KeypleReaderIOException("Keyple Android Reader supports only : " +
-                                AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC) + ", " +
-                                AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL) + ", " +
-                                AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4))
+                                AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC.descriptor) + ", " +
+                                AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL.descriptor) + ", " +
+                                AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor))
                     }
                 }
             }

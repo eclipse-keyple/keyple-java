@@ -19,8 +19,8 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.seproxy.message.ApduRequest
 import org.eclipse.keyple.core.seproxy.message.ChannelControl
 import org.eclipse.keyple.core.seproxy.message.SeRequest
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
+import org.eclipse.keyple.core.util.SeCommonProtocols
 import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiReaderTest
 import org.junit.Assert
 import org.junit.Test
@@ -51,7 +51,7 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
         val seRequest = SeRequest(SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3.descriptor)
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(PO_AID)
                         .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
                         .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build())
@@ -69,7 +69,7 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
         val seRequest = SeRequest(SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3.descriptor)
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(PO_AID)
                         .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
                         .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build())

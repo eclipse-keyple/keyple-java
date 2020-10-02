@@ -16,8 +16,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.seproxy.exception.*;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,7 +114,7 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
   }
 
   @Override
-  protected SeProtocol getCurrentProtocol() {
+  protected String getCurrentProtocol() {
     return null;
   }
 
@@ -126,14 +124,14 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
   }
 
   @Override
-  public void activateProtocol(SeProtocol seProtocol) {}
+  public void activateProtocol(String seProtocol) {}
 
   @Override
-  public void deactivateProtocol(SeProtocol seProtocol) {}
+  public void deactivateProtocol(String seProtocol) {}
 
   @Override
-  public TransmissionMode getTransmissionMode() {
-    return null;
+  public boolean isContactless() {
+    return true;
   }
 
   /*

@@ -21,9 +21,8 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.seproxy.message.ApduRequest
 import org.eclipse.keyple.core.seproxy.message.ChannelControl
 import org.eclipse.keyple.core.seproxy.message.SeRequest
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode
 import org.eclipse.keyple.core.util.ByteArrayUtil
+import org.eclipse.keyple.core.util.SeCommonProtocols
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -83,7 +82,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
 
     @Test
     fun getTransmissionMode() {
-        Assert.assertEquals(TransmissionMode.CONTACTS, reader.transmissionMode)
+        Assert.assertEquals(false, reader.isContactless)
     }
 
     @Test
@@ -169,7 +168,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
 
         // wrong protocol
         val seRequest = SeRequest(SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_MIFARE_UL)
+                .seProtocol(SeCommonProtocols.PROTOCOL_MIFARE_UL.descriptor)
                 .aidSelector(SeSelector.AidSelector.builder()
                         .aidToSelect(poAid).build()).build(), ArrayList())
 
@@ -231,7 +230,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
         val seRequest = SeRequest(SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3.descriptor)
                 .aidSelector(SeSelector.AidSelector.builder()
                         .aidToSelect(PO_AID).build()).build(), poApduRequestList)
 
@@ -245,7 +244,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
         val seRequest = SeRequest(SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3).build(), poApduRequestList)
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3.descriptor).build(), poApduRequestList)
 
         val seRequestSet = ArrayList<SeRequest>()
         seRequestSet.add(seRequest)

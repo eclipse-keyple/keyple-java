@@ -18,7 +18,6 @@ import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.generic.GenericSeSelectionRequest;
@@ -58,7 +57,7 @@ public class SequentialMultiSelection_Pcsc {
 
     // Get and configure the PO reader
     SeReader seReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
-    ((PcscReader) seReader).setTransmissionMode(TransmissionMode.CONTACTLESS);
+    ((PcscReader) seReader).setContaclessMode(true);
     ((PcscReader) seReader).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     logger.info(

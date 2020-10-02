@@ -33,11 +33,9 @@ import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeInsertion;
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeProcessing;
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemoval;
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetect;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.core.util.SeCommonProtocols;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,8 +59,8 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   private String parameterCardProtocol;
   private boolean cardExclusiveMode;
   private boolean cardReset;
-  private SeProtocol currentProtocol;
-  private TransmissionMode transmissionMode;
+  private String currentProtocol;
+  private Boolean isContactless;
 
   private Card card;
   private CardChannel channel;
@@ -81,7 +79,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   private final AtomicBoolean loopWaitSeRemoval = new AtomicBoolean();
 
   private final boolean usePingPresence;
-  private final Map<SeProtocol, String> protocolsMap;
+  private final Map<String, String> protocolsMap;
 
   /**
    * This constructor should only be called by PcscPlugin PCSC reader parameters are initialized
@@ -101,8 +99,9 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     this.parameterCardProtocol = IsoProtocol.ANY.getValue();
     this.cardExclusiveMode = true;
     this.cardReset = false;
+    this.isContactless = null;
     this.currentProtocol = null;
-    this.protocolsMap = new HashMap<SeProtocol, String>();
+    this.protocolsMap = new HashMap<String, String>();
 
     String os = System.getProperty("os.name").toLowerCase();
     usePingPresence = os.contains("mac");
@@ -112,8 +111,8 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     this.stateService = initStateService();
 
     // activates ISO protocols by default
-    activateProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3);
-    activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4);
+    activateProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3.getDescriptor());
+    activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
 
     logger.debug("[{}] constructor => using terminal ", terminal);
   }
@@ -355,7 +354,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    * @since 1.0
    */
   @Override
-  public void activateProtocol(SeProtocol seProtocol) {
+  public void activateProtocol(String seProtocol) {
 
     Assert.getInstance().notNull(seProtocol, "seProtocol");
 
@@ -367,10 +366,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
 
     if (logger.isInfoEnabled()) {
       logger.info(
-          "{}: Activate protocol {} with rule \"{}\".",
-          getName(),
-          seProtocol.getName(),
-          protocolRule);
+          "{}: Activate protocol {} with rule \"{}\".", getName(), seProtocol, protocolRule);
     }
     protocolsMap.put(seProtocol, protocolRule);
   }
@@ -385,15 +381,15 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    * @since 1.0
    */
   @Override
-  public void deactivateProtocol(SeProtocol seProtocol) {
+  public void deactivateProtocol(String seProtocol) {
 
     Assert.getInstance().notNull(seProtocol, "seProtocol");
 
     if (logger.isInfoEnabled()) {
-      logger.info("{}: Deactivate protocol {}.", getName(), seProtocol.getName());
+      logger.info("{}: Deactivate protocol {}.", getName(), seProtocol);
     }
     if (protocolsMap.remove(seProtocol) == null && logger.isInfoEnabled()) {
-      logger.info("{}: Protocol {} was not active", getName(), seProtocol.getName());
+      logger.info("{}: Protocol {} was not active", getName(), seProtocol);
     }
   }
 
@@ -414,13 +410,13 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    * <p>The protocol is determined once per SE communication session. If this method is called
    * several times, the last determined protocol is returned.
    *
-   * @return The identified {@link SeProtocol}.
+   * @return A not empty String.
    * @throws KeypleReaderProtocolNotFoundException if none of the defined regular expressions match
    *     the ATR of the SE.
    * @since 1.0
    */
   @Override
-  protected SeProtocol getCurrentProtocol() {
+  protected String getCurrentProtocol() {
 
     if (currentProtocol == null) {
       // open physical channel if needed
@@ -428,7 +424,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         openPhysicalChannel();
       }
       String atr = ByteArrayUtil.toHex(card.getATR().getBytes());
-      for (Map.Entry<SeProtocol, String> entry : protocolsMap.entrySet()) {
+      for (Map.Entry<String, String> entry : protocolsMap.entrySet()) {
         Pattern p = Pattern.compile(entry.getValue());
         if (p.matcher(atr).matches()) {
           currentProtocol = entry.getKey();
@@ -475,11 +471,9 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    * @since 1.0
    */
   @Override
-  public PcscReader setTransmissionMode(TransmissionMode transmissionMode) {
+  public PcscReader setContaclessMode(boolean isContactless) {
 
-    Assert.getInstance().notNull(transmissionMode, "transmissionMode");
-
-    this.transmissionMode = TransmissionMode.CONTACTLESS;
+    this.isContactless = isContactless;
     return this;
   }
 
@@ -576,14 +570,14 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    * @since 0.9
    */
   @Override
-  public TransmissionMode getTransmissionMode() {
+  public boolean isContactless() {
 
-    if (transmissionMode == null) {
-      /* the transmission mode has not yet been determined or fixed explicitly, let's ask the plugin to determine it (only once) */
-      transmissionMode =
+    if (isContactless == null) {
+      /* First time initialisation, the transmission mode has not yet been determined or fixed explicitly, let's ask the plugin to determine it (only once) */
+      isContactless =
           ((PcscPluginImpl) SeProxyService.getInstance().getPlugin(getPluginName()))
-              .findTransmissionMode(getName());
+              .isContactless(getName());
     }
-    return transmissionMode;
+    return isContactless;
   }
 }

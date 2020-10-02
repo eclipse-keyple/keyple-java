@@ -19,7 +19,6 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotFoundException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -279,11 +278,11 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * <p>This method must be implemented by the plugin which is able to determine the protocol of the
    * SE from the technical data it has available.
    *
-   * @return A not null reference to a {@link SeProtocol}.
+   * @return A not empty String.
    * @throws KeypleReaderProtocolNotFoundException if it is not possible to determine the protocol.
    * @since 1.0
    */
-  protected abstract SeProtocol getCurrentProtocol();
+  protected abstract String getCurrentProtocol();
 
   /**
    * {@inheritDoc}
@@ -492,7 +491,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
     boolean hasMatched = true;
 
     // check protocol if enabled
-    if (seSelector.getSeProtocol() != null && getCurrentProtocol() != seSelector.getSeProtocol()) {
+    if (seSelector.getString() != null && !seSelector.getString().equals(getCurrentProtocol())) {
       answerToReset = null;
       fciResponse = null;
       hasMatched = false;

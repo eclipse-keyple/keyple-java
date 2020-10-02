@@ -14,7 +14,6 @@ package org.eclipse.keyple.plugin.stub;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 public abstract class StubSecureElement {
@@ -43,7 +42,7 @@ public abstract class StubSecureElement {
   /**
    * Gets the SE protocol supported by the SE
    *
-   * @return A not null {@link SeProtocol}.
+   * @return A not empty String.
    */
   public abstract String getSeProtocol();
 

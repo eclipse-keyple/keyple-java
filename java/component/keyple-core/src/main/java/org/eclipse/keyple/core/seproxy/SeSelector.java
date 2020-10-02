@@ -14,7 +14,6 @@ package org.eclipse.keyple.core.seproxy;
 import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Pattern;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +26,7 @@ public class SeSelector implements Serializable {
   /** logger */
   private static final Logger logger = LoggerFactory.getLogger(SeSelector.class);
 
-  private final SeProtocol seProtocol;
+  private final String seProtocol;
   private final AidSelector aidSelector;
   private final AtrFilter atrFilter;
 
@@ -346,7 +345,7 @@ public class SeSelector implements Serializable {
    * @since 0.9
    */
   public static class SeSelectorBuilder {
-    private SeProtocol seProtocol;
+    private String seProtocol;
     private SeSelector.AtrFilter atrFilter;
     private SeSelector.AidSelector aidSelector;
 
@@ -354,12 +353,12 @@ public class SeSelector implements Serializable {
     protected SeSelectorBuilder() {}
 
     /**
-     * Sets the SE protocol
+     * Sets the SE protocol.
      *
-     * @param seProtocol the {@link SeProtocol} of the targeted SE
+     * @param seProtocol A not empty String.
      * @return the builder instance
      */
-    public SeSelectorBuilder seProtocol(SeProtocol seProtocol) {
+    public SeSelectorBuilder seProtocol(String seProtocol) {
       this.seProtocol = seProtocol;
       return this;
     }
@@ -408,9 +407,9 @@ public class SeSelector implements Serializable {
   /**
    * Getter
    *
-   * @return the {@link SeProtocol} provided at construction time
+   * @return the {@link String} provided at construction time
    */
-  public SeProtocol getSeProtocol() {
+  public String getString() {
     return seProtocol;
   }
 

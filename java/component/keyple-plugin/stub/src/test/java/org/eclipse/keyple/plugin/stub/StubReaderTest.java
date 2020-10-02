@@ -32,9 +32,8 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.core.util.SeCommonProtocols;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -404,7 +403,7 @@ public class StubReaderTest extends BaseStubTest {
     final String poAid = "A000000291A000000191";
 
     // activate PROTOCOL_ISO14443_4
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4);
+    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
 
     // add observer
     readerObs =
@@ -470,7 +469,7 @@ public class StubReaderTest extends BaseStubTest {
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
@@ -513,7 +512,7 @@ public class StubReaderTest extends BaseStubTest {
         };
 
     // activate PROTOCOL_ISO14443_4
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4);
+    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
 
     // add observer
     reader.addObserver(readerObs);
@@ -525,7 +524,7 @@ public class StubReaderTest extends BaseStubTest {
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
@@ -558,7 +557,7 @@ public class StubReaderTest extends BaseStubTest {
     final CountDownLatch lock = new CountDownLatch(1);
 
     // activate PROTOCOL_ISO14443_4
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4);
+    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
 
     // add observer
     readerObs =
@@ -593,7 +592,7 @@ public class StubReaderTest extends BaseStubTest {
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
@@ -620,7 +619,7 @@ public class StubReaderTest extends BaseStubTest {
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
     // activate PROTOCOL_B_PRIME
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_B_PRIME);
+    reader.activateProtocol(SeCommonProtocols.PROTOCOL_B_PRIME.getDescriptor());
 
     // CountDown lock
     final CountDownLatch lock = new CountDownLatch(1);
@@ -638,7 +637,7 @@ public class StubReaderTest extends BaseStubTest {
             PoSelectionRequest poSelectionRequest =
                 new PoSelectionRequest(
                     PoSelector.builder()
-                        .seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME)
+                        .seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME.getDescriptor())
                         .atrFilter(new PoSelector.AtrFilter("3B.*"))
                         .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                         .build());
@@ -688,7 +687,7 @@ public class StubReaderTest extends BaseStubTest {
     final String poAid = "A000000291A000000191";
 
     // activate PROTOCOL_ISO14443_4
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4);
+    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
 
     // add observer
     readerObs =
@@ -713,7 +712,7 @@ public class StubReaderTest extends BaseStubTest {
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
@@ -752,7 +751,7 @@ public class StubReaderTest extends BaseStubTest {
     reader.insertSe(hoplinkSE());
 
     // activate PROTOCOL_ISO14443_4
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4);
+    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
 
     // send the selection request
     genericSelectSe(reader);
@@ -779,7 +778,7 @@ public class StubReaderTest extends BaseStubTest {
     reader.insertSe(noApduResponseSE());
 
     // activate PROTOCOL_ISO14443_4
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4);
+    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
 
     // send the selection request
     genericSelectSe(reader);
@@ -803,7 +802,7 @@ public class StubReaderTest extends BaseStubTest {
     reader.insertSe(partialSE());
 
     // activate PROTOCOL_ISO14443_4
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4);
+    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
 
     // send the selection request
     genericSelectSe(reader);
@@ -834,7 +833,7 @@ public class StubReaderTest extends BaseStubTest {
     reader.insertSe(partialSE());
 
     // activate PROTOCOL_ISO14443_4
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4);
+    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
 
     // send the selection request
     genericSelectSe(reader);
@@ -867,7 +866,7 @@ public class StubReaderTest extends BaseStubTest {
     reader.insertSe(partialSE());
 
     // activate PROTOCOL_ISO14443_4
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4);
+    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
 
     // send the selection request
     genericSelectSe(reader);
@@ -900,7 +899,7 @@ public class StubReaderTest extends BaseStubTest {
     reader.insertSe(partialSE());
 
     // activate PROTOCOL_ISO14443_4
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4);
+    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
 
     // send the selection request
     genericSelectSe(reader);
@@ -932,7 +931,7 @@ public class StubReaderTest extends BaseStubTest {
     reader.insertSe(partialSE());
 
     // activate PROTOCOL_ISO14443_4
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4);
+    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
 
     // send the selection request
     genericSelectSe(reader);
@@ -960,7 +959,7 @@ public class StubReaderTest extends BaseStubTest {
     reader.insertSe(partialSE());
 
     // activate PROTOCOL_ISO14443_4
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4);
+    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
 
     // send the selection request
     genericSelectSe(reader);
@@ -988,7 +987,7 @@ public class StubReaderTest extends BaseStubTest {
     reader.insertSe(partialSE());
 
     // activate PROTOCOL_ISO14443_4
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4);
+    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
 
     // send the selection request
     genericSelectSe(reader);
@@ -1016,7 +1015,7 @@ public class StubReaderTest extends BaseStubTest {
     reader.insertSe(partialSE());
 
     // activate PROTOCOL_ISO14443_4
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4);
+    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
 
     // send the selection request
     genericSelectSe(reader);
@@ -1356,11 +1355,9 @@ public class StubReaderTest extends BaseStubTest {
   public static void genericSelectSe(SeReader reader) {
     /** Create a new local class extending AbstractSeSelectionRequest */
     class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
-      TransmissionMode transmissionMode;
 
       public GenericSeSelectionRequest(SeSelector seSelector) {
         super(seSelector);
-        transmissionMode = seSelector.getSeProtocol().getTransmissionMode();
       }
 
       @Override
@@ -1380,7 +1377,7 @@ public class StubReaderTest extends BaseStubTest {
     GenericSeSelectionRequest genericSeSelectionRequest =
         new GenericSeSelectionRequest(
             SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
                 .atrFilter(new SeSelector.AtrFilter("3B.*"))
                 .build());
 

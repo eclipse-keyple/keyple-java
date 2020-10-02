@@ -12,7 +12,6 @@
 package org.eclipse.keyple.plugin.remotese.integration;
 
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.junit.After;
@@ -50,20 +49,18 @@ public class VirtualReaderParameterTest extends VirtualReaderBaseTest {
   @Test
   public void testGetTransmissionMode() throws Exception {
     // configure and connect a Stub Native reader
-    nativeReader =
-        this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID, TransmissionMode.CONTACTLESS);
+    nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID, true);
 
     // test virtual reader
     virtualReader = getVirtualReader();
 
-    Assert.assertEquals(virtualReader.getTransmissionMode(), nativeReader.getTransmissionMode());
+    Assert.assertEquals(virtualReader.isContactless(), nativeReader.isContactless());
   }
 
   @Test
   public void testGetSession() throws Exception {
     // configure and connect a Stub Native reader
-    nativeReader =
-        this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID, TransmissionMode.CONTACTLESS);
+    nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID, true);
 
     // test virtual reader
     virtualReader = getVirtualReader();

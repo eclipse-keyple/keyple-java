@@ -20,7 +20,6 @@ import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.generic.GenericSeSelectionRequest;
@@ -47,9 +46,7 @@ public class GroupedMultiSelection_Pcsc {
 
     // Get and configure the PO reader
     SeReader seReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
-    ((PcscReader) seReader)
-        .setTransmissionMode(TransmissionMode.CONTACTLESS)
-        .setIsoProtocol(PcscReader.IsoProtocol.T1);
+    ((PcscReader) seReader).setContaclessMode(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     logger.info(
         "=============== UseCase Generic #3: AID based grouped explicit multiple selection ==================");

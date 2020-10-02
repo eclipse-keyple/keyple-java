@@ -29,9 +29,8 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.core.util.SeCommonProtocols;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualObservableReader;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.plugin.stub.StubReaderTest;
@@ -70,8 +69,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     /*
      * connect stub reader to create virtual reader
      */
-    nativeReader =
-        this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID, TransmissionMode.CONTACTLESS);
+    nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID, true);
 
     // get virtual reader
     virtualReader = (VirtualObservableReader) getVirtualReader();
@@ -252,7 +250,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     GenericSeSelectionRequest genericSeSelectionRequest =
         new GenericSeSelectionRequest(
             SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .build());
 
@@ -305,7 +303,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     GenericSeSelectionRequest genericSeSelectionRequest =
         new GenericSeSelectionRequest(
             SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .build());
 
@@ -372,7 +370,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     GenericSeSelectionRequest genericSeSelectionRequest =
         new GenericSeSelectionRequest(
             SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .build());
 
@@ -411,7 +409,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     GenericSeSelectionRequest genericSeSelectionRequest =
         new GenericSeSelectionRequest(
             SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
                 .atrFilter(new SeSelector.AtrFilter("3B.*"))
                 .build());
 
@@ -453,7 +451,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
             GenericSeSelectionRequest genericSeSelectionRequest =
                 new GenericSeSelectionRequest(
                     SeSelector.builder()
-                        .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                        .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
                         .atrFilter(new SeSelector.AtrFilter("3B.*"))
                         .build());
 
@@ -508,11 +506,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
   /** Create a new class extending AbstractSeSelectionRequest */
   private class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
-    TransmissionMode transmissionMode;
-
     public GenericSeSelectionRequest(SeSelector seSelector) {
       super(seSelector);
-      transmissionMode = seSelector.getSeProtocol().getTransmissionMode();
     }
 
     @Override
