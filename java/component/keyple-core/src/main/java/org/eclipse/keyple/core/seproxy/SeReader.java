@@ -11,7 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy;
 
-import java.util.Map;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotSupportedException;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
@@ -27,6 +26,7 @@ import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
  * </ul>
  *
  * Interface used by applications processing SE.
+ * @since 0.9
  */
 public interface SeReader extends ProxyElement {
 
@@ -35,6 +35,7 @@ public interface SeReader extends ProxyElement {
    *
    * @return true if a Secure Element is present in the reader
    * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @since 0.9
    */
   boolean isSePresent();
 

@@ -19,6 +19,9 @@ public class KeypleReaderProtocolNotFoundException extends KeypleReaderException
 
   /** @param identificationData the identification data used to identify the SE */
   public KeypleReaderProtocolNotFoundException(String identificationData) {
-    super("The SE with identification data " + identificationData + " was not determined.");
+    super(
+        "The protocol of the card with identification data "
+            + identificationData
+            + " was not determined.");
   }
 }

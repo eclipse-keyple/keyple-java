@@ -1344,7 +1344,7 @@ public class StubReaderTest extends BaseStubTest {
 
       @Override
       public String getSeProtocol() {
-        return null;
+        return "PROTOCOL_ISO14443_4";
       }
     };
   }

@@ -141,7 +141,7 @@ public class RemoteSePoolPluginTest {
 
         @Override
         public String getSeProtocol() {
-          return null;
+          return "PROTOCOL_ISO14443_4";
         }
       };
 }

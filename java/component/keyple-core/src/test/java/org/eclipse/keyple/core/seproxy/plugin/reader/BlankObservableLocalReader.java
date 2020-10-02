@@ -84,14 +84,10 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
   }
 
   @Override
-  public void activateProtocol(SeProtocol seProtocol) {
-
-  }
+  public void activateProtocol(SeProtocol seProtocol) {}
 
   @Override
-  public void deactivateProtocol(SeProtocol seProtocol) {
-
-  }
+  public void deactivateProtocol(SeProtocol seProtocol) {}
 
   @Override
   public TransmissionMode getTransmissionMode() {

@@ -49,6 +49,8 @@ import org.slf4j.LoggerFactory;
  * insertion of secure elements ({@link SmartInsertionReader}, able to detect the removal of a
  * secure element prior an attempt to communicate with it ({@link SmartRemovalReader} and has
  * specific settings ({@link PcscReader}.
+ *
+ * @since 0.9
  */
 final class PcscReaderImpl extends AbstractObservableLocalReader
     implements PcscReader, SmartInsertionReader, SmartRemovalReader {
@@ -87,6 +89,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    *
    * @param pluginName the name of the plugin
    * @param terminal the PC/SC terminal
+   * @since 0.9
    */
   protected PcscReaderImpl(String pluginName, CardTerminal terminal) {
 
@@ -115,6 +118,11 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     logger.debug("[{}] constructor => using terminal ", terminal);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public ObservableReaderStateService initStateService() {
 
@@ -154,7 +162,10 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         this, states, AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION);
   }
 
-  /** {@inheritDoc} */
+  /** {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected void closePhysicalChannel() {
 
@@ -174,7 +185,10 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     }
   }
 
-  /** {@inheritDoc} */
+  /** {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected boolean checkSePresence() {
     try {
@@ -187,6 +201,8 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   /**
    * Implements from SmartInsertionReader<br>
    * {@inheritDoc}
+   *
+   * @since 0.9
    */
   @Override
   public boolean waitForCardPresent() {
@@ -232,6 +248,8 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   /**
    * Implements from SmartInsertionReader<br>
    * {@inheritDoc}
+   *
+   * @since 0.9
    */
   @Override
   public void stopWaitForCard() {
@@ -241,6 +259,8 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   /**
    * Wait for the card absent event from smartcard.io<br>
    * {@inheritDoc}
+   *
+   * @since 0.9
    */
   @Override
   public boolean waitForCardAbsentNative() {
@@ -286,13 +306,18 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   /**
    * Implements from SmartRemovalReader<br>
    * {@inheritDoc}
+   *
+   * @since 0.9
    */
   @Override
   public void stopWaitForCardRemoval() {
     loopWaitSeRemoval.set(false);
   }
 
-  /** {@inheritDoc} */
+  /** {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected byte[] transmitApdu(byte[] apduIn) {
 
@@ -353,8 +378,8 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    * <p>Remove the protocol from the active protocols list.<br>
    * Does nothing if the provided protocol is not active.
    *
-   * @since 1.0
    * @throws IllegalArgumentException if seProtocol is null.
+   * @since 1.0
    */
   @Override
   public void deactivateProtocol(SeProtocol seProtocol) {
@@ -496,6 +521,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    * <p>The caller should test the card presence with isSePresent before calling this method.
    *
    * @return true if the physical channel is open
+   * @since 0.9
    */
   @Override
   protected boolean isPhysicalChannelOpen() {
@@ -511,6 +537,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    * for a limited time (ex. 5 seconds). After this delay, the card is automatically resetted.
    *
    * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @since 0.9
    */
   @Override
   protected void openPhysicalChannel() {
@@ -543,6 +570,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    *
    * @return the current transmission mode
    * @throws IllegalStateException if the transmission mode could not be determined
+   * @since 0.9
    */
   @Override
   public TransmissionMode getTransmissionMode() {

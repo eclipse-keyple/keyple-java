@@ -14,6 +14,7 @@ package org.eclipse.keyple.plugin.stub;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 public abstract class StubSecureElement {
@@ -39,7 +40,11 @@ public abstract class StubSecureElement {
     isPhysicalChannelOpen = false;
   }
 
-  /** @return SE protocol supported by the SE */
+  /**
+   * Gets the SE protocol supported by the SE
+   *
+   * @return A not null {@link SeProtocol}.
+   */
   public abstract String getSeProtocol();
 
   Map<String, String> hexCommands = new HashMap<String, String>();

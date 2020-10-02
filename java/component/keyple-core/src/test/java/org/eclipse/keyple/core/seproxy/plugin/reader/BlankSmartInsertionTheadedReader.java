@@ -126,14 +126,10 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
   }
 
   @Override
-  public void activateProtocol(SeProtocol seProtocol) {
-
-  }
+  public void activateProtocol(SeProtocol seProtocol) {}
 
   @Override
-  public void deactivateProtocol(SeProtocol seProtocol) {
-
-  }
+  public void deactivateProtocol(SeProtocol seProtocol) {}
 
   @Override
   public TransmissionMode getTransmissionMode() {

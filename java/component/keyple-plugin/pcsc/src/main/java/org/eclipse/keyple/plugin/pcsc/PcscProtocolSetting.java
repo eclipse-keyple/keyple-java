@@ -24,6 +24,7 @@ import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
  * <p>As they are based on the virtual ATR created by the reader, the protocol identification values
  * are provided as is and may vary from one reader and SE to another. <br>
  * Thus, it may be necessary to create a set of context-specific custom settings.
+ * @since 0.9
  */
 public final class PcscProtocolSetting {
 
@@ -60,6 +61,7 @@ public final class PcscProtocolSetting {
    *
    * @param specificProtocols A {@link Set} of {@link SeProtocol} (should be not null)
    * @return A {@link Map}
+   * @since 0.9
    */
   public static Map<SeProtocol, String> getSpecificSettings(
       Set<SeCommonProtocols> specificProtocols) {
@@ -76,6 +78,7 @@ public final class PcscProtocolSetting {
    * Return the whole settings map
    *
    * @return A {@link Map}
+   * @since 0.9
    */
   public static Map<SeProtocol, String> getSettings() {
     return PCSC_PROTOCOL_SETTING;
