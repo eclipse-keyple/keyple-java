@@ -33,27 +33,25 @@ public final class ApduRequest implements Serializable {
   /** Buffer of the APDU Request */
   private final byte[] bytes;
 
-  /**
-   * This flag is required to manage cards that presents a behaviour not compliant with ISO 7816-3
-   * in contacts mode (not returning the 61XYh status).
-   */
   private final boolean case4;
 
-  /**
-   * List of status codes that should be considered successful although they are different from
-   * 9000h
-   */
   private final Set<Integer> successfulStatusCodes;
 
   /** Name of the request being sent */
   private String name;
 
   /**
-   * the constructor called by a ticketing application in order to build the APDU command requests
-   * to push to the ProxyReader.
+   * Constructor called by a card specific library in order to build an APDU command requests sent
+   * to the card through the ProxyReader.
    *
-   * @param buffer Buffer of the APDU request
-   * @param case4 the case 4
+   * <p>The buffer contains the bytes to be sent.<br>
+   * The case4 flag is required to manage cards that presents a behaviour not compliant with ISO
+   * 7816-3 in contacts mode (not returning the 61XYh status).<br>
+   * The successfulStatusCodes list indicates which status words should be considered successful
+   * even though they are different from 9000h.
+   *
+   * @param buffer A not empty byte array.
+   * @param case4 True if the APDU is in case 4, false if not.
    * @param successfulStatusCodes the list of status codes to be considered as successful although
    *     different from 9000h
    * @since 0.9
@@ -65,11 +63,19 @@ public final class ApduRequest implements Serializable {
   }
 
   /**
-   * Alternate constructor with name
+   * Constructor called by a card specific library in order to build an named APDU command requests
+   * sent to the card through the ProxyReader.
    *
-   * @param name name to be printed (e.g. in logs)
-   * @param buffer data buffer
-   * @param case4 case 4 flag (true if case 4)
+   * <p>The buffer contains the APDU bytes.<br>
+   * The name is intended to be printed in logs.<br>
+   * The case4 flag is required to manage cards that presents a behaviour not compliant with ISO
+   * 7816-3 in contacts mode (not returning the 61XYh status).<br>
+   * The successfulStatusCodes list indicates which status words should be considered successful
+   * even though they are different from 9000h.
+   *
+   * @param name A not empty string.
+   * @param buffer A not empty byte array.
+   * @param case4 True if the APDU is in case 4, false if not.
    * @param successfulStatusCodes the list of status codes to be considered as successful although
    *     different from 9000h
    * @since 0.9
@@ -81,10 +87,15 @@ public final class ApduRequest implements Serializable {
   }
 
   /**
-   * Alternate constructor without status codes list
+   * Constructor called by a card specific library in order to build an APDU command requests sent
+   * to the card through the ProxyReader.
    *
-   * @param buffer data buffer
-   * @param case4 case 4 flag (true if case 4)
+   * <p>The buffer contains the APDU bytes.<br>
+   * The case4 flag is required to manage cards that presents a behaviour not compliant with ISO
+   * 7816-3 in contacts mode (not returning the 61XYh status).<br>
+   *
+   * @param buffer A not empty byte array.
+   * @param case4 True if the APDU is in case 4, false if not.
    * @since 0.9
    */
   public ApduRequest(byte[] buffer, boolean case4) {
@@ -92,11 +103,17 @@ public final class ApduRequest implements Serializable {
   }
 
   /**
-   * Alternate constructor with name, without status codes list
+   * Constructor called by a card specific library in order to build an named APDU command requests
+   * sent to the card through the ProxyReader.
    *
-   * @param name name to be printed (e.g. in logs)
-   * @param buffer data buffer
-   * @param case4 case 4 flag (true if case 4)
+   * <p>The buffer contains the APDU bytes.<br>
+   * The name is intended to be printed in logs.<br>
+   * The case4 flag is required to manage cards that presents a behaviour not compliant with ISO
+   * 7816-3 in contacts mode (not returning the 61XYh status).<br>
+   *
+   * @param name A not empty string.
+   * @param buffer A not empty byte array.
+   * @param case4 True if the APDU is in case 4, false if not.
    * @since 0.9
    */
   public ApduRequest(String name, byte[] buffer, boolean case4) {

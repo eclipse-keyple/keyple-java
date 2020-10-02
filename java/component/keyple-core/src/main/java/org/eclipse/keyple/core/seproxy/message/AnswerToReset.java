@@ -34,6 +34,7 @@ public class AnswerToReset implements Serializable {
    * Build from a byte array containing the power on data.
    *
    * @param atrBytes A not null byte array.
+   * @since 0.9
    */
   public AnswerToReset(byte[] atrBytes) {
     this.atrBytes = atrBytes;
@@ -43,6 +44,7 @@ public class AnswerToReset implements Serializable {
    * Gets the data
    *
    * @return A not null byte array.
+   * @since 0.9
    */
   public byte[] getBytes() {
     return atrBytes;
