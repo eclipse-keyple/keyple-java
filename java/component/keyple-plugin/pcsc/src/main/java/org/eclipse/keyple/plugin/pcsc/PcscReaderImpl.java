@@ -162,7 +162,8 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         this, states, AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION);
   }
 
-  /** {@inheritDoc}
+  /**
+   * {@inheritDoc}
    *
    * @since 0.9
    */
@@ -185,7 +186,8 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     }
   }
 
-  /** {@inheritDoc}
+  /**
+   * {@inheritDoc}
    *
    * @since 0.9
    */
@@ -314,7 +316,8 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     loopWaitSeRemoval.set(false);
   }
 
-  /** {@inheritDoc}
+  /**
+   * {@inheritDoc}
    *
    * @since 0.9
    */

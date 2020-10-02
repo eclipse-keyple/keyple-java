@@ -24,6 +24,7 @@ import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
  * <p>As they are based on the virtual ATR created by the reader, the protocol identification values
  * are provided as is and may vary from one reader and SE to another. <br>
  * Thus, it may be necessary to create a set of context-specific custom settings.
+ *
  * @since 0.9
  */
 public final class PcscProtocolSetting {

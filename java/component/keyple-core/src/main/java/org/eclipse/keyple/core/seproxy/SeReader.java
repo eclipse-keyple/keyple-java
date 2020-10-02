@@ -26,6 +26,7 @@ import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
  * </ul>
  *
  * Interface used by applications processing SE.
+ *
  * @since 0.9
  */
 public interface SeReader extends ProxyElement {
