@@ -13,8 +13,6 @@ package org.eclipse.keyple.plugin.android.omapi
 
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractLocalReader
 import org.eclipse.keyple.core.seproxy.plugin.reader.SmartSelectionReader
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode
 
 /**
@@ -33,14 +31,5 @@ internal abstract class AbstractAndroidOmapiReader(pluginName: String, readerNam
      */
     override fun getTransmissionMode(): TransmissionMode {
         return TransmissionMode.CONTACTS
-    }
-
-    /**
-     * Check that protocolFlag is PROTOCOL_ISO7816_3
-     * @param protocolFlag
-     * @return true if match PROTOCOL_ISO7816_3
-     */
-    override fun protocolFlagMatches(protocolFlag: SeProtocol?): Boolean {
-        return protocolFlag == SeCommonProtocols.PROTOCOL_ISO7816_3
     }
 }
