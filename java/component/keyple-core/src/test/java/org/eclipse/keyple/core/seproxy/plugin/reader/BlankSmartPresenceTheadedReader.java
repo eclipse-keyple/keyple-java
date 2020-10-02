@@ -69,13 +69,23 @@ public class BlankSmartPresenceTheadedReader extends AbstractObservableLocalRead
   }
 
   @Override
-  public boolean protocolFlagMatches(SeProtocol protocolFlag) {
-    return false;
+  protected SeProtocol getCurrentProtocol() {
+    return null;
   }
 
   @Override
   public byte[] transmitApdu(byte[] apduIn) {
     return new byte[0];
+  }
+
+  @Override
+  public void activateProtocol(SeProtocol seProtocol) {
+
+  }
+
+  @Override
+  public void deactivateProtocol(SeProtocol seProtocol) {
+
   }
 
   @Override

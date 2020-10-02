@@ -46,10 +46,14 @@ public class BlankAbstractReader extends AbstractReader {
   }
 
   @Override
-  public void addSeProtocolSetting(SeProtocol seProtocol, String protocolRule) {}
+  public void activateProtocol(SeProtocol seProtocol) {
+
+  }
 
   @Override
-  public void setSeProtocolSetting(Map<SeProtocol, String> protocolSetting) {}
+  public void deactivateProtocol(SeProtocol seProtocol) {
+
+  }
 
   @Override
   public TransmissionMode getTransmissionMode() {

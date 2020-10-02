@@ -16,6 +16,7 @@ import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotFoundException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
@@ -272,65 +273,17 @@ public abstract class AbstractLocalReader extends AbstractReader {
     logicalChannelIsOpen = false;
   }
 
-  /* ==== Protocol management =========================================== */
-
   /**
-   * PO selection map associating seProtocols and selection strings.
+   * Gets the communication protocol used by the current SE.
    *
-   * <p>The String associated with a particular protocol can be anything that is relevant to be
-   * interpreted by reader plugins implementing protocolFlagMatches (e.g. ATR regex for Pcsc
-   * plugins, technology name for Nfc plugins, etc).
+   * <p>This method must be implemented by the plugin which is able to determine the protocol of the
+   * SE from the technical data it has available.
+   *
+   * @return A not null reference to a {@link SeProtocol}.
+   * @throws KeypleReaderProtocolNotFoundException if it is not possible to determine the protocol.
+   * @since 1.0
    */
-  private final Map<SeProtocol, String> protocolsMap = new HashMap<SeProtocol, String>();
-
-  /**
-   * Defines the protocol setting Map to allow SE to be differentiated according to their
-   * communication protocol.
-   *
-   * @param seProtocol the protocol key identifier to be added to the plugin internal list
-   * @param protocolRule a string use to define how to identify the protocol
-   * @since 0.9
-   */
-  @Override
-  public void addSeProtocolSetting(SeProtocol seProtocol, String protocolRule) {
-    this.protocolsMap.put(seProtocol, protocolRule);
-  }
-
-  /**
-   * Complete the current setting map with the provided map
-   *
-   * @param protocolSetting the protocol setting map
-   */
-  @Override
-  public void setSeProtocolSetting(Map<SeProtocol, String> protocolSetting) {
-    this.protocolsMap.putAll(protocolSetting);
-  }
-
-  /**
-   * @return the Map containing the protocol definitions set by addSeProtocolSetting and
-   *     setSeProtocolSetting
-   * @since 0.9
-   */
-  protected final Map<SeProtocol, String> getProtocolsMap() {
-    return protocolsMap;
-  }
-
-  /**
-   * Test if the current protocol matches the provided protocol flag.
-   *
-   * <p>The method must be implemented by the ProxyReader plugin.
-   *
-   * <p>The protocol flag is used to retrieve from the protocolsMap the String used to differentiate
-   * this particular protocol. (e.g. in PC/SC the only way to identify the SE protocol is to analyse
-   * the ATR returned by the reader [ISO SE and memory card SE have specific ATR], in Android Nfc
-   * the SE protocol can be deduced with the TagTechnology interface).
-   *
-   * @param protocolFlag the protocol flag
-   * @return true if the current protocol matches the provided protocol flag
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
-   * @since 0.9
-   */
-  protected abstract boolean protocolFlagMatches(SeProtocol protocolFlag);
+  protected abstract SeProtocol getCurrentProtocol();
 
   /**
    * {@inheritDoc}
@@ -539,7 +492,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
     boolean hasMatched = true;
 
     // check protocol if enabled
-    if (seSelector.getSeProtocol() != null && !protocolFlagMatches(seSelector.getSeProtocol())) {
+    if (seSelector.getSeProtocol() != null && getCurrentProtocol() != seSelector.getSeProtocol()) {
       answerToReset = null;
       fciResponse = null;
       hasMatched = false;

@@ -210,30 +210,6 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
   }
 
   /*
-   * add Se Protocol Setting
-   */
-
-  @Test
-  public void add_SeProtocolSetting() throws Exception {
-    AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
-    String protocolRule = "any";
-    r.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4, protocolRule);
-    assertThat(protocolRule)
-        .isEqualTo(r.getProtocolsMap().get(SeCommonProtocols.PROTOCOL_ISO14443_4));
-  }
-
-  @Test
-  public void set_SeProtocolSetting() throws Exception {
-    AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
-    String protocolRule = "any";
-    Map protocols = new HashMap();
-    protocols.put(SeCommonProtocols.PROTOCOL_ISO14443_4, protocolRule);
-    r.setSeProtocolSetting(protocols);
-    assertThat(protocolRule)
-        .isEqualTo(r.getProtocolsMap().get(SeCommonProtocols.PROTOCOL_ISO14443_4));
-  }
-
-  /*
    * HELPERS
    */
 

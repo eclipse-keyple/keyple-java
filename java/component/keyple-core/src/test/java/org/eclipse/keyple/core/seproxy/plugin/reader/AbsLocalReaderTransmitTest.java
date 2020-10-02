@@ -358,10 +358,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
   public static void configure(AbstractLocalReader r) {
 
     // accept PROTOCOL_ISO14443_4
-    when(r.protocolFlagMatches(SeCommonProtocols.PROTOCOL_ISO14443_4)).thenReturn(true);
-
-    // refuse PROTOCOL_MIFARE_UL
-    when(r.protocolFlagMatches(SeCommonProtocols.PROTOCOL_MIFARE_UL)).thenReturn(false);
+    when(r.getCurrentProtocol()).thenReturn(SeCommonProtocols.PROTOCOL_ISO14443_4);
 
     // return art
     when(r.getATR()).thenReturn(ByteArrayUtil.fromHex(ATR));

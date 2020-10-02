@@ -42,8 +42,8 @@ public class BlankAbstractLocalReader extends AbstractLocalReader {
   }
 
   @Override
-  public boolean protocolFlagMatches(SeProtocol protocolFlag) {
-    return false;
+  protected SeProtocol getCurrentProtocol() {
+    return null;
   }
 
   @Override
@@ -53,6 +53,16 @@ public class BlankAbstractLocalReader extends AbstractLocalReader {
 
   @Override
   void terminateSeCommunication() {}
+
+  @Override
+  public void activateProtocol(SeProtocol seProtocol) {
+
+  }
+
+  @Override
+  public void deactivateProtocol(SeProtocol seProtocol) {
+
+  }
 
   @Override
   public TransmissionMode getTransmissionMode() {
