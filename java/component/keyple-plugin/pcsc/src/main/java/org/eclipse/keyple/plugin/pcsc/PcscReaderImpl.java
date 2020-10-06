@@ -87,8 +87,6 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     logger.info(
         "System detected : {}, is macOs checkPresence ping activated {}", os, usePingPresence);
 
-    this.stateService = initStateService();
-
     logger.debug("[{}] constructor => using terminal ", terminal);
   }
 

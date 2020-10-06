@@ -98,14 +98,6 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
             return options
         }
 
-    /**
-     * Private constructor
-     */
-    init {
-        Timber.i("Init NFC Reader")
-        stateService = initStateService()
-    }
-
     override fun initStateService(): ObservableReaderStateService {
 
         return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {

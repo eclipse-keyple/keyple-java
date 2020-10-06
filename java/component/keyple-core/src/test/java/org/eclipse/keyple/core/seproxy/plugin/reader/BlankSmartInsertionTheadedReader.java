@@ -40,8 +40,6 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
   public BlankSmartInsertionTheadedReader(
       String pluginName, String readerName, Integer mockDetect) {
     super(pluginName, readerName);
-
-    stateService = initStateService();
   }
 
   @Override

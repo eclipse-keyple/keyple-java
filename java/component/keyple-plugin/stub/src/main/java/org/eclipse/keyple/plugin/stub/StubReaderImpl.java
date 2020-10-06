@@ -45,8 +45,6 @@ class StubReaderImpl extends AbstractObservableLocalReader
    */
   StubReaderImpl(String pluginName, String readerName) {
     super(pluginName, readerName);
-
-    stateService = initStateService();
   }
 
   /**
