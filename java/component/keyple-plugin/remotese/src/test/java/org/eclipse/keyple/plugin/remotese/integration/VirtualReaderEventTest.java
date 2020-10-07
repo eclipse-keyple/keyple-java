@@ -517,7 +517,6 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
     // remove observer
     virtualReader.removeObserver(virtualReaderObs);
-
   }
 
   /*
