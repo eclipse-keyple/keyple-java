@@ -13,9 +13,10 @@ package org.eclipse.keyple.core.seproxy;
 
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotSupportedException;
+import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractLocalReader;
 
 /**
- * SeReader interface
+ * Defines a high level API to access a card reader.
  *
  * <ul>
  *   <li>To retrieve the unique reader name
@@ -39,33 +40,40 @@ public interface SeReader extends ProxyElement {
   boolean isSePresent();
 
   /**
-   * Activates the provided SE protocol.
+   * Activates the provided card protocol and assigns it a name.
    *
    * <ul>
-   *   <li>Ask the plugin to take this protocol into account if an SE using this protocol is
+   *   <li>Activates the detection of cards using this protocol (if the plugin allows it).
+   *   <li>Asks the plugin to take this protocol into account if a card using this protocol is
    *       identified during the selection phase.
-   *   <li>Activates the detection of SEs using this protocol (if the plugin allows it).
+   *   <li>Internally associates the two strings provided as arguments.
+   *   <li>The #readerProtocolName argument is the name of the protocol among those supported by the
+   *       reader.
+   *   <li>The #applicationProtocolName is the name of the protocol to be the plugin when a card
+   *       using this protocol is detected (see {@link AbstractLocalReader#getCurrentProtocol()})
    * </ul>
    *
-   * @param seProtocol The protocol to activate (must be not null).
+   * @param readerProtocolName A not empty String.
+   * @param applicationProtocolName A not empty String.
    * @throws KeypleReaderProtocolNotSupportedException if the protocol is not supported.
    * @since 1.0
    */
-  void activateProtocol(String seProtocol);
+  void activateProtocol(String readerProtocolName, String applicationProtocolName);
 
   /**
-   * Deactivates the provided SE protocol.
+   * Deactivates the provided card protocol.
    *
    * <ul>
-   *   <li>Ask the plugin to ignore this protocol if an SE using this protocol is identified during
+   *   <li>Inhibits the detection of cards using this protocol.
+   *   <li>Ask the plugin to ignore this protocol if a card using this protocol is identified during
    *       the selection phase.
-   *   <li>Inhibits the detection of SEs using this protocol (if the plugin allows it).
    * </ul>
    *
-   * @param seProtocol The protocol to deactivate (must be not null).
+   * @param readerProtocolName A not empty String.
+   * @throws KeypleReaderProtocolNotSupportedException if the protocol is not supported.
    * @since 1.0
    */
-  void deactivateProtocol(String seProtocol);
+  void deactivateProtocol(String readerProtocolName);
 
   /**
    * Tells if the current card communication is contactless.
