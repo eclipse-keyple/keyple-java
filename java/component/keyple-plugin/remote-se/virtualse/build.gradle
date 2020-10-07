@@ -146,8 +146,9 @@ uploadArchives {
                 //dependencies mapping is defined manually
                 pom.scopeMappings.with {
                     mappings.clear()
-                    addMapping(1, configurations.api, 'runtime')
-                    addMapping(2, configurations.testImplementation, 'test')
+                    addMapping(1, configurations.api, 'compile')
+                    addMapping(2, configurations.implementation, 'compile')
+                    addMapping(3, configurations.testImplementation, 'test')
                 }
 
             }
