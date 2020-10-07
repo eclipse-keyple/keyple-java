@@ -26,13 +26,13 @@ import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
  *
  * <ul>
  *   <li>To <b>register</b> the plugin, use the Keyple service method {@link
- *       SeProxyService#registerPlugin(PluginFactory)} using the factory {@link
+ *       SeProxyService#registerPlugin(PluginFactory)} using the factory {link
  *       RemoteSeClientPluginFactory} and <b>activate the plugin observation</b>.
  *   <li>To access the plugin, use one of the following utility methods :
  *       <ul>
- *         <li>For <b>Async</b> node configuration : {@link
+ *         <li>For <b>Async</b> node configuration : {link
  *             RemoteSeClientUtils#getAsyncObservablePlugin()}
- *         <li>For <b>Sync</b> node configuration : {@link
+ *         <li>For <b>Sync</b> node configuration : {link
  *             RemoteSeClientUtils#getSyncObservablePlugin()}
  *       </ul>
  *   <li>To <b>unregister</b> the plugin, use the Keyple service method {@link

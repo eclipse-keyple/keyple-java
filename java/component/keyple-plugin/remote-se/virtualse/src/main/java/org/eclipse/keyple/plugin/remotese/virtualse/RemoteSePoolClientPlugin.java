@@ -25,13 +25,13 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
  *
  * <ul>
  *   <li>To <b>register</b> the plugin, use the Keyple service method {@link
- *       SeProxyService#registerPlugin(PluginFactory)} using the factory {@link
+ *       SeProxyService#registerPlugin(PluginFactory)} using the factory {link
  *       RemoteSePoolClientPluginFactory}.
  *   <li>To access the plugin, use one of the following utility methods :
  *       <ul>
- *         <li>For <b>Async</b> node configuration : {@link
+ *         <li>For <b>Async</b> node configuration : {link
  *             RemoteSePoolClientUtils#getAsyncPlugin()}
- *         <li>For <b>Sync</b> node configuration : {@link RemoteSePoolClientUtils#getSyncPlugin()}
+ *         <li>For <b>Sync</b> node configuration : {link RemoteSePoolClientUtils#getSyncPlugin()}
  *       </ul>
  *   <li>To <b>unregister</b> the plugin, use the Keyple service method {@link
  *       SeProxyService#unregisterPlugin(String)} using the plugin name.
