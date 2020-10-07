@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.util.SeCommonProtocols;
+import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -98,8 +98,7 @@ public class SeRequestTest {
     assertArrayEquals(apdus.toArray(), seRequest.getApduRequests().toArray());
     //
     assertEquals(
-        SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor(),
-        seRequest.getSeSelector().getString());
+        ContactlessCardCommonProtocols.ISO_14443_4.name(), seRequest.getSeSelector().getString());
     assertNull(seRequest.getSeSelector().getAidSelector().getSuccessfulSelectionStatusCodes());
   }
 
@@ -119,8 +118,7 @@ public class SeRequestTest {
     assertEquals(getSelector(selectionStatusCode).toString(), seRequest.getSeSelector().toString());
     assertArrayEquals(apdus.toArray(), seRequest.getApduRequests().toArray());
     assertEquals(
-        SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor(),
-        seRequest.getSeSelector().getString());
+        ContactlessCardCommonProtocols.ISO_14443_4.name(), seRequest.getSeSelector().getString());
     //
     assertArrayEquals(
         selectionStatusCode.toArray(),
@@ -158,7 +156,7 @@ public class SeRequestTest {
   }
 
   static String getAString() {
-    return SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor();
+    return ContactlessCardCommonProtocols.ISO_14443_4.name();
   }
 
   static SeSelector getSelector(Set<Integer> selectionStatusCode) {

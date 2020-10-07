@@ -23,7 +23,7 @@ import org.eclipse.keyple.core.seproxy.SeSelector
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.seproxy.message.ApduResponse
 import org.eclipse.keyple.core.util.ByteArrayUtil
-import org.eclipse.keyple.core.util.SeCommonProtocols
+import org.eclipse.keyple.core.util.ContactsCardCommonProtocols
 import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiReader
 import timber.log.Timber
 
@@ -170,7 +170,7 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
      * @since 1.0
      */
     override fun getCurrentProtocol(): String {
-        return SeCommonProtocols.PROTOCOL_ISO7816_3.descriptor // TODO check this
+        return ContactsCardCommonProtocols.ISO_7816_3.name // TODO check this
     }
 
     /** Closes the logical channel explicitly.  */

@@ -23,7 +23,7 @@ import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.core.util.SeCommonProtocols;
+import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.common.calypso.stub.StubCalypsoClassic;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
@@ -107,7 +107,7 @@ public class ExplicitSelectionAid_Stub {
       PoSelectionRequest poSelectionRequest =
           new PoSelectionRequest(
               PoSelector.builder()
-                  .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
+                  .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                   .aidSelector(AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
                   .invalidatedPo(InvalidatedPo.REJECT)
                   .build());

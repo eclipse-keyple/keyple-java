@@ -33,7 +33,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.core.util.SeCommonProtocols;
+import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -402,8 +402,8 @@ public class StubReaderTest extends BaseStubTest {
     final CountDownLatch lock = new CountDownLatch(1);
     final String poAid = "A000000291A000000191";
 
-    // activate PROTOCOL_ISO14443_4
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
+    // activate ISO_14443_4
+    reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // add observer
     readerObs =
@@ -469,7 +469,7 @@ public class StubReaderTest extends BaseStubTest {
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
+                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
@@ -511,8 +511,8 @@ public class StubReaderTest extends BaseStubTest {
           }
         };
 
-    // activate PROTOCOL_ISO14443_4
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
+    // activate ISO_14443_4
+    reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // add observer
     reader.addObserver(readerObs);
@@ -524,7 +524,7 @@ public class StubReaderTest extends BaseStubTest {
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
+                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
@@ -556,8 +556,8 @@ public class StubReaderTest extends BaseStubTest {
     // CountDown lock
     final CountDownLatch lock = new CountDownLatch(1);
 
-    // activate PROTOCOL_ISO14443_4
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
+    // activate ISO_14443_4
+    reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // add observer
     readerObs =
@@ -592,7 +592,7 @@ public class StubReaderTest extends BaseStubTest {
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
+                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
@@ -618,8 +618,8 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
-    // activate PROTOCOL_B_PRIME
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_B_PRIME.getDescriptor());
+    // activate CALYPSO_OLD_CARD_PRIME
+    reader.activateProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name());
 
     // CountDown lock
     final CountDownLatch lock = new CountDownLatch(1);
@@ -637,7 +637,7 @@ public class StubReaderTest extends BaseStubTest {
             PoSelectionRequest poSelectionRequest =
                 new PoSelectionRequest(
                     PoSelector.builder()
-                        .seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME.getDescriptor())
+                        .seProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
                         .atrFilter(new PoSelector.AtrFilter("3B.*"))
                         .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                         .build());
@@ -686,8 +686,8 @@ public class StubReaderTest extends BaseStubTest {
     final CountDownLatch lock = new CountDownLatch(1);
     final String poAid = "A000000291A000000191";
 
-    // activate PROTOCOL_ISO14443_4
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
+    // activate ISO_14443_4
+    reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // add observer
     readerObs =
@@ -712,7 +712,7 @@ public class StubReaderTest extends BaseStubTest {
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
+                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
@@ -750,8 +750,8 @@ public class StubReaderTest extends BaseStubTest {
     // init SE
     reader.insertSe(hoplinkSE());
 
-    // activate PROTOCOL_ISO14443_4
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
+    // activate ISO_14443_4
+    reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -777,8 +777,8 @@ public class StubReaderTest extends BaseStubTest {
     // init SE
     reader.insertSe(noApduResponseSE());
 
-    // activate PROTOCOL_ISO14443_4
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
+    // activate ISO_14443_4
+    reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -801,8 +801,8 @@ public class StubReaderTest extends BaseStubTest {
     // init SE
     reader.insertSe(partialSE());
 
-    // activate PROTOCOL_ISO14443_4
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
+    // activate ISO_14443_4
+    reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -832,8 +832,8 @@ public class StubReaderTest extends BaseStubTest {
     // init SE
     reader.insertSe(partialSE());
 
-    // activate PROTOCOL_ISO14443_4
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
+    // activate ISO_14443_4
+    reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -865,8 +865,8 @@ public class StubReaderTest extends BaseStubTest {
     // init SE
     reader.insertSe(partialSE());
 
-    // activate PROTOCOL_ISO14443_4
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
+    // activate ISO_14443_4
+    reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -898,8 +898,8 @@ public class StubReaderTest extends BaseStubTest {
     // init SE
     reader.insertSe(partialSE());
 
-    // activate PROTOCOL_ISO14443_4
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
+    // activate ISO_14443_4
+    reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -930,8 +930,8 @@ public class StubReaderTest extends BaseStubTest {
     // init SE
     reader.insertSe(partialSE());
 
-    // activate PROTOCOL_ISO14443_4
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
+    // activate ISO_14443_4
+    reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -958,8 +958,8 @@ public class StubReaderTest extends BaseStubTest {
     // init SE
     reader.insertSe(partialSE());
 
-    // activate PROTOCOL_ISO14443_4
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
+    // activate ISO_14443_4
+    reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -986,8 +986,8 @@ public class StubReaderTest extends BaseStubTest {
     // init SE
     reader.insertSe(partialSE());
 
-    // activate PROTOCOL_ISO14443_4
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
+    // activate ISO_14443_4
+    reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -1014,8 +1014,8 @@ public class StubReaderTest extends BaseStubTest {
     // init SE
     reader.insertSe(partialSE());
 
-    // activate PROTOCOL_ISO14443_4
-    reader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
+    // activate ISO_14443_4
+    reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -1228,7 +1228,7 @@ public class StubReaderTest extends BaseStubTest {
 
       @Override
       public String getSeProtocol() {
-        return "PROTOCOL_ISO14443_4";
+        return "ISO_14443_4";
       }
     };
   }
@@ -1257,7 +1257,7 @@ public class StubReaderTest extends BaseStubTest {
 
       @Override
       public String getSeProtocol() {
-        return "PROTOCOL_B_PRIME";
+        return "CALYPSO_OLD_CARD_PRIME";
       }
     };
   }
@@ -1282,7 +1282,7 @@ public class StubReaderTest extends BaseStubTest {
 
       @Override
       public String getSeProtocol() {
-        return "PROTOCOL_ISO14443_4";
+        return "ISO_14443_4";
       }
     };
   }
@@ -1308,7 +1308,7 @@ public class StubReaderTest extends BaseStubTest {
 
       @Override
       public String getSeProtocol() {
-        return "PROTOCOL_ISO14443_4";
+        return "ISO_14443_4";
       }
     };
   }
@@ -1343,7 +1343,7 @@ public class StubReaderTest extends BaseStubTest {
 
       @Override
       public String getSeProtocol() {
-        return "PROTOCOL_ISO14443_4";
+        return "ISO_14443_4";
       }
     };
   }
@@ -1377,7 +1377,7 @@ public class StubReaderTest extends BaseStubTest {
     GenericSeSelectionRequest genericSeSelectionRequest =
         new GenericSeSelectionRequest(
             SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
+                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .atrFilter(new SeSelector.AtrFilter("3B.*"))
                 .build());
 

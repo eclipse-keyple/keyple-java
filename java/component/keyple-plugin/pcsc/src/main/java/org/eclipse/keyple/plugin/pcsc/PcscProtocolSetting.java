@@ -12,7 +12,7 @@
 package org.eclipse.keyple.plugin.pcsc;
 
 import java.util.*;
-import org.eclipse.keyple.core.util.SeCommonProtocols;
+import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols;
 
 /**
  * Contains a set of parameters to identify the communication protocols supported by the PC/SC
@@ -26,7 +26,7 @@ import org.eclipse.keyple.core.util.SeCommonProtocols;
  *
  * @since 0.9
  */
-public final class PcscProtocolSetting {
+final class PcscProtocolSetting {
 
   private static final Map<String, String> PCSC_PROTOCOL_SETTING;
 
@@ -35,27 +35,26 @@ public final class PcscProtocolSetting {
     Map<String, String> map = new HashMap<String, String>();
 
     map.put(
-        SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor(),
+        PcscSupportedProtocols.ISO_14443_4.name(),
         "3B8880....................|3B8B80.*|3B8C800150.*|.*4F4D4141544C4153.*");
     map.put(
-        SeCommonProtocols.PROTOCOL_B_PRIME.getDescriptor(),
+        PcscSupportedProtocols.CALYPSO_OLD_CARD_PRIME.name(),
         "3B8F8001805A0...................829000..");
 
     map.put(
-        SeCommonProtocols.PROTOCOL_MIFARE_UL.getDescriptor(),
+        PcscSupportedProtocols.MIFARE_ULTRA_LIGHT.name(),
         "3B8F8001804F0CA0000003060300030000000068");
 
     map.put(
-        SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC.getDescriptor(),
-        "3B8F8001804F0CA000000306030001000000006A");
+        PcscSupportedProtocols.MIFARE_CLASSIC.name(), "3B8F8001804F0CA000000306030001000000006A");
 
-    map.put(SeCommonProtocols.PROTOCOL_MIFARE_DESFIRE.getDescriptor(), "3B8180018080");
+    map.put(PcscSupportedProtocols.MIFARE_DESFIRE.name(), "3B8180018080");
 
     map.put(
-        SeCommonProtocols.PROTOCOL_MEMORY_ST25.getDescriptor(),
+        PcscSupportedProtocols.PROTOCOL_MEMORY_ST25.name(),
         "3B8F8001804F0CA000000306070007D0020C00B6");
 
-    map.put(SeCommonProtocols.PROTOCOL_ISO7816_3.getDescriptor(), "3.*");
+    map.put(PcscSupportedProtocols.ISO_7816_3.name(), "3.*");
 
     PCSC_PROTOCOL_SETTING = Collections.unmodifiableMap(map);
   }
@@ -71,12 +70,13 @@ public final class PcscProtocolSetting {
    * @return A {@link Map}
    * @since 0.9
    */
-  public static Map<String, String> getSpecificSettings(Set<SeCommonProtocols> specificProtocols) {
+  public static Map<String, String> getSpecificSettings(
+      Set<ContactlessCardCommonProtocols> specificProtocols) {
 
     Map<String, String> map = new HashMap<String, String>();
 
-    for (SeCommonProtocols seCommonProtocols : specificProtocols) {
-      map.put(seCommonProtocols.getDescriptor(), PCSC_PROTOCOL_SETTING.get(seCommonProtocols));
+    for (ContactlessCardCommonProtocols seCommonProtocols : specificProtocols) {
+      map.put(seCommonProtocols.name(), PCSC_PROTOCOL_SETTING.get(seCommonProtocols));
     }
     return map;
   }

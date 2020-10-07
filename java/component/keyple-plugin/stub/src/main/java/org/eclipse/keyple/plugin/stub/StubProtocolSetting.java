@@ -15,7 +15,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import org.eclipse.keyple.core.util.SeCommonProtocols;
+import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.util.ContactsCardCommonProtocols;
 
 /**
  * This class contains all the parameters to identify the communication protocols supported by STUB
@@ -37,19 +38,19 @@ public final class StubProtocolSetting {
   static {
     Map<String, String> map = new HashMap<String, String>();
 
-    map.put(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor(), "PROTOCOL_ISO14443_4");
+    map.put(ContactlessCardCommonProtocols.ISO_14443_4.name(), "ISO_14443_4");
 
-    map.put(SeCommonProtocols.PROTOCOL_B_PRIME.getDescriptor(), "PROTOCOL_B_PRIME");
+    map.put(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name(), "CALYPSO_OLD_CARD_PRIME");
 
-    map.put(SeCommonProtocols.PROTOCOL_MIFARE_UL.getDescriptor(), "PROTOCOL_MIFARE_UL");
+    map.put(ContactlessCardCommonProtocols.MIFARE_ULTRA_LIGHT.name(), "MIFARE_ULTRA_LIGHT");
 
-    map.put(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC.getDescriptor(), "PROTOCOL_MIFARE_CLASSIC");
+    map.put(ContactlessCardCommonProtocols.MIFARE_CLASSIC.name(), "MIFARE_CLASSIC");
 
-    map.put(SeCommonProtocols.PROTOCOL_MIFARE_DESFIRE.getDescriptor(), "PROTOCOL_MIFARE_DESFIRE");
+    map.put(ContactlessCardCommonProtocols.MIFARE_DESFIRE.name(), "MIFARE_DESFIRE");
 
-    map.put(SeCommonProtocols.PROTOCOL_MEMORY_ST25.getDescriptor(), "PROTOCOL_MEMORY_ST25");
+    map.put(ContactlessCardCommonProtocols.PROTOCOL_MEMORY_ST25.name(), "PROTOCOL_MEMORY_ST25");
 
-    map.put(SeCommonProtocols.PROTOCOL_ISO7816_3.getDescriptor(), "PROTOCOL_ISO7816_3");
+    map.put(ContactsCardCommonProtocols.ISO_7816_3.name(), "PROTOCOL_ISO7816_3");
 
     STUB_PROTOCOL_SETTING = Collections.unmodifiableMap(map);
   }
@@ -60,10 +61,11 @@ public final class StubProtocolSetting {
    * @param specificProtocols subset of protocols
    * @return a settings map
    */
-  public static Map<String, String> getSpecificSettings(Set<SeCommonProtocols> specificProtocols) {
+  public static Map<String, String> getSpecificSettings(
+      Set<ContactlessCardCommonProtocols> specificProtocols) {
     Map<String, String> map = new HashMap<String, String>();
-    for (SeCommonProtocols seCommonProtocols : specificProtocols) {
-      map.put(seCommonProtocols.getDescriptor(), STUB_PROTOCOL_SETTING.get(seCommonProtocols));
+    for (ContactlessCardCommonProtocols seCommonProtocols : specificProtocols) {
+      map.put(seCommonProtocols.name(), STUB_PROTOCOL_SETTING.get(seCommonProtocols));
     }
     return map;
   }

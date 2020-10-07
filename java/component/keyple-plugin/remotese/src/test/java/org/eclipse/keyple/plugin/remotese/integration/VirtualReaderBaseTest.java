@@ -13,7 +13,7 @@ package org.eclipse.keyple.plugin.remotese.integration;
 
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.util.SeCommonProtocols;
+import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
@@ -107,8 +107,8 @@ public class VirtualReaderBaseTest {
     // configure native reader
     StubReader nativeReader = (StubReader) Integration.createStubReader(readerName, isContactless);
 
-    // activate PROTOCOL_ISO14443_4
-    nativeReader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
+    // activate ISO_14443_4
+    nativeReader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     this.slaveAPI.connectReader(nativeReader);
     return nativeReader;

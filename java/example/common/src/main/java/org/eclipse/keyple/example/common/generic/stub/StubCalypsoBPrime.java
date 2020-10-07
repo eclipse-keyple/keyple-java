@@ -17,7 +17,7 @@ import org.eclipse.keyple.plugin.stub.StubSecureElement;
 /** Simple contact stub SE (no command) */
 public class StubCalypsoBPrime extends StubSecureElement {
 
-  static final String seProtocol = "PROTOCOL_B_PRIME";
+  static final String seProtocol = "CALYPSO_OLD_CARD_PRIME";
   final String ATR_HEX = "3B8F8001805A0A01032003111122334482900082";
 
   public StubCalypsoBPrime() {

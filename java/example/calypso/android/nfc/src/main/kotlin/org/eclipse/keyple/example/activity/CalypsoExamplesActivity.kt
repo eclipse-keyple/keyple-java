@@ -39,7 +39,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException
 import org.eclipse.keyple.core.util.ByteArrayUtil
-import org.eclipse.keyple.core.util.SeCommonProtocols
+import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols
 import org.eclipse.keyple.example.calypso.android.nfc.R
 import org.eclipse.keyple.example.util.CalypsoClassicInfo
 import org.eclipse.keyple.example.util.configProtocol
@@ -167,7 +167,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
 
             /* AID based selection (1st selection, later indexed 0) */
             val selectionRequest1st = PoSelectionRequest(PoSelector.builder().seProtocol(
-                    SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor).aidSelector(AidSelector.builder().aidToSelect(
+                    ContactlessCardCommonProtocols.ISO_14443_4.name).aidSelector(AidSelector.builder().aidToSelect(
                     seAidPrefix).fileOccurrence(
                     AidSelector.FileOccurrence.FIRST).fileControlInformation(
                     AidSelector.FileControlInformation.FCI).build()).invalidatedPo(InvalidatedPo.REJECT).build())
@@ -187,7 +187,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
             /* Close the channel after the selection */
             seSelection.prepareReleaseSeChannel()
 
-            val selectionRequest2nd = PoSelectionRequest(PoSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor).aidSelector(
+            val selectionRequest2nd = PoSelectionRequest(PoSelector.builder().seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name).aidSelector(
                     AidSelector.builder().aidToSelect(seAidPrefix).fileOccurrence(
                     AidSelector.FileOccurrence.NEXT).fileControlInformation(
                     AidSelector.FileControlInformation.FCI).build()).invalidatedPo(InvalidatedPo.REJECT).build())
@@ -237,7 +237,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
         if (reader.isSePresent) {
             /* AID based selection (1st selection, later indexed 0) */
             val selectionRequest1st = PoSelectionRequest(PoSelector.builder().seProtocol(
-                    SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor).aidSelector(
+                    ContactlessCardCommonProtocols.ISO_14443_4.name).aidSelector(
                     AidSelector.builder().aidToSelect(seAidPrefix).fileOccurrence(
                     AidSelector.FileOccurrence.FIRST).fileControlInformation(
                     AidSelector.FileControlInformation.FCI).build()).invalidatedPo(InvalidatedPo.REJECT).build())
@@ -246,7 +246,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
 
             /* next selection (2nd selection, later indexed 1) */
             val selectionRequest2nd = PoSelectionRequest(PoSelector.builder().seProtocol(
-                    SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor).aidSelector(
+                    ContactlessCardCommonProtocols.ISO_14443_4.name).aidSelector(
                     AidSelector.builder().aidToSelect(seAidPrefix).fileOccurrence(
                             AidSelector.FileOccurrence.NEXT).fileControlInformation(
                             AidSelector.FileControlInformation.FCI).build()).invalidatedPo(InvalidatedPo.REJECT).build())
@@ -255,7 +255,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
 
             /* next selection (3rd selection, later indexed 2) */
             val selectionRequest3rd = PoSelectionRequest(PoSelector.builder().seProtocol(
-                    SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor).aidSelector(
+                    ContactlessCardCommonProtocols.ISO_14443_4.name).aidSelector(
                     AidSelector.builder().aidToSelect(seAidPrefix).fileOccurrence(
                             AidSelector.FileOccurrence.NEXT).fileControlInformation(
                             AidSelector.FileControlInformation.FCI).build()).invalidatedPo(InvalidatedPo.REJECT).build())
@@ -316,7 +316,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
          * selection
          */
         val selectionRequest = PoSelectionRequest(PoSelector.builder().seProtocol(
-                SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor).aidSelector(
+                ContactlessCardCommonProtocols.ISO_14443_4.name).aidSelector(
                         AidSelector.builder().aidToSelect(aid).build()).invalidatedPo(InvalidatedPo.REJECT).build())
 
         /*
@@ -402,7 +402,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
              * configure Protocol
              */
             val selectionRequest = PoSelectionRequest(PoSelector.builder().seProtocol(
-                    SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor).aidSelector(
+                    ContactlessCardCommonProtocols.ISO_14443_4.name).aidSelector(
                             AidSelector.builder().aidToSelect(aid).build()).invalidatedPo(InvalidatedPo.REJECT).build())
 
             /**
@@ -463,7 +463,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
              * the selection and read additional information afterwards
              */
         val poSelectionRequest = PoSelectionRequest(PoSelector.builder().seProtocol(
-                SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor).aidSelector(
+                ContactlessCardCommonProtocols.ISO_14443_4.name).aidSelector(
                 AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build()).invalidatedPo(
                 InvalidatedPo.REJECT).build())
 
@@ -490,11 +490,11 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
 
         // uncomment to active protocol listening for Mifare ultralight
         // reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL, AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL))
-        reader.configProtocol(SeCommonProtocols.PROTOCOL_MIFARE_UL)
+        reader.configProtocol(ContactlessCardCommonProtocols.ISO_14443_4)
 
         // uncomment to active protocol listening for Mifare ultralight
         // reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC, AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC))
-        reader.configProtocol(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC)
+        reader.configProtocol(ContactlessCardCommonProtocols.ISO_14443_4)
 
         useCase = object : UseCase {
             override fun onEventUpdate(event: ReaderEvent?) {

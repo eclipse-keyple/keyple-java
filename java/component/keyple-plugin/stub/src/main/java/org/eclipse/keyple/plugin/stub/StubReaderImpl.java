@@ -33,8 +33,9 @@ import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeProcessing;
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemoval;
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetect;
 import org.eclipse.keyple.core.util.Assert;
+import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.util.ContactsCardCommonProtocols;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
-import org.eclipse.keyple.core.util.SeCommonProtocols;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,8 +75,8 @@ class StubReaderImpl extends AbstractObservableLocalReader
     protocolsMap = new HashMap<String, String>();
 
     // activates ISO protocols by default
-    activateProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3.getDescriptor());
-    activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
+    activateProtocol(ContactsCardCommonProtocols.ISO_7816_3.name());
+    activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
   }
 
   /**

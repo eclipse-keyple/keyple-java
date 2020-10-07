@@ -30,7 +30,7 @@ import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.core.util.SeCommonProtocols;
+import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualObservableReader;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.plugin.stub.StubReaderTest;
@@ -250,7 +250,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     GenericSeSelectionRequest genericSeSelectionRequest =
         new GenericSeSelectionRequest(
             SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
+                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .build());
 
@@ -303,7 +303,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     GenericSeSelectionRequest genericSeSelectionRequest =
         new GenericSeSelectionRequest(
             SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
+                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .build());
 
@@ -370,7 +370,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     GenericSeSelectionRequest genericSeSelectionRequest =
         new GenericSeSelectionRequest(
             SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
+                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .build());
 
@@ -409,7 +409,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     GenericSeSelectionRequest genericSeSelectionRequest =
         new GenericSeSelectionRequest(
             SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
+                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .atrFilter(new SeSelector.AtrFilter("3B.*"))
                 .build());
 
@@ -451,7 +451,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
             GenericSeSelectionRequest genericSeSelectionRequest =
                 new GenericSeSelectionRequest(
                     SeSelector.builder()
-                        .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor())
+                        .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                         .atrFilter(new SeSelector.AtrFilter("3B.*"))
                         .build());
 

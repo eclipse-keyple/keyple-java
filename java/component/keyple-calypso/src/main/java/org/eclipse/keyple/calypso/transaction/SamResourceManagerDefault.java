@@ -25,7 +25,7 @@ import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.core.util.SeCommonProtocols;
+import org.eclipse.keyple.core.util.ContactsCardCommonProtocols;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -368,8 +368,6 @@ public class SamResourceManagerDefault extends SamResourceManager {
   }
 
   private void initSamReader(SeReader samReader, ReaderObserver readerObserver) {
-    samReader.activateProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3.getDescriptor());
-
     /*
      * Specific to PCSC reader (no effect on Stub)
      */

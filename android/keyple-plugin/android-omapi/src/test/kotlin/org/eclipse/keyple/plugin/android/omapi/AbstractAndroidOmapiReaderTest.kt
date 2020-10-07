@@ -22,7 +22,8 @@ import org.eclipse.keyple.core.seproxy.message.ApduRequest
 import org.eclipse.keyple.core.seproxy.message.ChannelControl
 import org.eclipse.keyple.core.seproxy.message.SeRequest
 import org.eclipse.keyple.core.util.ByteArrayUtil
-import org.eclipse.keyple.core.util.SeCommonProtocols
+import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols
+import org.eclipse.keyple.core.util.ContactsCardCommonProtocols
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -168,7 +169,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
 
         // wrong protocol
         val seRequest = SeRequest(SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_MIFARE_UL.descriptor)
+                .seProtocol(ContactlessCardCommonProtocols.MIFARE_ULTRA_LIGHT.name)
                 .aidSelector(SeSelector.AidSelector.builder()
                         .aidToSelect(poAid).build()).build(), ArrayList())
 
@@ -230,7 +231,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
         val seRequest = SeRequest(SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3.descriptor)
+                .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
                 .aidSelector(SeSelector.AidSelector.builder()
                         .aidToSelect(PO_AID).build()).build(), poApduRequestList)
 
@@ -244,7 +245,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
         val seRequest = SeRequest(SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3.descriptor).build(), poApduRequestList)
+                .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name).build(), poApduRequestList)
 
         val seRequestSet = ArrayList<SeRequest>()
         seRequestSet.add(seRequest)

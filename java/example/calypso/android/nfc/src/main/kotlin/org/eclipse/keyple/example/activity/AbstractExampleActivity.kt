@@ -30,7 +30,7 @@ import org.eclipse.keyple.core.selection.SeSelection
 import org.eclipse.keyple.core.seproxy.SeProxyService
 import org.eclipse.keyple.core.seproxy.event.ObservableReader
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent
-import org.eclipse.keyple.core.util.SeCommonProtocols
+import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols
 import org.eclipse.keyple.example.adapter.EventAdapter
 import org.eclipse.keyple.example.calypso.android.nfc.R
 import org.eclipse.keyple.example.model.ChoiceEventModel
@@ -96,7 +96,7 @@ abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnN
         (reader as ObservableReader).addObserver(this)
 
         // with this protocol settings we activate the nfc for ISO1443_4 protocol
-        reader.configProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+        reader.configProtocol(ContactlessCardCommonProtocols.ISO_14443_4)
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }

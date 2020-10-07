@@ -34,7 +34,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException
 import org.eclipse.keyple.core.seproxy.message.SeResponse
 import org.eclipse.keyple.core.util.ByteArrayUtil
-import org.eclipse.keyple.core.util.SeCommonProtocols
+import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols
 import org.eclipse.keyple.example.calypso.android.nfc.R
 import org.eclipse.keyple.example.util.CalypsoClassicInfo
 import timber.log.Timber
@@ -95,7 +95,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             seSelection.prepareSelection(
                     GenericSeSelectionRequest(
                             SeSelector.builder()
-                                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor)
+                                    .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
                                     .aidSelector(AidSelector.builder()
                                             .aidToSelect(seAidPrefix)
                                             .fileOccurrence(SeSelector.AidSelector.FileOccurrence.FIRST)
@@ -119,7 +119,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             seSelection.prepareSelection(
                     GenericSeSelectionRequest(
                             SeSelector.builder()
-                                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor)
+                                    .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
                                     .aidSelector(SeSelector.AidSelector.builder()
                                             .aidToSelect(seAidPrefix)
                                             .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
@@ -171,7 +171,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             seSelection.prepareSelection(
                     GenericSeSelectionRequest(
                             SeSelector.builder()
-                                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor)
+                                    .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
                                     .aidSelector(SeSelector.AidSelector.builder()
                                             .aidToSelect(seAidPrefix)
                                             .fileOccurrence(SeSelector.AidSelector.FileOccurrence.FIRST)
@@ -182,7 +182,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             seSelection.prepareSelection(
                     GenericSeSelectionRequest(
                             SeSelector.builder()
-                                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor)
+                                    .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
                                     .aidSelector(SeSelector.AidSelector.builder()
                                             .aidToSelect(seAidPrefix)
                                             .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
@@ -193,7 +193,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             seSelection.prepareSelection(
                     GenericSeSelectionRequest(
                             SeSelector.builder()
-                                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor)
+                                    .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
                                     .aidSelector(SeSelector.AidSelector.builder()
                                             .aidToSelect(seAidPrefix)
                                             .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
@@ -253,7 +253,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
          * selection
          */
         val seSelector = GenericSeSelectionRequest(SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor)
+                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
                 .aidSelector(AidSelector.builder()
                         .aidToSelect(aid).build())
                 .build())
@@ -346,7 +346,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
              * the selection and read additional information afterwards
              */
             val genericSeSelectionRequest = GenericSeSelectionRequest(
-                    SeSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor).aidSelector(
+                    SeSelector.builder().seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name).aidSelector(
                             AidSelector.builder().aidToSelect(aid).build()).build())
 
             /**

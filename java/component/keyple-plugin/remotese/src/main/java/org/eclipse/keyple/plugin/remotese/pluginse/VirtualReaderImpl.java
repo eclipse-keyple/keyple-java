@@ -167,12 +167,12 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
   }
 
   @Override
-  public void activateProtocol(String seProtocol) {
+  public void activateProtocol(String readerProtocolName, String applicationProtocolName) {
     logger.warn("{} activateProtocol is not implemented yet in VirtualReader", this.getName());
   }
 
   @Override
-  public void deactivateProtocol(String seProtocol) {
+  public void deactivateProtocol(String readerProtocolName) {
     logger.warn("{} deactivateProtocol is not implemented yet in VirtualReader", this.getName());
   }
 

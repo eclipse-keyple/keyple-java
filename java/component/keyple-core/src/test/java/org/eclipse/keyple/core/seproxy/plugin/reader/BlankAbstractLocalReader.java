@@ -52,7 +52,7 @@ public class BlankAbstractLocalReader extends AbstractLocalReader {
   void terminateSeCommunication() {}
 
   @Override
-  public void activateProtocol(String seProtocol) {}
+  public void activateProtocol(String readerProtocolName, String applicationProtocolName) {}
 
   @Override
   public void deactivateProtocol(String seProtocol) {}

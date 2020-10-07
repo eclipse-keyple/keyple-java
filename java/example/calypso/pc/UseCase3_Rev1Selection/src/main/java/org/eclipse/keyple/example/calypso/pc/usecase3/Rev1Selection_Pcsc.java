@@ -24,7 +24,7 @@ import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.core.util.SeCommonProtocols;
+import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
@@ -75,7 +75,7 @@ public class Rev1Selection_Pcsc {
     ((PcscReader) poReader).setContaclessMode(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     /* Activate additional protocol */
-    poReader.activateProtocol(SeCommonProtocols.PROTOCOL_B_PRIME.getDescriptor());
+    poReader.activateProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name());
 
     logger.info(
         "=============== UseCase Calypso #1: ATR based explicit selection (PO Rev1) ===========");
@@ -97,7 +97,7 @@ public class Rev1Selection_Pcsc {
       PoSelectionRequest poSelectionRequest =
           new PoSelectionRequest(
               PoSelector.builder()
-                  .seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME.getDescriptor())
+                  .seProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
                   .atrFilter(new AtrFilter(PO_ATR_REGEX))
                   .invalidatedPo(InvalidatedPo.REJECT)
                   .build());

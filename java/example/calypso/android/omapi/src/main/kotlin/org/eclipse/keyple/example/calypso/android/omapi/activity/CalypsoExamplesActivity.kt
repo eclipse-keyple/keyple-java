@@ -22,7 +22,7 @@ import org.eclipse.keyple.core.selection.SeSelection
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.SeSelector.AidSelector
 import org.eclipse.keyple.core.util.ByteArrayUtil
-import org.eclipse.keyple.core.util.SeCommonProtocols
+import org.eclipse.keyple.core.util.ContactsCardCommonProtocols
 import org.eclipse.keyple.example.calypso.android.omapi.R
 import org.eclipse.keyple.example.calypso.android.omapi.utils.AidEnum
 
@@ -60,7 +60,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                      */
                     val poSelectionRequest = PoSelectionRequest(
                             PoSelector.builder()
-                                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3.descriptor)
+                                    .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
                                     .aidSelector(AidSelector.builder().aidToSelect(poAid).build())
                                         .invalidatedPo(InvalidatedPo.REJECT).build())
                     seSelection.prepareSelection(poSelectionRequest)
@@ -118,7 +118,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                     val seSelection = SeSelection()
                     val poSelectionRequest = PoSelectionRequest(
                             PoSelector.builder()
-                                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3.descriptor)
+                                    .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
                                     .aidSelector(AidSelector.builder().aidToSelect(poAid).build())
                                     .invalidatedPo(InvalidatedPo.REJECT).build())
 
@@ -192,7 +192,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                      */
                     val poSelectionRequest = PoSelectionRequest(
                             PoSelector.builder()
-                                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3.descriptor)
+                                    .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
                                     .aidSelector(AidSelector.builder().aidToSelect(poAid).build())
                                     .invalidatedPo(InvalidatedPo.REJECT).build())
 

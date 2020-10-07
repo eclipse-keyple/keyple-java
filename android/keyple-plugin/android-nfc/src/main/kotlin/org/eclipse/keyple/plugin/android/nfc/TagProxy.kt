@@ -19,7 +19,7 @@ import android.nfc.tech.TagTechnology
 import java.io.IOException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.util.ByteArrayUtil
-import org.eclipse.keyple.core.util.SeCommonProtocols
+import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols
 import org.slf4j.LoggerFactory
 
 /**
@@ -40,9 +40,9 @@ internal class TagProxy private constructor(private val tagTechnology: TagTechno
     val atr: ByteArray?
         @Throws(IOException::class, NoSuchElementException::class)
         get() = when (tech) {
-            AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC.descriptor) -> ByteArrayUtil.fromHex("3B8F8001804F0CA000000306030001000000006A")
-            AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL.descriptor) -> ByteArrayUtil.fromHex("3B8F8001804F0CA0000003060300030000000068")
-            AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor) ->
+            AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.MIFARE_CLASSIC.name) -> ByteArrayUtil.fromHex("3B8F8001804F0CA000000306030001000000006A")
+            AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.MIFARE_ULTRA_LIGHT.name) -> ByteArrayUtil.fromHex("3B8F8001804F0CA0000003060300030000000068")
+            AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.ISO_14443_4.name) ->
                 if ((tagTechnology as IsoDep).hiLayerResponse != null)
                     tagTechnology.hiLayerResponse
                 else
@@ -56,9 +56,9 @@ internal class TagProxy private constructor(private val tagTechnology: TagTechno
     @Throws(IOException::class, NoSuchElementException::class)
     fun transceive(data: ByteArray): ByteArray {
         return when (tech) {
-            AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC.descriptor) -> (tagTechnology as MifareClassic).transceive(data)
-            AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL.descriptor) -> (tagTechnology as MifareUltralight).transceive(data)
-            AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor) -> (tagTechnology as IsoDep).transceive(data)
+            AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.MIFARE_CLASSIC.name) -> (tagTechnology as MifareClassic).transceive(data)
+            AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.MIFARE_ULTRA_LIGHT.name) -> (tagTechnology as MifareUltralight).transceive(data)
+            AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.ISO_14443_4.name) -> (tagTechnology as IsoDep).transceive(data)
             else -> throw NoSuchElementException("Protocol $tech not found in plugin's settings.")
         }
     }
@@ -98,31 +98,31 @@ internal class TagProxy private constructor(private val tagTechnology: TagTechno
             LOG.info("Matching Tag Type : $tag")
 
             return tag.techList.firstOrNull {
-                it == AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC.descriptor) ||
-                        it == AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL.descriptor) ||
-                        it == AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor)
+                it == AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.MIFARE_CLASSIC.name) ||
+                        it == AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.MIFARE_ULTRA_LIGHT.name) ||
+                        it == AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.ISO_14443_4.name)
             }.let {
                 when (it) {
-                    AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC.descriptor) -> {
+                    AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.MIFARE_CLASSIC.name) -> {
                         LOG.debug("Tag embedded into MifareClassic")
                         TagProxy(MifareClassic.get(tag),
-                                AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC.descriptor))
+                                AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.MIFARE_CLASSIC.name))
                     }
-                    AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL.descriptor) -> {
+                    AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.MIFARE_ULTRA_LIGHT.name) -> {
                         LOG.debug("Tag embedded into MifareUltralight")
                         TagProxy(MifareUltralight.get(tag),
-                                AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL.descriptor))
+                                AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.MIFARE_ULTRA_LIGHT.name))
                     }
-                    AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor) -> {
+                    AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.ISO_14443_4.name) -> {
                         LOG.debug("Tag embedded into IsoDep")
                         TagProxy(IsoDep.get(tag),
-                                AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor))
+                                AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.ISO_14443_4.name))
                     }
                     else -> {
                         throw KeypleReaderIOException("Keyple Android Reader supports only : " +
-                                AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC.descriptor) + ", " +
-                                AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL.descriptor) + ", " +
-                                AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor))
+                                AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.MIFARE_CLASSIC.name) + ", " +
+                                AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.MIFARE_ULTRA_LIGHT.name) + ", " +
+                                AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.ISO_14443_4.name))
                     }
                 }
             }

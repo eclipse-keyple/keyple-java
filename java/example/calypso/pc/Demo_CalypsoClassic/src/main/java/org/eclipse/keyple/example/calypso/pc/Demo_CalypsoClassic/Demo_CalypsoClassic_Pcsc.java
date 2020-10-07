@@ -17,7 +17,7 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.util.SeCommonProtocols;
+import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -84,7 +84,7 @@ public class Demo_CalypsoClassic_Pcsc {
         .setSharingMode(PcscReader.SharingMode.SHARED);
 
     /* Activate additional protocol */
-    poReader.activateProtocol(SeCommonProtocols.PROTOCOL_B_PRIME.getDescriptor());
+    poReader.activateProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name());
 
     /* Assign the readers to the Calypso transaction engine */
     transactionEngine.setReaders(poReader, samReader);

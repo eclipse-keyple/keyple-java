@@ -35,7 +35,6 @@ import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemoval;
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetect;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.core.util.SeCommonProtocols;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,7 +78,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   private final AtomicBoolean loopWaitSeRemoval = new AtomicBoolean();
 
   private final boolean usePingPresence;
-  private final Map<String, String> protocolsMap;
+  private final Map<String, ProtocolPair> protocolsMap;
 
   /**
    * This constructor should only be called by PcscPlugin PCSC reader parameters are initialized
@@ -101,7 +100,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     this.cardReset = false;
     this.isContactless = null;
     this.currentProtocol = null;
-    this.protocolsMap = new HashMap<String, String>();
+    this.protocolsMap = new HashMap<String, ProtocolPair>();
 
     String os = System.getProperty("os.name").toLowerCase();
     usePingPresence = os.contains("mac");
@@ -109,10 +108,6 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         "System detected : {}, is macOs checkPresence ping activated {}", os, usePingPresence);
 
     this.stateService = initStateService();
-
-    // activates ISO protocols by default
-    activateProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3.getDescriptor());
-    activateProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4.getDescriptor());
 
     logger.debug("[{}] constructor => using terminal ", terminal);
   }
@@ -341,6 +336,25 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     return apduResponseData.getBytes();
   }
 
+  /** Utility class to associate an external protocol name and the corresponding rule. */
+  class ProtocolPair {
+    public ProtocolPair(String applicationProtocolName, String readerProtocolRule) {
+      this.applicationProtocolName = applicationProtocolName;
+      this.readerProtocolRule = readerProtocolRule;
+    }
+
+    public String getApplicationProtocolName() {
+      return applicationProtocolName;
+    }
+
+    public String getReaderProtocolRule() {
+      return readerProtocolRule;
+    }
+
+    private final String applicationProtocolName;
+    private final String readerProtocolRule;
+  }
+
   /**
    * {@inheritDoc}
    *
@@ -354,21 +368,26 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    * @since 1.0
    */
   @Override
-  public void activateProtocol(String seProtocol) {
+  public void activateProtocol(String readerProtocolName, String applicationProtocolName) {
 
-    Assert.getInstance().notNull(seProtocol, "seProtocol");
+    Assert.getInstance()
+        .notEmpty(readerProtocolName, "readerProtocolName")
+        .notEmpty(applicationProtocolName, "applicationProtocolName");
 
-    String protocolRule = PcscProtocolSetting.getSettings().get(seProtocol);
+    String protocolRule = PcscProtocolSetting.getSettings().get(readerProtocolName);
 
     if (protocolRule == null || protocolRule.isEmpty()) {
-      throw new KeypleReaderProtocolNotSupportedException(seProtocol);
+      throw new KeypleReaderProtocolNotSupportedException(readerProtocolName);
     }
 
     if (logger.isInfoEnabled()) {
       logger.info(
-          "{}: Activate protocol {} with rule \"{}\".", getName(), seProtocol, protocolRule);
+          "{}: Activate protocol {} with rule \"{}\".",
+          getName(),
+          readerProtocolName,
+          protocolRule);
     }
-    protocolsMap.put(seProtocol, protocolRule);
+    protocolsMap.put(readerProtocolName, new ProtocolPair(applicationProtocolName, protocolRule));
   }
 
   /**
@@ -381,15 +400,15 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    * @since 1.0
    */
   @Override
-  public void deactivateProtocol(String seProtocol) {
+  public void deactivateProtocol(String readerProtocolName) {
 
-    Assert.getInstance().notNull(seProtocol, "seProtocol");
+    Assert.getInstance().notNull(readerProtocolName, "seProtocol");
 
     if (logger.isInfoEnabled()) {
-      logger.info("{}: Deactivate protocol {}.", getName(), seProtocol);
+      logger.info("{}: Deactivate protocol {}.", getName(), readerProtocolName);
     }
-    if (protocolsMap.remove(seProtocol) == null && logger.isInfoEnabled()) {
-      logger.info("{}: Protocol {} was not active", getName(), seProtocol);
+    if (protocolsMap.remove(readerProtocolName) == null && logger.isInfoEnabled()) {
+      logger.info("{}: Protocol {} was not active", getName(), readerProtocolName);
     }
   }
 
@@ -424,10 +443,10 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         openPhysicalChannel();
       }
       String atr = ByteArrayUtil.toHex(card.getATR().getBytes());
-      for (Map.Entry<String, String> entry : protocolsMap.entrySet()) {
-        Pattern p = Pattern.compile(entry.getValue());
+      for (Map.Entry<String, ProtocolPair> entry : protocolsMap.entrySet()) {
+        Pattern p = Pattern.compile(entry.getValue().getReaderProtocolRule());
         if (p.matcher(atr).matches()) {
-          currentProtocol = entry.getKey();
+          currentProtocol = entry.getValue().getApplicationProtocolName();
           break;
         }
       }

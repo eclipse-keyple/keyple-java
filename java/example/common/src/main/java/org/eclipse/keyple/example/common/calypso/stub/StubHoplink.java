@@ -16,11 +16,11 @@ import org.eclipse.keyple.plugin.stub.StubSecureElement;
 
 /**
  * This class is an example of a Stub Implementation of SecureElement. It works with the protocol
- * PROTOCOL_ISO14443_4 and simulates a Calypso PO with an Hoplink application
+ * ISO_14443_4 and simulates a Calypso PO with an Hoplink application
  */
 public class StubHoplink extends StubSecureElement {
 
-  static final String seProtocol = "PROTOCOL_ISO14443_4";
+  static final String seProtocol = "ISO_14443_4";
   final String ATR_HEX = "3B8E800180318066409089120802830190000B";
 
   public StubHoplink() {

@@ -19,7 +19,7 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-import org.eclipse.keyple.core.util.SeCommonProtocols;
+import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -64,8 +64,8 @@ public class Demo_SeProtocolDetection_Pcsc {
     ((PcscReader) poReader).setContaclessMode(false).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     /* Activate additional protocol */
-    poReader.activateProtocol(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC.getDescriptor());
-    poReader.activateProtocol(SeCommonProtocols.PROTOCOL_MEMORY_ST25.getDescriptor());
+    poReader.activateProtocol(ContactlessCardCommonProtocols.MIFARE_CLASSIC.name());
+    poReader.activateProtocol(ContactlessCardCommonProtocols.PROTOCOL_MEMORY_ST25.name());
 
     // Set terminal as Observer of the first reader
     ((ObservableReader) poReader).addObserver(observer);

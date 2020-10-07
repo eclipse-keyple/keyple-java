@@ -13,7 +13,7 @@ package org.eclipse.keyple.example.util
 
 import android.content.Context
 import android.os.Build
-import org.eclipse.keyple.core.util.SeCommonProtocols
+import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader
 
 /**
@@ -25,8 +25,8 @@ fun AndroidNfcReader.configFlags(presenceCheckDelay: Int? = null, noPlateformSou
     skipNdefCheck?.let { this.setParameter("FLAG_READER_SKIP_NDEF_CHECK", "$skipNdefCheck") }
 }
 
-fun AndroidNfcReader.configProtocol(seCommonProtocols: SeCommonProtocols) {
-    this.activateProtocol(seCommonProtocols.descriptor)
+fun AndroidNfcReader.configProtocol(seCommonProtocols: ContactlessCardCommonProtocols) {
+    this.activateProtocol(seCommonProtocols.name)
 }
 
 fun Context.getColorResource(id: Int): Int {

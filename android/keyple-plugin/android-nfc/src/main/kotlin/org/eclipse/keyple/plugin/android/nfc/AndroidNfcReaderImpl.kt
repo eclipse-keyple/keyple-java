@@ -39,7 +39,7 @@ import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeProcessing
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemoval
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetect
 import org.eclipse.keyple.core.util.ByteArrayUtil
-import org.eclipse.keyple.core.util.SeCommonProtocols
+import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols
 import timber.log.Timber
 
 /**
@@ -87,9 +87,9 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
                 flags = flags or NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS
             }
             for (seProtocol in this.protocolsMap.keys) {
-                if (SeCommonProtocols.PROTOCOL_ISO14443_4.descriptor.equals(seProtocol)) {
+                if (ContactlessCardCommonProtocols.ISO_14443_4.name == seProtocol) {
                     flags = flags or NfcAdapter.FLAG_READER_NFC_B or NfcAdapter.FLAG_READER_NFC_A
-                } else if (SeCommonProtocols.PROTOCOL_MIFARE_UL.descriptor.equals(seProtocol) || SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC.descriptor.equals(seProtocol)) {
+                } else if (ContactlessCardCommonProtocols.MIFARE_ULTRA_LIGHT.name == seProtocol || ContactlessCardCommonProtocols.MIFARE_CLASSIC.name == seProtocol) {
                     flags = flags or NfcAdapter.FLAG_READER_NFC_A
                 }
             }

@@ -17,7 +17,7 @@ import org.eclipse.keyple.plugin.stub.StubSecureElement;
 /** Simple contact stub SE (no command) */
 public class StubMifareDesfire extends StubSecureElement {
 
-  static final String seProtocol = "PROTOCOL_MIFARE_DESFIRE";
+  static final String seProtocol = "MIFARE_DESFIRE";
   final String ATR_HEX = "3B8180018080";
 
   public StubMifareDesfire() {
