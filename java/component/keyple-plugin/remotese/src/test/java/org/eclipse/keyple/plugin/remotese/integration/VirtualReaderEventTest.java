@@ -26,7 +26,6 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
@@ -168,7 +167,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     nativeReader.insertSe(StubReaderTest.hoplinkSE());
     // wait 0,5 second
     Thread.sleep(500);
-    ((ProxyReader) nativeReader).transmitSeRequest(null, ChannelControl.CLOSE_AFTER);
+    ((ProxyReader) nativeReader).releaseChannel();
 
     // remove SE
     nativeReader.removeSe();

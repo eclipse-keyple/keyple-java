@@ -15,7 +15,6 @@ import java.util.*;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderNotifier;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
@@ -221,6 +220,6 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
   @Override
   public final void finalizeSeProcessing() {
     // TODO check why we can't test if the channel is already closed here.
-    transmitSeRequest(null, ChannelControl.CLOSE_AFTER);
+    releaseChannel();
   }
 }

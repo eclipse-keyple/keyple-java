@@ -55,4 +55,7 @@ public class BlankAbstractReader extends AbstractReader {
   public TransmissionMode getTransmissionMode() {
     return null;
   }
+
+  @Override
+  public void releaseChannel() {}
 }

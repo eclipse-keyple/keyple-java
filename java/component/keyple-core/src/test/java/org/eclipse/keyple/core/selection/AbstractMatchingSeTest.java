@@ -14,6 +14,7 @@ package org.eclipse.keyple.core.selection;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
+import java.util.ArrayList;
 import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
@@ -31,7 +32,8 @@ public class AbstractMatchingSeTest {
     TestMatchingSe testMatchingSe;
     AnswerToReset answerToReset = new AnswerToReset(ByteArrayUtil.fromHex(ATR1));
     SelectionStatus selectionStatus = new SelectionStatus(answerToReset, null, true);
-    SeResponse seResponse = new SeResponse(true, false, selectionStatus, null);
+    SeResponse seResponse =
+        new SeResponse(true, false, selectionStatus, new ArrayList<ApduResponse>());
     testMatchingSe = new TestMatchingSe(seResponse);
     assertThat(testMatchingSe.hasAtr()).isTrue();
     assertThat(testMatchingSe.hasFci()).isFalse();
@@ -50,7 +52,8 @@ public class AbstractMatchingSeTest {
     TestMatchingSe testMatchingSe;
     ApduResponse fci = new ApduResponse(ByteArrayUtil.fromHex(FCI_REV31), null);
     SelectionStatus selectionStatus = new SelectionStatus(null, fci, true);
-    SeResponse seResponse = new SeResponse(true, false, selectionStatus, null);
+    SeResponse seResponse =
+        new SeResponse(true, false, selectionStatus, new ArrayList<ApduResponse>());
     testMatchingSe = new TestMatchingSe(seResponse);
     assertThat(testMatchingSe.hasAtr()).isFalse();
     assertThat(testMatchingSe.hasFci()).isTrue();
@@ -70,7 +73,8 @@ public class AbstractMatchingSeTest {
     AnswerToReset answerToReset = new AnswerToReset(ByteArrayUtil.fromHex(ATR1));
     ApduResponse fci = new ApduResponse(ByteArrayUtil.fromHex(FCI_REV31), null);
     SelectionStatus selectionStatus = new SelectionStatus(answerToReset, fci, true);
-    SeResponse seResponse = new SeResponse(true, false, selectionStatus, null);
+    SeResponse seResponse =
+        new SeResponse(true, false, selectionStatus, new ArrayList<ApduResponse>());
     testMatchingSe = new TestMatchingSe(seResponse);
     assertThat(testMatchingSe.hasAtr()).isTrue();
     assertThat(testMatchingSe.hasFci()).isTrue();

@@ -30,4 +30,7 @@ public interface SmartSelectionReader extends ProxyReader {
    * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
    */
   ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector);
+
+  /** Closes the logical channel explicitly. */
+  void closeLogicalChannel();
 }

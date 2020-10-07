@@ -62,6 +62,9 @@ public class BlankSmartSelectionReader extends AbstractLocalReader implements Sm
   }
 
   @Override
+  public void closeLogicalChannel() {}
+
+  @Override
   public TransmissionMode getTransmissionMode() {
     return null;
   }
