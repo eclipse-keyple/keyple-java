@@ -11,29 +11,27 @@
  ************************************************************************************** */
 package org.eclipse.keyple.remotese.example.model;
 
-/**
- * Custom object that reflects the state of the transactions
- */
+/** Custom object that reflects the state of the transactions */
 public class TransactionResult {
 
-    private Boolean isSuccessful;
-    private String userId;
+  private Boolean isSuccessful;
+  private String userId;
 
-    public TransactionResult setSuccessful(Boolean successful) {
-        isSuccessful = successful;
-        return this;
-    }
+  public TransactionResult setSuccessful(Boolean successful) {
+    isSuccessful = successful;
+    return this;
+  }
 
-    public Boolean isSuccessful() {
-        return isSuccessful;
-    }
+  public Boolean isSuccessful() {
+    return isSuccessful;
+  }
 
-    public String getUserId() {
-        return userId;
-    }
+  public String getUserId() {
+    return userId;
+  }
 
-    public TransactionResult setUserId(String userId) {
-        this.userId = userId;
-        return this;
-    }
+  public TransactionResult setUserId(String userId) {
+    this.userId = userId;
+    return this;
+  }
 }

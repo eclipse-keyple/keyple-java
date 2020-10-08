@@ -11,7 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.remotese.example.app;
 
-
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
@@ -31,148 +30,146 @@ import org.eclipse.keyple.remotese.example.model.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
- * Example of a PluginObserver for a {@link RemoteSeServerPlugin}. It contains the business logic of the remote service execution
+ * Example of a PluginObserver for a {@link RemoteSeServerPlugin}. It contains the business logic of
+ * the remote service execution
  */
 public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
 
-    private static final Logger logger = LoggerFactory.getLogger(RemoteSePluginObserver.class);
-    /**
-     * AID: Keyple
-     */
-    public static final String AID = "315449432E49434131";
-    public static final byte RECORD_NUMBER_1 = 1;
-    public static final byte SFI_EnvironmentAndHolder = (byte) 0x07;
-    public static final byte SFI_EventLog = (byte) 0x08;
+  /** AID: Keyple */
+  public static final String AID = "315449432E49434131";
 
-    @Override
-    public void update(PluginEvent event) {
-        logger.info(
-                "Event received {} {} {}",
-                event.getEventType(),
-                event.getPluginName(),
-                event.getReaderNames().first());
+  public static final byte RECORD_NUMBER_1 = 1;
+  public static final byte SFI_EnvironmentAndHolder = (byte) 0x07;
+  public static final byte SFI_EventLog = (byte) 0x08;
+  private static final Logger logger = LoggerFactory.getLogger(RemoteSePluginObserver.class);
 
-        switch (event.getEventType()) {
-            case READER_CONNECTED:
-                // retrieve serviceId from reader
-                String virtualReaderName = event.getReaderNames().first();
-                RemoteSeServerPlugin plugin =
-                        (RemoteSeServerPlugin) SeProxyService.getInstance().getPlugin(event.getPluginName());
-                RemoteSeServerReader virtualReader = plugin.getReader(virtualReaderName);
+  @Override
+  public void update(PluginEvent event) {
+    logger.info(
+        "Event received {} {} {}",
+        event.getEventType(),
+        event.getPluginName(),
+        event.getReaderNames().first());
 
-                // execute the business logic based on serviceId
-                Object output = executeService(virtualReader);
+    switch (event.getEventType()) {
+      case READER_CONNECTED:
+        // retrieve serviceId from reader
+        String virtualReaderName = event.getReaderNames().first();
+        RemoteSeServerPlugin plugin =
+            (RemoteSeServerPlugin) SeProxyService.getInstance().getPlugin(event.getPluginName());
+        RemoteSeServerReader virtualReader = plugin.getReader(virtualReaderName);
 
-                // terminate service
-                plugin.terminateService(virtualReaderName, output);
+        // execute the business logic based on serviceId
+        Object output = executeService(virtualReader);
 
-                break;
-        }
+        // terminate service
+        plugin.terminateService(virtualReaderName, output);
+
+        break;
+    }
+  }
+
+  /**
+   * Execute a service based on the serviceId of the virtual reader
+   *
+   * @param virtualReader the virtual reader on where to execute the business logic
+   * @return output object
+   */
+  private Object executeService(RemoteSeServerReader virtualReader) {
+    logger.info("Executing ServiceId : {}", virtualReader.getServiceId());
+
+    // EXECUTE_CALYPSO_SESSION_FROM_REMOTE_SELECTION
+    if ("EXECUTE_CALYPSO_SESSION_FROM_REMOTE_SELECTION".equals(virtualReader.getServiceId())) {
+      UserInfo userInput = virtualReader.getUserInputData(UserInfo.class);
+
+      // perform a remote explicit SE selection
+      SeSelection seSelection = getSeSelection();
+      SelectionsResult selectionsResult = seSelection.processExplicitSelection(virtualReader);
+      CalypsoPo calypsoPo = (CalypsoPo) selectionsResult.getActiveMatchingSe();
+
+      try {
+        // execute a transaction
+        readEventLog(calypsoPo, virtualReader);
+        return new TransactionResult().setUserId(userInput.getUserId()).setSuccessful(true);
+      } catch (KeypleException e) {
+        return new TransactionResult().setSuccessful(false).setUserId(userInput.getUserId());
+      }
     }
 
-    /**
-     * Execute a service based on the serviceId of the virtual reader
-     *
-     * @param virtualReader the virtual reader on where to execute the business logic
-     * @return output object
-     */
-    private Object executeService(RemoteSeServerReader virtualReader) {
-        logger.info("Executing ServiceId : {}", virtualReader.getServiceId());
+    throw new IllegalArgumentException("Service Id not recognized");
+  }
 
-        // EXECUTE_CALYPSO_SESSION_FROM_REMOTE_SELECTION
-        if ("EXECUTE_CALYPSO_SESSION_FROM_REMOTE_SELECTION".equals(virtualReader.getServiceId())) {
-            UserInfo userInput = virtualReader.getUserInputData(UserInfo.class);
+  /**
+   * Prepare a SE Selection object ready to select Calypso SE and read environment file
+   *
+   * @return instance of SE Selection object
+   */
+  private SeSelection getSeSelection() {
+    // Prepare PO Selection
+    SeSelection seSelection = new SeSelection();
 
-            // perform a remote explicit SE selection
-            SeSelection seSelection = getSeSelection();
-            SelectionsResult selectionsResult = seSelection.processExplicitSelection(virtualReader);
-            CalypsoPo calypsoPo = (CalypsoPo) selectionsResult.getActiveMatchingSe();
+    // Calypso selection
+    PoSelectionRequest poSelectionRequest =
+        new PoSelectionRequest(
+            PoSelector.builder()
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .aidSelector(SeSelector.AidSelector.builder().aidToSelect(AID).build())
+                .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
+                .build());
 
-            try {
-                // execute a transaction
-                readEventLog(calypsoPo, virtualReader);
-                return new TransactionResult().setUserId(userInput.getUserId()).setSuccessful(true);
-            } catch (KeypleException e) {
-                return new TransactionResult().setSuccessful(false).setUserId(userInput.getUserId());
-            }
-        }
+    // Prepare the reading order.
+    poSelectionRequest.prepareReadRecordFile(SFI_EnvironmentAndHolder, RECORD_NUMBER_1);
 
-        throw new IllegalArgumentException("Service Id not recognized");
-    }
+    // Add the selection case to the current selection
+    seSelection.prepareSelection(poSelectionRequest);
+    return seSelection;
+  }
 
-    /**
-     * Prepare a SE Selection object ready to select Calypso SE and read environment file
-     * @return instance of SE Selection object
-     */
-    private SeSelection getSeSelection() {
-        // Prepare PO Selection
-        SeSelection seSelection = new SeSelection();
+  /**
+   * Read and return content of event log file within a Portable Object Transaction
+   *
+   * @param calypsoPo smartcard to read to the event log file
+   * @param seReader native reader where the smartcard is inserted
+   * @return content of the event log file in Hexadecimal
+   */
+  private String readEventLog(CalypsoPo calypsoPo, SeReader seReader) {
+    // execute calypso session from a se selection
+    logger.info(
+        "Initial PO Content, atr : {}, sn : {}",
+        calypsoPo.getAtr(),
+        calypsoPo.getApplicationSerialNumber());
 
-        // Calypso selection
-        PoSelectionRequest poSelectionRequest =
-                new PoSelectionRequest(
-                        PoSelector.builder()
-                                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
-                                .aidSelector(
-                                        SeSelector.AidSelector.builder().aidToSelect(AID).build())
-                                .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
-                                .build());
+    // Retrieve the data read from the CalyspoPo updated during the transaction process
+    ElementaryFile efEnvironmentAndHolder = calypsoPo.getFileBySfi(SFI_EnvironmentAndHolder);
+    String environmentAndHolder =
+        ByteArrayUtil.toHex(efEnvironmentAndHolder.getData().getContent());
 
-        // Prepare the reading order.
-        poSelectionRequest.prepareReadRecordFile(SFI_EnvironmentAndHolder,RECORD_NUMBER_1);
+    // Log the result
+    logger.info("EnvironmentAndHolder file data: {}", environmentAndHolder);
 
-        // Add the selection case to the current selection
-        seSelection.prepareSelection(poSelectionRequest);
-        return seSelection;
-    }
+    // Go on with the reading of the first record of the EventLog file
+    logger.info("= #### reading transaction of the EventLog file.");
 
-    /**
-     * Read and return content of event log file within a Portable Object Transaction
-     * @param calypsoPo smartcard to read to the event log file
-     * @param seReader native reader where the smartcard is inserted
-     * @return content of the event log file in Hexadecimal
-     */
-    private String readEventLog(CalypsoPo calypsoPo, SeReader seReader) {
-        // execute calypso session from a se selection
-        logger.info(
-                "Initial PO Content, atr : {}, sn : {}",
-                calypsoPo.getAtr(),
-                calypsoPo.getApplicationSerialNumber());
+    PoTransaction poTransaction = new PoTransaction(new SeResource<CalypsoPo>(seReader, calypsoPo));
 
-        // Retrieve the data read from the CalyspoPo updated during the transaction process
-        ElementaryFile efEnvironmentAndHolder =
-                calypsoPo.getFileBySfi(SFI_EnvironmentAndHolder);
-        String environmentAndHolder =
-                ByteArrayUtil.toHex(efEnvironmentAndHolder.getData().getContent());
+    // Prepare the reading order and keep the associated parser for later use once the
+    // transaction has been processed.
+    poTransaction.prepareReadRecordFile(SFI_EventLog, RECORD_NUMBER_1);
 
-        // Log the result
-        logger.info("EnvironmentAndHolder file data: {}", environmentAndHolder);
+    // Actual PO communication: send the prepared read order, then close the channel with
+    // the PO
+    poTransaction.prepareReleasePoChannel();
+    poTransaction.processPoCommands();
+    logger.info("The reading of the EventLog has succeeded.");
 
-        // Go on with the reading of the first record of the EventLog file
-        logger.info("= #### reading transaction of the EventLog file.");
+    // Retrieve the data read from the CalyspoPo updated during the transaction process
+    ElementaryFile efEventLog = calypsoPo.getFileBySfi(SFI_EventLog);
+    String eventLog = ByteArrayUtil.toHex(efEventLog.getData().getContent());
 
-        PoTransaction poTransaction = new PoTransaction(new SeResource<CalypsoPo>(seReader, calypsoPo));
+    // Log the result
+    logger.info("EventLog file data: {}", eventLog);
 
-        // Prepare the reading order and keep the associated parser for later use once the
-        // transaction has been processed.
-        poTransaction.prepareReadRecordFile(
-                SFI_EventLog, RECORD_NUMBER_1);
-
-        // Actual PO communication: send the prepared read order, then close the channel with
-        // the PO
-        poTransaction.prepareReleasePoChannel();
-        poTransaction.processPoCommands();
-        logger.info("The reading of the EventLog has succeeded.");
-
-        // Retrieve the data read from the CalyspoPo updated during the transaction process
-        ElementaryFile efEventLog = calypsoPo.getFileBySfi(SFI_EventLog);
-        String eventLog = ByteArrayUtil.toHex(efEventLog.getData().getContent());
-
-        // Log the result
-        logger.info("EventLog file data: {}", eventLog);
-
-        return eventLog;
-    }
+    return eventLog;
+  }
 }

@@ -11,18 +11,16 @@
  ************************************************************************************** */
 package org.eclipse.keyple.remotese.example.model;
 
-/**
- * Custom object that stores the userId
- */
+/** Custom object that stores the userId */
 public class UserInfo {
-    private String userId;
+  private String userId;
 
-    public String getUserId() {
-        return userId;
-    }
+  public String getUserId() {
+    return userId;
+  }
 
-    public UserInfo setUserId(String userId) {
-        this.userId = userId;
-        return this;
-    }
+  public UserInfo setUserId(String userId) {
+    this.userId = userId;
+    return this;
+  }
 }

@@ -1,39 +1,45 @@
+/* **************************************************************************************
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * See the NOTICE file(s) distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ************************************************************************************** */
 package org.eclipse.keyple.example.calypso.remotese.websocket.server;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.plugin.remotese.virtualse.impl.RemoteSeServerPluginFactory;
 import org.eclipse.keyple.remotese.example.app.RemoteSePluginObserver;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
-
-/**
- * Example of a server side app
- */
+/** Example of a server side app */
 @ApplicationScoped
 public class ServerApp {
 
-    RemoteSePluginObserver pluginObserver;
+  RemoteSePluginObserver pluginObserver;
 
-    @Inject
-    WebsocketServerEndpoint websocketServerEndpoint;
+  @Inject WebsocketServerEndpoint websocketServerEndpoint;
 
+  /**
+   * Initialize the Remote SE Plugin with an async endpoint {@link WebsocketServerEndpoint} and
+   * attach an observer to the plugin {@link RemoteSePluginObserver} that contains all the business
+   * logic
+   */
+  public void init() {
 
-    /**
-     * Initialize the Remote SE Plugin with an async endpoint {@link WebsocketServerEndpoint} and attach an observer to the plugin {@link RemoteSePluginObserver} that contains all the business logic
-     */
-    public void init() {
+    pluginObserver = new RemoteSePluginObserver();
 
-        pluginObserver = new RemoteSePluginObserver();
-
-        SeProxyService.getInstance()
-                .registerPlugin(
-                        RemoteSeServerPluginFactory.builder()
-                                .withAsyncNode(websocketServerEndpoint)
-                                .withPluginObserver(pluginObserver)
-                                .usingDefaultEventNotificationPool()
-                                .build());
-
-    }
+    SeProxyService.getInstance()
+        .registerPlugin(
+            RemoteSeServerPluginFactory.builder()
+                .withAsyncNode(websocketServerEndpoint)
+                .withPluginObserver(pluginObserver)
+                .usingDefaultEventNotificationPool()
+                .build());
+  }
 }
