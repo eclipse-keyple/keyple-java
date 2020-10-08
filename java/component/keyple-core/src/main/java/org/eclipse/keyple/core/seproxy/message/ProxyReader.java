@@ -41,16 +41,21 @@ public interface ProxyReader extends SeReader {
    *
    * <p>The actual processing of each {@link SeRequest} is similar to that performed by {@link
    * #transmitSeRequest(SeRequest, ChannelControl)} (see this method for further explanation of how
-   * the process works).<br>
-   * If the multiSeRequestProcessing parameter equals to {@link
+   * the process works).
+   *
+   * <p>If the multiSeRequestProcessing parameter equals to {@link
    * MultiSeRequestProcessing#FIRST_MATCH}, the iteration over the {@link SeRequest} list is
    * interrupted at the first processing that leads to an open logical channel state. In this case,
    * the list of {@link SeResponse} may be shorter than the list of SeRequests provided as input.
-   * <br>
-   * If it equals to {@link MultiSeRequestProcessing#PROCESS_ALL}, all the {@link SeRequest} are
+   *
+   * <p>If it equals to {@link MultiSeRequestProcessing#PROCESS_ALL}, all the {@link SeRequest} are
    * processed and the logical channel is closed after each process.<br>
    * The physical channel is managed by the ChannelControl parameter as in {@link
    * #transmitSeRequest(SeRequest, ChannelControl)}.
+   *
+   * <p>In the case of a selection specifying a card protocol, it is imperative to activate it
+   * previously with the method {@link SeReader#activateProtocol(String, String)}. An
+   * IllegalStateException exception will be thrown in case of inconsistency.
    *
    * @param seRequests A not empty SeRequest list.
    * @param multiSeRequestProcessing The multi se processing flag (must be not null).
@@ -59,6 +64,7 @@ public interface ProxyReader extends SeReader {
    * @return A not null response list (can be empty).
    * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
    * @throws IllegalArgumentException if one of the arguments is null.
+   * @throws IllegalStateException in case of configuration inconsistency.
    * @since 0.9
    */
   List<SeResponse> transmitSeRequests(

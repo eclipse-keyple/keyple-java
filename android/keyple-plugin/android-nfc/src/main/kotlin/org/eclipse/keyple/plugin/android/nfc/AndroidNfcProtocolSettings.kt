@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
-import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols
+import org.eclipse.keyple.core.util.AndroidNfcSupportedProtocols
 
 /**
  * This class contains all the parameters to identify the communication protocols supported by NFC
@@ -27,16 +27,16 @@ object AndroidNfcProtocolSettings {
      * the ATR)
      */
     private val allSettings: Map<String, String> = mapOf(
-        ContactlessCardCommonProtocols.ISO_14443_4.name to "android.nfc.tech.IsoDep",
-        ContactlessCardCommonProtocols.NFC_A_ISO_14443_3A.name to "android.nfc.tech.NfcA",
-        ContactlessCardCommonProtocols.NFC_B_ISO_14443_3B.name to "android.nfc.tech.NfcB",
-        ContactlessCardCommonProtocols.NFC_F_JIS_6319_4.name to "android.nfc.tech.NfcF",
-        ContactlessCardCommonProtocols.NFC_V_ISO_15693.name to "android.nfc.tech.NfcV",
-        ContactlessCardCommonProtocols.NFC_NDEF_TAG.name to "android.nfc.tech.Ndef",
-        ContactlessCardCommonProtocols.NFC_NDEF_FORMATABLE.name to "android.nfc.tech.NdefFormatable",
-        ContactlessCardCommonProtocols.NFC_BARCODE.name to "android.nfc.tech.NfcBarcode",
-        ContactlessCardCommonProtocols.MIFARE_ULTRA_LIGHT.name to "android.nfc.tech.MifareUltralight",
-        ContactlessCardCommonProtocols.MIFARE_CLASSIC.name to "android.nfc.tech.MifareClassic")
+        AndroidNfcSupportedProtocols.ISO_14443_4.name to "android.nfc.tech.IsoDep",
+//        AndroidNfcSupportedProtocols.NFC_A_ISO_14443_3A.name to "android.nfc.tech.NfcA",
+//        AndroidNfcSupportedProtocols.NFC_B_ISO_14443_3B.name to "android.nfc.tech.NfcB",
+//        AndroidNfcSupportedProtocols.NFC_F_JIS_6319_4.name to "android.nfc.tech.NfcF",
+//        AndroidNfcSupportedProtocols.NFC_V_ISO_15693.name to "android.nfc.tech.NfcV",
+//        AndroidNfcSupportedProtocols.NFC_NDEF_TAG.name to "android.nfc.tech.Ndef",
+//        AndroidNfcSupportedProtocols.NFC_NDEF_FORMATABLE.name to "android.nfc.tech.NdefFormatable",
+//        AndroidNfcSupportedProtocols.NFC_BARCODE.name to "android.nfc.tech.NfcBarcode",
+        AndroidNfcSupportedProtocols.MIFARE_ULTRA_LIGHT.name to "android.nfc.tech.MifareUltralight",
+        AndroidNfcSupportedProtocols.MIFARE_CLASSIC.name to "android.nfc.tech.MifareClassic")
 
     /**
      * Return a subset of the settings map

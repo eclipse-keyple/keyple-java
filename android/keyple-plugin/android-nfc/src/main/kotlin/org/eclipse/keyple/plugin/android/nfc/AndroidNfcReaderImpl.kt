@@ -39,7 +39,6 @@ import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeProcessing
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemoval
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetect
 import org.eclipse.keyple.core.util.ByteArrayUtil
-import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols
 import timber.log.Timber
 
 /**
@@ -87,9 +86,9 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
                 flags = flags or NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS
             }
             for (seProtocol in this.protocolsMap.keys) {
-                if (ContactlessCardCommonProtocols.ISO_14443_4.name == seProtocol) {
+                if (AndroidNfcSupportedProtocols.ISO_14443_4.name == seProtocol) {
                     flags = flags or NfcAdapter.FLAG_READER_NFC_B or NfcAdapter.FLAG_READER_NFC_A
-                } else if (ContactlessCardCommonProtocols.MIFARE_ULTRA_LIGHT.name == seProtocol || ContactlessCardCommonProtocols.MIFARE_CLASSIC.name == seProtocol) {
+                } else if (AndroidNfcSupportedProtocols.MIFARE_ULTRA_LIGHT.name == seProtocol || AndroidNfcSupportedProtocols.MIFARE_CLASSIC.name == seProtocol) {
                     flags = flags or NfcAdapter.FLAG_READER_NFC_A
                 }
             }
@@ -323,17 +322,14 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
     /**
      * Tells if the provided protocol matches the current protocol.
      *
-     *
-     * This method must be implemented by the plugin which is able to determine the protocol of the
-     * SE from the technical data it has available.
-     *
-     * @param A not empty String.
+     * @param readerProtocolName A not empty String.
      * @return True or false
      * @throws KeypleReaderProtocolNotFoundException if it is not possible to determine the protocol.
      * @since 1.0
      */
     override fun isCurrentProtocol(readerProtocolName: String?): Boolean {
         TODO("Not yet implemented")
+        return true
     }
 
     /**

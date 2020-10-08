@@ -22,6 +22,7 @@ import org.eclipse.keyple.core.seproxy.message.SeRequest
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.core.util.ContactsCardCommonProtocols
 import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiReaderTest
+import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiSupportedProtocols
 import org.junit.Assert
 import org.junit.Test
 import org.simalliance.openmobileapi.Channel
@@ -35,7 +36,9 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
     override lateinit var reader: AndroidOmapiReader
 
     override fun buildOmapiReaderImpl(nativeReader: Reader): AndroidOmapiReader {
-        return AndroidOmapiReader(nativeReader, PLUGIN_NAME, nativeReader.name)
+        var androidOmapiReader = AndroidOmapiReader(nativeReader, PLUGIN_NAME, nativeReader.name)
+        androidOmapiReader.activateProtocol(AndroidOmapiSupportedProtocols.ISO_7816_3.name, ContactsCardCommonProtocols.ISO_7816_3.name)
+        return androidOmapiReader
     }
 
     override fun getNativeReaderName(): String {

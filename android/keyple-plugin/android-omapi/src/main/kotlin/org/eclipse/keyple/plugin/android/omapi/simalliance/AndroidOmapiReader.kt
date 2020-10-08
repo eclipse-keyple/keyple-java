@@ -19,6 +19,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractLocalReader
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiReader
+import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiSupportedProtocols
 import org.simalliance.openmobileapi.Channel
 import org.simalliance.openmobileapi.Reader
 import org.simalliance.openmobileapi.Session
@@ -155,7 +156,7 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
      * @throws KeypleReaderProtocolNotSupportedException if the protocol is not supported.
      */
     override fun activateReaderProtocol(readerProtocolName: String?) {
-        TODO("Not yet implemented")
+        // Do nothing
     }
 
     /**
@@ -170,23 +171,19 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
      * @param readerProtocolName The protocol to deactivate (must be not null).
      */
     override fun deactivateReaderProtocol(readerProtocolName: String?) {
-        TODO("Not yet implemented")
+        // Do nothing
     }
 
     /**
      * Tells if the provided protocol matches the current protocol.
      *
-     *
-     * This method must be implemented by the plugin which is able to determine the protocol of the
-     * SE from the technical data it has available.
-     *
-     * @param A not empty String.
+     * @param readerProtocolName A not empty String.
      * @return True or false
      * @throws KeypleReaderProtocolNotFoundException if it is not possible to determine the protocol.
      * @since 1.0
      */
     override fun isCurrentProtocol(readerProtocolName: String?): Boolean {
-        TODO("Not yet implemented")
+        return AndroidOmapiSupportedProtocols.ISO_7816_3.name == readerProtocolName
     }
 
     /** Closes the logical channel explicitly.  */

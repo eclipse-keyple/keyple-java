@@ -72,13 +72,11 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverAsynchronou
                       .build());
 
           seSelection.prepareSelection(poSelectionRequest);
-
           break;
         case NFC_A_ISO_14443_3A:
         case NFC_B_ISO_14443_3B:
           // not handled in this demo code
           break;
-        case MIFARE_DESFIRE:
         case CALYPSO_OLD_CARD_PRIME:
           // intentionally ignored for demo purpose
           break;

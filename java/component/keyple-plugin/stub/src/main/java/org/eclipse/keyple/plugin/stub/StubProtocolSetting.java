@@ -15,7 +15,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ContactsCardCommonProtocols;
 
 /**
@@ -38,17 +37,17 @@ public final class StubProtocolSetting {
   static {
     Map<String, String> map = new HashMap<String, String>();
 
-    map.put(ContactlessCardCommonProtocols.ISO_14443_4.name(), "ISO_14443_4");
+    map.put(StubSupportedProtocols.ISO_14443_4.name(), "ISO_14443_4");
 
-    map.put(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name(), "CALYPSO_OLD_CARD_PRIME");
+    map.put(StubSupportedProtocols.CALYPSO_OLD_CARD_PRIME.name(), "CALYPSO_OLD_CARD_PRIME");
 
-    map.put(ContactlessCardCommonProtocols.MIFARE_ULTRA_LIGHT.name(), "MIFARE_ULTRA_LIGHT");
+    map.put(StubSupportedProtocols.MIFARE_ULTRA_LIGHT.name(), "MIFARE_ULTRA_LIGHT");
 
-    map.put(ContactlessCardCommonProtocols.MIFARE_CLASSIC.name(), "MIFARE_CLASSIC");
+    map.put(StubSupportedProtocols.MIFARE_CLASSIC.name(), "MIFARE_CLASSIC");
 
-    map.put(ContactlessCardCommonProtocols.MIFARE_DESFIRE.name(), "MIFARE_DESFIRE");
+    map.put(StubSupportedProtocols.MIFARE_DESFIRE.name(), "MIFARE_DESFIRE");
 
-    map.put(ContactlessCardCommonProtocols.MEMORY_ST25.name(), "MEMORY_ST25");
+    map.put(StubSupportedProtocols.MEMORY_ST25.name(), "MEMORY_ST25");
 
     map.put(ContactsCardCommonProtocols.ISO_7816_3.name(), "PROTOCOL_ISO7816_3");
 
@@ -62,9 +61,9 @@ public final class StubProtocolSetting {
    * @return a settings map
    */
   public static Map<String, String> getSpecificSettings(
-      Set<ContactlessCardCommonProtocols> specificProtocols) {
+      Set<StubSupportedProtocols> specificProtocols) {
     Map<String, String> map = new HashMap<String, String>();
-    for (ContactlessCardCommonProtocols seCommonProtocols : specificProtocols) {
+    for (StubSupportedProtocols seCommonProtocols : specificProtocols) {
       map.put(seCommonProtocols.name(), STUB_PROTOCOL_SETTING.get(seCommonProtocols));
     }
     return map;

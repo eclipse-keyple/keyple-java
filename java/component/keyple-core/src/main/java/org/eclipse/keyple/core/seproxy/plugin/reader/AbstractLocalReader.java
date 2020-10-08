@@ -58,6 +58,8 @@ public abstract class AbstractLocalReader extends AbstractReader {
   /** Timestamp recorder */
   private long before;
 
+  private boolean useDefaultProtocol;
+
   /**
    * Reader constructor
    *
@@ -251,7 +253,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    */
   private void openPhysicalChannelAndSetProtocol() {
     openPhysicalChannel();
-    currentProtocol = getCurrentProtocol();
+    determineCurrentProtocol();
   }
 
   /**
@@ -265,15 +267,15 @@ public abstract class AbstractLocalReader extends AbstractReader {
   protected abstract void closePhysicalChannel();
 
   /**
-   * Closes the physical channel and destroy the current protocol.
+   * Closes the physical channel and resets the current protocol info.
    *
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed and
-   *     the physical channel could not be open.
+   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
    * @since 1.0
    */
   private void resetProtocolAndClosePhysicalChannel() {
     currentProtocol = null;
-    closeLogicalChannel();
+    useDefaultProtocol = false;
+    closePhysicalChannel();
   }
 
   /**
@@ -329,16 +331,42 @@ public abstract class AbstractLocalReader extends AbstractReader {
    */
   protected abstract boolean isCurrentProtocol(String readerProtocolName);
 
-  private String getCurrentProtocol() {
+  /**
+   * Determines the current protocol used by the card.
+   *
+   * <p>The Map {@link #protocolAssociations} containing the protocol names (reader and application)
+   * is iterated and the reader protocol (key of the Map) is checked with the reader.
+   *
+   * <p>If the Map is not empty:
+   *
+   * <ul>
+   *   <li>The boolean {@link #useDefaultProtocol} is set to false.
+   *   <li>If the test is positive (the protocol presented is the one used by the current card) then
+   *       the field {@link #currentProtocol} is set with the name of the protocol known to the
+   *       application.
+   *   <li>If none of the protocols present in the Map matches then the method returns null.
+   * </ul>
+   *
+   * <br>
+   * If the Map is empty, no other check is done, the String field {@link #currentProtocol} is set
+   * to null and the boolean field {@link #useDefaultProtocol} is set to true.
+   *
+   * @return A String or null.
+   */
+  private void determineCurrentProtocol() {
 
     /* Determine the current protocol */
-    String currentProtocol = null;
-    for (Map.Entry<String, String> entry : protocolAssociations.entrySet()) {
-      if (isCurrentProtocol(entry.getKey())) {
-        currentProtocol = entry.getValue();
+    currentProtocol = null;
+    if (protocolAssociations.size() == 0) {
+      useDefaultProtocol = true;
+    } else {
+      useDefaultProtocol = false;
+      for (Map.Entry<String, String> entry : protocolAssociations.entrySet()) {
+        if (isCurrentProtocol(entry.getKey())) {
+          currentProtocol = entry.getValue();
+        }
       }
     }
-    return currentProtocol;
   }
 
   /**
@@ -539,6 +567,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    *
    * @param seSelector A not null {@link SeSelector}.
    * @return A not null {@link SelectionStatus}.
+   * @throws IllegalStateException in case of configuration inconsistency.
    * @see #processSeRequestLogical(SeRequest)
    */
   private SelectionStatus processSelection(SeSelector seSelector) {
@@ -547,21 +576,20 @@ public abstract class AbstractLocalReader extends AbstractReader {
     ApduResponse fciResponse;
     boolean hasMatched = true;
 
+    if (seSelector.getString() != null && useDefaultProtocol) {
+      throw new IllegalStateException(
+          "Protocol " + seSelector.getString() + " not associated to a reader protocol.");
+    }
+
     // check protocol if enabled
-    if (seSelector.getString() != null && !seSelector.getString().equals(currentProtocol)) {
-      answerToReset = null;
-      fciResponse = null;
-      hasMatched = false;
-    } else {
+    if (seSelector.getString() == null
+        || useDefaultProtocol
+        || seSelector.getString().equals(currentProtocol)) {
       // protocol check succeeded, check ATR if enabled
       byte[] atr = getATR();
       answerToReset = new AnswerToReset(atr);
       SeSelector.AtrFilter atrFilter = seSelector.getAtrFilter();
-      if (atrFilter != null && !checkAtr(atr, atrFilter)) {
-        // check failed
-        hasMatched = false;
-        fciResponse = null;
-      } else {
+      if (atrFilter == null || checkAtr(atr, atrFilter)) {
         // no ATR filter or ATR check succeeded, select by AID if enabled.
         SeSelector.AidSelector aidSelector = seSelector.getAidSelector();
         if (aidSelector != null) {
@@ -570,7 +598,16 @@ public abstract class AbstractLocalReader extends AbstractReader {
         } else {
           fciResponse = null;
         }
+      } else {
+        // check failed
+        hasMatched = false;
+        fciResponse = null;
       }
+    } else {
+      // protocol failed
+      answerToReset = null;
+      fciResponse = null;
+      hasMatched = false;
     }
     return new SelectionStatus(answerToReset, fciResponse, hasMatched);
   }
@@ -584,6 +621,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * @param seRequest The {@link SeRequest} to be processed (must be not null).
    * @return seResponse A not null {@link SeResponse}.
    * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws IllegalStateException in case of configuration inconsistency.
    * @see #processSeRequests(List, MultiSeRequestProcessing, ChannelControl)
    * @see #processSeRequest(SeRequest, ChannelControl)
    * @since 0.9

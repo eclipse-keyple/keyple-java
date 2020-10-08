@@ -68,12 +68,8 @@ public class Demo_SeProtocolDetection_Pcsc {
     poReader.activateProtocol(
         PcscSupportedProtocols.ISO_14443_4.name(),
         ContactlessCardCommonProtocols.ISO_14443_4.name());
-    poReader.activateProtocol(
-        PcscSupportedProtocols.MIFARE_CLASSIC.name(),
-        ContactlessCardCommonProtocols.MIFARE_CLASSIC.name());
-    poReader.activateProtocol(
-        PcscSupportedProtocols.MEMORY_ST25.name(),
-        ContactlessCardCommonProtocols.MEMORY_ST25.name());
+    poReader.activateProtocol(PcscSupportedProtocols.MIFARE_CLASSIC.name(), "MIFARE_CLASSIC");
+    poReader.activateProtocol(PcscSupportedProtocols.MEMORY_ST25.name(), "MEMORY_ST25");
 
     // Set terminal as Observer of the first reader
     ((ObservableReader) poReader).addObserver(observer);

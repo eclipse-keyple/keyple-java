@@ -23,27 +23,10 @@ public enum ContactlessCardCommonProtocols {
 
   /* ---- contactless  NFC compliant ------------- */
   NFC_A_ISO_14443_3A,
-
   NFC_B_ISO_14443_3B,
-
   NFC_F_JIS_6319_4,
-
   NFC_V_ISO_15693,
-
-  NFC_NDEF_TAG,
-
-  NFC_NDEF_FORMATABLE,
-
-  NFC_BARCODE,
-
-  MIFARE_ULTRA_LIGHT,
-
-  MIFARE_CLASSIC,
-
-  MIFARE_DESFIRE,
 
   /* ---- other contactless proprietary protocols -------- */
   CALYPSO_OLD_CARD_PRIME,
-
-  MEMORY_ST25;
 }

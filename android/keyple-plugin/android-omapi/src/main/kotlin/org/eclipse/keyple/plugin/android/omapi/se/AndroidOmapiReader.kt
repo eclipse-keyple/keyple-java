@@ -18,12 +18,12 @@ import androidx.annotation.RequiresApi
 import java.io.IOException
 import java.util.NoSuchElementException
 import kotlin.experimental.or
-import kotlinx.android.synthetic.*
 import org.eclipse.keyple.core.seproxy.SeSelector
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.seproxy.message.ApduResponse
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiReader
+import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiSupportedProtocols
 import timber.log.Timber
 
 /**
@@ -139,7 +139,7 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
      * @throws KeypleReaderProtocolNotSupportedException if the protocol is not supported.
      */
     override fun activateReaderProtocol(readerProtocolName: String?) {
-        TODO("Not yet implemented")
+        // do nothing
     }
 
     /**
@@ -154,15 +154,11 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
      * @param readerProtocolName The protocol to deactivate (must be not null).
      */
     override fun deactivateReaderProtocol(readerProtocolName: String?) {
-        TODO("Not yet implemented")
+        // do nothing
     }
 
     /**
      * Tells if the provided protocol matches the current protocol.
-     *
-     *
-     * This method must be implemented by the plugin which is able to determine the protocol of the
-     * SE from the technical data it has available.
      *
      * @param readerProtocolName A not empty String.
      * @return True or false
@@ -170,7 +166,7 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
      * @since 1.0
      */
     override fun isCurrentProtocol(readerProtocolName: String?): Boolean {
-        TODO("Not yet implemented")
+        return AndroidOmapiSupportedProtocols.ISO_7816_3.name == readerProtocolName
     }
 
     /** Closes the logical channel explicitly.  */
@@ -187,7 +183,7 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
      */
     override fun transmitApdu(apduIn: ByteArray): ByteArray {
         // Initialization
-        Timber.d("Data Length to be sent to tag : " + apduIn.size)
+        Timber.d("Data Length to be sent to tag : " + apduIn.size)C
         Timber.d("Data in : " + ByteArrayUtil.toHex(apduIn))
         var dataOut = byteArrayOf(0)
         try {

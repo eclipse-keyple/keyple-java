@@ -72,12 +72,8 @@ public class Demo_SeProtocolDetection_Stub {
     poReader.activateProtocol(
         StubSupportedProtocols.ISO_14443_4.name(),
         ContactlessCardCommonProtocols.ISO_14443_4.name());
-    poReader.activateProtocol(
-        StubSupportedProtocols.MIFARE_CLASSIC.name(),
-        ContactlessCardCommonProtocols.MIFARE_CLASSIC.name());
-    poReader.activateProtocol(
-        StubSupportedProtocols.MEMORY_ST25.name(),
-        ContactlessCardCommonProtocols.MEMORY_ST25.name());
+    poReader.activateProtocol(StubSupportedProtocols.MIFARE_CLASSIC.name(), "MIFARE_CLASSIC");
+    poReader.activateProtocol(StubSupportedProtocols.MEMORY_ST25.name(), "MEMORY_ST25");
 
     // Set terminal as Observer of the first reader
     poReader.addObserver(observer);
