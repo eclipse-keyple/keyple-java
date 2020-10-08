@@ -22,7 +22,6 @@ import org.eclipse.keyple.core.seproxy.message.ApduRequest
 import org.eclipse.keyple.core.seproxy.message.ChannelControl
 import org.eclipse.keyple.core.seproxy.message.SeRequest
 import org.eclipse.keyple.core.util.ByteArrayUtil
-import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols
 import org.eclipse.keyple.core.util.ContactsCardCommonProtocols
 import org.junit.After
 import org.junit.Assert
@@ -169,7 +168,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
 
         // wrong protocol
         val seRequest = SeRequest(SeSelector.builder()
-                .seProtocol(ContactlessCardCommonProtocols.MIFARE_ULTRA_LIGHT.name)
+                .seProtocol("MIFARE_ULTRA_LIGHT")
                 .aidSelector(SeSelector.AidSelector.builder()
                         .aidToSelect(poAid).build()).build(), ArrayList())
 

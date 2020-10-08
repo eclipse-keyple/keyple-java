@@ -19,7 +19,7 @@ class AndroidNfcProtocolSettingsTest {
     @Test
     fun getSpecificSettings() {
         val specificSettings = AndroidNfcProtocolSettings.getSpecificSettings(setOf(AndroidNfcSupportedProtocols.ISO_14443_4.name))
-        Assert.assertEquals(3, specificSettings.count())
+        Assert.assertEquals(1, specificSettings.count())
         Assert.assertEquals("android.nfc.tech.IsoDep", specificSettings[AndroidNfcSupportedProtocols.ISO_14443_4.name])
 //        Assert.assertEquals("android.nfc.tech.NfcA", specificSettings[AndroidNfcSupportedProtocols.NFC_A_ISO_14443_3A.name])
 //        Assert.assertEquals("android.nfc.tech.NfcB", specificSettings[AndroidNfcSupportedProtocols.NFC_B_ISO_14443_3B.name])
