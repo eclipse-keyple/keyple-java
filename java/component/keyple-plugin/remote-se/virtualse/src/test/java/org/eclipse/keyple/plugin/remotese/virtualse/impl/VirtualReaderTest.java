@@ -331,6 +331,38 @@ public class VirtualReaderTest {
   }
 
   @Test
+  public void releaseChannel_whenOk_shouldCallTheHandlerAndReturnResponses() {
+
+     // init response
+    KeypleMessageDto responseDto =
+            new KeypleMessageDto() //
+                    .setAction(KeypleMessageDto.Action.RELEASE_CHANNEL.name()) //
+                    .setVirtualReaderName(reader.getName()) //
+                    .setNativeReaderName(reader.nativeReaderName);
+
+    doReturn(responseDto).when(node).sendRequest(any(KeypleMessageDto.class));
+
+    // execute
+    reader.releaseChannel();
+  }
+
+  @Test(expected = KeypleTimeoutException.class)
+  public void releaseChannel_whenNodeTimeout_shouldThrowKTE() {
+    // init
+    mockTimeout();
+    // execute
+    reader.releaseChannel();
+  }
+
+  @Test(expected = KeypleReaderIOException.class)
+  public void releaseChannel_whenError_shouldThrowOriginalException() {
+    // init
+    mockError();
+    // execute
+    reader.releaseChannel();
+  }
+
+  @Test
   public void getSessionId_whenIsSet_shouldReturnCurrentValue() {
     String sessionId = reader.getSessionId();
     assertThat(sessionId).isEqualTo("val1");

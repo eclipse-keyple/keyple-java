@@ -181,6 +181,15 @@ public abstract class BaseNativeSeTest {
         .setBody(null);
   }
 
+  public static KeypleMessageDto getReleaseChannelDto(String sessionId) {
+    return new KeypleMessageDto() //
+            .setSessionId(sessionId) //
+            .setAction(KeypleMessageDto.Action.RELEASE_CHANNEL.name()) //
+            .setServerNodeId("serverNodeId") //
+            .setClientNodeId("clientNodeId") //
+            .setBody(null);
+  }
+
   public static SeRequest getASeRequest() {
     String poAid = "A000000291A000000191";
     List<ApduRequest> poApduRequests;

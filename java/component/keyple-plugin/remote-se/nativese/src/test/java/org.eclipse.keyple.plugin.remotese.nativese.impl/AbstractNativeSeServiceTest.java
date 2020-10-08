@@ -303,6 +303,18 @@ public class AbstractNativeSeServiceTest extends BaseNativeSeTest {
   }
 
   @Test
+  public void releaseChannelDto() {
+    // init
+    KeypleMessageDto requestDto = getReleaseChannelDto("aSessionId");
+    // execute
+    KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
+    // results
+    assertMetadataMatches(requestDto, responseDto);
+    assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.RELEASE_CHANNEL.name());
+    assertThat(responseDto.getBody()).isNull();
+  }
+
+  @Test
   public void startSeDetection() {
     // init
     KeypleMessageDto requestDto = getStartSeDetection("aSessionId");
