@@ -11,8 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
-import org.eclipse.keyple.core.util.AndroidNfcSupportedProtocols
-
 /**
  * This class contains all the parameters to identify the communication protocols supported by NFC
  * readers.

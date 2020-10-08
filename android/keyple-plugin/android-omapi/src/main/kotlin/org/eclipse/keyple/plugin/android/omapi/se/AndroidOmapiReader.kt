@@ -183,7 +183,7 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
      */
     override fun transmitApdu(apduIn: ByteArray): ByteArray {
         // Initialization
-        Timber.d("Data Length to be sent to tag : " + apduIn.size)C
+        Timber.d("Data Length to be sent to tag : " + apduIn.size)
         Timber.d("Data in : " + ByteArrayUtil.toHex(apduIn))
         var dataOut = byteArrayOf(0)
         try {
