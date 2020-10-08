@@ -220,4 +220,5 @@ final class VirtualObservableReader extends AbstractVirtualReader
   public void finalizeSeProcessing() {
     sendRequest(KeypleMessageDto.Action.FINALIZE_SE_PROCESSING, null);
   }
+
 }

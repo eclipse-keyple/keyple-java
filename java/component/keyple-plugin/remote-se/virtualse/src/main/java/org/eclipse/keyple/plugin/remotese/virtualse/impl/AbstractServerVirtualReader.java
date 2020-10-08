@@ -183,4 +183,15 @@ abstract class AbstractServerVirtualReader implements RemoteSeServerReader, Prox
   String getClientNodeId() {
     return reader.getClientNodeId();
   }
+
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
+  @Override
+  public void releaseChannel() {
+    reader.releaseChannel();
+  }
 }

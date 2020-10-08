@@ -141,6 +141,9 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
           case FINALIZE_SE_PROCESSING:
             response = finalizeSeProcessing();
             break;
+          case RELEASE_CHANNEL:
+            response = releaseChannel();
+            break;
           default:
             throw new IllegalArgumentException(action.name());
         }
@@ -417,6 +420,21 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
 
       // Execute the action on the reader
       ((ObservableReader) reader).finalizeSeProcessing();
+
+      return new KeypleMessageDto(msg).setBody(null);
+    }
+
+    /**
+     * (private)<br>
+     * Release channel
+     *
+     * @return a not null reference.
+     * @throws KeypleReaderIOException if a reader IO error occurs.
+     */
+    private KeypleMessageDto releaseChannel() {
+
+      // Execute the action on the reader
+      reader.releaseChannel();
 
       return new KeypleMessageDto(msg).setBody(null);
     }

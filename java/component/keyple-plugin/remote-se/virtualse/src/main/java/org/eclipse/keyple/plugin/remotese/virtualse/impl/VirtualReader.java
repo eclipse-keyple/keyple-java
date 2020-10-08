@@ -37,4 +37,5 @@ final class VirtualReader extends AbstractVirtualReader {
       String clientNodeId) {
     super(pluginName, nativeReaderName, node, sessionId, clientNodeId);
   }
+
 }

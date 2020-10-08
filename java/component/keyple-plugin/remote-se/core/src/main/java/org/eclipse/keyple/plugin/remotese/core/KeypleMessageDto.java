@@ -55,6 +55,7 @@ public class KeypleMessageDto {
     STOP_SE_DETECTION,
     START_SE_DETECTION,
     FINALIZE_SE_PROCESSING,
+    RELEASE_CHANNEL,
     ERROR
   }
 

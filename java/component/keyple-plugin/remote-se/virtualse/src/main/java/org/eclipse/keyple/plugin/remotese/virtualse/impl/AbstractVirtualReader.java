@@ -182,6 +182,17 @@ abstract class AbstractVirtualReader extends AbstractReader {
   }
 
   /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
+  @Override
+  public void releaseChannel(){
+    // Send the message as a request even if no return is expected
+    sendRequest(KeypleMessageDto.Action.RELEASE_CHANNEL, null);
+  }
+
+  /**
    * (private)<br>
    * <li>Build the message using the provided action and body.
    * <li>Send it as a request.
