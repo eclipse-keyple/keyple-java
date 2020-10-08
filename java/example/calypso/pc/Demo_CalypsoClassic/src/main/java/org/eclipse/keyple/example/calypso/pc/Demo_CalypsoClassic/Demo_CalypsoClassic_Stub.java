@@ -25,6 +25,7 @@ import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
+import org.eclipse.keyple.plugin.stub.StubSupportedProtocols;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,8 +78,13 @@ public class Demo_CalypsoClassic_Stub {
     logger.info("PO Reader  NAME = {}", poReader.getName());
     logger.info("SAM Reader  NAME = {}", samReader.getName());
 
-    /* Activate additional protocol */
-    poReader.activateProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name());
+    /* Activate protocols */
+    poReader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name());
+    poReader.activateProtocol(
+        StubSupportedProtocols.CALYPSO_OLD_CARD_PRIME.name(),
+        ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name());
 
     /* Assign readers to the Hoplink transaction engine */
     transactionEngine.setReaders(poReader, samReader);

@@ -48,7 +48,7 @@ public final class StubProtocolSetting {
 
     map.put(ContactlessCardCommonProtocols.MIFARE_DESFIRE.name(), "MIFARE_DESFIRE");
 
-    map.put(ContactlessCardCommonProtocols.PROTOCOL_MEMORY_ST25.name(), "PROTOCOL_MEMORY_ST25");
+    map.put(ContactlessCardCommonProtocols.MEMORY_ST25.name(), "MEMORY_ST25");
 
     map.put(ContactsCardCommonProtocols.ISO_7816_3.name(), "PROTOCOL_ISO7816_3");
 

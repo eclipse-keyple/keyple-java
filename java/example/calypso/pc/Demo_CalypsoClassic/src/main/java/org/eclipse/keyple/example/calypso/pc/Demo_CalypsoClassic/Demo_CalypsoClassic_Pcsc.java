@@ -18,9 +18,11 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.util.ContactsCardCommonProtocols;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
+import org.eclipse.keyple.plugin.pcsc.PcscSupportedProtocols;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,8 +85,16 @@ public class Demo_CalypsoClassic_Pcsc {
         .setIsoProtocol(PcscReader.IsoProtocol.T0)
         .setSharingMode(PcscReader.SharingMode.SHARED);
 
-    /* Activate additional protocol */
-    poReader.activateProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name());
+    /* Activate protocols */
+    poReader.activateProtocol(
+        PcscSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
+    poReader.activateProtocol(
+        PcscSupportedProtocols.CALYPSO_OLD_CARD_PRIME.name(),
+        ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name());
+
+    samReader.activateProtocol(
+        PcscSupportedProtocols.ISO_7816_3.name(), ContactsCardCommonProtocols.ISO_7816_3.name());
 
     /* Assign the readers to the Calypso transaction engine */
     transactionEngine.setReaders(poReader, samReader);

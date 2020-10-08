@@ -25,7 +25,6 @@ import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.core.util.ContactsCardCommonProtocols;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

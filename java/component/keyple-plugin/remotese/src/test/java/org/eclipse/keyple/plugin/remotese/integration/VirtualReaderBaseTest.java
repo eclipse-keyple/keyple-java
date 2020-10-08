@@ -108,7 +108,9 @@ public class VirtualReaderBaseTest {
     StubReader nativeReader = (StubReader) Integration.createStubReader(readerName, isContactless);
 
     // activate ISO_14443_4
-    nativeReader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
+    nativeReader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     this.slaveAPI.connectReader(nativeReader);
     return nativeReader;

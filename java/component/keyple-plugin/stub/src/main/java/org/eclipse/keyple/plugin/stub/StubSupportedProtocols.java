@@ -9,14 +9,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.plugin.pcsc;
+package org.eclipse.keyple.plugin.stub;
 
 /**
- * List of protocols supported by PC/SC readers.
+ * List of protocols supported by Stub readers.
  *
  * @since 1.0
  */
-public enum PcscSupportedProtocols {
+public enum StubSupportedProtocols {
   ISO_14443_4,
   CALYPSO_OLD_CARD_PRIME,
   MIFARE_ULTRA_LIGHT,

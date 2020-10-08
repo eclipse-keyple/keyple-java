@@ -13,7 +13,6 @@ package org.eclipse.keyple.core.seproxy;
 
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotSupportedException;
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractLocalReader;
 
 /**
  * Defines a high level API to access a card reader.
@@ -50,8 +49,12 @@ public interface SeReader extends ProxyElement {
    *   <li>The #readerProtocolName argument is the name of the protocol among those supported by the
    *       reader.
    *   <li>The #applicationProtocolName is the name of the protocol to be the plugin when a card
-   *       using this protocol is detected (see {@link AbstractLocalReader#getCurrentProtocol()})
+   *       using this protocol is detected.
    * </ul>
+   *
+   * Note: in the case where multiple protocols are activated, they will be checked in the selection
+   * process in the order in which they were activated. The most likely cases should therefore be
+   * activated first.
    *
    * @param readerProtocolName A not empty String.
    * @param applicationProtocolName A not empty String.

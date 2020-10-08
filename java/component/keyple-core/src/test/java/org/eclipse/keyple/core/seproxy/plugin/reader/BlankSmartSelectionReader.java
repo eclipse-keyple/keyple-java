@@ -50,6 +50,12 @@ public class BlankSmartSelectionReader extends AbstractLocalReader implements Sm
   void terminateSeCommunication() {}
 
   @Override
+  protected void activateReaderProtocol(String readerProtocolName) {}
+
+  @Override
+  protected void deactivateReaderProtocol(String readerProtocolName) {}
+
+  @Override
   public ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector) {
     return null;
   }
@@ -58,15 +64,9 @@ public class BlankSmartSelectionReader extends AbstractLocalReader implements Sm
   public void closeLogicalChannel() {}
 
   @Override
-  protected String getCurrentProtocol() {
-    return null;
+  protected boolean isCurrentProtocol(String readerProtocolName) {
+    return false;
   }
-
-  @Override
-  public void activateProtocol(String readerProtocolName, String applicationProtocolName) {}
-
-  @Override
-  public void deactivateProtocol(String seProtocol) {}
 
   @Override
   public boolean isContactless() {

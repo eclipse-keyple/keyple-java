@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.regex.Pattern;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotFoundException;
@@ -33,8 +32,6 @@ import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeProcessing;
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemoval;
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetect;
 import org.eclipse.keyple.core.util.Assert;
-import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols;
-import org.eclipse.keyple.core.util.ContactsCardCommonProtocols;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,10 +70,6 @@ class StubReaderImpl extends AbstractObservableLocalReader
     stateService = initStateService();
 
     protocolsMap = new HashMap<String, String>();
-
-    // activates ISO protocols by default
-    activateProtocol(ContactsCardCommonProtocols.ISO_7816_3.name());
-    activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
   }
 
   /**
@@ -128,8 +121,12 @@ class StubReaderImpl extends AbstractObservableLocalReader
   }
 
   @Override
-  protected String getCurrentProtocol() {
-    return currentProtocol;
+  protected boolean isCurrentProtocol(String readerProtocolName) {
+    if (se != null && se.getSeProtocol() != null) {
+      return se.getSeProtocol().equals(readerProtocolName);
+    } else {
+      return false;
+    }
   }
 
   @Override
@@ -138,7 +135,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
   }
 
   @Override
-  public final void activateProtocol(String seProtocol) {
+  protected final void activateReaderProtocol(String seProtocol) {
 
     Assert.getInstance().notNull(seProtocol, "seProtocol");
 
@@ -156,7 +153,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
   }
 
   @Override
-  public final void deactivateProtocol(String seProtocol) {
+  protected final void deactivateReaderProtocol(String seProtocol) {
 
     Assert.getInstance().notNull(seProtocol, "seProtocol");
 
@@ -196,17 +193,6 @@ class StubReaderImpl extends AbstractObservableLocalReader
     }
     if (_se != null) {
       se = _se;
-      for (Map.Entry<String, String> entry : protocolsMap.entrySet()) {
-        Pattern p = Pattern.compile(entry.getValue());
-        if (p.matcher(se.getSeProtocol()).matches()) {
-          currentProtocol = entry.getKey();
-          break;
-        }
-      }
-      if (currentProtocol == null) {
-        // none of the entries in the map correspond to the current SE protocol
-        throw new KeypleReaderProtocolNotFoundException(se.getSeProtocol());
-      }
     }
   }
 

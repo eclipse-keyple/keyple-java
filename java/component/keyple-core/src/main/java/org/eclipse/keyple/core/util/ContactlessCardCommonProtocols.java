@@ -45,5 +45,5 @@ public enum ContactlessCardCommonProtocols {
   /* ---- other contactless proprietary protocols -------- */
   CALYPSO_OLD_CARD_PRIME,
 
-  PROTOCOL_MEMORY_ST25;
+  MEMORY_ST25;
 }

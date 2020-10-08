@@ -72,8 +72,8 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
   }
 
   @Override
-  protected String getCurrentProtocol() {
-    return null;
+  protected boolean isCurrentProtocol(String readerProtocolName) {
+    return false;
   }
 
   @Override
@@ -82,10 +82,10 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
   }
 
   @Override
-  public void activateProtocol(String readerProtocolName, String applicationProtocolName) {}
+  protected void activateReaderProtocol(String readerProtocolName) {}
 
   @Override
-  public void deactivateProtocol(String seProtocol) {}
+  protected void deactivateReaderProtocol(String readerProtocolName) {}
 
   @Override
   public boolean isContactless() {

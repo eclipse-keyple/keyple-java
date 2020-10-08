@@ -403,7 +403,9 @@ public class StubReaderTest extends BaseStubTest {
     final String poAid = "A000000291A000000191";
 
     // activate ISO_14443_4
-    reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
+    reader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // add observer
     readerObs =
@@ -512,7 +514,9 @@ public class StubReaderTest extends BaseStubTest {
         };
 
     // activate ISO_14443_4
-    reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
+    reader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // add observer
     reader.addObserver(readerObs);
@@ -557,7 +561,9 @@ public class StubReaderTest extends BaseStubTest {
     final CountDownLatch lock = new CountDownLatch(1);
 
     // activate ISO_14443_4
-    reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
+    reader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // add observer
     readerObs =
@@ -619,7 +625,9 @@ public class StubReaderTest extends BaseStubTest {
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
     // activate CALYPSO_OLD_CARD_PRIME
-    reader.activateProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name());
+    reader.activateProtocol(
+        StubSupportedProtocols.CALYPSO_OLD_CARD_PRIME.name(),
+        ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name());
 
     // CountDown lock
     final CountDownLatch lock = new CountDownLatch(1);
@@ -687,7 +695,9 @@ public class StubReaderTest extends BaseStubTest {
     final String poAid = "A000000291A000000191";
 
     // activate ISO_14443_4
-    reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
+    reader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // add observer
     readerObs =
@@ -751,7 +761,9 @@ public class StubReaderTest extends BaseStubTest {
     reader.insertSe(hoplinkSE());
 
     // activate ISO_14443_4
-    reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
+    reader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -778,7 +790,9 @@ public class StubReaderTest extends BaseStubTest {
     reader.insertSe(noApduResponseSE());
 
     // activate ISO_14443_4
-    reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
+    reader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -802,7 +816,9 @@ public class StubReaderTest extends BaseStubTest {
     reader.insertSe(partialSE());
 
     // activate ISO_14443_4
-    reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
+    reader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -833,7 +849,9 @@ public class StubReaderTest extends BaseStubTest {
     reader.insertSe(partialSE());
 
     // activate ISO_14443_4
-    reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
+    reader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -866,7 +884,9 @@ public class StubReaderTest extends BaseStubTest {
     reader.insertSe(partialSE());
 
     // activate ISO_14443_4
-    reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
+    reader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -899,7 +919,9 @@ public class StubReaderTest extends BaseStubTest {
     reader.insertSe(partialSE());
 
     // activate ISO_14443_4
-    reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
+    reader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -931,7 +953,9 @@ public class StubReaderTest extends BaseStubTest {
     reader.insertSe(partialSE());
 
     // activate ISO_14443_4
-    reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
+    reader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -959,7 +983,9 @@ public class StubReaderTest extends BaseStubTest {
     reader.insertSe(partialSE());
 
     // activate ISO_14443_4
-    reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
+    reader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -987,7 +1013,9 @@ public class StubReaderTest extends BaseStubTest {
     reader.insertSe(partialSE());
 
     // activate ISO_14443_4
-    reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
+    reader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -1015,7 +1043,9 @@ public class StubReaderTest extends BaseStubTest {
     reader.insertSe(partialSE());
 
     // activate ISO_14443_4
-    reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name());
+    reader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);

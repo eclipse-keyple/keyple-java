@@ -357,8 +357,12 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
 
   public static void configure(AbstractLocalReader r) {
 
-    // accept ISO_14443_4
-    when(r.getCurrentProtocol()).thenReturn(ContactlessCardCommonProtocols.ISO_14443_4.name());
+    // activate and accept ISO_14443_4
+    r.activateProtocol(
+        ContactlessCardCommonProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
+
+    when(r.isCurrentProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())).thenReturn(true);
 
     // return art
     when(r.getATR()).thenReturn(ByteArrayUtil.fromHex(ATR));
@@ -381,7 +385,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
         .when(r)
         .transmitApdu(ByteArrayUtil.fromHex("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00"));
 
-    // physical channel is open
-    doReturn(true).when(r).isPhysicalChannelOpen();
+    //    // physical channel is open
+    //    doReturn(true).when(r).isPhysicalChannelOpen();
   }
 }

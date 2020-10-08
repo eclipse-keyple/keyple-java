@@ -298,10 +298,10 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
      *  * Activates the detection of SEs using this protocol (if the plugin allows it).
      *
      *
-     * @param seProtocol The protocol to activate (must be not null).
+     * @param readerProtocolName The protocol to activate (must be not null).
      * @throws KeypleReaderProtocolNotSupportedException if the protocol is not supported.
      */
-    override fun activateProtocol(seProtocol: String?) {
+    override fun activateReaderProtocol(readerProtocolName: String?) {
         TODO("Not yet implemented")
     }
 
@@ -314,24 +314,25 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
      *  * Inhibits the detection of SEs using this protocol (if the plugin allows it).
      *
      *
-     * @param seProtocol The protocol to deactivate (must be not null).
+     * @param readerProtocolName The protocol to deactivate (must be not null).
      */
-    override fun deactivateProtocol(seProtocol: String?) {
+    override fun deactivateReaderProtocol(readerProtocolName: String?) {
         TODO("Not yet implemented")
     }
 
     /**
-     * Gets the communication protocol used by the current SE.
+     * Tells if the provided protocol matches the current protocol.
      *
      *
      * This method must be implemented by the plugin which is able to determine the protocol of the
      * SE from the technical data it has available.
      *
-     * @return A not empty String.
+     * @param A not empty String.
+     * @return True or false
      * @throws KeypleReaderProtocolNotFoundException if it is not possible to determine the protocol.
      * @since 1.0
      */
-    override fun getCurrentProtocol(): String {
+    override fun isCurrentProtocol(readerProtocolName: String?): Boolean {
         TODO("Not yet implemented")
     }
 

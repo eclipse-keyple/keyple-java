@@ -26,7 +26,8 @@ fun AndroidNfcReader.configFlags(presenceCheckDelay: Int? = null, noPlateformSou
 }
 
 fun AndroidNfcReader.configProtocol(seCommonProtocols: ContactlessCardCommonProtocols) {
-    this.activateProtocol(seCommonProtocols.name)
+    TODO("update with new protocols management")
+    // this.activateProtocol(seCommonProtocols.name)
 }
 
 fun Context.getColorResource(id: Int): Int {

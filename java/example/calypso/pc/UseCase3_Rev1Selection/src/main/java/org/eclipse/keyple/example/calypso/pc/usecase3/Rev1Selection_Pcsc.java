@@ -29,6 +29,7 @@ import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
+import org.eclipse.keyple.plugin.pcsc.PcscSupportedProtocols;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,8 +75,10 @@ public class Rev1Selection_Pcsc {
     SeReader poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
     ((PcscReader) poReader).setContaclessMode(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
-    /* Activate additional protocol */
-    poReader.activateProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name());
+    /* Activate protocols */
+    poReader.activateProtocol(
+        PcscSupportedProtocols.CALYPSO_OLD_CARD_PRIME.name(),
+        ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name());
 
     logger.info(
         "=============== UseCase Calypso #1: ATR based explicit selection (PO Rev1) ===========");

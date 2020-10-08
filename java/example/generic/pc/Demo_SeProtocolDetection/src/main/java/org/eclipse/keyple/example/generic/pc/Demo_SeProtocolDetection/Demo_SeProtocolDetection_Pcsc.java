@@ -23,6 +23,7 @@ import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
+import org.eclipse.keyple.plugin.pcsc.PcscSupportedProtocols;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,9 +64,16 @@ public class Demo_SeProtocolDetection_Pcsc {
     // configure reader
     ((PcscReader) poReader).setContaclessMode(false).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
-    /* Activate additional protocol */
-    poReader.activateProtocol(ContactlessCardCommonProtocols.MIFARE_CLASSIC.name());
-    poReader.activateProtocol(ContactlessCardCommonProtocols.PROTOCOL_MEMORY_ST25.name());
+    /* Activate protocols */
+    poReader.activateProtocol(
+        PcscSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
+    poReader.activateProtocol(
+        PcscSupportedProtocols.MIFARE_CLASSIC.name(),
+        ContactlessCardCommonProtocols.MIFARE_CLASSIC.name());
+    poReader.activateProtocol(
+        PcscSupportedProtocols.MEMORY_ST25.name(),
+        ContactlessCardCommonProtocols.MEMORY_ST25.name());
 
     // Set terminal as Observer of the first reader
     ((ObservableReader) poReader).addObserver(observer);

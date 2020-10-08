@@ -51,7 +51,7 @@ final class PcscProtocolSetting {
     map.put(PcscSupportedProtocols.MIFARE_DESFIRE.name(), "3B8180018080");
 
     map.put(
-        PcscSupportedProtocols.PROTOCOL_MEMORY_ST25.name(),
+        PcscSupportedProtocols.MEMORY_ST25.name(),
         "3B8F8001804F0CA000000306070007D0020C00B6");
 
     map.put(PcscSupportedProtocols.ISO_7816_3.name(), "3.*");

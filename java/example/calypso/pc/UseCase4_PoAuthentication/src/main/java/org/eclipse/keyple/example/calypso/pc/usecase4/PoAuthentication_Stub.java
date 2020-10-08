@@ -32,6 +32,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.util.ContactsCardCommonProtocols;
 import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.common.calypso.stub.StubCalypsoClassic;
@@ -40,6 +41,7 @@ import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
+import org.eclipse.keyple.plugin.stub.StubSupportedProtocols;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,10 +94,12 @@ public class PoAuthentication_Stub {
     SeReader poReader = stubPlugin.getReader("poReader");
     SeReader samReader = stubPlugin.getReader("samReader");
 
-    // Check if the reader exists
-    if (poReader == null || samReader == null) {
-      throw new IllegalStateException("Bad PO or SAM reader setup");
-    }
+    // activate protocols
+    poReader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
+    samReader.activateProtocol(
+        StubSupportedProtocols.ISO_7816_3.name(), ContactsCardCommonProtocols.ISO_7816_3.name());
 
     // Create 'virtual' Calypso PO
     StubSecureElement calypsoStubSe = new StubCalypsoClassic();
