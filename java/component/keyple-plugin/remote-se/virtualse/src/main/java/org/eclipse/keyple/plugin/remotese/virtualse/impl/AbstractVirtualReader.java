@@ -187,7 +187,7 @@ abstract class AbstractVirtualReader extends AbstractReader {
    * @since 1.0
    */
   @Override
-  public void releaseChannel(){
+  public void releaseChannel() {
     // Send the message as a request even if no return is expected
     sendRequest(KeypleMessageDto.Action.RELEASE_CHANNEL, null);
   }

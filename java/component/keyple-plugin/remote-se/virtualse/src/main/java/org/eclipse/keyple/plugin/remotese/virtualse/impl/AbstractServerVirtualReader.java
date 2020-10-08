@@ -184,7 +184,6 @@ abstract class AbstractServerVirtualReader implements RemoteSeServerReader, Prox
     return reader.getClientNodeId();
   }
 
-
   /**
    * {@inheritDoc}
    *

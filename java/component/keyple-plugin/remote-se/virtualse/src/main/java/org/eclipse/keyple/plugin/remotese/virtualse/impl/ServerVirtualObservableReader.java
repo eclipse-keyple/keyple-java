@@ -184,5 +184,4 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
   ServerVirtualObservableReader getMasterReader() {
     return masterReader;
   }
-
 }
