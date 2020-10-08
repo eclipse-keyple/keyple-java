@@ -47,4 +47,25 @@ public interface PcscPlugin extends ObservablePlugin {
    * @since 1.0
    */
   void setReaderNameFilter(boolean contactlessMode, String readerNameFilter);
+
+  /**
+   * Sets a protocol identification rule based on an ATR analysis.
+   *
+   * <p>The rule is a regular expression contained in a String.
+   *
+   * <ul>
+   *   <li>If a rule already exists for the provided protocol, it is replaced.
+   *   <li>If there is no rule for the provided protocol, it is added.
+   * </ul>
+   *
+   * Note: A predefined list of identification rules is already integrated (see {@link
+   * PcscProtocolSetting}), however, depending on the type of reader used the ATR returned when
+   * presenting contactless cards may vary. It is therefore important to be able to update these
+   * rules.
+   *
+   * @param readerProtocolName A not empty String.
+   * @param protocolRule A not empty String.
+   * @since 1.0
+   */
+  void setProtocolIdentificationRule(String readerProtocolName, String protocolRule);
 }

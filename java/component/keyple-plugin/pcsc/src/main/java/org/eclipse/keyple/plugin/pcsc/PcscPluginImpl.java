@@ -261,6 +261,16 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
   }
 
   /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
+  @Override
+  public void setProtocolIdentificationRule(String readerProtocolName, String protocolRule) {
+    PcscProtocolSetting.setProtocolIdentificationRule(readerProtocolName, protocolRule);
+  }
+
+  /**
    * (package-private)<br>
    * Attempts to determine the transmission mode of the reader whose name is provided.<br>
    * This determination is made by a test based on regular expressions provided by the application
