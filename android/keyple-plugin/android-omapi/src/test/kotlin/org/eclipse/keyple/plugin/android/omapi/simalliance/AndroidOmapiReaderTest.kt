@@ -19,9 +19,10 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.seproxy.message.ApduRequest
 import org.eclipse.keyple.core.seproxy.message.ChannelControl
 import org.eclipse.keyple.core.seproxy.message.SeRequest
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
+import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactsCardCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiReaderTest
+import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiSupportedProtocols
 import org.junit.Assert
 import org.junit.Test
 import org.simalliance.openmobileapi.Channel
@@ -35,7 +36,9 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
     override lateinit var reader: AndroidOmapiReader
 
     override fun buildOmapiReaderImpl(nativeReader: Reader): AndroidOmapiReader {
-        return AndroidOmapiReader(nativeReader, PLUGIN_NAME, nativeReader.name)
+        var androidOmapiReader = AndroidOmapiReader(nativeReader, PLUGIN_NAME, nativeReader.name)
+        androidOmapiReader.activateProtocol(AndroidOmapiSupportedProtocols.ISO_7816_3.name, ContactsCardCommonProtocols.ISO_7816_3.name)
+        return androidOmapiReader
     }
 
     override fun getNativeReaderName(): String {
@@ -51,7 +54,7 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
         val seRequest = SeRequest(SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
+                .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(PO_AID)
                         .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
                         .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build())
@@ -69,7 +72,7 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
         val seRequest = SeRequest(SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
+                .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(PO_AID)
                         .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
                         .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build())

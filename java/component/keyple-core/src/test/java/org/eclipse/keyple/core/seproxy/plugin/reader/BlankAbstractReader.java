@@ -12,13 +12,10 @@
 package org.eclipse.keyple.core.seproxy.plugin.reader;
 
 import java.util.List;
-import java.util.Map;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 
 /** A blank class extending AbstractReader only purpose is to be tested and spied by mockito */
 public class BlankAbstractReader extends AbstractReader {
@@ -46,14 +43,14 @@ public class BlankAbstractReader extends AbstractReader {
   }
 
   @Override
-  public void addSeProtocolSetting(SeProtocol seProtocol, String protocolRule) {}
+  public void activateProtocol(String readerProtocolName, String applicationProtocolName) {}
 
   @Override
-  public void setSeProtocolSetting(Map<SeProtocol, String> protocolSetting) {}
+  public void deactivateProtocol(String seProtocol) {}
 
   @Override
-  public TransmissionMode getTransmissionMode() {
-    return null;
+  public boolean isContactless() {
+    return true;
   }
 
   @Override

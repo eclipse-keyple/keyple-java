@@ -21,7 +21,6 @@ import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -63,12 +62,12 @@ public class StubPluginTest extends BaseStubTest {
     final String READER_NAME = "plugOneReaderSync_sucess";
 
     // connect reader
-    stubPlugin.plugStubReader(READER_NAME, TransmissionMode.CONTACTLESS, true);
+    stubPlugin.plugStubReader(READER_NAME, true, true);
 
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader stubReader = (StubReader) stubPlugin.getReaders().values().toArray()[0];
     Assert.assertEquals(READER_NAME, stubReader.getName());
-    Assert.assertEquals(TransmissionMode.CONTACTLESS, stubReader.getTransmissionMode());
+    Assert.assertEquals(true, stubReader.isContactless());
   }
 
   /** Plug one reader synchronously Check: Event thrown */

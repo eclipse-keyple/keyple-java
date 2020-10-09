@@ -21,7 +21,6 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.integration.Integration;
 import org.eclipse.keyple.plugin.remotese.integration.VirtualReaderBaseTest;
 import org.junit.*;
@@ -86,7 +85,7 @@ public class VirtualObservableReaderTest extends VirtualReaderBaseTest {
     // configure mock native reader
     ObservableReader mockReader = Mockito.spy(ObservableReader.class);
     doReturn(readerName).when(mockReader).getName();
-    doReturn(TransmissionMode.CONTACTLESS).when(mockReader).getTransmissionMode();
+    doReturn(true).when(mockReader).isContactless();
 
     // Configure slaveAPI to find mockReader
     // TODO : findLocalReader real method is called, the mock does not work maybe due to

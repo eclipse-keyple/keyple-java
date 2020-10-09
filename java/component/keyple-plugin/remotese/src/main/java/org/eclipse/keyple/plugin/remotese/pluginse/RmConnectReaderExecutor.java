@@ -15,7 +15,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import java.util.Map;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.rm.IRemoteMethodExecutor;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
 import org.eclipse.keyple.plugin.remotese.transport.*;
@@ -53,7 +52,7 @@ class RmConnectReaderExecutor implements IRemoteMethodExecutor {
     // parseResponse msg
     String nativeReaderName = keypleDto.getNativeReaderName();
     String slaveNodeId = keypleDto.getRequesterNodeId();
-    String transmissionMode = body.get("transmissionMode").getAsString();
+    Boolean isContactless = body.get("isContactless").getAsBoolean();
     Boolean isObservable = body.get("isObservable").getAsBoolean();
 
     Map<String, String> options =
@@ -68,7 +67,7 @@ class RmConnectReaderExecutor implements IRemoteMethodExecutor {
                   slaveNodeId,
                   nativeReaderName,
                   this.dtoSender,
-                  TransmissionMode.valueOf(transmissionMode),
+                  isContactless,
                   isObservable,
                   options);
 

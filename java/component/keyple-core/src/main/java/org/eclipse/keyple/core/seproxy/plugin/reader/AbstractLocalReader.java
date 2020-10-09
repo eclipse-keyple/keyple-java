@@ -16,9 +16,11 @@ import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotFoundException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotSupportedException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
+import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +43,23 @@ public abstract class AbstractLocalReader extends AbstractReader {
   /** logical channel status flag */
   private boolean logicalChannelIsOpen = false;
 
+  /**
+   * Map associating reader and application protocol names
+   *
+   * <p>The reader's name is the key.<br>
+   * The application's name is the value.
+   */
+  private final Map<String, String> protocolAssociations;
+
+  /**
+   * The current protocol is determined after opening the physical channel and removed when closing.
+   */
+  private String currentProtocol;
+
   /** Timestamp recorder */
   private long before;
+
+  private boolean useDefaultProtocol;
 
   /**
    * Reader constructor
@@ -61,6 +78,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
     if (logger.isDebugEnabled()) {
       this.before = System.nanoTime();
     }
+    protocolAssociations = new LinkedHashMap<String, String>();
   }
   /**
    * Check the presence of a SE
@@ -96,7 +114,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
 
     closeLogicalChannel();
     try {
-      closePhysicalChannel();
+      resetProtocolAndClosePhysicalChannel();
     } catch (KeypleReaderIOException e) {
       if (logger.isDebugEnabled()) {
         logger.debug(
@@ -228,6 +246,18 @@ public abstract class AbstractLocalReader extends AbstractReader {
   protected abstract void openPhysicalChannel();
 
   /**
+   * Opens the physical channel, determines and keep the current protocol.
+   *
+   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed and
+   *     the physical channel could not be open.
+   * @since 1.0
+   */
+  private void openPhysicalChannelAndSetProtocol() {
+    openPhysicalChannel();
+    computeCurrentProtocol();
+  }
+
+  /**
    * Attempts to close the current physical channel.
    *
    * <p>This method must not return normally if the physical channel could not be closed.
@@ -236,6 +266,18 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * @since 0.9
    */
   protected abstract void closePhysicalChannel();
+
+  /**
+   * Closes the physical channel and resets the current protocol info.
+   *
+   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @since 1.0
+   */
+  private void resetProtocolAndClosePhysicalChannel() {
+    currentProtocol = null;
+    useDefaultProtocol = false;
+    closePhysicalChannel();
+  }
 
   /**
    * Tells if the physical channel is open or not.
@@ -272,65 +314,59 @@ public abstract class AbstractLocalReader extends AbstractReader {
     logicalChannelIsOpen = false;
   }
 
-  /* ==== Protocol management =========================================== */
+  /**
+   * Tells if the current card communicates with the protocol provided as an argument.
+   *
+   * <p>The protocol identification string must match one of the protocols supported by this reader.
+   *
+   * <p>This method must be implemented by the plugin's reader, which is the only one able to
+   * determine if the provided protocol matches the current protocol.
+   *
+   * <p>It returns true if the current protocol is the protocol provided as an argument, false if it
+   * is not.
+   *
+   * @param readerProtocolName A not empty string.
+   * @return True or false.
+   * @throws KeypleReaderProtocolNotFoundException if it is not possible to determine the protocol.
+   * @since 1.0
+   */
+  protected abstract boolean isCurrentProtocol(String readerProtocolName);
 
   /**
-   * PO selection map associating seProtocols and selection strings.
+   * Determines the current protocol used by the card.
    *
-   * <p>The String associated with a particular protocol can be anything that is relevant to be
-   * interpreted by reader plugins implementing protocolFlagMatches (e.g. ATR regex for Pcsc
-   * plugins, technology name for Nfc plugins, etc).
+   * <p>The Map {@link #protocolAssociations} containing the protocol names (reader and application)
+   * is iterated and the reader protocol (key of the Map) is checked with the reader.
+   *
+   * <p>If the Map is not empty:
+   *
+   * <ul>
+   *   <li>The boolean {@link #useDefaultProtocol} is set to false.
+   *   <li>If the test is positive (the protocol presented is the one used by the current card) then
+   *       the field {@link #currentProtocol} is set with the name of the protocol known to the
+   *       application.
+   *   <li>If none of the protocols present in the Map matches then the method returns null.
+   * </ul>
+   *
+   * <br>
+   * If the Map is empty, no other check is done, the String field {@link #currentProtocol} is set
+   * to null and the boolean field {@link #useDefaultProtocol} is set to true.
    */
-  private final Map<SeProtocol, String> protocolsMap = new HashMap<SeProtocol, String>();
+  private void computeCurrentProtocol() {
 
-  /**
-   * Defines the protocol setting Map to allow SE to be differentiated according to their
-   * communication protocol.
-   *
-   * @param seProtocol the protocol key identifier to be added to the plugin internal list
-   * @param protocolRule a string use to define how to identify the protocol
-   * @since 0.9
-   */
-  @Override
-  public void addSeProtocolSetting(SeProtocol seProtocol, String protocolRule) {
-    this.protocolsMap.put(seProtocol, protocolRule);
+    /* Determine the current protocol */
+    currentProtocol = null;
+    if (protocolAssociations.size() == 0) {
+      useDefaultProtocol = true;
+    } else {
+      useDefaultProtocol = false;
+      for (Map.Entry<String, String> entry : protocolAssociations.entrySet()) {
+        if (isCurrentProtocol(entry.getKey())) {
+          currentProtocol = entry.getValue();
+        }
+      }
+    }
   }
-
-  /**
-   * Complete the current setting map with the provided map
-   *
-   * @param protocolSetting the protocol setting map
-   */
-  @Override
-  public void setSeProtocolSetting(Map<SeProtocol, String> protocolSetting) {
-    this.protocolsMap.putAll(protocolSetting);
-  }
-
-  /**
-   * @return the Map containing the protocol definitions set by addSeProtocolSetting and
-   *     setSeProtocolSetting
-   * @since 0.9
-   */
-  protected final Map<SeProtocol, String> getProtocolsMap() {
-    return protocolsMap;
-  }
-
-  /**
-   * Test if the current protocol matches the provided protocol flag.
-   *
-   * <p>The method must be implemented by the ProxyReader plugin.
-   *
-   * <p>The protocol flag is used to retrieve from the protocolsMap the String used to differentiate
-   * this particular protocol. (e.g. in PC/SC the only way to identify the SE protocol is to analyse
-   * the ATR returned by the reader [ISO SE and memory card SE have specific ATR], in Android Nfc
-   * the SE protocol can be deduced with the TagTechnology interface).
-   *
-   * @param protocolFlag the protocol flag
-   * @return true if the current protocol matches the provided protocol flag
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
-   * @since 0.9
-   */
-  protected abstract boolean protocolFlagMatches(SeProtocol protocolFlag);
 
   /**
    * {@inheritDoc}
@@ -350,11 +386,11 @@ public abstract class AbstractLocalReader extends AbstractReader {
         this.terminateSeCommunication();
       } else {
         /* Not observed: close immediately the physical channel if requested */
-        closePhysicalChannel();
+        resetProtocolAndClosePhysicalChannel();
       }
     } else {
       /* Not observable: close immediately the physical channel if requested */
-      closePhysicalChannel();
+      resetProtocolAndClosePhysicalChannel();
     }
   }
 
@@ -374,9 +410,9 @@ public abstract class AbstractLocalReader extends AbstractReader {
 
     List<SeResponse> seResponses = new ArrayList<SeResponse>();
 
-    /* Open the physical channel if needed */
+    /* Open the physical channel if needed, determine the current protocol */
     if (!isPhysicalChannelOpen()) {
-      openPhysicalChannel();
+      openPhysicalChannelAndSetProtocol();
     }
 
     /* loop over all SeRequest provided in the list */
@@ -433,9 +469,9 @@ public abstract class AbstractLocalReader extends AbstractReader {
   @Override
   protected final SeResponse processSeRequest(SeRequest seRequest, ChannelControl channelControl) {
 
-    /* Open the physical channel if needed */
+    /* Open the physical channel if needed, determine the current protocol */
     if (!isPhysicalChannelOpen()) {
-      openPhysicalChannel();
+      openPhysicalChannelAndSetProtocol();
     }
 
     SeResponse seResponse;
@@ -530,6 +566,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    *
    * @param seSelector A not null {@link SeSelector}.
    * @return A not null {@link SelectionStatus}.
+   * @throws IllegalStateException in case of configuration inconsistency.
    * @see #processSeRequestLogical(SeRequest)
    */
   private SelectionStatus processSelection(SeSelector seSelector) {
@@ -538,21 +575,20 @@ public abstract class AbstractLocalReader extends AbstractReader {
     ApduResponse fciResponse;
     boolean hasMatched = true;
 
+    if (seSelector.getSeProtocol() != null && useDefaultProtocol) {
+      throw new IllegalStateException(
+          "Protocol " + seSelector.getSeProtocol() + " not associated to a reader protocol.");
+    }
+
     // check protocol if enabled
-    if (seSelector.getSeProtocol() != null && !protocolFlagMatches(seSelector.getSeProtocol())) {
-      answerToReset = null;
-      fciResponse = null;
-      hasMatched = false;
-    } else {
+    if (seSelector.getSeProtocol() == null
+        || useDefaultProtocol
+        || seSelector.getSeProtocol().equals(currentProtocol)) {
       // protocol check succeeded, check ATR if enabled
       byte[] atr = getATR();
       answerToReset = new AnswerToReset(atr);
       SeSelector.AtrFilter atrFilter = seSelector.getAtrFilter();
-      if (atrFilter != null && !checkAtr(atr, atrFilter)) {
-        // check failed
-        hasMatched = false;
-        fciResponse = null;
-      } else {
+      if (atrFilter == null || checkAtr(atr, atrFilter)) {
         // no ATR filter or ATR check succeeded, select by AID if enabled.
         SeSelector.AidSelector aidSelector = seSelector.getAidSelector();
         if (aidSelector != null) {
@@ -561,7 +597,16 @@ public abstract class AbstractLocalReader extends AbstractReader {
         } else {
           fciResponse = null;
         }
+      } else {
+        // check failed
+        hasMatched = false;
+        fciResponse = null;
       }
+    } else {
+      // protocol failed
+      answerToReset = null;
+      fciResponse = null;
+      hasMatched = false;
     }
     return new SelectionStatus(answerToReset, fciResponse, hasMatched);
   }
@@ -575,6 +620,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * @param seRequest The {@link SeRequest} to be processed (must be not null).
    * @return seResponse A not null {@link SeResponse}.
    * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws IllegalStateException in case of configuration inconsistency.
    * @see #processSeRequests(List, MultiSeRequestProcessing, ChannelControl)
    * @see #processSeRequest(SeRequest, ChannelControl)
    * @since 0.9
@@ -744,4 +790,57 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * @since 0.9
    */
   abstract void terminateSeCommunication();
+
+  /**
+   * Activates the protocol provided from the reader's implementation point of view.
+   *
+   * <p>The argument is a reader specific String identifying the protocol.
+   *
+   * <p>Must implemented by the plugin.
+   *
+   * @param readerProtocolName A not empty String.
+   * @throws KeypleReaderProtocolNotSupportedException if the protocol is not supported.
+   * @since 1.0
+   */
+  protected abstract void activateReaderProtocol(String readerProtocolName);
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
+  @Override
+  public final void activateProtocol(String readerProtocolName, String applicationProtocolName) {
+
+    Assert.getInstance()
+        .notEmpty(readerProtocolName, "readerProtocolName")
+        .notEmpty(applicationProtocolName, "applicationProtocolName");
+
+    activateReaderProtocol(readerProtocolName);
+    protocolAssociations.put(readerProtocolName, applicationProtocolName);
+  }
+
+  /**
+   * Deactivates the protocol provided from the reader's implementation point of view.
+   *
+   * <p>The argument is a reader specific String identifying the protocol.
+   *
+   * @param readerProtocolName A not empty String.
+   * @throws KeypleReaderProtocolNotSupportedException if the protocol is not supported.
+   * @since 1.0
+   */
+  protected abstract void deactivateReaderProtocol(String readerProtocolName);
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
+  public final void deactivateProtocol(String readerProtocolName) {
+
+    Assert.getInstance().notEmpty(readerProtocolName, "readerProtocolName");
+
+    protocolAssociations.remove(readerProtocolName);
+    deactivateReaderProtocol(readerProtocolName);
+  }
 }

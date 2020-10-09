@@ -28,7 +28,7 @@ public class StubSe1 extends StubSecureElement {
   }
 
   @Override
-  public String getSeProcotol() {
+  public String getSeProtocol() {
     return seProtocol;
   }
 }

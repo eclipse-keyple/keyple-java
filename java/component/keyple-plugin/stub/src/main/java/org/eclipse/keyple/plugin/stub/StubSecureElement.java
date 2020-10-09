@@ -39,8 +39,12 @@ public abstract class StubSecureElement {
     isPhysicalChannelOpen = false;
   }
 
-  /** @return SE protocol supported by the SE */
-  public abstract String getSeProcotol();
+  /**
+   * Gets the SE protocol supported by the SE
+   *
+   * @return A not empty String.
+   */
+  public abstract String getSeProtocol();
 
   Map<String, String> hexCommands = new HashMap<String, String>();
 

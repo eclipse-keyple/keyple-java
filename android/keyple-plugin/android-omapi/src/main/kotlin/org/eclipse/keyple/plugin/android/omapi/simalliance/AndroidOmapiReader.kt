@@ -19,6 +19,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractLocalReader
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiReader
+import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiSupportedProtocols
 import org.simalliance.openmobileapi.Channel
 import org.simalliance.openmobileapi.Reader
 import org.simalliance.openmobileapi.Session
@@ -140,6 +141,49 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
             it.session.close()
             openChannel = null
         }
+    }
+
+    /**
+     * Activates the provided SE protocol.
+     *
+     *
+     *  * Ask the plugin to take this protocol into account if an SE using this protocol is
+     * identified during the selection phase.
+     *  * Activates the detection of SEs using this protocol (if the plugin allows it).
+     *
+     *
+     * @param readerProtocolName The protocol to activate (must be not null).
+     * @throws KeypleReaderProtocolNotSupportedException if the protocol is not supported.
+     */
+    override fun activateReaderProtocol(readerProtocolName: String?) {
+        // Do nothing
+    }
+
+    /**
+     * Deactivates the provided SE protocol.
+     *
+     *
+     *  * Ask the plugin to ignore this protocol if an SE using this protocol is identified during
+     * the selection phase.
+     *  * Inhibits the detection of SEs using this protocol (if the plugin allows it).
+     *
+     *
+     * @param readerProtocolName The protocol to deactivate (must be not null).
+     */
+    override fun deactivateReaderProtocol(readerProtocolName: String?) {
+        // Do nothing
+    }
+
+    /**
+     * Tells if the provided protocol matches the current protocol.
+     *
+     * @param readerProtocolName A not empty String.
+     * @return True or false
+     * @throws KeypleReaderProtocolNotFoundException if it is not possible to determine the protocol.
+     * @since 1.0
+     */
+    override fun isCurrentProtocol(readerProtocolName: String?): Boolean {
+        return AndroidOmapiSupportedProtocols.ISO_7816_3.name == readerProtocolName
     }
 
     /** Closes the logical channel explicitly.  */
