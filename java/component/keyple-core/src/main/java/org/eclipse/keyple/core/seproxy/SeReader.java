@@ -74,6 +74,7 @@ public interface SeReader extends ProxyElement {
    *
    * @param readerProtocolName A not empty String.
    * @throws KeypleReaderProtocolNotSupportedException if the protocol is not supported.
+   * @throws IllegalStateException if the protocol was not activated.
    * @since 1.0
    */
   void deactivateProtocol(String readerProtocolName);
