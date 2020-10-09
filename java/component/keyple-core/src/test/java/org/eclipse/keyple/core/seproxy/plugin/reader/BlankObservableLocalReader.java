@@ -11,6 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.plugin.reader;
 
+import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 
 public class BlankObservableLocalReader extends AbstractObservableLocalReader {
@@ -28,7 +29,7 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
   @Override
   public final ObservableReaderStateService initStateService() {
 
-    return ObservableReaderStateService.builder(this)
+    return ObservableReaderStateService.builder(this, Executors.newSingleThreadExecutor())
         .waitForSeInsertionWithNativeDetection()
         .waitForSeProcessingWithNativeDetection()
         .waitForSeRemovalWithNativeDetection()

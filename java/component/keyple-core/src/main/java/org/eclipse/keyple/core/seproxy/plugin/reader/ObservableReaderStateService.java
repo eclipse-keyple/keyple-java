@@ -14,7 +14,6 @@ package org.eclipse.keyple.core.seproxy.plugin.reader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.slf4j.Logger;
@@ -41,14 +40,16 @@ public class ObservableReaderStateService {
   private AbstractObservableState currentState;
 
   /* Single Executor to run State Service watch */
-  private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
+  private final ExecutorService executorService;
 
   private ObservableReaderStateService(
       AbstractObservableLocalReader reader,
       Map<AbstractObservableState.MonitoringState, AbstractObservableState> states,
-      AbstractObservableState.MonitoringState initState) {
+      AbstractObservableState.MonitoringState initState,
+      ExecutorService executorService) {
     this.states = states;
     this.reader = reader;
+    this.executorService = executorService;
     switchState(initState);
   }
 
@@ -122,11 +123,13 @@ public class ObservableReaderStateService {
    * Builder providing steps to configure ObservableReaderStateService
    *
    * @param reader: Not null instance of {@link AbstractObservableLocalReader}
+   * @param executorService: Not null instance of {@link ExecutorService}
    * @return A non null instance
    * @since 1.0
    */
-  public static SeInsertionStep builder(AbstractObservableLocalReader reader) {
-    return new Builder(reader);
+  public static SeInsertionStep builder(
+      AbstractObservableLocalReader reader, ExecutorService executorService) {
+    return new Builder(reader, executorService);
   }
 
   /**
@@ -244,9 +247,11 @@ public class ObservableReaderStateService {
         new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
 
     private AbstractObservableLocalReader reader;
+    private ExecutorService executorService;
 
-    private Builder(AbstractObservableLocalReader reader) {
+    private Builder(AbstractObservableLocalReader reader, ExecutorService executorService) {
       this.reader = reader;
+      this.executorService = executorService;
       this.states.put(
           AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
           new WaitForStartDetectState(this.reader));
@@ -268,7 +273,7 @@ public class ObservableReaderStateService {
           new CardPresentMonitoringJob(reader, 200, true);
       states.put(
           AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-          new WaitForSeInsertionState(this.reader, cardPresentMonitoringJob, executorService));
+          new WaitForSeInsertionState(this.reader, cardPresentMonitoringJob, this.executorService));
       return this;
     }
 
@@ -281,7 +286,8 @@ public class ObservableReaderStateService {
           new SmartInsertionMonitoringJob((SmartInsertionReader) reader);
       states.put(
           AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-          new WaitForSeInsertionState(this.reader, smartInsertionMonitoringJob, executorService));
+          new WaitForSeInsertionState(
+              this.reader, smartInsertionMonitoringJob, this.executorService));
       return this;
     }
 
@@ -303,7 +309,8 @@ public class ObservableReaderStateService {
           new SmartRemovalMonitoringJob((SmartRemovalReader) reader);
       this.states.put(
           AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-          new WaitForSeProcessingState(this.reader, smartRemovalMonitoringJob, executorService));
+          new WaitForSeProcessingState(
+              this.reader, smartRemovalMonitoringJob, this.executorService));
       return this;
     }
 
@@ -323,7 +330,8 @@ public class ObservableReaderStateService {
           new CardAbsentPingMonitoringJob(this.reader);
       states.put(
           AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-          new WaitForSeRemovalState(this.reader, cardAbsentPingMonitoringJob, executorService));
+          new WaitForSeRemovalState(
+              this.reader, cardAbsentPingMonitoringJob, this.executorService));
       return this;
     }
 
@@ -336,7 +344,7 @@ public class ObservableReaderStateService {
           new SmartRemovalMonitoringJob((SmartRemovalReader) reader);
       states.put(
           AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-          new WaitForSeRemovalState(this.reader, smartRemovalMonitoringJob, executorService));
+          new WaitForSeRemovalState(this.reader, smartRemovalMonitoringJob, this.executorService));
       return this;
     }
 
@@ -344,7 +352,10 @@ public class ObservableReaderStateService {
     @Override
     public ObservableReaderStateService build() {
       return new ObservableReaderStateService(
-          reader, states, AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION);
+          reader,
+          states,
+          AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
+          executorService);
     }
   }
 }

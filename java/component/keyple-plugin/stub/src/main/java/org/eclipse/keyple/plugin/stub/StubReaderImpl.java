@@ -11,6 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.stub;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
@@ -34,6 +36,9 @@ class StubReaderImpl extends AbstractObservableLocalReader
 
   private StubSecureElement se;
   boolean isContactless = true;
+
+  private ExecutorService executorService =
+      Executors.newSingleThreadExecutor(new NamedThreadFactory("MonitoringThread-" + this));
 
   private final AtomicBoolean loopWaitSe = new AtomicBoolean();
   private final AtomicBoolean loopWaitSeRemoval = new AtomicBoolean();
@@ -237,7 +242,10 @@ class StubReaderImpl extends AbstractObservableLocalReader
 
   @Override
   protected final ObservableReaderStateService initStateService() {
-    return ObservableReaderStateService.builder(this)
+    // To be fixed with KEYP-349
+    executorService =
+        Executors.newSingleThreadExecutor(new NamedThreadFactory("MonitoringThread-" + getName()));
+    return ObservableReaderStateService.builder(this, executorService)
         .waitForSeInsertionWithSmartDetection()
         .waitForSeProcessingWithSmartDetection()
         .waitForSeRemovalWithSmartDetection()

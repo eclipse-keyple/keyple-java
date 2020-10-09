@@ -25,7 +25,7 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
 
   Integer mockDetect; // TODO check why mockDetect is not initialized!
   Integer detectCount = 0;
-  ExecutorService executorService = Executors.newSingleThreadExecutor();
+  ExecutorService executorService = null;
 
   /**
    * Reader constructor
@@ -44,8 +44,9 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
 
   @Override
   public final ObservableReaderStateService initStateService() {
-
-    return ObservableReaderStateService.builder(this)
+    // To be fixed with KEYP-349
+    executorService = Executors.newSingleThreadExecutor();
+    return ObservableReaderStateService.builder(this, executorService)
         .waitForSeInsertionWithSmartDetection()
         .waitForSeProcessingWithNativeDetection()
         .waitForSeRemovalWithPollingDetection()

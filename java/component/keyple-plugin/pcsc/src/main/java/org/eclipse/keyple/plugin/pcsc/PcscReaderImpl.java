@@ -11,6 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.pcsc;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 import javax.smartcardio.*;
@@ -57,6 +59,8 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   private static final long INSERT_LATENCY = 500;
   private static final long REMOVAL_LATENCY = 500;
 
+  private ExecutorService executorService;
+
   private final AtomicBoolean loopWaitSe = new AtomicBoolean();
   private final AtomicBoolean loopWaitSeRemoval = new AtomicBoolean();
 
@@ -98,18 +102,21 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   @Override
   public ObservableReaderStateService initStateService() {
 
+    // To be fixed with KEYP-349
+    executorService = Executors.newSingleThreadExecutor();
+
     ObservableReaderStateService observableReaderStateService = null;
 
     if (!usePingPresence) {
       observableReaderStateService =
-          ObservableReaderStateService.builder(this)
+          ObservableReaderStateService.builder(this, executorService)
               .waitForSeInsertionWithSmartDetection()
               .waitForSeProcessingWithSmartDetection()
               .waitForSeRemovalWithSmartDetection()
               .build();
     } else {
       observableReaderStateService =
-          ObservableReaderStateService.builder(this)
+          ObservableReaderStateService.builder(this, executorService)
               .waitForSeInsertionWithPollingDetection()
               .waitForSeProcessingWithSmartDetection()
               .waitForSeRemovalWithSmartDetection()
