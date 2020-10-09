@@ -23,7 +23,7 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.generic.GenericSeSelectionRequest;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
@@ -75,7 +75,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
 
     // Get and configure the PO reader
     SeReader seReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
-    ((PcscReader) seReader).setContaclessMode(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
+    ((PcscReader) seReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     logger.info(
         "=============== UseCase Generic #2: AID based default selection ===================");

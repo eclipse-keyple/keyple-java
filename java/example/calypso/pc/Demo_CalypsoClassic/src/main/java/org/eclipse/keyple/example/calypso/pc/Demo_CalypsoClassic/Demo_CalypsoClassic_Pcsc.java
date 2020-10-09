@@ -17,8 +17,8 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols;
-import org.eclipse.keyple.core.util.ContactsCardCommonProtocols;
+import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactsCardCommonProtocols;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -76,12 +76,12 @@ public class Demo_CalypsoClassic_Pcsc {
 
     /* Set PcSc settings per reader */
     ((PcscReader) poReader)
-        .setContaclessMode(true)
+        .setContactless(true)
         .setIsoProtocol(PcscReader.IsoProtocol.T1)
         .setSharingMode(PcscReader.SharingMode.SHARED);
 
     ((PcscReader) samReader)
-        .setContaclessMode(false)
+        .setContactless(false)
         .setIsoProtocol(PcscReader.IsoProtocol.T0)
         .setSharingMode(PcscReader.SharingMode.SHARED);
 

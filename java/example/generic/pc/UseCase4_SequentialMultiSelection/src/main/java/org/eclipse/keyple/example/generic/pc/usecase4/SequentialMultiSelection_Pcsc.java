@@ -57,7 +57,7 @@ public class SequentialMultiSelection_Pcsc {
 
     // Get and configure the PO reader
     SeReader seReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
-    ((PcscReader) seReader).setContaclessMode(true);
+    ((PcscReader) seReader).setContactless(true);
     ((PcscReader) seReader).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     logger.info(

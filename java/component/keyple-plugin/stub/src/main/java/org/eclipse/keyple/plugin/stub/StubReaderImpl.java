@@ -31,7 +31,6 @@ import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeInsertion;
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeProcessing;
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemoval;
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetect;
-import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,9 +45,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
   private static final Logger logger = LoggerFactory.getLogger(StubReaderImpl.class);
 
   private StubSecureElement se;
-  private String currentProtocol;
   boolean isContactless = true;
-  private final Map<String, String> protocolsMap;
 
   protected final ExecutorService executorService;
 
@@ -68,8 +65,6 @@ class StubReaderImpl extends AbstractObservableLocalReader
         Executors.newSingleThreadExecutor(new NamedThreadFactory("MonitoringThread-" + readerName));
 
     stateService = initStateService();
-
-    protocolsMap = new HashMap<String, String>();
   }
 
   /**
@@ -135,33 +130,30 @@ class StubReaderImpl extends AbstractObservableLocalReader
   }
 
   @Override
-  protected final void activateReaderProtocol(String seProtocol) {
+  protected final void activateReaderProtocol(String readerProtocolName) {
 
-    Assert.getInstance().notNull(seProtocol, "seProtocol");
-
-    String protocolRule = StubProtocolSetting.getSettings().get(seProtocol);
-
-    if (protocolRule == null || protocolRule.isEmpty()) {
-      throw new KeypleReaderProtocolNotSupportedException(seProtocol);
+    if (!StubProtocolSetting.getSettings().containsKey(readerProtocolName)) {
+      throw new KeypleReaderProtocolNotSupportedException(readerProtocolName);
     }
 
-    if (logger.isInfoEnabled()) {
-      logger.info(
-          "{}: Activate protocol {} with rule \"{}\".", getName(), seProtocol, protocolRule);
+    if (logger.isDebugEnabled()) {
+      logger.debug(
+          "{}: Activate protocol {} with rule \"{}\".",
+          getName(),
+          readerProtocolName,
+          StubProtocolSetting.getSettings().get(readerProtocolName));
     }
-    protocolsMap.put(seProtocol, protocolRule);
   }
 
   @Override
-  protected final void deactivateReaderProtocol(String seProtocol) {
+  protected final void deactivateReaderProtocol(String readerProtocolName) {
 
-    Assert.getInstance().notNull(seProtocol, "seProtocol");
-
-    if (logger.isInfoEnabled()) {
-      logger.info("{}: Deactivate protocol {}.", getName(), seProtocol);
+    if (!StubProtocolSetting.getSettings().containsKey(readerProtocolName)) {
+      throw new KeypleReaderProtocolNotSupportedException(readerProtocolName);
     }
-    if (protocolsMap.remove(seProtocol) == null && logger.isInfoEnabled()) {
-      logger.info("{}: Protocol {} was not active", getName(), seProtocol);
+
+    if (logger.isDebugEnabled()) {
+      logger.debug("{}: Deactivate protocol {}.", getName(), readerProtocolName);
     }
   }
 
@@ -198,7 +190,6 @@ class StubReaderImpl extends AbstractObservableLocalReader
 
   public synchronized void removeSe() {
     logger.debug("Remove SE {}", se != null ? se : "none");
-    currentProtocol = null;
     se = null;
   }
 

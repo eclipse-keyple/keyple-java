@@ -119,11 +119,11 @@ public class VerifyPin_Pcsc {
 
     // Get and configure the PO reader
     poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
-    ((PcscReader) poReader).setContaclessMode(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
+    ((PcscReader) poReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     // Get and configure the SAM reader
     SeReader samReader = readerPlugin.getReader(ReaderUtilities.getContactReaderName());
-    ((PcscReader) samReader).setContaclessMode(false).setIsoProtocol(PcscReader.IsoProtocol.T0);
+    ((PcscReader) samReader).setContactless(false).setIsoProtocol(PcscReader.IsoProtocol.T0);
 
     // Create a SAM resource after selecting the SAM
     SeSelection samSelection = new SeSelection();

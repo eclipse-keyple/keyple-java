@@ -343,7 +343,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   @Override
   protected void activateReaderProtocol(String readerProtocolName) {
 
-    if (PcscProtocolSetting.getSettings().containsKey(readerProtocolName)) {
+    if (!PcscProtocolSetting.getSettings().containsKey(readerProtocolName)) {
       throw new KeypleReaderProtocolNotSupportedException(readerProtocolName);
     }
 
@@ -366,7 +366,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    */
   @Override
   protected void deactivateReaderProtocol(String readerProtocolName) {
-    if (PcscProtocolSetting.getSettings().containsKey(readerProtocolName)) {
+    if (!PcscProtocolSetting.getSettings().containsKey(readerProtocolName)) {
       throw new KeypleReaderProtocolNotSupportedException(readerProtocolName);
     }
 
@@ -432,9 +432,9 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    * @since 1.0
    */
   @Override
-  public PcscReader setContactlessMode(boolean isContactless) {
+  public PcscReader setContactless(boolean contactless) {
 
-    this.isContactless = isContactless;
+    this.isContactless = contactless;
     return this;
   }
 

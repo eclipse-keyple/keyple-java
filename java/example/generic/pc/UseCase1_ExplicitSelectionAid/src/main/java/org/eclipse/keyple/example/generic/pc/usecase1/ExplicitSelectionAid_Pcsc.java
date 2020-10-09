@@ -61,7 +61,7 @@ public class ExplicitSelectionAid_Pcsc {
 
     // Get and configure the SE reader
     SeReader seReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
-    ((PcscReader) seReader).setContaclessMode(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
+    ((PcscReader) seReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     logger.info(
         "=============== UseCase Generic #1: AID based explicit selection ==================");

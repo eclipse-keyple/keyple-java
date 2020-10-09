@@ -30,7 +30,7 @@ import org.eclipse.keyple.core.selection.SeSelection
 import org.eclipse.keyple.core.seproxy.SeProxyService
 import org.eclipse.keyple.core.seproxy.event.ObservableReader
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent
-import org.eclipse.keyple.core.util.ContactlessCardCommonProtocols
+import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols
 import org.eclipse.keyple.example.adapter.EventAdapter
 import org.eclipse.keyple.example.calypso.android.nfc.R
 import org.eclipse.keyple.example.model.ChoiceEventModel

@@ -14,7 +14,6 @@ package org.eclipse.keyple.plugin.stub;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import org.eclipse.keyple.core.util.ContactsCardCommonProtocols;
 
 /**
  * This class contains all the parameters to identify the communication protocols supported by STUB
@@ -46,7 +45,7 @@ public final class StubProtocolSetting {
 
     settings.put(StubSupportedProtocols.MEMORY_ST25.name(), "MEMORY_ST25");
 
-    settings.put(ContactsCardCommonProtocols.ISO_7816_3.name(), "PROTOCOL_ISO7816_3");
+    settings.put(StubSupportedProtocols.ISO_7816_3.name(), "PROTOCOL_ISO7816_3");
   }
 
   /**

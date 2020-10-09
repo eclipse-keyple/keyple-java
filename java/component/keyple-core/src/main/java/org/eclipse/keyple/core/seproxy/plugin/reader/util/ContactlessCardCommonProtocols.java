@@ -9,19 +9,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.util;
+package org.eclipse.keyple.core.seproxy.plugin.reader.util;
 
 /**
- * This enum contains a non-exhaustive list of contacts smartcard communication protocols.
+ * This enum contains a non-exhaustive list of contactless smartcard communication protocols.
  *
  * @since 1.0
  */
-public enum ContactsCardCommonProtocols {
-  /* ---- contacts ISO standard ---------------------------- */
-  ISO_7816_3,
-  ISO_7816_3_TO,
-  ISO_7816_3_T1,
+public enum ContactlessCardCommonProtocols {
 
-  /* ---- contacts proprietary old Calypso SAM ---------------- */
-  CALYPSO_OLD_SAM_HSP; // High Speed Protocol
+  /* ---- contactless standard ------------- */
+  ISO_14443_4,
+
+  /* ---- contactless  NFC compliant ------------- */
+  NFC_A_ISO_14443_3A,
+  NFC_B_ISO_14443_3B,
+  NFC_F_JIS_6319_4,
+  NFC_V_ISO_15693,
+
+  /* ---- other contactless proprietary protocols -------- */
+  CALYPSO_OLD_CARD_PRIME,
 }

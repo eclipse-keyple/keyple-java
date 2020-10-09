@@ -35,16 +35,13 @@ public interface PcscPlugin extends ObservablePlugin {
    * ".*(Cherry TC|Identive).*".
    *
    * <p>Note: The use of this method is optional if the transmission mode of the readers is set
-   * directly at the reader level with the {@link PcscReader#setContactlessMode(boolean)} method.
-   * <br>
+   * directly at the reader level with the {@link PcscReader#setContactless(boolean)} method. <br>
    * Otherwise this method must imperatively be called twice to set the identification filters for
    * both transmission modes.
    *
    * @param contactlessMode True if the the filter is to be associated with contactless readers,
-   *     false if not. (must be not null).
+   *     false if not.
    * @param readerNameFilter A string a regular expression (must be not empty).
-   * @throws IllegalArgumentException if transmissionMode is null or readerNameFilter is null or
-   *     empty.
    * @since 1.0
    */
   void setReaderNameFilter(boolean contactlessMode, String readerNameFilter);
