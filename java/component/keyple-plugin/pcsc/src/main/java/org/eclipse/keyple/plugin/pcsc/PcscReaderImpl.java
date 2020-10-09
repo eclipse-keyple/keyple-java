@@ -331,6 +331,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
       // could occur if the SE was removed
       throw new KeypleReaderIOException(this.getName() + ": null channel.");
     }
+
     return apduResponseData.getBytes();
   }
 
@@ -346,8 +347,6 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    */
   @Override
   protected void activateReaderProtocol(String readerProtocolName) {
-
-    Assert.getInstance().notEmpty(readerProtocolName, "readerProtocolName");
 
     String protocolRule = PcscProtocolSetting.getSettings().get(readerProtocolName);
 
@@ -376,8 +375,6 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    */
   @Override
   protected void deactivateReaderProtocol(String readerProtocolName) {
-
-    Assert.getInstance().notNull(readerProtocolName, "seProtocol");
 
     if (logger.isInfoEnabled()) {
       logger.info("{}: Deactivate protocol {}.", getName(), readerProtocolName);
@@ -409,7 +406,9 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    */
   @Override
   protected boolean isCurrentProtocol(String readerProtocolName) {
+
     boolean match = false;
+
     String atr = ByteArrayUtil.toHex(card.getATR().getBytes());
     for (Map.Entry<String, String> entry : protocolRules.entrySet()) {
       Pattern p = Pattern.compile(entry.getKey());
@@ -418,6 +417,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         break;
       }
     }
+
     return match;
   }
 

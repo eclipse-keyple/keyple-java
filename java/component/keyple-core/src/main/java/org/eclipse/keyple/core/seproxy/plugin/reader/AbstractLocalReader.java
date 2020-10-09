@@ -20,6 +20,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotFoundExc
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotSupportedException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
+import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -812,8 +813,13 @@ public abstract class AbstractLocalReader extends AbstractReader {
    */
   @Override
   public final void activateProtocol(String readerProtocolName, String applicationProtocolName) {
-    protocolAssociations.put(readerProtocolName, applicationProtocolName);
+
+    Assert.getInstance()
+        .notEmpty(readerProtocolName, "readerProtocolName")
+        .notEmpty(applicationProtocolName, "applicationProtocolName");
+
     activateReaderProtocol(readerProtocolName);
+    protocolAssociations.put(readerProtocolName, applicationProtocolName);
   }
 
   /**
@@ -833,7 +839,12 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * @since 1.0
    */
   public final void deactivateProtocol(String readerProtocolName) {
-    protocolAssociations.remove(readerProtocolName);
+
+    Assert.getInstance().notEmpty(readerProtocolName, "readerProtocolName");
+
+    if (protocolAssociations.remove(readerProtocolName) == null) {
+      throw new IllegalStateException("The " + readerProtocolName + " protocol is not active.");
+    }
     deactivateReaderProtocol(readerProtocolName);
   }
 }
