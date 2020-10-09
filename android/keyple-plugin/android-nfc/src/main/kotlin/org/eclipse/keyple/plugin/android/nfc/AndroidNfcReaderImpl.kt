@@ -99,8 +99,8 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
         }
 
     override fun initStateService(): ObservableReaderStateService {
-        //To be fixed with KEYP-349
-        executorService = java.util.concurrent.Executors.newSingleThreadExecutor();
+        // To be fixed with KEYP-349
+        executorService = java.util.concurrent.Executors.newSingleThreadExecutor()
 
         return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             ObservableReaderStateService.builder(this, executorService)
