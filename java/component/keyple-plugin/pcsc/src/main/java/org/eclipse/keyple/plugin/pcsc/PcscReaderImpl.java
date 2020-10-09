@@ -12,7 +12,6 @@
 package org.eclipse.keyple.plugin.pcsc;
 
 import java.util.EnumMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -77,8 +76,6 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   private final AtomicBoolean loopWaitSeRemoval = new AtomicBoolean();
 
   private final boolean usePingPresence;
-  /** Map associating a protocol rule (regex) and and protocol identification string */
-  private final Map<String, String> protocolRules;
 
   /**
    * This constructor should only be called by PcscPlugin PCSC reader parameters are initialized
@@ -99,7 +96,6 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     this.cardExclusiveMode = true;
     this.cardReset = false;
     this.isContactless = null;
-    this.protocolRules = new LinkedHashMap<String, String>();
 
     String os = System.getProperty("os.name").toLowerCase();
     usePingPresence = os.contains("mac");
@@ -342,26 +338,22 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    * and its associated rule (regular expression).
    *
    * @param readerProtocolName A not empty String.
-   * @throws IllegalArgumentException if readerProtocolName is null.
    * @since 1.0
    */
   @Override
   protected void activateReaderProtocol(String readerProtocolName) {
 
-    String protocolRule = PcscProtocolSetting.getSettings().get(readerProtocolName);
-
-    if (protocolRule == null || protocolRule.isEmpty()) {
+    if (PcscProtocolSetting.getSettings().containsKey(readerProtocolName)) {
       throw new KeypleReaderProtocolNotSupportedException(readerProtocolName);
     }
 
-    if (logger.isInfoEnabled()) {
-      logger.info(
+    if (logger.isDebugEnabled()) {
+      logger.debug(
           "{}: Activate protocol {} with rule \"{}\".",
           getName(),
           readerProtocolName,
-          protocolRule);
+          PcscProtocolSetting.getSettings().get(readerProtocolName));
     }
-    protocolRules.put(readerProtocolName, protocolRule);
   }
 
   /**
@@ -370,17 +362,16 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    * <p>Remove the protocol from the active protocols list.<br>
    * Does nothing if the provided protocol is not active.
    *
-   * @throws IllegalArgumentException if seProtocol is null.
    * @since 1.0
    */
   @Override
   protected void deactivateReaderProtocol(String readerProtocolName) {
-
-    if (logger.isInfoEnabled()) {
-      logger.info("{}: Deactivate protocol {}.", getName(), readerProtocolName);
+    if (PcscProtocolSetting.getSettings().containsKey(readerProtocolName)) {
+      throw new KeypleReaderProtocolNotSupportedException(readerProtocolName);
     }
-    if (protocolRules.remove(readerProtocolName) == null && logger.isInfoEnabled()) {
-      logger.info("{}: Protocol {} was not active", getName(), readerProtocolName);
+
+    if (logger.isDebugEnabled()) {
+      logger.debug("{}: Deactivate protocol {}.", getName(), readerProtocolName);
     }
   }
 
@@ -396,10 +387,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    * Specification for ICCs and Personal Computer Systems</b>, Part 3).
    *
    * <p>We therefore use ATR (real or reconstructed) to identify the SE protocol using regular
-   * expressions. These regular expressions are defined in {@link PcscProtocolSetting}.
-   *
-   * <p>The protocol is determined once per SE communication session. If this method is called
-   * several times, the last determined protocol is returned.
+   * expressions. These regular expressions are managed in {@link PcscProtocolSetting}.
    *
    * @return True if the provided protocol matches the current protocol, false if not.
    * @since 1.0
@@ -407,18 +395,9 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   @Override
   protected boolean isCurrentProtocol(String readerProtocolName) {
 
-    boolean match = false;
-
+    String protocolRule = PcscProtocolSetting.getSettings().get(readerProtocolName);
     String atr = ByteArrayUtil.toHex(card.getATR().getBytes());
-    for (Map.Entry<String, String> entry : protocolRules.entrySet()) {
-      Pattern p = Pattern.compile(entry.getKey());
-      if (p.matcher(atr).matches()) {
-        match = true;
-        break;
-      }
-    }
-
-    return match;
+    return Pattern.compile(protocolRule).matcher(atr).matches();
   }
 
   /**
@@ -453,7 +432,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    * @since 1.0
    */
   @Override
-  public PcscReader setContaclessMode(boolean isContactless) {
+  public PcscReader setContactlessMode(boolean isContactless) {
 
     this.isContactless = isContactless;
     return this;

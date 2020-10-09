@@ -117,12 +117,12 @@ public interface PcscReader extends ObservableReader {
    * <p>The default value for this parameter if this method is not called is undefined.<br>
    * The {@link SeReader#isContactless()} may raise an {@link IllegalStateException}.
    *
-   * @param contaclessMode True to set contactless mode, false to set contact mode.
+   * @param contactlessMode True to set contactless mode, false to set contact mode.
    * @return This instance.
    * @throws IllegalArgumentException if transmissionMode is null
    * @since 1.0
    */
-  PcscReader setContaclessMode(boolean contaclessMode);
+  PcscReader setContactlessMode(boolean contactlessMode);
 
   /**
    * Changes the protocol to be used by the PC/SC reader when connecting to the SE ({@link

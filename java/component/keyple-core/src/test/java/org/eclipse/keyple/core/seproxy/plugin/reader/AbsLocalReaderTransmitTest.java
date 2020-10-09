@@ -381,8 +381,5 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
                 "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000"))
         .when(r)
         .transmitApdu(ByteArrayUtil.fromHex("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00"));
-
-    //    // physical channel is open
-    //    doReturn(true).when(r).isPhysicalChannelOpen();
   }
 }

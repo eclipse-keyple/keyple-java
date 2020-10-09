@@ -405,11 +405,11 @@ public class SeSelector implements Serializable {
   }
 
   /**
-   * Getter
+   * Gets the card protocol name.
    *
    * @return the {@link String} provided at construction time
    */
-  public String getString() {
+  public String getSeProtocol() {
     return seProtocol;
   }
 

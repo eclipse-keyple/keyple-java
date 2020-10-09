@@ -29,33 +29,30 @@ import org.eclipse.keyple.core.util.Assert;
  */
 final class PcscProtocolSetting {
 
-  private static final Map<String, String> PCSC_PROTOCOL_SETTING;
+  private static final Map<String, String> settings = new HashMap<String, String>();
 
   /* Associates a protocol and a string defining how to identify it (here a regex to be applied on the ATR) */
   static {
-    Map<String, String> map = new LinkedHashMap<String, String>();
-
     // contactless protocols
-    map.put(
+    settings.put(
         PcscSupportedProtocols.ISO_14443_4.name(),
         "3B8880....................|3B8B80.*|3B8C800150.*|.*4F4D4141544C4153.*");
-    map.put(
+    settings.put(
         PcscSupportedProtocols.CALYPSO_OLD_CARD_PRIME.name(),
         "3B8F8001805A0...................829000..");
-    map.put(
+    settings.put(
         PcscSupportedProtocols.MIFARE_ULTRA_LIGHT.name(),
         "3B8F8001804F0CA0000003060300030000000068");
-    map.put(
+    settings.put(
         PcscSupportedProtocols.MIFARE_CLASSIC.name(), "3B8F8001804F0CA000000306030001000000006A");
-    map.put(PcscSupportedProtocols.MIFARE_DESFIRE.name(), "3B8180018080");
-    map.put(PcscSupportedProtocols.MEMORY_ST25.name(), "3B8F8001804F0CA000000306070007D0020C00B6");
+    settings.put(PcscSupportedProtocols.MIFARE_DESFIRE.name(), "3B8180018080");
+    settings.put(
+        PcscSupportedProtocols.MEMORY_ST25.name(), "3B8F8001804F0CA000000306070007D0020C00B6");
 
     // contacts protocols
-    map.put(PcscSupportedProtocols.ISO_7816_3.name(), "3.*");
-    map.put(PcscSupportedProtocols.ISO_7816_3_T0.name(), "3.*");
-    map.put(PcscSupportedProtocols.ISO_7816_3_T1.name(), "3.*");
-
-    PCSC_PROTOCOL_SETTING = map;
+    settings.put(PcscSupportedProtocols.ISO_7816_3.name(), "3.*");
+    settings.put(PcscSupportedProtocols.ISO_7816_3_T0.name(), "3.*");
+    settings.put(PcscSupportedProtocols.ISO_7816_3_T1.name(), "3.*");
   }
 
   private PcscProtocolSetting() {}
@@ -73,7 +70,7 @@ final class PcscProtocolSetting {
    */
   static void setProtocolIdentificationRule(String readerProtocolName, String rule) {
     Assert.getInstance().notEmpty(readerProtocolName, "readerProtocolName").notEmpty(rule, "rule");
-    PCSC_PROTOCOL_SETTING.put(readerProtocolName, rule);
+    settings.put(readerProtocolName, rule);
   }
 
   /**
@@ -83,6 +80,6 @@ final class PcscProtocolSetting {
    * @since 0.9
    */
   static Map<String, String> getSettings() {
-    return PCSC_PROTOCOL_SETTING;
+    return settings;
   }
 }

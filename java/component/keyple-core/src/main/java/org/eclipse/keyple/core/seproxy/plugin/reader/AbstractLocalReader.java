@@ -254,7 +254,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    */
   private void openPhysicalChannelAndSetProtocol() {
     openPhysicalChannel();
-    determineCurrentProtocol();
+    computeCurrentProtocol();
   }
 
   /**
@@ -351,10 +351,8 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * <br>
    * If the Map is empty, no other check is done, the String field {@link #currentProtocol} is set
    * to null and the boolean field {@link #useDefaultProtocol} is set to true.
-   *
-   * @return A String or null.
    */
-  private void determineCurrentProtocol() {
+  private void computeCurrentProtocol() {
 
     /* Determine the current protocol */
     currentProtocol = null;
@@ -577,15 +575,15 @@ public abstract class AbstractLocalReader extends AbstractReader {
     ApduResponse fciResponse;
     boolean hasMatched = true;
 
-    if (seSelector.getString() != null && useDefaultProtocol) {
+    if (seSelector.getSeProtocol() != null && useDefaultProtocol) {
       throw new IllegalStateException(
-          "Protocol " + seSelector.getString() + " not associated to a reader protocol.");
+          "Protocol " + seSelector.getSeProtocol() + " not associated to a reader protocol.");
     }
 
     // check protocol if enabled
-    if (seSelector.getString() == null
+    if (seSelector.getSeProtocol() == null
         || useDefaultProtocol
-        || seSelector.getString().equals(currentProtocol)) {
+        || seSelector.getSeProtocol().equals(currentProtocol)) {
       // protocol check succeeded, check ATR if enabled
       byte[] atr = getATR();
       answerToReset = new AnswerToReset(atr);
@@ -842,9 +840,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
 
     Assert.getInstance().notEmpty(readerProtocolName, "readerProtocolName");
 
-    if (protocolAssociations.remove(readerProtocolName) == null) {
-      throw new IllegalStateException("The " + readerProtocolName + " protocol is not active.");
-    }
+    protocolAssociations.remove(readerProtocolName);
     deactivateReaderProtocol(readerProtocolName);
   }
 }

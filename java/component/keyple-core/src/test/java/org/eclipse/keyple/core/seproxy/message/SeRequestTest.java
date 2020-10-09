@@ -69,9 +69,9 @@ public class SeRequestTest {
   }
 
   @Test
-  public void getString() {
+  public void getSeProtocol() {
     seRequest = new SeRequest(getSelector(null), new ArrayList<ApduRequest>());
-    assertEquals(seProtocol, seRequest.getSeSelector().getString());
+    assertEquals(seProtocol, seRequest.getSeSelector().getSeProtocol());
   }
 
   @Test
@@ -98,7 +98,8 @@ public class SeRequestTest {
     assertArrayEquals(apdus.toArray(), seRequest.getApduRequests().toArray());
     //
     assertEquals(
-        ContactlessCardCommonProtocols.ISO_14443_4.name(), seRequest.getSeSelector().getString());
+        ContactlessCardCommonProtocols.ISO_14443_4.name(),
+        seRequest.getSeSelector().getSeProtocol());
     assertNull(seRequest.getSeSelector().getAidSelector().getSuccessfulSelectionStatusCodes());
   }
 
@@ -107,7 +108,7 @@ public class SeRequestTest {
     seRequest = new SeRequest(getSelector(null), apdus);
     assertEquals(getSelector(null).toString(), seRequest.getSeSelector().toString());
     assertArrayEquals(apdus.toArray(), seRequest.getApduRequests().toArray());
-    assertEquals(seProtocol, seRequest.getSeSelector().getString());
+    assertEquals(seProtocol, seRequest.getSeSelector().getSeProtocol());
     //
     assertNull(seRequest.getSeSelector().getAidSelector().getSuccessfulSelectionStatusCodes());
   }
@@ -118,7 +119,8 @@ public class SeRequestTest {
     assertEquals(getSelector(selectionStatusCode).toString(), seRequest.getSeSelector().toString());
     assertArrayEquals(apdus.toArray(), seRequest.getApduRequests().toArray());
     assertEquals(
-        ContactlessCardCommonProtocols.ISO_14443_4.name(), seRequest.getSeSelector().getString());
+        ContactlessCardCommonProtocols.ISO_14443_4.name(),
+        seRequest.getSeSelector().getSeProtocol());
     //
     assertArrayEquals(
         selectionStatusCode.toArray(),
@@ -130,7 +132,7 @@ public class SeRequestTest {
     seRequest = new SeRequest(getSelector(selectionStatusCode), apdus);
     assertEquals(getSelector(selectionStatusCode).toString(), seRequest.getSeSelector().toString());
     assertArrayEquals(apdus.toArray(), seRequest.getApduRequests().toArray());
-    assertEquals(seProtocol, seRequest.getSeSelector().getString());
+    assertEquals(seProtocol, seRequest.getSeSelector().getSeProtocol());
     assertArrayEquals(
         selectionStatusCode.toArray(),
         seRequest.getSeSelector().getAidSelector().getSuccessfulSelectionStatusCodes().toArray());
