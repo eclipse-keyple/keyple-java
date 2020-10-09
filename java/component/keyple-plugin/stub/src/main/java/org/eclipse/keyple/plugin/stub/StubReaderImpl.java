@@ -16,9 +16,10 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.regex.Pattern;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotFoundException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotSupportedException;
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState;
 import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderStateService;
@@ -30,8 +31,6 @@ import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeInsertion;
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeProcessing;
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemoval;
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetect;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,8 +45,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
   private static final Logger logger = LoggerFactory.getLogger(StubReaderImpl.class);
 
   private StubSecureElement se;
-
-  TransmissionMode transmissionMode = TransmissionMode.CONTACTLESS;
+  boolean isContactless = true;
 
   protected final ExecutorService executorService;
 
@@ -74,11 +72,11 @@ class StubReaderImpl extends AbstractObservableLocalReader
    *
    * @param pluginName
    * @param name
-   * @param transmissionMode
+   * @param isContactless
    */
-  StubReaderImpl(String pluginName, String name, TransmissionMode transmissionMode) {
+  StubReaderImpl(String pluginName, String name, boolean isContactless) {
     this(pluginName, name);
-    this.transmissionMode = transmissionMode;
+    this.isContactless = isContactless;
   }
 
   @Override
@@ -117,43 +115,13 @@ class StubReaderImpl extends AbstractObservableLocalReader
     return se.processApdu(apduIn);
   }
 
-  /** {@inheritDoc} */
   @Override
-  protected boolean protocolFlagMatches(SeProtocol protocolFlag) {
-    boolean result;
-    if (se == null) {
-      throw new KeypleReaderIOException("No SE available.");
-    }
-    // Test protocolFlag to check if ATR based protocol filtering is required
-    if (protocolFlag != null) {
-      if (!isPhysicalChannelOpen()) {
-        openPhysicalChannel();
-      }
-      // the request will be executed only if the protocol match the requestElement
-      String selectionMask = getProtocolsMap().get(protocolFlag);
-      if (selectionMask == null) {
-        throw new KeypleReaderIOException("Target selector mask not found!", null);
-      }
-      Pattern p = Pattern.compile(selectionMask);
-      String protocol = se.getSeProcotol();
-      if (!p.matcher(protocol).matches()) {
-        logger.trace(
-            "[{}] protocolFlagMatches => unmatching SE. PROTOCOLFLAG = {}",
-            this.getName(),
-            protocolFlag);
-        result = false;
-      } else {
-        logger.trace(
-            "[{}] protocolFlagMatches => matching SE. PROTOCOLFLAG = {}",
-            this.getName(),
-            protocolFlag);
-        result = true;
-      }
+  protected boolean isCurrentProtocol(String readerProtocolName) {
+    if (se != null && se.getSeProtocol() != null) {
+      return se.getSeProtocol().equals(readerProtocolName);
     } else {
-      // no protocol defined returns true
-      result = true;
+      return false;
     }
-    return result;
   }
 
   @Override
@@ -161,16 +129,50 @@ class StubReaderImpl extends AbstractObservableLocalReader
     return se != null;
   }
 
+  @Override
+  protected final void activateReaderProtocol(String readerProtocolName) {
+
+    if (!StubProtocolSetting.getSettings().containsKey(readerProtocolName)) {
+      throw new KeypleReaderProtocolNotSupportedException(readerProtocolName);
+    }
+
+    if (logger.isDebugEnabled()) {
+      logger.debug(
+          "{}: Activate protocol {} with rule \"{}\".",
+          getName(),
+          readerProtocolName,
+          StubProtocolSetting.getSettings().get(readerProtocolName));
+    }
+  }
+
+  @Override
+  protected final void deactivateReaderProtocol(String readerProtocolName) {
+
+    if (!StubProtocolSetting.getSettings().containsKey(readerProtocolName)) {
+      throw new KeypleReaderProtocolNotSupportedException(readerProtocolName);
+    }
+
+    if (logger.isDebugEnabled()) {
+      logger.debug("{}: Deactivate protocol {}.", getName(), readerProtocolName);
+    }
+  }
+
   /** @return the current transmission mode */
   @Override
-  public TransmissionMode getTransmissionMode() {
-    return transmissionMode;
+  public boolean isContactless() {
+    return isContactless;
   }
 
   /*
    * STATE CONTROLLERS FOR INSERTING AND REMOVING SECURE ELEMENT
    */
 
+  /**
+   * Inserts the provided SE.<br>
+   *
+   * @param _se stub secure element to be inserted in the reader
+   * @throws KeypleReaderProtocolNotFoundException if the SE protocol is not found
+   */
   public synchronized void insertSe(StubSecureElement _se) {
     logger.debug("Insert SE {}", _se);
     /* clean channels status */
@@ -188,7 +190,6 @@ class StubReaderImpl extends AbstractObservableLocalReader
 
   public synchronized void removeSe() {
     logger.debug("Remove SE {}", se != null ? se : "none");
-
     se = null;
   }
 

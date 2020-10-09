@@ -22,7 +22,6 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservablePlugin;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTxEngine;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
 import org.slf4j.Logger;
@@ -80,7 +79,7 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
       String slaveNodeId,
       String nativeReaderName,
       DtoSender dtoSender,
-      TransmissionMode transmissionMode,
+      Boolean isContactless,
       Boolean isObservable,
       Map<String, String> options) {
 
@@ -117,7 +116,7 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
               nativeReaderName,
               new RemoteMethodTxEngine(dtoSender, rpcTimeout, executorService),
               slaveNodeId,
-              transmissionMode,
+              isContactless,
               options);
     } else {
       virtualReader =
@@ -126,7 +125,7 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
               nativeReaderName,
               new RemoteMethodTxEngine(dtoSender, rpcTimeout, executorService),
               slaveNodeId,
-              transmissionMode,
+              isContactless,
               options);
     }
     readers.put(virtualReader.getName(), virtualReader);

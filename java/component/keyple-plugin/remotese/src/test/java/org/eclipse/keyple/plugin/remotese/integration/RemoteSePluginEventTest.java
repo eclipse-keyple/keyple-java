@@ -17,7 +17,6 @@ import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.pluginse.RemoteSePlugin;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
 import org.eclipse.keyple.plugin.stub.StubReader;
@@ -78,8 +77,7 @@ public class RemoteSePluginEventTest extends VirtualReaderBaseTest {
     remoteSePlugin.addObserver(obs);
 
     // connect a Stub Native reader
-    nativeReader =
-        this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID, TransmissionMode.CONTACTLESS);
+    nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID, true);
 
     // wait 5 seconds
     lock.await(2, TimeUnit.SECONDS);
@@ -125,8 +123,7 @@ public class RemoteSePluginEventTest extends VirtualReaderBaseTest {
     remoteSePlugin.addObserver(obs);
 
     // connect a Stub Native reader
-    nativeReader =
-        this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID, TransmissionMode.CONTACTLESS);
+    nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID, true);
 
     // wait 1 second
     Thread.sleep(1000);
@@ -221,8 +218,7 @@ public class RemoteSePluginEventTest extends VirtualReaderBaseTest {
     remoteSePlugin.addObserver(obs);
 
     // connect a Stub Native reader
-    nativeReader =
-        this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID, TransmissionMode.CONTACTLESS);
+    nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID, true);
 
     // wait 1 second
     Thread.sleep(1000);
@@ -249,8 +245,7 @@ public class RemoteSePluginEventTest extends VirtualReaderBaseTest {
   @Test(expected = KeypleReaderNotFoundException.class)
   public void testMaster_DisconnectReaderNotFound() throws Exception {
     // connect a Stub Native reader
-    nativeReader =
-        this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID, TransmissionMode.CONTACTLESS);
+    nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID, true);
     // wait 1 second
     Thread.sleep(1000);
     VirtualReader virtualReader = getVirtualReader();
@@ -267,8 +262,7 @@ public class RemoteSePluginEventTest extends VirtualReaderBaseTest {
   @Test(expected = KeypleReaderNotFoundException.class)
   public void testMaster_DisconnectReaderNotFound2() throws Exception {
     // connect a Stub Native reader
-    nativeReader =
-        this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID, TransmissionMode.CONTACTLESS);
+    nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID, true);
     // wait 1 second
     Thread.sleep(1000);
     VirtualReader virtualReader = getVirtualReader();

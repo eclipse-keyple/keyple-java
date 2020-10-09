@@ -13,14 +13,12 @@ package org.eclipse.keyple.plugin.remotese.transport.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 
 /** Json Parser for Keyple DTO and Keyple DTO fields */
 public class JsonParser {
 
   public static Gson getGson() {
     final GsonBuilder gsonBuilder = new GsonBuilder();
-    gsonBuilder.registerTypeAdapter(SeProtocol.class, new GsonSeProtocolTypeAdapter());
     gsonBuilder.registerTypeAdapter(byte[].class, new HexTypeAdapter());
     // gsonBuilder.setPrettyPrinting(); disable pretty printing for inline json
     return gsonBuilder.create();

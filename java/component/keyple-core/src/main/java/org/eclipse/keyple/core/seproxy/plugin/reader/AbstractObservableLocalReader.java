@@ -82,7 +82,11 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
 
   private ObservableReader.PollingMode currentPollingMode = ObservableReader.PollingMode.SINGLESHOT;
 
-  /* Internal events */
+  /**
+   * Internal events
+   *
+   * @since 0.9
+   */
   public enum InternalEvent {
     /** A SE has been inserted */
     SE_INSERTED,

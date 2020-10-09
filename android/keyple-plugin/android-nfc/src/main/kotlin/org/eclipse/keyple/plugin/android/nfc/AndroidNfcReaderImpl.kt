@@ -38,9 +38,6 @@ import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeInsertion
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeProcessing
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemoval
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetect
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import timber.log.Timber
 
@@ -57,6 +54,8 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
     private var tagProxy: TagProxy? = null
 
     private val parameters = HashMap<String, String?>()
+
+    private val protocolsMap = HashMap<String, String?>()
 
     private val executorService: ExecutorService
 
@@ -87,9 +86,9 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
                 flags = flags or NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS
             }
             for (seProtocol in this.protocolsMap.keys) {
-                if (SeCommonProtocols.PROTOCOL_ISO14443_4 == seProtocol) {
+                if (AndroidNfcSupportedProtocols.ISO_14443_4.name == seProtocol) {
                     flags = flags or NfcAdapter.FLAG_READER_NFC_B or NfcAdapter.FLAG_READER_NFC_A
-                } else if (seProtocol === SeCommonProtocols.PROTOCOL_MIFARE_UL || seProtocol === SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC) {
+                } else if (AndroidNfcSupportedProtocols.MIFARE_ULTRA_LIGHT.name == seProtocol || AndroidNfcSupportedProtocols.MIFARE_CLASSIC.name == seProtocol) {
                     flags = flags or NfcAdapter.FLAG_READER_NFC_A
                 }
             }
@@ -189,10 +188,10 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
     /**
      * The transmission mode is always CONTACTLESS in a NFC reader
      *
-     * @return the current transmission mode
+     * @return Always true.
      */
-    override fun getTransmissionMode(): TransmissionMode {
-        return TransmissionMode.CONTACTLESS
+    override fun isContactless(): Boolean {
+        return true
     }
 
     /**
@@ -289,8 +288,48 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
         }
     }
 
-    public override fun protocolFlagMatches(protocolFlag: SeProtocol?): Boolean {
-        return protocolFlag == null || protocolsMap.containsKey(protocolFlag) && protocolsMap[protocolFlag] == tagProxy?.tech
+    /**
+     * Activates the provided SE protocol.
+     *
+     *
+     *  * Ask the plugin to take this protocol into account if an SE using this protocol is
+     * identified during the selection phase.
+     *  * Activates the detection of SEs using this protocol (if the plugin allows it).
+     *
+     *
+     * @param readerProtocolName The protocol to activate (must be not null).
+     * @throws KeypleReaderProtocolNotSupportedException if the protocol is not supported.
+     */
+    override fun activateReaderProtocol(readerProtocolName: String?) {
+        TODO("Not yet implemented")
+    }
+
+    /**
+     * Deactivates the provided SE protocol.
+     *
+     *
+     *  * Ask the plugin to ignore this protocol if an SE using this protocol is identified during
+     * the selection phase.
+     *  * Inhibits the detection of SEs using this protocol (if the plugin allows it).
+     *
+     *
+     * @param readerProtocolName The protocol to deactivate (must be not null).
+     */
+    override fun deactivateReaderProtocol(readerProtocolName: String?) {
+        TODO("Not yet implemented")
+    }
+
+    /**
+     * Tells if the provided protocol matches the current protocol.
+     *
+     * @param readerProtocolName A not empty String.
+     * @return True or false
+     * @throws KeypleReaderProtocolNotFoundException if it is not possible to determine the protocol.
+     * @since 1.0
+     */
+    override fun isCurrentProtocol(readerProtocolName: String?): Boolean {
+        TODO("Not yet implemented")
+        return true
     }
 
     /**

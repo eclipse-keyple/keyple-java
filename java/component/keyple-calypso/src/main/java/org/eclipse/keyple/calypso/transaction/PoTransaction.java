@@ -65,7 +65,6 @@ import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
@@ -466,7 +465,7 @@ public class PoTransaction {
     // Add the PO Ratification command if any
     boolean ratificationCommandAdded;
     if (SessionSetting.RatificationMode.CLOSE_RATIFIED.equals(ratificationMode)
-        && TransmissionMode.CONTACTLESS.equals(poReader.getTransmissionMode())) {
+        && poReader.isContactless()) {
       poApduRequests.add(RatificationCmdBuild.getApduRequest(calypsoPo.getPoClass()));
       ratificationCommandAdded = true;
     } else {

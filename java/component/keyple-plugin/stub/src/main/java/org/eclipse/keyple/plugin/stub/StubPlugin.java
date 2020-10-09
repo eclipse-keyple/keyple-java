@@ -14,7 +14,6 @@ package org.eclipse.keyple.plugin.stub;
 import java.util.Set;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 
 /**
  * Stubplugin allows to simulate a {@link org.eclipse.keyple.core.seproxy.ReaderPlugin} and a {@link
@@ -35,11 +34,11 @@ public interface StubPlugin extends ObservablePlugin {
    * Plug a Stub Reader
    *
    * @param name : name of the created reader
-   * @param transmissionMode : transmissionMode of the created reader
+   * @param isContactless : true if the created reader is contactless, false if not.
    * @param synchronous : should the stubreader added synchronously (without waiting for the
    *     observation thread). An READER_CONNECTED event is raised in both cases
    */
-  void plugStubReader(String name, TransmissionMode transmissionMode, Boolean synchronous);
+  void plugStubReader(String name, boolean isContactless, Boolean synchronous);
 
   /**
    * Plug a list of stub Reader at once

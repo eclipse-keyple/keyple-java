@@ -27,7 +27,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -215,15 +215,12 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter(ATR);
     SeSelector selector =
         SeSelector.builder()
-            .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+            .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
             .atrFilter(atrFilter)
             .build();
 
     SeSelector failSelector =
-        SeSelector.builder()
-            .seProtocol(SeCommonProtocols.PROTOCOL_MIFARE_UL)
-            .atrFilter(atrFilter)
-            .build();
+        SeSelector.builder().seProtocol("MIFARE_ULTRA_LIGHT").atrFilter(atrFilter).build();
 
     ApduRequest apduOK = new ApduRequest(APDU_SUCCESS, false);
     ApduRequest apduKO = new ApduRequest(APDU_IOEXC, false);
@@ -295,7 +292,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
 
     /*
      * SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter(ATR); SeSelector selector = new
-     * SeSelector( SeCommonProtocols.PROTOCOL_ISO14443_4, atrFilter, null, "iso");
+     * SeSelector( ContactlessCardCommonProtocols.ISO_14443_4, atrFilter, null, "iso");
      *
      */
 
@@ -357,11 +354,12 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
 
   public static void configure(AbstractLocalReader r) {
 
-    // accept PROTOCOL_ISO14443_4
-    when(r.protocolFlagMatches(SeCommonProtocols.PROTOCOL_ISO14443_4)).thenReturn(true);
+    // activate and accept ISO_14443_4
+    r.activateProtocol(
+        ContactlessCardCommonProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
-    // refuse PROTOCOL_MIFARE_UL
-    when(r.protocolFlagMatches(SeCommonProtocols.PROTOCOL_MIFARE_UL)).thenReturn(false);
+    when(r.isCurrentProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())).thenReturn(true);
 
     // return art
     when(r.getATR()).thenReturn(ByteArrayUtil.fromHex(ATR));
@@ -383,8 +381,5 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
                 "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000"))
         .when(r)
         .transmitApdu(ByteArrayUtil.fromHex("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00"));
-
-    // physical channel is open
-    doReturn(true).when(r).isPhysicalChannelOpen();
   }
 }

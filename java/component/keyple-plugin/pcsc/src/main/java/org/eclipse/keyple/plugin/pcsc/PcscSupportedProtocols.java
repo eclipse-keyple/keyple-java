@@ -1,5 +1,5 @@
 /* **************************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information
  * regarding copyright ownership.
@@ -9,23 +9,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.seproxy.protocol;
+package org.eclipse.keyple.plugin.pcsc;
 
-import java.io.Serializable;
-
-public interface SeProtocol extends Serializable {
-
-  /**
-   * Protocol name
-   *
-   * @return String
-   */
-  String getName();
-
-  /**
-   * Transmission mode: CONTACTS or CONTACTLESS
-   *
-   * @return a TransmissionMode enum value
-   */
-  TransmissionMode getTransmissionMode();
+/**
+ * List of protocols supported by PC/SC readers.
+ *
+ * @since 1.0
+ */
+public enum PcscSupportedProtocols {
+  ISO_14443_4,
+  CALYPSO_OLD_CARD_PRIME,
+  MIFARE_ULTRA_LIGHT,
+  MIFARE_CLASSIC,
+  MIFARE_DESFIRE,
+  MEMORY_ST25,
+  ISO_7816_3,
+  ISO_7816_3_T0,
+  ISO_7816_3_T1
 }

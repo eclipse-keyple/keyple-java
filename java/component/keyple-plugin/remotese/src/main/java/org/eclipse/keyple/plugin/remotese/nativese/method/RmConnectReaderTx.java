@@ -105,7 +105,7 @@ public class RmConnectReaderTx extends AbstractRemoteMethodTx<String> {
 
     // create response
     JsonObject body = new JsonObject();
-    body.addProperty("transmissionMode", localReader.getTransmissionMode().name());
+    body.addProperty("isContactless", localReader.isContactless());
     body.addProperty("isObservable", localReader instanceof ObservableReader);
     body.addProperty("options", JsonParser.getGson().toJson(options));
 

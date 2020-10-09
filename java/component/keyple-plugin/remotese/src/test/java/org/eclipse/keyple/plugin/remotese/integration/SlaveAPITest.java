@@ -16,7 +16,6 @@ import java.util.Map;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualObservableReader;
@@ -79,7 +78,7 @@ public class SlaveAPITest {
     // bind Slave services to client
     spySlaveAPI = Integration.createSpySlaveAPI(factory.getClient(CLIENT_NODE_ID), SERVER_NODE_ID);
 
-    nativeReader = Integration.createStubReader(NATIVE_READER_NAME, TransmissionMode.CONTACTLESS);
+    nativeReader = Integration.createStubReader(NATIVE_READER_NAME, true);
   }
 
   @After

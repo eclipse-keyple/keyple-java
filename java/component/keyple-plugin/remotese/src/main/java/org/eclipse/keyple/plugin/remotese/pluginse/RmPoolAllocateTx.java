@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.rm.AbstractRemoteMethodTx;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
@@ -81,7 +80,7 @@ public class RmPoolAllocateTx extends AbstractRemoteMethodTx<SeReader> {
       logger.trace("KeypleDto contains a response: {}", keypleDto);
 
       JsonObject body = JsonParser.getGson().fromJson(keypleDto.getBody(), JsonObject.class);
-      String transmissionMode = body.get("transmissionMode").getAsString();
+      Boolean isContactless = body.get("isContactless").getAsBoolean();
       String slaveNodeId = keypleDto.getRequesterNodeId();
       String nativeReaderName = keypleDto.getNativeReaderName();
 
@@ -93,12 +92,7 @@ public class RmPoolAllocateTx extends AbstractRemoteMethodTx<SeReader> {
         VirtualReaderImpl virtualReader =
             (VirtualReaderImpl)
                 this.virtualPoolPlugin.createVirtualReader(
-                    slaveNodeId,
-                    nativeReaderName,
-                    this.dtoSender,
-                    TransmissionMode.valueOf(transmissionMode),
-                    false,
-                    options);
+                    slaveNodeId, nativeReaderName, this.dtoSender, isContactless, false, options);
 
         return virtualReader;
 

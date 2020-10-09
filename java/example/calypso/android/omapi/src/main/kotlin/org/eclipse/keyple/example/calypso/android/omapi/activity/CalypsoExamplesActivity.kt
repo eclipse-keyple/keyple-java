@@ -21,8 +21,8 @@ import org.eclipse.keyple.calypso.transaction.PoSelector.InvalidatedPo
 import org.eclipse.keyple.core.selection.SeSelection
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.SeSelector.AidSelector
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
+import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactsCardCommonProtocols
 import org.eclipse.keyple.example.calypso.android.omapi.R
 import org.eclipse.keyple.example.calypso.android.omapi.utils.AidEnum
 
@@ -60,7 +60,6 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                      */
                     val poSelectionRequest = PoSelectionRequest(
                             PoSelector.builder()
-                                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
                                     .aidSelector(AidSelector.builder().aidToSelect(poAid).build())
                                         .invalidatedPo(InvalidatedPo.REJECT).build())
                     seSelection.prepareSelection(poSelectionRequest)
@@ -118,7 +117,6 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                     val seSelection = SeSelection()
                     val poSelectionRequest = PoSelectionRequest(
                             PoSelector.builder()
-                                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
                                     .aidSelector(AidSelector.builder().aidToSelect(poAid).build())
                                     .invalidatedPo(InvalidatedPo.REJECT).build())
 
@@ -192,7 +190,6 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                      */
                     val poSelectionRequest = PoSelectionRequest(
                             PoSelector.builder()
-                                    .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
                                     .aidSelector(AidSelector.builder().aidToSelect(poAid).build())
                                     .invalidatedPo(InvalidatedPo.REJECT).build())
 

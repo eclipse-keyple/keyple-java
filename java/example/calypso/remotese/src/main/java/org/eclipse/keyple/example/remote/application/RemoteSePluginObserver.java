@@ -25,7 +25,7 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
 import org.slf4j.Logger;
@@ -84,7 +84,7 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
           PoSelectionRequest poSelectionRequest =
               new PoSelectionRequest(
                   PoSelector.builder()
-                      .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                      .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                       .aidSelector(
                           AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
                       .invalidatedPo(InvalidatedPo.ACCEPT)

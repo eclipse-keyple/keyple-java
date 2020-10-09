@@ -21,7 +21,6 @@ import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.example.common.calypso.stub.StubSamCalypsoClassic;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.RemoteSePlugin;
@@ -32,7 +31,6 @@ import org.eclipse.keyple.plugin.remotese.transport.factory.ServerNode;
 import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPluginFactory;
-import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
 import org.slf4j.Logger;
@@ -116,10 +114,6 @@ public class MasterNodeController {
       ((StubPlugin) samStubPlugin).plugStubReader("samReader", true);
 
       SeReader samReader = samStubPlugin.getReader("samReader");
-
-      samReader.addSeProtocolSetting(
-          SeCommonProtocols.PROTOCOL_ISO7816_3,
-          StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO7816_3));
 
       /* Create 'virtual' and insert a Calypso SAM */
       StubSecureElement calypsoSamStubSe = new StubSamCalypsoClassic();

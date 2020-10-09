@@ -18,14 +18,14 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.common.calypso.stub.StubCalypsoClassic;
 import org.eclipse.keyple.example.common.calypso.stub.StubSamCalypsoClassic;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPluginFactory;
-import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
+import org.eclipse.keyple.plugin.stub.StubSupportedProtocols;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,15 +78,13 @@ public class Demo_CalypsoClassic_Stub {
     logger.info("PO Reader  NAME = {}", poReader.getName());
     logger.info("SAM Reader  NAME = {}", samReader.getName());
 
-    /* Set the PO reader protocol flag */
-    poReader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
-    poReader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_B_PRIME,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_B_PRIME));
-
-    samReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO7816_3, ".*");
+    /* Activate protocols */
+    poReader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name());
+    poReader.activateProtocol(
+        StubSupportedProtocols.CALYPSO_OLD_CARD_PRIME.name(),
+        ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name());
 
     /* Assign readers to the Hoplink transaction engine */
     transactionEngine.setReaders(poReader, samReader);

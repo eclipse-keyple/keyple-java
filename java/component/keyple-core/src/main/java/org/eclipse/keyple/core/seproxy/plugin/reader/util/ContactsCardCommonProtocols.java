@@ -1,5 +1,5 @@
 /* **************************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information
  * regarding copyright ownership.
@@ -9,14 +9,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.seproxy.protocol;
+package org.eclipse.keyple.core.seproxy.plugin.reader.util;
 
 /**
- * Transmission mode.
+ * This enum contains a non-exhaustive list of contacts smartcard communication protocols.
  *
- * <p>The transmission mode indicates whether the communication is contactless or not.
+ * @since 1.0
  */
-public enum TransmissionMode {
-  CONTACTS,
-  CONTACTLESS
+public enum ContactsCardCommonProtocols {
+  /* ---- contacts ISO standard ---------------------------- */
+  ISO_7816_3,
+  ISO_7816_3_TO,
+  ISO_7816_3_T1,
+
+  /* ---- contacts proprietary old Calypso SAM ---------------- */
+  CALYPSO_OLD_SAM_HSP; // High Speed Protocol
 }

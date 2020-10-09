@@ -16,7 +16,6 @@ import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderNotifier;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.pluginse.method.RmSetDefaultSelectionRequestTx;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTxEngine;
@@ -46,9 +45,9 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
       String nativeReaderName,
       RemoteMethodTxEngine rmTxEngine,
       String slaveNodeId,
-      TransmissionMode transmissionMode,
+      boolean isContactless,
       Map<String, String> options) {
-    super(session, nativeReaderName, rmTxEngine, slaveNodeId, transmissionMode, options);
+    super(session, nativeReaderName, rmTxEngine, slaveNodeId, isContactless, options);
   }
 
   @Override

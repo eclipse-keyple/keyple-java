@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.calypso.SelectFileControl;
 import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Before;
@@ -47,7 +47,7 @@ public class PoSelectionRequestTest {
     poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .atrFilter(new PoSelector.AtrFilter(".*"))
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());

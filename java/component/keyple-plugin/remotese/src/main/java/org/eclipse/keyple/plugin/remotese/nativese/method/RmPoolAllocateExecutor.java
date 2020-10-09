@@ -83,7 +83,7 @@ public class RmPoolAllocateExecutor implements IRemoteMethodExecutor {
     // Build Response
     JsonObject bodyResp = new JsonObject();
     bodyResp.addProperty("nativeReaderName", seReader.getName());
-    bodyResp.addProperty("transmissionMode", seReader.getTransmissionMode().name());
+    bodyResp.addProperty("isContactless", seReader.isContactless());
 
     out =
         transportDto.nextTransportDTO(

@@ -149,6 +149,7 @@ public abstract class AbstractReader implements ProxyReader {
    * @return A not empty response list (can be empty).
    * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
    * @throws IllegalArgumentException if one of the arguments is null.
+   * @throws IllegalStateException in case of configuration inconsistency.
    * @see ProxyReader#transmitSeRequests(List, MultiSeRequestProcessing, ChannelControl)
    * @since 0.9
    */

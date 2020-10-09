@@ -22,11 +22,8 @@ import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import java.io.IOException
-import org.eclipse.keyple.core.seproxy.exception.KeypleException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -77,7 +74,7 @@ class AndroidNfcReaderImplTest {
     @Test
     fun aInitReaderTest() { // Must be ran in 1st position as AndroidNfcReaderImpl is a singleton
         // Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION, reader.currentMonitoringState)
-        Assert.assertEquals(TransmissionMode.CONTACTLESS, reader.transmissionMode)
+        Assert.assertEquals(true, reader.isContactless)
         Assert.assertEquals(AndroidNfcPlugin.PLUGIN_NAME, reader.pluginName)
         Assert.assertEquals(AndroidNfcReader.READER_NAME, reader.name)
         Assert.assertTrue((reader as AndroidNfcReader).getParameters().isEmpty())
@@ -187,18 +184,19 @@ class AndroidNfcReaderImplTest {
         // throw exception
     }
 
-    @Test
-    @Throws(KeypleException::class, IOException::class)
-    fun protocolFlagMatchesTrue() {
-        // init
-        presentMockTag()
-        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4))
-        every { tagProxy?.tech } returns AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4)
-
-        // test
-        Assert.assertTrue(reader.protocolFlagMatches(SeCommonProtocols.PROTOCOL_ISO14443_4))
-    }
+    // TODO Replace this test by a getCurrentProtocol test
+//    @Test
+//    @Throws(KeypleException::class, IOException::class)
+//    fun protocolFlagMatchesTrue() {
+//        // init
+//        presentMockTag()
+//        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+//                AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4))
+//        every { tagProxy?.tech } returns AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4)
+//
+//        // test
+//        Assert.assertTrue(reader.protocolFlagMatches(SeCommonProtocols.PROTOCOL_ISO14443_4))
+//    }
 
     // ----- TEST PARAMETERS ------ //
 

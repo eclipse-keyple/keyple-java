@@ -17,7 +17,7 @@ import org.eclipse.keyple.plugin.stub.StubSecureElement;
 /** Simple contact stub SE (no command) */
 public class StubMifareClassic extends StubSecureElement {
 
-  static final String seProtocol = "PROTOCOL_MIFARE_CLASSIC";
+  static final String seProtocol = "MIFARE_CLASSIC";
   final String ATR_HEX = "3B8F8001804F0CA000000306030001000000006A";
 
   public StubMifareClassic() {
@@ -31,7 +31,7 @@ public class StubMifareClassic extends StubSecureElement {
   }
 
   @Override
-  public String getSeProcotol() {
+  public String getSeProtocol() {
     return seProtocol;
   }
 }

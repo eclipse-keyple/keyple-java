@@ -136,8 +136,8 @@ public class StubPoolPluginTest extends BaseStubTest {
         }
 
         @Override
-        public String getSeProcotol() {
-          return null;
+        public String getSeProtocol() {
+          return "PROTOCOL_ISO7816_3";
         }
       };
 }
