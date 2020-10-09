@@ -60,7 +60,6 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                      */
                     val poSelectionRequest = PoSelectionRequest(
                             PoSelector.builder()
-                                    .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
                                     .aidSelector(AidSelector.builder().aidToSelect(poAid).build())
                                         .invalidatedPo(InvalidatedPo.REJECT).build())
                     seSelection.prepareSelection(poSelectionRequest)
@@ -118,7 +117,6 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                     val seSelection = SeSelection()
                     val poSelectionRequest = PoSelectionRequest(
                             PoSelector.builder()
-                                    .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
                                     .aidSelector(AidSelector.builder().aidToSelect(poAid).build())
                                     .invalidatedPo(InvalidatedPo.REJECT).build())
 
@@ -192,7 +190,6 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                      */
                     val poSelectionRequest = PoSelectionRequest(
                             PoSelector.builder()
-                                    .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
                                     .aidSelector(AidSelector.builder().aidToSelect(poAid).build())
                                     .invalidatedPo(InvalidatedPo.REJECT).build())
 

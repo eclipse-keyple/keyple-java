@@ -74,7 +74,6 @@ class CoreExamplesActivity : ExamplesActivity() {
                     addHeaderEvent("Starting explicitAidSelection with $poAid on Reader ${it.key}")
 
                     val seSelector = SeSelector.builder()
-                            .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
                             .aidSelector(AidSelector.builder().aidToSelect(poAid).build())
                             .build()
                     val seRequest = SeRequest(seSelector, null)
@@ -115,7 +114,6 @@ class CoreExamplesActivity : ExamplesActivity() {
         /* AID based selection (1st selection, later indexed 0) */
         seSelection.prepareSelection(GenericSeSelectionRequest(
                 SeSelector.builder()
-                        .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
                         .aidSelector(AidSelector.builder()
                                 .aidToSelect(seAidPrefix)
                                 .fileOccurrence(AidSelector.FileOccurrence.FIRST)
@@ -125,7 +123,6 @@ class CoreExamplesActivity : ExamplesActivity() {
         /* next selection (2nd selection, later indexed 1) */
         seSelection.prepareSelection(GenericSeSelectionRequest(
                 SeSelector.builder()
-                .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
                 .aidSelector(AidSelector.builder()
                         .aidToSelect(seAidPrefix)
                         .fileOccurrence(AidSelector.FileOccurrence.NEXT)
@@ -135,7 +132,6 @@ class CoreExamplesActivity : ExamplesActivity() {
         /* next selection (3rd selection, later indexed 2) */
         seSelection.prepareSelection(GenericSeSelectionRequest(
                 SeSelector.builder()
-                        .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
                         .aidSelector(AidSelector.builder()
                                 .aidToSelect(seAidPrefix)
                                 .fileOccurrence(AidSelector.FileOccurrence.NEXT)
@@ -198,7 +194,6 @@ class CoreExamplesActivity : ExamplesActivity() {
                      */
                     seSelection.prepareSelection(GenericSeSelectionRequest(
                             SeSelector.builder()
-                                    .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
                                     .aidSelector(AidSelector.builder()
                                             .aidToSelect(seAidPrefix)
                                             .fileOccurrence(AidSelector.FileOccurrence.FIRST)
@@ -218,7 +213,6 @@ class CoreExamplesActivity : ExamplesActivity() {
 
                     seSelection.prepareSelection(GenericSeSelectionRequest(
                             SeSelector.builder()
-                                    .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
                                     .aidSelector(AidSelector.builder()
                                             .aidToSelect(seAidPrefix)
                                             .fileOccurrence(AidSelector.FileOccurrence.NEXT)
