@@ -32,8 +32,6 @@ import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeInsertion;
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeProcessing;
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemoval;
 import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetect;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
@@ -47,6 +45,8 @@ import org.slf4j.LoggerFactory;
  * insertion of secure elements ({@link SmartInsertionReader}, able to detect the removal of a
  * secure element prior an attempt to communicate with it ({@link SmartRemovalReader} and has
  * specific settings ({@link PcscReader}.
+ *
+ * @since 0.9
  */
 final class PcscReaderImpl extends AbstractObservableLocalReader
     implements PcscReader, SmartInsertionReader, SmartRemovalReader {
@@ -57,7 +57,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   private String parameterCardProtocol;
   private boolean cardExclusiveMode;
   private boolean cardReset;
-  private TransmissionMode transmissionMode;
+  private Boolean isContactless;
 
   private Card card;
   private CardChannel channel;
@@ -83,6 +83,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    *
    * @param pluginName the name of the plugin
    * @param terminal the PC/SC terminal
+   * @since 0.9
    */
   protected PcscReaderImpl(String pluginName, CardTerminal terminal) {
 
@@ -94,6 +95,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     this.parameterCardProtocol = IsoProtocol.ANY.getValue();
     this.cardExclusiveMode = true;
     this.cardReset = false;
+    this.isContactless = null;
 
     String os = System.getProperty("os.name").toLowerCase();
     usePingPresence = os.contains("mac");
@@ -105,6 +107,11 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     logger.debug("[{}] constructor => using terminal ", terminal);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public ObservableReaderStateService initStateService() {
 
@@ -144,7 +151,11 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         this, states, AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected void closePhysicalChannel() {
 
@@ -163,7 +174,11 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected boolean checkSePresence() {
     try {
@@ -176,6 +191,8 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   /**
    * Implements from SmartInsertionReader<br>
    * {@inheritDoc}
+   *
+   * @since 0.9
    */
   @Override
   public boolean waitForCardPresent() {
@@ -221,6 +238,8 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   /**
    * Implements from SmartInsertionReader<br>
    * {@inheritDoc}
+   *
+   * @since 0.9
    */
   @Override
   public void stopWaitForCard() {
@@ -230,6 +249,8 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   /**
    * Wait for the card absent event from smartcard.io<br>
    * {@inheritDoc}
+   *
+   * @since 0.9
    */
   @Override
   public boolean waitForCardAbsentNative() {
@@ -275,13 +296,19 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   /**
    * Implements from SmartRemovalReader<br>
    * {@inheritDoc}
+   *
+   * @since 0.9
    */
   @Override
   public void stopWaitForCardRemoval() {
     loopWaitSeRemoval.set(false);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   protected byte[] transmitApdu(byte[] apduIn) {
 
@@ -300,57 +327,77 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
       // could occur if the SE was removed
       throw new KeypleReaderIOException(this.getName() + ": null channel.");
     }
+
     return apduResponseData.getBytes();
   }
 
   /**
-   * Tells if the current SE protocol matches the provided protocol flag. If the protocol flag is
-   * not defined (null), we consider here that it matches. An exception is returned when the
-   * provided protocolFlag is not found in the current protocolMap.
+   * {@inheritDoc}
    *
-   * @param protocolFlag the protocol flag
-   * @return true if the current SE matches the protocol flag
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
-   * @since 0.9
+   * <p>In the PC/SC case, this method fills the internal protocols map with the provided protocol
+   * and its associated rule (regular expression).
+   *
+   * @param readerProtocolName A not empty String.
+   * @since 1.0
    */
   @Override
-  protected boolean protocolFlagMatches(SeProtocol protocolFlag) {
+  protected void activateReaderProtocol(String readerProtocolName) {
 
-    boolean result;
-    // Test protocolFlag to check if ATR based protocol filtering is required
-    if (protocolFlag != null) {
-      if (!isPhysicalChannelOpen()) {
-        openPhysicalChannel();
-      }
-      // the request will be executed only if the protocol match the requestElement
-      String selectionMask = getProtocolsMap().get(protocolFlag);
-      if (selectionMask == null) {
-        throw new KeypleReaderIOException("Target selector mask not found: " + protocolFlag, null);
-      }
-      Pattern p = Pattern.compile(selectionMask);
-      String atr = ByteArrayUtil.toHex(card.getATR().getBytes());
-      if (!p.matcher(atr).matches()) {
-        logger.debug(
-            "[{}] protocolFlagMatches => unmatching SE. PROTOCOLFLAG = {}, ATR = {}, MASK = {}",
-            this.getName(),
-            protocolFlag,
-            atr,
-            selectionMask);
-
-        result = false;
-      } else {
-        logger.debug(
-            "[{}] protocolFlagMatches => matching SE. PROTOCOLFLAG = {}",
-            this.getName(),
-            protocolFlag);
-
-        result = true;
-      }
-    } else {
-      // no protocol defined returns true
-      result = true;
+    if (!PcscProtocolSetting.getSettings().containsKey(readerProtocolName)) {
+      throw new KeypleReaderProtocolNotSupportedException(readerProtocolName);
     }
-    return result;
+
+    if (logger.isDebugEnabled()) {
+      logger.debug(
+          "{}: Activate protocol {} with rule \"{}\".",
+          getName(),
+          readerProtocolName,
+          PcscProtocolSetting.getSettings().get(readerProtocolName));
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>Remove the protocol from the active protocols list.<br>
+   * Does nothing if the provided protocol is not active.
+   *
+   * @since 1.0
+   */
+  @Override
+  protected void deactivateReaderProtocol(String readerProtocolName) {
+    if (!PcscProtocolSetting.getSettings().containsKey(readerProtocolName)) {
+      throw new KeypleReaderProtocolNotSupportedException(readerProtocolName);
+    }
+
+    if (logger.isDebugEnabled()) {
+      logger.debug("{}: Deactivate protocol {}.", getName(), readerProtocolName);
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The standard interface of the PC/SC readers does not allow to know directly the type of
+   * protocol used by an SE.
+   *
+   * <p>This is especially true in contactless mode. Moreover, in this mode, the Answer To Reset
+   * (ATR) returned by the reader is not produced by the SE but reconstructed by the reader from low
+   * level internal data and with elements defined in the standard (see <b>Interoperability
+   * Specification for ICCs and Personal Computer Systems</b>, Part 3).
+   *
+   * <p>We therefore use ATR (real or reconstructed) to identify the SE protocol using regular
+   * expressions. These regular expressions are managed in {@link PcscProtocolSetting}.
+   *
+   * @return True if the provided protocol matches the current protocol, false if not.
+   * @since 1.0
+   */
+  @Override
+  protected boolean isCurrentProtocol(String readerProtocolName) {
+
+    String protocolRule = PcscProtocolSetting.getSettings().get(readerProtocolName);
+    String atr = ByteArrayUtil.toHex(card.getATR().getBytes());
+    return Pattern.compile(protocolRule).matcher(atr).matches();
   }
 
   /**
@@ -385,11 +432,9 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    * @since 1.0
    */
   @Override
-  public PcscReader setTransmissionMode(TransmissionMode transmissionMode) {
+  public PcscReader setContactless(boolean contactless) {
 
-    Assert.getInstance().notNull(transmissionMode, "transmissionMode");
-
-    this.transmissionMode = TransmissionMode.CONTACTLESS;
+    this.isContactless = contactless;
     return this;
   }
 
@@ -434,6 +479,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    * <p>The caller should test the card presence with isSePresent before calling this method.
    *
    * @return true if the physical channel is open
+   * @since 0.9
    */
   @Override
   protected boolean isPhysicalChannelOpen() {
@@ -449,6 +495,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    * for a limited time (ex. 5 seconds). After this delay, the card is automatically resetted.
    *
    * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @since 0.9
    */
   @Override
   protected void openPhysicalChannel() {
@@ -481,16 +528,17 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    *
    * @return the current transmission mode
    * @throws IllegalStateException if the transmission mode could not be determined
+   * @since 0.9
    */
   @Override
-  public TransmissionMode getTransmissionMode() {
+  public boolean isContactless() {
 
-    if (transmissionMode == null) {
-      /* the transmission mode has not yet been determined or fixed explicitly, let's ask the plugin to determine it (only once) */
-      transmissionMode =
+    if (isContactless == null) {
+      /* First time initialisation, the transmission mode has not yet been determined or fixed explicitly, let's ask the plugin to determine it (only once) */
+      isContactless =
           ((PcscPluginImpl) SeProxyService.getInstance().getPlugin(getPluginName()))
-              .findTransmissionMode(getName());
+              .isContactless(getName());
     }
-    return transmissionMode;
+    return isContactless;
   }
 }

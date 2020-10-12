@@ -14,8 +14,6 @@ package org.eclipse.keyple.core.seproxy.plugin.reader;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 
 public class BlankObservableLocalReader extends AbstractObservableLocalReader {
 
@@ -74,7 +72,7 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
   }
 
   @Override
-  public boolean protocolFlagMatches(SeProtocol protocolFlag) {
+  protected boolean isCurrentProtocol(String readerProtocolName) {
     return false;
   }
 
@@ -84,8 +82,14 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
   }
 
   @Override
-  public TransmissionMode getTransmissionMode() {
-    return null;
+  protected void activateReaderProtocol(String readerProtocolName) {}
+
+  @Override
+  protected void deactivateReaderProtocol(String readerProtocolName) {}
+
+  @Override
+  public boolean isContactless() {
+    return true;
   }
 
   /**

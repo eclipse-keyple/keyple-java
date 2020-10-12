@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.common.generic.AbstractReaderObserverAsynchronousEngine;
 import org.eclipse.keyple.example.common.generic.GenericSeSelectionRequest;
 
@@ -58,28 +58,26 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverAsynchronou
     seSelection = new SeSelection();
 
     // process SDK defined protocols
-    for (SeCommonProtocols protocol : SeCommonProtocols.values()) {
+    for (ContactlessCardCommonProtocols protocol : ContactlessCardCommonProtocols.values()) {
       switch (protocol) {
-        case PROTOCOL_ISO14443_4:
+        case ISO_14443_4:
           /* Add a Hoplink selector */
           String HoplinkAID = "A000000291A000000191";
           PoSelectionRequest poSelectionRequest =
               new PoSelectionRequest(
                   PoSelector.builder()
-                      .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                      .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                       .aidSelector(AidSelector.builder().aidToSelect(HoplinkAID).build())
                       .invalidatedPo(InvalidatedPo.REJECT)
                       .build());
 
           seSelection.prepareSelection(poSelectionRequest);
-
           break;
-        case PROTOCOL_ISO14443_3A:
-        case PROTOCOL_ISO14443_3B:
+        case NFC_A_ISO_14443_3A:
+        case NFC_B_ISO_14443_3B:
           // not handled in this demo code
           break;
-        case PROTOCOL_MIFARE_DESFIRE:
-        case PROTOCOL_B_PRIME:
+        case CALYPSO_OLD_CARD_PRIME:
           // intentionally ignored for demo purpose
           break;
         default:
@@ -87,7 +85,7 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverAsynchronou
           seSelection.prepareSelection(
               new GenericSeSelectionRequest(
                   SeSelector.builder()
-                      .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                      .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                       .atrFilter(new SeSelector.AtrFilter(".*"))
                       .build()));
           break;

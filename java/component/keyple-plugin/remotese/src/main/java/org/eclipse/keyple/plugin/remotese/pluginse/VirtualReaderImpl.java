@@ -21,8 +21,6 @@ import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractReader;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.pluginse.method.RmTransmitSetTx;
 import org.eclipse.keyple.plugin.remotese.pluginse.method.RmTransmitTx;
@@ -40,7 +38,7 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
   protected final String nativeReaderName;
   protected final RemoteMethodTxEngine rmTxEngine;
   protected final String slaveNodeId;
-  protected final TransmissionMode transmissionMode;
+  protected final boolean isContactless;
 
   private static final Logger logger = LoggerFactory.getLogger(VirtualReaderImpl.class);
 
@@ -52,14 +50,14 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
    * @param session : session associated to the reader
    * @param nativeReaderName : native reader name on slave terminal
    * @param rmTxEngine : processor for remote method
-   * @param transmissionMode : transmission mode of the native reader on slave terminal
+   * @param isContactless : transmission mode of the native reader on slave terminal
    */
   VirtualReaderImpl(
       VirtualReaderSession session,
       String nativeReaderName,
       RemoteMethodTxEngine rmTxEngine,
       String slaveNodeId,
-      TransmissionMode transmissionMode,
+      boolean isContactless,
       Map<String, String> options) {
     super(
         RemoteSePluginImpl.DEFAULT_PLUGIN_NAME,
@@ -68,13 +66,13 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
     this.nativeReaderName = nativeReaderName;
     this.rmTxEngine = rmTxEngine;
     this.slaveNodeId = slaveNodeId;
-    this.transmissionMode = transmissionMode;
+    this.isContactless = isContactless;
     this.parameters = options;
   }
 
   /** @return the current transmission mode */
-  public TransmissionMode getTransmissionMode() {
-    return transmissionMode;
+  public boolean isContactless() {
+    return isContactless;
   }
 
   public String getNativeReaderName() {
@@ -169,13 +167,13 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
   }
 
   @Override
-  public void addSeProtocolSetting(SeProtocol seProtocol, String protocolRule) {
-    logger.warn("{} addSeProtocolSetting is not implemented yet in VirtualReader", this.getName());
+  public void activateProtocol(String readerProtocolName, String applicationProtocolName) {
+    logger.warn("{} activateProtocol is not implemented yet in VirtualReader", this.getName());
   }
 
   @Override
-  public void setSeProtocolSetting(Map<SeProtocol, String> protocolSetting) {
-    logger.warn("{} setSeProtocolSetting is not implemented yet in VirtualReader", this.getName());
+  public void deactivateProtocol(String readerProtocolName) {
+    logger.warn("{} deactivateProtocol is not implemented yet in VirtualReader", this.getName());
   }
 
   /*

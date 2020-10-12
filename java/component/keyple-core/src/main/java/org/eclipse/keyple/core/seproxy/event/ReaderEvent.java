@@ -130,7 +130,7 @@ public final class ReaderEvent {
   }
 
   /**
-   * Gets the {@link SeReader} that generated the event comes from
+   * Gets the {@link SeReader} from which generated event comes from
    *
    * @return A not null reference.
    * @since 0.9

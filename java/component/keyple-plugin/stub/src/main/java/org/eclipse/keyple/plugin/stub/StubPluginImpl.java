@@ -19,7 +19,6 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,12 +54,11 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
   }
 
   public void plugStubReader(String readerName, Boolean synchronous) {
-    plugStubReader(readerName, TransmissionMode.CONTACTLESS, synchronous);
+    plugStubReader(readerName, true, synchronous);
   }
 
   @Override
-  public void plugStubReader(
-      String readerName, TransmissionMode transmissionMode, Boolean synchronous) {
+  public void plugStubReader(String readerName, boolean isContactless, Boolean synchronous) {
 
     logger.debug("Plugging a new reader with readerName {}", readerName);
     /* add the native reader to the native readers list */
@@ -68,7 +66,7 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
 
     if (!exist && synchronous) {
       /* add the reader as a new reader to the readers list */
-      readers.put(readerName, new StubReaderImpl(this.getName(), readerName, transmissionMode));
+      readers.put(readerName, new StubReaderImpl(this.getName(), readerName, isContactless));
     }
 
     connectedStubNames.add(readerName);

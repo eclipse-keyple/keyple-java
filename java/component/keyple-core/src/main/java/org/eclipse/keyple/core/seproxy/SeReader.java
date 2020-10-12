@@ -11,21 +11,21 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy;
 
-import java.util.Map;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotSupportedException;
 
 /**
- * SeReader interface
+ * Defines a high level API to access a card reader.
  *
  * <ul>
  *   <li>To retrieve the unique reader name
  *   <li>To check the SE presence.
- *   <li>To set the communication protocol and the specific reader parameters.
+ *   <li>To activate and deactivate SE protocols.
  * </ul>
  *
  * Interface used by applications processing SE.
+ *
+ * @since 0.9
  */
 public interface SeReader extends ProxyElement {
 
@@ -34,37 +34,55 @@ public interface SeReader extends ProxyElement {
    *
    * @return true if a Secure Element is present in the reader
    * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @since 0.9
    */
   boolean isSePresent();
 
   /**
-   * A protocol setting is an association that establish the link between a protocol identifier and
-   * a String that defines how a particular SE may match this protocol.
+   * Activates the provided card protocol and assigns it a name.
    *
-   * <p>For example:
+   * <ul>
+   *   <li>Activates the detection of cards using this protocol (if the plugin allows it).
+   *   <li>Asks the plugin to take this protocol into account if a card using this protocol is
+   *       identified during the selection phase.
+   *   <li>Internally associates the two strings provided as arguments.
+   *   <li>The #readerProtocolName argument is the name of the protocol among those supported by the
+   *       reader.
+   *   <li>The #applicationProtocolName is the name of the protocol to be the plugin when a card
+   *       using this protocol is detected.
+   * </ul>
    *
-   * <p>for a PC/SC plugin the String is defined as a regular expression that will be applied to the
-   * ATR in order to identify which type of SE is currently communicating.
+   * Note: in the case where multiple protocols are activated, they will be checked in the selection
+   * process in the order in which they were activated. The most likely cases should therefore be
+   * activated first.
    *
-   * <p>for another plugin (e.g. NFC or proprietary plugin) the String would be any specific word to
-   * match a value handled by the low level API of the reader (e.g. "NfcA", "NfcB", "MifareClassic",
-   * etc)
-   *
-   * <p>A reader plugin will handle a list of protocol settings in order to target multiple types of
-   * SE.
-   *
-   * @param seProtocol the protocol key identifier to be added to the plugin internal list
-   * @param protocolRule a string use to define how to identify the protocol
+   * @param readerProtocolName A not empty String.
+   * @param applicationProtocolName A not empty String.
+   * @throws KeypleReaderProtocolNotSupportedException if the protocol is not supported.
+   * @since 1.0
    */
-  void addSeProtocolSetting(SeProtocol seProtocol, String protocolRule);
+  void activateProtocol(String readerProtocolName, String applicationProtocolName);
 
   /**
-   * Complete the current setting map with the provided map
+   * Deactivates the provided card protocol.
    *
-   * @param protocolSetting the protocol setting map
+   * <ul>
+   *   <li>Inhibits the detection of cards using this protocol.
+   *   <li>Ask the plugin to ignore this protocol if a card using this protocol is identified during
+   *       the selection phase.
+   * </ul>
+   *
+   * @param readerProtocolName A not empty String.
+   * @throws KeypleReaderProtocolNotSupportedException if the protocol is not supported.
+   * @since 1.0
    */
-  void setSeProtocolSetting(Map<SeProtocol, String> protocolSetting);
+  void deactivateProtocol(String readerProtocolName);
 
-  /** @return the transmission mode in use with this SE reader */
-  TransmissionMode getTransmissionMode();
+  /**
+   * Tells if the current card communication is contactless.
+   *
+   * @return True if the communication is contactless, false if not.
+   * @since 1.0
+   */
+  boolean isContactless();
 }

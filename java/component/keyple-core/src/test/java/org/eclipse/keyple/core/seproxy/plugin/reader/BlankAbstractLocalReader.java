@@ -11,9 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.plugin.reader;
 
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
-
 public class BlankAbstractLocalReader extends AbstractLocalReader {
 
   public BlankAbstractLocalReader(String pluginName, String readerName) {
@@ -42,7 +39,7 @@ public class BlankAbstractLocalReader extends AbstractLocalReader {
   }
 
   @Override
-  public boolean protocolFlagMatches(SeProtocol protocolFlag) {
+  protected boolean isCurrentProtocol(String readerProtocolName) {
     return false;
   }
 
@@ -55,7 +52,13 @@ public class BlankAbstractLocalReader extends AbstractLocalReader {
   void terminateSeCommunication() {}
 
   @Override
-  public TransmissionMode getTransmissionMode() {
-    return null;
+  protected void activateReaderProtocol(String readerProtocolName) {}
+
+  @Override
+  protected void deactivateReaderProtocol(String readerProtocolName) {}
+
+  @Override
+  public boolean isContactless() {
+    return true;
   }
 }

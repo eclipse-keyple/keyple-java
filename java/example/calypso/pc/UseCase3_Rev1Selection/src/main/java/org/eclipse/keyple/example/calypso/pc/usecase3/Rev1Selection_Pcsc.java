@@ -23,14 +23,13 @@ import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
-import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
+import org.eclipse.keyple.plugin.pcsc.PcscSupportedProtocols;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,14 +73,12 @@ public class Rev1Selection_Pcsc {
 
     // Get and configure the PO reader
     SeReader poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
-    ((PcscReader) poReader)
-        .setTransmissionMode(TransmissionMode.CONTACTLESS)
-        .setIsoProtocol(PcscReader.IsoProtocol.T1);
+    ((PcscReader) poReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
-    // Add the B Prime protocol filter
-    poReader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_B_PRIME,
-        PcscProtocolSetting.getAllSettings().get(SeCommonProtocols.PROTOCOL_B_PRIME));
+    /* Activate protocols */
+    poReader.activateProtocol(
+        PcscSupportedProtocols.CALYPSO_OLD_CARD_PRIME.name(),
+        ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name());
 
     logger.info(
         "=============== UseCase Calypso #1: ATR based explicit selection (PO Rev1) ===========");
@@ -103,7 +100,7 @@ public class Rev1Selection_Pcsc {
       PoSelectionRequest poSelectionRequest =
           new PoSelectionRequest(
               PoSelector.builder()
-                  .seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME)
+                  .seProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
                   .atrFilter(new AtrFilter(PO_ATR_REGEX))
                   .invalidatedPo(InvalidatedPo.REJECT)
                   .build());
