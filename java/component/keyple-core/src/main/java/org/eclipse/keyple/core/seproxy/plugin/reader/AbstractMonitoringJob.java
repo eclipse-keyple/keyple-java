@@ -25,7 +25,7 @@ package org.eclipse.keyple.core.seproxy.plugin.reader;
  * it is possible to define new ones within a plugin reader if necessary, implementing this abstract
  * class.
  */
-public abstract class AbstractMonitoringJob {
+abstract class AbstractMonitoringJob {
 
   /**
    * Define a Runnable task of the monitoring job

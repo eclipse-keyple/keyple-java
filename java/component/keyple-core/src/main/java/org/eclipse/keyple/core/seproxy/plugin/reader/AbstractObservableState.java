@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  * Defines a state behaviour for a {@link AbstractObservableLocalReader} Handles {@link
  * AbstractObservableLocalReader.InternalEvent} that might results on a switch of state.
  */
-public abstract class AbstractObservableState {
+abstract class AbstractObservableState {
 
   private static final Logger logger = LoggerFactory.getLogger(AbstractObservableState.class);
 
