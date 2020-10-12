@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 import javax.smartcardio.*;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotSupportedException;
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderStateService;
 import org.eclipse.keyple.core.seproxy.plugin.reader.SmartInsertionReader;
