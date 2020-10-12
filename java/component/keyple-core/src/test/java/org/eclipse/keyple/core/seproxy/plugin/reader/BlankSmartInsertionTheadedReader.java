@@ -11,8 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.plugin.reader;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.seproxy.exception.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +23,6 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
 
   Integer mockDetect; // TODO check why mockDetect is not initialized!
   Integer detectCount = 0;
-  ExecutorService executorService = null;
 
   /**
    * Reader constructor
@@ -45,8 +42,7 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
   @Override
   public final ObservableReaderStateService initStateService() {
     // To be fixed with KEYP-349
-    executorService = Executors.newSingleThreadExecutor();
-    return ObservableReaderStateService.builder(this, executorService)
+    return ObservableReaderStateService.builder(this)
         .waitForSeInsertionWithSmartDetection()
         .waitForSeProcessingWithNativeDetection()
         .waitForSeRemovalWithPollingDetection()

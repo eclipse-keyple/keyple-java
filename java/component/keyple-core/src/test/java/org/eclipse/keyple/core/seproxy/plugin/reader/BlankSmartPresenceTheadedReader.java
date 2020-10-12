@@ -11,8 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.plugin.reader;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.slf4j.Logger;
@@ -23,8 +21,6 @@ public class BlankSmartPresenceTheadedReader extends AbstractObservableLocalRead
 
   private static final Logger logger =
       LoggerFactory.getLogger(BlankSmartPresenceTheadedReader.class);
-
-  protected ExecutorService executorService = null;
 
   Integer mockDetect;
   Integer detectCount = 0;
@@ -110,9 +106,7 @@ public class BlankSmartPresenceTheadedReader extends AbstractObservableLocalRead
 
   @Override
   public ObservableReaderStateService initStateService() {
-    // To be fixed with KEYP-349
-    executorService = Executors.newSingleThreadExecutor();
-    return ObservableReaderStateService.builder(this, executorService)
+    return ObservableReaderStateService.builder(this)
         .waitForSeInsertionWithSmartDetection()
         .waitForSeProcessingWithSmartDetection()
         .waitForSeRemovalWithSmartDetection()

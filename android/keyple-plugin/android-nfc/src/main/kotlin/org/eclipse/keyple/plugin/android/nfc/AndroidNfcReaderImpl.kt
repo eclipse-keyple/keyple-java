@@ -43,8 +43,6 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
 
     private val protocolsMap = HashMap<String, String?>()
 
-    lateinit var executorService: java.util.concurrent.ExecutorService
-
     private const val NO_TAG = "no-tag"
 
     private var isWatingForRemoval = false
@@ -99,17 +97,15 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
         }
 
     override fun initStateService(): ObservableReaderStateService {
-        // To be fixed with KEYP-349
-        executorService = java.util.concurrent.Executors.newSingleThreadExecutor()
 
         return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            ObservableReaderStateService.builder(this, executorService)
+            ObservableReaderStateService.builder(this)
                     .waitForSeInsertionWithNativeDetection()
                     .waitForSeProcessingWithNativeDetection()
                     .waitForSeRemovalWithPollingDetection()
                     .build()
         } else {
-            ObservableReaderStateService.builder(this, executorService)
+            ObservableReaderStateService.builder(this)
                     .waitForSeInsertionWithNativeDetection()
                     .waitForSeProcessingWithNativeDetection()
                     .waitForSeRemovalWithSmartDetection()
