@@ -54,10 +54,12 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
 
     switch (event.getEventType()) {
       case READER_CONNECTED:
-        // retrieve serviceId from reader
-        String virtualReaderName = event.getReaderNames().first();
+        // retrieve plugin
         RemoteSeServerPlugin plugin =
             (RemoteSeServerPlugin) SeProxyService.getInstance().getPlugin(event.getPluginName());
+
+        // retrieve reader
+        String virtualReaderName = event.getReaderNames().first();
         RemoteSeServerReader virtualReader = plugin.getReader(virtualReaderName);
 
         // execute the business logic based on serviceId
@@ -77,22 +79,37 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
    * @return output object
    */
   private Object executeService(RemoteSeServerReader virtualReader) {
-    logger.info("Executing ServiceId : {}", virtualReader.getServiceId());
 
-    // EXECUTE_CALYPSO_SESSION_FROM_REMOTE_SELECTION
-    if ("EXECUTE_CALYPSO_SESSION_FROM_REMOTE_SELECTION".equals(virtualReader.getServiceId())) {
+    /*
+     * Retrieve the serviceId specified by the client when executing the remote service. Based on this serviceId, the server can select the ticketing logic to execute.
+     */
+    final String serviceId = virtualReader.getServiceId();
+    logger.info("Executing ServiceId : {}", serviceId);
+
+    // the service Id EXECUTE_CALYPSO_SESSION_FROM_REMOTE_SELECTION matches the following logic
+    if ("EXECUTE_CALYPSO_SESSION_FROM_REMOTE_SELECTION".equals(serviceId)) {
+      /*
+       * Retrieve the userInputData specified by the client when executing the remote service.
+       */
       UserInfo userInput = virtualReader.getUserInputData(UserInfo.class);
 
+      /*
+       * Execute an example of a ticketing transaction :
+       * - perform a remote explicit SE selection
+       * - read the content of event log file
+       */
       // perform a remote explicit SE selection
       SeSelection seSelection = getSeSelection();
       SelectionsResult selectionsResult = seSelection.processExplicitSelection(virtualReader);
       CalypsoPo calypsoPo = (CalypsoPo) selectionsResult.getActiveMatchingSe();
 
       try {
-        // execute a transaction
+        // read the content of event log file
         readEventLog(calypsoPo, virtualReader);
+        // return a successful transaction result
         return new TransactionResult().setUserId(userInput.getUserId()).setSuccessful(true);
       } catch (KeypleException e) {
+        // if an exception is thrown, return an unsuccessful transaction result
         return new TransactionResult().setSuccessful(false).setUserId(userInput.getUserId());
       }
     }
