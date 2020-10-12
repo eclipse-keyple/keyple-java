@@ -333,12 +333,12 @@ public class VirtualReaderTest {
   @Test
   public void releaseChannel_whenOk_shouldCallTheHandlerAndReturnResponses() {
 
-     // init response
+    // init response
     KeypleMessageDto responseDto =
-            new KeypleMessageDto() //
-                    .setAction(KeypleMessageDto.Action.RELEASE_CHANNEL.name()) //
-                    .setVirtualReaderName(reader.getName()) //
-                    .setNativeReaderName(reader.nativeReaderName);
+        new KeypleMessageDto() //
+            .setAction(KeypleMessageDto.Action.RELEASE_CHANNEL.name()) //
+            .setVirtualReaderName(reader.getName()) //
+            .setNativeReaderName(reader.nativeReaderName);
 
     doReturn(responseDto).when(node).sendRequest(any(KeypleMessageDto.class));
 
