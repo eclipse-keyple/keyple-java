@@ -111,7 +111,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
   private final Object sync = new Object();
 
   /* Service that handles Internal Events and their impact on the current state of the reader */
-  protected ObservableReaderStateService stateService;
+  protected final ObservableReaderStateService stateService;
 
   /**
    * Initialize the ObservableReaderStateService with the possible states and their implementation.
@@ -138,6 +138,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
    */
   public AbstractObservableLocalReader(String pluginName, String readerName) {
     super(pluginName, readerName);
+    stateService = initStateService();
   }
 
   /**

@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
  * This monitoring job polls the {@link SeReader#isSePresent()} method to detect
  * SE_INSERTED/SE_REMOVED
  */
-public class CardPresentMonitoringJob extends AbstractMonitoringJob {
+class CardPresentMonitoringJob extends AbstractMonitoringJob {
 
   private static final Logger logger = LoggerFactory.getLogger(CardPresentMonitoringJob.class);
 

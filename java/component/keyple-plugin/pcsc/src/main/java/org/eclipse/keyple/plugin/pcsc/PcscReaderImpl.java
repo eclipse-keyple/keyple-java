@@ -11,27 +11,16 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.pcsc;
 
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 import javax.smartcardio.*;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.exception.*;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotSupportedException;
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableLocalReader;
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState;
-import org.eclipse.keyple.core.seproxy.plugin.reader.CardPresentMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderStateService;
-import org.eclipse.keyple.core.seproxy.plugin.reader.SmartInsertionMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.reader.SmartInsertionReader;
-import org.eclipse.keyple.core.seproxy.plugin.reader.SmartRemovalMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.reader.SmartRemovalReader;
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeInsertion;
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeProcessing;
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemoval;
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetect;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
@@ -69,9 +58,6 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   private static final long INSERT_LATENCY = 500;
   private static final long REMOVAL_LATENCY = 500;
 
-  private static final long INSERT_WAIT_TIMEOUT = 200;
-  private final ExecutorService executorService = Executors.newSingleThreadExecutor();
-
   private final AtomicBoolean loopWaitSe = new AtomicBoolean();
   private final AtomicBoolean loopWaitSeRemoval = new AtomicBoolean();
 
@@ -102,8 +88,6 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     logger.info(
         "System detected : {}, is macOs checkPresence ping activated {}", os, usePingPresence);
 
-    this.stateService = initStateService();
-
     logger.debug("[{}] constructor => using terminal ", terminal);
   }
 
@@ -114,41 +98,25 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    */
   @Override
   public ObservableReaderStateService initStateService() {
+    ObservableReaderStateService observableReaderStateService = null;
 
-    Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
-        new EnumMap<AbstractObservableState.MonitoringState, AbstractObservableState>(
-            AbstractObservableState.MonitoringState.class);
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
-        new WaitForStartDetect(this));
-
-    // should the SmartInsertionMonitoringJob be used?
     if (!usePingPresence) {
-      // use the SmartInsertionMonitoringJob
-      states.put(
-          AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-          new WaitForSeInsertion(this, new SmartInsertionMonitoringJob(this), executorService));
+      observableReaderStateService =
+          ObservableReaderStateService.builder(this)
+              .waitForSeInsertionWithSmartDetection()
+              .waitForSeProcessingWithSmartDetection()
+              .waitForSeRemovalWithSmartDetection()
+              .build();
     } else {
-      // use the CardPresentMonitoring job (only on Mac due to jvm crash)
-      // https://github.com/eclipse/keyple-java/issues/153
-      states.put(
-          AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-          new WaitForSeInsertion(
-              this,
-              new CardPresentMonitoringJob(this, INSERT_WAIT_TIMEOUT, true),
-              executorService));
+      observableReaderStateService =
+          ObservableReaderStateService.builder(this)
+              .waitForSeInsertionWithPollingDetection()
+              .waitForSeProcessingWithSmartDetection()
+              .waitForSeRemovalWithSmartDetection()
+              .build();
     }
 
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-        new WaitForSeProcessing(this, new SmartRemovalMonitoringJob(this), executorService));
-
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-        new WaitForSeRemoval(this, new SmartRemovalMonitoringJob(this), executorService));
-
-    return new ObservableReaderStateService(
-        this, states, AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION);
+    return observableReaderStateService;
   }
 
   /**

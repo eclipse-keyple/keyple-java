@@ -25,16 +25,16 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WaitForSeProcessingTest extends CoreBaseTest {
+public class WaitForSeProcessingStateTest extends CoreBaseTest {
 
-  private static final Logger logger = LoggerFactory.getLogger(WaitForSeProcessingTest.class);
+  private static final Logger logger = LoggerFactory.getLogger(WaitForSeProcessingStateTest.class);
 
   final String PLUGIN_NAME = "WaitForSeProcessingTestP";
-  final String READER_NAME = "WaitForSeProcessingTest";
+  final String READER_NAME = "WaitForSeProcessingStateTest";
 
   final ExecutorService executorService = Executors.newSingleThreadExecutor();
   BlankSmartPresenceTheadedReader r;
-  WaitForSeProcessing waitForSeProcessing;
+  WaitForSeProcessingState waitForSeProcessingState;
 
   @Before
   public void setUp() {
@@ -43,14 +43,14 @@ public class WaitForSeProcessingTest extends CoreBaseTest {
     logger.info("------------------------------");
 
     r = AbsSmartPresenceTheadedReaderTest.getSmartPresenceMock(PLUGIN_NAME, READER_NAME);
-    waitForSeProcessing =
-        new WaitForSeProcessing(r, new SmartRemovalMonitoringJob(r), executorService);
+    waitForSeProcessingState =
+        new WaitForSeProcessingState(r, new SmartRemovalMonitoringJob(r), executorService);
   }
 
   @Before
   public void tearDown() {
     logger.info("------------------------------");
-    waitForSeProcessing.onDeactivate();
+    waitForSeProcessingState.onDeactivate();
   }
 
   @Test
@@ -63,8 +63,8 @@ public class WaitForSeProcessingTest extends CoreBaseTest {
     doReturn(false).when(r).waitForCardAbsentNative();
 
     /* test */
-    waitForSeProcessing.onActivate();
-    waitForSeProcessing.onEvent(AbstractObservableLocalReader.InternalEvent.SE_PROCESSED);
+    waitForSeProcessingState.onActivate();
+    waitForSeProcessingState.onEvent(AbstractObservableLocalReader.InternalEvent.SE_PROCESSED);
 
     /* Assert */
     // Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
@@ -81,7 +81,7 @@ public class WaitForSeProcessingTest extends CoreBaseTest {
     doReturn(true).when(r).waitForCardAbsentNative();
 
     /* test */
-    waitForSeProcessing.onActivate();
+    waitForSeProcessingState.onActivate();
 
     Thread.sleep(500l); // avoid flaky
 
@@ -98,7 +98,7 @@ public class WaitForSeProcessingTest extends CoreBaseTest {
     doReturn(true).when(r).waitForCardAbsentNative();
 
     /* test */
-    waitForSeProcessing.onActivate();
+    waitForSeProcessingState.onActivate();
 
     Thread.sleep(50l); // wait
 
