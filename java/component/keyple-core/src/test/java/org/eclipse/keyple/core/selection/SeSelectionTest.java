@@ -135,9 +135,9 @@ public class SeSelectionTest extends CoreBaseTest {
     SeSelection seSelection = createSeSelection();
 
     AbstractDefaultSelectionsResponse defaultSelectionsResponse;
-    List<SeResponse> seResponses = new ArrayList<SeResponse>();
+    List<CardResponse> cardResponse = new ArrayList<CardResponse>();
 
-    defaultSelectionsResponse = new DefaultSelectionsResponse(seResponses);
+    defaultSelectionsResponse = new DefaultSelectionsResponse(cardResponse);
 
     SelectionsResult selectionsResult = null;
     try {
@@ -157,7 +157,7 @@ public class SeSelectionTest extends CoreBaseTest {
 
     // create a selection response
     AbstractDefaultSelectionsResponse defaultSelectionsResponse;
-    List<SeResponse> seResponses = new ArrayList<SeResponse>();
+    List<CardResponse> cardResponse = new ArrayList<CardResponse>();
 
     ApduResponse apduResponse =
         new ApduResponse(
@@ -173,11 +173,11 @@ public class SeSelectionTest extends CoreBaseTest {
         new SelectionStatus(
             null, new ApduResponse(ByteArrayUtil.fromHex("001122334455669000"), null), false);
 
-    SeResponse seResponse = new SeResponse(true, true, selectionStatus, apduResponses);
+    CardResponse cardResponse = new CardResponse(true, true, selectionStatus, apduResponses);
 
-    seResponses.add(seResponse);
+    cardResponse.add(cardResponse);
 
-    defaultSelectionsResponse = new DefaultSelectionsResponse(seResponses);
+    defaultSelectionsResponse = new DefaultSelectionsResponse(cardResponse);
 
     // process the selection response with the SeSelection
     SelectionsResult selectionsResult = null;
@@ -202,7 +202,7 @@ public class SeSelectionTest extends CoreBaseTest {
 
     // create a selection response
     AbstractDefaultSelectionsResponse defaultSelectionsResponse;
-    List<SeResponse> seResponses = new ArrayList<SeResponse>();
+    List<CardResponse> cardResponse = new ArrayList<CardResponse>();
 
     ApduResponse apduResponse =
         new ApduResponse(
@@ -218,11 +218,11 @@ public class SeSelectionTest extends CoreBaseTest {
         new SelectionStatus(
             null, new ApduResponse(ByteArrayUtil.fromHex("001122334455669000"), null), true);
 
-    SeResponse seResponse = new SeResponse(true, true, selectionStatus, apduResponses);
+    CardResponse cardResponse = new CardResponse(true, true, selectionStatus, apduResponses);
 
-    seResponses.add(seResponse);
+    cardResponse.add(cardResponse);
 
-    defaultSelectionsResponse = new DefaultSelectionsResponse(seResponses);
+    defaultSelectionsResponse = new DefaultSelectionsResponse(cardResponse);
 
     // process the selection response with the SeSelection
     SelectionsResult selectionsResult = null;
@@ -318,14 +318,14 @@ public class SeSelectionTest extends CoreBaseTest {
     }
 
     @Override
-    protected AbstractMatchingSe parse(SeResponse seResponse) {
-      return new MatchingSe(seResponse);
+    protected AbstractMatchingSe parse(CardResponse cardResponse) {
+      return new MatchingSe(cardResponse);
     }
   }
 
   /** Matching card instantiation */
   private final class MatchingSe extends AbstractMatchingSe {
-    MatchingSe(SeResponse selectionResponse) {
+    MatchingSe(CardResponse selectionResponse) {
       super(selectionResponse);
     }
   }

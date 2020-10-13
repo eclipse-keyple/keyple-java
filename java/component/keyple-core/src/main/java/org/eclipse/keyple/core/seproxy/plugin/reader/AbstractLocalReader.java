@@ -403,12 +403,12 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * @since 0.9
    */
   @Override
-  protected final List<SeResponse> processSeRequests(
+  protected final List<CardResponse> processSeRequests(
       List<CardRequest> cardRequests,
       MultiSeRequestProcessing multiSeRequestProcessing,
       ChannelControl channelControl) {
 
-    List<SeResponse> seResponses = new ArrayList<SeResponse>();
+    List<CardResponse> cardResponses = new ArrayList<CardResponse>();
 
     /* Open the physical channel if needed, determine the current protocol */
     if (!isPhysicalChannelOpen()) {
@@ -417,28 +417,28 @@ public abstract class AbstractLocalReader extends AbstractReader {
 
     /* loop over all CardRequest provided in the list */
     for (CardRequest cardRequest : cardRequests) {
-      /* process the CardRequest and append the SeResponse list */
-      SeResponse seResponse;
+      /* process the CardRequest and append the CardResponse list */
+      CardResponse cardResponse;
       try {
-        seResponse = processSeRequestLogical(cardRequest);
+        cardResponse = processSeRequestLogical(cardRequest);
       } catch (KeypleReaderIOException ex) {
         /*
          * The process has been interrupted. We launch a KeypleReaderException with
          * the responses collected so far.
-         * Add the latest (and partial) SeResponse to the current list.
+         * Add the latest (and partial) CardResponse to the current list.
          */
-        seResponses.add(ex.getSeResponse());
-        /* Build a List of SeResponse with the available data. */
-        ex.setSeResponses(seResponses);
+        cardResponses.add(ex.getCardResponse());
+        /* Build a List of CardResponse with the available data. */
+        ex.setCardResponses(cardResponses);
         if (logger.isDebugEnabled()) {
           logger.debug(
               "[{}] processSeRequests => transmit : process interrupted, collect previous responses {}",
               this.getName(),
-              seResponses);
+                  cardResponses);
         }
         throw ex;
       }
-      seResponses.add(seResponse);
+      cardResponses.add(cardResponse);
       if (multiSeRequestProcessing == MultiSeRequestProcessing.PROCESS_ALL) {
         /* multi CardRequest case: just close the logical channel and go on with the next selection. */
         closeLogicalChannel();
@@ -455,7 +455,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
       releaseChannel();
     }
 
-    return seResponses;
+    return cardResponses;
   }
 
   /**
@@ -467,7 +467,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * @since 0.9
    */
   @Override
-  protected final SeResponse processSeRequest(
+  protected final CardResponse processSeRequest(
       CardRequest cardRequest, ChannelControl channelControl) {
 
     /* Open the physical channel if needed, determine the current protocol */
@@ -475,17 +475,17 @@ public abstract class AbstractLocalReader extends AbstractReader {
       openPhysicalChannelAndSetProtocol();
     }
 
-    SeResponse seResponse;
+    CardResponse cardResponse;
 
-    /* process the CardRequest and keep the SeResponse */
-    seResponse = processSeRequestLogical(cardRequest);
+    /* process the CardRequest and keep the CardResponse */
+    cardResponse = processSeRequestLogical(cardRequest);
 
     /* close the channel if requested */
     if (channelControl == ChannelControl.CLOSE_AFTER) {
       releaseChannel();
     }
 
-    return seResponse;
+    return cardResponse;
   }
 
   /**
@@ -613,20 +613,20 @@ public abstract class AbstractLocalReader extends AbstractReader {
   }
 
   /**
-   * Processes the {@link CardRequest} passed as an argument and returns a {@link SeResponse}.
+   * Processes the {@link CardRequest} passed as an argument and returns a {@link CardResponse}.
    *
    * <p>The complete description of the process of transmitting an {@link CardRequest} is described
    * in {{@link ProxyReader#transmitSeRequest(CardRequest, ChannelControl)}}
    *
    * @param cardRequest The {@link CardRequest} to be processed (must be not null).
-   * @return seResponse A not null {@link SeResponse}.
+   * @return cardResponse A not null {@link CardResponse}.
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @throws IllegalStateException in case of configuration inconsistency.
    * @see #processSeRequests(List, MultiSeRequestProcessing, ChannelControl)
    * @see #processSeRequest(CardRequest, ChannelControl)
    * @since 0.9
    */
-  private SeResponse processSeRequestLogical(CardRequest cardRequest) {
+  private CardResponse processSeRequestLogical(CardRequest cardRequest) {
 
     SelectionStatus selectionStatus = null;
     SeSelector seSelector = cardRequest.getSeSelector();
@@ -636,7 +636,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
       selectionStatus = processSelection(seSelector);
       if (!selectionStatus.hasMatched()) {
         // the selection failed, return an empty response having the selection status
-        return new SeResponse(
+        return new CardResponse(
             false, previouslyOpen, selectionStatus, new ArrayList<ApduResponse>());
       }
 
@@ -662,13 +662,13 @@ public abstract class AbstractLocalReader extends AbstractReader {
           }
 
           closeLogicalAndPhysicalChannels();
-          ex.setSeResponse(new SeResponse(false, previouslyOpen, selectionStatus, apduResponses));
+          ex.setCardResponse(new CardResponse(false, previouslyOpen, selectionStatus, apduResponses));
           throw ex;
         }
       }
     }
 
-    return new SeResponse(logicalChannelIsOpen, previouslyOpen, selectionStatus, apduResponses);
+    return new CardResponse(logicalChannelIsOpen, previouslyOpen, selectionStatus, apduResponses);
   }
 
   /**

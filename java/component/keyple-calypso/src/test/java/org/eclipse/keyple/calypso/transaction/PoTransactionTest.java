@@ -37,9 +37,9 @@ import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.message.CardRequest;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Before;
@@ -1681,8 +1681,8 @@ public class PoTransactionTest {
   }
 
   private CalypsoPo createCalypsoPo(String FCI) {
-    SeResponse selectionData =
-        new SeResponse(
+    CardResponse selectionData =
+        new CardResponse(
             true,
             false,
             new SelectionStatus(null, new ApduResponse(ByteArrayUtil.fromHex(FCI), null), true),
@@ -1694,7 +1694,7 @@ public class PoTransactionTest {
 
     SelectionStatus selectionStatus =
         new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR1)), null, true);
-    return new CalypsoSam(new SeResponse(true, true, selectionStatus, null));
+    return new CalypsoSam(new CardResponse(true, true, selectionStatus, null));
   }
 
   private ProxyReader createMockReader(
@@ -1706,9 +1706,9 @@ public class PoTransactionTest {
     doReturn(isContactless).when(mockReader).isContactless();
 
     doAnswer(
-            new Answer<SeResponse>() {
+            new Answer<CardResponse>() {
               @Override
-              public SeResponse answer(InvocationOnMock invocation) {
+              public CardResponse answer(InvocationOnMock invocation) {
                 Object[] args = invocation.getArguments();
                 CardRequest cardRequest = (CardRequest) args[0];
                 List<ApduRequest> apduRequests = cardRequest.getApduRequests();
@@ -1724,10 +1724,10 @@ public class PoTransactionTest {
                             + apduResponse.toString());
                   }
                 } catch (KeypleReaderIOException ex) {
-                  ex.setSeResponse(new SeResponse(true, true, null, apduResponses));
+                  ex.setCardResponse(new CardResponse(true, true, null, apduResponses));
                   throw ex;
                 }
-                return new SeResponse(true, true, null, apduResponses);
+                return new CardResponse(true, true, null, apduResponses);
               }
             })
         .when(mockReader)

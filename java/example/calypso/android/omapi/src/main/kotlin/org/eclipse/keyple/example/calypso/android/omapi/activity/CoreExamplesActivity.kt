@@ -78,11 +78,11 @@ class CoreExamplesActivity : ExamplesActivity() {
 
                     addActionEvent("Sending CardRequest to select: $poAid")
                     try {
-                        val seResponse = (it.value as ProxyReader).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN)
+                        val cardResponse = (it.value as ProxyReader).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN)
 
-                        if (seResponse?.selectionStatus?.hasMatched() == true) {
+                        if (cardResponse?.selectionStatus?.hasMatched() == true) {
                             addResultEvent("The selection of the PO has succeeded.")
-                            addResultEvent("Application FCI = ${ByteArrayUtil.toHex(seResponse.selectionStatus.fci.bytes)}")
+                            addResultEvent("Application FCI = ${ByteArrayUtil.toHex(cardResponse.selectionStatus.fci.bytes)}")
                         } else {
                             addResultEvent("The selection of the PO Failed")
                         }

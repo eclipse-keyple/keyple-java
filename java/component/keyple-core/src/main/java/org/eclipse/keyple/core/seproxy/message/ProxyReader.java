@@ -20,9 +20,9 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 /**
  * A {@link ProxyReader} is an {@link Reader} with methods for communicating with SEs.
  *
- * <p>Exchanges are made using {@link CardRequest} which in return result in {@link SeResponse}.<br>
+ * <p>Exchanges are made using {@link CardRequest} which in return result in {@link CardResponse}.<br>
  * The {@link CardRequest} optionally carries the card selection data and an APDU list.<br>
- * The {@link SeResponse} contains the result of the selection and the responses to the APDUs.
+ * The {@link CardResponse} contains the result of the selection and the responses to the APDUs.
  *
  * <p>The {@link CardRequest} are transmitted individually ({@link #transmitSeRequest(CardRequest,
  * ChannelControl)} or by a list {@link #transmitSeRequests(List, MultiSeRequestProcessing,
@@ -37,7 +37,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 public interface ProxyReader extends Reader {
 
   /**
-   * Transmits the list of {@link CardRequest } and gets in return a list of {@link SeResponse}.
+   * Transmits the list of {@link CardRequest } and gets in return a list of {@link CardResponse}.
    *
    * <p>The actual processing of each {@link CardRequest} is similar to that performed by {@link
    * #transmitSeRequest(CardRequest, ChannelControl)} (see this method for further explanation of
@@ -46,7 +46,7 @@ public interface ProxyReader extends Reader {
    * <p>If the multiSeRequestProcessing parameter equals to {@link
    * MultiSeRequestProcessing#FIRST_MATCH}, the iteration over the {@link CardRequest} list is
    * interrupted at the first processing that leads to an open logical channel state. In this case,
-   * the list of {@link SeResponse} may be shorter than the list of SeRequests provided as input.
+   * the list of {@link CardResponse} may be shorter than the list of SeRequests provided as input.
    *
    * <p>If it equals to {@link MultiSeRequestProcessing#PROCESS_ALL}, all the {@link CardRequest}
    * are processed and the logical channel is closed after each process.<br>
@@ -67,13 +67,13 @@ public interface ProxyReader extends Reader {
    * @throws IllegalStateException in case of configuration inconsistency.
    * @since 0.9
    */
-  List<SeResponse> transmitSeRequests(
+  List<CardResponse> transmitSeRequests(
       List<CardRequest> cardRequests,
       MultiSeRequestProcessing multiSeRequestProcessing,
       ChannelControl channelControl);
 
   /**
-   * Transmits a single {@link CardRequest} passed as an argument and returns a {@link SeResponse}.
+   * Transmits a single {@link CardRequest} passed as an argument and returns a {@link CardResponse}.
    *
    * <p>The process includes the following steps:
    *
@@ -97,7 +97,7 @@ public interface ProxyReader extends Reader {
    *       list.
    *   <li>Closes the physical channel if the {@link ChannelControl} is {@link
    *       ChannelControl#CLOSE_AFTER}.
-   *   <li>Returns a {@link SeResponse} containing:
+   *   <li>Returns a {@link CardResponse} containing:
    *       <ul>
    *         <li>a boolean giving the current logical channel status.
    *         <li>a boolean giving the previous logical channel status.
@@ -113,14 +113,14 @@ public interface ProxyReader extends Reader {
    * response to the {@link CardRequest}.
    *
    * @param cardRequest The {@link CardRequest} to be processed (must be not null).
-   * @return seResponse A not null {@link SeResponse}.
+   * @return cardResponse A not null {@link CardResponse}.
    * @param channelControl indicates if the physical channel has to be closed at the end of the
    *     processing (must be not null).
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @throws IllegalArgumentException if one of the arguments is null.
    * @since 0.9
    */
-  SeResponse transmitSeRequest(CardRequest cardRequest, ChannelControl channelControl);
+  CardResponse transmitSeRequest(CardRequest cardRequest, ChannelControl channelControl);
 
   /**
    * Release the communication channel previously established with the card.

@@ -111,8 +111,8 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         nativeReader = mockReaderWithExceptionOnOpenLogicalChannel(NoSuchElementException())
         reader = buildOmapiReaderImpl(nativeReader)
         // test
-        val seResponseList = reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
-        Assert.assertFalse(seResponseList[0].selectionStatus.hasMatched()) // If container is not found a null responsed is returned
+        val cardResponseList = reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        Assert.assertFalse(cardResponseList[0].selectionStatus.hasMatched()) // If container is not found a null responsed is returned
     }
 
     @Test(expected = KeypleReaderIOException::class)
@@ -155,10 +155,10 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader = buildOmapiReaderImpl(nativeReader)
 
         // test
-        val seResponseList = reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        val cardResponseList = reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
 
         // assert
-        Assert.assertFalse(seResponseList[0].selectionStatus.hasMatched())
+        Assert.assertFalse(cardResponseList[0].selectionStatus.hasMatched())
     }
 
     @Test
@@ -175,10 +175,10 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         // test
         val seRequests = ArrayList<CardRequest>()
         seRequests.add(seRequest)
-        val seResponseList = reader.transmitSeRequests(seRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        val cardResponseList = reader.transmitSeRequests(seRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
 
         // assert
-        Assert.assertFalse(seResponseList[0].selectionStatus.hasMatched())
+        Assert.assertFalse(cardResponseList[0].selectionStatus.hasMatched())
     }
 
     @Test(expected = KeypleReaderException::class)
@@ -200,8 +200,8 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader = buildOmapiReaderImpl(nativeReader)
 
         // test
-        val seResponseList = reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER)
-        Assert.assertNotNull(seResponseList)
+        val cardResponseList = reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER)
+        Assert.assertNotNull(cardResponseList)
     }
 
     @Test(expected = KeypleReaderIOException::class)

@@ -15,7 +15,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import java.util.Map;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
@@ -31,12 +31,12 @@ public class SelectionsResultTest {
     SelectionsResult selectionsResult = new SelectionsResult();
     ApduResponse fci1 = new ApduResponse(ByteArrayUtil.fromHex(FCI1), null);
     SelectionStatus selectionStatus1 = new SelectionStatus(null, fci1, true);
-    SeResponse seResponse1 = new SeResponse(true, false, selectionStatus1, null);
+    CardResponse cardResponse1 = new CardResponse(true, false, selectionStatus1, null);
     ApduResponse fci2 = new ApduResponse(ByteArrayUtil.fromHex(FCI2), null);
     SelectionStatus selectionStatus2 = new SelectionStatus(null, fci2, true);
-    SeResponse seResponse2 = new SeResponse(true, false, selectionStatus2, null);
-    TestMatchingSe testMatchingSe1 = new TestMatchingSe(seResponse1);
-    TestMatchingSe testMatchingSe2 = new TestMatchingSe(seResponse2);
+    CardResponse cardResponse2 = new CardResponse(true, false, selectionStatus2, null);
+    TestMatchingSe testMatchingSe1 = new TestMatchingSe(cardResponse1);
+    TestMatchingSe testMatchingSe2 = new TestMatchingSe(cardResponse2);
     selectionsResult.addMatchingSe(0, testMatchingSe1, false);
     selectionsResult.addMatchingSe(2, testMatchingSe2, true);
     assertThat(selectionsResult.hasActiveSelection()).isTrue();
@@ -55,7 +55,7 @@ public class SelectionsResultTest {
   }
 
   private static class TestMatchingSe extends AbstractMatchingSe {
-    protected TestMatchingSe(SeResponse selectionResponse) {
+    protected TestMatchingSe(CardResponse selectionResponse) {
       super(selectionResponse);
     }
   }

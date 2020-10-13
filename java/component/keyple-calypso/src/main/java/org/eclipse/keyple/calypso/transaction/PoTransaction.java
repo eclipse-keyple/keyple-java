@@ -64,7 +64,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
@@ -180,7 +180,7 @@ public class PoTransaction {
    *   <li>According to the PO responses of Open Session and the PO commands sent inside the
    *       session, a "cache" of SAM commands is filled with the corresponding Digest Init &amp;
    *       Digest Update commands.
-   *   <li>Returns the corresponding PO SeResponse (responses to poCommands).
+   *   <li>Returns the corresponding PO CardResponse (responses to poCommands).
    * </ul>
    *
    * @param accessLevel access level of the session (personalization, load or debit).
@@ -249,10 +249,10 @@ public class PoTransaction {
     CardRequest poCardRequest = new CardRequest(poApduRequests);
 
     // Transmit the commands to the PO
-    SeResponse poSeResponse = safePoTransmit(poCardRequest, ChannelControl.KEEP_OPEN);
+    CardResponse poCardResponse = safePoTransmit(poCardRequest, ChannelControl.KEEP_OPEN);
 
     // Retrieve and check the ApduResponses
-    List<ApduResponse> poApduResponses = poSeResponse.getApduResponses();
+    List<ApduResponse> poApduResponses = poCardResponse.getApduResponses();
 
     // Do some basic checks
     checkCommandsResponsesSynchronization(poApduRequests.size(), poApduResponses.size());
@@ -299,7 +299,7 @@ public class PoTransaction {
       samCommandProcessor.pushPoExchangeDataList(poApduRequests, poApduResponses, 1);
     }
 
-    // Remove Open Secure Session response and create a new SeResponse
+    // Remove Open Secure Session response and create a new CardResponse
     poApduResponses.remove(0);
 
     // update CalypsoPo with the received data
@@ -336,7 +336,7 @@ public class PoTransaction {
    *       corresponding Digest Update commands.
    *   <li>If a session is open and channelControl is set to CLOSE_AFTER, the current PO session is
    *       aborted
-   *   <li>Returns the corresponding PO SeResponse.
+   *   <li>Returns the corresponding PO CardResponse.
    * </ul>
    *
    * @param poCommands the po commands inside session
@@ -358,10 +358,10 @@ public class PoTransaction {
     CardRequest poCardRequest = new CardRequest(poApduRequests);
 
     // Transmit the commands to the PO
-    SeResponse poSeResponse = safePoTransmit(poCardRequest, channelControl);
+    CardResponse poCardResponse = safePoTransmit(poCardRequest, channelControl);
 
     // Retrieve and check the ApduResponses
-    List<ApduResponse> poApduResponses = poSeResponse.getApduResponses();
+    List<ApduResponse> poApduResponses = poCardResponse.getApduResponses();
 
     // Do some basic checks
     checkCommandsResponsesSynchronization(poApduRequests.size(), poApduResponses.size());
@@ -372,7 +372,7 @@ public class PoTransaction {
       samCommandProcessor.pushPoExchangeDataList(poApduRequests, poApduResponses, 0);
     }
 
-    CalypsoPoUtils.updateCalypsoPo(calypsoPo, poCommands, poSeResponse.getApduResponses());
+    CalypsoPoUtils.updateCalypsoPo(calypsoPo, poCommands, poCardResponse.getApduResponses());
   }
 
   /**
@@ -410,7 +410,7 @@ public class PoTransaction {
    *       identified.
    *   <li>Finally, on the SAM session reader, a Digest Authenticate is automatically operated in
    *       order to verify the PO signature.
-   *   <li>Returns the corresponding PO SeResponse.
+   *   <li>Returns the corresponding PO CardResponse.
    * </ul>
    *
    * The method is marked as deprecated because the advanced variant defined below must be used at
@@ -475,14 +475,14 @@ public class PoTransaction {
     // Transfer PO commands
     CardRequest poCardRequest = new CardRequest(poApduRequests);
 
-    SeResponse poSeResponse;
+    CardResponse poCardResponse;
     try {
-      poSeResponse = poReader.transmitSeRequest(poCardRequest, channelControl);
+      poCardResponse = poReader.transmitSeRequest(poCardRequest, channelControl);
       // if the ratification command was added and no error occured then the response has been
       // received
       ratificationCommandResponseReceived = ratificationCommandAdded;
     } catch (KeypleReaderIOException ex) {
-      poSeResponse = ex.getSeResponse();
+      poCardResponse = ex.getCardResponse();
       // The current exception may have been caused by a communication issue with the PO
       // during the ratification command.
       //
@@ -491,15 +491,15 @@ public class PoTransaction {
       //
       // We should have one response less than requests.
       if (!ratificationCommandAdded
-          || poSeResponse == null
-          || poSeResponse.getApduResponses().size() != poApduRequests.size() - 1) {
+          || poCardResponse == null
+          || poCardResponse.getApduResponses().size() != poApduRequests.size() - 1) {
         throw new CalypsoPoIOException("PO IO Exception while transmitting commands.", ex);
       }
       // we received all responses except the response to the ratification command
       ratificationCommandResponseReceived = false;
     }
 
-    List<ApduResponse> poApduResponses = poSeResponse.getApduResponses();
+    List<ApduResponse> poApduResponses = poCardResponse.getApduResponses();
 
     // Check the commands executed before closing the secure session (only responses to these
     // commands
@@ -541,7 +541,7 @@ public class PoTransaction {
       poApduResponses.remove(poApduResponses.size() - 1);
     }
 
-    // Remove Close Secure Session response and create a new SeResponse
+    // Remove Close Secure Session response and create a new CardResponse
     poApduResponses.remove(poApduResponses.size() - 1);
   }
 
@@ -1097,9 +1097,9 @@ public class PoTransaction {
     // Transfer PO commands
     CardRequest poCardRequest = new CardRequest(poApduRequests);
 
-    SeResponse poSeResponse = safePoTransmit(poCardRequest, channelControl);
+    CardResponse poCardResponse = safePoTransmit(poCardRequest, channelControl);
 
-    closeSessionCmdBuild.createResponseParser(poSeResponse.getApduResponses().get(0)).checkStatus();
+    closeSessionCmdBuild.createResponseParser(poCardResponse.getApduResponses().get(0)).checkStatus();
 
     // sets the flag indicating that the commands have been executed
     poCommandManager.notifyCommandsProcessed();
@@ -1183,7 +1183,7 @@ public class PoTransaction {
     processVerifyPin(pin.getBytes());
   }
 
-  private SeResponse safePoTransmit(CardRequest poCardRequest, ChannelControl channelControl) {
+  private CardResponse safePoTransmit(CardRequest poCardRequest, ChannelControl channelControl) {
     try {
       return poReader.transmitSeRequest(poCardRequest, channelControl);
     } catch (KeypleReaderIOException e) {

@@ -107,23 +107,23 @@ public class ManagedSamResourceManagerDefaultTest extends CalypsoBaseTest {
    * Helpers
    */
 
-  SeResponse samSelectionSuccess() {
+  CardResponse samSelectionSuccess() {
     SelectionStatus selectionStatus = Mockito.mock(SelectionStatus.class);
     when(selectionStatus.hasMatched()).thenReturn(true);
     when(selectionStatus.getAtr())
         .thenReturn(new AnswerToReset(ByteArrayUtil.fromHex(CalypsoSamTest.ATR1)));
 
-    SeResponse seResponse = Mockito.mock(SeResponse.class);
-    when(seResponse.getSelectionStatus()).thenReturn(selectionStatus);
-    when(seResponse.isLogicalChannelOpen()).thenReturn(true);
+    CardResponse cardResponse = Mockito.mock(CardResponse.class);
+    when(cardResponse.getSelectionStatus()).thenReturn(selectionStatus);
+    when(cardResponse.isLogicalChannelOpen()).thenReturn(true);
 
-    return seResponse;
+    return cardResponse;
   }
 
   // get a sam manager spy with a selectable sam
   SamResourceManagerDefault srmSpy(String samFilter) {
 
-    List<SeResponse> selectionResponses = new ArrayList<SeResponse>();
+    List<CardResponse> selectionResponses = new ArrayList<CardResponse>();
     selectionResponses.add(samSelectionSuccess());
 
     // create a mock reader

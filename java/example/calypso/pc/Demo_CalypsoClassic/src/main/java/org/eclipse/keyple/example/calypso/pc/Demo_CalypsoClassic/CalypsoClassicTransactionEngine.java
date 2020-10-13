@@ -233,7 +233,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
       /*
        * [------------------------------------]
        *
-       * Place to analyze the PO profile available in seResponse: Environment/Holder,
+       * Place to analyze the PO profile available in cardResponse: Environment/Holder,
        * EventLog, ContractList.
        *
        * The information available allows the determination of the contract to be read.
@@ -266,7 +266,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
       /*
        * [------------------------------------]
        *
-       * Place to analyze the Contract (in seResponse).
+       * Place to analyze the Contract (in cardResponse).
        *
        * The content of the contract will grant or not access.
        *

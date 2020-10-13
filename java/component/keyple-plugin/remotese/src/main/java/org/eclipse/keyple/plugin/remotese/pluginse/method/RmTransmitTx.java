@@ -14,8 +14,8 @@ package org.eclipse.keyple.plugin.remotese.pluginse.method;
 import com.google.gson.JsonObject;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.CardRequest;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.rm.AbstractRemoteMethodTx;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Handle the Transmit keypleDTO serialization and deserialization */
-public class RmTransmitTx extends AbstractRemoteMethodTx<SeResponse> {
+public class RmTransmitTx extends AbstractRemoteMethodTx<CardResponse> {
 
   private static final Logger logger = LoggerFactory.getLogger(RmTransmitTx.class);
 
@@ -71,7 +71,7 @@ public class RmTransmitTx extends AbstractRemoteMethodTx<SeResponse> {
   }
 
   @Override
-  public SeResponse parseResponse(KeypleDto keypleDto) {
+  public CardResponse parseResponse(KeypleDto keypleDto) {
 
     logger.trace("KeypleDto : {}", keypleDto);
     if (KeypleDtoHelper.containsException(keypleDto)) {
@@ -82,7 +82,7 @@ public class RmTransmitTx extends AbstractRemoteMethodTx<SeResponse> {
           "An exception occurs while calling the remote method transmit", ex);
     } else {
       logger.trace("KeypleDto contains a response: {}", keypleDto);
-      return JsonParser.getGson().fromJson(keypleDto.getBody(), SeResponse.class);
+      return JsonParser.getGson().fromJson(keypleDto.getBody(), CardResponse.class);
     }
   }
 }

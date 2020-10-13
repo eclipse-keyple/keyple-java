@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,9 +48,9 @@ public class JsonParserTest {
   }
 
   @Test
-  public void testSeResponses() {
-    List<SeResponse> seResponses = SampleFactory.getCompleteResponseSet();
-    testSerializeDeserializeObj(seResponses, List.class);
+  public void testCardResponses() {
+    List<CardResponse> cardResponse = SampleFactory.getCompleteResponseSet();
+    testSerializeDeserializeObj(cardResponse, List.class);
   }
 
   @Test

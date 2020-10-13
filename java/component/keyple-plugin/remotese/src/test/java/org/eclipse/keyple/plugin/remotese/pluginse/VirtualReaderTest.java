@@ -22,7 +22,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.plugin.remotese.integration.Integration;
 import org.eclipse.keyple.plugin.remotese.integration.VirtualReaderBaseTest;
 import org.eclipse.keyple.plugin.remotese.rm.json.SampleFactory;
@@ -196,7 +196,7 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
     ProxyReader mockReader = Mockito.spy(ProxyReader.class);
     doReturn(readerName).when(mockReader).getName();
     doReturn(true).when(mockReader).isContactless();
-    doReturn(new ArrayList<SeResponse>())
+    doReturn(new ArrayList<CardResponse>())
         .when(mockReader)
         .transmitSeRequests(
             ArgumentMatchers.<CardRequest>anyList(),

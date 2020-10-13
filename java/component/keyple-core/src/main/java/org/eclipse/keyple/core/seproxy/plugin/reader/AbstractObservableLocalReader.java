@@ -18,9 +18,9 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -402,14 +402,14 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
        */
       boolean aSeMatched = false;
       try {
-        List<SeResponse> seResponses =
+        List<CardResponse> cardResponses =
             transmitSeRequests(
                 defaultSelectionsRequest.getSelectionSeRequests(),
                 defaultSelectionsRequest.getMultiSeRequestProcessing(),
                 defaultSelectionsRequest.getChannelControl());
 
-        for (SeResponse seResponse : seResponses) {
-          if (seResponse != null && seResponse.getSelectionStatus().hasMatched()) {
+        for (CardResponse cardResponse : cardResponses) {
+          if (cardResponse != null && cardResponse.getSelectionStatus().hasMatched()) {
             if (logger.isTraceEnabled()) {
               logger.trace("[{}] a default selection has matched", getName());
             }
@@ -425,7 +425,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
                 getPluginName(),
                 getName(),
                 ReaderEvent.EventType.SE_MATCHED,
-                new DefaultSelectionsResponse(seResponses));
+                new DefaultSelectionsResponse(cardResponses));
           } else {
             if (logger.isTraceEnabled()) {
               logger.trace(
@@ -443,7 +443,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
                 getPluginName(),
                 getName(),
                 ReaderEvent.EventType.SE_MATCHED,
-                new DefaultSelectionsResponse(seResponses));
+                new DefaultSelectionsResponse(cardResponses));
           } else {
             /*
              * the card didn't match, notify an SE_INSERTED event with the received
@@ -451,13 +451,13 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
              */
             if (logger.isTraceEnabled()) {
               logger.trace(
-                  "[{}] none of {} default selection matched", getName(), seResponses.size());
+                  "[{}] none of {} default selection matched", getName(), cardResponses.size());
             }
             return new ReaderEvent(
                 getPluginName(),
                 getName(),
                 ReaderEvent.EventType.SE_INSERTED,
-                new DefaultSelectionsResponse(seResponses));
+                new DefaultSelectionsResponse(cardResponses));
           }
         }
       } catch (KeypleReaderException e) {

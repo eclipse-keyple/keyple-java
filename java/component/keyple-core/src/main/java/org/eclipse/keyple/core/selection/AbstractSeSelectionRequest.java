@@ -18,7 +18,7 @@ import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.CardRequest;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 
 /**
  * The AbstractSeSelectionRequest class combines a SeSelector with additional helper methods useful
@@ -75,9 +75,9 @@ public abstract class AbstractSeSelectionRequest<T extends AbstractApduCommandBu
   /**
    * Virtual parse method
    *
-   * @param seResponse the card response received
+   * @param cardResponse the card response received
    * @return a {@link AbstractMatchingSe}
    * @throws KeypleException if an error occurs while parsing the card response
    */
-  protected abstract AbstractMatchingSe parse(SeResponse seResponse);
+  protected abstract AbstractMatchingSe parse(CardResponse cardResponse);
 }

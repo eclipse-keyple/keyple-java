@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.fail;
 import java.util.ArrayList;
 import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
@@ -32,9 +32,9 @@ public class AbstractMatchingSeTest {
     TestMatchingSe testMatchingSe;
     AnswerToReset answerToReset = new AnswerToReset(ByteArrayUtil.fromHex(ATR1));
     SelectionStatus selectionStatus = new SelectionStatus(answerToReset, null, true);
-    SeResponse seResponse =
-        new SeResponse(true, false, selectionStatus, new ArrayList<ApduResponse>());
-    testMatchingSe = new TestMatchingSe(seResponse);
+    CardResponse cardResponse =
+        new CardResponse(true, false, selectionStatus, new ArrayList<ApduResponse>());
+    testMatchingSe = new TestMatchingSe(cardResponse);
     assertThat(testMatchingSe.hasAtr()).isTrue();
     assertThat(testMatchingSe.hasFci()).isFalse();
     assertThat(testMatchingSe.getAtrBytes()).isEqualTo(ByteArrayUtil.fromHex(ATR1));
@@ -52,9 +52,9 @@ public class AbstractMatchingSeTest {
     TestMatchingSe testMatchingSe;
     ApduResponse fci = new ApduResponse(ByteArrayUtil.fromHex(FCI_REV31), null);
     SelectionStatus selectionStatus = new SelectionStatus(null, fci, true);
-    SeResponse seResponse =
-        new SeResponse(true, false, selectionStatus, new ArrayList<ApduResponse>());
-    testMatchingSe = new TestMatchingSe(seResponse);
+    CardResponse cardResponse =
+        new CardResponse(true, false, selectionStatus, new ArrayList<ApduResponse>());
+    testMatchingSe = new TestMatchingSe(cardResponse);
     assertThat(testMatchingSe.hasAtr()).isFalse();
     assertThat(testMatchingSe.hasFci()).isTrue();
     assertThat(testMatchingSe.getFciBytes()).isEqualTo(ByteArrayUtil.fromHex(FCI_REV31));
@@ -73,9 +73,9 @@ public class AbstractMatchingSeTest {
     AnswerToReset answerToReset = new AnswerToReset(ByteArrayUtil.fromHex(ATR1));
     ApduResponse fci = new ApduResponse(ByteArrayUtil.fromHex(FCI_REV31), null);
     SelectionStatus selectionStatus = new SelectionStatus(answerToReset, fci, true);
-    SeResponse seResponse =
-        new SeResponse(true, false, selectionStatus, new ArrayList<ApduResponse>());
-    testMatchingSe = new TestMatchingSe(seResponse);
+    CardResponse cardResponse =
+        new CardResponse(true, false, selectionStatus, new ArrayList<ApduResponse>());
+    testMatchingSe = new TestMatchingSe(cardResponse);
     assertThat(testMatchingSe.hasAtr()).isTrue();
     assertThat(testMatchingSe.hasFci()).isTrue();
     assertThat(testMatchingSe.getAtrBytes()).isEqualTo(ByteArrayUtil.fromHex(ATR1));
@@ -83,7 +83,7 @@ public class AbstractMatchingSeTest {
   }
 
   private static class TestMatchingSe extends AbstractMatchingSe {
-    protected TestMatchingSe(SeResponse selectionResponse) {
+    protected TestMatchingSe(CardResponse selectionResponse) {
       super(selectionResponse);
     }
   }

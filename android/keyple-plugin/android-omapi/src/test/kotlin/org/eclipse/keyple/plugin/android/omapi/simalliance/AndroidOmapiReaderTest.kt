@@ -83,10 +83,10 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
         seRequests.add(seRequest)
 
         reader.transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN)
-        val seResponseList = reader.transmitSeRequests(seRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        val cardResponseList = reader.transmitSeRequests(seRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
 
         // assert
-        Assert.assertNotNull(seResponseList[0])
+        Assert.assertNotNull(cardResponseList[0])
     }
 
     override fun mockReader(): Reader {

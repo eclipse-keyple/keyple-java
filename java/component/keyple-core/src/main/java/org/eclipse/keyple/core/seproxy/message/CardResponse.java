@@ -35,7 +35,7 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
  * @since 0.9
  */
 @SuppressWarnings("PMD.NPathComplexity")
-public final class SeResponse implements Serializable {
+public final class CardResponse implements Serializable {
 
   /**
    * is defined as true by the card reader in case a logical channel was already open with the
@@ -64,7 +64,7 @@ public final class SeResponse implements Serializable {
    * @param apduResponses A list of {@link ApduResponse} (must be not null).
    * @since 0.9
    */
-  public SeResponse(
+  public CardResponse(
       boolean logicalChannelIsOpen,
       boolean channelPreviouslyOpen,
       SelectionStatus selectionStatus,
@@ -127,7 +127,7 @@ public final class SeResponse implements Serializable {
     if (selectionStatus != null) {
       string =
           String.format(
-              "SeResponse:{RESPONSES = %s, ATR = %s, FCI = %s, HASMATCHED = %b CHANNELWASOPEN = %b "
+              "CardResponse:{RESPONSES = %s, ATR = %s, FCI = %s, HASMATCHED = %b CHANNELWASOPEN = %b "
                   + "LOGICALCHANNEL = %s}",
               getApduResponses(),
               selectionStatus.getAtr() == null
@@ -142,7 +142,7 @@ public final class SeResponse implements Serializable {
     } else {
       string =
           String.format(
-              "SeResponse:{RESPONSES = %s, ATR = null, FCI = null, HASMATCHED = false CHANNELWASOPEN = %b "
+              "CardResponse:{RESPONSES = %s, ATR = null, FCI = null, HASMATCHED = false CHANNELWASOPEN = %b "
                   + "LOGICALCHANNEL = %s}",
               getApduResponses(),
               wasChannelPreviouslyOpen(),
@@ -156,17 +156,17 @@ public final class SeResponse implements Serializable {
     if (o == this) {
       return true;
     }
-    if (!(o instanceof SeResponse)) {
+    if (!(o instanceof CardResponse)) {
       return false;
     }
 
-    SeResponse seResponse = (SeResponse) o;
-    return seResponse.getSelectionStatus().equals(selectionStatus)
-        && (seResponse.getApduResponses() == null
+    CardResponse cardResponse = (CardResponse) o;
+    return cardResponse.getSelectionStatus().equals(selectionStatus)
+        && (cardResponse.getApduResponses() == null
             ? apduResponses == null
-            : seResponse.getApduResponses().equals(apduResponses))
-        && seResponse.isLogicalChannelOpen() == logicalChannelIsOpen
-        && seResponse.wasChannelPreviouslyOpen() == channelPreviouslyOpen;
+            : cardResponse.getApduResponses().equals(apduResponses))
+        && cardResponse.isLogicalChannelOpen() == logicalChannelIsOpen
+        && cardResponse.wasChannelPreviouslyOpen() == channelPreviouslyOpen;
   }
 
   @Override
