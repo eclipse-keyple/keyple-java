@@ -30,16 +30,16 @@ import org.slf4j.LoggerFactory;
  *   <li>Upon SE_REMOVED event, the machine changes state for WAIT_FOR_SE_DETECTION.
  * </ul>
  */
-public class WaitForSeInsertion extends AbstractObservableState {
+class WaitForSeInsertionState extends AbstractObservableState {
 
   /** logger */
-  private static final Logger logger = LoggerFactory.getLogger(WaitForSeInsertion.class);
+  private static final Logger logger = LoggerFactory.getLogger(WaitForSeInsertionState.class);
 
-  public WaitForSeInsertion(AbstractObservableLocalReader reader) {
+  WaitForSeInsertionState(AbstractObservableLocalReader reader) {
     super(MonitoringState.WAIT_FOR_SE_INSERTION, reader);
   }
 
-  public WaitForSeInsertion(
+  WaitForSeInsertionState(
       AbstractObservableLocalReader reader,
       AbstractMonitoringJob monitoringJob,
       ExecutorService executorService) {
@@ -47,7 +47,7 @@ public class WaitForSeInsertion extends AbstractObservableState {
   }
 
   @Override
-  public void onEvent(AbstractObservableLocalReader.InternalEvent event) {
+  void onEvent(AbstractObservableLocalReader.InternalEvent event) {
     if (logger.isTraceEnabled()) {
       logger.trace(
           "[{}] onEvent => Event {} received in currentState {}", reader.getName(), event, state);

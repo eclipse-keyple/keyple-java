@@ -17,36 +17,34 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Wait for Se Processing State
+ * Wait for Se Removal State
  *
- * <p>The state during which the SE is being processed by the application.
+ * <p>The state in which the SE is still present and awaiting removal.
  *
  * <ul>
- *   <li>Upon SE_PROCESSED event, the machine changes state for WAIT_FOR_SE_REMOVAL or
- *       WAIT_FOR_SE_DETECTION according to the {@link ObservableReader.PollingMode} setting.
  *   <li>Upon SE_REMOVED event, the machine changes state for WAIT_FOR_SE_INSERTION or
  *       WAIT_FOR_SE_DETECTION according to the {@link ObservableReader.PollingMode} setting.
  *   <li>Upon STOP_DETECT event, the machine changes state for WAIT_FOR_SE_DETECTION.
  * </ul>
  */
-public class WaitForSeProcessing extends AbstractObservableState {
+class WaitForSeRemovalState extends AbstractObservableState {
 
   /** logger */
-  private static final Logger logger = LoggerFactory.getLogger(WaitForSeProcessing.class);
+  private static final Logger logger = LoggerFactory.getLogger(WaitForSeRemovalState.class);
 
-  public WaitForSeProcessing(AbstractObservableLocalReader reader) {
-    super(MonitoringState.WAIT_FOR_SE_PROCESSING, reader);
+  WaitForSeRemovalState(AbstractObservableLocalReader reader) {
+    super(MonitoringState.WAIT_FOR_SE_REMOVAL, reader);
   }
 
-  public WaitForSeProcessing(
+  WaitForSeRemovalState(
       AbstractObservableLocalReader reader,
       AbstractMonitoringJob monitoringJob,
       ExecutorService executorService) {
-    super(MonitoringState.WAIT_FOR_SE_PROCESSING, reader, monitoringJob, executorService);
+    super(MonitoringState.WAIT_FOR_SE_REMOVAL, reader, monitoringJob, executorService);
   }
 
   @Override
-  public void onEvent(AbstractObservableLocalReader.InternalEvent event) {
+  void onEvent(AbstractObservableLocalReader.InternalEvent event) {
     if (logger.isTraceEnabled()) {
       logger.trace(
           "[{}] onEvent => Event {} received in currentState {}", reader.getName(), event, state);
@@ -55,17 +53,6 @@ public class WaitForSeProcessing extends AbstractObservableState {
      * Process InternalEvent
      */
     switch (event) {
-      case SE_PROCESSED:
-        if (this.reader.getPollingMode() == ObservableReader.PollingMode.REPEATING) {
-          switchState(MonitoringState.WAIT_FOR_SE_REMOVAL);
-        } else {
-          // We close the channels now and notify the application of
-          // the SE_REMOVED event.
-          this.reader.processSeRemoved();
-          switchState(MonitoringState.WAIT_FOR_START_DETECTION);
-        }
-        break;
-
       case SE_REMOVED:
         // the SE has been removed, we close all channels and return to
         // the currentState of waiting

@@ -11,27 +11,15 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.stub;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotSupportedException;
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableLocalReader;
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState;
 import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderStateService;
-import org.eclipse.keyple.core.seproxy.plugin.reader.SmartInsertionMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.reader.SmartInsertionReader;
-import org.eclipse.keyple.core.seproxy.plugin.reader.SmartRemovalMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.reader.SmartRemovalReader;
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeInsertion;
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeProcessing;
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemoval;
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetect;
-import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,8 +35,6 @@ class StubReaderImpl extends AbstractObservableLocalReader
   private StubSecureElement se;
   boolean isContactless = true;
 
-  protected final ExecutorService executorService;
-
   private final AtomicBoolean loopWaitSe = new AtomicBoolean();
   private final AtomicBoolean loopWaitSeRemoval = new AtomicBoolean();
 
@@ -59,12 +45,6 @@ class StubReaderImpl extends AbstractObservableLocalReader
    */
   StubReaderImpl(String pluginName, String readerName) {
     super(pluginName, readerName);
-
-    // create a executor service with one thread whose name is customized
-    executorService =
-        Executors.newSingleThreadExecutor(new NamedThreadFactory("MonitoringThread-" + readerName));
-
-    stateService = initStateService();
   }
 
   /**
@@ -257,30 +237,10 @@ class StubReaderImpl extends AbstractObservableLocalReader
 
   @Override
   protected final ObservableReaderStateService initStateService() {
-    if (executorService == null) {
-      throw new IllegalArgumentException("Executor service has not been initialized");
-    }
-
-    Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
-        new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
-
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
-        new WaitForStartDetect(this));
-
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-        new WaitForSeInsertion(this, new SmartInsertionMonitoringJob(this), executorService));
-
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-        new WaitForSeProcessing(this, new SmartRemovalMonitoringJob(this), executorService));
-
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-        new WaitForSeRemoval(this, new SmartRemovalMonitoringJob(this), executorService));
-
-    return new ObservableReaderStateService(
-        this, states, AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION);
+    return ObservableReaderStateService.builder(this)
+        .waitForSeInsertionWithSmartDetection()
+        .waitForSeProcessingWithSmartDetection()
+        .waitForSeRemovalWithSmartDetection()
+        .build();
   }
 }

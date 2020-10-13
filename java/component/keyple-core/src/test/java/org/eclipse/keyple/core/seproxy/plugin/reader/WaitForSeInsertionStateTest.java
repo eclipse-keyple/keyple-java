@@ -16,26 +16,33 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WaitForSeInsertionJobExecutorTest extends CoreBaseTest {
+@RunWith(Parameterized.class)
+public class WaitForSeInsertionStateTest extends CoreBaseTest {
 
-  private static final Logger logger =
-      LoggerFactory.getLogger(WaitForSeInsertionJobExecutorTest.class);
+  private static final Logger logger = LoggerFactory.getLogger(WaitForSeInsertionStateTest.class);
 
-  final String READER_NAME = "WaitForSeInsertionJobExecutorTest";
+  final String READER_NAME = "WaitForSeInsertionStateTest";
 
   AbstractObservableState waitForInsert;
-  BlankSmartInsertionTheadedReader r;
-  long timeout;
-  ExecutorService executorService = Executors.newSingleThreadExecutor();;
+  AbstractObservableLocalReader r;
+
+  final Long WAIT = 500l;
+
+  static final Integer X_TIMES = 5; // run tests multiple times to reproduce flaky
+
+  @Parameterized.Parameters
+  public static Object[][] data() {
+    return new Object[X_TIMES][0];
+  }
 
   @Before
   public void setUp() {
@@ -43,13 +50,8 @@ public class WaitForSeInsertionJobExecutorTest extends CoreBaseTest {
     logger.info("Test {}", name.getMethodName() + "");
     logger.info("------------------------------");
 
-    /*
-     * Setup new parameters for each tests
-     */
-    timeout = 100l;
-    // executorService = Executors.newSingleThreadExecutor();
     r = AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
-    waitForInsert = new WaitForSeInsertion(r, new SmartInsertionMonitoringJob(r), executorService);
+    waitForInsert = new WaitForSeInsertionState(r);
   }
 
   @Before
@@ -59,10 +61,6 @@ public class WaitForSeInsertionJobExecutorTest extends CoreBaseTest {
     logger.info("\"******************************");
 
     waitForInsert.onDeactivate();
-
-    // shutdown executorService, no tasks should be left actived
-    // List<Runnable> activeTask = executorService.shutdownNow();
-    // Assert.assertTrue(activeTask.isEmpty());
   }
 
   @Test
@@ -70,77 +68,54 @@ public class WaitForSeInsertionJobExecutorTest extends CoreBaseTest {
     /*
      * input SE inserted SE matched
      */
-    // se matched
     doReturn(new ReaderEvent("", "", ReaderEvent.EventType.SE_MATCHED, null))
         .when(r)
         .processSeInserted();
-    doReturn(true).when(r).waitForCardPresent();
 
     /* test */
     waitForInsert.onActivate();
+    waitForInsert.onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
 
-    Thread.sleep(20l);
+    Thread.sleep(WAIT); // wait for the monitoring to act
 
     /* Assert */
-    // Assert.assertEquals(WAIT_FOR_SE_PROCESSING, r.getCurrentState().getMonitoringState());
     verify(r, times(1)).switchState(WAIT_FOR_SE_PROCESSING);
+
+    // Assert.assertEquals(WAIT_FOR_SE_PROCESSING, r.getCurrentState().getMonitoringState());
+
   }
 
   @Test
-  public void testInsertSe_NotMatched() throws Exception {
+  public void testInsertSe_Notmatched() throws Exception {
     /*
-     * input SE inserted SE doesnt matched
+     * input SE inserted SE doesnt matched Back to Detection
      */
-    // se not matched
     doReturn(new ReaderEvent("", "", ReaderEvent.EventType.SE_INSERTED, null))
         .when(r)
         .processSeInserted();
-    doReturn(true).when(r).waitForCardPresent();
 
     /* test */
     waitForInsert.onActivate();
-
-    Thread.sleep(20l);
-
+    waitForInsert.onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
     /* Assert */
+
+    Thread.sleep(WAIT); // wait for the monitoring to act
+
     // switched to the same state to relaunch the monitoring job
     verify(r, times(1)).switchState(WAIT_FOR_SE_PROCESSING);
   }
 
-  @Test
-  public void testInsertSe_Error() throws Exception {
-    /*
-     * input SE inserted SE doesnt matched
-     */
-    // se not matched
-    doReturn(null).when(r).processSeInserted();
-    doReturn(true).when(r).waitForCardPresent();
-
-    /* test */
-    waitForInsert.onActivate();
-
-    Thread.sleep(20l);
-
-    /* Assert */
-    // wait for the card removal
-    verify(r, times(1)).switchState(WAIT_FOR_SE_REMOVAL);
-  }
-
   // @Test
-  // public void testTimeout() throws Exception, NoStackTraceThrowable {
+  // public void testTimeout() throws Exception {
   // /*
   // * input no SE inserted within timeout
   // */
-  // r = AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 0);
-  // waitForInsert = new WaitForSeInsertion(r, executorService);
   //
   // /* test */
   // waitForInsert.onActivate();
-  //
-  // Thread.sleep(70l);// wait for timeout
+  // waitForInsert.onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
   //
   // /* Assert */
-  // // Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentState().getMonitoringState());
   // verify(r, times(1)).switchState(WAIT_FOR_SE_INSERTION);
   // }
 

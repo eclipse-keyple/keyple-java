@@ -20,24 +20,10 @@ import android.os.Build
 import android.os.Bundle
 import java.io.IOException
 import java.util.HashMap
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableLocalReader
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState.MonitoringState
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION
-import org.eclipse.keyple.core.seproxy.plugin.reader.CardAbsentPingMonitoringJob
 import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderStateService
-import org.eclipse.keyple.core.seproxy.plugin.reader.SmartRemovalMonitoringJob
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeInsertion
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeProcessing
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemoval
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetect
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import timber.log.Timber
 
@@ -56,8 +42,6 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
     private val parameters = HashMap<String, String?>()
 
     private val protocolsMap = HashMap<String, String?>()
-
-    private val executorService: ExecutorService
 
     private const val NO_TAG = "no-tag"
 
@@ -112,35 +96,20 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
             return options
         }
 
-    /**
-     * Private constructor
-     */
-    init {
-        Timber.i("Init NFC Reader")
-
-        executorService = Executors.newSingleThreadExecutor()
-
-        stateService = initStateService()
-    }
-
     override fun initStateService(): ObservableReaderStateService {
 
-        val states = HashMap<MonitoringState, AbstractObservableState>()
-
-        states[WAIT_FOR_START_DETECTION] = WaitForStartDetect(this)
-        states[WAIT_FOR_SE_INSERTION] = WaitForSeInsertion(this)
-        states[WAIT_FOR_SE_PROCESSING] = WaitForSeProcessing(this)
-        states[WAIT_FOR_SE_REMOVAL] = initWaitForRemoval()
-
-        return ObservableReaderStateService(this, states, WAIT_FOR_START_DETECTION)
-    }
-
-    private fun initWaitForRemoval(): WaitForSeRemoval {
         return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            WaitForSeRemoval(this, CardAbsentPingMonitoringJob(this), executorService)
+            ObservableReaderStateService.builder(this)
+                    .waitForSeInsertionWithNativeDetection()
+                    .waitForSeProcessingWithNativeDetection()
+                    .waitForSeRemovalWithPollingDetection()
+                    .build()
         } else {
-            // this.waitForCardAbsentNative will only be used on API>= N
-            WaitForSeRemoval(this, SmartRemovalMonitoringJob(this), executorService)
+            ObservableReaderStateService.builder(this)
+                    .waitForSeInsertionWithNativeDetection()
+                    .waitForSeProcessingWithNativeDetection()
+                    .waitForSeRemovalWithSmartDetection()
+                    .build()
         }
     }
 
