@@ -50,14 +50,14 @@ public class GroupedMultiSelection_Pcsc {
 
     logger.info(
         "=============== UseCase Generic #3: AID based grouped explicit multiple selection ==================");
-    logger.info("= SE Reader  NAME = {}", seReader.getName());
+    logger.info("= Card Reader  NAME = {}", seReader.getName());
 
-    // Check if a SE is present in the reader
+    // Check if a card is present in the reader
     if (seReader.isSePresent()) {
 
       SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.PROCESS_ALL);
 
-      // operate SE selection (change the AID here to adapt it to the SE used for the test)
+      // operate the card selection (change the AID here to adapt it to the card used for the test)
       String seAidPrefix = "A000000404012509";
 
       // AID based selection (1st selection, later indexed 0)
@@ -99,7 +99,7 @@ public class GroupedMultiSelection_Pcsc {
       // close the channel after the selection to force the selection of all applications
       seSelection.prepareReleaseSeChannel();
 
-      // Actual SE communication: operate through a single request the SE selection
+      // Actual card communication: operate through a single request the card selection
       SelectionsResult selectionsResult = seSelection.processExplicitSelection(seReader);
 
       if (selectionsResult.getMatchingSelections().size() > 0) {
@@ -117,10 +117,10 @@ public class GroupedMultiSelection_Pcsc {
               fci);
         }
       } else {
-        logger.error("No SE matched the selection.");
+        logger.error("No cards matched the selection.");
       }
     } else {
-      logger.error("No SE were detected.");
+      logger.error("No cards were detected.");
     }
     System.exit(0);
   }

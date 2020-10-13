@@ -75,7 +75,7 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
           /*
            * Setting of an AID based selection of a Calypso REV3 PO
            *
-           * Select the first application matching the selection AID whatever the SE
+           * Select the first application matching the selection AID whatever the card
            * communication protocol keep the logical channel open after the selection
            *
            * Calypso selection: configures a PoSelectionRequest with all the desired

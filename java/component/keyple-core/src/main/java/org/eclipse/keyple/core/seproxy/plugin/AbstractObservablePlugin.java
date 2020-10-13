@@ -109,7 +109,7 @@ public abstract class AbstractObservablePlugin extends AbstractPlugin
   }
 
   /**
-   * This method shall be called only from a SE Proxy plugin implementing AbstractPlugin. Push a
+   * This method shall be called only from a SeProxy plugin implementing AbstractPlugin. Push a
    * PluginEvent of the selected AbstractPlugin to its registered Observer.
    *
    * @param event the event

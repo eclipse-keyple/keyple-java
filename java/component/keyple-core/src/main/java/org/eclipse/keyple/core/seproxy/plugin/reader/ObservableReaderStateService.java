@@ -56,7 +56,7 @@ public class ObservableReaderStateService {
 
   /**
    * Thread safe method to communicate an internal event to this reader Use this method to inform
-   * the reader of external event like a tag discovered or a Se inserted
+   * the reader of external event like a tag discovered or a card inserted
    *
    * @param event internal event
    * @since 0.9
@@ -146,7 +146,7 @@ public class ObservableReaderStateService {
     SeProcessingStep waitForSeInsertionWithNativeDetection();
 
     /**
-     * Set up SeInsertionDetection to detect the SE insertion thanks to the method {@link
+     * Set up SeInsertionDetection to detect the card insertion thanks to the method {@link
      * SmartInsertionReader#waitForCardPresent()}.
      *
      * @return A non null reference

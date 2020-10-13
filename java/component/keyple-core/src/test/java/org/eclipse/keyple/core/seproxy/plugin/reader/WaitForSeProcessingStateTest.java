@@ -56,7 +56,7 @@ public class WaitForSeProcessingStateTest extends CoreBaseTest {
   @Test
   public void waitForProcessed_processed() throws Exception {
     /*
-     * ------------ input polling mode is CONTINUE SE has been processed within timeout
+     * ------------ input polling mode is CONTINUE card has been processed within timeout
      */
 
     doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();
@@ -75,7 +75,7 @@ public class WaitForSeProcessingStateTest extends CoreBaseTest {
   public void smart_waitForProcessed_STOP() throws Exception {
     // flaky test
     /*
-     * ------------ input polling mode is STOP SE has been REMOVED within timeout
+     * ------------ input polling mode is STOP card has been REMOVED within timeout
      */
     doReturn(ObservableReader.PollingMode.SINGLESHOT).when(r).getPollingMode();
     doReturn(true).when(r).waitForCardAbsentNative();
@@ -92,7 +92,7 @@ public class WaitForSeProcessingStateTest extends CoreBaseTest {
   @Test
   public void smart_waitForProcessed_CONTINUE() throws Exception {
     /*
-     * ------------ input polling mode is CONTINUE SE has been removed within timeout
+     * ------------ input polling mode is CONTINUE card has been removed within timeout
      */
     doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();
     doReturn(true).when(r).waitForCardAbsentNative();

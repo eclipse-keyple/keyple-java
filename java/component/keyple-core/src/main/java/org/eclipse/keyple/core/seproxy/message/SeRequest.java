@@ -22,17 +22,19 @@ import org.eclipse.keyple.core.seproxy.SeSelector;
  */
 public final class SeRequest implements Serializable {
 
-  /** SE seSelector is either an AID or an ATR regular expression */
+  /** +/seSelector is either an AID or an ATR regular expression */
   private final SeSelector seSelector;
 
-  /** contains a group of APDUCommand to operate on the selected SE application by the SE reader. */
+  /**
+   * contains a group of APDUCommand to operate on the selected card application by the card reader.
+   */
   private final List<ApduRequest> apduRequests;
 
   /**
    * The constructor called by a ProxyReader in order to open a logical channel, to send a set of
-   * APDU commands to a SE application, or both of them.
+   * APDU commands to a card application, or both of them.
    *
-   * @param seSelector the SeSelector containing the selection information to process the SE
+   * @param seSelector the SeSelector containing the selection information to process the card
    *     selection
    * @param apduRequests a optional list of {@link ApduRequest} to execute after a successful
    *     selection process
@@ -43,7 +45,7 @@ public final class SeRequest implements Serializable {
   }
 
   /**
-   * Constructor to be used when the SE is already selected (without {@link SeSelector})
+   * Constructor to be used when the card is already selected (without {@link SeSelector})
    *
    * @param apduRequests a list of ApudRequest
    */
@@ -53,9 +55,9 @@ public final class SeRequest implements Serializable {
   }
 
   /**
-   * Gets the SE seSelector.
+   * Gets the card seSelector.
    *
-   * @return the current SE seSelector
+   * @return the current card seSelector
    */
   public SeSelector getSeSelector() {
     return seSelector;
@@ -64,7 +66,7 @@ public final class SeRequest implements Serializable {
   /**
    * Gets the apdu requests.
    *
-   * @return the group of APDUs to be transmitted to the SE application for this instance of
+   * @return the group of APDUs to be transmitted to the card application for this instance of
    *     SERequest.
    */
   public List<ApduRequest> getApduRequests() {

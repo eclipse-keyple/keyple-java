@@ -199,7 +199,7 @@ public class MasterAPI implements DtoHandler {
   /**
    * Retrieve the Rse Plugin
    *
-   * @return the Remote Se Plugin managing the Virtual Readers
+   * @return the Remote Card Plugin managing the Virtual Readers
    */
   public RemoteSePlugin getPlugin() {
     return plugin;

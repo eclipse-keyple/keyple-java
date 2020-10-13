@@ -85,7 +85,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
    * Fetch the list of connected native reader (from smartcard.io) and returns their names
    *
    * @return A {@link SortedSet} of {@link String}
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @since 0.9
    */
   @Override
@@ -158,7 +158,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
    * @param name A String (should be not null).
    * @return A not null reference to a {@link SeReader}.
    * @throws KeypleReaderNotFoundException if a reader is not found by its name
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @since 0.9
    */
   @Override

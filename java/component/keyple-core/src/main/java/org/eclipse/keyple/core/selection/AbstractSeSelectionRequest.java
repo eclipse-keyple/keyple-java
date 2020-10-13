@@ -24,7 +24,7 @@ import org.eclipse.keyple.core.seproxy.message.SeResponse;
  * The AbstractSeSelectionRequest class combines a SeSelector with additional helper methods useful
  * to the selection process done in {@link SeSelection}.
  *
- * <p>This class may also be extended to add particular features specific to a SE family.
+ * <p>This class may also be extended to add particular features specific to a card family.
  */
 public abstract class AbstractSeSelectionRequest<T extends AbstractApduCommandBuilder> {
   protected final SeSelector seSelector;
@@ -75,9 +75,9 @@ public abstract class AbstractSeSelectionRequest<T extends AbstractApduCommandBu
   /**
    * Virtual parse method
    *
-   * @param seResponse the SE response received
+   * @param seResponse the card response received
    * @return a {@link AbstractMatchingSe}
-   * @throws KeypleException if an error occurs while parsing the SE response
+   * @throws KeypleException if an error occurs while parsing the card response
    */
   protected abstract AbstractMatchingSe parse(SeResponse seResponse);
 }

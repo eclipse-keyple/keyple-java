@@ -13,7 +13,7 @@ package org.eclipse.keyple.plugin.remotese.transport;
 
 import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 
-/** Internal Remote SE Plugin components that processes incoming messages */
+/** Internal Remote reader Plugin components that processes incoming messages */
 public interface DtoHandler {
 
   /**

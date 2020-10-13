@@ -61,7 +61,7 @@ public class SeSelectionTest extends CoreBaseTest {
     List<SeRequest> selectionSeRequests = selectionOperation.getSelectionSeRequests();
     Assert.assertEquals(2, selectionSeRequests.size());
 
-    // get the two se requests
+    // get the two card requests
     Iterator<SeRequest> iterator = selectionSeRequests.iterator();
     SeRequest seRequest1 = iterator.next();
     SeRequest seRequest2 = iterator.next();
@@ -190,7 +190,7 @@ public class SeSelectionTest extends CoreBaseTest {
     try {
       selectionsResult.getActiveMatchingSe();
     } catch (Exception e) {
-      Assert.assertTrue(e.getMessage().contains("No active Matching SE is available"));
+      Assert.assertTrue(e.getMessage().contains("No active Matching card is available"));
     }
   }
 
@@ -322,7 +322,7 @@ public class SeSelectionTest extends CoreBaseTest {
     }
   }
 
-  /** Matching Se instantiation */
+  /** Matching card instantiation */
   private final class MatchingSe extends AbstractMatchingSe {
     MatchingSe(SeResponse selectionResponse) {
       super(selectionResponse);

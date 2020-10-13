@@ -176,7 +176,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     // start detection
     r.startSeDetection(ObservableReader.PollingMode.REPEATING);
 
-    // insert SE
+    // insert card
     r.onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
 
     // assert currentState have changed
@@ -184,14 +184,14 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
         r.getCurrentMonitoringState());
 
-    // SE has been processed
+    // the card has been processed
     r.finalizeSeProcessing();
 
     // assert currentState have changed
     Assert.assertEquals(
         AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL, r.getCurrentMonitoringState());
 
-    // remove SE
+    // remove the card
     r.onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
 
     // assert currentState have changed

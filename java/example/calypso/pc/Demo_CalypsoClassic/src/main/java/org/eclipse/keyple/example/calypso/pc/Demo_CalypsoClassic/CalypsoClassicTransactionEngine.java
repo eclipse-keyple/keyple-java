@@ -67,8 +67,8 @@ import org.slf4j.profiler.Profiler;
  *       doCalypsoReadWriteTransaction}).
  * </ol>
  *
- * <p>The Calypso transactions demonstrated here shows the Keyple API in use with Calypso SE (PO and
- * SAM).
+ * <p>The Calypso transactions demonstrated here shows the Keyple API in use with Calypso card (PO
+ * and SAM).
  *
  * <p>Read the doc of each methods for further details.
  */
@@ -411,16 +411,16 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
 
   @Override
   public void processSeInserted() {
-    logger.error("Unexpected SE insertion event");
+    logger.error("Unexpected card insertion event");
   }
 
   @Override
   public void processSeRemoved() {
-    logger.error("SE removal event");
+    logger.error("Card removal event");
   }
 
   @Override
   public void processUnexpectedSeRemoval() {
-    logger.error("Unexpected SE removal event");
+    logger.error("Unexpected card removal event");
   }
 }

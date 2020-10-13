@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This abstract class is intended to be extended by the applications classes in which the SE
+ * This abstract class is intended to be extended by the applications classes in which the card
  * insertion, selection, removal is factorized here.<br>
  * In this implementation of the reader observation, the method {@link
  * ObservableReader.ReaderObserver#update(ReaderEvent)} is processed synchronously from the
@@ -69,7 +69,7 @@ public abstract class AbstractReaderObserverSynchronousEngine
         } catch (KeypleException e) {
           logger.error("Keyple exception: {}", e.getMessage());
           /*
-           * Informs the underlying layer of the end of the SE processing, in order to
+           * Informs the underlying layer of the end of the card processing, in order to
            * manage the removal sequence.
            */
           try {
@@ -88,7 +88,7 @@ public abstract class AbstractReaderObserverSynchronousEngine
         } catch (KeypleException e) {
           logger.error("Keyple exception: {}", e.getMessage());
           /*
-           * Informs the underlying layer of the end of the SE processing, in order to
+           * Informs the underlying layer of the end of the card processing, in order to
            * manage the removal sequence.
            */
           try {
@@ -104,12 +104,12 @@ public abstract class AbstractReaderObserverSynchronousEngine
       case SE_REMOVED:
         processSeRemoved();
         if (logger.isInfoEnabled()) {
-          logger.info("Waiting for a SE...");
+          logger.info("Waiting for a card...");
         }
         break;
       case TIMEOUT_ERROR:
         logger.error(
-            "Timeout Error: the processing time or the time limit for removing the SE"
+            "Timeout Error: the processing time or the time limit for removing the card"
                 + " has been exceeded.");
         // do the appropriate processing here but do not prevent the return of this update
         // method (e. g. by

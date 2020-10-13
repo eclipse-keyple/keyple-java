@@ -51,7 +51,7 @@ public class Demo_SeProtocolDetection_Stub {
     ReaderPlugin stubPlugin =
         seProxyService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
 
-    // create an observer class to handle the SE operations
+    // create an observer class to handle the card operations
     SeProtocolDetectionEngine observer = new SeProtocolDetectionEngine();
 
     // Plug PO reader.

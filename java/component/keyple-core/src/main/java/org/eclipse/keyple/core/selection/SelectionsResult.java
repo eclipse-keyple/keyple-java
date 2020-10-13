@@ -17,9 +17,9 @@ import java.util.Map;
 /**
  * The SelectionsResult class holds the result of a selection process.
  *
- * <p>Embeds a map of {@link AbstractMatchingSe}. At most one of these matching SE is active.<br>
+ * <p>Embeds a map of {@link AbstractMatchingSe}. At most one of these matching card is active.<br>
  * Provides a set of methods to retrieve the active selection (getActiveMatchingSe) or a particular
- * matching SE specified by its index.
+ * matching card specified by its index.
  */
 public final class SelectionsResult {
   private Integer activeSelectionIndex = null;
@@ -32,9 +32,9 @@ public final class SelectionsResult {
   /**
    * Append a {@link AbstractMatchingSe} to the internal list
    *
-   * @param selectionIndex the index of the selection that resulted in the matching SE
-   * @param matchingSe the matching SE to add
-   * @param isSelected true if the currently added matching SE is selected (its logical channel is
+   * @param selectionIndex the index of the selection that resulted in the matching card
+   * @param matchingSe the matching card to add
+   * @param isSelected true if the currently added matching card is selected (its logical channel is
    *     open)
    */
   void addMatchingSe(int selectionIndex, AbstractMatchingSe matchingSe, boolean isSelected) {
@@ -46,16 +46,16 @@ public final class SelectionsResult {
   }
 
   /**
-   * Get the active matching SE. I.e. the SE that has been selected. <br>
+   * Get the active matching card. I.e. the card that has been selected. <br>
    * The hasActiveSelection method should be called before.
    *
-   * @return the currently active matching SE
-   * @throws IllegalStateException if no active matching SE is found
+   * @return the currently active matching card
+   * @throws IllegalStateException if no active matching card is found
    */
   public AbstractMatchingSe getActiveMatchingSe() {
     AbstractMatchingSe matchingSe = matchingSeMap.get(activeSelectionIndex);
     if (matchingSe == null) {
-      throw new IllegalStateException("No active Matching SE is available");
+      throw new IllegalStateException("No active Matching card is available");
     }
     return matchingSe;
   }
@@ -98,6 +98,6 @@ public final class SelectionsResult {
     if (hasActiveSelection()) {
       return activeSelectionIndex;
     }
-    throw new IllegalStateException("No active Matching SE is available");
+    throw new IllegalStateException("No active Matching card is available");
   }
 }

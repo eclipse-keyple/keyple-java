@@ -63,7 +63,7 @@ public class WaitForSeRemovalStateJobExecutorTest extends CoreBaseTest {
      *
      * polling mode is SINGLESHOT
      *
-     * SE has been removed
+     * card has been removed
      */
     AbstractObservableLocalReader r = AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
     WaitForSeRemovalState waitForSeRemovalState =
@@ -86,7 +86,7 @@ public class WaitForSeRemovalStateJobExecutorTest extends CoreBaseTest {
   @Test
   public void waitForRemoval_REPEATING() throws Exception {
     /*
-     * ------------ input polling mode is CONTINUE SE has been removed within timeout
+     * ------------ input polling mode is CONTINUE card has been removed within timeout
      */
     AbstractObservableLocalReader r = AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
     WaitForSeRemovalState waitForSeRemovalState =
@@ -113,7 +113,7 @@ public class WaitForSeRemovalStateJobExecutorTest extends CoreBaseTest {
      *
      * polling mode is SINGLESHOT
      *
-     * SE has been removed
+     * card has been removed
      */
     AbstractObservableLocalReader r = AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
     AbstractObservableState stateMock = Mockito.mock(AbstractObservableState.class);
@@ -140,7 +140,7 @@ public class WaitForSeRemovalStateJobExecutorTest extends CoreBaseTest {
   @Test
   public void smart_waitForRemoval_SINGLESHOT() throws Exception {
     /*
-     * ------------ input polling mode is STOP SE has been removed within timeout
+     * ------------ input polling mode is STOP card has been removed within timeout
      */
     BlankSmartPresenceTheadedReader r =
         AbsSmartPresenceTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME);
@@ -165,7 +165,7 @@ public class WaitForSeRemovalStateJobExecutorTest extends CoreBaseTest {
     // flaky
 
     /*
-     * ------------ input polling mode is CONTINUE SE has been removed within timeout
+     * ------------ input polling mode is CONTINUE card has been removed within timeout
      */
     BlankSmartPresenceTheadedReader r =
         AbsSmartPresenceTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME);

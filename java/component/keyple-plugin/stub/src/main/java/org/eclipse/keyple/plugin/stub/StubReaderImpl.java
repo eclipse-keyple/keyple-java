@@ -32,7 +32,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
 
   private static final Logger logger = LoggerFactory.getLogger(StubReaderImpl.class);
 
-  private StubSecureElement se;
+  private StubSecureElement card;
   boolean isContactless = true;
 
   private final AtomicBoolean loopWaitSe = new AtomicBoolean();
@@ -61,44 +61,44 @@ class StubReaderImpl extends AbstractObservableLocalReader
 
   @Override
   protected byte[] getATR() {
-    return se.getATR();
+    return card.getATR();
   }
 
   /** {@inheritDoc} */
   @Override
   protected boolean isPhysicalChannelOpen() {
-    return se != null && se.isPhysicalChannelOpen();
+    return card != null && card.isPhysicalChannelOpen();
   }
 
   /** {@inheritDoc} */
   @Override
   protected void openPhysicalChannel() {
-    if (se != null) {
-      se.openPhysicalChannel();
+    if (card != null) {
+      card.openPhysicalChannel();
     }
   }
 
   /** {@inheritDoc} */
   @Override
   public void closePhysicalChannel() {
-    if (se != null) {
-      se.closePhysicalChannel();
+    if (card != null) {
+      card.closePhysicalChannel();
     }
   }
 
   /** {@inheritDoc} */
   @Override
   public byte[] transmitApdu(byte[] apduIn) {
-    if (se == null) {
-      throw new KeypleReaderIOException("No SE available.");
+    if (card == null) {
+      throw new KeypleReaderIOException("No card available.");
     }
-    return se.processApdu(apduIn);
+    return card.processApdu(apduIn);
   }
 
   @Override
   protected boolean isCurrentProtocol(String readerProtocolName) {
-    if (se != null && se.getSeProtocol() != null) {
-      return se.getSeProtocol().equals(readerProtocolName);
+    if (card != null && card.getSeProtocol() != null) {
+      return card.getSeProtocol().equals(readerProtocolName);
     } else {
       return false;
     }
@@ -106,7 +106,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
 
   @Override
   protected synchronized boolean checkSePresence() {
-    return se != null;
+    return card != null;
   }
 
   @Override
@@ -148,13 +148,13 @@ class StubReaderImpl extends AbstractObservableLocalReader
    */
 
   /**
-   * Inserts the provided SE.<br>
+   * Inserts the provided card.<br>
    *
    * @param _se stub secure element to be inserted in the reader
-   * @throws KeypleReaderProtocolNotFoundException if the SE protocol is not found
+   * @throws KeypleReaderProtocolNotFoundException if the card protocol is not found
    */
   public synchronized void insertSe(StubSecureElement _se) {
-    logger.debug("Insert SE {}", _se);
+    logger.debug("Insert card {}", _se);
     /* clean channels status */
     if (isPhysicalChannelOpen()) {
       try {
@@ -164,23 +164,23 @@ class StubReaderImpl extends AbstractObservableLocalReader
       }
     }
     if (_se != null) {
-      se = _se;
+      card = _se;
     }
   }
 
   public synchronized void removeSe() {
-    logger.debug("Remove SE {}", se != null ? se : "none");
-    se = null;
+    logger.debug("Remove card {}", card != null ? card : "none");
+    card = null;
   }
 
   public StubSecureElement getSe() {
-    return se;
+    return card;
   }
 
   /**
-   * This method is called by the monitoring thread to check SE presence
+   * This method is called by the monitoring thread to check the card presence
    *
-   * @return true if the SE is present
+   * @return true if the card is present
    */
   @Override
   public boolean waitForCardPresent() {
@@ -207,9 +207,9 @@ class StubReaderImpl extends AbstractObservableLocalReader
 
   /**
    * Defined in the {@link SmartRemovalReader} interface, this method is called by the monitoring
-   * thread to check SE absence
+   * thread to check the card absence
    *
-   * @return true if the SE is absent
+   * @return true if the card is absent
    */
   @Override
   public boolean waitForCardAbsentNative() {

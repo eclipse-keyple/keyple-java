@@ -49,16 +49,16 @@ import org.slf4j.LoggerFactory;
  *       <h2>Scenario:</h2>
  *       <ul>
  *         <li>Define a default selection of ISO 14443-4 Calypso PO and set it to an observable
- *             reader, on SE detection in case the Calypso selection is successful, notify the
+ *             reader, on card detection in case the Calypso selection is successful, notify the
  *             terminal application with the PO information, then the terminal follows by operating
  *             a simple Calypso PO transaction.
  *         <li><code>
  * Default Selection Notification
- * </code> means that the SE processing is automatically started when detected.
+ * </code> means that the card processing is automatically started when detected.
  *         <li>PO messages:
  *             <ul>
- *               <li>A first SE message to notify about the selected Calypso PO
- *               <li>A second SE message to operate the simple Calypso transaction
+ *               <li>A first card message to notify about the selected Calypso PO
+ *               <li>A second card message to operate the simple Calypso transaction
  *             </ul>
  *       </ul>
  * </ul>
@@ -93,7 +93,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
     seSelection = new SeSelection();
 
     // Setting of an AID based selection of a Calypso REV3 PO
-    // // Select the first application matching the selection AID whatever the SE communication
+    // // Select the first application matching the selection AID whatever the card communication
     // protocol keep the logical channel open after the selection
 
     // Calypso selection: configures a PoSelectionRequest with all the desired attributes to
@@ -212,7 +212,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
               e.getMessage());
         }
         if (!transactionComplete) {
-          // Informs the underlying layer of the end of the SE processing, in order to
+          // Informs the underlying layer of the end of the card processing, in order to
           // manage the
           // removal sequence.
           try {

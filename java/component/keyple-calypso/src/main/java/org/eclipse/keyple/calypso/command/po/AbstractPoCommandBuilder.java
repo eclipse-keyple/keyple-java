@@ -38,7 +38,7 @@ public abstract class AbstractPoCommandBuilder<T extends AbstractPoResponseParse
   /**
    * Create the response parser matching the builder
    *
-   * @param apduResponse the response data from the SE
+   * @param apduResponse the response data from the the card
    * @return an {@link AbstractApduResponseParser}
    */
   public abstract T createResponseParser(ApduResponse apduResponse);

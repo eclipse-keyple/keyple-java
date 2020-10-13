@@ -54,7 +54,7 @@ public class ObservableReaderNotificationEngine {
     }
   }
 
-  /** This method is called whenever a Reader event occurs (SE insertion/removal) */
+  /** This method is called whenever a Reader event occurs (card insertion/removal) */
   public class SpecificReaderObserver implements ObservableReader.ReaderObserver {
 
     SpecificReaderObserver() {
@@ -65,7 +65,7 @@ public class ObservableReaderNotificationEngine {
       switch (event.getEventType()) {
         case SE_MATCHED:
           /*
-           * Informs the underlying layer of the end of the SE processing, in order to
+           * Informs the underlying layer of the end of the card processing, in order to
            * manage the removal sequence.
            */
           try {
@@ -79,7 +79,7 @@ public class ObservableReaderNotificationEngine {
 
         case SE_INSERTED:
           /*
-           * end of the SE processing is automatically done
+           * end of the card processing is automatically done
            */
           break;
       }

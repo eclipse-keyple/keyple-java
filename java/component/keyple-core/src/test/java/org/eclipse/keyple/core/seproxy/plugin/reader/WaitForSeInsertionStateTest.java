@@ -66,7 +66,7 @@ public class WaitForSeInsertionStateTest extends CoreBaseTest {
   @Test
   public void insertSe_matched() throws Exception {
     /*
-     * input SE inserted SE matched
+     * input card inserted card matched
      */
     doReturn(new ReaderEvent("", "", ReaderEvent.EventType.SE_MATCHED, null))
         .when(r)
@@ -88,7 +88,7 @@ public class WaitForSeInsertionStateTest extends CoreBaseTest {
   @Test
   public void testInsertSe_Notmatched() throws Exception {
     /*
-     * input SE inserted SE doesnt matched Back to Detection
+     * input card inserted card doesnt matched Back to Detection
      */
     doReturn(new ReaderEvent("", "", ReaderEvent.EventType.SE_INSERTED, null))
         .when(r)
@@ -108,7 +108,7 @@ public class WaitForSeInsertionStateTest extends CoreBaseTest {
   // @Test
   // public void testTimeout() throws Exception {
   // /*
-  // * input no SE inserted within timeout
+  // * input no card inserted within timeout
   // */
   //
   // /* test */

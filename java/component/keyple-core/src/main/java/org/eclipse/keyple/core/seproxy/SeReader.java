@@ -19,21 +19,21 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotSupporte
  *
  * <ul>
  *   <li>To retrieve the unique reader name
- *   <li>To check the SE presence.
- *   <li>To activate and deactivate SE protocols.
+ *   <li>To check the card presence.
+ *   <li>To activate and deactivate the card protocols.
  * </ul>
  *
- * Interface used by applications processing SE.
+ * Interface used by applications processing the card.
  *
  * @since 0.9
  */
 public interface SeReader extends ProxyElement {
 
   /**
-   * Checks if is SE present.
+   * Checks if is the card present.
    *
    * @return true if a Secure Element is present in the reader
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @since 0.9
    */
   boolean isSePresent();

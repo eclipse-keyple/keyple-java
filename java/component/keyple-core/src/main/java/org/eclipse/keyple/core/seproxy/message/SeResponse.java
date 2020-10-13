@@ -19,7 +19,7 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
  * This POJO is used to transport data from a secure element obtained in response to a {@link
  * SeRequest}..
  *
- * <p>It includes elements related to the selection of the SE.
+ * <p>It includes elements related to the selection of the card.
  *
  * <ul>
  *   <li><code>logicalChannelIsOpen</code> tells if a logical channel is currently open.
@@ -38,8 +38,8 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
 public final class SeResponse implements Serializable {
 
   /**
-   * is defined as true by the SE reader in case a logical channel was already open with the target
-   * SE application.
+   * is defined as true by the card reader in case a logical channel was already open with the
+   * target card application.
    */
   private final boolean channelPreviouslyOpen;
 
@@ -49,7 +49,7 @@ public final class SeResponse implements Serializable {
   /** POJO possibly including ATR, FCI and matching flag */
   private final SelectionStatus selectionStatus;
 
-  /** List of {@link ApduResponse} returned by the selected SE application. */
+  /** List of {@link ApduResponse} returned by the selected card application. */
   private final List<ApduResponse> apduResponses;
 
   /**

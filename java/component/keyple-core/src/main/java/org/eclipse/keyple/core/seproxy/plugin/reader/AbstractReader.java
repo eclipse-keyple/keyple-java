@@ -143,11 +143,11 @@ public abstract class AbstractReader implements ProxyReader {
    * ChannelControl)}.
    *
    * @param seRequests A not empty list of not null {@link SeRequest}.
-   * @param multiSeRequestProcessing The multi se processing flag (must be not null).
+   * @param multiSeRequestProcessing The multi card processing flag (must be not null).
    * @param channelControl indicates if the physical channel has to be closed at the end of the
    *     processing (must be not null).
    * @return A not empty response list (can be empty).
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @throws IllegalArgumentException if one of the arguments is null.
    * @throws IllegalStateException in case of configuration inconsistency.
    * @see ProxyReader#transmitSeRequests(List, MultiSeRequestProcessing, ChannelControl)
@@ -220,7 +220,7 @@ public abstract class AbstractReader implements ProxyReader {
    * @return seResponse A not null {@link SeResponse}.
    * @param channelControl indicates if the physical channel has to be closed at the end of the
    *     processing (must be not null).
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @throws IllegalArgumentException if one of the arguments is null.
    * @see ProxyReader#transmitSeRequest(SeRequest, ChannelControl)
    * @since 0.9

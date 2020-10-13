@@ -12,12 +12,12 @@
 package org.eclipse.keyple.core.seproxy.exception;
 
 /**
- * The exception {@code KeypleReaderNotFoundException} indicates that the current SE protocol is
+ * The exception {@code KeypleReaderNotFoundException} indicates that the current card protocol is
  * undetermined.
  */
 public class KeypleReaderProtocolNotFoundException extends KeypleReaderException {
 
-  /** @param identificationData the identification data used to identify the SE */
+  /** @param identificationData the identification data used to identify the card */
   public KeypleReaderProtocolNotFoundException(String identificationData) {
     super(
         "The protocol of the card with identification data "

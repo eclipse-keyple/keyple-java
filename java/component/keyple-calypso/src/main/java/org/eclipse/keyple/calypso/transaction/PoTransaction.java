@@ -340,7 +340,7 @@ public class PoTransaction {
    * </ul>
    *
    * @param poCommands the po commands inside session
-   * @param channelControl indicated if the SE channel of the PO reader must be closed after the
+   * @param channelControl indicated if the card channel of the PO reader must be closed after the
    *     last command
    * @throws CalypsoPoTransactionException if a functional error occurs (including PO and SAM IO
    *     errors)
@@ -419,7 +419,7 @@ public class PoTransaction {
    * @param poModificationCommands a list of commands that can modify the PO memory content
    * @param poAnticipatedResponses a list of anticipated PO responses to the modification commands
    * @param ratificationMode the ratification mode tells if the session is closed ratified or not
-   * @param channelControl indicates if the SE channel of the PO reader must be closed after the
+   * @param channelControl indicates if the card channel of the PO reader must be closed after the
    *     last command
    * @throws CalypsoPoTransactionException if a functional error occurs (including PO and SAM IO
    *     errors)
@@ -551,7 +551,7 @@ public class PoTransaction {
    *
    * @param poCommands a list of commands that can modify the PO memory content
    * @param ratificationMode the ratification mode tells if the session is closed ratified or not
-   * @param channelControl indicates if the SE channel of the PO reader must be closed after the
+   * @param channelControl indicates if the card channel of the PO reader must be closed after the
    *     last command
    * @throws CalypsoPoTransactionException if a functional error occurs (including PO and SAM IO
    *     errors)
@@ -863,7 +863,7 @@ public class PoTransaction {
    *   <li>The result of the commands is placed in CalypsoPo.
    * </ul>
    *
-   * @param channelControl indicates if the SE channel of the PO reader must be closed after the
+   * @param channelControl indicates if the card channel of the PO reader must be closed after the
    *     last command
    * @throws CalypsoPoTransactionException if a functional error occurs (including PO and SAM IO
    *     errors)
@@ -1110,7 +1110,7 @@ public class PoTransaction {
   }
 
   /**
-   * Performs a PIN verification, in order to authenticate the cardholder and/or unlock access to
+   * Performs a PIN verification, in order to authenticate the card holder and/or unlock access to
    * certain PO files.<br>
    * This command can be performed both in and out of a secure session.<br>
    * The PIN code can be transmitted in plain text or encrypted according to the parameter set in

@@ -42,15 +42,15 @@ import org.slf4j.LoggerFactory;
  *   <li>
  *       <h2>Scenario:</h2>
  *       <ul>
- *         <li>Check if a ISO 14443-4 SE is in the reader, select a Calypso PO, operate a simple
+ *         <li>Check if a ISO 14443-4 card is in the reader, select a Calypso PO, operate a simple
  *             Calypso PO transaction (simple plain read, not involving a Calypso SAM).
  *         <li><code>
  * Explicit Selection
- * </code> means that it is the terminal application which start the SE processing.
+ * </code> means that it is the terminal application which start the card processing.
  *         <li>PO messages:
  *             <ul>
- *               <li>A first SE message to select the application in the reader
- *               <li>A second SE message to operate the simple Calypso transaction
+ *               <li>A first card message to select the application in the reader
+ *               <li>A second card message to operate the simple Calypso transaction
  *             </ul>
  *       </ul>
  * </ul>
@@ -99,7 +99,7 @@ public class ExplicitSelectionAid_Stub {
       SeSelection seSelection = new SeSelection();
 
       // Setting of an AID based selection of a Calypso REV3 PO
-      // Select the first application matching the selection AID whatever the SE communication
+      // Select the first application matching the selection AID whatever the card communication
       // protocol keep the logical channel open after the selection
 
       // Calypso selection: configures a PoSelectionRequest with all the desired attributes to

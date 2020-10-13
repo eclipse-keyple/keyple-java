@@ -16,13 +16,13 @@ import org.eclipse.keyple.core.seproxy.message.SeResponse;
 
 /**
  * The exception {@code KeypleReaderIOException} indicates that some IO operations with the reader
- * or SE have failed, generally when the reader was disconnected or card removed.
+ * or the card have failed, generally when the reader was disconnected or card removed.
  */
 public class KeypleReaderIOException extends KeypleReaderException {
 
   /*
    * SeResponse and list of SeResponse objects to carry partial responses in case of a breakdown
-   * in communication with the SE.
+   * in communication with the card.
    */
   private SeResponse seResponse;
   private List<SeResponse> seResponses;

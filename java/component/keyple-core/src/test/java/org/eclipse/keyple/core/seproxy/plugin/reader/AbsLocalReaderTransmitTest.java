@@ -35,7 +35,7 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Process Se Request Test for AbstractLocalReader */
+/** Process card Request Test for AbstractLocalReader */
 public class AbsLocalReaderTransmitTest extends CoreBaseTest {
 
   private static final Logger logger = LoggerFactory.getLogger(AbsLocalReaderTransmitTest.class);

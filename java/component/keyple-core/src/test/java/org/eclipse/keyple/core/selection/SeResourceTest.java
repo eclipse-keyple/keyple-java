@@ -48,7 +48,7 @@ public class SeResourceTest extends CoreBaseTest {
     Assert.assertEquals(null, localSeResource.getSeReader());
   }
 
-  /** Matching Se instantiation */
+  /** Matching card instantiation */
   private final class MatchingSe extends AbstractMatchingSe {
     MatchingSe(SeResponse selectionResponse) {
       super(selectionResponse);

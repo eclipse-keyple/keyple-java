@@ -34,7 +34,7 @@ public class JsonParserTest {
 
   private static final Logger logger = LoggerFactory.getLogger(JsonParserTest.class);
 
-  /** Test Serialization of Keyple Se Proxy Objects */
+  /** Test Serialization of Keyple Card Proxy Objects */
   @Test
   public void testHoplinkSeRequestList() {
     List<SeRequest> seRequests = SampleFactory.getASeRequestList_ISO14443_4();

@@ -56,7 +56,7 @@ public class Demo_SeProtocolDetection_Pcsc {
 
     logger.info("PO Reader  : {}", poReader.getName());
 
-    // create an observer class to handle the SE operations
+    // create an observer class to handle the card operations
     SeProtocolDetectionEngine observer = new SeProtocolDetectionEngine();
 
     observer.setReader(poReader);

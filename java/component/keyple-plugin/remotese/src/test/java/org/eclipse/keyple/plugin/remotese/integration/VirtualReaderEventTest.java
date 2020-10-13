@@ -40,7 +40,7 @@ import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Test Virtual Reader Service with stub plugin and hoplink SE */
+/** Test Virtual Reader Service with stub plugin and hoplink card */
 @RunWith(Parameterized.class)
 public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
@@ -57,7 +57,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
   }
 
   /*
-   * SE EVENTS
+   * Card EVENTS
    */
 
   @Before
@@ -113,9 +113,9 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
     nativeReader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
 
-    logger.info("Insert a Hoplink SE and wait 5 seconds for a SE event to be thrown");
+    logger.info("Insert a Hoplink card and wait 5 seconds for a card event to be thrown");
 
-    // insert SE
+    // insert card
     nativeReader.insertSe(StubReaderTest.hoplinkSE());
 
     // wait 5 seconds
@@ -162,17 +162,18 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     // register stubPluginObserver
     virtualReader.addObserver(obs);
 
-    logger.info("Insert and remove a Hoplink SE and wait 5 seconds for two SE events to be thrown");
+    logger.info(
+        "Insert and remove a Hoplink card and wait 5 seconds for two card events to be thrown");
 
     nativeReader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
 
-    // insert SE
+    // insert card
     nativeReader.insertSe(StubReaderTest.hoplinkSE());
     // wait 0,5 second
     Thread.sleep(500);
     ((ProxyReader) nativeReader).releaseChannel();
 
-    // remove SE
+    // remove card
     nativeReader.removeSe();
 
     nativeReader.stopSeDetection();
@@ -216,7 +217,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                     .getBytes(),
                 hoplinkSE().getATR());
 
-            // retrieve the expected FCI from the Stub SE running the select application command
+            // retrieve the expected FCI from the card Stub running the select application command
             byte[] aid = ByteArrayUtil.fromHex(poAid);
             byte[] selectApplicationCommand = new byte[6 + aid.length];
             selectApplicationCommand[0] = (byte) 0x00; // CLA
@@ -325,7 +326,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
             seSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
 
     // wait 1 second
-    logger.debug("Wait 1 second before inserting SE");
+    logger.debug("Wait 1 second before inserting card");
     Thread.sleep(500);
 
     // test
@@ -392,7 +393,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
             seSelection.getSelectionOperation(), ObservableReader.NotificationMode.ALWAYS);
 
     // wait 1 second
-    logger.debug("Wait 1 second before inserting SE");
+    logger.debug("Wait 1 second before inserting card");
     Thread.sleep(500);
 
     nativeReader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
@@ -416,10 +417,10 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
   @Test
   public void processExplicitSelectionByAtr() throws InterruptedException, KeypleReaderException {
 
-    // Insert a SE
+    // Insert a card
     nativeReader.insertSe(hoplinkSE());
 
-    logger.info("Prepare SE Selection");
+    logger.info("Prepare card selection");
     SeSelection seSelection = new SeSelection();
     GenericSeSelectionRequest genericSeSelectionRequest =
         new GenericSeSelectionRequest(
@@ -431,7 +432,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     /* Prepare selector, ignore AbstractMatchingSe here */
     seSelection.prepareSelection(genericSeSelectionRequest);
 
-    logger.info("Process explicit SE Selection");
+    logger.info("Process explicit card selection");
 
     SelectionsResult selectionsResult = null;
     try {
@@ -440,7 +441,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
       Assert.fail("Unexpected exception");
     }
 
-    logger.info("Explicit SE Selection result : {}", selectionsResult);
+    logger.info("Explicit card selection result : {}", selectionsResult);
 
     AbstractMatchingSe matchingSe = selectionsResult.getActiveMatchingSe();
 
@@ -461,7 +462,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
           public void update(final ReaderEvent event) {
 
             Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
-            logger.info("Prepare SE Selection");
+            logger.info("Prepare card selection");
             SeSelection seSelection = new SeSelection();
             GenericSeSelectionRequest genericSeSelectionRequest =
                 new GenericSeSelectionRequest(
@@ -473,7 +474,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
             /* Prepare selector, ignore AbstractMatchingSe here */
             seSelection.prepareSelection(genericSeSelectionRequest);
 
-            logger.info("Process explicit SE Selection");
+            logger.info("Process explicit card selection");
 
             SelectionsResult selectionsResult = null;
             try {
@@ -485,7 +486,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
               Assert.fail("Unexpected exception");
             }
 
-            logger.info("Explicit SE Selection result : {}", selectionsResult);
+            logger.info("Explicit card selection result : {}", selectionsResult);
 
             AbstractMatchingSe matchingSe = selectionsResult.getActiveMatchingSe();
 
@@ -502,7 +503,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     nativeReader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
 
     // test
-    logger.info("Inserting SE");
+    logger.info("Inserting card");
     nativeReader.insertSe(hoplinkSE());
     // Thread.sleep(2000);
     // nativeReader.removeSe();

@@ -61,7 +61,7 @@ class CardPresentMonitoringJob extends AbstractMonitoringJob {
             // polls for SE_INSERTED
             if (monitorInsertion && reader.isSePresent()) {
               if (logger.isDebugEnabled()) {
-                logger.debug("[{}] The SE is present ", reader.getName());
+                logger.debug("[{}] The card is present ", reader.getName());
               }
               loop.set(false);
               state.onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
@@ -70,7 +70,7 @@ class CardPresentMonitoringJob extends AbstractMonitoringJob {
             // polls for SE_REMOVED
             if (!monitorInsertion && !reader.isSePresent()) {
               if (logger.isDebugEnabled()) {
-                logger.debug("[{}] The SE is not present ", reader.getName());
+                logger.debug("[{}] The card is not present ", reader.getName());
               }
               loop.set(false);
               state.onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);

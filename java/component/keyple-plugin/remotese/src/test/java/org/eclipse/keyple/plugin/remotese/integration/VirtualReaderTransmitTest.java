@@ -111,7 +111,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
   }
 
   /**
-   * Successful Transmit with a Calypso command to a Calypso SE
+   * Successful Transmit with a Calypso command to a Calypso card
    *
    * @throws Exception
    */
@@ -120,7 +120,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
   public void rse_transmit_Hoplink_Sucessfull() throws Exception {
     int N_TIMES = 10;
 
-    // insert SE
+    // insert card
     nativeReader.insertSe(StubReaderTest.hoplinkSE());
 
     Thread.sleep(1000);
@@ -153,7 +153,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
   @Test(expected = KeypleReaderException.class)
   public void rse_transmit_no_response() throws Exception {
 
-    // insert SE
+    // insert card
     nativeReader.insertSe(StubReaderTest.noApduResponseSE());
 
     // wait for card to be detected
@@ -173,7 +173,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
   @Test
   public void transmit_partial_response_set_0() throws InterruptedException {
 
-    // insert SE
+    // insert card
     nativeReader.insertSe(StubReaderTest.partialSE());
 
     // wait for card to be detected
@@ -203,7 +203,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
   @Test
   public void transmit_partial_response_set_1() throws InterruptedException {
 
-    // insert SE
+    // insert card
     nativeReader.insertSe(StubReaderTest.partialSE());
 
     // wait for card to be detected
@@ -234,7 +234,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
   @Test
   public void transmit_partial_response_set_2() throws InterruptedException {
 
-    // insert SE
+    // insert card
     nativeReader.insertSe(StubReaderTest.partialSE());
 
     // wait for card to be detected
@@ -266,7 +266,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
   @Test
   public void transmit_partial_response_set_3() throws InterruptedException {
 
-    // insert SE
+    // insert card
     nativeReader.insertSe(StubReaderTest.partialSE());
 
     // wait for card to be detected
@@ -298,7 +298,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
   @Test
   public void transmit_partial_response_0() throws InterruptedException {
 
-    // insert SE
+    // insert card
     nativeReader.insertSe(StubReaderTest.partialSE());
 
     // wait for card to be detected
@@ -325,7 +325,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
   @Test
   public void transmit_partial_response_1() throws InterruptedException {
 
-    // insert SE
+    // insert card
     nativeReader.insertSe(StubReaderTest.partialSE());
 
     // wait for card to be detected
@@ -352,7 +352,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
   @Test
   public void transmit_partial_response_2() throws InterruptedException {
 
-    // insert SE
+    // insert card
     nativeReader.insertSe(StubReaderTest.partialSE());
 
     // wait for card to be detected
@@ -379,7 +379,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
   @Test
   public void transmit_partial_response_3() throws InterruptedException {
 
-    // insert SE
+    // insert card
     nativeReader.insertSe(StubReaderTest.partialSE());
 
     // wait for card to be detected

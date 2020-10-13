@@ -31,14 +31,17 @@ public class SeSelector implements Serializable {
   private final AtrFilter atrFilter;
 
   /**
-   * - AID’s bytes of the SE application to select. In case the SE application is currently not
-   * selected, a logical channel is established and the corresponding SE application is selected by
-   * the SE reader, otherwise keep the current channel. - optional {@link FileOccurrence} and {@link
-   * FileControlInformation} defines selections modes according to ISO7816-4 - optional
-   * successfulSelectionStatusCodes define a list of accepted SW1SW2 codes (in addition to 9000).
-   * Allows, for example, to manage the selection of the invalidated cards. - AidSelector could be
-   * missing in SeSelector when operating SE which don’t support the Select Application command (as
-   * it is the case for SAM).
+   * Holds the AID selection data.
+   *
+   * <p>- AID’s bytes of the card application to select. In case the card application is currently
+   * not selected, a logical channel is established and the corresponding card application is
+   * selected by the card reader, otherwise keep the current channel. <br>
+   * - optional {@link FileOccurrence} and {@link FileControlInformation} defines selections modes
+   * according to ISO7816-4<br>
+   * - optional successfulSelectionStatusCodes define a list of accepted SW1SW2 codes (in addition
+   * to 9000). Allows, for example, to manage the selection of the invalidated cards.<br>
+   * - AidSelector could be missing in SeSelector when operating a card which don’t support the
+   * Select Application command (as it is the case for SAM).
    */
   public static final class AidSelector implements Serializable {
     public static final int AID_MIN_LENGTH = 5;
@@ -259,7 +262,9 @@ public class SeSelector implements Serializable {
 
   /** Static nested class to hold the data elements used to perform an ATR based filtering */
   public static final class AtrFilter implements Serializable {
-    /** Regular expression dedicated to handle SE logical channel opening based on ATR pattern */
+    /**
+     * Regular expression dedicated to handle the card logical channel opening based on ATR pattern
+     */
     private String atrRegex;
 
     /**
@@ -340,7 +345,7 @@ public class SeSelector implements Serializable {
   }
 
   /**
-   * Create a SeSelector to perform the SE selection<br>
+   * Create a SeSelector to perform the card selection<br>
    *
    * @since 0.9
    */
@@ -353,7 +358,7 @@ public class SeSelector implements Serializable {
     protected SeSelectorBuilder() {}
 
     /**
-     * Sets the SE protocol.
+     * Sets the card protocol.
      *
      * @param seProtocol A not empty String.
      * @return the builder instance
@@ -364,9 +369,9 @@ public class SeSelector implements Serializable {
     }
 
     /**
-     * Sets the SE ATR Filter
+     * Sets the card ATR Filter
      *
-     * @param atrFilter the {@link AtrFilter} of the targeted SE
+     * @param atrFilter the {@link AtrFilter} of the targeted card
      * @return the builder instance
      */
     public SeSelectorBuilder atrFilter(SeSelector.AtrFilter atrFilter) {
@@ -375,9 +380,9 @@ public class SeSelector implements Serializable {
     }
 
     /**
-     * Sets the SE AID Selector
+     * Sets the card AID Selector
      *
-     * @param aidSelector the {@link AidSelector} of the targeted SE
+     * @param aidSelector the {@link AidSelector} of the targeted card
      * @return the builder instance
      */
     public SeSelectorBuilder aidSelector(SeSelector.AidSelector aidSelector) {

@@ -15,7 +15,7 @@ import org.eclipse.keyple.core.command.SeCommand;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 
 /**
- * This exception is the parent abstract class of all Keyple SE APDU commands exceptions.
+ * This exception is the parent abstract class of all Keyple card APDU commands exceptions.
  *
  * @since 0.9
  */

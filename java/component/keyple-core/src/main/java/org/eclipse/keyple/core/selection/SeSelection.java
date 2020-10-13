@@ -26,9 +26,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The SeSelection class handles the SE selection process.
+ * The SeSelection class handles the card selection process.
  *
- * <p>It provides a way to do explicit SE selection or to post process a default SE selection. <br>
+ * <p>It provides a way to do an explicit card selection or to post process a default card
+ * selection. <br>
  * The channel is kept open by default, but can be closed after each selection cases (see
  * PrepareReleaseSeChannel).
  */
@@ -48,7 +49,7 @@ public final class SeSelection {
   /**
    * Constructor.
    *
-   * @param multiSeRequestProcessing the multi se processing mode
+   * @param multiSeRequestProcessing the multi card processing mode
    */
   public SeSelection(MultiSeRequestProcessing multiSeRequestProcessing) {
     this.multiSeRequestProcessing = multiSeRequestProcessing;
@@ -80,10 +81,11 @@ public final class SeSelection {
   }
 
   /**
-   * Prepare to close the SE channel.<br>
+   * Prepare to close the card channel.<br>
    * If this command is called before a "process" selection command then the last transmission to
-   * the PO will be associated with the indication CLOSE_AFTER in order to close the SE channel.<br>
-   * This makes it possible to chain several selections on the same SE if necessary.
+   * the PO will be associated with the indication CLOSE_AFTER in order to close the card channel.
+   * <br>
+   * This makes it possible to chain several selections on the same card if necessary.
    */
   public final void prepareReleaseSeChannel() {
     channelControl = ChannelControl.CLOSE_AFTER;
@@ -96,7 +98,7 @@ public final class SeSelection {
    *
    * <p>The responses from the List of {@link SeResponse} is parsed and checked.
    *
-   * <p>A {@link AbstractMatchingSe} list is build and returned. Non matching SE are signaled by a
+   * <p>A {@link AbstractMatchingSe} list is build and returned. Non matching card are signaled by a
    * null element in the list
    *
    * @param defaultSelectionsResponse the selection response
@@ -123,7 +125,7 @@ public final class SeSelection {
          */
         AbstractMatchingSe matchingSe = seSelectionRequests.get(index).parse(seResponse);
 
-        // determine if the current matching SE is selected
+        // determine if the current matching card is selected
         SelectionStatus selectionStatus = seResponse.getSelectionStatus();
         boolean isSelected;
         if (selectionStatus != null) {
@@ -140,10 +142,10 @@ public final class SeSelection {
   }
 
   /**
-   * Parses the response to a selection operation sent to a SE and return a list of {@link
+   * Parses the response to a selection operation sent to a card and return a list of {@link
    * AbstractMatchingSe}
    *
-   * <p>Selection cases that have not matched the current SE are set to null.
+   * <p>Selection cases that have not matched the current card are set to null.
    *
    * @param defaultSelectionsResponse the response from the reader to the {@link
    *     AbstractDefaultSelectionsRequest}
@@ -172,13 +174,13 @@ public final class SeSelection {
   /**
    * Execute the selection process and return a list of {@link AbstractMatchingSe}.
    *
-   * <p>Selection requests are transmitted to the SE through the supplied SeReader.
+   * <p>Selection requests are transmitted to the card through the supplied SeReader.
    *
    * <p>The process stops in the following cases:
    *
    * <ul>
    *   <li>All the selection requests have been transmitted
-   *   <li>A selection request matches the current SE and the keepChannelOpen flag was true
+   *   <li>A selection request matches the current card and the keepChannelOpen flag was true
    * </ul>
    *
    * <p>
@@ -186,7 +188,7 @@ public final class SeSelection {
    * @param seReader the SeReader on which the selection is made
    * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
    *     including {@link AbstractMatchingSe} and {@link SeResponse}.
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @throws KeypleException if an error occurs during the selection process
    */
   public SelectionsResult processExplicitSelection(SeReader seReader) {
@@ -199,7 +201,7 @@ public final class SeSelection {
       logger.trace("Transmit SELECTIONREQUEST ({} request(s))", selectionRequests.size());
     }
 
-    /* Communicate with the SE to do the selection */
+    /* Communicate with the card to do the selection */
     List<SeResponse> seResponses =
         ((ProxyReader) seReader)
             .transmitSeRequests(selectionRequests, multiSeRequestProcessing, channelControl);
@@ -209,8 +211,8 @@ public final class SeSelection {
 
   /**
    * The SelectionOperation is the {@link AbstractDefaultSelectionsRequest} to process in ordered to
-   * select a SE among others through the selection process. This method is useful to build the
-   * prepared selection to be executed by a reader just after a SE insertion.
+   * select a card among others through the selection process. This method is useful to build the
+   * prepared selection to be executed by a reader just after a card insertion.
    *
    * @return the {@link AbstractDefaultSelectionsRequest} previously prepared with prepareSelection
    */

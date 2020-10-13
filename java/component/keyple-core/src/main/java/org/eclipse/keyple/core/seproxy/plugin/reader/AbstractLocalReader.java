@@ -81,15 +81,15 @@ public abstract class AbstractLocalReader extends AbstractReader {
     protocolAssociations = new LinkedHashMap<String, String>();
   }
   /**
-   * Check the presence of a SE
+   * Check the presence of a card
    *
    * <p>This method is recommended for non-observable readers.
    *
    * <p>When the card is not present the logical and physical channels status may be refreshed
    * through a call to the processSeRemoved method.
    *
-   * @return true if the SE is present
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @return true if the card is present
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */
   @Override
   public boolean isSePresent() {
@@ -98,14 +98,14 @@ public abstract class AbstractLocalReader extends AbstractReader {
 
   /**
    * Wrapper for the native method of the plugin specific local reader to verify the presence of the
-   * SE.
+   * card.
    *
    * <p>This method must be implemented by the ProxyReader plugin (e.g. Pcsc reader plugin).
    *
    * <p>This method is invoked by isSePresent.
    *
-   * @return true if the SE is present
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @return true if the card is present
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */
   protected abstract boolean checkSePresence();
 
@@ -142,13 +142,13 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * This method is dedicated to the case where no FCI data is available in return for the select
    * command.
    *
-   * <p>A specific APDU is sent to the SE retrieve the FCI data and returns it in an {@link
+   * <p>A specific APDU is sent to the card to retrieve the FCI data and returns it in an {@link
    * ApduResponse}.<br>
    * The provided AidSelector is used to check the response's status codes.
    *
    * @param aidSelector A {@link SeSelector.AidSelector} (must be not null).
    * @return A {@link ApduResponse} containing the FCI.
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */
   private ApduResponse recoverSelectionFciData(SeSelector.AidSelector aidSelector) {
 
@@ -175,12 +175,12 @@ public abstract class AbstractLocalReader extends AbstractReader {
   }
 
   /**
-   * Sends the select application command to the SE and returns the requested data according to
+   * Sends the select application command to the card and returns the requested data according to
    * AidSelector attributes (ISO7816-4 selection data) into an {@link ApduResponse}.
    *
    * @param aidSelector A not null {@link SeSelector.AidSelector}
    * @return A not null {@link ApduResponse}.
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */
   private ApduResponse processExplicitAidSelection(SeSelector.AidSelector aidSelector) {
 
@@ -196,7 +196,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
           ByteArrayUtil.toHex(aid));
     }
     /*
-     * build a get response command the actual length expected by the SE in the get response
+     * build a get response command the actual length expected by the card in the get response
      * command is handled in transmitApdu
      */
     byte[] selectApplicationCommand = new byte[6 + aid.length];
@@ -239,7 +239,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    *
    * <p>This method must not return normally if the physical channel could not be opened.
    *
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed and
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed and
    *     the physical channel could not be open.
    * @since 0.9
    */
@@ -248,7 +248,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
   /**
    * Opens the physical channel, determines and keep the current protocol.
    *
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed and
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed and
    *     the physical channel could not be open.
    * @since 1.0
    */
@@ -262,7 +262,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    *
    * <p>This method must not return normally if the physical channel could not be closed.
    *
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @since 0.9
    */
   protected abstract void closePhysicalChannel();
@@ -270,7 +270,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
   /**
    * Closes the physical channel and resets the current protocol info.
    *
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @since 1.0
    */
   private void resetProtocolAndClosePhysicalChannel() {
@@ -522,12 +522,12 @@ public abstract class AbstractLocalReader extends AbstractReader {
   }
 
   /**
-   * Selects the SE with the provided AID and gets the FCI response in return.
+   * Selects the card with the provided AID and gets the FCI response in return.
    *
    * @param aidSelector A {@link org.eclipse.keyple.core.seproxy.SeSelector.AidSelector} must be not
    *     null.
    * @return An not null {@link ApduResponse} containing the FCI.
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed.
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed.
    * @see #processSelection(SeSelector)
    */
   private ApduResponse selectByAid(SeSelector.AidSelector aidSelector) {
@@ -554,7 +554,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
   }
 
   /**
-   * Select the SE according to the {@link SeSelector}.
+   * Select the card according to the {@link SeSelector}.
    *
    * <p>The selection status is returned.<br>
    * 3 levels of filtering/selection are applied successively if they are enabled: protocol, ATR and
@@ -562,7 +562,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * As soon as one of these operations fails, the method returns with a failed selection status.
    *
    * <p>Conversely, the selection is considered successful if none of the filters have rejected the
-   * SE, even if none of the filters are active.
+   * card, even if none of the filters are active.
    *
    * @param seSelector A not null {@link SeSelector}.
    * @return A not null {@link SelectionStatus}.
@@ -619,7 +619,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    *
    * @param seRequest The {@link SeRequest} to be processed (must be not null).
    * @return seResponse A not null {@link SeResponse}.
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @throws IllegalStateException in case of configuration inconsistency.
    * @see #processSeRequests(List, MultiSeRequestProcessing, ChannelControl)
    * @see #processSeRequest(SeRequest, ChannelControl)
@@ -678,7 +678,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    *
    * @param apduRequest APDU request
    * @return APDU response
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @since 0.9
    */
   private ApduResponse processApduRequest(ApduRequest apduRequest) {
@@ -725,7 +725,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    *
    * @param originalStatusCode the status code of the command that didn't returned data
    * @return ApduResponse the response to the get response command
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @since 0.9
    */
   private ApduResponse case4HackGetResponse(int originalStatusCode) {
@@ -772,20 +772,20 @@ public abstract class AbstractLocalReader extends AbstractReader {
    *
    * <p>This abstract method must be implemented by the ProxyReader plugin (e.g. Pcsc, Nfc).
    *
-   * <p><b>Caution: the implementation must handle the case where the SE response is 61xy and
+   * <p><b>Caution: the implementation must handle the case where the card response is 61xy and
    * execute the appropriate get response command.</b>
    *
    * @param apduIn byte buffer containing the ingoing data (should be not null).
    * @return apduResponse byte buffer containing the outgoing data.
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @since 0.9
    */
   protected abstract byte[] transmitApdu(byte[] apduIn);
 
   /**
    * Method to be implemented by child classes in order to handle the needed actions when
-   * terminating the communication with a SE (closing of the physical channel, initiating a removal
-   * sequence, etc.)
+   * terminating the communication with a card (closing of the physical channel, initiating a
+   * removal sequence, etc.)
    *
    * @since 0.9
    */

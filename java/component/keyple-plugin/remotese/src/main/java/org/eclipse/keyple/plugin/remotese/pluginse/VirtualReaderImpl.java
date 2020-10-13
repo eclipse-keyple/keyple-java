@@ -97,11 +97,11 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
   /**
    * Blocking TransmitSeRequests
    *
-   * @param seRequests : List of SeRequest to be transmitted to SE
-   * @param multiSeRequestProcessing the multi se processing mode
+   * @param seRequests : List of SeRequest to be transmitted to the card
+   * @param multiSeRequestProcessing the multi card processing mode
    * @param channelControl indicates if the channel has to be closed at the end of the processing
-   * @return List of SeResponse from SE
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @return List of SeResponse from the card
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */
   @Override
   protected List<SeResponse> processSeRequests(
@@ -136,10 +136,10 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
   /**
    * Blocking Transmit
    *
-   * @param seRequest : SeRequest to be transmitted to SE
+   * @param seRequest : SeRequest to be transmitted to the card
    * @param channelControl indicates if the channel has to be closed at the end of the processing
-   * @return seResponse : SeResponse from SE
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @return seResponse : SeResponse from the card
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */
   @Override
   protected SeResponse processSeRequest(SeRequest seRequest, ChannelControl channelControl) {

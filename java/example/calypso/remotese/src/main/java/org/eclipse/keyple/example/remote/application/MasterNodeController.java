@@ -141,12 +141,12 @@ public class MasterNodeController {
               MasterAPI.PLUGIN_TYPE_DEFAULT,
               REMOTESE_PLUGIN_NAME);
 
-      // observe remote se plugin for events
+      // observe remote card plugin for events
       logger.info(
           "{} Observe SeRemotePlugin for Plugin Events and Reader Events", node.getNodeId());
       ReaderPlugin rsePlugin = masterAPI.getPlugin();
 
-      // add a custom observer for the Remote SE plugin
+      // add a custom observer for the Remote Card plugin
       ((ObservablePlugin) rsePlugin)
           .addObserver(new RemoteSePluginObserver(masterAPI, samResourceManager, node.getNodeId()));
 

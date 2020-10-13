@@ -19,7 +19,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduRequest;
  * <p>It provides the generic getters to retrieve:
  *
  * <ul>
- *   <li>the SE command reference,
+ *   <li>the card command reference,
  *   <li>the name of the command,
  *   <li>the built APDURequest,
  *   <li>the corresponding AbstractApduResponseParser class.

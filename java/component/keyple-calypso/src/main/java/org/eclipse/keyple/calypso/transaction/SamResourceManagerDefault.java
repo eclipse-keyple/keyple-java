@@ -415,7 +415,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
     /**
      * Constructor
      *
-     * @param seReader the {@link SeReader} with which the SE is communicating
+     * @param seReader the {@link SeReader} with which the card is communicating
      * @param calypsoSam the {@link CalypsoSam} information structure
      */
     public ManagedSamResource(SeReader seReader, CalypsoSam calypsoSam) {

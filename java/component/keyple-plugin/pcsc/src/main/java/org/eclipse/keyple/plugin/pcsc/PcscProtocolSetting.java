@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.util.Assert;
  * <p>The application can choose to get all the parameters at the same time or only a subset.
  *
  * <p>As they are based on the virtual ATR created by the reader, the protocol identification values
- * are provided as is and may vary from one reader and SE to another. <br>
+ * are provided as is and may vary from one reader and one card to another. <br>
  * Thus, it may be necessary to create a set of context-specific custom settings using {@link
  * #setProtocolIdentificationRule(String, String)}.
  *
