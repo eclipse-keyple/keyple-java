@@ -14,9 +14,9 @@ package org.eclipse.keyple.example.generic.pc.Demo_SeProtocolDetection;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
@@ -51,7 +51,7 @@ public class Demo_SeProtocolDetection_Pcsc {
     ReaderPlugin readerPlugin = seProxyService.registerPlugin(new PcscPluginFactory());
 
     // Get and configure the PO reader
-    SeReader poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
+    Reader poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
     ((PcscReader) poReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     logger.info("PO Reader  : {}", poReader.getName());

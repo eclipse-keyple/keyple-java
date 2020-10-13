@@ -16,9 +16,9 @@ import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
@@ -45,15 +45,15 @@ public class GroupedMultiSelection_Pcsc {
     ReaderPlugin readerPlugin = seProxyService.registerPlugin(new PcscPluginFactory());
 
     // Get and configure the PO reader
-    SeReader seReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
-    ((PcscReader) seReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
+    Reader reader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
+    ((PcscReader) reader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     logger.info(
         "=============== UseCase Generic #3: AID based grouped explicit multiple selection ==================");
-    logger.info("= Card Reader  NAME = {}", seReader.getName());
+    logger.info("= Card Reader  NAME = {}", reader.getName());
 
     // Check if a card is present in the reader
-    if (seReader.isSePresent()) {
+    if (reader.isSePresent()) {
 
       SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.PROCESS_ALL);
 
@@ -100,7 +100,7 @@ public class GroupedMultiSelection_Pcsc {
       seSelection.prepareReleaseSeChannel();
 
       // Actual card communication: operate through a single request the card selection
-      SelectionsResult selectionsResult = seSelection.processExplicitSelection(seReader);
+      SelectionsResult selectionsResult = seSelection.processExplicitSelection(reader);
 
       if (selectionsResult.getMatchingSelections().size() > 0) {
         for (Map.Entry<Integer, AbstractMatchingSe> entry :

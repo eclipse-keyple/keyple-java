@@ -19,10 +19,9 @@ import org.eclipse.keyple.calypso.transaction.PoSelectionRequest
 import org.eclipse.keyple.calypso.transaction.PoSelector
 import org.eclipse.keyple.calypso.transaction.PoSelector.InvalidatedPo
 import org.eclipse.keyple.core.selection.SeSelection
-import org.eclipse.keyple.core.seproxy.SeReader
+import org.eclipse.keyple.core.seproxy.Reader
 import org.eclipse.keyple.core.seproxy.SeSelector.AidSelector
 import org.eclipse.keyple.core.util.ByteArrayUtil
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactsCardCommonProtocols
 import org.eclipse.keyple.example.calypso.android.omapi.R
 import org.eclipse.keyple.example.calypso.android.omapi.utils.AidEnum
 
@@ -44,11 +43,11 @@ class CalypsoExamplesActivity : ExamplesActivity() {
             if (readers.size < 1) {
                 addResultEvent("No readers available")
             } else {
-                readers.values.forEach { seReader: SeReader ->
-                    addHeaderEvent("Starting explicitAidSelection with $poAid on Reader ${seReader.name}")
+                readers.values.forEach { reader: Reader ->
+                    addHeaderEvent("Starting explicitAidSelection with $poAid on Reader ${reader.name}")
                     /*
                      * Prepare a Calypso PO selection. Default parameters:
-                     * Select the first application matching the selection AID whatever the SE
+                     * Select the first application matching the selection AID whatever the card
                      * communication protocol and keep the logical channel open after the selection
                      */
                     val seSelection = SeSelection()
@@ -66,14 +65,14 @@ class CalypsoExamplesActivity : ExamplesActivity() {
 
                     try {
                         addActionEvent("Process explicit selection")
-                        val selectionsResult = seSelection.processExplicitSelection(seReader)
+                        val selectionsResult = seSelection.processExplicitSelection(reader)
 
                         /**
                          * Check if PO has been selected successfuly
                          */
                         if (selectionsResult.hasActiveSelection()) {
                             val matchedSe = selectionsResult.activeMatchingSe
-                            addResultEvent("The selection of the SE has succeeded.")
+                            addResultEvent("The selection of the card has succeeded.")
                             addResultEvent("Application FCI = ${ByteArrayUtil.toHex(matchedSe.fciBytes)}")
                         } else {
                             addResultEvent("The selection of the PO Failed")
@@ -102,14 +101,14 @@ class CalypsoExamplesActivity : ExamplesActivity() {
         if (readers.size < 1) {
             addResultEvent("No readers available")
         } else {
-            readers.values.forEach { seReader: SeReader ->
+            readers.values.forEach { reader: Reader ->
                 if (aidEnum == AidEnum.NAVIGO2013) {
 
                     val poAid = aidEnum.aid
                     val sfiNavigoEFEnvironment = 0x07.toByte()
                     val sfiNavigoEFTransportEvent = 0x08.toByte()
 
-                    addHeaderEvent("Starting readEnvironmentAndUsage with: $poAid on Reader ${seReader.name}")
+                    addHeaderEvent("Starting readEnvironmentAndUsage with: $poAid on Reader ${reader.name}")
 
                     /*
                      * Prepare a Calypso PO selection
@@ -144,7 +143,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                      */
                     addActionEvent("Process explicit selection for $poAid and reading Environment and transport event")
                     try {
-                        val selectionsResult = seSelection.processExplicitSelection(seReader)
+                        val selectionsResult = seSelection.processExplicitSelection(reader)
 
                         if (selectionsResult.hasActiveSelection()) {
                             val calypsoPo = selectionsResult.activeMatchingSe as CalypsoPo
@@ -167,7 +166,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                     val sfiHoplinkEFEnvironment = 0x14.toByte()
                     val sfiHoplinkEFUsage = 0x1A.toByte()
 
-                    addHeaderEvent("Starting readEnvironmentAndUsage with: $poAid on Reader ${seReader.name}")
+                    addHeaderEvent("Starting readEnvironmentAndUsage with: $poAid on Reader ${reader.name}")
 
                     val t2UsageRecord1_dataFill = ("0102030405060708090A0B0C0D0E0F10" + "1112131415161718191A1B1C1D1E1F20" +
                             "2122232425262728292A2B2C2D2E2F30")
@@ -180,7 +179,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                     /*
                      * Setting of an AID based selection of a Calypso REV3 PO
                      *
-                     * Select the first application matching the selection AID whatever the SE
+                     * Select the first application matching the selection AID whatever the card
                      * communication protocol keep the logical channel open after the selection
                      */
 
@@ -215,7 +214,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                      * selection and the file read
                      */
                     try {
-                        val selectionsResult = seSelection.processExplicitSelection(seReader)
+                        val selectionsResult = seSelection.processExplicitSelection(reader)
 
                         if (selectionsResult.hasActiveSelection()) {
                             val calypsoPo = selectionsResult.activeMatchingSe as CalypsoPo

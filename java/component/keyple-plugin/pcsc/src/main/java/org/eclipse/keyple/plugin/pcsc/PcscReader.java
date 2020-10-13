@@ -12,7 +12,7 @@
 package org.eclipse.keyple.plugin.pcsc;
 
 import javax.smartcardio.Card;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 
 /**
@@ -108,14 +108,14 @@ public interface PcscReader extends ObservableReader {
    * what type of technology a reader uses.
    *
    * <p>Thus, it is the duty of the application to give the reader the means to know his own type.
-   * This information will be used by the {@link SeReader#isContactless()} mode method.<br>
+   * This information will be used by the {@link Reader#isContactless()} mode method.<br>
    * This can be achieved with this method but also by giving the plugin the means to determine the
    * type from the reader's name. In the latter case, the application does not need to call this
    * method, the reader itself will determine its type using the plugin's parameters (see {@link
    * PcscPlugin#setReaderNameFilter(boolean, String)}.
    *
    * <p>The default value for this parameter if this method is not called is undefined.<br>
-   * The {@link SeReader#isContactless()} may raise an {@link IllegalStateException}.
+   * The {@link Reader#isContactless()} may raise an {@link IllegalStateException}.
    *
    * @param contactless True to set contactless mode, false to set contact mode.
    * @return This instance.

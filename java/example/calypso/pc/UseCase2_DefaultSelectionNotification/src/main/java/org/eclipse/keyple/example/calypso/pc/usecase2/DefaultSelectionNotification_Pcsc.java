@@ -22,9 +22,9 @@ import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
 import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -82,7 +82,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
     ReaderPlugin readerPlugin = seProxyService.registerPlugin(new PcscPluginFactory());
 
     // Get and configure the PO reader
-    SeReader poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
+    Reader poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
     ((PcscReader) poReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     logger.info(
@@ -112,7 +112,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
     // Add the selection case to the current selection (we could have added other cases here)
     seSelection.prepareSelection(poSelectionRequest);
 
-    // Provide the SeReader with the selection operation to be processed when a PO is inserted.
+    // Provide the Reader with the selection operation to be processed when a PO is inserted.
     ((ObservableReader) poReader)
         .setDefaultSelectionRequest(
             seSelection.getSelectionOperation(),
@@ -143,7 +143,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
       case SE_MATCHED:
         boolean transactionComplete = false;
         CalypsoPo calypsoPo = null;
-        SeReader poReader = null;
+        Reader poReader = null;
         try {
           calypsoPo =
               (CalypsoPo)

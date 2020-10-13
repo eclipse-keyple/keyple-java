@@ -110,7 +110,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
    *
    * @param samReader the SAM reader of the resource to remove from the list.
    */
-  protected void removeResource(SeReader samReader) {
+  protected void removeResource(Reader samReader) {
     ManagedSamResource managedSamResource = localManagedSamResources.get(samReader.getName());
     if (managedSamResource != null) {
       localManagedSamResources.remove(samReader.getName());
@@ -180,7 +180,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
   public void freeSamResource(SeResource<CalypsoSam> samResource) {
     synchronized (localManagedSamResources) {
       ManagedSamResource managedSamResource =
-          localManagedSamResources.get(samResource.getSeReader().getName());
+          localManagedSamResources.get(samResource.getReader().getName());
       if (managedSamResource != null) {
         logger.trace("Freeing local SAM resource.");
         managedSamResource.setSamResourceStatus(ManagedSamResource.SamResourceStatus.FREE);
@@ -216,7 +216,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
     @Override
     public void update(PluginEvent event) {
       for (String readerName : event.getReaderNames()) {
-        SeReader samReader = null;
+        Reader samReader = null;
         logger.info(
             "PluginEvent: PLUGINNAME = {}, READERNAME = {}, EVENTTYPE = {}",
             event.getPluginName(),
@@ -316,7 +316,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
     @Override
     public void update(ReaderEvent event) {
       // TODO revise exception management
-      SeReader samReader = null;
+      Reader samReader = null;
       try {
         samReader = samReaderPlugin.getReader(event.getReaderName());
       } catch (KeypleReaderNotFoundException e) {
@@ -366,7 +366,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
     }
   }
 
-  private void initSamReader(SeReader samReader, ReaderObserver readerObserver) {
+  private void initSamReader(Reader samReader, ReaderObserver readerObserver) {
     /*
      * Specific to PCSC reader (no effect on Stub)
      */
@@ -415,11 +415,11 @@ public class SamResourceManagerDefault extends SamResourceManager {
     /**
      * Constructor
      *
-     * @param seReader the {@link SeReader} with which the card is communicating
+     * @param reader the {@link Reader} with which the card is communicating
      * @param calypsoSam the {@link CalypsoSam} information structure
      */
-    public ManagedSamResource(SeReader seReader, CalypsoSam calypsoSam) {
-      super(seReader, calypsoSam);
+    public ManagedSamResource(Reader reader, CalypsoSam calypsoSam) {
+      super(reader, calypsoSam);
 
       samResourceStatus = SamResourceStatus.FREE;
       samIdentifier = null;

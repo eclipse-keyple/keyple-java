@@ -31,14 +31,14 @@ public interface ReaderPlugin extends ProxyElement {
    * @return the map of this plugin's connected reader's name and instance, can be an empty list,
    *     can not be null;
    */
-  Map<String, SeReader> getReaders();
+  Map<String, Reader> getReaders();
 
   /**
    * Gets the reader whose name is provided as an argument
    *
    * @param name of the reader
-   * @return the SeReader object.
+   * @return the Reader object.
    * @throws KeypleReaderNotFoundException if the wanted reader is not found
    */
-  SeReader getReader(String name);
+  Reader getReader(String name);
 }

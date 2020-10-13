@@ -11,10 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.selection;
 
-import static org.junit.Assert.*;
-
 import org.eclipse.keyple.core.CoreBaseTest;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
@@ -42,10 +40,10 @@ public class SeResourceTest extends CoreBaseTest {
         new SelectionStatus(
             new AnswerToReset(ByteArrayUtil.fromHex("3B00000000000000")), null, false);
     MatchingSe matchingSe = new MatchingSe(new SeResponse(true, true, selectionStatus, null));
-    SeReader seReader = null;
-    LocalSeResource localSeResource = new LocalSeResource(seReader, matchingSe);
+    Reader reader = null;
+    LocalSeResource localSeResource = new LocalSeResource(reader, matchingSe);
     Assert.assertEquals(matchingSe, localSeResource.getMatchingSe());
-    Assert.assertEquals(null, localSeResource.getSeReader());
+    Assert.assertEquals(null, localSeResource.getReader());
   }
 
   /** Matching card instantiation */
@@ -58,8 +56,8 @@ public class SeResourceTest extends CoreBaseTest {
   /** SeResource instantiation */
   private final class LocalSeResource extends SeResource<MatchingSe> {
 
-    protected LocalSeResource(SeReader seReader, MatchingSe matchingSe) {
-      super(seReader, matchingSe);
+    protected LocalSeResource(Reader reader, MatchingSe matchingSe) {
+      super(reader, matchingSe);
     }
   }
 }

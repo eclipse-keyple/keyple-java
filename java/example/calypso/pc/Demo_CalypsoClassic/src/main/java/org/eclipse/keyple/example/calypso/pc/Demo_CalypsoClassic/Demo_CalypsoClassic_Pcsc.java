@@ -11,9 +11,9 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.calypso.pc.Demo_CalypsoClassic;
 
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
@@ -57,8 +57,8 @@ public class Demo_CalypsoClassic_Pcsc {
      * Get PO and SAM readers. Apply regulars expressions to reader names to select PO / SAM
      * readers. Use the getReader helper method from the transaction engine.
      */
-    SeReader poReader = null;
-    SeReader samReader = null;
+    Reader poReader = null;
+    Reader samReader = null;
     try {
       poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
       samReader = readerPlugin.getReader(ReaderUtilities.getContactReaderName());

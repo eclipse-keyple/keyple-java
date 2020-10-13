@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 import com.google.gson.JsonObject;
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.rm.AbstractRemoteMethodTx;
@@ -26,7 +26,7 @@ import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RmPoolAllocateTx extends AbstractRemoteMethodTx<SeReader> {
+public class RmPoolAllocateTx extends AbstractRemoteMethodTx<Reader> {
 
   private static final Logger logger = LoggerFactory.getLogger(RmPoolAllocateTx.class);
 
@@ -68,7 +68,7 @@ public class RmPoolAllocateTx extends AbstractRemoteMethodTx<SeReader> {
   }
 
   @Override
-  protected SeReader parseResponse(KeypleDto keypleDto) {
+  protected Reader parseResponse(KeypleDto keypleDto) {
     logger.trace("KeypleDto : {}", keypleDto);
     if (KeypleDtoHelper.containsException(keypleDto)) {
       logger.trace("KeypleDto contains an exception: {}", keypleDto);

@@ -86,7 +86,7 @@ public class ManagedSamResourceManagerDefaultTest extends CalypsoBaseTest {
 
     // init SamResourceManager with a mathching filter
     SamResourceManagerDefault srmSpy = srmSpy(".*");
-    // doReturn(samResourceMock()).when(srmSpy).createSamResource(any(SeReader.class));
+    // doReturn(samResourceMock()).when(srmSpy).createSamResource(any(Reader.class));
 
     long start = System.currentTimeMillis();
 
@@ -136,7 +136,7 @@ public class ManagedSamResourceManagerDefaultTest extends CalypsoBaseTest {
             any(List.class), any(MultiSeRequestProcessing.class), any(ChannelControl.class));
 
     // create a list of mock readers
-    ConcurrentMap<String, SeReader> readers = new ConcurrentHashMap<String, SeReader>();
+    ConcurrentMap<String, Reader> readers = new ConcurrentHashMap<String, Reader>();
     readers.put(reader.getName(), reader);
 
     // create the mock plugin
@@ -156,8 +156,8 @@ public class ManagedSamResourceManagerDefaultTest extends CalypsoBaseTest {
     return mock;
   }
 
-  SeReader seReaderMock() {
-    SeReader mock = Mockito.mock(SeReader.class);
+  Reader readerMock() {
+    Reader mock = Mockito.mock(Reader.class);
     return mock;
   }
 }

@@ -20,9 +20,9 @@ import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
@@ -66,7 +66,7 @@ public class ExplicitSelectionAid_Pcsc {
     ReaderPlugin readerPlugin = seProxyService.registerPlugin(new PcscPluginFactory());
 
     // Get and configure the PO reader
-    SeReader poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
+    Reader poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
     ((PcscReader) poReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     logger.info(

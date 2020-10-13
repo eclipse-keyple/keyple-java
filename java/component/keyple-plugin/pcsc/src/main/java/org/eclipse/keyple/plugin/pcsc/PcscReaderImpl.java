@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Package private class implementing the {@link org.eclipse.keyple.core.seproxy.SeReader} interface
+ * Package private class implementing the {@link org.eclipse.keyple.core.seproxy.Reader} interface
  * for PC/SC based readers.
  *
  * <p>A PC/SC reader is observable ({@link AbstractObservableLocalReader}), autonomous to detect the

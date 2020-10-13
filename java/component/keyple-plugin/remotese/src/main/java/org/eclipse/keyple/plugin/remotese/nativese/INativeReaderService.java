@@ -12,7 +12,7 @@
 package org.eclipse.keyple.plugin.remotese.nativese;
 
 import java.util.Map;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 
@@ -26,7 +26,7 @@ public interface INativeReaderService {
    * @return sessionId id of the session of the virtual reader
    * @throws KeypleReaderException if reader is already connected
    */
-  String connectReader(SeReader localReader);
+  String connectReader(Reader localReader);
 
   /**
    * Connect Physical Local Reader to Remote reader Creates a Session to exchange data with this
@@ -37,7 +37,7 @@ public interface INativeReaderService {
    * @return sessionId id of the session of the virtual reader
    * @throws KeypleReaderException if reader is already connected
    */
-  String connectReader(SeReader localReader, Map<String, String> options);
+  String connectReader(Reader localReader, Map<String, String> options);
 
   /**
    * Disconnect Physical Local Reader from RemoteSe Master, nativeReaderName must be used as the
@@ -54,8 +54,8 @@ public interface INativeReaderService {
    * Find a local reader across plugins
    *
    * @param nativeReaderName : native name of the reader to find
-   * @return SeReader : card Reader found
+   * @return Reader : card Reader found
    * @throws KeypleReaderNotFoundException : if none reader was found
    */
-  SeReader findLocalReader(String nativeReaderName);
+  Reader findLocalReader(String nativeReaderName);
 }

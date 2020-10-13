@@ -30,7 +30,7 @@ import org.eclipse.keyple.core.selection.SeResource
 import org.eclipse.keyple.core.selection.SeSelection
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
 import org.eclipse.keyple.core.seproxy.SeProxyService
-import org.eclipse.keyple.core.seproxy.SeReader
+import org.eclipse.keyple.core.seproxy.Reader
 import org.eclipse.keyple.core.seproxy.SeSelector.AidSelector
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse
 import org.eclipse.keyple.core.seproxy.event.ObservableReader
@@ -71,7 +71,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                 configureUseCase0()
 
                 Timber.d("Handle ACTION TECH intent")
-                // notify reader that se detection has been launched
+                // notify reader that card detection has been launched
                 reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT)
                 initFromBackgroundTextView()
                 reader.processIntent(intent)
@@ -91,7 +91,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
         Timber.i("on Pause Fragment - Stopping Read Write Mode")
         try {
 
-            // notify reader that se detection has been switched off
+            // notify reader that card detection has been switched off
             reader.stopSeDetection()
 
             // Disable Reader Mode for NFC Adapter
@@ -152,13 +152,13 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
 
     private fun configureUseCase4SequentialMultiSelection() {
         addHeaderEvent("UseCase Generic #4: AID based sequential explicit multiple selection")
-        addHeaderEvent("SE Reader  NAME = ${reader.name}")
+        addHeaderEvent("Reader  NAME = ${reader.name}")
 
-        /*Check if a SE is present in the reader */
+        /*Check if a card is present in the reader */
         if (reader.isSePresent) {
             /*
-              * operate SE AID selection (change the AID prefix here to adapt it to the SE used for
-              * the test [the SE should have at least two applications matching the AID prefix])
+              * operate card AID selection (change the AID prefix here to adapt it to the card used for
+              * the test [the card should have at least two applications matching the AID prefix])
               */
             val seAidPrefix = CalypsoClassicInfo.AID_PREFIX
 
@@ -198,12 +198,12 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
             addActionEvent("NEXT MATCH Calypso PO selection for prefix: $seAidPrefix")
             doAndAnalyseSelection(reader, seSelection, 2)
         } else {
-            addResultEvent("No SE were detected.")
+            addResultEvent("No cards were detected.")
         }
         eventRecyclerView.smoothScrollToPosition(events.size - 1)
     }
 
-    private fun doAndAnalyseSelection(reader: SeReader, seSelection: SeSelection, index: Int) {
+    private fun doAndAnalyseSelection(reader: Reader, seSelection: SeSelection, index: Int) {
         try {
             val selectionsResult = seSelection.processExplicitSelection(reader)
             if (selectionsResult.hasActiveSelection()) {
@@ -222,11 +222,11 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
 
     private fun configureUseCase3GroupedMultiSelection() {
         addHeaderEvent("UseCase Generic #3: AID based grouped explicit multiple selection")
-        addHeaderEvent("SE Reader  NAME = ${reader.name}")
+        addHeaderEvent("Reader  NAME = ${reader.name}")
 
         seSelection = SeSelection(MultiSeRequestProcessing.PROCESS_ALL)
 
-        /* operate SE selection (change the AID here to adapt it to the SE used for the test) */
+        /* operate card selection (change the AID here to adapt it to the card used for the test) */
         val seAidPrefix = CalypsoClassicInfo.AID_PREFIX
 
         /* Close the channel after the selection to force the selection of all applications */
@@ -265,7 +265,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
             addActionEvent("Calypso PO selection for prefix: $seAidPrefix")
 
             /*
-            * Actual SE communication: operate through a single request the SE selection
+            * Actual card communication: operate through a single request the card selection
             */
             try {
                 val selectionResult = seSelection.processExplicitSelection(reader)
@@ -280,14 +280,14 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                     }
                     addResultEvent("End of selection")
                 } else {
-                    addResultEvent("No SE matched the selection.")
-                    addResultEvent("SE must be in the field when starting this use case")
+                    addResultEvent("No card matched the selection.")
+                    addResultEvent("The card must be in the field when starting this use case")
                 }
             } catch (e: KeypleReaderException) {
                 addResultEvent("Error: ${e.message}")
             }
         } else {
-            addResultEvent("No SE were detected.")
+            addResultEvent("No cards were detected.")
         }
 
         eventRecyclerView.smoothScrollToPosition(events.size - 1)
@@ -295,7 +295,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
 
     private fun configureUseCase2DefaultSelectionNotification() {
         addHeaderEvent("UseCase Generic #2: AID based default selection")
-        addHeaderEvent("SE Reader  NAME = ${reader.name}")
+        addHeaderEvent("Reader  NAME = ${reader.name}")
 
         /*
         * Prepare a a new Calypso PO selection
@@ -307,7 +307,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
         /*
         * Setting of an AID based selection
         *
-        * Select the first application matching the selection AID whatever the SE communication
+        * Select the first application matching the selection AID whatever the card communication
         * protocol keep the logical channel open after the selection
         */
 
@@ -325,27 +325,27 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
         seSelection.prepareSelection(selectionRequest)
 
         /*
-         * Provide the SeReader with the selection operation to be processed when a SE is inserted.
+         * Provide the Reader with the selection operation to be processed when a card is inserted.
          */
         (reader as ObservableReader).setDefaultSelectionRequest(seSelection.selectionOperation,
                 ObservableReader.NotificationMode.MATCHED_ONLY, ObservableReader.PollingMode.REPEATING)
 
         // (reader as ObservableReader).addObserver(this) //ALready done in onCreate
 
-        addActionEvent("Waiting for a SE... The default AID based selection to be processed as soon as the SE is detected.")
+        addActionEvent("Waiting for a card... The default AID based selection to be processed as soon as the card is detected.")
 
         useCase = object : UseCase {
             override fun onEventUpdate(event: ReaderEvent?) {
                 CoroutineScope(Dispatchers.Main).launch {
                     when (event?.eventType) {
                         ReaderEvent.EventType.SE_MATCHED -> {
-                            addResultEvent("SE_MATCHED event: A SE corresponding to request has been detected")
+                            addResultEvent("SE_MATCHED event: A card corresponding to request has been detected")
                             val selectedSe = seSelection.processDefaultSelection(event.defaultSelectionsResponse).activeMatchingSe
                             if (selectedSe != null) {
-                                addResultEvent("Observer notification: the selection of the SE has succeeded. End of the SE processing.")
+                                addResultEvent("Observer notification: the selection of the card has succeeded. End of the card processing.")
                                 addResultEvent("Application FCI = ${ByteArrayUtil.toHex(selectedSe.fciBytes)}")
                             } else {
-                                addResultEvent("The selection of the SE has failed. Should not have occurred due to the MATCHED_ONLY selection mode.")
+                                addResultEvent("The selection of the card has failed. Should not have occurred due to the MATCHED_ONLY selection mode.")
                             }
                         }
 
@@ -364,7 +364,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                 if (event?.eventType == ReaderEvent.EventType.SE_INSERTED || event?.eventType == ReaderEvent.EventType.SE_MATCHED) {
                     // TODO make this conditional on the abnormal termination (exception)
                     /*
-                     * Informs the underlying layer of the end of the SE processing, in order to manage the
+                     * Informs the underlying layer of the end of the card processing, in order to manage the
                      * removal sequence. <p>If closing has already been requested, this method will do
                      * nothing.
                      */
@@ -385,7 +385,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
 
     private fun configureUseCase1ExplicitSelectionAid() {
         addHeaderEvent("UseCase Generic #1: Explicit AID selection")
-        addHeaderEvent("SE Reader  NAME = ${reader.name}")
+        addHeaderEvent("Reader  NAME = ${reader.name}")
 
         /*
         * Prepare a a new Calypso PO selection
@@ -411,7 +411,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
             seSelection.prepareSelection(selectionRequest)
 
             /*
-             * Provide the SeReader with the selection operation to be processed when a SE is inserted.
+             * Provide the Reader with the selection operation to be processed when a card is inserted.
              */
             (reader as ObservableReader).setDefaultSelectionRequest(seSelection.selectionOperation,
                     ObservableReader.NotificationMode.MATCHED_ONLY, ObservableReader.PollingMode.SINGLESHOT)
@@ -427,19 +427,19 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
 
                 if (selectionsResult.hasActiveSelection()) {
                     val matchedSe = selectionsResult.activeMatchingSe
-                    addResultEvent("The selection of the SE has succeeded.")
+                    addResultEvent("The selection of the card has succeeded.")
                     addResultEvent("Application FCI = ${ByteArrayUtil.toHex(matchedSe.fciBytes)}")
-                    addResultEvent("End of the generic SE processing.")
+                    addResultEvent("End of the generic card processing.")
                 } else {
-                    addResultEvent("The selection of the SE has failed.")
+                    addResultEvent("The selection of the card has failed.")
                 }
             } catch (e: KeypleReaderException) {
                 Timber.e(e)
                 addResultEvent("Error: ${e.message}")
             }
         } else {
-            addResultEvent("No SE were detected.")
-            addResultEvent("SE must be in the field when starting this use case")
+            addResultEvent("No cards were detected.")
+            addResultEvent("The card must be in the field when starting this use case")
         }
         eventRecyclerView.smoothScrollToPosition(events.size - 1)
     }
@@ -454,7 +454,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
         /*
              * Setting of an AID based selection of a Calypso REV3 PO
              *
-             * Select the first application matching the selection AID whatever the SE communication
+             * Select the first application matching the selection AID whatever the card communication
              * protocol keep the logical channel open after the selection
              */
 
@@ -482,7 +482,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
         seSelection.prepareSelection(poSelectionRequest)
 
         /*
-             * Provide the SeReader with the selection operation to be processed when a PO is
+             * Provide the Reader with the selection operation to be processed when a PO is
              * inserted.
              */
         (reader as ObservableReader).setDefaultSelectionRequest(
@@ -501,7 +501,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                 CoroutineScope(Dispatchers.Main).launch {
                     when (event?.eventType) {
                         ReaderEvent.EventType.SE_MATCHED -> {
-                            addResultEvent("Tag detected - SE MATCHED")
+                            addResultEvent("Tag detected - card MATCHED")
                             executeCommands(event.defaultSelectionsResponse)
                             reader.finalizeSeProcessing()
                         }
@@ -512,18 +512,18 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                         }
 
                         ReaderEvent.EventType.SE_REMOVED -> {
-                            addResultEvent("Tag detected - SE SE_REMOVED")
+                            addResultEvent("Tag detected - card SE_REMOVED")
                         }
 
                         ReaderEvent.EventType.TIMEOUT_ERROR -> {
-                            addResultEvent("Tag detected - SE TIMEOUT_ERROR")
+                            addResultEvent("Tag detected - card TIMEOUT_ERROR")
                         }
                     }
                 }
                 eventRecyclerView.smoothScrollToPosition(events.size - 1)
             }
         }
-        // notify reader that se detection has been launched
+        // notify reader that card detection has been launched
         reader.startSeDetection(ObservableReader.PollingMode.REPEATING)
     }
 

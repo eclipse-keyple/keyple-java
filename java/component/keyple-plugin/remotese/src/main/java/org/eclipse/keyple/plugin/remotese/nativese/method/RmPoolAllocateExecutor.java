@@ -12,8 +12,8 @@
 package org.eclipse.keyple.plugin.remotese.nativese.method;
 
 import com.google.gson.JsonObject;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationNoReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
@@ -51,9 +51,9 @@ public class RmPoolAllocateExecutor implements IRemoteMethodExecutor {
     String groupReference = body.get("groupReference").getAsString();
 
     // Execute Remote Method
-    SeReader seReader = null;
+    Reader reader = null;
     try {
-      seReader = poolPlugin.allocateReader(groupReference);
+      reader = poolPlugin.allocateReader(groupReference);
     } catch (KeypleAllocationReaderException e) {
       // if an exception occurs, send it into a keypleDto to the Master
       return transportDto.nextTransportDTO(
@@ -82,8 +82,8 @@ public class RmPoolAllocateExecutor implements IRemoteMethodExecutor {
 
     // Build Response
     JsonObject bodyResp = new JsonObject();
-    bodyResp.addProperty("nativeReaderName", seReader.getName());
-    bodyResp.addProperty("isContactless", seReader.isContactless());
+    bodyResp.addProperty("nativeReaderName", reader.getName());
+    bodyResp.addProperty("isContactless", reader.isContactless());
 
     out =
         transportDto.nextTransportDTO(
@@ -91,7 +91,7 @@ public class RmPoolAllocateExecutor implements IRemoteMethodExecutor {
                 getMethodName().getName(), //
                 bodyResp.toString(), //
                 null, // no session yet
-                seReader.getName(), //
+                reader.getName(), //
                 null, // no virtualreader yet
                 keypleDto.getTargetNodeId(), //
                 slaveNodeId, // nodeId of the actual slave dtoNode, useful for load

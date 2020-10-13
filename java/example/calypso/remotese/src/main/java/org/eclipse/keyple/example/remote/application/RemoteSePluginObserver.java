@@ -17,9 +17,9 @@ import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.SamResourceManager;
 import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
@@ -65,7 +65,7 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
           ReaderPlugin remoteSEPlugin =
               SeProxyService.getInstance().getPlugin(event.getPluginName());
 
-          SeReader poReader = remoteSEPlugin.getReader(event.getReaderNames().first());
+          Reader poReader = remoteSEPlugin.getReader(event.getReaderNames().first());
 
           logger.info("{} Configure SeSelection", nodeId);
 
@@ -101,7 +101,7 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
           logger.info("{} setDefaultSelectionRequest for PoReader {}", nodeId, poReader.getName());
 
           /*
-           * Provide the SeReader with the selection operation to be processed when a PO
+           * Provide the Reader with the selection operation to be processed when a PO
            * is inserted.
            */
           ((ObservableReader) poReader)

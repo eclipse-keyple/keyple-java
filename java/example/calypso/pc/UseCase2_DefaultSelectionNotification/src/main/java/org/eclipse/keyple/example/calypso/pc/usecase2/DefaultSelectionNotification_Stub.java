@@ -22,9 +22,9 @@ import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
 import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -88,7 +88,7 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
     /*
      * Get a PO reader ready to work with Calypso PO.
      */
-    SeReader poReader = stubPlugin.getReader("poReader");
+    Reader poReader = stubPlugin.getReader("poReader");
 
     /* Check if the reader exists */
     if (poReader == null) {
@@ -135,7 +135,7 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
     seSelection.prepareSelection(poSelectionRequest);
 
     /*
-     * Provide the SeReader with the selection operation to be processed when a PO is inserted.
+     * Provide the Reader with the selection operation to be processed when a PO is inserted.
      */
     ((ObservableReader) poReader)
         .setDefaultSelectionRequest(
@@ -179,7 +179,7 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
       case SE_MATCHED:
         boolean transactionComplete = false;
         CalypsoPo calypsoPo = null;
-        SeReader poReader = null;
+        Reader poReader = null;
         try {
           calypsoPo =
               (CalypsoPo)

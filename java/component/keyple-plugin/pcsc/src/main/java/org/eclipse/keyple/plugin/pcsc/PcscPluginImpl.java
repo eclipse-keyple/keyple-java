@@ -23,7 +23,7 @@ import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CardTerminals;
 import javax.smartcardio.TerminalFactory;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
@@ -122,9 +122,9 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
    * @since 0.9
    */
   @Override
-  protected Map<String, SeReader> initNativeReaders() {
+  protected Map<String, Reader> initNativeReaders() {
 
-    ConcurrentMap<String, SeReader> nativeReaders = new ConcurrentHashMap<String, SeReader>();
+    ConcurrentMap<String, Reader> nativeReaders = new ConcurrentHashMap<String, Reader>();
 
     // parse the current readers list to create the ProxyReader(s) associated with new reader(s)
     CardTerminals terminals = getCardTerminals();
@@ -156,18 +156,18 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
    * Creates and returns a new reader if not.
    *
    * @param name A String (should be not null).
-   * @return A not null reference to a {@link SeReader}.
+   * @return A not null reference to a {@link Reader}.
    * @throws KeypleReaderNotFoundException if a reader is not found by its name
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @since 0.9
    */
   @Override
-  protected SeReader fetchNativeReader(String name) {
+  protected Reader fetchNativeReader(String name) {
 
     // return the current reader if it is already listed
-    SeReader seReader = readers.get(name);
-    if (seReader != null) {
-      return seReader;
+    Reader reader = readers.get(name);
+    if (reader != null) {
+      return reader;
     }
     /* parse the current PC/SC readers list to create the ProxyReader(s) associated with new reader(s) */
     CardTerminals terminals = getCardTerminals();
@@ -178,22 +178,22 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
               "[{}] fetchNativeReader => CardTerminal in new PcscReader: {}",
               this.getName(),
               terminals);
-          seReader = new PcscReaderImpl(this.getName(), term);
+          reader = new PcscReaderImpl(this.getName(), term);
         }
       }
     } catch (CardException e) {
       throw new KeypleReaderIOException("Could not access terminals list", e);
     }
-    if (seReader == null) {
+    if (reader == null) {
       throw new KeypleReaderNotFoundException("Reader " + name + " not found!");
     }
-    return seReader;
+    return reader;
   }
 
   private CardTerminals getCardTerminals() {
 
     if (scardNoServiceHackNeeded == null) {
-      /* First time init: activate a special processing for the "SCARD_E_NO_NO_SERVICE" exception (on Windows platforms the removal of the last PC/SC reader stops the "Windows Smart Card service") */
+      /* First time init: activate a special processing for the "SCARD_E_NO_SERVICE" exception (on Windows platforms the removal of the last PC/SC reader stops the "Windows Smart Card service") */
       String os = System.getProperty("os.name").toLowerCase();
       scardNoServiceHackNeeded = os.contains("win");
       logger.info("Windows System detected, SCARD_E_NO_NO_SERVICE management activated.");
@@ -233,7 +233,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
           Class<?> classMap = Class.forName("java.util.Map");
           Method clearMap = classMap.getDeclaredMethod("clear");
 
-          clearMap.invoke(fieldTerminals.get(terminals));
+          ((Map)fieldTerminals.get(terminals)).clear();
         }
       } catch (Exception e) {
         logger.error("Unexpected exception.", e);

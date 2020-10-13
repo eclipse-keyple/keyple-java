@@ -92,7 +92,7 @@ class SamCommandProcessor {
     this.poResource = poResource;
     this.poSecuritySettings = poSecuritySettings;
     this.samResource = poSecuritySettings.getSamResource();
-    samReader = (ProxyReader) this.samResource.getSeReader();
+    samReader = (ProxyReader) this.samResource.getReader();
   }
 
   /**

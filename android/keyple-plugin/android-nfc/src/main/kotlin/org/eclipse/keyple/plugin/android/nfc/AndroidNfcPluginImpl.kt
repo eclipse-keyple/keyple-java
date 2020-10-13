@@ -13,13 +13,13 @@ package org.eclipse.keyple.plugin.android.nfc
 
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
-import org.eclipse.keyple.core.seproxy.SeReader
+import org.eclipse.keyple.core.seproxy.Reader
 import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin
 import timber.log.Timber
 
 /**
  * Enables Keyple to communicate with the the Android device by providing access to the
- * implementation of SeReader.
+ * implementation of Reader.
  *
  */
 internal object AndroidNfcPluginImpl : AbstractPlugin(AndroidNfcPlugin.PLUGIN_NAME), AndroidNfcPlugin {
@@ -30,9 +30,9 @@ internal object AndroidNfcPluginImpl : AbstractPlugin(AndroidNfcPlugin.PLUGIN_NA
      * @return SortedSet<ProxyReader> : contains only one element, the
      * singleton @[AndroidNfcReaderImpl]
     </ProxyReader> */
-    override fun initNativeReaders(): ConcurrentMap<String, SeReader>? {
+    override fun initNativeReaders(): ConcurrentMap<String, Reader>? {
         Timber.d("InitNativeReader() add the unique instance of AndroidNfcReaderImpl")
-        val readers = ConcurrentHashMap<String, SeReader>()
+        val readers = ConcurrentHashMap<String, Reader>()
         readers[AndroidNfcReaderImpl.name] = AndroidNfcReaderImpl
         // Nfc android adapter availability is checked in AndroidNfcFragment
         return readers

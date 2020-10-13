@@ -12,13 +12,13 @@
 package org.eclipse.keyple.core.seproxy.plugin.reader;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This monitoring job polls the {@link SeReader#isSePresent()} method to detect
+ * This monitoring job polls the {@link Reader#isSePresent()} method to detect
  * SE_INSERTED/SE_REMOVED
  */
 class CardPresentMonitoringJob extends AbstractMonitoringJob {
@@ -27,7 +27,7 @@ class CardPresentMonitoringJob extends AbstractMonitoringJob {
 
   private final long waitTimeout;
   private final boolean monitorInsertion;
-  private final SeReader reader;
+  private final Reader reader;
   private final AtomicBoolean loop = new AtomicBoolean();
 
   /**
@@ -37,7 +37,7 @@ class CardPresentMonitoringJob extends AbstractMonitoringJob {
    * @param waitTimeout : wait time during two hit of the polling
    * @param monitorInsertion : if true, polls for SE_INSERTED, else SE_REMOVED
    */
-  public CardPresentMonitoringJob(SeReader reader, long waitTimeout, boolean monitorInsertion) {
+  public CardPresentMonitoringJob(Reader reader, long waitTimeout, boolean monitorInsertion) {
     this.waitTimeout = waitTimeout;
     this.reader = reader;
     this.monitorInsertion = monitorInsertion;

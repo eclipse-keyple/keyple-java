@@ -25,9 +25,9 @@ import org.eclipse.keyple.calypso.transaction.SamSelector;
 import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
@@ -91,8 +91,8 @@ public class PoAuthentication_Stub {
     ((StubPlugin) stubPlugin).plugStubReader("samReader", true);
 
     // Get a PO and a SAM reader ready to work with a Calypso PO.
-    SeReader poReader = stubPlugin.getReader("poReader");
-    SeReader samReader = stubPlugin.getReader("samReader");
+    Reader poReader = stubPlugin.getReader("poReader");
+    Reader samReader = stubPlugin.getReader("samReader");
 
     // activate protocols
     poReader.activateProtocol(
