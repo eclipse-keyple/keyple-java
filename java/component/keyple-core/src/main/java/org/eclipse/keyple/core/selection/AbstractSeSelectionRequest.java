@@ -17,7 +17,7 @@ import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
+import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 
 /**
@@ -37,17 +37,17 @@ public abstract class AbstractSeSelectionRequest<T extends AbstractApduCommandBu
   }
 
   /**
-   * Returns a selection SeRequest built from the information provided in the constructor and
+   * Returns a selection CardRequest built from the information provided in the constructor and
    * possibly completed with the commandBuilders list
    *
-   * @return the selection SeRequest
+   * @return the selection CardRequest
    */
-  final SeRequest getSelectionRequest() {
+  final CardRequest getSelectionRequest() {
     List<ApduRequest> seSelectionApduRequests = new ArrayList<ApduRequest>();
     for (T commandBuilder : commandBuilders) {
       seSelectionApduRequests.add(commandBuilder.getApduRequest());
     }
-    return new SeRequest(seSelector, seSelectionApduRequests);
+    return new CardRequest(seSelector, seSelectionApduRequests);
   }
 
   public SeSelector getSeSelector() {

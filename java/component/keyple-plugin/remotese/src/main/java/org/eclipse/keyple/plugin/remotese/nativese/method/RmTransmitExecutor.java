@@ -54,18 +54,19 @@ public class RmTransmitExecutor implements IRemoteMethodExecutor {
 
     channelControl = ChannelControl.valueOf(bodyJsonO.get("channelControl").getAsString());
 
-    SeRequest seRequest =
-        JsonParser.getGson().fromJson(bodyJsonO.get("seRequest").getAsString(), SeRequest.class);
+    CardRequest cardRequest =
+        JsonParser.getGson()
+            .fromJson(bodyJsonO.get("cardRequest").getAsString(), CardRequest.class);
 
     String nativeReaderName = keypleDto.getNativeReaderName();
-    logger.trace("Execute locally seRequest : {} with params {} ", seRequest, channelControl);
+    logger.trace("Execute locally cardRequest : {} with params {} ", cardRequest, channelControl);
 
     try {
       // find native reader by name
       ProxyReader reader = (ProxyReader) slaveAPI.findLocalReader(nativeReaderName);
 
       // execute transmitSet
-      seResponse = reader.transmitSeRequest(seRequest, channelControl);
+      seResponse = reader.transmitSeRequest(cardRequest, channelControl);
 
       // prepare response
       String parseBody = JsonParser.getGson().toJson(seResponse, SeResponse.class);

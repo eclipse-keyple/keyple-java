@@ -211,7 +211,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
   @Test
   public void communicationClosing_standard() throws Exception {
     AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
-    SeRequest request = SeRequestTest.getSeRequestSample();
+    CardRequest request = CardRequestTest.getSeRequestSample();
     // close after
     r.transmitSeRequest(request, ChannelControl.CLOSE_AFTER);
 
@@ -299,7 +299,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         Mockito.spy(new BlankObservableLocalReader(pluginName, readerName));
     doReturn(SeResponseTest.getASeResponse())
         .when(r)
-        .processSeRequest(any(SeRequest.class), any(ChannelControl.class));
+        .processSeRequest(any(CardRequest.class), any(ChannelControl.class));
     doReturn(getSeResponses())
         .when(r)
         .processSeRequests(

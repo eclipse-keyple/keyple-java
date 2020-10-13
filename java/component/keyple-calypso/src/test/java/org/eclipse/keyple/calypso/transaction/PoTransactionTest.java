@@ -36,9 +36,9 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -1710,8 +1710,8 @@ public class PoTransactionTest {
               @Override
               public SeResponse answer(InvocationOnMock invocation) {
                 Object[] args = invocation.getArguments();
-                SeRequest seRequest = (SeRequest) args[0];
-                List<ApduRequest> apduRequests = seRequest.getApduRequests();
+                CardRequest cardRequest = (CardRequest) args[0];
+                List<ApduRequest> apduRequests = cardRequest.getApduRequests();
                 List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
                 try {
                   for (ApduRequest apduRequest : apduRequests) {
@@ -1731,7 +1731,7 @@ public class PoTransactionTest {
               }
             })
         .when(mockReader)
-        .transmitSeRequest(any(SeRequest.class), any(ChannelControl.class));
+        .transmitSeRequest(any(CardRequest.class), any(ChannelControl.class));
     return mockReader;
   }
 

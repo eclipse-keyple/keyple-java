@@ -17,20 +17,20 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /**
  * This POJO is used to transport data from a secure element obtained in response to a {@link
- * SeRequest}..
+ * CardRequest}..
  *
  * <p>It includes elements related to the selection of the card.
  *
  * <ul>
  *   <li><code>logicalChannelIsOpen</code> tells if a logical channel is currently open.
  *   <li><code>channelPreviouslyOpen</code> tells if a logical channel wa already open prior the
- *       latest {@link SeRequest}.
+ *       latest {@link CardRequest}.
  *   <li><code>selectionStatus</code>another POJO carrying ATR, FCI and a selection result boolean
  *       (may be null)
  * </ul>
  *
  * It also includes a list of {@link ApduResponse} corresponding to the list of {@link ApduRequest}
- * present in the original {@link SeRequest}.
+ * present in the original {@link CardRequest}.
  *
  * @since 0.9
  */

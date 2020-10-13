@@ -25,10 +25,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 @SuppressWarnings("PMD.SignatureDeclareThrowsException")
 @RunWith(MockitoJUnitRunner.class)
-public class SeRequestTest {
+public class CardRequestTest {
 
   // object to test
-  SeRequest seRequest;
+  CardRequest cardRequest;
 
   public List<ApduRequest> getApdus() {
     return apdus;
@@ -47,45 +47,46 @@ public class SeRequestTest {
     seProtocol = getAString();
     selectionStatusCode = ApduRequestTest.getASuccessFulStatusCode();
     selector = getSelector(selectionStatusCode);
-    seRequest = new SeRequest(selector, apdus);
+    cardRequest = new CardRequest(selector, apdus);
   }
 
   @Test
   public void testSERequest() {
-    assertNotNull(seRequest);
+    assertNotNull(cardRequest);
   }
 
   @Test
   public void getSelector() {
     // test
-    assertEquals(getSelector(selectionStatusCode).toString(), seRequest.getSeSelector().toString());
+    assertEquals(
+        getSelector(selectionStatusCode).toString(), cardRequest.getSeSelector().toString());
   }
 
   @Test
   public void getApduRequests() {
     // test
-    seRequest = new SeRequest(getSelector(null), apdus);
-    assertArrayEquals(apdus.toArray(), seRequest.getApduRequests().toArray());
+    cardRequest = new CardRequest(getSelector(null), apdus);
+    assertArrayEquals(apdus.toArray(), cardRequest.getApduRequests().toArray());
   }
 
   @Test
   public void getSeProtocol() {
-    seRequest = new SeRequest(getSelector(null), new ArrayList<ApduRequest>());
-    assertEquals(seProtocol, seRequest.getSeSelector().getSeProtocol());
+    cardRequest = new CardRequest(getSelector(null), new ArrayList<ApduRequest>());
+    assertEquals(seProtocol, cardRequest.getSeSelector().getSeProtocol());
   }
 
   @Test
   public void getSuccessfulSelectionStatusCodes() {
-    seRequest = new SeRequest(getSelector(selectionStatusCode), new ArrayList<ApduRequest>());
+    cardRequest = new CardRequest(getSelector(selectionStatusCode), new ArrayList<ApduRequest>());
     assertArrayEquals(
         selectionStatusCode.toArray(),
-        seRequest.getSeSelector().getAidSelector().getSuccessfulSelectionStatusCodes().toArray());
+        cardRequest.getSeSelector().getAidSelector().getSuccessfulSelectionStatusCodes().toArray());
   }
 
   @Test
   public void toStringNull() {
-    seRequest = new SeRequest(null, null);
-    assertNotNull(seRequest.toString());
+    cardRequest = new CardRequest(null, null);
+    assertNotNull(cardRequest.toString());
   }
 
   /*
@@ -93,60 +94,62 @@ public class SeRequestTest {
    */
   @Test
   public void constructor1() {
-    seRequest = new SeRequest(getSelector(null), apdus);
-    assertEquals(getSelector(null).toString(), seRequest.getSeSelector().toString());
-    assertArrayEquals(apdus.toArray(), seRequest.getApduRequests().toArray());
+    cardRequest = new CardRequest(getSelector(null), apdus);
+    assertEquals(getSelector(null).toString(), cardRequest.getSeSelector().toString());
+    assertArrayEquals(apdus.toArray(), cardRequest.getApduRequests().toArray());
     //
     assertEquals(
         ContactlessCardCommonProtocols.ISO_14443_4.name(),
-        seRequest.getSeSelector().getSeProtocol());
-    assertNull(seRequest.getSeSelector().getAidSelector().getSuccessfulSelectionStatusCodes());
+        cardRequest.getSeSelector().getSeProtocol());
+    assertNull(cardRequest.getSeSelector().getAidSelector().getSuccessfulSelectionStatusCodes());
   }
 
   @Test
   public void constructor2() {
-    seRequest = new SeRequest(getSelector(null), apdus);
-    assertEquals(getSelector(null).toString(), seRequest.getSeSelector().toString());
-    assertArrayEquals(apdus.toArray(), seRequest.getApduRequests().toArray());
-    assertEquals(seProtocol, seRequest.getSeSelector().getSeProtocol());
+    cardRequest = new CardRequest(getSelector(null), apdus);
+    assertEquals(getSelector(null).toString(), cardRequest.getSeSelector().toString());
+    assertArrayEquals(apdus.toArray(), cardRequest.getApduRequests().toArray());
+    assertEquals(seProtocol, cardRequest.getSeSelector().getSeProtocol());
     //
-    assertNull(seRequest.getSeSelector().getAidSelector().getSuccessfulSelectionStatusCodes());
+    assertNull(cardRequest.getSeSelector().getAidSelector().getSuccessfulSelectionStatusCodes());
   }
 
   @Test
   public void constructor2b() {
-    seRequest = new SeRequest(getSelector(selectionStatusCode), apdus);
-    assertEquals(getSelector(selectionStatusCode).toString(), seRequest.getSeSelector().toString());
-    assertArrayEquals(apdus.toArray(), seRequest.getApduRequests().toArray());
+    cardRequest = new CardRequest(getSelector(selectionStatusCode), apdus);
+    assertEquals(
+        getSelector(selectionStatusCode).toString(), cardRequest.getSeSelector().toString());
+    assertArrayEquals(apdus.toArray(), cardRequest.getApduRequests().toArray());
     assertEquals(
         ContactlessCardCommonProtocols.ISO_14443_4.name(),
-        seRequest.getSeSelector().getSeProtocol());
+        cardRequest.getSeSelector().getSeProtocol());
     //
     assertArrayEquals(
         selectionStatusCode.toArray(),
-        seRequest.getSeSelector().getAidSelector().getSuccessfulSelectionStatusCodes().toArray());
+        cardRequest.getSeSelector().getAidSelector().getSuccessfulSelectionStatusCodes().toArray());
   }
 
   @Test
   public void constructor3() {
-    seRequest = new SeRequest(getSelector(selectionStatusCode), apdus);
-    assertEquals(getSelector(selectionStatusCode).toString(), seRequest.getSeSelector().toString());
-    assertArrayEquals(apdus.toArray(), seRequest.getApduRequests().toArray());
-    assertEquals(seProtocol, seRequest.getSeSelector().getSeProtocol());
+    cardRequest = new CardRequest(getSelector(selectionStatusCode), apdus);
+    assertEquals(
+        getSelector(selectionStatusCode).toString(), cardRequest.getSeSelector().toString());
+    assertArrayEquals(apdus.toArray(), cardRequest.getApduRequests().toArray());
+    assertEquals(seProtocol, cardRequest.getSeSelector().getSeProtocol());
     assertArrayEquals(
         selectionStatusCode.toArray(),
-        seRequest.getSeSelector().getAidSelector().getSuccessfulSelectionStatusCodes().toArray());
+        cardRequest.getSeSelector().getAidSelector().getSuccessfulSelectionStatusCodes().toArray());
   }
 
   /*
    * HELPERS FOR OTHERS TESTS SUITE
    */
 
-  public static SeRequest getSeRequestSample() {
+  public static CardRequest getSeRequestSample() {
 
     List<ApduRequest> apdus = getAapduLists();
     Set<Integer> selectionStatusCode = ApduRequestTest.getASuccessFulStatusCode();
-    return new SeRequest(getSelector(selectionStatusCode), apdus);
+    return new CardRequest(getSelector(selectionStatusCode), apdus);
   }
 
   static List<ApduRequest> getAapduLists() {

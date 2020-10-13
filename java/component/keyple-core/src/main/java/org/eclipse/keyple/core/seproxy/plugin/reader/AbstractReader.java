@@ -14,9 +14,9 @@ package org.eclipse.keyple.core.seproxy.plugin.reader;
 import java.util.List;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,8 +46,8 @@ public abstract class AbstractReader implements ProxyReader {
    * Reader constructor taking the name of the plugin that instantiated the reader and the name of
    * the reader in argument.
    *
-   * <p>Initializes the time measurement log at {@link SeRequest} level. The first measurement gives
-   * the time elapsed since the plugin was loaded.
+   * <p>Initializes the time measurement log at {@link CardRequest} level. The first measurement
+   * gives the time elapsed since the plugin was loaded.
    *
    * @param pluginName A not empty string.
    * @param name A not empty string.
@@ -91,7 +91,7 @@ public abstract class AbstractReader implements ProxyReader {
    */
   @Override
   public final List<SeResponse> transmitSeRequests(
-      List<SeRequest> seRequests,
+      List<CardRequest> cardRequests,
       MultiSeRequestProcessing multiSeRequestProcessing,
       ChannelControl channelControl) {
 
@@ -104,12 +104,12 @@ public abstract class AbstractReader implements ProxyReader {
       logger.debug(
           "[{}] transmit => SEREQUESTLIST = {}, elapsed {} ms.",
           this.getName(),
-          seRequests,
+          cardRequests,
           elapsed10ms / 10.0);
     }
 
     try {
-      seResponses = processSeRequests(seRequests, multiSeRequestProcessing, channelControl);
+      seResponses = processSeRequests(cardRequests, multiSeRequestProcessing, channelControl);
     } catch (KeypleReaderIOException ex) {
       if (logger.isDebugEnabled()) {
         long timeStamp = System.nanoTime();
@@ -139,10 +139,10 @@ public abstract class AbstractReader implements ProxyReader {
 
   /**
    * This method is the actual implementation of the process of transmitting a list of {@link
-   * SeRequest} as defined by {@link ProxyReader#transmitSeRequests(List, MultiSeRequestProcessing,
-   * ChannelControl)}.
+   * CardRequest} as defined by {@link ProxyReader#transmitSeRequests(List,
+   * MultiSeRequestProcessing, ChannelControl)}.
    *
-   * @param seRequests A not empty list of not null {@link SeRequest}.
+   * @param cardRequests A not empty list of not null {@link CardRequest}.
    * @param multiSeRequestProcessing The multi card processing flag (must be not null).
    * @param channelControl indicates if the physical channel has to be closed at the end of the
    *     processing (must be not null).
@@ -154,20 +154,21 @@ public abstract class AbstractReader implements ProxyReader {
    * @since 0.9
    */
   protected abstract List<SeResponse> processSeRequests(
-      List<SeRequest> seRequests,
+      List<CardRequest> cardRequests,
       MultiSeRequestProcessing multiSeRequestProcessing,
       ChannelControl channelControl);
 
   /**
    * {@inheritDoc}
    *
-   * <p>This implementation of {@link ProxyReader#transmitSeRequest(SeRequest, ChannelControl)} is
-   * based on {@link #processSeRequest(SeRequest, ChannelControl)}.<br>
+   * <p>This implementation of {@link ProxyReader#transmitSeRequest(CardRequest, ChannelControl)} is
+   * based on {@link #processSeRequest(CardRequest, ChannelControl)}.<br>
    * It adds a logging of exchanges including a measure of execution time, available at the debug
    * level.
    */
   @Override
-  public final SeResponse transmitSeRequest(SeRequest seRequest, ChannelControl channelControl) {
+  public final SeResponse transmitSeRequest(
+      CardRequest cardRequest, ChannelControl channelControl) {
 
     SeResponse seResponse;
 
@@ -178,12 +179,12 @@ public abstract class AbstractReader implements ProxyReader {
       logger.debug(
           "[{}] transmit => SEREQUEST = {}, elapsed {} ms.",
           this.getName(),
-          seRequest,
+          cardRequest,
           elapsed10ms / 10.0);
     }
 
     try {
-      seResponse = processSeRequest(seRequest, channelControl);
+      seResponse = processSeRequest(cardRequest, channelControl);
     } catch (KeypleReaderIOException ex) {
       if (logger.isDebugEnabled()) {
         long timeStamp = System.nanoTime();
@@ -213,18 +214,18 @@ public abstract class AbstractReader implements ProxyReader {
   }
 
   /**
-   * This method is the actual implementation of the process of a {@link SeRequest} as defined by
-   * {@link ProxyReader#transmitSeRequest(SeRequest, ChannelControl)}
+   * This method is the actual implementation of the process of a {@link CardRequest} as defined by
+   * {@link ProxyReader#transmitSeRequest(CardRequest, ChannelControl)}
    *
-   * @param seRequest The {@link SeRequest} to be processed (can be null).
+   * @param cardRequest The {@link CardRequest} to be processed (can be null).
    * @return seResponse A not null {@link SeResponse}.
    * @param channelControl indicates if the physical channel has to be closed at the end of the
    *     processing (must be not null).
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @throws IllegalArgumentException if one of the arguments is null.
-   * @see ProxyReader#transmitSeRequest(SeRequest, ChannelControl)
+   * @see ProxyReader#transmitSeRequest(CardRequest, ChannelControl)
    * @since 0.9
    */
   protected abstract SeResponse processSeRequest(
-      SeRequest seRequest, ChannelControl channelControl);
+      CardRequest cardRequest, ChannelControl channelControl);
 }

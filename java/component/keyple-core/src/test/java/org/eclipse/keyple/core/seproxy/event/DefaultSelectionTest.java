@@ -19,9 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbsObservableLocalReaderTest;
 import org.eclipse.keyple.core.seproxy.plugin.reader.BlankObservableLocalReader;
@@ -62,7 +62,7 @@ public class DefaultSelectionTest {
         (BlankObservableLocalReader) AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
 
     // configure parameters
-    List<SeRequest> selections = new ArrayList<SeRequest>();
+    List<CardRequest> selections = new ArrayList<CardRequest>();
     MultiSeRequestProcessing multi = MultiSeRequestProcessing.PROCESS_ALL;
     ChannelControl channel = ChannelControl.CLOSE_AFTER;
     ObservableReader.NotificationMode mode = ObservableReader.NotificationMode.ALWAYS;
@@ -91,7 +91,7 @@ public class DefaultSelectionTest {
         (BlankObservableLocalReader) AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
 
     // configure parameters
-    List<SeRequest> selections = new ArrayList<SeRequest>();
+    List<CardRequest> selections = new ArrayList<CardRequest>();
     MultiSeRequestProcessing multi = MultiSeRequestProcessing.PROCESS_ALL;
     ChannelControl channel = ChannelControl.CLOSE_AFTER;
     ObservableReader.NotificationMode mode = ObservableReader.NotificationMode.MATCHED_ONLY;
@@ -120,7 +120,7 @@ public class DefaultSelectionTest {
         (BlankObservableLocalReader) AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
 
     // configure parameters
-    List<SeRequest> selections = new ArrayList<SeRequest>();
+    List<CardRequest> selections = new ArrayList<CardRequest>();
     MultiSeRequestProcessing multi = MultiSeRequestProcessing.PROCESS_ALL;
     ChannelControl channel = ChannelControl.CLOSE_AFTER;
     ObservableReader.NotificationMode mode = ObservableReader.NotificationMode.MATCHED_ONLY;
@@ -144,7 +144,7 @@ public class DefaultSelectionTest {
         (BlankObservableLocalReader) AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
 
     // configure parameters
-    List<SeRequest> selections = new ArrayList<SeRequest>();
+    List<CardRequest> selections = new ArrayList<CardRequest>();
     MultiSeRequestProcessing multi = MultiSeRequestProcessing.PROCESS_ALL;
     ChannelControl channel = ChannelControl.CLOSE_AFTER;
     ObservableReader.NotificationMode mode = ObservableReader.NotificationMode.ALWAYS;

@@ -19,9 +19,9 @@ import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.plugin.remotese.integration.Integration;
 import org.eclipse.keyple.plugin.remotese.integration.VirtualReaderBaseTest;
@@ -118,17 +118,17 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
   // TODO Mock does not work, see this#connectMockReader()
   // execute at hand and check logs
   public void transmitSeRequests_withParameters() throws Exception {
-    List<SeRequest> seRequests = SampleFactory.getASeRequestList();
+    List<CardRequest> cardRequests = SampleFactory.getASeRequestList();
 
     // test transmitSeRequests with Parameters
     ((ProxyReader) virtualReader)
         .transmitSeRequests(
-            seRequests, MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
+            cardRequests, MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
 
     // condition -> the nativeReader execute the method executed on the virtual reader
     verify(nativeReader, times(1))
         .transmitSeRequests(
-            seRequests, MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
+            cardRequests, MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
   }
 
   @Test
@@ -136,17 +136,17 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
   // TODO Mock does not work, see this#connectMockReader()
   // execute at hand and check logs
   public void transmitSeRequests_withNoParameters() throws Exception {
-    List<SeRequest> seRequests = SampleFactory.getASeRequestList();
+    List<CardRequest> cardRequests = SampleFactory.getASeRequestList();
 
     // test transmitSeRequest without parameter
     ((ProxyReader) virtualReader)
         .transmitSeRequests(
-            seRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+            cardRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
     // condition -> the nativeReader execute the method executed on the virtual reader
     verify(nativeReader, times(1))
         .transmitSeRequests(
-            seRequests,
+            cardRequests,
             MultiSeRequestProcessing.FIRST_MATCH,
             ChannelControl.KEEP_OPEN); // default value
     // when no param is
@@ -163,13 +163,13 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
   // TODO Mock does not work, see this#connectMockReader()
   // execute at hand and check logs
   public void transmitSeRequest_withParameters() throws Exception {
-    SeRequest seRequest = SampleFactory.getASeRequest();
+    CardRequest cardRequest = SampleFactory.getASeRequest();
 
     // test transmitSeRequest with Parameters
-    ((ProxyReader) virtualReader).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+    ((ProxyReader) virtualReader).transmitSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
     // condition -> the nativeReader execute the method executed on the virtual reader
-    verify(nativeReader, times(1)).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+    verify(nativeReader, times(1)).transmitSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
   }
 
   @Test
@@ -177,14 +177,14 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
   // TODO Mock does not work, see this#connectMockReader()
   // execute at hand and check logs
   public void transmitSeRequest_withNoParam() throws Exception {
-    SeRequest seRequest = SampleFactory.getASeRequest();
+    CardRequest cardRequest = SampleFactory.getASeRequest();
 
     // test transmitSeRequest without parameter
-    ((ProxyReader) virtualReader).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+    ((ProxyReader) virtualReader).transmitSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
     // condition -> the nativeReader execute the method executed on the virtual reader
     verify(nativeReader, times(1))
-        .transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN); // default
+        .transmitSeRequest(cardRequest, ChannelControl.KEEP_OPEN); // default
     // value when
     // no param is
     // specified
@@ -199,7 +199,7 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
     doReturn(new ArrayList<SeResponse>())
         .when(mockReader)
         .transmitSeRequests(
-            ArgumentMatchers.<SeRequest>anyList(),
+            ArgumentMatchers.<CardRequest>anyList(),
             any(MultiSeRequestProcessing.class),
             any(ChannelControl.class));
 

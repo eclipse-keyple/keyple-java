@@ -192,7 +192,7 @@ public final class SeSelection {
    * @throws KeypleException if an error occurs during the selection process
    */
   public SelectionsResult processExplicitSelection(Reader reader) {
-    List<SeRequest> selectionRequests = new ArrayList<SeRequest>();
+    List<CardRequest> selectionRequests = new ArrayList<CardRequest>();
     for (AbstractSeSelectionRequest<? extends AbstractApduCommandBuilder> seSelectionRequest :
         seSelectionRequests) {
       selectionRequests.add(seSelectionRequest.getSelectionRequest());
@@ -217,7 +217,7 @@ public final class SeSelection {
    * @return the {@link AbstractDefaultSelectionsRequest} previously prepared with prepareSelection
    */
   public AbstractDefaultSelectionsRequest getSelectionOperation() {
-    List<SeRequest> selectionRequests = new ArrayList<SeRequest>();
+    List<CardRequest> selectionRequests = new ArrayList<CardRequest>();
     for (AbstractSeSelectionRequest<? extends AbstractApduCommandBuilder> seSelectionRequest :
         seSelectionRequests) {
       selectionRequests.add(seSelectionRequest.getSelectionRequest());

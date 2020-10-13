@@ -22,7 +22,7 @@ import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
  * <p>The default selection is defined by:
  *
  * <ul>
- *   <li>A list of {@link SeRequest} corresponding to one or more selection cases.
+ *   <li>A list of {@link CardRequest} corresponding to one or more selection cases.
  *   <li>A {@link MultiSeRequestProcessing} indicator specifying whether all planned selections are
  *       to be executed or whether to stop at the first one that is successful.
  *   <li>A {@link ChannelControl} indicator controlling the physical channel to stipulate whether it
@@ -36,7 +36,7 @@ import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
  */
 public final class DefaultSelectionsRequest extends AbstractDefaultSelectionsRequest {
 
-  private final List<SeRequest> selectionSeRequests;
+  private final List<CardRequest> selectionCardRequests;
   private final MultiSeRequestProcessing multiSeRequestProcessing;
   private final ChannelControl channelControl;
 
@@ -53,21 +53,21 @@ public final class DefaultSelectionsRequest extends AbstractDefaultSelectionsReq
    * <p>The {@link ChannelControl} enum controls the closing of the physical channel at the end of
    * the selection.
    *
-   * <p>Note: the {@link SeRequest} list should be carefully ordered in accordance with the SEs
+   * <p>Note: the {@link CardRequest} list should be carefully ordered in accordance with the SEs
    * expected in the application to optimize the processing time of the selection process. The first
    * selection case in the list will be processed first.
    *
-   * @param selectionSeRequests A list of {@link SeRequest} embedding the selection data (must be
-   *     not null).
+   * @param selectionCardRequests A list of {@link CardRequest} embedding the selection data (must
+   *     be not null).
    * @param multiSeRequestProcessing The multi request processing mode (must be not null).
    * @param channelControl The channel control (must be not null).
    * @since 0.9
    */
   public DefaultSelectionsRequest(
-      List<SeRequest> selectionSeRequests,
+      List<CardRequest> selectionCardRequests,
       MultiSeRequestProcessing multiSeRequestProcessing,
       ChannelControl channelControl) {
-    this.selectionSeRequests = selectionSeRequests;
+    this.selectionCardRequests = selectionCardRequests;
     this.multiSeRequestProcessing = multiSeRequestProcessing;
     this.channelControl = channelControl;
   }
@@ -83,7 +83,7 @@ public final class DefaultSelectionsRequest extends AbstractDefaultSelectionsReq
   }
 
   /** {@inheritDoc} */
-  public final List<SeRequest> getSelectionSeRequests() {
-    return selectionSeRequests;
+  public final List<CardRequest> getSelectionSeRequests() {
+    return selectionCardRequests;
   }
 }

@@ -20,11 +20,11 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 /**
  * A {@link ProxyReader} is an {@link Reader} with methods for communicating with SEs.
  *
- * <p>Exchanges are made using {@link SeRequest} which in return result in {@link SeResponse}.<br>
- * The {@link SeRequest} optionally carries the card selection data and an APDU list.<br>
+ * <p>Exchanges are made using {@link CardRequest} which in return result in {@link SeResponse}.<br>
+ * The {@link CardRequest} optionally carries the card selection data and an APDU list.<br>
  * The {@link SeResponse} contains the result of the selection and the responses to the APDUs.
  *
- * <p>The {@link SeRequest} are transmitted individually ({@link #transmitSeRequest(SeRequest,
+ * <p>The {@link CardRequest} are transmitted individually ({@link #transmitSeRequest(CardRequest,
  * ChannelControl)} or by a list {@link #transmitSeRequests(List, MultiSeRequestProcessing,
  * ChannelControl)} allowing applications to provide several selection patterns with various
  * options.
@@ -37,27 +37,27 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 public interface ProxyReader extends Reader {
 
   /**
-   * Transmits the list of {@link SeRequest } and gets in return a list of {@link SeResponse}.
+   * Transmits the list of {@link CardRequest } and gets in return a list of {@link SeResponse}.
    *
-   * <p>The actual processing of each {@link SeRequest} is similar to that performed by {@link
-   * #transmitSeRequest(SeRequest, ChannelControl)} (see this method for further explanation of how
-   * the process works).
+   * <p>The actual processing of each {@link CardRequest} is similar to that performed by {@link
+   * #transmitSeRequest(CardRequest, ChannelControl)} (see this method for further explanation of
+   * how the process works).
    *
    * <p>If the multiSeRequestProcessing parameter equals to {@link
-   * MultiSeRequestProcessing#FIRST_MATCH}, the iteration over the {@link SeRequest} list is
+   * MultiSeRequestProcessing#FIRST_MATCH}, the iteration over the {@link CardRequest} list is
    * interrupted at the first processing that leads to an open logical channel state. In this case,
    * the list of {@link SeResponse} may be shorter than the list of SeRequests provided as input.
    *
-   * <p>If it equals to {@link MultiSeRequestProcessing#PROCESS_ALL}, all the {@link SeRequest} are
-   * processed and the logical channel is closed after each process.<br>
+   * <p>If it equals to {@link MultiSeRequestProcessing#PROCESS_ALL}, all the {@link CardRequest}
+   * are processed and the logical channel is closed after each process.<br>
    * The physical channel is managed by the ChannelControl parameter as in {@link
-   * #transmitSeRequest(SeRequest, ChannelControl)}.
+   * #transmitSeRequest(CardRequest, ChannelControl)}.
    *
    * <p>In the case of a selection specifying a card protocol, it is imperative to activate it
    * previously with the method {@link Reader#activateProtocol(String, String)}. An
    * IllegalStateException exception will be thrown in case of inconsistency.
    *
-   * @param seRequests A not empty SeRequest list.
+   * @param cardRequests A not empty CardRequest list.
    * @param multiSeRequestProcessing The multi card processing flag (must be not null).
    * @param channelControl indicates if the physical channel has to be closed at the end of the
    *     processing (must be not null).
@@ -68,18 +68,18 @@ public interface ProxyReader extends Reader {
    * @since 0.9
    */
   List<SeResponse> transmitSeRequests(
-      List<SeRequest> seRequests,
+      List<CardRequest> cardRequests,
       MultiSeRequestProcessing multiSeRequestProcessing,
       ChannelControl channelControl);
 
   /**
-   * Transmits a single {@link SeRequest} passed as an argument and returns a {@link SeResponse}.
+   * Transmits a single {@link CardRequest} passed as an argument and returns a {@link SeResponse}.
    *
    * <p>The process includes the following steps:
    *
    * <ul>
    *   <li>Open the physical channel if it is not already open.
-   *   <li>If the {@link SeRequest} contains a non null {@link SeSelector}. The 3 following
+   *   <li>If the {@link CardRequest} contains a non null {@link SeSelector}. The 3 following
    *       operations are performed in this order:
    *       <ol>
    *         <li>If specified, check the card protocol (compare the specified protocol with the
@@ -92,8 +92,9 @@ public interface ProxyReader extends Reader {
    *       is returned.<br>
    *       If all executed operations are successful then a selection status is created with the
    *       corresponding data (ATR and/or FCI) and the hasMatched flag true.
-   *   <li>If the {@link SeRequest} contains a list of APDUs to send ({@link ApduRequest}) then each
-   *       APDU is sent to the card and its response ({@link ApduResponse} is added to a new list.
+   *   <li>If the {@link CardRequest} contains a list of APDUs to send ({@link ApduRequest}) then
+   *       each APDU is sent to the card and its response ({@link ApduResponse} is added to a new
+   *       list.
    *   <li>Closes the physical channel if the {@link ChannelControl} is {@link
    *       ChannelControl#CLOSE_AFTER}.
    *   <li>Returns a {@link SeResponse} containing:
@@ -109,9 +110,9 @@ public interface ProxyReader extends Reader {
    * Note: in case of a communication error when sending an APDU an {@link KeypleReaderIOException}
    * exception is thrown. Responses to previous APDUs are attached to this exception.<br>
    * This allows the calling application to be tolerant to the card tearing and to recover a partial
-   * response to the {@link SeRequest}.
+   * response to the {@link CardRequest}.
    *
-   * @param seRequest The {@link SeRequest} to be processed (must be not null).
+   * @param cardRequest The {@link CardRequest} to be processed (must be not null).
    * @return seResponse A not null {@link SeResponse}.
    * @param channelControl indicates if the physical channel has to be closed at the end of the
    *     processing (must be not null).
@@ -119,7 +120,7 @@ public interface ProxyReader extends Reader {
    * @throws IllegalArgumentException if one of the arguments is null.
    * @since 0.9
    */
-  SeResponse transmitSeRequest(SeRequest seRequest, ChannelControl channelControl);
+  SeResponse transmitSeRequest(CardRequest cardRequest, ChannelControl channelControl);
 
   /**
    * Release the communication channel previously established with the card.

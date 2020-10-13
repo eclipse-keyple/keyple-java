@@ -20,9 +20,9 @@ import org.eclipse.keyple.core.seproxy.Reader
 import org.eclipse.keyple.core.seproxy.SeSelector
 import org.eclipse.keyple.core.seproxy.SeSelector.AidSelector
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
+import org.eclipse.keyple.core.seproxy.message.CardRequest
 import org.eclipse.keyple.core.seproxy.message.ChannelControl
 import org.eclipse.keyple.core.seproxy.message.ProxyReader
-import org.eclipse.keyple.core.seproxy.message.SeRequest
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.example.calypso.android.omapi.R
 import org.eclipse.keyple.example.calypso.android.omapi.utils.AidEnum
@@ -74,9 +74,9 @@ class CoreExamplesActivity : ExamplesActivity() {
                     val seSelector = SeSelector.builder()
                             .aidSelector(AidSelector.builder().aidToSelect(poAid).build())
                             .build()
-                    val seRequest = SeRequest(seSelector, null)
+                    val seRequest = CardRequest(seSelector, null)
 
-                    addActionEvent("Sending SeRequest to select: $poAid")
+                    addActionEvent("Sending CardRequest to select: $poAid")
                     try {
                         val seResponse = (it.value as ProxyReader).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN)
 
