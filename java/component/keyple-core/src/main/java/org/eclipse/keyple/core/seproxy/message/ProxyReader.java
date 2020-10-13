@@ -20,7 +20,8 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 /**
  * A {@link ProxyReader} is an {@link Reader} with methods for communicating with SEs.
  *
- * <p>Exchanges are made using {@link CardRequest} which in return result in {@link CardResponse}.<br>
+ * <p>Exchanges are made using {@link CardRequest} which in return result in {@link CardResponse}.
+ * <br>
  * The {@link CardRequest} optionally carries the card selection data and an APDU list.<br>
  * The {@link CardResponse} contains the result of the selection and the responses to the APDUs.
  *
@@ -73,7 +74,8 @@ public interface ProxyReader extends Reader {
       ChannelControl channelControl);
 
   /**
-   * Transmits a single {@link CardRequest} passed as an argument and returns a {@link CardResponse}.
+   * Transmits a single {@link CardRequest} passed as an argument and returns a {@link
+   * CardResponse}.
    *
    * <p>The process includes the following steps:
    *

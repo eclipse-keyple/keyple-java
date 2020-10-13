@@ -130,7 +130,7 @@ public abstract class AbstractReader implements ProxyReader {
       logger.debug(
           "[{}] transmit => CARDRESPONSELIST = {}, elapsed {} ms.",
           this.getName(),
-              cardResponse,
+          cardResponse,
           elapsed10ms / 10.0);
     }
 
@@ -206,7 +206,7 @@ public abstract class AbstractReader implements ProxyReader {
       logger.debug(
           "[{}] transmit => CARDRESPONSE = {}, elapsed {} ms.",
           this.getName(),
-              cardResponse,
+          cardResponse,
           elapsed10ms / 10.0);
     }
 

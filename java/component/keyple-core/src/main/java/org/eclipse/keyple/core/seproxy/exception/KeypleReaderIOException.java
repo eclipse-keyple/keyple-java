@@ -12,7 +12,6 @@
 package org.eclipse.keyple.core.seproxy.exception;
 
 import java.util.List;
-
 import org.eclipse.keyple.core.seproxy.message.CardResponse;
 
 /**

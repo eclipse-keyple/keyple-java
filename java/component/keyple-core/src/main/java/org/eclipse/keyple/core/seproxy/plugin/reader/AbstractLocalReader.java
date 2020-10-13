@@ -434,7 +434,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
           logger.debug(
               "[{}] processSeRequests => transmit : process interrupted, collect previous responses {}",
               this.getName(),
-                  cardResponses);
+              cardResponses);
         }
         throw ex;
       }
@@ -662,7 +662,8 @@ public abstract class AbstractLocalReader extends AbstractReader {
           }
 
           closeLogicalAndPhysicalChannels();
-          ex.setCardResponse(new CardResponse(false, previouslyOpen, selectionStatus, apduResponses));
+          ex.setCardResponse(
+              new CardResponse(false, previouslyOpen, selectionStatus, apduResponses));
           throw ex;
         }
       }

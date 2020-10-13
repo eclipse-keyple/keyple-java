@@ -165,7 +165,9 @@ public final class SeSelection {
     if (logger.isTraceEnabled()) {
       logger.trace(
           "Process default SELECTIONRESPONSE ({} response(s))",
-          ((DefaultSelectionsResponse) defaultSelectionsResponse).getSelectionCardResponses().size());
+          ((DefaultSelectionsResponse) defaultSelectionsResponse)
+              .getSelectionCardResponses()
+              .size());
     }
 
     return processSelection(defaultSelectionsResponse);

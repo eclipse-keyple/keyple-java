@@ -32,21 +32,22 @@ public final class DefaultSelectionsResponse extends AbstractDefaultSelectionsRe
 
   /**
    * Constructor<br>
-   * This object is constructed from the list of {@link CardResponse} received from the reader during
-   * the selection process. It transports the selection results into the {@link ReaderEvent} when
-   * the reader is observed and also during explicit selections in the case of an unobserved reader.
+   * This object is constructed from the list of {@link CardResponse} received from the reader
+   * during the selection process. It transports the selection results into the {@link ReaderEvent}
+   * when the reader is observed and also during explicit selections in the case of an unobserved
+   * reader.
    *
-   * <p>The list of {@link CardResponse} corresponds to the list of {@link CardRequest} present in the
-   * {@link DefaultSelectionsRequest}. The first {@link CardResponse} corresponds to the first {@link
-   * CardRequest} and so on.
+   * <p>The list of {@link CardResponse} corresponds to the list of {@link CardRequest} present in
+   * the {@link DefaultSelectionsRequest}. The first {@link CardResponse} corresponds to the first
+   * {@link CardRequest} and so on.
    *
    * <p>When a {@link CardRequest} has not resulted in a response, then the corresponding {@link
    * CardResponse} in the list is null.
    *
    * <p>Depending on the setting of the selection, the process either processes all selection cases
    * provided in the {@link DefaultSelectionsRequest} or stops at the first selection case that
-   * results in a response. In the latter case, the {@link CardResponse} list may be shorter than the
-   * {@link CardRequest} list.
+   * results in a response. In the latter case, the {@link CardResponse} list may be shorter than
+   * the {@link CardRequest} list.
    *
    * @param selectionCardRespons A list of {@link CardResponse} (should not be null).
    * @since 0.9
