@@ -34,7 +34,7 @@ public class PoSelectionRequest
   /**
    * Constructor.
    *
-   * @param poSelector the selector to target a particular SE
+   * @param poSelector the selector to target a particular card
    */
   public PoSelectionRequest(PoSelector poSelector) {
 
@@ -99,7 +99,7 @@ public class PoSelectionRequest
   /**
    * Create a CalypsoPo object containing the selection data received from the plugin
    *
-   * @param seResponse the SE response received
+   * @param seResponse the card response received
    * @return a {@link CalypsoPo}
    * @throws CalypsoDesynchronizedExchangesException if the number of responses is different from
    *     the number of requests

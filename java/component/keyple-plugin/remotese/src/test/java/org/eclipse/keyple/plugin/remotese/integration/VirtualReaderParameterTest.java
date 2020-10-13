@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Test Virtual Reader Parameters with stub plugin and hoplink SE */
+/** Test Virtual Reader Parameters with stub plugin and hoplink card */
 public class VirtualReaderParameterTest extends VirtualReaderBaseTest {
 
   private static final Logger logger = LoggerFactory.getLogger(VirtualReaderParameterTest.class);

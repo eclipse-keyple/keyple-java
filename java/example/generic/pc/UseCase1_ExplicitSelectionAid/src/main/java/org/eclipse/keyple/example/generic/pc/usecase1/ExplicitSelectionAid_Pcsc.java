@@ -35,13 +35,13 @@ import org.slf4j.LoggerFactory;
  *   <li>
  *       <h2>Scenario:</h2>
  *       <ul>
- *         <li>Check if a ISO 14443-4 SE is in the reader, select a SE (here a Calypso PO).
+ *         <li>Check if a ISO 14443-4 card is in the reader, select a card (here a Calypso PO).
  *         <li><code>
  * Explicit Selection
- * </code> means that it is the terminal application which start the SE processing.
- *         <li>SE messages:
+ * </code> means that it is the terminal application which start the card processing.
+ *         <li>card messages:
  *             <ul>
- *               <li>A single SE message to select the application in the reader
+ *               <li>A single card message to select the application in the reader
  *             </ul>
  *       </ul>
  * </ul>
@@ -59,25 +59,25 @@ public class ExplicitSelectionAid_Pcsc {
     // return
     ReaderPlugin readerPlugin = seProxyService.registerPlugin(new PcscPluginFactory());
 
-    // Get and configure the SE reader
+    // Get and configure the card reader
     SeReader seReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
     ((PcscReader) seReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     logger.info(
         "=============== UseCase Generic #1: AID based explicit selection ==================");
-    logger.info("= SE Reader  NAME = {}", seReader.getName());
+    logger.info("= Card Reader  NAME = {}", seReader.getName());
 
-    // Check if a SE is present in the reader
+    // Check if a card is present in the reader
     if (seReader.isSePresent()) {
 
       logger.info("= #### AID based selection.");
 
-      // Prepare the SE selection
+      // Prepare the card selection
       SeSelection seSelection = new SeSelection();
 
       // Setting of an AID based selection (in this example a Calypso REV3 PO)
       //
-      // Select the first application matching the selection AID whatever the SE communication
+      // Select the first application matching the selection AID whatever the card communication
       // protocol keep the logical channel open after the selection
 
       // Generic selection: configures a SeSelector with all the desired attributes to make
@@ -92,11 +92,11 @@ public class ExplicitSelectionAid_Pcsc {
       // here)
       seSelection.prepareSelection(genericSeSelectionRequest);
 
-      // Actual SE communication: operate through a single request the SE selection
+      // Actual card communication: operate through a single request the card selection
       SelectionsResult selectionsResult = seSelection.processExplicitSelection(seReader);
       if (selectionsResult.hasActiveSelection()) {
         AbstractMatchingSe matchingSe = selectionsResult.getActiveMatchingSe();
-        logger.info("The selection of the SE has succeeded.");
+        logger.info("The selection of the card has succeeded.");
         if (matchingSe.hasFci()) {
           String fci = ByteArrayUtil.toHex(matchingSe.getFciBytes());
           logger.info("Application FCI = {}", fci);
@@ -109,9 +109,9 @@ public class ExplicitSelectionAid_Pcsc {
         logger.info("The selection of the application " + seAid + " failed.");
       }
 
-      logger.info("= #### End of the generic SE processing.");
+      logger.info("= #### End of the generic card processing.");
     } else {
-      logger.error("The selection of the SE has failed.");
+      logger.error("The selection of the card has failed.");
     }
     System.exit(0);
   }

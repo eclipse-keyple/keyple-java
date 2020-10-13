@@ -17,7 +17,7 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 
 /**
  * This abstract class defines a POJO carrying the default selections responses in return to the
- * default selections made when the SE was inserted.
+ * default selections made when the card was inserted.
  *
  * <p>Its main feature is to provide a list of {@link SeResponse} following a selection process.
  *

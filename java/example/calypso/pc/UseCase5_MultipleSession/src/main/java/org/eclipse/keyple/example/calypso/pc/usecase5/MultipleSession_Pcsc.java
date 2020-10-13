@@ -47,8 +47,8 @@ import org.slf4j.LoggerFactory;
  *   <li>
  *       <h2>Scenario:</h2>
  *       <ul>
- *         <li>Check if a ISO 14443-4 SE is in the reader, select a Calypso PO, operate a Calypso PO
- *             transaction in multiple mode including a number (N) of modification commands that
+ *         <li>Check if a ISO 14443-4 card is in the reader, select a Calypso PO, operate a Calypso
+ *             PO transaction in multiple mode including a number (N) of modification commands that
  *             exceed by one command the PO modification buffer. (open and close a secure session
  *             performed with the debit key).
  *             <p>Two sessions are performed:
@@ -60,15 +60,15 @@ import org.slf4j.LoggerFactory;
  *         <li>
  *             <p><code>
  * Explicit Selection
- * </code> means that it is the terminal application which start the SE processing.
+ * </code> means that it is the terminal application which start the card processing.
  *         <li>PO messages:
  *             <ul>
- *               <li>1 - SE message to explicitly select the application in the reader
- *               <li>2 - transaction SE message to operate the session opening in multiple mode
- *               <li>3 - transaction SE message to operate multiple updates of the same file (a
+ *               <li>1 - card message to explicitly select the application in the reader
+ *               <li>2 - transaction card message to operate the session opening in multiple mode
+ *               <li>3 - transaction card message to operate multiple updates of the same file (a
  *                   first session proceeding with the first modification commands is open and
  *                   closed)
- *               <li>4 - transaction SE message to operate the closing opening
+ *               <li>4 - transaction card message to operate the closing opening
  *             </ul>
  *       </ul>
  * </ul>
@@ -134,7 +134,7 @@ public class MultipleSession_Pcsc {
 
       // Setting of an AID based selection of a Calypso REV3 PO
       //
-      // Select the first application matching the selection AID whatever the SE
+      // Select the first application matching the selection AID whatever the card
       // communication
       // protocol keep the logical channel open after the selection
 

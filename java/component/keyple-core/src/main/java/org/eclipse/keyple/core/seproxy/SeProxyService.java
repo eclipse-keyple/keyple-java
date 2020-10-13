@@ -21,8 +21,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The Class SeProxyService. This singleton is the entry point of the SE Proxy Service, its instance
- * has to be called by a ticketing application in order to establish a link with a SE’s application.
+ * The Class SeProxyService. This singleton is the entry point of the card Proxy Service, its
+ * instance has to be called by a ticketing application in order to establish a link with a card’s
+ * application.
  */
 public final class SeProxyService {
 
@@ -32,7 +33,7 @@ public final class SeProxyService {
   /** singleton instance of SeProxyService */
   private static final SeProxyService uniqueInstance = new SeProxyService();
 
-  /** the list of readers’ plugins interfaced with the SE Proxy Service */
+  /** the list of readers’ plugins interfaced with the card Proxy Service */
   private final Map<String, ReaderPlugin> plugins = new ConcurrentHashMap<String, ReaderPlugin>();
 
   /** Field MONITOR, this is the object we will be synchronizing on ("the monitor") */

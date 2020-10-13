@@ -51,19 +51,19 @@ import org.slf4j.LoggerFactory;
  *   <li>
  *       <h2>Scenario:</h2>
  *       <ul>
- *         <li>Check if a ISO 14443-4 SE is in the reader, select a Calypso PO, operate a simple
+ *         <li>Check if a ISO 14443-4 card is in the reader, select a Calypso PO, operate a simple
  *             Calypso PO authentication (open and close a secure session performed with the debit
  *             key).
  *             <p>The SAM messages are handled transparently by the Calypso transaction API.
  *         <li><code>
  * Explicit Selection
- * </code> means that it is the terminal application which start the SE processing.
+ * </code> means that it is the terminal application which start the card processing.
  *         <li>4 PO messages:
  *             <ul>
- *               <li>1 - SE message to explicitly select the application in the reader
- *               <li>2 - transaction SE message to operate the session opening and a PO read
- *               <li>3 - transaction SE message to operate the reading of a file
- *               <li>4 - transaction SE message to operate the closing opening
+ *               <li>1 - card message to explicitly select the application in the reader
+ *               <li>2 - transaction card message to operate the session opening and a PO read
+ *               <li>3 - transaction card message to operate the reading of a file
+ *               <li>4 - transaction card message to operate the closing opening
  *             </ul>
  *       </ul>
  * </ul>
@@ -140,7 +140,7 @@ public class PoAuthentication_Pcsc {
 
       // Setting of an AID based selection of a Calypso REV3 PO
       //
-      // Select the first application matching the selection AID whatever the SE communication
+      // Select the first application matching the selection AID whatever the card communication
       // protocol keep the logical channel open after the selection
 
       // Calypso selection: configures a PoSelectionRequest with all the desired attributes to

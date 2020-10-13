@@ -33,7 +33,7 @@ public class Demo_ObservableReaderNotification_Pcsc {
     // /* Set observers *//**/
     demoEngine.setPluginObserver();
 
-    logger.info("Wait for reader or SE insertion/removal");
+    logger.info("Wait for reader or card insertion/removal");
 
     // Wait indefinitely. CTRL-C to exit.
     synchronized (waitBeforeEnd) {

@@ -25,7 +25,7 @@ import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Execute the Connect Reader on Remote Se plugin */
+/** Execute the Connect Reader on Remote card plugin */
 class RmConnectReaderExecutor implements IRemoteMethodExecutor {
 
   private static final Logger logger = LoggerFactory.getLogger(RmConnectReaderExecutor.class);

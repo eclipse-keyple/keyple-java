@@ -28,8 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Remote SE Plugin Creates a virtual reader when a remote readers connect Manages the dispatch of
- * events received from remote readers
+ * Remote reader Plugin Creates a virtual reader when a remote readers connect Manages the dispatch
+ * of events received from remote readers
  */
 class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlugin {
 

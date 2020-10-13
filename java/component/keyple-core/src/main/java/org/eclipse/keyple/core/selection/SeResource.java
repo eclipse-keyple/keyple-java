@@ -21,7 +21,7 @@ public class SeResource<T extends AbstractMatchingSe> {
   /**
    * Constructor
    *
-   * @param seReader the {@link SeReader} with which the SE is communicating
+   * @param seReader the {@link SeReader} with which the card is communicating
    * @param matchingSe the {@link AbstractMatchingSe} information structure
    */
   public SeResource(SeReader seReader, T matchingSe) {
@@ -29,7 +29,7 @@ public class SeResource<T extends AbstractMatchingSe> {
     this.matchingSe = matchingSe;
   }
 
-  /** @return the current {@link SeReader} for this SE */
+  /** @return the current {@link SeReader} for this card */
   public SeReader getSeReader() {
     return seReader;
   }

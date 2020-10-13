@@ -25,7 +25,7 @@ import org.junit.rules.TestName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Test Virtual Reader Service with stub plugin and hoplink SE */
+/** Test Virtual Reader Service with stub plugin and hoplink card */
 public class VirtualReaderBaseTest {
 
   @Rule public TestName name = new TestName();

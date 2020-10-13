@@ -27,7 +27,7 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Se Selection Test for AbstractLocalReader */
+/** Card Selection Test for AbstractLocalReader */
 public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
   private static final Logger logger = LoggerFactory.getLogger(AbsLocalReaderSelectionTest.class);

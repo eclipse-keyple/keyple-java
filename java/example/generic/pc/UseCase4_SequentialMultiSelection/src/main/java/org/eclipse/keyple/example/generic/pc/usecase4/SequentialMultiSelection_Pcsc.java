@@ -37,7 +37,7 @@ public class SequentialMultiSelection_Pcsc {
     SelectionsResult selectionsResult = seSelection.processExplicitSelection(seReader);
     if (selectionsResult.hasActiveSelection()) {
       AbstractMatchingSe matchingSe = selectionsResult.getActiveMatchingSe();
-      logger.info("The SE matched the selection {}.", index);
+      logger.info("The card matched the selection {}.", index);
       String atr = matchingSe.hasAtr() ? ByteArrayUtil.toHex(matchingSe.getAtrBytes()) : "no ATR";
       String fci = matchingSe.hasFci() ? ByteArrayUtil.toHex(matchingSe.getFciBytes()) : "no FCI";
       logger.info("Selection status for case {}: \n\t\tATR: {}\n\t\tFCI: {}", index, atr, fci);
@@ -63,15 +63,15 @@ public class SequentialMultiSelection_Pcsc {
     logger.info(
         "=============== UseCase Generic #4: AID based sequential explicit multiple selection "
             + "==================");
-    logger.info("= SE Reader  NAME = {}", seReader.getName());
+    logger.info("= Card reader  NAME = {}", seReader.getName());
 
-    // Check if a SE is present in the reader
+    // Check if a card is present in the reader
     if (seReader.isSePresent()) {
 
       SeSelection seSelection;
 
-      // operate SE AID selection (change the AID prefix here to adapt it to the SE used for
-      // the test [the SE should have at least two applications matching the AID prefix])
+      // operate card AID selection (change the AID prefix here to adapt it to the card used for
+      // the test [the card should have at least two applications matching the AID prefix])
       String seAidPrefix = "315449432E494341";
 
       // First selection case
@@ -116,7 +116,7 @@ public class SequentialMultiSelection_Pcsc {
 
     } else {
 
-      logger.error("No SE were detected.");
+      logger.error("No cards were detected.");
     }
     System.exit(0);
   }

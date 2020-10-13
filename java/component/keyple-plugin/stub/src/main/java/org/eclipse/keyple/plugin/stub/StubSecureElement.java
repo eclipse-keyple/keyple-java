@@ -41,7 +41,7 @@ public abstract class StubSecureElement {
   }
 
   /**
-   * Gets the SE protocol supported by the SE
+   * Gets the card protocol supported by the card
    *
    * @return A not empty String.
    */
@@ -50,7 +50,7 @@ public abstract class StubSecureElement {
   Map<String, String> hexCommands = new HashMap<String, String>();
 
   /**
-   * Add more simulated commands to the Stub SE
+   * Add more simulated commands to the card Stub
    *
    * @param command : hexadecimal command to react to
    * @param response : hexadecimal response to be sent in reaction to command
@@ -64,7 +64,7 @@ public abstract class StubSecureElement {
   }
 
   /**
-   * Remove simulated commands from the Stub SE
+   * Remove simulated commands from the card Stub
    *
    * @param command : hexadecimal command to be removed
    */
@@ -80,7 +80,7 @@ public abstract class StubSecureElement {
    *
    * @param apduIn : commands to be processed
    * @return APDU response
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */
   public byte[] processApdu(byte[] apduIn) {
 

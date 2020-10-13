@@ -42,17 +42,17 @@ import org.slf4j.LoggerFactory;
  *   <li>
  *       <h2>Scenario:</h2>
  *       <ul>
- *         <li>Check if a B' protocol SE is in the reader, select a Calypso PO Rev1 (ATR selection),
- *             select the DF RT (ticketing), operate a simple Calypso PO transaction (simple plain
- *             read, not involving a Calypso SAM).
+ *         <li>Check if a B' protocol card is in the reader, select a Calypso PO Rev1 (ATR
+ *             selection), select the DF RT (ticketing), operate a simple Calypso PO transaction
+ *             (simple plain read, not involving a Calypso SAM).
  *         <li><code>
  * Explicit Selection
- * </code> means that it is the terminal application which start the SE processing.
+ * </code> means that it is the terminal application which start the card processing.
  *         <li>PO messages:
  *             <ul>
- *               <li>A first SE message to do an ATR based selection and DF selection of the SE in
- *                   the reader
- *               <li>A second SE message to operate the simple Calypso transaction
+ *               <li>A first card message to do an ATR based selection and DF selection of the card
+ *                   in the reader
+ *               <li>A second card message to operate the simple Calypso transaction
  *             </ul>
  *       </ul>
  * </ul>

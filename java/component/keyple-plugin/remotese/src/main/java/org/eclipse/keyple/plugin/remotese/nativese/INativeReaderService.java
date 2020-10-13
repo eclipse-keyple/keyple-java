@@ -19,8 +19,8 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 public interface INativeReaderService {
 
   /**
-   * Connect Physical Local Reader to Remote SE Creates a Session to exchange data with this Reader
-   * with an option to duplex connection
+   * Connect Physical Local Reader to Remote reader Creates a Session to exchange data with this
+   * Reader with an option to duplex connection
    *
    * @param localReader nativeReader to be connected to Master
    * @return sessionId id of the session of the virtual reader
@@ -29,8 +29,8 @@ public interface INativeReaderService {
   String connectReader(SeReader localReader);
 
   /**
-   * Connect Physical Local Reader to Remote SE Creates a Session to exchange data with this Reader
-   * with an option to duplex connection
+   * Connect Physical Local Reader to Remote reader Creates a Session to exchange data with this
+   * Reader with an option to duplex connection
    *
    * @param localReader nativeReader to be connected to Master
    * @param options map of parameters to set into the virtual reader
@@ -54,7 +54,7 @@ public interface INativeReaderService {
    * Find a local reader across plugins
    *
    * @param nativeReaderName : native name of the reader to find
-   * @return SeReader : Se Reader found
+   * @return SeReader : card Reader found
    * @throws KeypleReaderNotFoundException : if none reader was found
    */
   SeReader findLocalReader(String nativeReaderName);

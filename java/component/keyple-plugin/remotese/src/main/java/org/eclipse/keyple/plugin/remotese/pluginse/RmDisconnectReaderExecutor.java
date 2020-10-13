@@ -22,7 +22,7 @@ import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Execute the disconnect Reader on Remote Se plugin */
+/** Execute the disconnect Reader on Remote Card plugin */
 class RmDisconnectReaderExecutor implements IRemoteMethodExecutor {
 
   private static final Logger logger = LoggerFactory.getLogger(RmDisconnectReaderExecutor.class);

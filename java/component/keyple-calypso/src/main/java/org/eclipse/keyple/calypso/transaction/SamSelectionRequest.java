@@ -50,7 +50,7 @@ public class SamSelectionRequest
    * Create a CalypsoSam object containing the selection data received from the plugin<br>
    * If an Unlock command has been prepared, its status is checked.
    *
-   * @param seResponse the SE response received
+   * @param seResponse the card response received
    * @return a {@link CalypsoSam}
    * @throws CalypsoDesynchronizedExchangesException if the APDU SAM exchanges are out of sync
    * @throws CalypsoSamCommandException if the SAM has responded with an error status

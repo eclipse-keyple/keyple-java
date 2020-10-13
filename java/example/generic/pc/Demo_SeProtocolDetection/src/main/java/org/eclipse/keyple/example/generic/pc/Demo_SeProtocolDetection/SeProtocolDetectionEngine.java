@@ -31,14 +31,14 @@ import org.eclipse.keyple.example.common.generic.GenericSeSelectionRequest;
  * <ul>
  *   <li>instantiates a PC/SC plugin for a reader which name matches the regular expression provided
  *       by poReaderName.
- *   <li>uses the observable mechanism to handle SE insertion/detection
- *   <li>expects SE with various protocols (technologies)
- *   <li>shows the identified protocol when a SE is detected
- *   <li>executes a simple Hoplink reading when a Hoplink SE is identified
+ *   <li>uses the observable mechanism to handle card insertion/detection
+ *   <li>expects card with various protocols (technologies)
+ *   <li>shows the identified protocol when a card is detected
+ *   <li>executes a simple Hoplink reading when a Hoplink card is identified
  * </ul>
  *
- * The program spends most of its time waiting for a Enter key before exit. The actual SE processing
- * is mainly event driven through the observability.
+ * The program spends most of its time waiting for a Enter key before exit. The actual card
+ * processing is mainly event driven through the observability.
  */
 public class SeProtocolDetectionEngine extends AbstractReaderObserverAsynchronousEngine {
   private SeReader seReader;
@@ -95,13 +95,13 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverAsynchronou
   }
 
   /**
-   * This method is called when a SE is inserted (or presented to the reader's antenna). It executes
-   * a {@link AbstractDefaultSelectionsResponse} and processes the {@link
+   * This method is called when a card is inserted (or presented to the reader's antenna). It
+   * executes a {@link AbstractDefaultSelectionsResponse} and processes the {@link
    * AbstractDefaultSelectionsResponse} showing the APDUs exchanges
    */
   @Override
   public void processSeMatch(AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
-    /* get the SE that matches one of the two selection targets */
+    /* get the card that matches one of the two selection targets */
     if (seSelection.processDefaultSelection(defaultSelectionsResponse).hasActiveSelection()) {
       AbstractMatchingSe selectedSe =
           seSelection.processDefaultSelection(defaultSelectionsResponse).getActiveMatchingSe();
@@ -113,16 +113,16 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverAsynchronou
 
   @Override
   public void processSeInserted() {
-    System.out.println("Unexpected SE insertion event");
+    System.out.println("Unexpected card insertion event");
   }
 
   @Override
   public void processSeRemoved() {
-    System.out.println("SE removal event");
+    System.out.println("Card removal event");
   }
 
   @Override
   public void processUnexpectedSeRemoval() {
-    System.out.println("Unexpected SE removal event");
+    System.out.println("Unexpected card removal event");
   }
 }

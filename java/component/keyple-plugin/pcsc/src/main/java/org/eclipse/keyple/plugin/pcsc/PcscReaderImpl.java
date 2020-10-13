@@ -292,7 +292,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         throw new KeypleReaderIOException(this.getName() + ":" + e.getMessage());
       }
     } else {
-      // could occur if the SE was removed
+      // could occur if the card was removed
       throw new KeypleReaderIOException(this.getName() + ": null channel.");
     }
 
@@ -347,14 +347,14 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    * {@inheritDoc}
    *
    * <p>The standard interface of the PC/SC readers does not allow to know directly the type of
-   * protocol used by an SE.
+   * protocol used by a card.
    *
    * <p>This is especially true in contactless mode. Moreover, in this mode, the Answer To Reset
-   * (ATR) returned by the reader is not produced by the SE but reconstructed by the reader from low
-   * level internal data and with elements defined in the standard (see <b>Interoperability
+   * (ATR) returned by the reader is not produced by the card but reconstructed by the reader from
+   * low level internal data and with elements defined in the standard (see <b>Interoperability
    * Specification for ICCs and Personal Computer Systems</b>, Part 3).
    *
-   * <p>We therefore use ATR (real or reconstructed) to identify the SE protocol using regular
+   * <p>We therefore use ATR (real or reconstructed) to identify the card protocol using regular
    * expressions. These regular expressions are managed in {@link PcscProtocolSetting}.
    *
    * @return True if the provided protocol matches the current protocol, false if not.
@@ -379,7 +379,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     Assert.getInstance().notNull(sharingMode, "sharingMode");
 
     if (sharingMode == SharingMode.SHARED) {
-      // if an SE is present, change the mode immediately
+      // if a card is present, change the mode immediately
       if (card != null) {
         try {
           card.endExclusive();
@@ -462,22 +462,23 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    * <p>In this case be aware that on some platforms (ex. Windows 8+), the exclusivity is granted
    * for a limited time (ex. 5 seconds). After this delay, the card is automatically resetted.
    *
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @since 0.9
    */
   @Override
   protected void openPhysicalChannel() {
 
-    /* init of the physical SE channel: if not yet established, opening of a new physical channel */
+    /* init of the card physical channel: if not yet established, opening of a new physical channel */
     try {
       if (card == null) {
         this.card = this.terminal.connect(parameterCardProtocol);
         if (cardExclusiveMode) {
           card.beginExclusive();
-          logger.debug("[{}] Opening of a physical SE channel in exclusive mode.", this.getName());
+          logger.debug(
+              "[{}] Opening of a card physical channel in exclusive mode.", this.getName());
 
         } else {
-          logger.debug("[{}] Opening of a physical SE channel in shared mode.", this.getName());
+          logger.debug("[{}] Opening of a card physical channel in shared mode.", this.getName());
         }
       }
       this.channel = card.getBasicChannel();

@@ -16,7 +16,7 @@ import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 
 /**
- * This POJO defines the default selection request to be processed when an SE is inserted in an
+ * This POJO defines the default selection request to be processed when a card is inserted in an
  * observable reader.
  *
  * <p>The default selection is defined by:

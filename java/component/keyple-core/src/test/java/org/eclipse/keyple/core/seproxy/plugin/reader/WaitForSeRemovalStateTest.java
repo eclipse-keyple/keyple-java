@@ -49,7 +49,7 @@ public class WaitForSeRemovalStateTest extends CoreBaseTest {
   @Test
   public void waitForRemoval_SINGLESHOT() throws Exception {
     /*
-     * ------------ input polling mode is STOP SE has been removed within timeout
+     * ------------ input polling mode is STOP card has been removed within timeout
      */
     AbstractObservableLocalReader r = AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
     WaitForSeRemovalState waitForSeRemovalState = new WaitForSeRemovalState(r);
@@ -68,7 +68,7 @@ public class WaitForSeRemovalStateTest extends CoreBaseTest {
   @Test
   public void waitForRemoval_REPEATING() throws Exception {
     /*
-     * ------------ input polling mode is CONTINUE SE has been removed within timeout
+     * ------------ input polling mode is CONTINUE card has been removed within timeout
      */
     AbstractObservableLocalReader r = AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
     WaitForSeRemovalState waitForSeRemovalState = new WaitForSeRemovalState(r);

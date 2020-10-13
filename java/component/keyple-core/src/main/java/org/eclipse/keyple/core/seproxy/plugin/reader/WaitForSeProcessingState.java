@@ -17,9 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Wait for Se Processing State
+ * Wait for card Processing State
  *
- * <p>The state during which the SE is being processed by the application.
+ * <p>The state during which the card is being processed by the application.
  *
  * <ul>
  *   <li>Upon SE_PROCESSED event, the machine changes state for WAIT_FOR_SE_REMOVAL or
@@ -67,7 +67,7 @@ class WaitForSeProcessingState extends AbstractObservableState {
         break;
 
       case SE_REMOVED:
-        // the SE has been removed, we close all channels and return to
+        // the card has been removed, we close all channels and return to
         // the currentState of waiting
         // for insertion
         // We notify the application of the SE_REMOVED event.

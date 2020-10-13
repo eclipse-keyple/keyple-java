@@ -47,7 +47,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
    * names (or id)
    *
    * @return connected readers' name list
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */
   protected abstract SortedSet<String> fetchNativeReadersNames();
 
@@ -59,7 +59,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
    * @param name the reader name
    * @return the list of AbstractReader objects.
    * @throws KeypleReaderNotFoundException if the reader was not found by its name
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */
   protected abstract SeReader fetchNativeReader(String name);
 
@@ -201,7 +201,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
       if (reader instanceof ObservableReader) {
         ((ObservableReader) reader).clearObservers();
 
-        // In case where Reader was detecting SE
+        // In case where Reader was detecting the card
         ((ObservableReader) reader).stopSeDetection();
       }
       readers.remove(reader.getName());

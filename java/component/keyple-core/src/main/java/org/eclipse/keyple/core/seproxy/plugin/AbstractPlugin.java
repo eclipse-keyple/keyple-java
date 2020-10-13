@@ -81,7 +81,7 @@ public abstract class AbstractPlugin implements ReaderPlugin {
    * <p>this method is called once in the plugin constructor.
    *
    * @return the map of AbstractReader objects.
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */
   protected abstract Map<String, SeReader> initNativeReaders();
 

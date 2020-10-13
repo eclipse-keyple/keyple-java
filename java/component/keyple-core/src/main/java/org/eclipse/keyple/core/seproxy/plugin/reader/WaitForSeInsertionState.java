@@ -18,13 +18,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Wait for Se Insertion State
+ * Wait for card Insertion State
  *
- * <p>The state during which the insertion of an SE is expected.
+ * <p>The state during which the insertion of a card is expected.
  *
  * <ul>
  *   <li>Upon SE_INSERTED event, the default selection is processed if required and if the
- *       conditions are met (ALWAYS or SE MATCHED) the machine changes state for
+ *       conditions are met (ALWAYS or SE_MATCHED) the machine changes state for
  *       WAIT_FOR_SE_PROCESSING.
  *   <li>Upon STOP_DETECT event, the machine changes state for WAIT_FOR_SE_DETECTION.
  *   <li>Upon SE_REMOVED event, the machine changes state for WAIT_FOR_SE_DETECTION.
@@ -65,11 +65,11 @@ class WaitForSeInsertionState extends AbstractObservableState {
           // notify the external observer of the event
           reader.notifyObservers(seEvent);
         } else {
-          // if none event was sent to the application, back to SE detection
+          // if none event was sent to the application, back to card detection
           // stay in the same state, however switch to WAIT_FOR_SE_INSERTION to relaunch
           // the monitoring job
           if (logger.isTraceEnabled()) {
-            logger.trace("[{}] onEvent => Inserted SE hasn't matched", reader.getName());
+            logger.trace("[{}] onEvent => Inserted card hasn't matched", reader.getName());
           }
           switchState(MonitoringState.WAIT_FOR_SE_REMOVAL);
         }
@@ -81,7 +81,7 @@ class WaitForSeInsertionState extends AbstractObservableState {
 
       case SE_REMOVED:
         // TODO Check if this case really happens (NFC?)
-        // SE has been removed during default selection
+        // the card has been removed during default selection
         if (reader.getPollingMode() == ObservableReader.PollingMode.REPEATING) {
           switchState(MonitoringState.WAIT_FOR_SE_INSERTION);
         } else {

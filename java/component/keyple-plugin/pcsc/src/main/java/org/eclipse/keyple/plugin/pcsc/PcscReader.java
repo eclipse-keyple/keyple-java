@@ -24,7 +24,7 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 public interface PcscReader extends ObservableReader {
 
   /**
-   * Defines the expected behavior regarding the access to the SE in a
+   * Defines the expected behavior regarding the access to the card in a
    * multithreaded/multi-application context.
    *
    * <p>Corresponds to the beginExclusive() and endExclusive() methods of smartcard.io and, at a
@@ -33,9 +33,9 @@ public interface PcscReader extends ObservableReader {
    * @since 1.0
    */
   enum SharingMode {
-    /** Allows simultaneous access to the SE */
+    /** Allows simultaneous access to the card */
     SHARED,
-    /** Requests exclusive access to the SE */
+    /** Requests exclusive access to the card */
     EXCLUSIVE
   }
 
@@ -69,7 +69,7 @@ public interface PcscReader extends ObservableReader {
     }
 
     /**
-     * Gets the string expected by smartcard.io / PC/SC to set the SE transmission protocol.
+     * Gets the string expected by smartcard.io / PC/SC to set the card transmission protocol.
      *
      * @return A not empty string.
      */
@@ -78,11 +78,11 @@ public interface PcscReader extends ObservableReader {
     }
   }
 
-  /** Actions to be taken after disconnection of the SE. */
+  /** Actions to be taken after disconnection of the card. */
   enum DisconnectionMode {
-    /** Resets the SE */
+    /** Resets the card */
     RESET,
-    /** Keeps the status of the SE unchanged */
+    /** Keeps the status of the card unchanged */
     LEAVE
   }
 
@@ -91,7 +91,7 @@ public interface PcscReader extends ObservableReader {
    *
    * <p>This mode will be used when a new {@link Card} is created.
    *
-   * <p>If a SE is already inserted, changes immediately the mode in the current {@link Card}
+   * <p>If a card is already inserted, changes immediately the mode in the current {@link Card}
    * object.
    *
    * @param sharingMode The {@link SharingMode} to use (must be not null).
@@ -124,7 +124,7 @@ public interface PcscReader extends ObservableReader {
   PcscReader setContactless(boolean contactless);
 
   /**
-   * Changes the protocol to be used by the PC/SC reader when connecting to the SE ({@link
+   * Changes the protocol to be used by the PC/SC reader when connecting to the card ({@link
    * IsoProtocol#T0}, {@link IsoProtocol#T1}, or {@link IsoProtocol#TCL}), or {@link
    * IsoProtocol#ANY} to connect using any available protocol (default value {@link
    * IsoProtocol#ANY}).
@@ -140,7 +140,7 @@ public interface PcscReader extends ObservableReader {
    * Changes the action to be taken after disconnection (default value {@link
    * DisconnectionMode#LEAVE}).
    *
-   * <p>The SE is either reset or left as is.
+   * <p>The cardis either reset or left as is.
    *
    * <p>The default value for this parameter if this method is not called is {@link
    * DisconnectionMode#LEAVE}.

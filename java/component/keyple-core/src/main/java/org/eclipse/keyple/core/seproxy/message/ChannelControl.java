@@ -21,8 +21,8 @@ public enum ChannelControl {
   /** lefts the physical channel open */
   KEEP_OPEN,
   /**
-   * terminates the communication with the SE (instantaneously closes the physical channel or
-   * initiates the SE removal sequence depending on the observation mode)
+   * terminates the communication with the card (instantaneously closes the physical channel or
+   * initiates the card removal sequence depending on the observation mode)
    */
   CLOSE_AFTER
 }

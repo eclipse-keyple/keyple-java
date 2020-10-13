@@ -78,7 +78,7 @@ public class StubReaderTest extends BaseStubTest {
    */
 
   /**
-   * Insert SE check : event and se presence
+   * Insert card check : event and card presence
    *
    * @throws InterruptedException
    */
@@ -132,7 +132,7 @@ public class StubReaderTest extends BaseStubTest {
   }
 
   /**
-   * Remove SE check : event and se presence
+   * Remove card check : event and card presence
    *
    * @throws InterruptedException
    */
@@ -200,7 +200,7 @@ public class StubReaderTest extends BaseStubTest {
   }
 
   /**
-   * Remove SE check : event and se presence
+   * Remove card check : event and card presence
    *
    * @throws InterruptedException
    */
@@ -446,7 +446,7 @@ public class StubReaderTest extends BaseStubTest {
                       .getBytes(),
                   hoplinkSE().getATR());
 
-              // retrieve the expected FCI from the Stub SE running the select application command
+              // retrieve the expected FCI from the card Stub running the select application command
               byte[] aid = ByteArrayUtil.fromHex(poAid);
               byte[] selectApplicationCommand = new byte[6 + aid.length];
               selectApplicationCommand[0] = (byte) 0x00; // CLA
@@ -745,7 +745,7 @@ public class StubReaderTest extends BaseStubTest {
 
             if (ReaderEvent.EventType.SE_MATCHED == event.getEventType()) {
               logger.info("SE_MATCHED event received");
-              logger.info("Notify SE processed after 0ms");
+              logger.info("Notify card processed after 0ms");
               ((ProxyReader) reader).releaseChannel();
               lock.countDown();
             }
@@ -800,7 +800,7 @@ public class StubReaderTest extends BaseStubTest {
     // init Request
     List<SeRequest> requests = getRequestIsoDepSetSample();
 
-    // init SE
+    // init card
     reader.insertSe(hoplinkSE());
 
     // activate ISO_14443_4
@@ -829,7 +829,7 @@ public class StubReaderTest extends BaseStubTest {
     // init Request
     List<SeRequest> requests = getNoResponseRequest();
 
-    // init SE
+    // init card
     reader.insertSe(noApduResponseSE());
 
     // activate ISO_14443_4
@@ -855,7 +855,7 @@ public class StubReaderTest extends BaseStubTest {
     // init Request
     List<SeRequest> seRequests = getPartialRequestList(0);
 
-    // init SE
+    // init card
     reader.insertSe(partialSE());
 
     // activate ISO_14443_4
@@ -888,7 +888,7 @@ public class StubReaderTest extends BaseStubTest {
     // init Request
     List<SeRequest> seRequests = getPartialRequestList(1);
 
-    // init SE
+    // init card
     reader.insertSe(partialSE());
 
     // activate ISO_14443_4
@@ -923,7 +923,7 @@ public class StubReaderTest extends BaseStubTest {
     // init Request
     List<SeRequest> seRequests = getPartialRequestList(2);
 
-    // init SE
+    // init card
     reader.insertSe(partialSE());
 
     // activate ISO_14443_4
@@ -958,7 +958,7 @@ public class StubReaderTest extends BaseStubTest {
     // init Request
     List<SeRequest> seRequests = getPartialRequestList(3);
 
-    // init SE
+    // init card
     reader.insertSe(partialSE());
 
     // activate ISO_14443_4
@@ -992,7 +992,7 @@ public class StubReaderTest extends BaseStubTest {
     // init Request
     SeRequest seRequest = getPartialRequest(0);
 
-    // init SE
+    // init card
     reader.insertSe(partialSE());
 
     // activate ISO_14443_4
@@ -1022,7 +1022,7 @@ public class StubReaderTest extends BaseStubTest {
     // init Request
     SeRequest seRequest = getPartialRequest(1);
 
-    // init SE
+    // init card
     reader.insertSe(partialSE());
 
     // activate ISO_14443_4
@@ -1052,7 +1052,7 @@ public class StubReaderTest extends BaseStubTest {
     // init Request
     SeRequest seRequest = getPartialRequest(2);
 
-    // init SE
+    // init card
     reader.insertSe(partialSE());
 
     // activate ISO_14443_4
@@ -1082,7 +1082,7 @@ public class StubReaderTest extends BaseStubTest {
     // init Request
     SeRequest seRequest = getPartialRequest(3);
 
-    // init SE
+    // init card
     reader.insertSe(partialSE());
 
     // activate ISO_14443_4

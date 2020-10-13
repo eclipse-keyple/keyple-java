@@ -14,7 +14,7 @@ package org.eclipse.keyple.example.common.generic.stub;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
 
-/** Simple contact stub SE (no command) */
+/** Simple contact card Stub (no command) */
 public class StubISO14443_4 extends StubSecureElement {
 
   static final String seProtocol = "ISO_14443_4";

@@ -1,5 +1,5 @@
 /**
- * Contains the necessary APIs for handling of SE Commands.
+ * Contains the necessary APIs for handling of card Commands.
  *
  * <p>It contains Command builders and response parser
  *

@@ -89,12 +89,12 @@ public class Demo_CalypsoClassic_Stub {
     /* Assign readers to the Hoplink transaction engine */
     transactionEngine.setReaders(poReader, samReader);
 
-    /* Create 'virtual' Hoplink and SAM SE */
+    /* Create 'virtual' Hoplink and SAM card */
     StubSecureElement calypsoStubSe = new StubCalypsoClassic();
     StubSecureElement samSE = new StubSamCalypsoClassic();
 
     /* Insert the SAM into the SAM reader */
-    logger.info("Insert stub SAM SE.");
+    logger.info("Insert stub SAM card.");
     samReader.insertSe(samSE);
 
     /* Set the default selection operation */
@@ -106,13 +106,13 @@ public class Demo_CalypsoClassic_Stub {
     /* Set the transactionEngine as Observer of the PO reader */
     poReader.addObserver(transactionEngine);
 
-    logger.info("Insert stub PO SE.");
+    logger.info("Insert stub PO card.");
     poReader.insertSe(calypsoStubSe);
 
     Thread.sleep(1000);
 
-    /* Remove SE */
-    logger.info("Remove stub SAM and PO SE.");
+    /* Remove card */
+    logger.info("Remove stub SAM and PO cards.");
 
     poReader.removeSe();
     samReader.removeSe();

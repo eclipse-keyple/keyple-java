@@ -69,9 +69,9 @@ public class WaitForSeInsertionStateJobExecutorTest extends CoreBaseTest {
   @Test
   public void insertSe_matched() throws Exception {
     /*
-     * input SE inserted SE matched
+     * input SE_inserted SE_matched
      */
-    // se matched
+    // card matched
     doReturn(new ReaderEvent("", "", ReaderEvent.EventType.SE_MATCHED, null))
         .when(r)
         .processSeInserted();
@@ -90,9 +90,9 @@ public class WaitForSeInsertionStateJobExecutorTest extends CoreBaseTest {
   @Test
   public void testInsertSe_NotMatched() throws Exception {
     /*
-     * input SE inserted SE doesnt matched
+     * input card inserted card doesnt matched
      */
-    // se not matched
+    // card not matched
     doReturn(new ReaderEvent("", "", ReaderEvent.EventType.SE_INSERTED, null))
         .when(r)
         .processSeInserted();
@@ -111,9 +111,9 @@ public class WaitForSeInsertionStateJobExecutorTest extends CoreBaseTest {
   @Test
   public void testInsertSe_Error() throws Exception {
     /*
-     * input SE inserted SE doesnt matched
+     * input card inserted card doesnt matched
      */
-    // se not matched
+    // card not matched
     doReturn(null).when(r).processSeInserted();
     doReturn(true).when(r).waitForCardPresent();
 
@@ -130,7 +130,7 @@ public class WaitForSeInsertionStateJobExecutorTest extends CoreBaseTest {
   // @Test
   // public void testTimeout() throws Exception, NoStackTraceThrowable {
   // /*
-  // * input no SE inserted within timeout
+  // * input no card inserted within timeout
   // */
   // r = AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 0);
   // waitForInsert = new WaitForSeInsertionState(r, executorService);

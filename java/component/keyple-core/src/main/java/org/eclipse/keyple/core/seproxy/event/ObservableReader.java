@@ -18,7 +18,7 @@ import org.eclipse.keyple.core.seproxy.SeReader;
  *
  * <ul>
  *   <li>Observer management
- *   <li>Start/stop of SE detection
+ *   <li>Start/stop of card detection
  *   <li>Managing the default selection
  *   <li>Definition of polling and notification modes
  * </ul>
@@ -64,13 +64,13 @@ public interface ObservableReader extends SeReader {
   }
 
   /**
-   * Indicates the action to be taken after processing a SE.
+   * Indicates the action to be taken after processing a card.
    *
    * @since 0.9
    */
   enum PollingMode {
 
-    /** Continue waiting for the insertion of a next SE. */
+    /** Continue waiting for the insertion of a next card. */
     REPEATING,
     /** Stop and wait for a restart signal. */
     SINGLESHOT
@@ -116,12 +116,12 @@ public interface ObservableReader extends SeReader {
   int countObservers();
 
   /**
-   * Starts the SE detection. Once activated, the application can be notified of the arrival of an
-   * SE.
+   * Starts the card detection. Once activated, the application can be notified of the arrival of a
+   * card.
    *
-   * <p>The {@link PollingMode} indicates the action to be followed after processing the SE: if
-   * {@link PollingMode#REPEATING}, the SE detection is restarted, if {@link
-   * PollingMode#SINGLESHOT}, the SE detection is stopped until a new call to startSeDetection is
+   * <p>The {@link PollingMode} indicates the action to be followed after processing the card: if
+   * {@link PollingMode#REPEATING}, the card detection is restarted, if {@link
+   * PollingMode#SINGLESHOT}, the card detection is stopped until a new call to startSeDetection is
    * made
    *
    * @param pollingMode The polling mode to use (should be not null).
@@ -130,16 +130,16 @@ public interface ObservableReader extends SeReader {
   void startSeDetection(PollingMode pollingMode);
 
   /**
-   * Stops the SE detection.
+   * Stops the card detection.
    *
    * @since 0.9
    */
   void stopSeDetection();
 
   /**
-   * Defines the default selection request to be processed when an SE is inserted.
+   * Defines the default selection request to be processed when a card is inserted.
    *
-   * <p>Depending on the SE and the notificationMode parameter, a {@link
+   * <p>Depending on the card and the notificationMode parameter, a {@link
    * org.eclipse.keyple.core.seproxy.event.ReaderEvent.EventType#SE_INSERTED EventType#SE_INSERTED},
    * {@link org.eclipse.keyple.core.seproxy.event.ReaderEvent.EventType#SE_MATCHED
    * EventType#SE_MATCHED} or no event at all will be notified to the application observers.
@@ -153,17 +153,17 @@ public interface ObservableReader extends SeReader {
       AbstractDefaultSelectionsRequest defaultSelectionsRequest, NotificationMode notificationMode);
 
   /**
-   * Defines the default selection request and starts the SE detection using the provided polling
+   * Defines the default selection request and starts the card detection using the provided polling
    * mode.
    *
    * <p>The notification mode indicates whether a {@link
    * org.eclipse.keyple.core.seproxy.event.ReaderEvent.EventType#SE_INSERTED} event should be
-   * notified even if the selection has failed ({@link NotificationMode#ALWAYS}) or whether the SE
+   * notified even if the selection has failed ({@link NotificationMode#ALWAYS}) or whether the card
    * insertion should be ignored in this case ({@link NotificationMode#MATCHED_ONLY}).
    *
-   * <p>The polling mode indicates the action to be followed after processing the SE: if {@link
-   * PollingMode#REPEATING}, the SE detection is restarted, if {@link PollingMode#SINGLESHOT}, the
-   * SE detection is stopped until a new call to * startSeDetection is made.
+   * <p>The polling mode indicates the action to be followed after processing the card: if {@link
+   * PollingMode#REPEATING}, the card detection is restarted, if {@link PollingMode#SINGLESHOT}, the
+   * card detection is stopped until a new call to * startSeDetection is made.
    *
    * @param defaultSelectionsRequest The default selection request to be operated.
    * @param notificationMode The notification mode to use (should be not null).
@@ -176,13 +176,13 @@ public interface ObservableReader extends SeReader {
       PollingMode pollingMode);
 
   /**
-   * Terminates the processing of the SE, in particular after an interruption by exception<br>
+   * Terminates the processing of the card, in particular after an interruption by exception<br>
    * Do nothing if the channel is already closed.<br>
    * Channel closing is nominally managed by using the {@link
    * org.eclipse.keyple.core.seproxy.message.ChannelControl#CLOSE_AFTER} flag during the last
-   * transmission with the SE. However, there are cases where exchanges with the SE are interrupted
-   * by an exception, in which case it is necessary to explicitly close the channel using this
-   * method.
+   * transmission with the card. However, there are cases where exchanges with the card are
+   * interrupted by an exception, in which case it is necessary to explicitly close the channel
+   * using this method.
    *
    * @since 0.9
    */

@@ -17,9 +17,9 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 
 /**
- * This POJO is used to propagate a change of a SE state in an {@link ObservableReader}.
+ * This POJO is used to propagate a change of a card state in an {@link ObservableReader}.
  *
- * <p>The various events that can occur concern the insertion and removal of an SE from a reader.
+ * <p>The various events that can occur concern the insertion and removal of a card from a reader.
  *
  * <p>When an insertion is made there are two cases depending on whether a default selection has
  * been programmed or not.
@@ -43,13 +43,13 @@ public final class ReaderEvent {
     /** An timeout error occurred. */
     TIMEOUT_ERROR,
 
-    /** A SE has been inserted. */
+    /** A card has been inserted. */
     SE_INSERTED,
 
-    /** A SE has been inserted and the default requests process has been successfully operated. */
+    /** A card has been inserted and the default requests process has been successfully operated. */
     SE_MATCHED,
 
-    /** The SE has been removed and is no longer able to communicate with the reader */
+    /** The card has been removed and is no longer able to communicate with the reader */
     SE_REMOVED
   }
 

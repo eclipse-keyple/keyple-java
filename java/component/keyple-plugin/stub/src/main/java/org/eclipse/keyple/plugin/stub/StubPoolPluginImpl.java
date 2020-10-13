@@ -49,7 +49,7 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
 
   @Override
   public SeReader plugStubPoolReader(
-      String groupReference, String readerName, StubSecureElement se) {
+      String groupReference, String readerName, StubSecureElement card) {
     try {
       // create new reader
       stubPlugin.plugStubReader(readerName, true);
@@ -57,7 +57,7 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
       // get new reader
       StubReaderImpl newReader = (StubReaderImpl) stubPlugin.getReader(readerName);
 
-      newReader.insertSe(se);
+      newReader.insertSe(card);
 
       // map reader to groupReference
       readerPool.put(groupReference, newReader);
@@ -139,12 +139,12 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
           "Can not release seReader, SeReader should be of type StubReader");
     }
 
-    /** Remove and Re-insert SE to reset logical channel */
+    /** Remove and Re-insert card to reset logical channel */
     StubReaderImpl stubReader = ((StubReaderImpl) seReader);
     if (stubReader.checkSePresence()) {
-      StubSecureElement se = stubReader.getSe();
+      StubSecureElement card = stubReader.getSe();
       stubReader.removeSe();
-      stubReader.insertSe(se);
+      stubReader.insertSe(card);
     }
 
     allocatedReader.remove(seReader.getName());

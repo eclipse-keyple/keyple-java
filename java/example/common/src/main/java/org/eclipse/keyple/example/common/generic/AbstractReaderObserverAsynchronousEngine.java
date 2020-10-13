@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This abstract class is intended to be extended by the applications classes in which the SE
+ * This abstract class is intended to be extended by the applications classes in which the card
  * insertion, selection, removal is factorized here.<br>
  * In this implementation of the reader observation, the method {@link
  * ObservableReader.ReaderObserver#update(ReaderEvent)} is processed asynchronously from a separate
@@ -47,18 +47,18 @@ public abstract class AbstractReaderObserverAsynchronousEngine
 
   /**
    * Method to be implemented by the application to handle the SE_REMOVED reader event at the end of
-   * the SE processing
+   * the card processing
    */
   protected abstract void processSeRemoved();
 
   /**
-   * Method to be implemented by the application to handle the SE_REMOVED reader event during the SE
-   * processing
+   * Method to be implemented by the application to handle the SE_REMOVED reader event during the
+   * card processing
    */
   protected abstract void processUnexpectedSeRemoval();
 
   /**
-   * This flag helps to determine whether the SE_REMOVED event was expected or not (case of SE
+   * This flag helps to determine whether the SE_REMOVED event was expected or not (case of card
    * withdrawal during processing).
    */
   boolean currentlyProcessingSe = false;
@@ -81,7 +81,7 @@ public abstract class AbstractReaderObserverAsynchronousEngine
                 } catch (KeypleException e) {
                   logger.error("Keyple exception: {}", e.getMessage());
                   /*
-                   * Informs the underlying layer of the end of the SE processing, in order to
+                   * Informs the underlying layer of the end of the card processing, in order to
                    * manage the removal sequence.
                    */
                   try {
@@ -111,7 +111,7 @@ public abstract class AbstractReaderObserverAsynchronousEngine
                 } catch (KeypleException e) {
                   logger.error("Keyple exception: {}", e.getMessage());
                   /*
-                   * Informs the underlying layer of the end of the SE processing, in order to
+                   * Informs the underlying layer of the end of the card processing, in order to
                    * manage the removal sequence.
                    */
                   try {
@@ -153,19 +153,19 @@ public abstract class AbstractReaderObserverAsynchronousEngine
 
       case SE_REMOVED:
         if (currentlyProcessingSe) {
-          processUnexpectedSeRemoval(); // to clean current SE processing
-          logger.error("Unexpected SE Removal");
+          processUnexpectedSeRemoval(); // to clean current card processing
+          logger.error("Unexpected card Removal");
         } else {
           processSeRemoved();
           if (logger.isInfoEnabled()) {
-            logger.info("Waiting for a SE...");
+            logger.info("Waiting for a card...");
           }
         }
         currentlyProcessingSe = false;
         break;
       case TIMEOUT_ERROR:
         logger.error(
-            "Timeout Error: the processing time or the time limit for removing the SE"
+            "Timeout Error: the processing time or the time limit for removing the card"
                 + " has been exceeded.");
         // do the appropriate processing here but do not prevent the return of this update
         // method (e. g. by

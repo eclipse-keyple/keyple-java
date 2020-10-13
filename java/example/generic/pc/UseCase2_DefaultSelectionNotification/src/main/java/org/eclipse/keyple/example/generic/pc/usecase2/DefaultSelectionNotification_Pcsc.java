@@ -41,14 +41,14 @@ import org.slf4j.LoggerFactory;
  *       <h2>Scenario:</h2>
  *       <ul>
  *         <li>Define a default selection of ISO 14443-4 (here a Calypso PO) and set it to an
- *             observable reader, on SE detection in case the selection is successful, notify the
- *             terminal application with the SE information.
+ *             observable reader, on card detection in case the selection is successful, notify the
+ *             terminal application with the card information.
  *         <li><code>
  * Default Selection Notification
- * </code> means that the SE processing is automatically started when detected.
+ * </code> means that the card processing is automatically started when detected.
  *         <li>PO messages:
  *             <ul>
- *               <li>A single SE message handled at SeReader level
+ *               <li>A single card message handled at SeReader level
  *             </ul>
  *       </ul>
  * </ul>
@@ -79,14 +79,14 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
 
     logger.info(
         "=============== UseCase Generic #2: AID based default selection ===================");
-    logger.info("= SE Reader  NAME = {}", seReader.getName());
+    logger.info("= Card reader  NAME = {}", seReader.getName());
 
-    // Prepare a SE selection
+    // Prepare a card selection
     seSelection = new SeSelection();
 
     // Setting of an AID based selection
     //
-    // Select the first application matching the selection AID whatever the SE communication
+    // Select the first application matching the selection AID whatever the card communication
     // protocol keep the logical channel open after the selection
 
     // Generic selection: configures a SeSelector with all the desired attributes to make the
@@ -101,7 +101,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
     // Add the selection case to the current selection (we could have added other cases here)
     seSelection.prepareSelection(seSelector);
 
-    // Provide the SeReader with the selection operation to be processed when a SE is inserted.
+    // Provide the SeReader with the selection operation to be processed when a card is inserted.
     ((ObservableReader) seReader)
         .setDefaultSelectionRequest(
             seSelection.getSelectionOperation(),
@@ -112,8 +112,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
     ((ObservableReader) seReader).addObserver(this);
 
     logger.info(
-        "= #### Wait for a SE. The default AID based selection to be processed as soon as the");
-    logger.info("= SE is detected.");
+        "= #### Wait for a card. The default AID based selection to be processed as soon as the card is detected.");
 
     // Wait for ever (exit with CTRL-C)
     synchronized (waitForEnd) {
@@ -149,12 +148,12 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
         }
 
         if (selectedSe != null) {
-          logger.info("Observer notification: the selection of the SE has succeeded.");
+          logger.info("Observer notification: the selection of the card has succeeded.");
 
-          logger.info("= #### End of the SE processing.");
+          logger.info("= #### End of the card processing.");
         } else {
           logger.error(
-              "The selection of the SE has failed. Should not have occurred due to the MATCHED_ONLY selection mode.");
+              "The selection of the card has failed. Should not have occurred due to the MATCHED_ONLY selection mode.");
         }
         break;
       case SE_INSERTED:
@@ -169,7 +168,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
     }
     if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED
         || event.getEventType() == ReaderEvent.EventType.SE_MATCHED) {
-      // Informs the underlying layer of the end of the SE processing, in order to manage the
+      // Informs the underlying layer of the end of the card processing, in order to manage the
       // removal sequence.
       try {
         ((ObservableReader) (event.getReader())).finalizeSeProcessing();
@@ -183,7 +182,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
 
   /** main program entry */
   public static void main(String[] args) throws InterruptedException, KeypleException {
-    // Create the observable object to handle the SE processing
+    // Create the observable object to handle the card processing
     new DefaultSelectionNotification_Pcsc();
   }
 }

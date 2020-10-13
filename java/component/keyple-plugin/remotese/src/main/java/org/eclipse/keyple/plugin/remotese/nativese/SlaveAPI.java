@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * SlaveAPI is the main component of the Remote Se Architecture on the slave side.
+ * SlaveAPI is the main component of the Remote card Architecture on the slave side.
  *
  * <p>It allows also to connect/disconnect a reader trhough dedicated methods
  *
@@ -261,7 +261,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
   /** */
 
   /**
-   * Connect a local reader to Remote SE Plugin. Override from interface {@link
+   * Connect a local reader to Remote reader Plugin. Override from interface {@link
    * INativeReaderService}
    *
    * @param localReader : native reader to be connected
@@ -274,7 +274,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
   }
 
   /**
-   * Connect a local reader to Remote SE Plugin with options Override from interface {@link
+   * Connect a local reader to Remote reader Plugin with options Override from interface {@link
    * INativeReaderService}
    *
    * @param localReader : native reader to be connected
@@ -353,7 +353,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
    * Internal method to find a local reader by its name across multiple plugins
    *
    * @param nativeReaderName : name of the reader to be found
-   * @return Se Reader found if any
+   * @return card Reader found if any
    * @throws KeypleReaderNotFoundException if not reader were found with this name
    */
   @Override

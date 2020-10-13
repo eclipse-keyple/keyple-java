@@ -12,13 +12,13 @@
 package org.eclipse.keyple.core.seproxy.exception;
 
 /**
- * The exception {@code KeypleReaderNotFoundException} indicates that the current SE protocol is not
- * supported by the plugin.
+ * The exception {@code KeypleReaderNotFoundException} indicates that the current card protocol is
+ * not supported by the plugin.
  */
 public class KeypleReaderProtocolNotSupportedException extends KeypleReaderException {
 
-  /** @param seProtocol the identification data used to identify the SE */
+  /** @param seProtocol the identification data used to identify the card */
   public KeypleReaderProtocolNotSupportedException(String seProtocol) {
-    super("The SE protocol " + seProtocol + " is not supported.");
+    super("The card protocol " + seProtocol + " is not supported.");
   }
 }

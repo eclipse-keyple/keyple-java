@@ -17,9 +17,9 @@ import org.eclipse.keyple.core.seproxy.message.SeResponse;
 
 /**
  * AbstractMatchingSe is the class to manage the elements of the result of a selection.<br>
- * This class should be extended for the management of specific SE.<br>
+ * This class should be extended for the management of specific card.<br>
  * Nevertheless it gives access to the generic parameters common to all SEs which are the FCI
- * (response to select command) and the ATR (SE's answer to reset) when they are available.
+ * (response to select command) and the ATR (card's answer to reset) when they are available.
  */
 public abstract class AbstractMatchingSe {
   private final byte[] fciBytes;
@@ -28,7 +28,7 @@ public abstract class AbstractMatchingSe {
   /**
    * Constructor.
    *
-   * @param selectionResponse the response from the SE
+   * @param selectionResponse the response from the card
    */
   protected AbstractMatchingSe(SeResponse selectionResponse) {
     ApduResponse fci = selectionResponse.getSelectionStatus().getFci();
@@ -45,12 +45,12 @@ public abstract class AbstractMatchingSe {
     }
   }
 
-  /** @return true if the matching SE has an FCI */
+  /** @return true if the matching card has an FCI */
   public boolean hasFci() {
     return fciBytes != null && fciBytes.length > 0;
   }
 
-  /** @return true if the matching SE has an ATR */
+  /** @return true if the matching card has an ATR */
   public boolean hasAtr() {
     return atrBytes != null && atrBytes.length > 0;
   }

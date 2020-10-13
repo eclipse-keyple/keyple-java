@@ -29,7 +29,7 @@ public interface PluginFactory {
    *
    * @return instance of a ReaderPlugin
    * @throws KeyplePluginInstantiationException if instantiation failed, mostly when the third party
-   *     library which manages the Se Reader interface is not ready
+   *     library which manages the card Reader interface is not ready
    */
   ReaderPlugin getPlugin();
 }

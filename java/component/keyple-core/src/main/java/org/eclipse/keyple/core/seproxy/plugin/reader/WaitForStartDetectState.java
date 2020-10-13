@@ -16,10 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Wait for Start SE Detection
+ * Wait for Start the card Detection
  *
- * <p>The state during which the reader does not wait for a SE to be inserted but for a signal from
- * the application to do so (switch to the WAIT_FOR_SE_INSERTION state).
+ * <p>The state during which the reader does not wait for a card to be inserted but for a signal
+ * from the application to do so (switch to the WAIT_FOR_SE_INSERTION state).
  *
  * <ul>
  *   <li>Upon START_DETECT event, the machine changes state for WAIT_FOR_SE_INSERTION.
