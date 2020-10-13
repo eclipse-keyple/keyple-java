@@ -297,17 +297,17 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
   public static AbstractObservableLocalReader getSpy(String pluginName, String readerName) {
     AbstractObservableLocalReader r =
         Mockito.spy(new BlankObservableLocalReader(pluginName, readerName));
-    doReturn(SeResponseTest.getASeResponse())
+    doReturn(CardResponseTest.getACardResponse())
         .when(r)
         .processSeRequest(any(CardRequest.class), any(ChannelControl.class));
-    doReturn(getSeResponses())
+    doReturn(getCardResponses())
         .when(r)
         .processSeRequests(
             any(List.class), any(MultiSeRequestProcessing.class), any(ChannelControl.class));
     return r;
   }
 
-  public static List<SeResponse> getMatchingResponses() {
+  public static List<CardResponse> getMatchingResponses() {
     SelectionStatus selectionStatus =
         new SelectionStatus(
             null,
@@ -315,19 +315,19 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
                 AbsLocalReaderTransmitTest.RESP_SUCCESS,
                 AbsLocalReaderSelectionTest.STATUS_CODE_LIST),
             true);
-    SeResponse seResponse = new SeResponse(true, false, selectionStatus, null);
-    return Arrays.asList(seResponse);
+    CardResponse cardResponse = new CardResponse(true, false, selectionStatus, null);
+    return Arrays.asList(cardResponse);
   }
 
-  public static List<SeResponse> getNotMatchingResponses() {
+  public static List<CardResponse> getNotMatchingResponses() {
     SelectionStatus selectionStatus =
         new SelectionStatus(
             null,
             new ApduResponse(
                 AbsLocalReaderTransmitTest.RESP_FAIL, AbsLocalReaderSelectionTest.STATUS_CODE_LIST),
             false);
-    SeResponse seResponse = new SeResponse(false, false, selectionStatus, null);
-    return Arrays.asList(seResponse);
+    CardResponse cardResponse = new CardResponse(false, false, selectionStatus, null);
+    return Arrays.asList(cardResponse);
   }
 
   public static ObservableReader.ReaderObserver getReaderObserver() {
@@ -337,9 +337,9 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     };
   }
 
-  public static List<SeResponse> getSeResponses() {
-    List<SeResponse> responses = new ArrayList<SeResponse>();
-    responses.add(SeResponseTest.getASeResponse());
+  public static List<CardResponse> getCardResponses() {
+    List<CardResponse> responses = new ArrayList<CardResponse>();
+    responses.add(CardResponseTest.getACardResponse());
     return responses;
   }
 }

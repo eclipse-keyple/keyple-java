@@ -20,9 +20,9 @@ import java.util.List;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.CardRequest;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbsObservableLocalReaderTest;
 import org.eclipse.keyple.core.seproxy.plugin.reader.BlankObservableLocalReader;
 import org.junit.Assert;
@@ -68,7 +68,7 @@ public class DefaultSelectionTest {
     ObservableReader.NotificationMode mode = ObservableReader.NotificationMode.ALWAYS;
 
     // mock return matching selection
-    List<SeResponse> responses = getNotMatchingResponses();
+    List<CardResponse> responses = getNotMatchingResponses();
     doReturn(responses).when(r).transmitSeRequests(selections, multi, channel);
 
     // test
@@ -77,7 +77,7 @@ public class DefaultSelectionTest {
 
     // assert
     Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
-    Assert.assertEquals(responses, event.getDefaultSelectionsResponse().getSelectionSeResponses());
+    Assert.assertEquals(responses, event.getDefaultSelectionsResponse().getSelectionCardResponses());
     Assert.assertEquals(PLUGIN_NAME, event.getPluginName());
     Assert.assertEquals(READER_NAME, event.getReaderName());
   }
@@ -98,7 +98,7 @@ public class DefaultSelectionTest {
 
     // mock
     // return success selection
-    List<SeResponse> responses = AbsObservableLocalReaderTest.getMatchingResponses();
+    List<CardResponse> responses = AbsObservableLocalReaderTest.getMatchingResponses();
     doReturn(responses).when(r).transmitSeRequests(selections, multi, channel);
 
     // test
@@ -106,7 +106,7 @@ public class DefaultSelectionTest {
     ReaderEvent event = r.processSeInsertedTest();
 
     Assert.assertEquals(ReaderEvent.EventType.SE_MATCHED, event.getEventType());
-    Assert.assertEquals(responses, event.getDefaultSelectionsResponse().getSelectionSeResponses());
+    Assert.assertEquals(responses, event.getDefaultSelectionsResponse().getSelectionCardResponses());
     Assert.assertEquals(PLUGIN_NAME, event.getPluginName());
     Assert.assertEquals(READER_NAME, event.getReaderName());
   }

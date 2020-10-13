@@ -15,13 +15,13 @@ import org.eclipse.keyple.core.command.AbstractApduCommandBuilder
 import org.eclipse.keyple.core.selection.AbstractMatchingSe
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest
 import org.eclipse.keyple.core.seproxy.SeSelector
-import org.eclipse.keyple.core.seproxy.message.SeResponse
+import org.eclipse.keyple.core.seproxy.message.CardResponse
 
 class GenericSeSelectionRequest(seSelector: SeSelector) : AbstractSeSelectionRequest<AbstractApduCommandBuilder>(seSelector) {
-    override fun parse(seResponse: SeResponse): AbstractMatchingSe {
+    override fun parse(cardResponse: CardResponse): AbstractMatchingSe {
         class GenericMatchingSe(
-            selectionResponse: SeResponse
+            selectionResponse: CardResponse
         ) : AbstractMatchingSe(selectionResponse)
-        return GenericMatchingSe(seResponse)
+        return GenericMatchingSe(cardResponse)
     }
 }

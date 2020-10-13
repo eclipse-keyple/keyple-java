@@ -17,7 +17,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,7 @@ public class CalypsoSam extends AbstractMatchingSe {
    *
    * @param selectionResponse the selection response from the SAM
    */
-  CalypsoSam(SeResponse selectionResponse) {
+  CalypsoSam(CardResponse selectionResponse) {
     super(selectionResponse);
 
     String atrString =

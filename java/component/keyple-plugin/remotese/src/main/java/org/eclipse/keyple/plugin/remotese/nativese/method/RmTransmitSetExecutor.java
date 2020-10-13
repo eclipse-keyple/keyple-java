@@ -20,7 +20,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.rm.IRemoteMethodExecutor;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
@@ -55,7 +55,7 @@ public class RmTransmitSetExecutor implements IRemoteMethodExecutor {
   public TransportDto execute(TransportDto transportDto) {
     KeypleDto keypleDto = transportDto.getKeypleDTO();
     TransportDto out = null;
-    List<SeResponse> seResponses = null;
+    List<CardResponse> cardResponse = null;
     MultiSeRequestProcessing multiSeRequestProcessing;
     ChannelControl channelControl;
 
@@ -87,13 +87,13 @@ public class RmTransmitSetExecutor implements IRemoteMethodExecutor {
       ProxyReader reader = (ProxyReader) slaveAPI.findLocalReader(nativeReaderName);
 
       // execute transmitSet
-      seResponses =
+      cardResponse =
           reader.transmitSeRequests(cardRequests, multiSeRequestProcessing, channelControl);
 
       // prepare response
       String parseBody =
           JsonParser.getGson()
-              .toJson(seResponses, new TypeToken<ArrayList<SeResponse>>() {}.getType());
+              .toJson(cardResponse, new TypeToken<ArrayList<CardResponse>>() {}.getType());
       out =
           transportDto.nextTransportDTO(
               KeypleDtoHelper.buildResponse(

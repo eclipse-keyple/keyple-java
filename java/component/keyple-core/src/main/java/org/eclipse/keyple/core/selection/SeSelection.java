@@ -96,14 +96,14 @@ public final class SeSelection {
    * org.eclipse.keyple.core.seproxy.event.ReaderEvent} (default selection) or from an explicit
    * selection.
    *
-   * <p>The responses from the List of {@link SeResponse} is parsed and checked.
+   * <p>The responses from the List of {@link CardResponse} is parsed and checked.
    *
    * <p>A {@link AbstractMatchingSe} list is build and returned. Non matching card are signaled by a
    * null element in the list
    *
    * @param defaultSelectionsResponse the selection response
    * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
-   *     including {@link AbstractMatchingSe} and {@link SeResponse}.
+   *     including {@link AbstractMatchingSe} and {@link CardResponse}.
    * @throws KeypleException if the selection process failed
    */
   private SelectionsResult processSelection(
@@ -112,24 +112,24 @@ public final class SeSelection {
 
     int index = 0;
 
-    /* Check SeResponses */
-    for (SeResponse seResponse :
-        ((DefaultSelectionsResponse) defaultSelectionsResponse).getSelectionSeResponses()) {
+    /* Check card responses */
+    for (CardResponse cardResponse :
+        ((DefaultSelectionsResponse) defaultSelectionsResponse).getSelectionCardResponses()) {
       /* test if the selection is successful: we should have either a FCI or an ATR */
-      if (seResponse != null
-          && seResponse.getSelectionStatus() != null
-          && seResponse.getSelectionStatus().hasMatched()) {
+      if (cardResponse != null
+          && cardResponse.getSelectionStatus() != null
+          && cardResponse.getSelectionStatus().hasMatched()) {
         /*
          * create a AbstractMatchingSe with the class deduced from the selection request
          * during the selection preparation
          */
-        AbstractMatchingSe matchingSe = seSelectionRequests.get(index).parse(seResponse);
+        AbstractMatchingSe matchingSe = seSelectionRequests.get(index).parse(cardResponse);
 
         // determine if the current matching card is selected
-        SelectionStatus selectionStatus = seResponse.getSelectionStatus();
+        SelectionStatus selectionStatus = cardResponse.getSelectionStatus();
         boolean isSelected;
         if (selectionStatus != null) {
-          isSelected = selectionStatus.hasMatched() && seResponse.isLogicalChannelOpen();
+          isSelected = selectionStatus.hasMatched() && cardResponse.isLogicalChannelOpen();
         } else {
           isSelected = false;
         }
@@ -150,7 +150,7 @@ public final class SeSelection {
    * @param defaultSelectionsResponse the response from the reader to the {@link
    *     AbstractDefaultSelectionsRequest}
    * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
-   *     including {@link AbstractMatchingSe} and {@link SeResponse}.
+   *     including {@link AbstractMatchingSe} and {@link CardResponse}.
    * @throws KeypleException if an error occurs during the selection process
    */
   public SelectionsResult processDefaultSelection(
@@ -165,7 +165,7 @@ public final class SeSelection {
     if (logger.isTraceEnabled()) {
       logger.trace(
           "Process default SELECTIONRESPONSE ({} response(s))",
-          ((DefaultSelectionsResponse) defaultSelectionsResponse).getSelectionSeResponses().size());
+          ((DefaultSelectionsResponse) defaultSelectionsResponse).getSelectionCardResponses().size());
     }
 
     return processSelection(defaultSelectionsResponse);
@@ -187,7 +187,7 @@ public final class SeSelection {
    *
    * @param reader the Reader on which the selection is made
    * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
-   *     including {@link AbstractMatchingSe} and {@link SeResponse}.
+   *     including {@link AbstractMatchingSe} and {@link CardResponse}.
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @throws KeypleException if an error occurs during the selection process
    */
@@ -202,11 +202,11 @@ public final class SeSelection {
     }
 
     /* Communicate with the card to do the selection */
-    List<SeResponse> seResponses =
+    List<CardResponse> cardResponse =
         ((ProxyReader) reader)
             .transmitSeRequests(selectionRequests, multiSeRequestProcessing, channelControl);
 
-    return processSelection(new DefaultSelectionsResponse(seResponses));
+    return processSelection(new DefaultSelectionsResponse(cardResponse));
   }
 
   /**

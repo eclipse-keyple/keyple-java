@@ -46,7 +46,7 @@ public class RmTransmitExecutor implements IRemoteMethodExecutor {
 
     KeypleDto keypleDto = transportDto.getKeypleDTO();
     TransportDto out = null;
-    SeResponse seResponse = null;
+    CardResponse cardResponse = null;
     ChannelControl channelControl;
 
     // Extract info from keypleDto
@@ -66,10 +66,10 @@ public class RmTransmitExecutor implements IRemoteMethodExecutor {
       ProxyReader reader = (ProxyReader) slaveAPI.findLocalReader(nativeReaderName);
 
       // execute transmitSet
-      seResponse = reader.transmitSeRequest(cardRequest, channelControl);
+      cardResponse = reader.transmitSeRequest(cardRequest, channelControl);
 
       // prepare response
-      String parseBody = JsonParser.getGson().toJson(seResponse, SeResponse.class);
+      String parseBody = JsonParser.getGson().toJson(cardResponse, CardResponse.class);
       out =
           transportDto.nextTransportDTO(
               KeypleDtoHelper.buildResponse(

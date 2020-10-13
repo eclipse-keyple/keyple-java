@@ -150,8 +150,8 @@ public class SampleFactory {
     return cardRequests;
   }
 
-  public static List<SeResponse> getCompleteResponseSet() {
-    List<SeResponse> seResponses = new ArrayList<SeResponse>();
+  public static List<CardResponse> getCompleteResponseSet() {
+    List<CardResponse> cardResponse = new ArrayList<CardResponse>();
 
     ApduResponse apdu = new ApduResponse(ByteArrayUtil.fromHex("9000"), new HashSet<Integer>());
     ApduResponse apdu2 = new ApduResponse(ByteArrayUtil.fromHex("9000"), new HashSet<Integer>());
@@ -160,11 +160,11 @@ public class SampleFactory {
     apduResponses.add(apdu);
     apduResponses.add(apdu2);
 
-    seResponses.add(
-        new SeResponse(true, true, new SelectionStatus(null, apdu, true), apduResponses));
-    seResponses.add(
-        new SeResponse(true, true, new SelectionStatus(null, apdu, true), apduResponses));
+    cardResponse.add(
+        new CardResponse(true, true, new SelectionStatus(null, apdu, true), apduResponses));
+    cardResponse.add(
+        new CardResponse(true, true, new SelectionStatus(null, apdu, true), apduResponses));
 
-    return seResponses;
+    return cardResponse;
   }
 }

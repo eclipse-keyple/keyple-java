@@ -26,9 +26,9 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualObservableReader;
@@ -203,14 +203,14 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
             Assert.assertEquals(ReaderEvent.EventType.SE_MATCHED, event.getEventType());
             Assert.assertTrue(
                 ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                    .getSelectionSeResponses()
+                    .getSelectionCardResponses()
                     .get(0)
                     .getSelectionStatus()
                     .hasMatched());
 
             Assert.assertArrayEquals(
                 ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                    .getSelectionSeResponses()
+                    .getSelectionCardResponses()
                     .get(0)
                     .getSelectionStatus()
                     .getAtr()
@@ -237,7 +237,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
             Assert.assertArrayEquals(
                 ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                    .getSelectionSeResponses()
+                    .getSelectionCardResponses()
                     .get(0)
                     .getSelectionStatus()
                     .getFci()
@@ -364,7 +364,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
             // card has not match
             Assert.assertFalse(
                 ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                    .getSelectionSeResponses()
+                    .getSelectionCardResponses()
                     .get(0)
                     .getSelectionStatus()
                     .hasMatched());
@@ -531,13 +531,13 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     }
 
     @Override
-    protected AbstractMatchingSe parse(SeResponse seResponse) {
+    protected AbstractMatchingSe parse(CardResponse cardResponse) {
       class GenericMatchingSe extends AbstractMatchingSe {
-        public GenericMatchingSe(SeResponse selectionResponse) {
+        public GenericMatchingSe(CardResponse selectionResponse) {
           super(selectionResponse);
         }
       }
-      return new GenericMatchingSe(seResponse);
+      return new GenericMatchingSe(cardResponse);
     }
   }
 }

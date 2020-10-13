@@ -82,8 +82,8 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
       logger.info("KeypleReaderException was thrown as expected");
       // assert exception is thrown
       Assert.assertNotNull(e);
-      // Assert.assertNotNull(e.getSeResponseSet());
-      // Assert.assertNull(e.getSeResponse());
+      // Assert.assertNotNull(e.getCardResponseSet());
+      // Assert.assertNull(e.getCardResponse());
     }
   }
 
@@ -103,8 +103,8 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
       logger.info("KeypleReaderException was thrown as expected");
       // assert exception is thrown
       Assert.assertNotNull(e);
-      // Assert.assertNotNull(e.getSeResponseSet());
-      // Assert.assertNull(e.getSeResponse());
+      // Assert.assertNotNull(e.getCardResponseSet());
+      // Assert.assertNull(e.getCardResponse());
       // should not be null but transmit is using transmitSet, this is the reason I guess
       // todo : VirtualReader transmit should not be using transmitSet
     }
@@ -141,12 +141,12 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
       // Set<CardRequest> seRequests = new LinkedHashSet<CardRequest>();
       // seRequests.add(seRequest);
       //
-      // List<SeResponse> seResponse = ((ProxyReader)
+      // List<CardResponse> cardResponse = ((ProxyReader)
       // virtualReader).transmitSet(seRequests);
       // // assert
-      // Assert.assertTrue(seResponse.get(0).getApduResponses().get(0).isSuccessful());
+      // Assert.assertTrue(cardResponse.get(0).getApduResponses().get(0).isSuccessful());
       //
-      // logger.info("SeResponse returned as expected {}", seResponse.get(0));
+      // logger.info("CardResponse returned as expected {}", cardResponse.get(0));
     }
   }
 
@@ -192,11 +192,11 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
     } catch (KeypleReaderIOException ex) {
       logger.info(
           "KeypleReaderException was thrown as expected : {} {}",
-          ex.getSeResponses(),
-          ex.getSeResponse());
+          ex.getCardResponses(),
+          ex.getCardResponse());
 
-      Assert.assertEquals(ex.getSeResponses().size(), 1);
-      Assert.assertEquals(ex.getSeResponses().get(0).getApduResponses().size(), 2);
+      Assert.assertEquals(ex.getCardResponses().size(), 1);
+      Assert.assertEquals(ex.getCardResponses().get(0).getApduResponses().size(), 2);
     }
   }
 
@@ -222,12 +222,12 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
     } catch (KeypleReaderIOException ex) {
       logger.info(
           "KeypleReaderException was thrown as expected : {} {}",
-          ex.getSeResponses(),
-          ex.getSeResponse());
-      Assert.assertEquals(ex.getSeResponses().size(), 2);
-      Assert.assertEquals(ex.getSeResponses().get(0).getApduResponses().size(), 4);
-      Assert.assertEquals(ex.getSeResponses().get(1).getApduResponses().size(), 2);
-      Assert.assertEquals(ex.getSeResponses().get(1).getApduResponses().size(), 2);
+          ex.getCardResponses(),
+          ex.getCardResponse());
+      Assert.assertEquals(ex.getCardResponses().size(), 2);
+      Assert.assertEquals(ex.getCardResponses().get(0).getApduResponses().size(), 4);
+      Assert.assertEquals(ex.getCardResponses().get(1).getApduResponses().size(), 2);
+      Assert.assertEquals(ex.getCardResponses().get(1).getApduResponses().size(), 2);
     }
   }
 
@@ -254,12 +254,12 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
     } catch (KeypleReaderIOException ex) {
       logger.info(
           "KeypleReaderException was thrown as expected : {} {}",
-          ex.getSeResponses(),
-          ex.getSeResponse());
-      Assert.assertEquals(ex.getSeResponses().size(), 3);
-      Assert.assertEquals(ex.getSeResponses().get(0).getApduResponses().size(), 4);
-      Assert.assertEquals(ex.getSeResponses().get(1).getApduResponses().size(), 4);
-      Assert.assertEquals(ex.getSeResponses().get(2).getApduResponses().size(), 2);
+          ex.getCardResponses(),
+          ex.getCardResponse());
+      Assert.assertEquals(ex.getCardResponses().size(), 3);
+      Assert.assertEquals(ex.getCardResponses().get(0).getApduResponses().size(), 4);
+      Assert.assertEquals(ex.getCardResponses().get(1).getApduResponses().size(), 4);
+      Assert.assertEquals(ex.getCardResponses().get(2).getApduResponses().size(), 2);
     }
   }
 
@@ -286,12 +286,12 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
     } catch (KeypleReaderIOException ex) {
       logger.info(
           "KeypleReaderException was thrown as expected : {} {}",
-          ex.getSeResponses(),
-          ex.getSeResponse());
-      Assert.assertEquals(ex.getSeResponses().size(), 3);
-      Assert.assertEquals(ex.getSeResponses().get(0).getApduResponses().size(), 4);
-      Assert.assertEquals(ex.getSeResponses().get(1).getApduResponses().size(), 4);
-      Assert.assertEquals(ex.getSeResponses().get(2).getApduResponses().size(), 4);
+          ex.getCardResponses(),
+          ex.getCardResponse());
+      Assert.assertEquals(ex.getCardResponses().size(), 3);
+      Assert.assertEquals(ex.getCardResponses().get(0).getApduResponses().size(), 4);
+      Assert.assertEquals(ex.getCardResponses().get(1).getApduResponses().size(), 4);
+      Assert.assertEquals(ex.getCardResponses().get(2).getApduResponses().size(), 4);
     }
   }
 
@@ -316,9 +316,9 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
     } catch (KeypleReaderIOException ex) {
       logger.info(
           "KeypleReaderException was thrown as expected : {} {}",
-          ex.getSeResponses(),
-          ex.getSeResponse());
-      Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 0);
+          ex.getCardResponses(),
+          ex.getCardResponse());
+      Assert.assertEquals(ex.getCardResponse().getApduResponses().size(), 0);
     }
   }
 
@@ -343,9 +343,9 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
     } catch (KeypleReaderIOException ex) {
       logger.info(
           "KeypleReaderException was thrown as expected : {} {}",
-          ex.getSeResponses(),
-          ex.getSeResponse());
-      Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 1);
+          ex.getCardResponses(),
+          ex.getCardResponse());
+      Assert.assertEquals(ex.getCardResponse().getApduResponses().size(), 1);
     }
   }
 
@@ -369,10 +369,10 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
     } catch (KeypleReaderIOException ex) {
       logger.info(
-          "KeypleReaderException was thrown as expected : set : {}, seResponse : {}",
-          ex.getSeResponses(),
-          ex.getSeResponse());
-      Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 2);
+          "KeypleReaderException was thrown as expected : set : {}, cardResponse : {}",
+          ex.getCardResponses(),
+          ex.getCardResponse());
+      Assert.assertEquals(ex.getCardResponse().getApduResponses().size(), 2);
     }
   }
 
@@ -397,9 +397,9 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
     } catch (KeypleReaderIOException ex) {
       logger.info(
           "KeypleReaderException was thrown as expected : {} {}",
-          ex.getSeResponses(),
-          ex.getSeResponse());
-      Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 3);
+          ex.getCardResponses(),
+          ex.getCardResponse());
+      Assert.assertEquals(ex.getCardResponse().getApduResponses().size(), 3);
     }
   }
 }

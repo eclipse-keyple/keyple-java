@@ -433,13 +433,13 @@ public class StubReaderTest extends BaseStubTest {
               Assert.assertEquals(ReaderEvent.EventType.SE_MATCHED, event.getEventType());
               Assert.assertTrue(
                   ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                      .getSelectionSeResponses()
+                      .getSelectionCardResponses()
                       .get(0)
                       .getSelectionStatus()
                       .hasMatched());
               Assert.assertArrayEquals(
                   ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                      .getSelectionSeResponses()
+                      .getSelectionCardResponses()
                       .get(0)
                       .getSelectionStatus()
                       .getAtr()
@@ -466,7 +466,7 @@ public class StubReaderTest extends BaseStubTest {
 
               Assert.assertArrayEquals(
                   ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                      .getSelectionSeResponses()
+                      .getSelectionCardResponses()
                       .get(0)
                       .getSelectionStatus()
                       .getFci()
@@ -607,7 +607,7 @@ public class StubReaderTest extends BaseStubTest {
               // card has not match
               Assert.assertFalse(
                   ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                      .getSelectionSeResponses()
+                      .getSelectionCardResponses()
                       .get(0)
                       .getSelectionStatus()
                       .hasMatched());
@@ -812,13 +812,13 @@ public class StubReaderTest extends BaseStubTest {
     genericSelectSe(reader);
 
     // test
-    List<SeResponse> seResponse =
+    List<CardResponse> cardResponse =
         ((ProxyReader) reader)
             .transmitSeRequests(
                 requests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
     // assert
-    Assert.assertTrue(seResponse.get(0).getApduResponses().get(0).isSuccessful());
+    Assert.assertTrue(cardResponse.get(0).getApduResponses().get(0).isSuccessful());
   }
 
   @Test(expected = KeypleReaderException.class)
@@ -841,7 +841,7 @@ public class StubReaderTest extends BaseStubTest {
     genericSelectSe(reader);
 
     // test
-    List<SeResponse> seResponse =
+    List<CardResponse> cardResponse =
         ((ProxyReader) reader)
             .transmitSeRequests(
                 requests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
@@ -868,15 +868,15 @@ public class StubReaderTest extends BaseStubTest {
 
     // test
     try {
-      List<SeResponse> seResponses =
+      List<CardResponse> cardResponse =
           ((ProxyReader) reader)
               .transmitSeRequests(
                   cardRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
-      Assert.assertEquals(1, ex.getSeResponses().size());
-      Assert.assertEquals(2, ex.getSeResponses().get(0).getApduResponses().size());
+      Assert.assertEquals(1, ex.getCardResponses().size());
+      Assert.assertEquals(2, ex.getCardResponses().get(0).getApduResponses().size());
     }
   }
 
@@ -901,17 +901,17 @@ public class StubReaderTest extends BaseStubTest {
 
     // test
     try {
-      List<SeResponse> seResponses =
+      List<CardResponse> cardResponse =
           ((ProxyReader) reader)
               .transmitSeRequests(
                   cardRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
-      Assert.assertEquals(2, ex.getSeResponses().size());
-      Assert.assertEquals(4, ex.getSeResponses().get(0).getApduResponses().size());
-      Assert.assertEquals(2, ex.getSeResponses().get(1).getApduResponses().size());
-      Assert.assertEquals(2, ex.getSeResponses().get(1).getApduResponses().size());
+      Assert.assertEquals(2, ex.getCardResponses().size());
+      Assert.assertEquals(4, ex.getCardResponses().get(0).getApduResponses().size());
+      Assert.assertEquals(2, ex.getCardResponses().get(1).getApduResponses().size());
+      Assert.assertEquals(2, ex.getCardResponses().get(1).getApduResponses().size());
     }
   }
 
@@ -936,17 +936,17 @@ public class StubReaderTest extends BaseStubTest {
 
     // test
     try {
-      List<SeResponse> seResponses =
+      List<CardResponse> cardResponse =
           ((ProxyReader) reader)
               .transmitSeRequests(
                   cardRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
-      Assert.assertEquals(3, ex.getSeResponses().size());
-      Assert.assertEquals(4, ex.getSeResponses().get(0).getApduResponses().size());
-      Assert.assertEquals(4, ex.getSeResponses().get(1).getApduResponses().size());
-      Assert.assertEquals(2, ex.getSeResponses().get(2).getApduResponses().size());
+      Assert.assertEquals(3, ex.getCardResponses().size());
+      Assert.assertEquals(4, ex.getCardResponses().get(0).getApduResponses().size());
+      Assert.assertEquals(4, ex.getCardResponses().get(1).getApduResponses().size());
+      Assert.assertEquals(2, ex.getCardResponses().get(2).getApduResponses().size());
     }
   }
 
@@ -971,14 +971,14 @@ public class StubReaderTest extends BaseStubTest {
 
     // test
     try {
-      List<SeResponse> seResponses =
+      List<CardResponse> cardResponse =
           ((ProxyReader) reader)
               .transmitSeRequests(
                   cardRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
-      Assert.assertEquals(3, seResponses.size());
-      Assert.assertEquals(4, seResponses.get(0).getApduResponses().size());
-      Assert.assertEquals(4, seResponses.get(1).getApduResponses().size());
-      Assert.assertEquals(4, seResponses.get(2).getApduResponses().size());
+      Assert.assertEquals(3, cardResponse.size());
+      Assert.assertEquals(4, cardResponse.get(0).getApduResponses().size());
+      Assert.assertEquals(4, cardResponse.get(1).getApduResponses().size());
+      Assert.assertEquals(4, cardResponse.get(2).getApduResponses().size());
     } catch (KeypleReaderException ex) {
       Assert.fail("Should not throw exception");
     }
@@ -1005,12 +1005,12 @@ public class StubReaderTest extends BaseStubTest {
 
     // test
     try {
-      SeResponse seResponse =
+      CardResponse cardResponse =
           ((ProxyReader) reader).transmitSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
-      Assert.assertEquals(0, ex.getSeResponse().getApduResponses().size());
+      Assert.assertEquals(0, ex.getCardResponse().getApduResponses().size());
     }
   }
 
@@ -1035,12 +1035,12 @@ public class StubReaderTest extends BaseStubTest {
 
     // test
     try {
-      SeResponse seResponse =
+      CardResponse cardResponse =
           ((ProxyReader) reader).transmitSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
-      Assert.assertEquals(1, ex.getSeResponse().getApduResponses().size());
+      Assert.assertEquals(1, ex.getCardResponse().getApduResponses().size());
     }
   }
 
@@ -1065,12 +1065,12 @@ public class StubReaderTest extends BaseStubTest {
 
     // test
     try {
-      SeResponse seResponse =
+      CardResponse cardResponse =
           ((ProxyReader) reader).transmitSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
-      Assert.assertEquals(2, ex.getSeResponse().getApduResponses().size());
+      Assert.assertEquals(2, ex.getCardResponse().getApduResponses().size());
     }
   }
 
@@ -1095,9 +1095,9 @@ public class StubReaderTest extends BaseStubTest {
 
     // test
     try {
-      SeResponse seResponse =
+      CardResponse cardResponse =
           ((ProxyReader) reader).transmitSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
-      Assert.assertEquals(3, seResponse.getApduResponses().size());
+      Assert.assertEquals(3, cardResponse.getApduResponses().size());
     } catch (KeypleReaderException ex) {
       Assert.fail("Should not throw exception");
     }
@@ -1434,13 +1434,13 @@ public class StubReaderTest extends BaseStubTest {
       }
 
       @Override
-      protected AbstractMatchingSe parse(SeResponse seResponse) {
+      protected AbstractMatchingSe parse(CardResponse cardResponse) {
         class GenericMatchingSe extends AbstractMatchingSe {
-          public GenericMatchingSe(SeResponse selectionResponse) {
+          public GenericMatchingSe(CardResponse selectionResponse) {
             super(selectionResponse);
           }
         }
-        return new GenericMatchingSe(seResponse);
+        return new GenericMatchingSe(cardResponse);
       }
     }
 

@@ -25,8 +25,8 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.CardRequest;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Before;
@@ -69,8 +69,8 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
           cardRequests, MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
       fail("A KeypleReaderIOException was expected");
     } catch (KeypleReaderIOException ex) {
-      assertThat(ex.getSeResponses().size()).isEqualTo(1);
-      assertThat(ex.getSeResponses().get(0).getApduResponses().size()).isEqualTo(2);
+      assertThat(ex.getCardResponses().size()).isEqualTo(1);
+      assertThat(ex.getCardResponses().get(0).getApduResponses().size()).isEqualTo(2);
     }
   }
 
@@ -85,10 +85,10 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
           cardRequests, MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
       fail("A KeypleReaderIOException was expected");
     } catch (KeypleReaderIOException ex) {
-      assertThat(ex.getSeResponses().size()).isEqualTo(2);
-      assertThat(ex.getSeResponses().get(0).getApduResponses().size()).isEqualTo(4);
-      assertThat(ex.getSeResponses().get(1).getApduResponses().size()).isEqualTo(2);
-      assertThat(ex.getSeResponses().get(1).getApduResponses().size()).isEqualTo(2);
+      assertThat(ex.getCardResponses().size()).isEqualTo(2);
+      assertThat(ex.getCardResponses().get(0).getApduResponses().size()).isEqualTo(4);
+      assertThat(ex.getCardResponses().get(1).getApduResponses().size()).isEqualTo(2);
+      assertThat(ex.getCardResponses().get(1).getApduResponses().size()).isEqualTo(2);
     }
   }
 
@@ -103,10 +103,10 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
           cardRequests, MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
       fail("A KeypleReaderIOException was expected");
     } catch (KeypleReaderIOException ex) {
-      assertThat(ex.getSeResponses().size()).isEqualTo(3);
-      assertThat(ex.getSeResponses().get(0).getApduResponses().size()).isEqualTo(4);
-      assertThat(ex.getSeResponses().get(1).getApduResponses().size()).isEqualTo(4);
-      assertThat(ex.getSeResponses().get(2).getApduResponses().size()).isEqualTo(2);
+      assertThat(ex.getCardResponses().size()).isEqualTo(3);
+      assertThat(ex.getCardResponses().get(0).getApduResponses().size()).isEqualTo(4);
+      assertThat(ex.getCardResponses().get(1).getApduResponses().size()).isEqualTo(4);
+      assertThat(ex.getCardResponses().get(2).getApduResponses().size()).isEqualTo(2);
     }
   }
 
@@ -117,7 +117,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     List<CardRequest> cardRequests = getPartialRequestList(reader, 3);
     try {
       // test
-      List<SeResponse> responses =
+      List<CardResponse> responses =
           reader.processSeRequests(
               cardRequests, MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
       assertThat(responses.size()).isEqualTo(3);
@@ -137,7 +137,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     List<CardRequest> cardRequests = getPartialRequestList(reader, 3);
     try {
       // test
-      List<SeResponse> responses =
+      List<CardResponse> responses =
           reader.processSeRequests(
               cardRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
       assertThat(responses.size()).isEqualTo(1);
@@ -157,7 +157,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
       reader.processSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
     } catch (KeypleReaderIOException ex) {
       logger.error("", ex);
-      assertThat(ex.getSeResponse().getApduResponses().size()).isEqualTo(0);
+      assertThat(ex.getCardResponse().getApduResponses().size()).isEqualTo(0);
     }
   }
 
@@ -172,7 +172,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
       fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
-      assertThat(ex.getSeResponse().getApduResponses().size()).isEqualTo(1);
+      assertThat(ex.getCardResponse().getApduResponses().size()).isEqualTo(1);
     }
   }
 
@@ -187,7 +187,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
       fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
-      assertThat(ex.getSeResponse().getApduResponses().size()).isEqualTo(2);
+      assertThat(ex.getCardResponse().getApduResponses().size()).isEqualTo(2);
     }
   }
 
@@ -198,8 +198,8 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     CardRequest cardRequest = getPartialRequest(reader, 3);
     try {
       // test
-      SeResponse seResponse = reader.processSeRequest(cardRequest, ChannelControl.CLOSE_AFTER);
-      assertThat(seResponse.getApduResponses().size()).isEqualTo(3);
+      CardResponse cardResponse = reader.processSeRequest(cardRequest, ChannelControl.CLOSE_AFTER);
+      assertThat(cardResponse.getApduResponses().size()).isEqualTo(3);
     } catch (KeypleReaderException ex) {
       fail("Should not throw exception");
     }

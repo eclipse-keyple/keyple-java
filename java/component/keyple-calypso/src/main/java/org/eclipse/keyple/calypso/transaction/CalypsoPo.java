@@ -16,7 +16,7 @@ import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /**
@@ -95,7 +95,7 @@ public class CalypsoPo extends AbstractMatchingSe {
    *
    * @param selectionResponse the response to the selection application command
    */
-  CalypsoPo(SeResponse selectionResponse) {
+  CalypsoPo(CardResponse selectionResponse) {
     super(selectionResponse);
 
     int bufferSizeIndicator;

@@ -18,8 +18,8 @@ import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.CardRequest;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractReader;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.pluginse.method.RmTransmitSetTx;
@@ -100,11 +100,11 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
    * @param cardRequests : List of CardRequest to be transmitted to the card
    * @param multiSeRequestProcessing the multi card processing mode
    * @param channelControl indicates if the channel has to be closed at the end of the processing
-   * @return List of SeResponse from the card
+   * @return List of CardResponse from the card
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */
   @Override
-  protected List<SeResponse> processSeRequests(
+  protected List<CardResponse> processSeRequests(
       List<CardRequest> cardRequests,
       MultiSeRequestProcessing multiSeRequestProcessing,
       ChannelControl channelControl) {
@@ -138,11 +138,11 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
    *
    * @param cardRequest : CardRequest to be transmitted to the card
    * @param channelControl indicates if the channel has to be closed at the end of the processing
-   * @return seResponse : SeResponse from the card
+   * @return cardResponse : CardResponse from the card
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */
   @Override
-  protected SeResponse processSeRequest(CardRequest cardRequest, ChannelControl channelControl) {
+  protected CardResponse processSeRequest(CardRequest cardRequest, ChannelControl channelControl) {
 
     RmTransmitTx transmit =
         new RmTransmitTx(

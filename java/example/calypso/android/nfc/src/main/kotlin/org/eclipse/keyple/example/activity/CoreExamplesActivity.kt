@@ -32,7 +32,7 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException
-import org.eclipse.keyple.core.seproxy.message.SeResponse
+import org.eclipse.keyple.core.seproxy.message.CardResponse
 import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.example.calypso.android.nfc.R
@@ -397,11 +397,11 @@ class CoreExamplesActivity : AbstractExampleActivity() {
      * Create a new class extending AbstractSeSelectionRequest
      */
     inner class GenericSeSelectionRequest(seSelector: SeSelector) : AbstractSeSelectionRequest<AbstractApduCommandBuilder>(seSelector) {
-        override fun parse(seResponse: SeResponse): AbstractMatchingSe {
+        override fun parse(cardResponse: CardResponse): AbstractMatchingSe {
             class GenericMatchingSe(
-                selectionResponse: SeResponse
+                selectionResponse: CardResponse
             ) : AbstractMatchingSe(selectionResponse)
-            return GenericMatchingSe(seResponse)
+            return GenericMatchingSe(cardResponse)
         }
     }
 }

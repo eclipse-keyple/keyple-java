@@ -13,7 +13,7 @@ package org.eclipse.keyple.core.selection;
 
 import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 
 /**
  * AbstractMatchingSe is the class to manage the elements of the result of a selection.<br>
@@ -30,7 +30,7 @@ public abstract class AbstractMatchingSe {
    *
    * @param selectionResponse the response from the card
    */
-  protected AbstractMatchingSe(SeResponse selectionResponse) {
+  protected AbstractMatchingSe(CardResponse selectionResponse) {
     ApduResponse fci = selectionResponse.getSelectionStatus().getFci();
     if (fci != null) {
       this.fciBytes = fci.getBytes();

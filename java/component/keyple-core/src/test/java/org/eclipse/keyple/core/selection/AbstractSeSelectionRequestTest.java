@@ -19,7 +19,7 @@ import org.eclipse.keyple.core.command.SeCommand;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.CardRequest;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
@@ -70,7 +70,7 @@ public class AbstractSeSelectionRequestTest {
     }
 
     @Override
-    protected AbstractMatchingSe parse(SeResponse seResponse) {
+    protected AbstractMatchingSe parse(CardResponse cardResponse) {
       return null;
     }
   }

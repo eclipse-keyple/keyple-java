@@ -18,13 +18,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 @SuppressWarnings({"PMD.TooManyMethods", "PMD.SignatureDeclareThrowsException"})
 @RunWith(MockitoJUnitRunner.class)
-public class SeResponseTest {
+public class CardResponseTest {
 
   @Test
   public void constructorSuccessfullResponseMatch() {
 
-    SeResponse response =
-        new SeResponse(
+    CardResponse response =
+        new CardResponse(
             true,
             true,
             new SelectionStatus(ApduResponseTest.getAAtr(), ApduResponseTest.getAFCI(), true),
@@ -41,8 +41,8 @@ public class SeResponseTest {
   @Test
   public void constructorSuccessfullResponseNoMatch() {
 
-    SeResponse response =
-        new SeResponse(
+    CardResponse response =
+        new CardResponse(
             true,
             true,
             new SelectionStatus(ApduResponseTest.getAAtr(), ApduResponseTest.getAFCI(), false),
@@ -58,8 +58,8 @@ public class SeResponseTest {
 
   @Test
   public void constructorATRNull() {
-    SeResponse response =
-        new SeResponse(
+    CardResponse response =
+        new CardResponse(
             true,
             true,
             new SelectionStatus(null, ApduResponseTest.getAFCI(), true),
@@ -69,8 +69,8 @@ public class SeResponseTest {
 
   @Test
   public void constructorFCINull() {
-    SeResponse response =
-        new SeResponse(
+    CardResponse response =
+        new CardResponse(
             true,
             true,
             new SelectionStatus(ApduResponseTest.getAAtr(), null, true),
@@ -82,8 +82,8 @@ public class SeResponseTest {
    * HELPERS
    */
 
-  public static SeResponse getASeResponse() {
-    return new SeResponse(
+  public static CardResponse getACardResponse() {
+    return new CardResponse(
         true,
         true,
         new SelectionStatus(ApduResponseTest.getAAtr(), ApduResponseTest.getAFCI(), true),

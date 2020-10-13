@@ -14,7 +14,7 @@ package org.eclipse.keyple.core.selection;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
@@ -39,7 +39,7 @@ public class SeResourceTest extends CoreBaseTest {
     SelectionStatus selectionStatus =
         new SelectionStatus(
             new AnswerToReset(ByteArrayUtil.fromHex("3B00000000000000")), null, false);
-    MatchingSe matchingSe = new MatchingSe(new SeResponse(true, true, selectionStatus, null));
+    MatchingSe matchingSe = new MatchingSe(new CardResponse(true, true, selectionStatus, null));
     Reader reader = null;
     LocalSeResource localSeResource = new LocalSeResource(reader, matchingSe);
     Assert.assertEquals(matchingSe, localSeResource.getMatchingSe());
@@ -48,7 +48,7 @@ public class SeResourceTest extends CoreBaseTest {
 
   /** Matching card instantiation */
   private final class MatchingSe extends AbstractMatchingSe {
-    MatchingSe(SeResponse selectionResponse) {
+    MatchingSe(CardResponse selectionResponse) {
       super(selectionResponse);
     }
   }

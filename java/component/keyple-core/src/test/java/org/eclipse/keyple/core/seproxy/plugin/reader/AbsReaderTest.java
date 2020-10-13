@@ -23,9 +23,9 @@ import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.CardRequestTest;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
+import org.eclipse.keyple.core.seproxy.message.CardResponseTest;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.message.SeResponseTest;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -83,7 +83,7 @@ public class AbsReaderTest extends CoreBaseTest {
   public void ts_transmit() throws Exception {
     AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
     List<CardRequest> cardRequests = getSeRequestList();
-    List<SeResponse> responses =
+    List<CardResponse> responses =
         r.transmitSeRequests(
             cardRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
     verify(r, times(1))
@@ -100,7 +100,7 @@ public class AbsReaderTest extends CoreBaseTest {
   public void transmit() throws Exception {
     AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
     CardRequest request = CardRequestTest.getSeRequestSample();
-    SeResponse response = r.transmitSeRequest(request, ChannelControl.CLOSE_AFTER);
+    CardResponse response = r.transmitSeRequest(request, ChannelControl.CLOSE_AFTER);
     verify(r, times(1)).processSeRequest(request, ChannelControl.CLOSE_AFTER);
     Assert.assertNotNull(response);
   }
@@ -120,10 +120,10 @@ public class AbsReaderTest extends CoreBaseTest {
   public static AbstractReader getSpy(String pluginName, String readerName) {
     AbstractReader r = Mockito.spy(new BlankAbstractReader(pluginName, readerName));
     when(r.processSeRequest(any(CardRequest.class), any(ChannelControl.class)))
-        .thenReturn(SeResponseTest.getASeResponse());
+        .thenReturn(CardResponseTest.getACardResponse());
     when(r.processSeRequests(
             any(List.class), any(MultiSeRequestProcessing.class), any(ChannelControl.class)))
-        .thenReturn(getSeResponses());
+        .thenReturn(getCardResponses());
     return r;
   }
 
@@ -133,9 +133,9 @@ public class AbsReaderTest extends CoreBaseTest {
     return cardRequests;
   }
 
-  public static List<SeResponse> getSeResponses() {
-    List<SeResponse> responses = new ArrayList<SeResponse>();
-    responses.add(SeResponseTest.getASeResponse());
+  public static List<CardResponse> getCardResponses() {
+    List<CardResponse> responses = new ArrayList<CardResponse>();
+    responses.add(CardResponseTest.getACardResponse());
     return responses;
   }
 }

@@ -14,7 +14,7 @@ package org.eclipse.keyple.example.common.generic;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
 import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 
 /** Create a new class extending AbstractSeSelectionRequest */
 public class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
@@ -23,12 +23,12 @@ public class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
   }
 
   @Override
-  protected AbstractMatchingSe parse(SeResponse seResponse) {
+  protected AbstractMatchingSe parse(CardResponse cardResponse) {
     class GenericMatchingSe extends AbstractMatchingSe {
-      public GenericMatchingSe(SeResponse selectionResponse) {
+      public GenericMatchingSe(CardResponse selectionResponse) {
         super(selectionResponse);
       }
     }
-    return new GenericMatchingSe(seResponse);
+    return new GenericMatchingSe(cardResponse);
   }
 }

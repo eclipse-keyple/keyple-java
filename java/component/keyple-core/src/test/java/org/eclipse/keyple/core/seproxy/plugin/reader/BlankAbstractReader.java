@@ -14,8 +14,8 @@ package org.eclipse.keyple.core.seproxy.plugin.reader;
 import java.util.List;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.message.CardRequest;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
 
 /** A blank class extending AbstractReader only purpose is to be tested and spied by mockito */
 public class BlankAbstractReader extends AbstractReader {
@@ -25,7 +25,7 @@ public class BlankAbstractReader extends AbstractReader {
   }
 
   @Override
-  protected List<SeResponse> processSeRequests(
+  protected List<CardResponse> processSeRequests(
       List<CardRequest> cardRequests,
       MultiSeRequestProcessing multiSeRequestProcessing,
       ChannelControl channelControl) {
@@ -33,7 +33,7 @@ public class BlankAbstractReader extends AbstractReader {
   }
 
   @Override
-  protected SeResponse processSeRequest(CardRequest cardRequest, ChannelControl channelControl) {
+  protected CardResponse processSeRequest(CardRequest cardRequest, ChannelControl channelControl) {
     return null;
   }
 

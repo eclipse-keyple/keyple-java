@@ -16,9 +16,9 @@ import java.util.List;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 
 /**
- * List of APDU requests that will result in a {@link SeResponse}
+ * List of APDU requests that will result in a {@link CardResponse}
  *
- * @see SeResponse
+ * @see CardResponse
  */
 public final class CardRequest implements Serializable {
 

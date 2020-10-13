@@ -140,16 +140,16 @@ class SamCommandProcessor {
 
     apduRequests.add(getChallengeCmdBuild.getApduRequest());
 
-    // Transmit the CardRequest to the SAM and get back the SeResponse (list of ApduResponse)
-    SeResponse samSeResponse;
+    // Transmit the CardRequest to the SAM and get back the CardResponse (list of ApduResponse)
+    CardResponse samCardResponse;
     try {
-      samSeResponse =
+      samCardResponse =
           samReader.transmitSeRequest(new CardRequest(apduRequests), ChannelControl.KEEP_OPEN);
     } catch (KeypleReaderIOException e) {
       throw new CalypsoSamIOException("SAM IO Exception while getting terminal challenge.", e);
     }
 
-    List<ApduResponse> samApduResponses = samSeResponse.getApduResponses();
+    List<ApduResponse> samApduResponses = samCardResponse.getApduResponses();
     byte[] sessionTerminalChallenge;
 
     int numberOfSamCmd = apduRequests.size();
@@ -402,16 +402,16 @@ class SamCommandProcessor {
 
     CardRequest samCardRequest = new CardRequest(getApduRequests(samCommands));
 
-    // Transmit CardRequest and get SeResponse
-    SeResponse samSeResponse;
+    // Transmit CardRequest and get CardResponse
+    CardResponse samCardResponse;
 
     try {
-      samSeResponse = samReader.transmitSeRequest(samCardRequest, ChannelControl.KEEP_OPEN);
+      samCardResponse = samReader.transmitSeRequest(samCardRequest, ChannelControl.KEEP_OPEN);
     } catch (KeypleReaderIOException e) {
       throw new CalypsoSamIOException("SAM IO Exception while transmitting digest data.", e);
     }
 
-    List<ApduResponse> samApduResponses = samSeResponse.getApduResponses();
+    List<ApduResponse> samApduResponses = samCardResponse.getApduResponses();
 
     if (samApduResponses.size() != samCommands.size()) {
       throw new CalypsoDesynchronizedExchangesException(
@@ -463,16 +463,16 @@ class SamCommandProcessor {
 
     CardRequest samCardRequest = new CardRequest(samApduRequests);
 
-    SeResponse samSeResponse;
+    CardResponse samCardResponse;
     try {
-      samSeResponse = samReader.transmitSeRequest(samCardRequest, ChannelControl.KEEP_OPEN);
+      samCardResponse = samReader.transmitSeRequest(samCardRequest, ChannelControl.KEEP_OPEN);
     } catch (KeypleReaderIOException e) {
       throw new CalypsoSamIOException(
           "SAM IO Exception while transmitting digest authentication data.", e);
     }
 
     // Get transaction result parsing the response
-    List<ApduResponse> samApduResponses = samSeResponse.getApduResponses();
+    List<ApduResponse> samApduResponses = samCardResponse.getApduResponses();
 
     if (samApduResponses == null || samApduResponses.isEmpty()) {
       throw new CalypsoDesynchronizedExchangesException(
@@ -557,11 +557,11 @@ class SamCommandProcessor {
     CardRequest samCardRequest = new CardRequest(getApduRequests(samCommands));
 
     // execute the command
-    SeResponse samSeResponse =
+    CardResponse samCardResponse =
         samReader.transmitSeRequest(samCardRequest, ChannelControl.KEEP_OPEN);
 
     ApduResponse cardCipherPinResponse =
-        samSeResponse.getApduResponses().get(cardCipherPinCmdIndex);
+        samCardResponse.getApduResponses().get(cardCipherPinCmdIndex);
 
     // create a parser
     CardCipherPinRespPars cardCipherPinRespPars =
@@ -618,11 +618,11 @@ class SamCommandProcessor {
     CardRequest samCardRequest = new CardRequest(getApduRequests(samCommands));
 
     // execute the command
-    SeResponse samSeResponse =
+    CardResponse samCardResponse =
         samReader.transmitSeRequest(samCardRequest, ChannelControl.KEEP_OPEN);
 
     ApduResponse svPrepareResponse =
-        samSeResponse.getApduResponses().get(svPrepareOperationCmdIndex);
+        samCardResponse.getApduResponses().get(svPrepareOperationCmdIndex);
 
     // create a parser
     SvPrepareOperationRespPars svPrepareOperationRespPars =
@@ -749,10 +749,10 @@ class SamCommandProcessor {
     CardRequest samCardRequest = new CardRequest(getApduRequests(samCommands));
 
     // execute the command
-    SeResponse samSeResponse =
+    CardResponse samCardResponse =
         samReader.transmitSeRequest(samCardRequest, ChannelControl.KEEP_OPEN);
 
-    ApduResponse svCheckResponse = samSeResponse.getApduResponses().get(0);
+    ApduResponse svCheckResponse = samCardResponse.getApduResponses().get(0);
 
     // create a parser
     SvCheckRespPars svCheckRespPars = svCheckCmdBuilder.createResponseParser(svCheckResponse);

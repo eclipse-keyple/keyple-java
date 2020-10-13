@@ -16,7 +16,7 @@ import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationNoReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.plugin.remotese.rm.IRemoteMethodExecutor;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
@@ -44,7 +44,7 @@ public class RmPoolAllocateExecutor implements IRemoteMethodExecutor {
 
     KeypleDto keypleDto = transportDto.getKeypleDTO();
     TransportDto out = null;
-    SeResponse seResponse = null;
+    CardResponse cardResponse = null;
 
     // Extract info from keypleDto
     JsonObject body = JsonParser.getGson().fromJson(keypleDto.getBody(), JsonObject.class);
