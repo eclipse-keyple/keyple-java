@@ -13,6 +13,7 @@ package org.eclipse.keyple.plugin.stub;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
@@ -90,12 +91,16 @@ public abstract class StubSecureElement {
     // convert apduIn to hexa
     String hexApdu = ByteArrayUtil.toHex(apduIn);
 
-    // return matching hexa response if found
-    if (hexCommands.containsKey(hexApdu)) {
-      return ByteArrayUtil.fromHex(hexCommands.get(hexApdu));
+    // return matching hexa response if the provided APDU matches the regex
+    Pattern p;
+    for (Map.Entry<String, String> hexCommand : hexCommands.entrySet()) {
+      p = Pattern.compile(hexCommand.getKey());
+      if (p.matcher(hexApdu).matches()) {
+        return ByteArrayUtil.fromHex(hexCommand.getValue());
+      }
     }
 
     // throw a KeypleReaderIOException if not found
-    throw new KeypleReaderIOException("No response available for this request.");
+    throw new KeypleReaderIOException("No response available for this request: " + hexApdu);
   }
 }
