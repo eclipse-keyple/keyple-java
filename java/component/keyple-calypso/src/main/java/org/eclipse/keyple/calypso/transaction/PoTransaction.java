@@ -61,9 +61,9 @@ import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -245,11 +245,11 @@ public class PoTransaction {
       poApduRequests.addAll(getApduRequests(poCommands));
     }
 
-    // Create a SeRequest from the ApduRequest list, PO AID as Selector, keep channel open
-    SeRequest poSeRequest = new SeRequest(poApduRequests);
+    // Create a CardRequest from the ApduRequest list, PO AID as Selector, keep channel open
+    CardRequest poCardRequest = new CardRequest(poApduRequests);
 
     // Transmit the commands to the PO
-    SeResponse poSeResponse = safePoTransmit(poSeRequest, ChannelControl.KEEP_OPEN);
+    SeResponse poSeResponse = safePoTransmit(poCardRequest, ChannelControl.KEEP_OPEN);
 
     // Retrieve and check the ApduResponses
     List<ApduResponse> poApduResponses = poSeResponse.getApduResponses();
@@ -330,7 +330,7 @@ public class PoTransaction {
    * Process PO commands in a Secure Session.
    *
    * <ul>
-   *   <li>On the PO reader, generates a SeRequest with channelControl set to KEEP_OPEN, and
+   *   <li>On the PO reader, generates a CardRequest with channelControl set to KEEP_OPEN, and
    *       ApduRequests with the PO commands.
    *   <li>In case the secure session is active, the "cache" of SAM commands is completed with the
    *       corresponding Digest Update commands.
@@ -353,12 +353,12 @@ public class PoTransaction {
     // Get the PO ApduRequest List
     List<ApduRequest> poApduRequests = getApduRequests(poCommands);
 
-    // Create a SeRequest from the ApduRequest list, PO AID as Selector, manage the logical
+    // Create a CardRequest from the ApduRequest list, PO AID as Selector, manage the logical
     // channel according to the channelControl enum
-    SeRequest poSeRequest = new SeRequest(poApduRequests);
+    CardRequest poCardRequest = new CardRequest(poApduRequests);
 
     // Transmit the commands to the PO
-    SeResponse poSeResponse = safePoTransmit(poSeRequest, channelControl);
+    SeResponse poSeResponse = safePoTransmit(poCardRequest, channelControl);
 
     // Retrieve and check the ApduResponses
     List<ApduResponse> poApduResponses = poSeResponse.getApduResponses();
@@ -382,11 +382,11 @@ public class PoTransaction {
    *   <li>The SAM cache is completed with the Digest Update commands related to the new PO commands
    *       to be sent and their anticipated responses. A Digest Close command is also added to the
    *       SAM command cache.
-   *   <li>On the SAM session reader side, a SeRequest is transmitted with SAM commands from the
+   *   <li>On the SAM session reader side, a CardRequest is transmitted with SAM commands from the
    *       command cache. The SAM command cache is emptied.
    *   <li>The SAM certificate is retrieved from the Digest Close response. The terminal signature
    *       is identified.
-   *   <li>Then, on the PO reader, a SeRequest is transmitted with a {@link ChannelControl} set to
+   *   <li>Then, on the PO reader, a CardRequest is transmitted with a {@link ChannelControl} set to
    *       CLOSE_AFTER or KEEP_OPEN depending on whether or not prepareReleasePoChannel was called,
    *       and apduRequests including the new PO commands to send in the session, a Close Session
    *       command (defined with the SAM certificate), and optionally a ratificationCommand.
@@ -473,11 +473,11 @@ public class PoTransaction {
     }
 
     // Transfer PO commands
-    SeRequest poSeRequest = new SeRequest(poApduRequests);
+    CardRequest poCardRequest = new CardRequest(poApduRequests);
 
     SeResponse poSeResponse;
     try {
-      poSeResponse = poReader.transmitSeRequest(poSeRequest, channelControl);
+      poSeResponse = poReader.transmitSeRequest(poCardRequest, channelControl);
       // if the ratification command was added and no error occured then the response has been
       // received
       ratificationCommandResponseReceived = ratificationCommandAdded;
@@ -858,8 +858,8 @@ public class PoTransaction {
    * Process all prepared PO commands (outside a Secure Session).
    *
    * <ul>
-   *   <li>On the PO reader, generates a SeRequest with channelControl set to the provided value and
-   *       ApduRequests containing the PO commands.
+   *   <li>On the PO reader, generates a CardRequest with channelControl set to the provided value
+   *       and ApduRequests containing the PO commands.
    *   <li>The result of the commands is placed in CalypsoPo.
    * </ul>
    *
@@ -887,7 +887,7 @@ public class PoTransaction {
    * Process all prepared PO commands in a Secure Session.
    *
    * <ul>
-   *   <li>On the PO reader, generates a SeRequest with channelControl set to KEEP_OPEN, and
+   *   <li>On the PO reader, generates a CardRequest with channelControl set to KEEP_OPEN, and
    *       ApduRequests containing the PO commands.
    *   <li>In case the secure session is active, the "cache" of SAM commands is completed with the
    *       corresponding Digest Update commands.
@@ -1095,9 +1095,9 @@ public class PoTransaction {
     poApduRequests.add(closeSessionCmdBuild.getApduRequest());
 
     // Transfer PO commands
-    SeRequest poSeRequest = new SeRequest(poApduRequests);
+    CardRequest poCardRequest = new CardRequest(poApduRequests);
 
-    SeResponse poSeResponse = safePoTransmit(poSeRequest, channelControl);
+    SeResponse poSeResponse = safePoTransmit(poCardRequest, channelControl);
 
     closeSessionCmdBuild.createResponseParser(poSeResponse.getApduResponses().get(0)).checkStatus();
 
@@ -1183,9 +1183,9 @@ public class PoTransaction {
     processVerifyPin(pin.getBytes());
   }
 
-  private SeResponse safePoTransmit(SeRequest poSeRequest, ChannelControl channelControl) {
+  private SeResponse safePoTransmit(CardRequest poCardRequest, ChannelControl channelControl) {
     try {
-      return poReader.transmitSeRequest(poSeRequest, channelControl);
+      return poReader.transmitSeRequest(poCardRequest, channelControl);
     } catch (KeypleReaderIOException e) {
       throw new CalypsoPoIOException("PO IO Exception while transmitting commands.", e);
     }

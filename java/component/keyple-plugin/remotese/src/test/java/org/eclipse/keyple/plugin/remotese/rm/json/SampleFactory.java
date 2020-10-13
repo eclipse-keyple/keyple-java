@@ -47,7 +47,7 @@ public class SampleFactory {
     return ObservableReader.NotificationMode.ALWAYS;
   }
 
-  public static List<SeRequest> getASeRequestList_ISO14443_4() {
+  public static List<CardRequest> getASeRequestList_ISO14443_4() {
     String poAid = "A000000291A000000191";
 
     List<ApduRequest> poApduRequests;
@@ -62,31 +62,31 @@ public class SampleFactory {
             .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
             .build();
 
-    SeRequest seRequest = new SeRequest(seSelector, poApduRequests);
+    CardRequest cardRequest = new CardRequest(seSelector, poApduRequests);
 
-    List<SeRequest> seRequests = new ArrayList<SeRequest>();
+    List<CardRequest> cardRequests = new ArrayList<CardRequest>();
 
-    seRequests.add(seRequest);
+    cardRequests.add(cardRequest);
 
-    return seRequests;
+    return cardRequests;
   }
 
-  public static List<SeRequest> getASeRequestList() {
+  public static List<CardRequest> getASeRequestList() {
     String poAid = "A000000291A000000191";
 
     List<ApduRequest> poApduRequests;
     poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
-    SeRequest seRequest = new SeRequest(poApduRequests);
+    CardRequest cardRequest = new CardRequest(poApduRequests);
 
-    List<SeRequest> seRequests = new ArrayList<SeRequest>();
+    List<CardRequest> cardRequests = new ArrayList<CardRequest>();
 
-    seRequests.add(seRequest);
+    cardRequests.add(cardRequest);
 
-    return seRequests;
+    return cardRequests;
   }
 
-  public static SeRequest getASeRequest_ISO14443_4() {
+  public static CardRequest getASeRequest_ISO14443_4() {
     String poAid = "A000000291A000000191";
 
     List<ApduRequest> poApduRequests;
@@ -101,21 +101,21 @@ public class SampleFactory {
             .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
             .build();
 
-    SeRequest seRequest = new SeRequest(seSelector, poApduRequests);
-    return seRequest;
+    CardRequest cardRequest = new CardRequest(seSelector, poApduRequests);
+    return cardRequest;
   }
 
-  public static SeRequest getASeRequest() {
+  public static CardRequest getASeRequest() {
     String poAid = "A000000291A000000191";
 
     List<ApduRequest> poApduRequests;
     poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
-    SeRequest seRequest = new SeRequest(poApduRequests);
-    return seRequest;
+    CardRequest cardRequest = new CardRequest(poApduRequests);
+    return cardRequest;
   }
 
-  public static List<SeRequest> getCompleteRequestList() {
+  public static List<CardRequest> getCompleteRequestList() {
     String poAid = "A000000291A000000191";
 
     List<ApduRequest> poApduRequests;
@@ -139,15 +139,15 @@ public class SampleFactory {
             .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name())
             .build();
 
-    SeRequest seRequest = new SeRequest(aidSeSelector, poApduRequests);
+    CardRequest cardRequest = new CardRequest(aidSeSelector, poApduRequests);
 
-    SeRequest seRequest2 = new SeRequest(seAtrSelector, poApduRequests);
+    CardRequest cardRequest2 = new CardRequest(seAtrSelector, poApduRequests);
 
-    List<SeRequest> seRequests = new ArrayList<SeRequest>();
-    seRequests.add(seRequest);
-    seRequests.add(seRequest2);
+    List<CardRequest> cardRequests = new ArrayList<CardRequest>();
+    cardRequests.add(cardRequest);
+    cardRequests.add(cardRequest2);
 
-    return seRequests;
+    return cardRequests;
   }
 
   public static List<SeResponse> getCompleteResponseSet() {

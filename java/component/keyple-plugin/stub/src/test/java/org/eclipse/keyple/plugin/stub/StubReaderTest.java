@@ -798,7 +798,7 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
     // init Request
-    List<SeRequest> requests = getRequestIsoDepSetSample();
+    List<CardRequest> requests = getRequestIsoDepSetSample();
 
     // init card
     reader.insertSe(hoplinkSE());
@@ -827,7 +827,7 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
     // init Request
-    List<SeRequest> requests = getNoResponseRequest();
+    List<CardRequest> requests = getNoResponseRequest();
 
     // init card
     reader.insertSe(noApduResponseSE());
@@ -853,7 +853,7 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
     // init Request
-    List<SeRequest> seRequests = getPartialRequestList(0);
+    List<CardRequest> cardRequests = getPartialRequestList(0);
 
     // init card
     reader.insertSe(partialSE());
@@ -871,7 +871,7 @@ public class StubReaderTest extends BaseStubTest {
       List<SeResponse> seResponses =
           ((ProxyReader) reader)
               .transmitSeRequests(
-                  seRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+                  cardRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
@@ -886,7 +886,7 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
     // init Request
-    List<SeRequest> seRequests = getPartialRequestList(1);
+    List<CardRequest> cardRequests = getPartialRequestList(1);
 
     // init card
     reader.insertSe(partialSE());
@@ -904,7 +904,7 @@ public class StubReaderTest extends BaseStubTest {
       List<SeResponse> seResponses =
           ((ProxyReader) reader)
               .transmitSeRequests(
-                  seRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+                  cardRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
@@ -921,7 +921,7 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
     // init Request
-    List<SeRequest> seRequests = getPartialRequestList(2);
+    List<CardRequest> cardRequests = getPartialRequestList(2);
 
     // init card
     reader.insertSe(partialSE());
@@ -939,7 +939,7 @@ public class StubReaderTest extends BaseStubTest {
       List<SeResponse> seResponses =
           ((ProxyReader) reader)
               .transmitSeRequests(
-                  seRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+                  cardRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
@@ -956,7 +956,7 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
     // init Request
-    List<SeRequest> seRequests = getPartialRequestList(3);
+    List<CardRequest> cardRequests = getPartialRequestList(3);
 
     // init card
     reader.insertSe(partialSE());
@@ -974,7 +974,7 @@ public class StubReaderTest extends BaseStubTest {
       List<SeResponse> seResponses =
           ((ProxyReader) reader)
               .transmitSeRequests(
-                  seRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+                  cardRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
       Assert.assertEquals(3, seResponses.size());
       Assert.assertEquals(4, seResponses.get(0).getApduResponses().size());
       Assert.assertEquals(4, seResponses.get(1).getApduResponses().size());
@@ -990,7 +990,7 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
     // init Request
-    SeRequest seRequest = getPartialRequest(0);
+    CardRequest cardRequest = getPartialRequest(0);
 
     // init card
     reader.insertSe(partialSE());
@@ -1006,7 +1006,7 @@ public class StubReaderTest extends BaseStubTest {
     // test
     try {
       SeResponse seResponse =
-          ((ProxyReader) reader).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+          ((ProxyReader) reader).transmitSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
@@ -1020,7 +1020,7 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
     // init Request
-    SeRequest seRequest = getPartialRequest(1);
+    CardRequest cardRequest = getPartialRequest(1);
 
     // init card
     reader.insertSe(partialSE());
@@ -1036,7 +1036,7 @@ public class StubReaderTest extends BaseStubTest {
     // test
     try {
       SeResponse seResponse =
-          ((ProxyReader) reader).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+          ((ProxyReader) reader).transmitSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
@@ -1050,7 +1050,7 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
     // init Request
-    SeRequest seRequest = getPartialRequest(2);
+    CardRequest cardRequest = getPartialRequest(2);
 
     // init card
     reader.insertSe(partialSE());
@@ -1066,7 +1066,7 @@ public class StubReaderTest extends BaseStubTest {
     // test
     try {
       SeResponse seResponse =
-          ((ProxyReader) reader).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+          ((ProxyReader) reader).transmitSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
@@ -1080,7 +1080,7 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
     // init Request
-    SeRequest seRequest = getPartialRequest(3);
+    CardRequest cardRequest = getPartialRequest(3);
 
     // init card
     reader.insertSe(partialSE());
@@ -1096,7 +1096,7 @@ public class StubReaderTest extends BaseStubTest {
     // test
     try {
       SeResponse seResponse =
-          ((ProxyReader) reader).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+          ((ProxyReader) reader).transmitSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
       Assert.assertEquals(3, seResponse.getApduResponses().size());
     } catch (KeypleReaderException ex) {
       Assert.fail("Should not throw exception");
@@ -1119,20 +1119,20 @@ public class StubReaderTest extends BaseStubTest {
    * HELPER METHODS
    */
 
-  public static List<SeRequest> getRequestIsoDepSetSample() {
+  public static List<CardRequest> getRequestIsoDepSetSample() {
     String poAid = "A000000291A000000191";
     ReadRecordsCmdBuild poReadRecordCmd_T2Env =
         new ReadRecordsCmdBuild(PoClass.ISO, 0x14, 1, ReadRecordsCmdBuild.ReadMode.ONE_RECORD, 32);
 
     List<ApduRequest> poApduRequests = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
 
-    SeRequest seRequest = new SeRequest(poApduRequests);
+    CardRequest cardRequest = new CardRequest(poApduRequests);
 
-    List<SeRequest> seRequests = new ArrayList<SeRequest>();
+    List<CardRequest> cardRequests = new ArrayList<CardRequest>();
 
-    seRequests.add(seRequest);
+    cardRequests.add(cardRequest);
 
-    return seRequests;
+    return cardRequests;
   }
 
   /*
@@ -1140,20 +1140,20 @@ public class StubReaderTest extends BaseStubTest {
    *
    * An Exception will be thrown.
    */
-  public static List<SeRequest> getNoResponseRequest() {
+  public static List<CardRequest> getNoResponseRequest() {
 
     IncreaseCmdBuild poIncreaseCmdBuild =
         new IncreaseCmdBuild(PoClass.ISO, (byte) 0x14, (byte) 0x01, 0);
 
     List<ApduRequest> poApduRequests = Arrays.asList(poIncreaseCmdBuild.getApduRequest());
 
-    SeRequest seRequest = new SeRequest(poApduRequests);
+    CardRequest cardRequest = new CardRequest(poApduRequests);
 
-    List<SeRequest> seRequests = new ArrayList<SeRequest>();
+    List<CardRequest> cardRequests = new ArrayList<CardRequest>();
 
-    seRequests.add(seRequest);
+    cardRequests.add(cardRequest);
 
-    return seRequests;
+    return cardRequests;
   }
 
   /*
@@ -1161,7 +1161,7 @@ public class StubReaderTest extends BaseStubTest {
    *
    * An Exception will be thrown.
    */
-  public static List<SeRequest> getPartialRequestList(int scenario) {
+  public static List<CardRequest> getPartialRequestList(int scenario) {
     String poAid = "A000000291A000000191";
     ReadRecordsCmdBuild poReadRecord1CmdBuild =
         new ReadRecordsCmdBuild(PoClass.ISO, 0x14, 1, ReadRecordsCmdBuild.ReadMode.ONE_RECORD, 0);
@@ -1188,46 +1188,46 @@ public class StubReaderTest extends BaseStubTest {
     poApduRequests3.add(poReadRecord2CmdBuild.getApduRequest());
     poApduRequests3.add(poReadRecord1CmdBuild.getApduRequest());
 
-    SeRequest seRequest1 = new SeRequest(poApduRequests1);
+    CardRequest cardRequest1 = new CardRequest(poApduRequests1);
 
-    SeRequest seRequest2 = new SeRequest(poApduRequests2);
+    CardRequest cardRequest2 = new CardRequest(poApduRequests2);
 
-    /* This SeRequest fails at step 3 */
-    SeRequest seRequest3 = new SeRequest(poApduRequests3);
+    /* This CardRequest fails at step 3 */
+    CardRequest cardRequest3 = new CardRequest(poApduRequests3);
 
-    SeRequest seRequest4 = new SeRequest(poApduRequests1);
+    CardRequest cardRequest4 = new CardRequest(poApduRequests1);
 
-    List<SeRequest> seRequests = new ArrayList<SeRequest>();
+    List<CardRequest> cardRequests = new ArrayList<CardRequest>();
 
     switch (scenario) {
       case 0:
         /* 0 response */
-        seRequests.add(seRequest3); // fails
-        seRequests.add(seRequest1); // succeeds
-        seRequests.add(seRequest2); // succeeds
+        cardRequests.add(cardRequest3); // fails
+        cardRequests.add(cardRequest1); // succeeds
+        cardRequests.add(cardRequest2); // succeeds
         break;
       case 1:
         /* 1 response */
-        seRequests.add(seRequest1); // succeeds
-        seRequests.add(seRequest3); // fails
-        seRequests.add(seRequest2); // succeeds
+        cardRequests.add(cardRequest1); // succeeds
+        cardRequests.add(cardRequest3); // fails
+        cardRequests.add(cardRequest2); // succeeds
         break;
       case 2:
         /* 2 responses */
-        seRequests.add(seRequest1); // succeeds
-        seRequests.add(seRequest2); // succeeds
-        seRequests.add(seRequest3); // fails
+        cardRequests.add(cardRequest1); // succeeds
+        cardRequests.add(cardRequest2); // succeeds
+        cardRequests.add(cardRequest3); // fails
         break;
       case 3:
         /* 3 responses */
-        seRequests.add(seRequest1); // succeeds
-        seRequests.add(seRequest2); // succeeds
-        seRequests.add(seRequest4); // succeeds
+        cardRequests.add(cardRequest1); // succeeds
+        cardRequests.add(cardRequest2); // succeeds
+        cardRequests.add(cardRequest4); // succeeds
         break;
       default:
     }
 
-    return seRequests;
+    return cardRequests;
   }
 
   /*
@@ -1235,7 +1235,7 @@ public class StubReaderTest extends BaseStubTest {
    *
    * An Exception will be thrown.
    */
-  public static SeRequest getPartialRequest(int scenario) {
+  public static CardRequest getPartialRequest(int scenario) {
     String poAid = "A000000291A000000191";
 
     ReadRecordsCmdBuild poReadRecord1CmdBuild =
@@ -1272,7 +1272,7 @@ public class StubReaderTest extends BaseStubTest {
         break;
     }
 
-    return new SeRequest(poApduRequests);
+    return new CardRequest(poApduRequests);
   }
 
   public static StubSecureElement hoplinkSE() {

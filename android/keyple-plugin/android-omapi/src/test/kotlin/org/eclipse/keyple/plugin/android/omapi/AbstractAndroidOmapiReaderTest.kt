@@ -19,8 +19,8 @@ import org.eclipse.keyple.core.seproxy.SeSelector
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.seproxy.message.ApduRequest
+import org.eclipse.keyple.core.seproxy.message.CardRequest
 import org.eclipse.keyple.core.seproxy.message.ChannelControl
-import org.eclipse.keyple.core.seproxy.message.SeRequest
 import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactsCardCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.junit.After
@@ -167,13 +167,13 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         val poAid = "A000000291A000000191"
 
         // wrong protocol
-        val seRequest = SeRequest(SeSelector.builder()
+        val seRequest = CardRequest(SeSelector.builder()
                 .seProtocol("MIFARE_ULTRA_LIGHT")
                 .aidSelector(SeSelector.AidSelector.builder()
                         .aidToSelect(poAid).build()).build(), ArrayList())
 
         // test
-        val seRequests = ArrayList<SeRequest>()
+        val seRequests = ArrayList<CardRequest>()
         seRequests.add(seRequest)
         val seResponseList = reader.transmitSeRequests(seRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
 
@@ -225,28 +225,28 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
-    private fun getSampleSeRequest(): List<SeRequest> {
+    private fun getSampleSeRequest(): List<CardRequest> {
 
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
-        val seRequest = SeRequest(SeSelector.builder()
+        val seRequest = CardRequest(SeSelector.builder()
                 .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
                 .aidSelector(SeSelector.AidSelector.builder()
                         .aidToSelect(PO_AID).build()).build(), poApduRequestList)
 
-        val seRequestSet = ArrayList<SeRequest>()
+        val seRequestSet = ArrayList<CardRequest>()
         seRequestSet.add(seRequest)
         return seRequestSet
     }
 
-    private fun getNoAidSampleSeRequest(): List<SeRequest> {
+    private fun getNoAidSampleSeRequest(): List<CardRequest> {
 
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
-        val seRequest = SeRequest(SeSelector.builder()
+        val seRequest = CardRequest(SeSelector.builder()
                 .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name).build(), poApduRequestList)
 
-        val seRequestSet = ArrayList<SeRequest>()
+        val seRequestSet = ArrayList<CardRequest>()
         seRequestSet.add(seRequest)
         return seRequestSet
     }

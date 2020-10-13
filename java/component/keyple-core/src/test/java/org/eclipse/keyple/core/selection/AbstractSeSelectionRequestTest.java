@@ -18,7 +18,7 @@ import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.core.command.SeCommand;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
+import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -57,7 +57,7 @@ public class AbstractSeSelectionRequestTest {
     List<AbstractApduCommandBuilder> builders = testSeSelectionRequest.getCommandBuilders();
     assertThat(builders.get(0)).isEqualTo(builder1);
     assertThat(builders.get(1)).isEqualTo(builder2);
-    SeRequest selectionRequest = testSeSelectionRequest.getSelectionRequest();
+    CardRequest selectionRequest = testSeSelectionRequest.getSelectionRequest();
     List<ApduRequest> apduRequests = selectionRequest.getApduRequests();
     assertThat(apduRequests.get(0)).isEqualTo(apduRequest1);
     assertThat(apduRequests.get(1)).isEqualTo(apduRequest2);

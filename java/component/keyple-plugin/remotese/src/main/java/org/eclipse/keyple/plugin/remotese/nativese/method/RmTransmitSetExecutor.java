@@ -17,9 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.rm.IRemoteMethodExecutor;
@@ -68,17 +68,17 @@ public class RmTransmitSetExecutor implements IRemoteMethodExecutor {
 
     channelControl = ChannelControl.valueOf(bodyJsonO.get("channelControl").getAsString());
 
-    List<SeRequest> seRequests =
+    List<CardRequest> cardRequests =
         JsonParser.getGson()
             .fromJson(
-                bodyJsonO.get("seRequests").getAsString(),
-                new TypeToken<ArrayList<SeRequest>>() {}.getType());
+                bodyJsonO.get("cardRequests").getAsString(),
+                new TypeToken<ArrayList<CardRequest>>() {}.getType());
 
     // prepare transmitSet on nativeReader
     String nativeReaderName = keypleDto.getNativeReaderName();
     logger.trace(
-        "Execute locally seRequests : {} with params {} {}",
-        seRequests,
+        "Execute locally cardRequests : {} with params {} {}",
+        cardRequests,
         channelControl,
         multiSeRequestProcessing);
 
@@ -87,7 +87,8 @@ public class RmTransmitSetExecutor implements IRemoteMethodExecutor {
       ProxyReader reader = (ProxyReader) slaveAPI.findLocalReader(nativeReaderName);
 
       // execute transmitSet
-      seResponses = reader.transmitSeRequests(seRequests, multiSeRequestProcessing, channelControl);
+      seResponses =
+          reader.transmitSeRequests(cardRequests, multiSeRequestProcessing, channelControl);
 
       // prepare response
       String parseBody =

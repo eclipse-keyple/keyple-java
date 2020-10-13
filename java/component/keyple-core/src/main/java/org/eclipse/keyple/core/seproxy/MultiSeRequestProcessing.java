@@ -13,11 +13,11 @@ package org.eclipse.keyple.core.seproxy;
 
 /**
  * indicates whether the selection process should stop after the first matching or process all
- * requests in the SeRequest Set
+ * requests in the CardRequest Set
  */
 public enum MultiSeRequestProcessing {
   /** The selection process stops as soon as a selection case is successful. */
   FIRST_MATCH,
-  /** The selection process performs all the selection cases provided in the Set of SeRequest. */
+  /** The selection process performs all the selection cases provided in the Set of CardRequest. */
   PROCESS_ALL
 }

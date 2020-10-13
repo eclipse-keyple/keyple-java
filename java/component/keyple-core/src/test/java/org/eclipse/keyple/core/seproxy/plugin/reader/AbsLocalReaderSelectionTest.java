@@ -82,9 +82,9 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     SeSelector seSelector = getAtrSelector();
 
-    SeRequest seRequest = new SeRequest(seSelector, new ArrayList<ApduRequest>());
+    CardRequest cardRequest = new CardRequest(seSelector, new ArrayList<ApduRequest>());
 
-    SeResponse seResponse = r.processSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+    SeResponse seResponse = r.processSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
     assertThat(seResponse.getSelectionStatus().hasMatched()).isTrue();
 
@@ -99,9 +99,9 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     SeSelector seSelector = getAtrSelector();
 
-    SeRequest seRequest = new SeRequest(seSelector, new ArrayList<ApduRequest>());
+    CardRequest cardRequest = new CardRequest(seSelector, new ArrayList<ApduRequest>());
 
-    SeResponse seResponse = r.processSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+    SeResponse seResponse = r.processSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
     assertThat(seResponse.getSelectionStatus().hasMatched()).isFalse();
   }
@@ -117,9 +117,9 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     SeSelector seSelector = getAidSelector();
 
-    SeRequest seRequest = new SeRequest(seSelector, new ArrayList<ApduRequest>());
+    CardRequest cardRequest = new CardRequest(seSelector, new ArrayList<ApduRequest>());
 
-    SeResponse seResponse = r.processSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+    SeResponse seResponse = r.processSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
     assertThat(seResponse.getSelectionStatus().hasMatched()).isTrue();
   }
@@ -131,9 +131,9 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     SeSelector seSelector = getAidSelector();
 
-    SeRequest seRequest = new SeRequest(seSelector, new ArrayList<ApduRequest>());
+    CardRequest cardRequest = new CardRequest(seSelector, new ArrayList<ApduRequest>());
 
-    SeResponse seResponse = r.processSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+    SeResponse seResponse = r.processSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
     assertThat(seResponse.getSelectionStatus().hasMatched()).isFalse();
   }
@@ -153,9 +153,9 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     SeSelector seSelector = getAidSelector();
 
-    SeRequest seRequest = new SeRequest(seSelector, new ArrayList<ApduRequest>());
+    CardRequest cardRequest = new CardRequest(seSelector, new ArrayList<ApduRequest>());
 
-    SeResponse seResponse = r.processSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+    SeResponse seResponse = r.processSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
     assertThat(seResponse.getSelectionStatus().hasMatched()).isTrue();
   }
@@ -183,9 +183,9 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     SeSelector seSelector =
         SeSelector.builder().atrFilter(atrFilter).aidSelector(aidSelector).build();
 
-    SeRequest seRequest = new SeRequest(seSelector, new ArrayList<ApduRequest>());
+    CardRequest cardRequest = new CardRequest(seSelector, new ArrayList<ApduRequest>());
 
-    SeResponse seResponse = r.processSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+    SeResponse seResponse = r.processSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
     assertThat(seResponse.getSelectionStatus().hasMatched()).isTrue();
   }
@@ -201,9 +201,9 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     SeSelector seSelector = SeSelector.builder().build();
 
-    SeRequest seRequest = new SeRequest(seSelector, new ArrayList<ApduRequest>());
+    CardRequest cardRequest = new CardRequest(seSelector, new ArrayList<ApduRequest>());
 
-    SeResponse seResponse = r.processSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+    SeResponse seResponse = r.processSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
     assertThat(seResponse.getSelectionStatus().hasMatched()).isTrue();
   }

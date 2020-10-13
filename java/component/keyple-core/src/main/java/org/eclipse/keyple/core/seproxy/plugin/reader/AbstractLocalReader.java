@@ -404,7 +404,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    */
   @Override
   protected final List<SeResponse> processSeRequests(
-      List<SeRequest> seRequests,
+      List<CardRequest> cardRequests,
       MultiSeRequestProcessing multiSeRequestProcessing,
       ChannelControl channelControl) {
 
@@ -415,12 +415,12 @@ public abstract class AbstractLocalReader extends AbstractReader {
       openPhysicalChannelAndSetProtocol();
     }
 
-    /* loop over all SeRequest provided in the list */
-    for (SeRequest seRequest : seRequests) {
-      /* process the SeRequest and append the SeResponse list */
+    /* loop over all CardRequest provided in the list */
+    for (CardRequest cardRequest : cardRequests) {
+      /* process the CardRequest and append the SeResponse list */
       SeResponse seResponse;
       try {
-        seResponse = processSeRequestLogical(seRequest);
+        seResponse = processSeRequestLogical(cardRequest);
       } catch (KeypleReaderIOException ex) {
         /*
          * The process has been interrupted. We launch a KeypleReaderException with
@@ -440,7 +440,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
       }
       seResponses.add(seResponse);
       if (multiSeRequestProcessing == MultiSeRequestProcessing.PROCESS_ALL) {
-        /* multi SeRequest case: just close the logical channel and go on with the next selection. */
+        /* multi CardRequest case: just close the logical channel and go on with the next selection. */
         closeLogicalChannel();
       } else {
         if (logicalChannelIsOpen) {
@@ -467,7 +467,8 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * @since 0.9
    */
   @Override
-  protected final SeResponse processSeRequest(SeRequest seRequest, ChannelControl channelControl) {
+  protected final SeResponse processSeRequest(
+      CardRequest cardRequest, ChannelControl channelControl) {
 
     /* Open the physical channel if needed, determine the current protocol */
     if (!isPhysicalChannelOpen()) {
@@ -476,8 +477,8 @@ public abstract class AbstractLocalReader extends AbstractReader {
 
     SeResponse seResponse;
 
-    /* process the SeRequest and keep the SeResponse */
-    seResponse = processSeRequestLogical(seRequest);
+    /* process the CardRequest and keep the SeResponse */
+    seResponse = processSeRequestLogical(cardRequest);
 
     /* close the channel if requested */
     if (channelControl == ChannelControl.CLOSE_AFTER) {
@@ -567,7 +568,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * @param seSelector A not null {@link SeSelector}.
    * @return A not null {@link SelectionStatus}.
    * @throws IllegalStateException in case of configuration inconsistency.
-   * @see #processSeRequestLogical(SeRequest)
+   * @see #processSeRequestLogical(CardRequest)
    */
   private SelectionStatus processSelection(SeSelector seSelector) {
 
@@ -612,23 +613,23 @@ public abstract class AbstractLocalReader extends AbstractReader {
   }
 
   /**
-   * Processes the {@link SeRequest} passed as an argument and returns a {@link SeResponse}.
+   * Processes the {@link CardRequest} passed as an argument and returns a {@link SeResponse}.
    *
-   * <p>The complete description of the process of transmitting an {@link SeRequest} is described in
-   * {{@link ProxyReader#transmitSeRequest(SeRequest, ChannelControl)}}
+   * <p>The complete description of the process of transmitting an {@link CardRequest} is described
+   * in {{@link ProxyReader#transmitSeRequest(CardRequest, ChannelControl)}}
    *
-   * @param seRequest The {@link SeRequest} to be processed (must be not null).
+   * @param cardRequest The {@link CardRequest} to be processed (must be not null).
    * @return seResponse A not null {@link SeResponse}.
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @throws IllegalStateException in case of configuration inconsistency.
    * @see #processSeRequests(List, MultiSeRequestProcessing, ChannelControl)
-   * @see #processSeRequest(SeRequest, ChannelControl)
+   * @see #processSeRequest(CardRequest, ChannelControl)
    * @since 0.9
    */
-  private SeResponse processSeRequestLogical(SeRequest seRequest) {
+  private SeResponse processSeRequestLogical(CardRequest cardRequest) {
 
     SelectionStatus selectionStatus = null;
-    SeSelector seSelector = seRequest.getSeSelector();
+    SeSelector seSelector = cardRequest.getSeSelector();
     boolean previouslyOpen = logicalChannelIsOpen;
 
     if (seSelector != null) {
@@ -645,9 +646,9 @@ public abstract class AbstractLocalReader extends AbstractReader {
     List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
 
     /* The ApduRequests are optional, check if null */
-    if (seRequest.getApduRequests() != null) {
-      /* Proceeds with the APDU requests present in the SeRequest if any */
-      for (ApduRequest apduRequest : seRequest.getApduRequests()) {
+    if (cardRequest.getApduRequests() != null) {
+      /* Proceeds with the APDU requests present in the CardRequest if any */
+      for (ApduRequest apduRequest : cardRequest.getApduRequests()) {
         try {
           apduResponses.add(processApduRequest(apduRequest));
         } catch (KeypleReaderIOException ex) {

@@ -36,17 +36,17 @@ public final class DefaultSelectionsResponse extends AbstractDefaultSelectionsRe
    * the selection process. It transports the selection results into the {@link ReaderEvent} when
    * the reader is observed and also during explicit selections in the case of an unobserved reader.
    *
-   * <p>The list of {@link SeResponse} corresponds to the list of {@link SeRequest} present in the
+   * <p>The list of {@link SeResponse} corresponds to the list of {@link CardRequest} present in the
    * {@link DefaultSelectionsRequest}. The first {@link SeResponse} corresponds to the first {@link
-   * SeRequest} and so on.
+   * CardRequest} and so on.
    *
-   * <p>When a {@link SeRequest} has not resulted in a response, then the corresponding {@link
+   * <p>When a {@link CardRequest} has not resulted in a response, then the corresponding {@link
    * SeResponse} in the list is null.
    *
    * <p>Depending on the setting of the selection, the process either processes all selection cases
    * provided in the {@link DefaultSelectionsRequest} or stops at the first selection case that
    * results in a response. In the latter case, the {@link SeResponse} list may be shorter than the
-   * {@link SeRequest} list.
+   * {@link CardRequest} list.
    *
    * @param selectionSeResponses A list of {@link SeResponse} (should not be null).
    * @since 0.9

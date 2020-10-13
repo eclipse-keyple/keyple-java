@@ -13,8 +13,8 @@ package org.eclipse.keyple.core.seproxy.event;
 
 import java.util.List;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
 
 /**
  * This abstract class defines the POJO used to carry the default selection request data.
@@ -49,5 +49,5 @@ public abstract class AbstractDefaultSelectionsRequest {
    * @return A not empty list.
    * @since 0.9
    */
-  protected abstract List<SeRequest> getSelectionSeRequests();
+  protected abstract List<CardRequest> getSelectionSeRequests();
 }

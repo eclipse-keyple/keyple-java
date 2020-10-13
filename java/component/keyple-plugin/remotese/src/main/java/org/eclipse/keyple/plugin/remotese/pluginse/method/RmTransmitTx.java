@@ -13,8 +13,8 @@ package org.eclipse.keyple.plugin.remotese.pluginse.method;
 
 import com.google.gson.JsonObject;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.rm.AbstractRemoteMethodTx;
@@ -30,7 +30,7 @@ public class RmTransmitTx extends AbstractRemoteMethodTx<SeResponse> {
 
   private static final Logger logger = LoggerFactory.getLogger(RmTransmitTx.class);
 
-  private final SeRequest seRequest;
+  private final CardRequest cardRequest;
   private final ChannelControl channelControl;
 
   @Override
@@ -39,7 +39,7 @@ public class RmTransmitTx extends AbstractRemoteMethodTx<SeResponse> {
   }
 
   public RmTransmitTx(
-      SeRequest seRequest,
+      CardRequest cardRequest,
       ChannelControl channelControl,
       String sessionId,
       String nativeReaderName,
@@ -47,7 +47,7 @@ public class RmTransmitTx extends AbstractRemoteMethodTx<SeResponse> {
       String requesterNodeId,
       String slaveNodeId) {
     super(sessionId, nativeReaderName, virtualReaderName, slaveNodeId, requesterNodeId);
-    this.seRequest = seRequest;
+    this.cardRequest = cardRequest;
     this.channelControl = channelControl;
   }
 
@@ -55,7 +55,7 @@ public class RmTransmitTx extends AbstractRemoteMethodTx<SeResponse> {
   public KeypleDto dto() {
     JsonObject body = new JsonObject();
 
-    body.addProperty("seRequest", JsonParser.getGson().toJson(seRequest, SeRequest.class));
+    body.addProperty("cardRequest", JsonParser.getGson().toJson(cardRequest, CardRequest.class));
 
     body.addProperty("channelControl", channelControl.name());
 

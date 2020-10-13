@@ -20,7 +20,7 @@ import org.eclipse.keyple.core.seproxy.SeSelector;
  *
  * @see SeResponse
  */
-public final class SeRequest implements Serializable {
+public final class CardRequest implements Serializable {
 
   /** +/seSelector is either an AID or an ATR regular expression */
   private final SeSelector seSelector;
@@ -39,7 +39,7 @@ public final class SeRequest implements Serializable {
    * @param apduRequests a optional list of {@link ApduRequest} to execute after a successful
    *     selection process
    */
-  public SeRequest(SeSelector seSelector, List<ApduRequest> apduRequests) {
+  public CardRequest(SeSelector seSelector, List<ApduRequest> apduRequests) {
     this.seSelector = seSelector;
     this.apduRequests = apduRequests;
   }
@@ -49,7 +49,7 @@ public final class SeRequest implements Serializable {
    *
    * @param apduRequests a list of ApudRequest
    */
-  public SeRequest(List<ApduRequest> apduRequests) {
+  public CardRequest(List<ApduRequest> apduRequests) {
     this.seSelector = null;
     this.apduRequests = apduRequests;
   }
@@ -76,6 +76,6 @@ public final class SeRequest implements Serializable {
   @Override
   public String toString() {
     return String.format(
-        "SeRequest:{REQUESTS = %s, SELECTOR = %s}", getApduRequests(), getSeSelector());
+        "CardRequest:{REQUESTS = %s, SELECTOR = %s}", getApduRequests(), getSeSelector());
   }
 }

@@ -21,9 +21,9 @@ import java.util.List;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.message.CardRequest;
+import org.eclipse.keyple.core.seproxy.message.CardRequestTest;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
-import org.eclipse.keyple.core.seproxy.message.SeRequestTest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponseTest;
 import org.junit.Assert;
@@ -82,13 +82,13 @@ public class AbsReaderTest extends CoreBaseTest {
   @Test
   public void ts_transmit() throws Exception {
     AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
-    List<SeRequest> seRequests = getSeRequestList();
+    List<CardRequest> cardRequests = getSeRequestList();
     List<SeResponse> responses =
         r.transmitSeRequests(
-            seRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
+            cardRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
     verify(r, times(1))
         .processSeRequests(
-            seRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
+            cardRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
     Assert.assertNotNull(responses);
   }
 
@@ -99,7 +99,7 @@ public class AbsReaderTest extends CoreBaseTest {
   @Test
   public void transmit() throws Exception {
     AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
-    SeRequest request = SeRequestTest.getSeRequestSample();
+    CardRequest request = CardRequestTest.getSeRequestSample();
     SeResponse response = r.transmitSeRequest(request, ChannelControl.CLOSE_AFTER);
     verify(r, times(1)).processSeRequest(request, ChannelControl.CLOSE_AFTER);
     Assert.assertNotNull(response);
@@ -119,7 +119,7 @@ public class AbsReaderTest extends CoreBaseTest {
    */
   public static AbstractReader getSpy(String pluginName, String readerName) {
     AbstractReader r = Mockito.spy(new BlankAbstractReader(pluginName, readerName));
-    when(r.processSeRequest(any(SeRequest.class), any(ChannelControl.class)))
+    when(r.processSeRequest(any(CardRequest.class), any(ChannelControl.class)))
         .thenReturn(SeResponseTest.getASeResponse());
     when(r.processSeRequests(
             any(List.class), any(MultiSeRequestProcessing.class), any(ChannelControl.class)))
@@ -127,10 +127,10 @@ public class AbsReaderTest extends CoreBaseTest {
     return r;
   }
 
-  public static List<SeRequest> getSeRequestList() {
-    List<SeRequest> seRequests = new ArrayList<SeRequest>();
-    seRequests.add(SeRequestTest.getSeRequestSample());
-    return seRequests;
+  public static List<CardRequest> getSeRequestList() {
+    List<CardRequest> cardRequests = new ArrayList<CardRequest>();
+    cardRequests.add(CardRequestTest.getSeRequestSample());
+    return cardRequests;
   }
 
   public static List<SeResponse> getSeResponses() {

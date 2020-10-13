@@ -24,8 +24,8 @@ import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
+import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -62,11 +62,11 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
     // init Request
-    List<SeRequest> seRequests = getPartialRequestList(reader, 0);
+    List<CardRequest> cardRequests = getPartialRequestList(reader, 0);
     try {
       // test
       reader.processSeRequests(
-          seRequests, MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
+          cardRequests, MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
       fail("A KeypleReaderIOException was expected");
     } catch (KeypleReaderIOException ex) {
       assertThat(ex.getSeResponses().size()).isEqualTo(1);
@@ -78,11 +78,11 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
   public void transmit_partial_response_set_1() throws Exception {
     AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
-    List<SeRequest> seRequests = getPartialRequestList(reader, 1);
+    List<CardRequest> cardRequests = getPartialRequestList(reader, 1);
     try {
       // test
       reader.processSeRequests(
-          seRequests, MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
+          cardRequests, MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
       fail("A KeypleReaderIOException was expected");
     } catch (KeypleReaderIOException ex) {
       assertThat(ex.getSeResponses().size()).isEqualTo(2);
@@ -96,11 +96,11 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
   public void transmit_partial_response_set_2() throws Exception {
     AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
-    List<SeRequest> seRequests = getPartialRequestList(reader, 2);
+    List<CardRequest> cardRequests = getPartialRequestList(reader, 2);
     try {
       // test
       reader.processSeRequests(
-          seRequests, MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
+          cardRequests, MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
       fail("A KeypleReaderIOException was expected");
     } catch (KeypleReaderIOException ex) {
       assertThat(ex.getSeResponses().size()).isEqualTo(3);
@@ -114,12 +114,12 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
   public void transmit_partial_response_set_3() throws Exception {
     AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
-    List<SeRequest> seRequests = getPartialRequestList(reader, 3);
+    List<CardRequest> cardRequests = getPartialRequestList(reader, 3);
     try {
       // test
       List<SeResponse> responses =
           reader.processSeRequests(
-              seRequests, MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
+              cardRequests, MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
       assertThat(responses.size()).isEqualTo(3);
       assertThat(responses.get(0).getApduResponses().size()).isEqualTo(4);
       assertThat(responses.get(1).getApduResponses().size()).isEqualTo(4);
@@ -134,12 +134,12 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
   public void transmit_first_match() throws Exception {
     AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
-    List<SeRequest> seRequests = getPartialRequestList(reader, 3);
+    List<CardRequest> cardRequests = getPartialRequestList(reader, 3);
     try {
       // test
       List<SeResponse> responses =
           reader.processSeRequests(
-              seRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
+              cardRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
       assertThat(responses.size()).isEqualTo(1);
       assertThat(responses.get(0).getApduResponses().size()).isEqualTo(4);
     } catch (KeypleReaderException ex) {
@@ -151,10 +151,10 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
   public void transmit_partial_response_0() throws Exception {
     AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
-    SeRequest seRequest = getPartialRequest(reader, 0);
+    CardRequest cardRequest = getPartialRequest(reader, 0);
     try {
       // test
-      reader.processSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+      reader.processSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
     } catch (KeypleReaderIOException ex) {
       logger.error("", ex);
       assertThat(ex.getSeResponse().getApduResponses().size()).isEqualTo(0);
@@ -165,10 +165,10 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
   public void transmit_partial_response_1() throws Exception {
     AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
-    SeRequest seRequest = getPartialRequest(reader, 1);
+    CardRequest cardRequest = getPartialRequest(reader, 1);
     try {
       // test
-      reader.processSeRequest(seRequest, ChannelControl.CLOSE_AFTER);
+      reader.processSeRequest(cardRequest, ChannelControl.CLOSE_AFTER);
       fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
@@ -180,10 +180,10 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
   public void transmit_partial_response_2() throws Exception {
     AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
-    SeRequest seRequest = getPartialRequest(reader, 2);
+    CardRequest cardRequest = getPartialRequest(reader, 2);
     try {
       // test
-      reader.processSeRequest(seRequest, ChannelControl.CLOSE_AFTER);
+      reader.processSeRequest(cardRequest, ChannelControl.CLOSE_AFTER);
       fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
@@ -195,10 +195,10 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
   public void transmit_partial_response_3() throws Exception {
     AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
-    SeRequest seRequest = getPartialRequest(reader, 3);
+    CardRequest cardRequest = getPartialRequest(reader, 3);
     try {
       // test
-      SeResponse seResponse = reader.processSeRequest(seRequest, ChannelControl.CLOSE_AFTER);
+      SeResponse seResponse = reader.processSeRequest(cardRequest, ChannelControl.CLOSE_AFTER);
       assertThat(seResponse.getApduResponses().size()).isEqualTo(3);
     } catch (KeypleReaderException ex) {
       fail("Should not throw exception");
@@ -210,7 +210,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
    *
    * An Exception will be thrown.
    */
-  public static List<SeRequest> getPartialRequestList(AbstractLocalReader r, int scenario) {
+  public static List<CardRequest> getPartialRequestList(AbstractLocalReader r, int scenario) {
 
     SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter(ATR);
     SeSelector selector =
@@ -243,52 +243,52 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     poApduRequests3.add(apduKO);
     poApduRequests3.add(apduOK);
 
-    SeRequest seRequest1 = new SeRequest(selector, poApduRequests1);
-    SeRequest seRequest2 = new SeRequest(selector, poApduRequests2);
+    CardRequest cardRequest1 = new CardRequest(selector, poApduRequests1);
+    CardRequest cardRequest2 = new CardRequest(selector, poApduRequests2);
 
-    SeRequest seRequest4 = new SeRequest(failSelector, poApduRequests1);
+    CardRequest cardRequest4 = new CardRequest(failSelector, poApduRequests1);
 
-    /* This SeRequest fails at step 3 */
-    SeRequest seRequest3 = new SeRequest(selector, poApduRequests3);
+    /* This CardRequest fails at step 3 */
+    CardRequest cardRequest3 = new CardRequest(selector, poApduRequests3);
 
-    List<SeRequest> seRequests = new ArrayList<SeRequest>();
+    List<CardRequest> cardRequests = new ArrayList<CardRequest>();
 
     switch (scenario) {
       case 0:
         /* 0 response Set */
-        seRequests.add(seRequest3); // fails
-        seRequests.add(seRequest1); // succeeds
-        seRequests.add(seRequest2); // succeeds
+        cardRequests.add(cardRequest3); // fails
+        cardRequests.add(cardRequest1); // succeeds
+        cardRequests.add(cardRequest2); // succeeds
         break;
       case 1:
         /* 1 response Set */
-        seRequests.add(seRequest1); // succeeds
-        seRequests.add(seRequest3); // fails
-        seRequests.add(seRequest2); // succeeds
+        cardRequests.add(cardRequest1); // succeeds
+        cardRequests.add(cardRequest3); // fails
+        cardRequests.add(cardRequest2); // succeeds
         break;
       case 2:
         /* 2 responses Set */
-        seRequests.add(seRequest1); // succeeds
-        seRequests.add(seRequest2); // succeeds
-        seRequests.add(seRequest3); // fails
+        cardRequests.add(cardRequest1); // succeeds
+        cardRequests.add(cardRequest2); // succeeds
+        cardRequests.add(cardRequest3); // fails
         break;
       case 3:
         /* 3 responses Set */
-        seRequests.add(seRequest1); // succeeds
-        seRequests.add(seRequest2); // succeeds
-        seRequests.add(seRequest4); // selection fails
+        cardRequests.add(cardRequest1); // succeeds
+        cardRequests.add(cardRequest2); // succeeds
+        cardRequests.add(cardRequest4); // selection fails
         break;
       case 4:
         /* 3 responses Set */
-        seRequests.add(seRequest1); // succeeds
+        cardRequests.add(cardRequest1); // succeeds
         break;
       default:
     }
 
-    return seRequests;
+    return cardRequests;
   }
 
-  public static SeRequest getPartialRequest(AbstractLocalReader r, int scenario) {
+  public static CardRequest getPartialRequest(AbstractLocalReader r, int scenario) {
 
     /*
      * SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter(ATR); SeSelector selector = new
@@ -328,7 +328,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
         break;
     }
 
-    return new SeRequest(aidSelector, poApduRequests);
+    return new CardRequest(aidSelector, poApduRequests);
   }
   /*
    * Partial response: multiple read records commands, one is not defined in the StubSE

@@ -58,56 +58,57 @@ public class SeSelectionTest extends CoreBaseTest {
     Assert.assertEquals(ChannelControl.KEEP_OPEN, selectionOperation.getChannelControl());
 
     // get the serequest set
-    List<SeRequest> selectionSeRequests = selectionOperation.getSelectionSeRequests();
-    Assert.assertEquals(2, selectionSeRequests.size());
+    List<CardRequest> selectionCardRequests = selectionOperation.getSelectionSeRequests();
+    Assert.assertEquals(2, selectionCardRequests.size());
 
     // get the two card requests
-    Iterator<SeRequest> iterator = selectionSeRequests.iterator();
-    SeRequest seRequest1 = iterator.next();
-    SeRequest seRequest2 = iterator.next();
+    Iterator<CardRequest> iterator = selectionCardRequests.iterator();
+    CardRequest cardRequest1 = iterator.next();
+    CardRequest cardRequest2 = iterator.next();
 
     // check selectors
     Assert.assertEquals(
         "AABBCCDDEE",
-        ByteArrayUtil.toHex(seRequest1.getSeSelector().getAidSelector().getAidToSelect()));
+        ByteArrayUtil.toHex(cardRequest1.getSeSelector().getAidSelector().getAidToSelect()));
     Assert.assertEquals(
         "1122334455",
-        ByteArrayUtil.toHex(seRequest2.getSeSelector().getAidSelector().getAidToSelect()));
+        ByteArrayUtil.toHex(cardRequest2.getSeSelector().getAidSelector().getAidToSelect()));
 
     Assert.assertEquals(
         SeSelector.AidSelector.FileOccurrence.FIRST,
-        seRequest1.getSeSelector().getAidSelector().getFileOccurrence());
+        cardRequest1.getSeSelector().getAidSelector().getFileOccurrence());
     Assert.assertEquals(
         SeSelector.AidSelector.FileOccurrence.NEXT,
-        seRequest2.getSeSelector().getAidSelector().getFileOccurrence());
+        cardRequest2.getSeSelector().getAidSelector().getFileOccurrence());
 
     Assert.assertEquals(
         SeSelector.AidSelector.FileControlInformation.FCI,
-        seRequest1.getSeSelector().getAidSelector().getFileControlInformation());
+        cardRequest1.getSeSelector().getAidSelector().getFileControlInformation());
     Assert.assertEquals(
         SeSelector.AidSelector.FileControlInformation.FCP,
-        seRequest2.getSeSelector().getAidSelector().getFileControlInformation());
+        cardRequest2.getSeSelector().getAidSelector().getFileControlInformation());
 
     Assert.assertNull(
-        seRequest1.getSeSelector().getAidSelector().getSuccessfulSelectionStatusCodes());
+        cardRequest1.getSeSelector().getAidSelector().getSuccessfulSelectionStatusCodes());
 
     Assert.assertEquals(
-        1, seRequest2.getSeSelector().getAidSelector().getSuccessfulSelectionStatusCodes().size());
+        1,
+        cardRequest2.getSeSelector().getAidSelector().getSuccessfulSelectionStatusCodes().size());
     Assert.assertEquals(
         0x6283,
-        seRequest2
+        cardRequest2
             .getSeSelector()
             .getAidSelector()
             .getSuccessfulSelectionStatusCodes()
             .toArray()[0]);
 
-    Assert.assertNull(seRequest1.getSeSelector().getAtrFilter());
-    Assert.assertEquals(".*", seRequest2.getSeSelector().getAtrFilter().getAtrRegex());
+    Assert.assertNull(cardRequest1.getSeSelector().getAtrFilter());
+    Assert.assertEquals(".*", cardRequest2.getSeSelector().getAtrFilter().getAtrRegex());
 
-    Assert.assertEquals(2, seRequest1.getApduRequests().size());
-    Assert.assertEquals(0, seRequest2.getApduRequests().size());
+    Assert.assertEquals(2, cardRequest1.getApduRequests().size());
+    Assert.assertEquals(0, cardRequest2.getApduRequests().size());
 
-    List<ApduRequest> apduRequests = seRequest1.getApduRequests();
+    List<ApduRequest> apduRequests = cardRequest1.getApduRequests();
 
     Assert.assertArrayEquals(apduRequests.get(0).getBytes(), ByteArrayUtil.fromHex("001122334455"));
     Assert.assertArrayEquals(apduRequests.get(1).getBytes(), ByteArrayUtil.fromHex("66778899AABB"));

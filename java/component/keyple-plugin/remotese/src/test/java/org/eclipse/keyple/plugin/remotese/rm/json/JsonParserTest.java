@@ -18,9 +18,9 @@ import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.junit.Test;
@@ -37,14 +37,14 @@ public class JsonParserTest {
   /** Test Serialization of Keyple Card Proxy Objects */
   @Test
   public void testHoplinkSeRequestList() {
-    List<SeRequest> seRequests = SampleFactory.getASeRequestList_ISO14443_4();
-    testSerializeDeserializeObj(seRequests, Set.class);
+    List<CardRequest> cardRequests = SampleFactory.getASeRequestList_ISO14443_4();
+    testSerializeDeserializeObj(cardRequests, Set.class);
   }
 
   @Test
   public void testCompleteSeRequestList() {
-    List<SeRequest> seRequests = SampleFactory.getCompleteRequestList();
-    testSerializeDeserializeObj(seRequests, Set.class);
+    List<CardRequest> cardRequests = SampleFactory.getCompleteRequestList();
+    testSerializeDeserializeObj(cardRequests, Set.class);
   }
 
   @Test

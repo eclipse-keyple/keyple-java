@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.rm.AbstractRemoteMethodTx;
@@ -34,7 +34,7 @@ public class RmTransmitSetTx extends AbstractRemoteMethodTx<List<SeResponse>> {
 
   private static final Logger logger = LoggerFactory.getLogger(RmTransmitSetTx.class);
 
-  private final List<SeRequest> seRequests;
+  private final List<CardRequest> cardRequests;
   private final MultiSeRequestProcessing multiSeRequestProcessing;
   private final ChannelControl channelControl;
 
@@ -44,7 +44,7 @@ public class RmTransmitSetTx extends AbstractRemoteMethodTx<List<SeResponse>> {
   }
 
   public RmTransmitSetTx(
-      List<SeRequest> seRequests,
+      List<CardRequest> cardRequests,
       MultiSeRequestProcessing multiSeRequestProcessing,
       ChannelControl channelControl,
       String sessionId,
@@ -53,7 +53,7 @@ public class RmTransmitSetTx extends AbstractRemoteMethodTx<List<SeResponse>> {
       String requesterNodeId,
       String slaveNodeId) {
     super(sessionId, nativeReaderName, virtualReaderName, slaveNodeId, requesterNodeId);
-    this.seRequests = seRequests;
+    this.cardRequests = cardRequests;
     this.multiSeRequestProcessing = multiSeRequestProcessing;
     this.channelControl = channelControl;
   }
@@ -64,9 +64,9 @@ public class RmTransmitSetTx extends AbstractRemoteMethodTx<List<SeResponse>> {
     JsonObject body = new JsonObject();
 
     body.addProperty(
-        "seRequests",
+        "cardRequests",
         JsonParser.getGson()
-            .toJson(seRequests, new TypeToken<ArrayList<SeRequest>>() {}.getType()));
+            .toJson(cardRequests, new TypeToken<ArrayList<CardRequest>>() {}.getType()));
 
     body.addProperty("multiSeRequestProcessing", multiSeRequestProcessing.name());
 
