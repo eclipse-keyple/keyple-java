@@ -233,7 +233,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
           Class<?> classMap = Class.forName("java.util.Map");
           Method clearMap = classMap.getDeclaredMethod("clear");
 
-          ((Map) fieldTerminals.get(terminals)).clear();
+          clearMap.invoke(fieldTerminals.get(terminals));
         }
       } catch (Exception e) {
         logger.error("Unexpected exception.", e);

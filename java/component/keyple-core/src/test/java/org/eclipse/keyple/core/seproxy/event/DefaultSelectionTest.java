@@ -77,7 +77,8 @@ public class DefaultSelectionTest {
 
     // assert
     Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
-    Assert.assertEquals(responses, event.getDefaultSelectionsResponse().getSelectionCardResponses());
+    Assert.assertEquals(
+        responses, event.getDefaultSelectionsResponse().getSelectionCardResponses());
     Assert.assertEquals(PLUGIN_NAME, event.getPluginName());
     Assert.assertEquals(READER_NAME, event.getReaderName());
   }
@@ -106,7 +107,8 @@ public class DefaultSelectionTest {
     ReaderEvent event = r.processSeInsertedTest();
 
     Assert.assertEquals(ReaderEvent.EventType.SE_MATCHED, event.getEventType());
-    Assert.assertEquals(responses, event.getDefaultSelectionsResponse().getSelectionCardResponses());
+    Assert.assertEquals(
+        responses, event.getDefaultSelectionsResponse().getSelectionCardResponses());
     Assert.assertEquals(PLUGIN_NAME, event.getPluginName());
     Assert.assertEquals(READER_NAME, event.getReaderName());
   }

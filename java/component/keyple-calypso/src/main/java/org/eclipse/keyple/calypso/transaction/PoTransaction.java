@@ -62,9 +62,9 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.message.CardRequest;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
@@ -1099,7 +1099,9 @@ public class PoTransaction {
 
     CardResponse poCardResponse = safePoTransmit(poCardRequest, channelControl);
 
-    closeSessionCmdBuild.createResponseParser(poCardResponse.getApduResponses().get(0)).checkStatus();
+    closeSessionCmdBuild
+        .createResponseParser(poCardResponse.getApduResponses().get(0))
+        .checkStatus();
 
     // sets the flag indicating that the commands have been executed
     poCommandManager.notifyCommandsProcessed();
