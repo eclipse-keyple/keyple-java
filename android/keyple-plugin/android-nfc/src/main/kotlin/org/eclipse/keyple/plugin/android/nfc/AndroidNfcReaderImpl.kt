@@ -185,7 +185,7 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
 
     /**
      *
-     * @return true if a SE is present
+     * @return true if a card is present
      */
     public override fun checkSePresence(): Boolean {
         return tagProxy != null
@@ -258,10 +258,10 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
     }
 
     /**
-     * Activates the provided SE protocol.
+     * Activates the provided card protocol.
      *
      *
-     *  * Ask the plugin to take this protocol into account if an SE using this protocol is
+     *  * Ask the plugin to take this protocol into account if a card using this protocol is
      * identified during the selection phase.
      *  * Activates the detection of SEs using this protocol (if the plugin allows it).
      *
@@ -274,10 +274,10 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
     }
 
     /**
-     * Deactivates the provided SE protocol.
+     * Deactivates the provided card protocol.
      *
      *
-     *  * Ask the plugin to ignore this protocol if an SE using this protocol is identified during
+     *  * Ask the plugin to ignore this protocol if a card using this protocol is identified during
      * the selection phase.
      *  * Inhibits the detection of SEs using this protocol (if the plugin allows it).
      *

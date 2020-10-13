@@ -25,9 +25,9 @@ import org.eclipse.keyple.calypso.transaction.SamSelector;
 import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -86,11 +86,11 @@ public class MultipleSession_Pcsc {
     ReaderPlugin readerPlugin = seProxyService.registerPlugin(new PcscPluginFactory());
 
     // Get and configure the PO reader
-    SeReader poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
+    Reader poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
     ((PcscReader) poReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     // Get and configure the SAM reader
-    SeReader samReader = readerPlugin.getReader(ReaderUtilities.getContactReaderName());
+    Reader samReader = readerPlugin.getReader(ReaderUtilities.getContactReaderName());
     ((PcscReader) samReader).setContactless(false).setIsoProtocol(PcscReader.IsoProtocol.T0);
 
     // Create a SAM resource after selecting the SAM
@@ -122,7 +122,7 @@ public class MultipleSession_Pcsc {
     // display basic information about the readers and SAM
     logger.info("=============== UseCase Calypso #5: Po Authentication ==================");
     logger.info("= PO Reader  NAME = {}", poReader.getName());
-    logger.info("= SAM Reader  NAME = {}", samResource.getSeReader().getName());
+    logger.info("= SAM Reader  NAME = {}", samResource.getReader().getName());
 
     // Check if a PO is present in the reader
     if (poReader.isSePresent()) {

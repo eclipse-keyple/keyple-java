@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.calypso.KeyReference;
 import org.eclipse.keyple.core.selection.SeResource;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
@@ -48,7 +48,7 @@ public class PoSecuritySettingsTest {
 
   @Test
   public void poSecuritySettings_nominal() {
-    SeReader samReader = null;
+    Reader samReader = null;
     CalypsoSam calypsoSam = createCalypsoSam();
     SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
     PoSecuritySettings poSecuritySettings =
@@ -89,7 +89,7 @@ public class PoSecuritySettingsTest {
 
   @Test
   public void poSecuritySettings_modificationMode_default() {
-    SeReader samReader = null;
+    Reader samReader = null;
     CalypsoSam calypsoSam = createCalypsoSam();
     SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
     PoSecuritySettings poSecuritySettings =
@@ -99,7 +99,7 @@ public class PoSecuritySettingsTest {
 
   @Test
   public void poSecuritySettings_modificationMode_Atomic() {
-    SeReader samReader = null;
+    Reader samReader = null;
     CalypsoSam calypsoSam = createCalypsoSam();
     SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
     PoSecuritySettings poSecuritySettings =
@@ -111,7 +111,7 @@ public class PoSecuritySettingsTest {
 
   @Test
   public void poSecuritySettings_modificationMode_Multiple() {
-    SeReader samReader = null;
+    Reader samReader = null;
     CalypsoSam calypsoSam = createCalypsoSam();
     SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
     PoSecuritySettings poSecuritySettings =
@@ -123,7 +123,7 @@ public class PoSecuritySettingsTest {
 
   @Test
   public void poSecuritySettings_ratificationMode_default() {
-    SeReader samReader = null;
+    Reader samReader = null;
     CalypsoSam calypsoSam = createCalypsoSam();
     SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
     PoSecuritySettings poSecuritySettings =
@@ -133,7 +133,7 @@ public class PoSecuritySettingsTest {
 
   @Test
   public void poSecuritySettings_ratificationMode_CloseRatified() {
-    SeReader samReader = null;
+    Reader samReader = null;
     CalypsoSam calypsoSam = createCalypsoSam();
     SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
     PoSecuritySettings poSecuritySettings =
@@ -145,7 +145,7 @@ public class PoSecuritySettingsTest {
 
   @Test
   public void poSecuritySettings_ratificationMode_CloseNotRatified() {
-    SeReader samReader = null;
+    Reader samReader = null;
     CalypsoSam calypsoSam = createCalypsoSam();
     SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
     PoSecuritySettings poSecuritySettings =
@@ -158,7 +158,7 @@ public class PoSecuritySettingsTest {
 
   @Test
   public void poSecuritySettings_pinTransmissionMode_default() {
-    SeReader samReader = null;
+    Reader samReader = null;
     CalypsoSam calypsoSam = createCalypsoSam();
     SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
     PoSecuritySettings poSecuritySettings =
@@ -168,7 +168,7 @@ public class PoSecuritySettingsTest {
 
   @Test
   public void poSecuritySettings_pinTransmissionMode_plain() {
-    SeReader samReader = null;
+    Reader samReader = null;
     CalypsoSam calypsoSam = createCalypsoSam();
     SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
     PoSecuritySettings poSecuritySettings =
@@ -180,7 +180,7 @@ public class PoSecuritySettingsTest {
 
   @Test
   public void poSecuritySettings_pinTransmissionMode_encrypted() {
-    SeReader samReader = null;
+    Reader samReader = null;
     CalypsoSam calypsoSam = createCalypsoSam();
     SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
     PoSecuritySettings poSecuritySettings =
@@ -192,7 +192,7 @@ public class PoSecuritySettingsTest {
 
   @Test
   public void poSecuritySettings_authorizedKvcList() {
-    SeReader samReader = null;
+    Reader samReader = null;
     CalypsoSam calypsoSam = createCalypsoSam();
     SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
     List<Byte> authorizedKvcs = new ArrayList<Byte>();
@@ -209,7 +209,7 @@ public class PoSecuritySettingsTest {
 
   @Test
   public void poSecuritySettings_defaultPinCipheringKey() {
-    SeReader samReader = null;
+    Reader samReader = null;
     CalypsoSam calypsoSam = createCalypsoSam();
     SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
     PoSecuritySettings poSecuritySettings =
@@ -230,7 +230,7 @@ public class PoSecuritySettingsTest {
 
   @Test
   public void poSecuritySettings_negativeSvBalance() {
-    SeReader samReader = null;
+    Reader samReader = null;
     CalypsoSam calypsoSam = createCalypsoSam();
     SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
     PoSecuritySettings poSecuritySettings =

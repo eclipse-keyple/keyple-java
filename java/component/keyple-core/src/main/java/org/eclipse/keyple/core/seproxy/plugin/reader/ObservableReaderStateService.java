@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -156,7 +156,7 @@ public class ObservableReaderStateService {
     SeProcessingStep waitForSeInsertionWithSmartDetection();
 
     /**
-     * Set up SeInsertionDetection to use polling of the {@link SeReader#isSePresent()} method to
+     * Set up SeInsertionDetection to use polling of the {@link Reader#isSePresent()} method to
      * detect SE_INSERTED
      *
      * @return A non null reference
@@ -215,7 +215,7 @@ public class ObservableReaderStateService {
     BuilderStep waitForSeRemovalWithSmartDetection();
 
     /**
-     * Set up SeRemovalDetection with to use polling of the {@link SeReader#isSePresent()} method to
+     * Set up SeRemovalDetection with to use polling of the {@link Reader#isSePresent()} method to
      * detect SE_REMOVED
      *
      * @return A non null reference

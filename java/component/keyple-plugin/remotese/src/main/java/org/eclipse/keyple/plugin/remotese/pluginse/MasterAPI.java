@@ -14,8 +14,8 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
@@ -317,8 +317,8 @@ public class MasterAPI implements DtoHandler {
    * @throws KeypleReaderNotFoundException : if none reader was found
    */
   private VirtualReaderImpl getReaderBySessionId(String sessionId) {
-    final Collection<SeReader> seReaders = plugin.getReaders().values();
-    for (SeReader reader : seReaders) {
+    final Collection<Reader> readers = plugin.getReaders().values();
+    for (Reader reader : readers) {
 
       if (((VirtualReaderImpl) reader).getSession().getSessionId().equals(sessionId)) {
         return (VirtualReaderImpl) reader;

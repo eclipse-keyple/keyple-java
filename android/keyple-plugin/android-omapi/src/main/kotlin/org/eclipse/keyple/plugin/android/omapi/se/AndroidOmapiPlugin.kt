@@ -12,10 +12,8 @@
 package org.eclipse.keyple.plugin.android.omapi.se
 
 import android.content.Context
-import android.se.omapi.Reader
 import android.se.omapi.SEService
 import androidx.annotation.RequiresApi
-import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiPlugin
 import org.eclipse.keyple.plugin.android.omapi.PLUGIN_NAME
 import timber.log.Timber
@@ -25,7 +23,7 @@ import timber.log.Timber
  * OMAPI implementation of Reader and SeService objects.
  */
 @RequiresApi(android.os.Build.VERSION_CODES.P) // OS version providing android.se.omapi package
-internal object AndroidOmapiPlugin : AbstractAndroidOmapiPlugin<Reader, SEService>(), SEService.OnConnectedListener {
+internal object AndroidOmapiPlugin : AbstractAndroidOmapiPlugin<android.se.omapi.Reader, SEService>(), SEService.OnConnectedListener {
 
     override fun connectToSe(context: Context) {
         val seServiceFactory = SeServiceFactoryImpl(context.applicationContext)
@@ -33,11 +31,11 @@ internal object AndroidOmapiPlugin : AbstractAndroidOmapiPlugin<Reader, SEServic
         Timber.i("OMAPI SEService version: %s", seService?.version)
     }
 
-    override fun getNativeReaders(): Array<Reader>? {
+    override fun getNativeReaders(): Array<android.se.omapi.Reader>? {
         return seService?.readers
     }
 
-    override fun mapToSeReader(nativeReader: Reader): SeReader {
+    override fun mapToSeReader(nativeReader: android.se.omapi.Reader): org.eclipse.keyple.core.seproxy.Reader {
         Timber.d("Reader available name : %s", nativeReader.name)
         Timber.d("Reader available isSePresent : %S", nativeReader.isSecureElementPresent)
         return AndroidOmapiReader(nativeReader, PLUGIN_NAME, nativeReader.name)
@@ -47,7 +45,7 @@ internal object AndroidOmapiPlugin : AbstractAndroidOmapiPlugin<Reader, SEServic
      * Warning. Do not call this method directly.
      *
      * Invoked by Open Mobile {@link SEService} when connected
-     * Instantiates {@link AndroidOmapiReader} for each SE Reader detected in the platform
+     * Instantiates {@link AndroidOmapiReader} for each Reader detected in the platform
      *
      * @param seService : connected omapi service
      */

@@ -16,10 +16,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  *
  * <p>It allows also to connect/disconnect a reader trhough dedicated methods
  *
- * <p>It handles incoming {@link KeypleDto} and transfer them to the right {@link SeReader}
+ * <p>It handles incoming {@link KeypleDto} and transfer them to the right {@link Reader}
  *
  * <p>Configure the SlaveAPI with a {@link DtoNode} to enable communication with the {@link
  * org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI}
@@ -269,7 +269,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
    * @throws KeypleReaderException : if unsuccessful
    */
   @Override
-  public String connectReader(SeReader localReader) {
+  public String connectReader(Reader localReader) {
     return connectReader(localReader, new HashMap<String, String>());
   }
 
@@ -281,7 +281,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
    * @param options : options will be set as parameters of virtual reader
    */
   @Override
-  public String connectReader(SeReader localReader, Map<String, String> options) {
+  public String connectReader(Reader localReader, Map<String, String> options) {
 
     if (options == null) {
       options = new HashMap<String, String>();
@@ -312,7 +312,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
   }
 
   /**
-   * Disconnect a SeReader. Matching virtual session will be destroyed on Master node.
+   * Disconnect a Reader. Matching virtual session will be destroyed on Master node.
    *
    * @param sessionId (optional)
    * @param nativeReaderName local name of the reader, will be used coupled with the nodeId to
@@ -333,7 +333,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
     try {
       // blocking call
       disconnect.execute(rmTxEngine);
-      SeReader nativeReader = findLocalReader(nativeReaderName);
+      Reader nativeReader = findLocalReader(nativeReaderName);
       if (nativeReader instanceof ObservableReader) {
         logger.trace("Disconnected reader is observable, removing slaveAPI observer");
 
@@ -357,7 +357,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
    * @throws KeypleReaderNotFoundException if not reader were found with this name
    */
   @Override
-  public SeReader findLocalReader(String nativeReaderName) {
+  public Reader findLocalReader(String nativeReaderName) {
     logger.trace(
         "Find local reader by name {} in {} plugin(s)",
         nativeReaderName,

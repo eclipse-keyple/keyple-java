@@ -13,9 +13,9 @@ package org.eclipse.keyple.example.generic.pc.usecase2;
 
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * </code> means that the card processing is automatically started when detected.
  *         <li>PO messages:
  *             <ul>
- *               <li>A single card message handled at SeReader level
+ *               <li>A single card message handled at Reader level
  *             </ul>
  *       </ul>
  * </ul>
@@ -74,12 +74,12 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
     ReaderPlugin readerPlugin = seProxyService.registerPlugin(new PcscPluginFactory());
 
     // Get and configure the PO reader
-    SeReader seReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
-    ((PcscReader) seReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
+    Reader reader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
+    ((PcscReader) reader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     logger.info(
         "=============== UseCase Generic #2: AID based default selection ===================");
-    logger.info("= Card reader  NAME = {}", seReader.getName());
+    logger.info("= Card reader  NAME = {}", reader.getName());
 
     // Prepare a card selection
     seSelection = new SeSelection();
@@ -101,15 +101,15 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
     // Add the selection case to the current selection (we could have added other cases here)
     seSelection.prepareSelection(seSelector);
 
-    // Provide the SeReader with the selection operation to be processed when a card is inserted.
-    ((ObservableReader) seReader)
+    // Provide the Reader with the selection operation to be processed when a card is inserted.
+    ((ObservableReader) reader)
         .setDefaultSelectionRequest(
             seSelection.getSelectionOperation(),
             ObservableReader.NotificationMode.MATCHED_ONLY,
             ObservableReader.PollingMode.REPEATING);
 
     // Set the current class as Observer of the first reader
-    ((ObservableReader) seReader).addObserver(this);
+    ((ObservableReader) reader).addObserver(this);
 
     logger.info(
         "= #### Wait for a card. The default AID based selection to be processed as soon as the card is detected.");

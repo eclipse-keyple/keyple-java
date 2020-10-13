@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.activity_core_examples.eventRecyclerView
 import kotlinx.android.synthetic.main.activity_core_examples.toolbar
 import org.eclipse.keyple.core.selection.SeSelection
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
-import org.eclipse.keyple.core.seproxy.SeReader
+import org.eclipse.keyple.core.seproxy.Reader
 import org.eclipse.keyple.core.seproxy.SeSelector
 import org.eclipse.keyple.core.seproxy.SeSelector.AidSelector
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
@@ -24,8 +24,6 @@ import org.eclipse.keyple.core.seproxy.message.ChannelControl
 import org.eclipse.keyple.core.seproxy.message.ProxyReader
 import org.eclipse.keyple.core.seproxy.message.SeRequest
 import org.eclipse.keyple.core.util.ByteArrayUtil
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactsCardCommonProtocols
 import org.eclipse.keyple.example.calypso.android.omapi.R
 import org.eclipse.keyple.example.calypso.android.omapi.utils.AidEnum
 import org.eclipse.keyple.example.calypso.android.omapi.utils.GenericSeSelectionRequest
@@ -108,7 +106,7 @@ class CoreExamplesActivity : ExamplesActivity() {
         /* Close the channel after the selection in order to secure the selection of all applications */
         seSelection.prepareReleaseSeChannel()
 
-        /* operate SE selection (change the AID here to adapt it to the SE used for the test) */
+        /* operate card selection (change the AID here to adapt it to the card used for the test) */
         val seAidPrefix = "A000000404012509"
 
         /* AID based selection (1st selection, later indexed 0) */
@@ -139,16 +137,16 @@ class CoreExamplesActivity : ExamplesActivity() {
                         .build()))
 
         /*
-         * Actual SE communication: operate through a single request the SE selection
+         * Actual card communication: operate through a single request the card selection
          */
         if (readers.size <1) {
             addResultEvent("No readers available")
         } else {
-            readers.values.forEach { seReader: SeReader ->
-                if (seReader.isSePresent) {
-                    addActionEvent("Sending multiSelection request based on AID Prefix $seAidPrefix to ${seReader.name}")
+            readers.values.forEach { reader: Reader ->
+                if (reader.isSePresent) {
+                    addActionEvent("Sending multiSelection request based on AID Prefix $seAidPrefix to ${reader.name}")
                     try {
-                        val selectionsResult = seSelection.processExplicitSelection(seReader)
+                        val selectionsResult = seSelection.processExplicitSelection(reader)
                         if (selectionsResult.matchingSelections.size> 0) {
                             selectionsResult.matchingSelections.forEach {
                                 val matchingSe = it.value
@@ -158,13 +156,13 @@ class CoreExamplesActivity : ExamplesActivity() {
                                         "FCI: ${ByteArrayUtil.toHex(matchingSe.fciBytes)}")
                             }
                         } else {
-                            addResultEvent("No SE matched the selection.")
+                            addResultEvent("No cards matched the selection.")
                         }
                     } catch (e: Exception) {
                         addResultEvent("The selection of the PO Failed: ${e.message}")
                     }
                 } else {
-                    addResultEvent("No SE were detected")
+                    addResultEvent("No cards were detected")
                 }
             }
         }
@@ -177,14 +175,14 @@ class CoreExamplesActivity : ExamplesActivity() {
     private fun sequentialMultiSelection() {
         addHeaderEvent("UseCase Generic #4: AID based sequential explicit multiple selection")
 
-        /* operate SE selection (change the AID here to adapt it to the SE used for the test) */
+        /* operate card selection (change the AID here to adapt it to the card used for the test) */
         val seAidPrefix = "A000000404012509"
 
         if (readers.size <1) {
             addResultEvent("No readers available")
         } else {
-            readers.values.forEach { seReader: SeReader ->
-                if (seReader.isSePresent) {
+            readers.values.forEach { reader: Reader ->
+                if (reader.isSePresent) {
 
                     var seSelection = SeSelection()
 
@@ -200,7 +198,7 @@ class CoreExamplesActivity : ExamplesActivity() {
                                             .fileControlInformation(AidSelector.FileControlInformation.FCI).build())
                                     .build()))
                     /* Do the selection and display the result */
-                    doAndAnalyseSelection(seReader, seSelection, 1, seAidPrefix)
+                    doAndAnalyseSelection(reader, seSelection, 1, seAidPrefix)
 
                     /*
                      * New selection: get the next application occurrence matching the same AID, close the
@@ -220,9 +218,9 @@ class CoreExamplesActivity : ExamplesActivity() {
                                     .build()))
 
                     /* Do the selection and display the result */
-                    doAndAnalyseSelection(seReader, seSelection, 2, seAidPrefix)
+                    doAndAnalyseSelection(reader, seSelection, 2, seAidPrefix)
                 } else {
-                    addResultEvent("No SE were detected")
+                    addResultEvent("No cards were detected")
                 }
             }
         }
@@ -230,12 +228,12 @@ class CoreExamplesActivity : ExamplesActivity() {
     }
 
     @Throws(KeypleReaderException::class)
-    private fun doAndAnalyseSelection(seReader: SeReader, seSelection: SeSelection, index: Int, seAidPrefix: String) {
-        addActionEvent("Sending multiSelection request based on AID Prefix $seAidPrefix to ${seReader.name}")
-        val selectionsResult = seSelection.processExplicitSelection(seReader)
+    private fun doAndAnalyseSelection(reader: Reader, seSelection: SeSelection, index: Int, seAidPrefix: String) {
+        addActionEvent("Sending multiSelection request based on AID Prefix $seAidPrefix to ${reader.name}")
+        val selectionsResult = seSelection.processExplicitSelection(reader)
         if (selectionsResult.hasActiveSelection()) {
             val matchingSe = selectionsResult.activeMatchingSe
-            addResultEvent("The SE matched the selection $index.")
+            addResultEvent("The card matched the selection $index.")
 
             addResultEvent("Selection status for case $index: \n\t\t" +
                     "ATR: ${ByteArrayUtil.toHex(matchingSe.atrBytes)}\n\t\t" +

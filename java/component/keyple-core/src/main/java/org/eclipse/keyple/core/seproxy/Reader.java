@@ -27,7 +27,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotSupporte
  *
  * @since 0.9
  */
-public interface SeReader extends ProxyElement {
+public interface Reader extends ProxyElement {
 
   /**
    * Checks if is the card present.

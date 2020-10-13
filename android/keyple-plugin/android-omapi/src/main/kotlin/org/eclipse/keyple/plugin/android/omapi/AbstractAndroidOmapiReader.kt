@@ -17,8 +17,8 @@ import org.eclipse.keyple.core.seproxy.plugin.reader.SmartSelectionReader
 /**
  * Communicates with Android readers throught the Open Mobile API see org.simalliance.openmobileapi.Reader
  *
- * Instances of this class represent SE readers supported by this device. These readers can be physical devices
- * or virtual devices. They can be removable or not. They can contain one SE that can or cannot be
+ * Instances of this class represent card readers supported by this device. These readers can be physical devices
+ * or virtual devices. They can be removable or not. They can contain one card that can or cannot be
  * removed.
  */
 internal abstract class AbstractAndroidOmapiReader(pluginName: String, readerName: String) : AbstractLocalReader(pluginName, readerName), SmartSelectionReader {

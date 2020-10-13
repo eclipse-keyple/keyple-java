@@ -31,7 +31,7 @@ import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionIlle
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoSessionAuthenticationException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoUnauthorizedKvcException;
 import org.eclipse.keyple.core.selection.SeResource;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
@@ -58,7 +58,7 @@ public class PoTransactionTest {
   final byte DEFAULT_KEY_RECORD_NUMBER_PERSO = (byte) 0x01;
   final byte DEFAULT_KEY_RECORD_NUMBER_LOAD = (byte) 0x02;
   final byte DEFAULT_KEY_RECORD_NUMBER_DEBIT = (byte) 0x03;
-  private SeReader poReader;
+  private Reader poReader;
   private PoTransaction poTransaction;
   private SeResource<CalypsoSam> samResource;
 
@@ -313,7 +313,7 @@ public class PoTransactionTest {
     poCommandsTestSet.clear();
     samCommandsTestSet.clear();
     poReader = createMockReader("PO", true, poCommandsTestSet);
-    SeReader samReader = createMockReader("SAM", false, samCommandsTestSet);
+    Reader samReader = createMockReader("SAM", false, samCommandsTestSet);
     CalypsoSam calypsoSam = createCalypsoSam();
 
     samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);

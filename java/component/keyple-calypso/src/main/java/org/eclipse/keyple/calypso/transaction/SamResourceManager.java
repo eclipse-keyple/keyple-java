@@ -17,7 +17,7 @@ import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableExcepti
 import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -74,7 +74,7 @@ public abstract class SamResourceManager {
    * @return a {@link SeResource}
    * @throws CalypsoNoSamResourceAvailableException if an error occurs while doing the selection
    */
-  protected SamResourceManagerDefault.ManagedSamResource createSamResource(SeReader samReader) {
+  protected SamResourceManagerDefault.ManagedSamResource createSamResource(Reader samReader) {
 
     SeSelection samSelection = new SeSelection();
 

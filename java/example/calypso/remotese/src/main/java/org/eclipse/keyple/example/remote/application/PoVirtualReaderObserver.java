@@ -24,7 +24,7 @@ import org.eclipse.keyple.calypso.transaction.SamResourceManager;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
 import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
@@ -90,7 +90,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
         }
 
         // retrieve PO virtual reader
-        SeReader poReader = null;
+        Reader poReader = null;
         SeResource<CalypsoSam> samResource = null;
         try {
           poReader = masterAPI.getPlugin().getReader(event.getReaderName());

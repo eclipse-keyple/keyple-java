@@ -31,7 +31,7 @@ import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionExce
 import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
@@ -77,8 +77,8 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
   private static final Logger logger =
       LoggerFactory.getLogger(CalypsoClassicTransactionEngine.class);
 
-  private SeReader poReader;
-  private SeReader samReader;
+  private Reader poReader;
+  private Reader samReader;
   private SeResource<CalypsoSam> samResource = null;
 
   private SeSelection seSelection;
@@ -89,7 +89,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
   }
 
   /* Assign readers to the transaction engine */
-  public void setReaders(SeReader poReader, SeReader samReader) {
+  public void setReaders(Reader poReader, Reader samReader) {
     this.poReader = poReader;
     this.samReader = samReader;
   }

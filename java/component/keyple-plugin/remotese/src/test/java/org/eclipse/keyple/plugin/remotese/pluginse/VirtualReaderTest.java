@@ -16,8 +16,8 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
@@ -207,8 +207,8 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
     // TODO : findLocalReader real method is called, the mock does not work maybe due to
     // multiple thread...
     doReturn(mockReader).when(slaveAPI).findLocalReader(any(String.class));
-    doCallRealMethod().when(slaveAPI).connectReader(any(SeReader.class));
-    doCallRealMethod().when(slaveAPI).connectReader(any(SeReader.class), any(Map.class));
+    doCallRealMethod().when(slaveAPI).connectReader(any(Reader.class));
+    doCallRealMethod().when(slaveAPI).connectReader(any(Reader.class), any(Map.class));
 
     slaveAPI.connectReader(mockReader);
 

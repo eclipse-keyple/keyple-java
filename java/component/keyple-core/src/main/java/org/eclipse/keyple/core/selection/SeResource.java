@@ -11,27 +11,27 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.selection;
 
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 
-/** The SeResource class groups a AbstractMatchingSe and its associated SeReader */
+/** The SeResource class groups a AbstractMatchingSe and its associated Reader */
 public class SeResource<T extends AbstractMatchingSe> {
-  private final SeReader seReader;
+  private final Reader reader;
   private final T matchingSe;
 
   /**
    * Constructor
    *
-   * @param seReader the {@link SeReader} with which the card is communicating
+   * @param reader the {@link Reader} with which the card is communicating
    * @param matchingSe the {@link AbstractMatchingSe} information structure
    */
-  public SeResource(SeReader seReader, T matchingSe) {
-    this.seReader = seReader;
+  public SeResource(Reader reader, T matchingSe) {
+    this.reader = reader;
     this.matchingSe = matchingSe;
   }
 
-  /** @return the current {@link SeReader} for this card */
-  public SeReader getSeReader() {
-    return seReader;
+  /** @return the current {@link Reader} for this card */
+  public Reader getReader() {
+    return reader;
   }
 
   /** @return the {@link AbstractMatchingSe} */

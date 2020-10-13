@@ -14,7 +14,7 @@ package org.eclipse.keyple.core.selection;
 import java.util.*;
 import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
@@ -174,7 +174,7 @@ public final class SeSelection {
   /**
    * Execute the selection process and return a list of {@link AbstractMatchingSe}.
    *
-   * <p>Selection requests are transmitted to the card through the supplied SeReader.
+   * <p>Selection requests are transmitted to the card through the supplied Reader.
    *
    * <p>The process stops in the following cases:
    *
@@ -185,13 +185,13 @@ public final class SeSelection {
    *
    * <p>
    *
-   * @param seReader the SeReader on which the selection is made
+   * @param reader the Reader on which the selection is made
    * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
    *     including {@link AbstractMatchingSe} and {@link SeResponse}.
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @throws KeypleException if an error occurs during the selection process
    */
-  public SelectionsResult processExplicitSelection(SeReader seReader) {
+  public SelectionsResult processExplicitSelection(Reader reader) {
     List<SeRequest> selectionRequests = new ArrayList<SeRequest>();
     for (AbstractSeSelectionRequest<? extends AbstractApduCommandBuilder> seSelectionRequest :
         seSelectionRequests) {
@@ -203,7 +203,7 @@ public final class SeSelection {
 
     /* Communicate with the card to do the selection */
     List<SeResponse> seResponses =
-        ((ProxyReader) seReader)
+        ((ProxyReader) reader)
             .transmitSeRequests(selectionRequests, multiSeRequestProcessing, channelControl);
 
     return processSelection(new DefaultSelectionsResponse(seResponses));

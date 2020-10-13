@@ -14,9 +14,9 @@ package org.eclipse.keyple.example.generic.pc.usecase4;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
@@ -33,8 +33,8 @@ import org.slf4j.LoggerFactory;
 public class SequentialMultiSelection_Pcsc {
   private static final Logger logger = LoggerFactory.getLogger(SequentialMultiSelection_Pcsc.class);
 
-  private static void doAndAnalyseSelection(SeReader seReader, SeSelection seSelection, int index) {
-    SelectionsResult selectionsResult = seSelection.processExplicitSelection(seReader);
+  private static void doAndAnalyseSelection(Reader reader, SeSelection seSelection, int index) {
+    SelectionsResult selectionsResult = seSelection.processExplicitSelection(reader);
     if (selectionsResult.hasActiveSelection()) {
       AbstractMatchingSe matchingSe = selectionsResult.getActiveMatchingSe();
       logger.info("The card matched the selection {}.", index);
@@ -56,17 +56,17 @@ public class SequentialMultiSelection_Pcsc {
     ReaderPlugin readerPlugin = seProxyService.registerPlugin(new PcscPluginFactory());
 
     // Get and configure the PO reader
-    SeReader seReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
-    ((PcscReader) seReader).setContactless(true);
-    ((PcscReader) seReader).setIsoProtocol(PcscReader.IsoProtocol.T1);
+    Reader reader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
+    ((PcscReader) reader).setContactless(true);
+    ((PcscReader) reader).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     logger.info(
         "=============== UseCase Generic #4: AID based sequential explicit multiple selection "
             + "==================");
-    logger.info("= Card reader  NAME = {}", seReader.getName());
+    logger.info("= Card reader  NAME = {}", reader.getName());
 
     // Check if a card is present in the reader
-    if (seReader.isSePresent()) {
+    if (reader.isSePresent()) {
 
       SeSelection seSelection;
 
@@ -91,7 +91,7 @@ public class SequentialMultiSelection_Pcsc {
                   .build()));
 
       // Do the selection and display the result
-      doAndAnalyseSelection(seReader, seSelection, 1);
+      doAndAnalyseSelection(reader, seSelection, 1);
 
       // New selection: get the next application occurrence matching the same AID, close the
       // physical channel after
@@ -112,7 +112,7 @@ public class SequentialMultiSelection_Pcsc {
       seSelection.prepareReleaseSeChannel();
 
       // Do the selection and display the result
-      doAndAnalyseSelection(seReader, seSelection, 2);
+      doAndAnalyseSelection(reader, seSelection, 2);
 
     } else {
 

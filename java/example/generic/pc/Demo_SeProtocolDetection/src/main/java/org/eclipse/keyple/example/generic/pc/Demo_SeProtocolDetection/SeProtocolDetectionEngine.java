@@ -17,7 +17,7 @@ import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
@@ -41,7 +41,7 @@ import org.eclipse.keyple.example.common.generic.GenericSeSelectionRequest;
  * processing is mainly event driven through the observability.
  */
 public class SeProtocolDetectionEngine extends AbstractReaderObserverAsynchronousEngine {
-  private SeReader seReader;
+  private Reader reader;
   private SeSelection seSelection;
 
   public SeProtocolDetectionEngine() {
@@ -49,8 +49,8 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverAsynchronou
   }
 
   /* Assign reader to the transaction engine */
-  public void setReader(SeReader poReader) {
-    this.seReader = poReader;
+  public void setReader(Reader poReader) {
+    this.reader = poReader;
   }
 
   public AbstractDefaultSelectionsRequest prepareSeSelection() {

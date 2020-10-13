@@ -11,9 +11,9 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.event;
 
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 
 /**
@@ -130,12 +130,12 @@ public final class ReaderEvent {
   }
 
   /**
-   * Gets the {@link SeReader} from which generated event comes from
+   * Gets the {@link Reader} from which generated event comes from
    *
    * @return A not null reference.
    * @since 0.9
    */
-  public SeReader getReader() {
+  public Reader getReader() {
     return getPlugin().getReader(readerName);
   }
 }

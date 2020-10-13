@@ -12,9 +12,9 @@
 package org.eclipse.keyple.example.generic.pc.Demo_ObservableReaderNotification;
 
 import java.util.Collection;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
@@ -105,7 +105,7 @@ public class ObservableReaderNotificationEngine {
     @Override
     public void update(PluginEvent event) {
       for (String readerName : event.getReaderNames()) {
-        SeReader reader = null;
+        Reader reader = null;
         logger.info(
             "PluginEvent: PLUGINNAME = {}, READERNAME = {}, EVENTTYPE = {}",
             event.getPluginName(),

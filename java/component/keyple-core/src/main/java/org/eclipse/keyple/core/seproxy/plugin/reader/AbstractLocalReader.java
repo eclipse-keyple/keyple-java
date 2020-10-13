@@ -13,6 +13,7 @@ package org.eclipse.keyple.core.seproxy.plugin.reader;
 
 import java.util.*;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
@@ -27,8 +28,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A local reader. <code>AbstractLocalReader</code> implements the methods defined by the {@link
- * org.eclipse.keyple.core.seproxy.SeReader} and {@link ProxyReader} interfaces for a local reader.
- * <br>
+ * Reader} and {@link ProxyReader} interfaces for a local reader. <br>
  * It also defines a set of abstract methods to be implemented by the reader plugins in order to
  * take into account the specific needs of the hardware.
  */

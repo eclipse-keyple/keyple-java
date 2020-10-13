@@ -13,12 +13,12 @@ package org.eclipse.keyple.core.seproxy.message;
 
 import java.util.List;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 
 /**
- * A {@link ProxyReader} is an {@link SeReader} with methods for communicating with SEs.
+ * A {@link ProxyReader} is an {@link Reader} with methods for communicating with SEs.
  *
  * <p>Exchanges are made using {@link SeRequest} which in return result in {@link SeResponse}.<br>
  * The {@link SeRequest} optionally carries the card selection data and an APDU list.<br>
@@ -34,7 +34,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
  *
  * @since 0.9
  */
-public interface ProxyReader extends SeReader {
+public interface ProxyReader extends Reader {
 
   /**
    * Transmits the list of {@link SeRequest } and gets in return a list of {@link SeResponse}.
@@ -54,7 +54,7 @@ public interface ProxyReader extends SeReader {
    * #transmitSeRequest(SeRequest, ChannelControl)}.
    *
    * <p>In the case of a selection specifying a card protocol, it is imperative to activate it
-   * previously with the method {@link SeReader#activateProtocol(String, String)}. An
+   * previously with the method {@link Reader#activateProtocol(String, String)}. An
    * IllegalStateException exception will be thrown in case of inconsistency.
    *
    * @param seRequests A not empty SeRequest list.

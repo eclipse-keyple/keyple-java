@@ -11,8 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remotese.integration;
 
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.RemoteSePoolPlugin;
@@ -107,10 +107,10 @@ public class RemoteSePoolPluginTest {
 
     // allocate reader
     remoteSePoolPlugin.bind(SERVER_NODE_ID);
-    SeReader seReader = remoteSePoolPlugin.allocateReader(REF_GROUP1);
+    Reader reader = remoteSePoolPlugin.allocateReader(REF_GROUP1);
 
     // check results
-    Assert.assertNotNull(seReader);
+    Assert.assertNotNull(reader);
   }
 
   /** Test release SUCCESS */
@@ -119,16 +119,16 @@ public class RemoteSePoolPluginTest {
 
     // allocate reader
     remoteSePoolPlugin.bind(SERVER_NODE_ID);
-    SeReader seReader = remoteSePoolPlugin.allocateReader(REF_GROUP1);
+    Reader reader = remoteSePoolPlugin.allocateReader(REF_GROUP1);
 
     // release reader
-    ((RemoteSePoolPlugin) masterAPI.getPlugin()).releaseReader(seReader);
+    ((RemoteSePoolPlugin) masterAPI.getPlugin()).releaseReader(reader);
 
     // re allocate reader
-    SeReader seReader2 = remoteSePoolPlugin.allocateReader(REF_GROUP1);
+    Reader reader2 = remoteSePoolPlugin.allocateReader(REF_GROUP1);
 
     // check results
-    Assert.assertNotNull(seReader2);
+    Assert.assertNotNull(reader2);
   }
 
   /** Stub Secure Element */

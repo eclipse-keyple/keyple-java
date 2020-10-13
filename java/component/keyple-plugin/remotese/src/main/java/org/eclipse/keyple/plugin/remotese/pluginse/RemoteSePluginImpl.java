@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
@@ -61,7 +61,7 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
   }
 
   public VirtualReaderImpl getReaderByRemoteName(String remoteName, String slaveNodeId) {
-    SeReader virtualReader =
+    Reader virtualReader =
         readers.get(RemoteSePluginImpl.generateReaderName(remoteName, slaveNodeId));
     if (virtualReader == null) {
       throw new KeypleReaderNotFoundException(remoteName);
@@ -191,8 +191,8 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
    * @return
    */
   @Override
-  protected ConcurrentMap<String, SeReader> initNativeReaders() {
-    return new ConcurrentHashMap<String, SeReader>();
+  protected ConcurrentMap<String, Reader> initNativeReaders() {
+    return new ConcurrentHashMap<String, Reader>();
   }
 
   /**

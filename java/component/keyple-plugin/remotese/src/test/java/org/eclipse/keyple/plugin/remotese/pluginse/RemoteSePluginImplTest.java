@@ -20,7 +20,7 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.plugin.remotese.CoreBaseTest;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
@@ -72,7 +72,7 @@ public class RemoteSePluginImplTest extends CoreBaseTest {
             "pluginName",
             Executors.newCachedThreadPool());
 
-    Map<String, SeReader> readers = plugin.getReaders();
+    Map<String, Reader> readers = plugin.getReaders();
 
     final CountDownLatch lock = new CountDownLatch(9);
 
@@ -94,13 +94,13 @@ public class RemoteSePluginImplTest extends CoreBaseTest {
   }
 
   public static void listReaders(
-      final Map<String, SeReader> readers, final int N, final CountDownLatch lock) {
+      final Map<String, Reader> readerMap, final int N, final CountDownLatch lock) {
     Thread thread =
         new Thread() {
           public void run() {
             for (int i = 0; i < N; i++) {
-              Collection<SeReader> seReaders = readers.values();
-              for (SeReader reader : seReaders) {
+              Collection<Reader> readers = readerMap.values();
+              for (Reader reader : readers) {
                 logger.debug("list, readers: {}, reader {}", readers.size(), reader.getName());
               }
               try {
@@ -117,13 +117,13 @@ public class RemoteSePluginImplTest extends CoreBaseTest {
   }
 
   public static void removeReaderThread(
-      final Map<String, SeReader> readers, final int N, final CountDownLatch lock) {
+      final Map<String, Reader> readers, final int N, final CountDownLatch lock) {
     Thread thread =
         new Thread() {
           public void run() {
             for (int i = 0; i < N; i++) {
               try {
-                Map.Entry<String, SeReader> entry = readers.entrySet().iterator().next();
+                Map.Entry<String, Reader> entry = readers.entrySet().iterator().next();
                 if (entry != null) {
                   logger.debug("Removing reader {}", entry.getKey());
                   readers.remove(entry.getKey());

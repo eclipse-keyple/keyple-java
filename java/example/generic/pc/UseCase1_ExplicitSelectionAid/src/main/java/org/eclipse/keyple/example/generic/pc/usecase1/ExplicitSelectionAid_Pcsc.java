@@ -14,9 +14,9 @@ package org.eclipse.keyple.example.generic.pc.usecase1;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
@@ -60,15 +60,15 @@ public class ExplicitSelectionAid_Pcsc {
     ReaderPlugin readerPlugin = seProxyService.registerPlugin(new PcscPluginFactory());
 
     // Get and configure the card reader
-    SeReader seReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
-    ((PcscReader) seReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
+    Reader reader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
+    ((PcscReader) reader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     logger.info(
         "=============== UseCase Generic #1: AID based explicit selection ==================");
-    logger.info("= Card Reader  NAME = {}", seReader.getName());
+    logger.info("= Card Reader  NAME = {}", reader.getName());
 
     // Check if a card is present in the reader
-    if (seReader.isSePresent()) {
+    if (reader.isSePresent()) {
 
       logger.info("= #### AID based selection.");
 
@@ -93,7 +93,7 @@ public class ExplicitSelectionAid_Pcsc {
       seSelection.prepareSelection(genericSeSelectionRequest);
 
       // Actual card communication: operate through a single request the card selection
-      SelectionsResult selectionsResult = seSelection.processExplicitSelection(seReader);
+      SelectionsResult selectionsResult = seSelection.processExplicitSelection(reader);
       if (selectionsResult.hasActiveSelection()) {
         AbstractMatchingSe matchingSe = selectionsResult.getActiveMatchingSe();
         logger.info("The selection of the card has succeeded.");

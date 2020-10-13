@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.event;
 
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 
 /**
  * Provides the API to observe Secure Elements in readers.
@@ -25,7 +25,7 @@ import org.eclipse.keyple.core.seproxy.SeReader;
  *
  * @since 0.9
  */
-public interface ObservableReader extends SeReader {
+public interface ObservableReader extends Reader {
 
   /**
    * This interface has to be implemented by reader observers.

@@ -85,13 +85,13 @@ public class VirtualReaderBaseTest {
     try {
       stubPlugin = (StubPlugin) SeProxyService.getInstance().getPlugin(Integration.SLAVE_STUB);
 
-      // Set<SeReader> readers = stubPlugin.getReaders();
+      // Set<Reader> readers = stubPlugin.getReaders();
 
       /*
        * unplug each readers and check that there are no observers
        */
       /*
-       * for (SeReader reader : readers) { Assert.assertEquals(0, ((ObservableReader)
+       * for (Reader reader : readers) { Assert.assertEquals(0, ((ObservableReader)
        * reader).countObservers()); ((ObservableReader) reader).clearObservers(); }
        */
       this.slaveAPI.disconnectReader("", readerName);
