@@ -15,7 +15,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.unmockkAll
 import java.io.IOException
 import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing
-import org.eclipse.keyple.core.seproxy.SeSelector
+import org.eclipse.keyple.core.seproxy.CardSelector
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.seproxy.message.ApduRequest
@@ -167,9 +167,9 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         val poAid = "A000000291A000000191"
 
         // wrong protocol
-        val seRequest = CardRequest(SeSelector.builder()
+        val seRequest = CardRequest(CardSelector.builder()
                 .seProtocol("MIFARE_ULTRA_LIGHT")
-                .aidSelector(SeSelector.AidSelector.builder()
+                .aidSelector(CardSelector.AidSelector.builder()
                         .aidToSelect(poAid).build()).build(), ArrayList())
 
         // test
@@ -229,9 +229,9 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
 
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
-        val seRequest = CardRequest(SeSelector.builder()
+        val seRequest = CardRequest(CardSelector.builder()
                 .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
-                .aidSelector(SeSelector.AidSelector.builder()
+                .aidSelector(CardSelector.AidSelector.builder()
                         .aidToSelect(PO_AID).build()).build(), poApduRequestList)
 
         val seRequestSet = ArrayList<CardRequest>()
@@ -243,7 +243,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
 
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
-        val seRequest = CardRequest(SeSelector.builder()
+        val seRequest = CardRequest(CardSelector.builder()
                 .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name).build(), poApduRequestList)
 
         val seRequestSet = ArrayList<CardRequest>()

@@ -15,8 +15,8 @@ import java.util.*;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.core.command.SeCommand;
+import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
-import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.message.*;
@@ -69,41 +69,41 @@ public class SeSelectionTest extends CoreBaseTest {
     // check selectors
     Assert.assertEquals(
         "AABBCCDDEE",
-        ByteArrayUtil.toHex(cardRequest1.getSeSelector().getAidSelector().getAidToSelect()));
+        ByteArrayUtil.toHex(cardRequest1.getCardSelector().getAidSelector().getAidToSelect()));
     Assert.assertEquals(
         "1122334455",
-        ByteArrayUtil.toHex(cardRequest2.getSeSelector().getAidSelector().getAidToSelect()));
+        ByteArrayUtil.toHex(cardRequest2.getCardSelector().getAidSelector().getAidToSelect()));
 
     Assert.assertEquals(
-        SeSelector.AidSelector.FileOccurrence.FIRST,
-        cardRequest1.getSeSelector().getAidSelector().getFileOccurrence());
+        CardSelector.AidSelector.FileOccurrence.FIRST,
+        cardRequest1.getCardSelector().getAidSelector().getFileOccurrence());
     Assert.assertEquals(
-        SeSelector.AidSelector.FileOccurrence.NEXT,
-        cardRequest2.getSeSelector().getAidSelector().getFileOccurrence());
+        CardSelector.AidSelector.FileOccurrence.NEXT,
+        cardRequest2.getCardSelector().getAidSelector().getFileOccurrence());
 
     Assert.assertEquals(
-        SeSelector.AidSelector.FileControlInformation.FCI,
-        cardRequest1.getSeSelector().getAidSelector().getFileControlInformation());
+        CardSelector.AidSelector.FileControlInformation.FCI,
+        cardRequest1.getCardSelector().getAidSelector().getFileControlInformation());
     Assert.assertEquals(
-        SeSelector.AidSelector.FileControlInformation.FCP,
-        cardRequest2.getSeSelector().getAidSelector().getFileControlInformation());
+        CardSelector.AidSelector.FileControlInformation.FCP,
+        cardRequest2.getCardSelector().getAidSelector().getFileControlInformation());
 
     Assert.assertNull(
-        cardRequest1.getSeSelector().getAidSelector().getSuccessfulSelectionStatusCodes());
+        cardRequest1.getCardSelector().getAidSelector().getSuccessfulSelectionStatusCodes());
 
     Assert.assertEquals(
         1,
-        cardRequest2.getSeSelector().getAidSelector().getSuccessfulSelectionStatusCodes().size());
+        cardRequest2.getCardSelector().getAidSelector().getSuccessfulSelectionStatusCodes().size());
     Assert.assertEquals(
         0x6283,
         cardRequest2
-            .getSeSelector()
+            .getCardSelector()
             .getAidSelector()
             .getSuccessfulSelectionStatusCodes()
             .toArray()[0]);
 
-    Assert.assertNull(cardRequest1.getSeSelector().getAtrFilter());
-    Assert.assertEquals(".*", cardRequest2.getSeSelector().getAtrFilter().getAtrRegex());
+    Assert.assertNull(cardRequest1.getCardSelector().getAtrFilter());
+    Assert.assertEquals(".*", cardRequest2.getCardSelector().getAtrFilter().getAtrRegex());
 
     Assert.assertEquals(2, cardRequest1.getApduRequests().size());
     Assert.assertEquals(0, cardRequest2.getApduRequests().size());
@@ -258,14 +258,14 @@ public class SeSelectionTest extends CoreBaseTest {
     SeSelection seSelection = new SeSelection();
 
     // create and add two selection cases
-    SeSelector.AidSelector aidSelector =
-        SeSelector.AidSelector.builder()
+    CardSelector.AidSelector aidSelector =
+        CardSelector.AidSelector.builder()
             .aidToSelect("AABBCCDDEE")
-            .fileOccurrence(SeSelector.AidSelector.FileOccurrence.FIRST)
-            .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI)
+            .fileOccurrence(CardSelector.AidSelector.FileOccurrence.FIRST)
+            .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI)
             .build();
-    SeSelector seSelector1 =
-        SeSelector.builder()
+    CardSelector cardSelector1 =
+        CardSelector.builder()
             .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
             .aidSelector(aidSelector)
             .build();
@@ -281,24 +281,24 @@ public class SeSelectionTest extends CoreBaseTest {
             SeCommandTest.COMMAND_1,
             new ApduRequest("Apdu 66778899AABB", ByteArrayUtil.fromHex("66778899AABB"), true)));
 
-    seSelection.prepareSelection(new SeSelectionRequest(seSelector1, commandBuilders));
+    seSelection.prepareSelection(new SeSelectionRequest(cardSelector1, commandBuilders));
 
     aidSelector =
-        SeSelector.AidSelector.builder()
+        CardSelector.AidSelector.builder()
             .aidToSelect("1122334455")
-            .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
-            .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCP)
+            .fileOccurrence(CardSelector.AidSelector.FileOccurrence.NEXT)
+            .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCP)
             .build();
     aidSelector.addSuccessfulStatusCode(0x6283);
 
-    SeSelector seSelector2 =
-        SeSelector.builder()
+    CardSelector cardSelector2 =
+        CardSelector.builder()
             .seProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
-            .atrFilter(new SeSelector.AtrFilter(".*"))
+            .atrFilter(new CardSelector.AtrFilter(".*"))
             .aidSelector(aidSelector)
             .build();
 
-    seSelection.prepareSelection(new SeSelectionRequest(seSelector2, null));
+    seSelection.prepareSelection(new SeSelectionRequest(cardSelector2, null));
 
     return seSelection;
   }
@@ -307,8 +307,8 @@ public class SeSelectionTest extends CoreBaseTest {
   private final class SeSelectionRequest extends AbstractSeSelectionRequest {
 
     public SeSelectionRequest(
-        SeSelector seSelector, List<AbstractApduCommandBuilder> commandBuilders) {
-      super(seSelector);
+        CardSelector cardSelector, List<AbstractApduCommandBuilder> commandBuilders) {
+      super(cardSelector);
 
       if (commandBuilders != null) {
         for (AbstractApduCommandBuilder commandBuilder : commandBuilders) {

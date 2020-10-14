@@ -12,9 +12,9 @@
 package org.eclipse.keyple.core.seproxy.plugin.reader;
 
 import java.util.*;
+import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
 import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotFoundException;
@@ -146,11 +146,11 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * ApduResponse}.<br>
    * The provided AidSelector is used to check the response's status codes.
    *
-   * @param aidSelector A {@link SeSelector.AidSelector} (must be not null).
+   * @param aidSelector A {@link CardSelector.AidSelector} (must be not null).
    * @return A {@link ApduResponse} containing the FCI.
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */
-  private ApduResponse recoverSelectionFciData(SeSelector.AidSelector aidSelector) {
+  private ApduResponse recoverSelectionFciData(CardSelector.AidSelector aidSelector) {
 
     ApduResponse fciResponse;
     // Get Data APDU: CLA, INS, P1: always 0, P2: 0x6F FCI for the current DF, LC: 0
@@ -178,11 +178,11 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * Sends the select application command to the card and returns the requested data according to
    * AidSelector attributes (ISO7816-4 selection data) into an {@link ApduResponse}.
    *
-   * @param aidSelector A not null {@link SeSelector.AidSelector}
+   * @param aidSelector A not null {@link CardSelector.AidSelector}
    * @return A not null {@link ApduResponse}.
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */
-  private ApduResponse processExplicitAidSelection(SeSelector.AidSelector aidSelector) {
+  private ApduResponse processExplicitAidSelection(CardSelector.AidSelector aidSelector) {
 
     ApduResponse fciResponse;
     final byte[] aid = aidSelector.getAidToSelect();
@@ -494,12 +494,12 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * <p>Returns true if the ATR is accepted by the filter.
    *
    * @param atr A byte array.
-   * @param atrFilter A not null {@link org.eclipse.keyple.core.seproxy.SeSelector.AtrFilter}
+   * @param atrFilter A not null {@link org.eclipse.keyple.core.seproxy.CardSelector.AtrFilter}
    * @return True or false.
    * @throws IllegalStateException if no ATR is available and the AtrFilter is set.
-   * @see #processSelection(SeSelector)
+   * @see #processSelection(CardSelector)
    */
-  private boolean checkAtr(byte[] atr, SeSelector.AtrFilter atrFilter) {
+  private boolean checkAtr(byte[] atr, CardSelector.AtrFilter atrFilter) {
 
     if (logger.isDebugEnabled()) {
       logger.debug("[{}] openLogicalChannel => ATR = {}", this.getName(), ByteArrayUtil.toHex(atr));
@@ -525,13 +525,13 @@ public abstract class AbstractLocalReader extends AbstractReader {
   /**
    * Selects the card with the provided AID and gets the FCI response in return.
    *
-   * @param aidSelector A {@link org.eclipse.keyple.core.seproxy.SeSelector.AidSelector} must be not
-   *     null.
+   * @param aidSelector A {@link org.eclipse.keyple.core.seproxy.CardSelector.AidSelector} must be
+   *     not null.
    * @return An not null {@link ApduResponse} containing the FCI.
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed.
-   * @see #processSelection(SeSelector)
+   * @see #processSelection(CardSelector)
    */
-  private ApduResponse selectByAid(SeSelector.AidSelector aidSelector) {
+  private ApduResponse selectByAid(CardSelector.AidSelector aidSelector) {
 
     ApduResponse fciResponse;
 
@@ -555,7 +555,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
   }
 
   /**
-   * Select the card according to the {@link SeSelector}.
+   * Select the card according to the {@link CardSelector}.
    *
    * <p>The selection status is returned.<br>
    * 3 levels of filtering/selection are applied successively if they are enabled: protocol, ATR and
@@ -565,33 +565,33 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * <p>Conversely, the selection is considered successful if none of the filters have rejected the
    * card, even if none of the filters are active.
    *
-   * @param seSelector A not null {@link SeSelector}.
+   * @param cardSelector A not null {@link CardSelector}.
    * @return A not null {@link SelectionStatus}.
    * @throws IllegalStateException in case of configuration inconsistency.
    * @see #processSeRequestLogical(CardRequest)
    */
-  private SelectionStatus processSelection(SeSelector seSelector) {
+  private SelectionStatus processSelection(CardSelector cardSelector) {
 
     AnswerToReset answerToReset;
     ApduResponse fciResponse;
     boolean hasMatched = true;
 
-    if (seSelector.getSeProtocol() != null && useDefaultProtocol) {
+    if (cardSelector.getSeProtocol() != null && useDefaultProtocol) {
       throw new IllegalStateException(
-          "Protocol " + seSelector.getSeProtocol() + " not associated to a reader protocol.");
+          "Protocol " + cardSelector.getSeProtocol() + " not associated to a reader protocol.");
     }
 
     // check protocol if enabled
-    if (seSelector.getSeProtocol() == null
+    if (cardSelector.getSeProtocol() == null
         || useDefaultProtocol
-        || seSelector.getSeProtocol().equals(currentProtocol)) {
+        || cardSelector.getSeProtocol().equals(currentProtocol)) {
       // protocol check succeeded, check ATR if enabled
       byte[] atr = getATR();
       answerToReset = new AnswerToReset(atr);
-      SeSelector.AtrFilter atrFilter = seSelector.getAtrFilter();
+      CardSelector.AtrFilter atrFilter = cardSelector.getAtrFilter();
       if (atrFilter == null || checkAtr(atr, atrFilter)) {
         // no ATR filter or ATR check succeeded, select by AID if enabled.
-        SeSelector.AidSelector aidSelector = seSelector.getAidSelector();
+        CardSelector.AidSelector aidSelector = cardSelector.getAidSelector();
         if (aidSelector != null) {
           fciResponse = selectByAid(aidSelector);
           hasMatched = fciResponse.isSuccessful();
@@ -629,11 +629,11 @@ public abstract class AbstractLocalReader extends AbstractReader {
   private CardResponse processSeRequestLogical(CardRequest cardRequest) {
 
     SelectionStatus selectionStatus = null;
-    SeSelector seSelector = cardRequest.getSeSelector();
+    CardSelector cardSelector = cardRequest.getCardSelector();
     boolean previouslyOpen = logicalChannelIsOpen;
 
-    if (seSelector != null) {
-      selectionStatus = processSelection(seSelector);
+    if (cardSelector != null) {
+      selectionStatus = processSelection(cardSelector);
       if (!selectionStatus.hasMatched()) {
         // the selection failed, return an empty response having the selection status
         return new CardResponse(

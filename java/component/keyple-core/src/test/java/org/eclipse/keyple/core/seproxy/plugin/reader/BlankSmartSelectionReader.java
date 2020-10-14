@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.plugin.reader;
 
-import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 public class BlankSmartSelectionReader extends AbstractLocalReader implements SmartSelectionReader {
@@ -56,7 +56,7 @@ public class BlankSmartSelectionReader extends AbstractLocalReader implements Sm
   protected void deactivateReaderProtocol(String readerProtocolName) {}
 
   @Override
-  public ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector) {
+  public ApduResponse openChannelForAid(CardSelector.AidSelector aidSelector) {
     return null;
   }
 

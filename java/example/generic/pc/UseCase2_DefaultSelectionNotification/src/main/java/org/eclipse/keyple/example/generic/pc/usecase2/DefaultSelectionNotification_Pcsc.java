@@ -13,10 +13,10 @@ package org.eclipse.keyple.example.generic.pc.usecase2;
 
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -89,17 +89,17 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
     // Select the first application matching the selection AID whatever the card communication
     // protocol keep the logical channel open after the selection
 
-    // Generic selection: configures a SeSelector with all the desired attributes to make the
+    // Generic selection: configures a CardSelector with all the desired attributes to make the
     // selection
-    GenericSeSelectionRequest seSelector =
+    GenericSeSelectionRequest cardSelector =
         new GenericSeSelectionRequest(
-            SeSelector.builder()
+            CardSelector.builder()
                 .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                .aidSelector(SeSelector.AidSelector.builder().aidToSelect(seAid).build())
+                .aidSelector(CardSelector.AidSelector.builder().aidToSelect(seAid).build())
                 .build());
 
     // Add the selection case to the current selection (we could have added other cases here)
-    seSelection.prepareSelection(seSelector);
+    seSelection.prepareSelection(cardSelector);
 
     // Provide the Reader with the selection operation to be processed when a card is inserted.
     ((ObservableReader) reader)

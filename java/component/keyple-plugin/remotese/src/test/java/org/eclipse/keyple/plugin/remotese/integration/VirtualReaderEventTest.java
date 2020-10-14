@@ -19,8 +19,8 @@ import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
+import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
@@ -257,9 +257,9 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
     GenericSeSelectionRequest genericSeSelectionRequest =
         new GenericSeSelectionRequest(
-            SeSelector.builder()
+            CardSelector.builder()
                 .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
+                .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .build());
 
     seSelection.prepareSelection(genericSeSelectionRequest);
@@ -314,9 +314,9 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
     GenericSeSelectionRequest genericSeSelectionRequest =
         new GenericSeSelectionRequest(
-            SeSelector.builder()
+            CardSelector.builder()
                 .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
+                .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .build());
 
     seSelection.prepareSelection(genericSeSelectionRequest);
@@ -381,9 +381,9 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
     GenericSeSelectionRequest genericSeSelectionRequest =
         new GenericSeSelectionRequest(
-            SeSelector.builder()
+            CardSelector.builder()
                 .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
+                .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .build());
 
     seSelection.prepareSelection(genericSeSelectionRequest);
@@ -424,9 +424,9 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     SeSelection seSelection = new SeSelection();
     GenericSeSelectionRequest genericSeSelectionRequest =
         new GenericSeSelectionRequest(
-            SeSelector.builder()
+            CardSelector.builder()
                 .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                .atrFilter(new SeSelector.AtrFilter("3B.*"))
+                .atrFilter(new CardSelector.AtrFilter("3B.*"))
                 .build());
 
     /* Prepare selector, ignore AbstractMatchingSe here */
@@ -466,9 +466,9 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
             SeSelection seSelection = new SeSelection();
             GenericSeSelectionRequest genericSeSelectionRequest =
                 new GenericSeSelectionRequest(
-                    SeSelector.builder()
+                    CardSelector.builder()
                         .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                        .atrFilter(new SeSelector.AtrFilter("3B.*"))
+                        .atrFilter(new CardSelector.AtrFilter("3B.*"))
                         .build());
 
             /* Prepare selector, ignore AbstractMatchingSe here */
@@ -526,8 +526,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
   /** Create a new class extending AbstractSeSelectionRequest */
   private class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
-    public GenericSeSelectionRequest(SeSelector seSelector) {
-      super(seSelector);
+    public GenericSeSelectionRequest(CardSelector cardSelector) {
+      super(cardSelector);
     }
 
     @Override

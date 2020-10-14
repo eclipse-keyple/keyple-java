@@ -14,10 +14,10 @@ package org.eclipse.keyple.example.generic.pc.usecase1;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
+import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.generic.GenericSeSelectionRequest;
@@ -80,12 +80,12 @@ public class ExplicitSelectionAid_Pcsc {
       // Select the first application matching the selection AID whatever the card communication
       // protocol keep the logical channel open after the selection
 
-      // Generic selection: configures a SeSelector with all the desired attributes to make
+      // Generic selection: configures a CardSelector with all the desired attributes to make
       // the selection and read additional information afterwards
       GenericSeSelectionRequest genericSeSelectionRequest =
           new GenericSeSelectionRequest(
-              SeSelector.builder()
-                  .aidSelector(SeSelector.AidSelector.builder().aidToSelect(seAid).build())
+              CardSelector.builder()
+                  .aidSelector(CardSelector.AidSelector.builder().aidToSelect(seAid).build())
                   .build());
 
       // Add the selection case to the current selection (we could have added other cases

@@ -12,9 +12,9 @@
 package org.eclipse.keyple.core.seproxy.message;
 
 import java.util.List;
+import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
 import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 
 /**
@@ -81,7 +81,7 @@ public interface ProxyReader extends Reader {
    *
    * <ul>
    *   <li>Open the physical channel if it is not already open.
-   *   <li>If the {@link CardRequest} contains a non null {@link SeSelector}. The 3 following
+   *   <li>If the {@link CardRequest} contains a non null {@link CardSelector}. The 3 following
    *       operations are performed in this order:
    *       <ol>
    *         <li>If specified, check the card protocol (compare the specified protocol with the
@@ -103,7 +103,7 @@ public interface ProxyReader extends Reader {
    *       <ul>
    *         <li>a boolean giving the current logical channel status.
    *         <li>a boolean giving the previous logical channel status.
-   *         <li>if a selection has been made ({@link SeSelector } not null) a {@link
+   *         <li>if a selection has been made ({@link CardSelector } not null) a {@link
    *             SelectionStatus} object containing the elements resulting from the selection.
    *         <li>if APDUs have been transmitted to the card, the list of responses to these APDUs.
    *       </ul>

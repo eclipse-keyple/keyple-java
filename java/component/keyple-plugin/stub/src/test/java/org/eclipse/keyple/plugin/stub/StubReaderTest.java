@@ -23,9 +23,9 @@ import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
+import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
 import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.*;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -489,7 +489,7 @@ public class StubReaderTest extends BaseStubTest {
         new PoSelectionRequest(
             PoSelector.builder()
                 .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
+                .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
 
@@ -554,7 +554,7 @@ public class StubReaderTest extends BaseStubTest {
         new PoSelectionRequest(
             PoSelector.builder()
                 .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
+                .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
 
@@ -628,7 +628,7 @@ public class StubReaderTest extends BaseStubTest {
         new PoSelectionRequest(
             PoSelector.builder()
                 .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
+                .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
 
@@ -761,7 +761,7 @@ public class StubReaderTest extends BaseStubTest {
         new PoSelectionRequest(
             PoSelector.builder()
                 .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
+                .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
 
@@ -1429,8 +1429,8 @@ public class StubReaderTest extends BaseStubTest {
     /** Create a new local class extending AbstractSeSelectionRequest */
     class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
 
-      public GenericSeSelectionRequest(SeSelector seSelector) {
-        super(seSelector);
+      public GenericSeSelectionRequest(CardSelector cardSelector) {
+        super(cardSelector);
       }
 
       @Override
@@ -1449,9 +1449,9 @@ public class StubReaderTest extends BaseStubTest {
     // ChannelControl.CLOSE_AFTER);
     GenericSeSelectionRequest genericSeSelectionRequest =
         new GenericSeSelectionRequest(
-            SeSelector.builder()
+            CardSelector.builder()
                 .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                .atrFilter(new SeSelector.AtrFilter("3B.*"))
+                .atrFilter(new CardSelector.AtrFilter("3B.*"))
                 .build());
 
     /* Prepare selector, ignore AbstractMatchingSe here */

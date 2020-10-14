@@ -13,8 +13,8 @@ package org.eclipse.keyple.plugin.remotese.rm.json;
 
 import java.io.IOException;
 import java.util.*;
+import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
-import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
@@ -53,16 +53,16 @@ public class SampleFactory {
     List<ApduRequest> poApduRequests;
     poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
-    SeSelector.AidSelector aidSelector =
-        SeSelector.AidSelector.builder().aidToSelect(poAid).build();
+    CardSelector.AidSelector aidSelector =
+        CardSelector.AidSelector.builder().aidToSelect(poAid).build();
 
-    SeSelector seSelector =
-        SeSelector.builder()
+    CardSelector cardSelector =
+        CardSelector.builder()
             .aidSelector(aidSelector)
             .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
             .build();
 
-    CardRequest cardRequest = new CardRequest(seSelector, poApduRequests);
+    CardRequest cardRequest = new CardRequest(cardSelector, poApduRequests);
 
     List<CardRequest> cardRequests = new ArrayList<CardRequest>();
 
@@ -92,16 +92,16 @@ public class SampleFactory {
     List<ApduRequest> poApduRequests;
     poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
-    SeSelector.AidSelector aidSelector =
-        SeSelector.AidSelector.builder().aidToSelect(poAid).build();
+    CardSelector.AidSelector aidSelector =
+        CardSelector.AidSelector.builder().aidToSelect(poAid).build();
 
-    SeSelector seSelector =
-        SeSelector.builder()
+    CardSelector cardSelector =
+        CardSelector.builder()
             .aidSelector(aidSelector)
             .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
             .build();
 
-    CardRequest cardRequest = new CardRequest(seSelector, poApduRequests);
+    CardRequest cardRequest = new CardRequest(cardSelector, poApduRequests);
     return cardRequest;
   }
 
@@ -122,24 +122,24 @@ public class SampleFactory {
 
     poApduRequests = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
-    SeSelector.AidSelector aidSelector =
-        SeSelector.AidSelector.builder().aidToSelect(poAid).build();
+    CardSelector.AidSelector aidSelector =
+        CardSelector.AidSelector.builder().aidToSelect(poAid).build();
 
-    SeSelector aidSeSelector =
-        SeSelector.builder()
+    CardSelector aidCardSelector =
+        CardSelector.builder()
             .aidSelector(aidSelector)
             .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
             .build();
 
-    SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter("/regex/");
+    CardSelector.AtrFilter atrFilter = new CardSelector.AtrFilter("/regex/");
 
-    SeSelector seAtrSelector =
-        SeSelector.builder()
+    CardSelector seAtrSelector =
+        CardSelector.builder()
             .atrFilter(atrFilter)
             .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name())
             .build();
 
-    CardRequest cardRequest = new CardRequest(aidSeSelector, poApduRequests);
+    CardRequest cardRequest = new CardRequest(aidCardSelector, poApduRequests);
 
     CardRequest cardRequest2 = new CardRequest(seAtrSelector, poApduRequests);
 

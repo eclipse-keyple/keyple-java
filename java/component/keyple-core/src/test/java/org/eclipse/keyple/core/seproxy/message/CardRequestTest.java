@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +38,7 @@ public class CardRequestTest {
   List<ApduRequest> apdus;
   String seProtocol;
   Set<Integer> selectionStatusCode;
-  SeSelector selector;
+  CardSelector selector;
 
   @Before
   public void setUp() {
@@ -59,7 +59,7 @@ public class CardRequestTest {
   public void getSelector() {
     // test
     assertEquals(
-        getSelector(selectionStatusCode).toString(), cardRequest.getSeSelector().toString());
+        getSelector(selectionStatusCode).toString(), cardRequest.getCardSelector().toString());
   }
 
   @Test
@@ -72,7 +72,7 @@ public class CardRequestTest {
   @Test
   public void getSeProtocol() {
     cardRequest = new CardRequest(getSelector(null), new ArrayList<ApduRequest>());
-    assertEquals(seProtocol, cardRequest.getSeSelector().getSeProtocol());
+    assertEquals(seProtocol, cardRequest.getCardSelector().getSeProtocol());
   }
 
   @Test
@@ -80,7 +80,11 @@ public class CardRequestTest {
     cardRequest = new CardRequest(getSelector(selectionStatusCode), new ArrayList<ApduRequest>());
     assertArrayEquals(
         selectionStatusCode.toArray(),
-        cardRequest.getSeSelector().getAidSelector().getSuccessfulSelectionStatusCodes().toArray());
+        cardRequest
+            .getCardSelector()
+            .getAidSelector()
+            .getSuccessfulSelectionStatusCodes()
+            .toArray());
   }
 
   @Test
@@ -95,50 +99,58 @@ public class CardRequestTest {
   @Test
   public void constructor1() {
     cardRequest = new CardRequest(getSelector(null), apdus);
-    assertEquals(getSelector(null).toString(), cardRequest.getSeSelector().toString());
+    assertEquals(getSelector(null).toString(), cardRequest.getCardSelector().toString());
     assertArrayEquals(apdus.toArray(), cardRequest.getApduRequests().toArray());
     //
     assertEquals(
         ContactlessCardCommonProtocols.ISO_14443_4.name(),
-        cardRequest.getSeSelector().getSeProtocol());
-    assertNull(cardRequest.getSeSelector().getAidSelector().getSuccessfulSelectionStatusCodes());
+        cardRequest.getCardSelector().getSeProtocol());
+    assertNull(cardRequest.getCardSelector().getAidSelector().getSuccessfulSelectionStatusCodes());
   }
 
   @Test
   public void constructor2() {
     cardRequest = new CardRequest(getSelector(null), apdus);
-    assertEquals(getSelector(null).toString(), cardRequest.getSeSelector().toString());
+    assertEquals(getSelector(null).toString(), cardRequest.getCardSelector().toString());
     assertArrayEquals(apdus.toArray(), cardRequest.getApduRequests().toArray());
-    assertEquals(seProtocol, cardRequest.getSeSelector().getSeProtocol());
+    assertEquals(seProtocol, cardRequest.getCardSelector().getSeProtocol());
     //
-    assertNull(cardRequest.getSeSelector().getAidSelector().getSuccessfulSelectionStatusCodes());
+    assertNull(cardRequest.getCardSelector().getAidSelector().getSuccessfulSelectionStatusCodes());
   }
 
   @Test
   public void constructor2b() {
     cardRequest = new CardRequest(getSelector(selectionStatusCode), apdus);
     assertEquals(
-        getSelector(selectionStatusCode).toString(), cardRequest.getSeSelector().toString());
+        getSelector(selectionStatusCode).toString(), cardRequest.getCardSelector().toString());
     assertArrayEquals(apdus.toArray(), cardRequest.getApduRequests().toArray());
     assertEquals(
         ContactlessCardCommonProtocols.ISO_14443_4.name(),
-        cardRequest.getSeSelector().getSeProtocol());
+        cardRequest.getCardSelector().getSeProtocol());
     //
     assertArrayEquals(
         selectionStatusCode.toArray(),
-        cardRequest.getSeSelector().getAidSelector().getSuccessfulSelectionStatusCodes().toArray());
+        cardRequest
+            .getCardSelector()
+            .getAidSelector()
+            .getSuccessfulSelectionStatusCodes()
+            .toArray());
   }
 
   @Test
   public void constructor3() {
     cardRequest = new CardRequest(getSelector(selectionStatusCode), apdus);
     assertEquals(
-        getSelector(selectionStatusCode).toString(), cardRequest.getSeSelector().toString());
+        getSelector(selectionStatusCode).toString(), cardRequest.getCardSelector().toString());
     assertArrayEquals(apdus.toArray(), cardRequest.getApduRequests().toArray());
-    assertEquals(seProtocol, cardRequest.getSeSelector().getSeProtocol());
+    assertEquals(seProtocol, cardRequest.getCardSelector().getSeProtocol());
     assertArrayEquals(
         selectionStatusCode.toArray(),
-        cardRequest.getSeSelector().getAidSelector().getSuccessfulSelectionStatusCodes().toArray());
+        cardRequest
+            .getCardSelector()
+            .getAidSelector()
+            .getSuccessfulSelectionStatusCodes()
+            .toArray());
   }
 
   /*
@@ -164,20 +176,20 @@ public class CardRequestTest {
     return ContactlessCardCommonProtocols.ISO_14443_4.name();
   }
 
-  static SeSelector getSelector(Set<Integer> selectionStatusCode) {
+  static CardSelector getSelector(Set<Integer> selectionStatusCode) {
     /*
      * We can use a fake AID here because it is not fully interpreted, the purpose of this unit
      * test is to verify the proper format of the request.
      */
-    SeSelector.AidSelector aidSelector =
-        SeSelector.AidSelector.builder().aidToSelect("AABBCCDDEEFF").build();
+    CardSelector.AidSelector aidSelector =
+        CardSelector.AidSelector.builder().aidToSelect("AABBCCDDEEFF").build();
     if (selectionStatusCode != null) {
       for (int statusCode : selectionStatusCode) {
         aidSelector.addSuccessfulStatusCode(statusCode);
       }
     }
-    SeSelector seSelector =
-        SeSelector.builder().seProtocol(getAString()).aidSelector(aidSelector).build();
-    return seSelector;
+    CardSelector cardSelector =
+        CardSelector.builder().seProtocol(getAString()).aidSelector(aidSelector).build();
+    return cardSelector;
   }
 }

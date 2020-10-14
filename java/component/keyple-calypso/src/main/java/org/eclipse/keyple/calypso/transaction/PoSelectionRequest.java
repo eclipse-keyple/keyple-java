@@ -41,7 +41,7 @@ public class PoSelectionRequest
     super(poSelector);
 
     /* No AID selector for a legacy Calypso PO */
-    if (seSelector.getAidSelector() == null) {
+    if (cardSelector.getAidSelector() == null) {
       poClass = PoClass.LEGACY;
     } else {
       poClass = PoClass.ISO;

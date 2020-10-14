@@ -19,8 +19,8 @@ import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.core.CoreBaseTest;
+import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
-import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
@@ -212,15 +212,15 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
    */
   public static List<CardRequest> getPartialRequestList(AbstractLocalReader r, int scenario) {
 
-    SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter(ATR);
-    SeSelector selector =
-        SeSelector.builder()
+    CardSelector.AtrFilter atrFilter = new CardSelector.AtrFilter(ATR);
+    CardSelector selector =
+        CardSelector.builder()
             .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
             .atrFilter(atrFilter)
             .build();
 
-    SeSelector failSelector =
-        SeSelector.builder().seProtocol("MIFARE_ULTRA_LIGHT").atrFilter(atrFilter).build();
+    CardSelector failSelector =
+        CardSelector.builder().seProtocol("MIFARE_ULTRA_LIGHT").atrFilter(atrFilter).build();
 
     ApduRequest apduOK = new ApduRequest(APDU_SUCCESS, false);
     ApduRequest apduKO = new ApduRequest(APDU_IOEXC, false);
@@ -291,12 +291,12 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
   public static CardRequest getPartialRequest(AbstractLocalReader r, int scenario) {
 
     /*
-     * SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter(ATR); SeSelector selector = new
-     * SeSelector( ContactlessCardCommonProtocols.ISO_14443_4, atrFilter, null, "iso");
+     * CardSelector.AtrFilter atrFilter = new CardSelector.AtrFilter(ATR); CardSelector selector = new
+     * CardSelector( ContactlessCardCommonProtocols.ISO_14443_4, atrFilter, null, "iso");
      *
      */
 
-    SeSelector aidSelector = AbsLocalReaderSelectionTest.getAidSelector();
+    CardSelector aidSelector = AbsLocalReaderSelectionTest.getAidSelector();
 
     ApduRequest apduOK = new ApduRequest(APDU_SUCCESS, false);
     ApduRequest apduKO = new ApduRequest(APDU_IOEXC, false);

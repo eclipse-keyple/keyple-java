@@ -14,10 +14,10 @@ package org.eclipse.keyple.example.generic.pc.usecase4;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
+import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.generic.GenericSeSelectionRequest;
@@ -81,12 +81,13 @@ public class SequentialMultiSelection_Pcsc {
       // physical channel open
       seSelection.prepareSelection(
           new GenericSeSelectionRequest(
-              SeSelector.builder()
+              CardSelector.builder()
                   .aidSelector(
-                      SeSelector.AidSelector.builder()
+                      CardSelector.AidSelector.builder()
                           .aidToSelect(seAidPrefix)
-                          .fileOccurrence(SeSelector.AidSelector.FileOccurrence.FIRST)
-                          .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI)
+                          .fileOccurrence(CardSelector.AidSelector.FileOccurrence.FIRST)
+                          .fileControlInformation(
+                              CardSelector.AidSelector.FileControlInformation.FCI)
                           .build())
                   .build()));
 
@@ -99,12 +100,13 @@ public class SequentialMultiSelection_Pcsc {
 
       seSelection.prepareSelection(
           new GenericSeSelectionRequest(
-              SeSelector.builder()
+              CardSelector.builder()
                   .aidSelector(
-                      SeSelector.AidSelector.builder()
+                      CardSelector.AidSelector.builder()
                           .aidToSelect(seAidPrefix)
-                          .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
-                          .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI)
+                          .fileOccurrence(CardSelector.AidSelector.FileOccurrence.NEXT)
+                          .fileControlInformation(
+                              CardSelector.AidSelector.FileControlInformation.FCI)
                           .build())
                   .build()));
 

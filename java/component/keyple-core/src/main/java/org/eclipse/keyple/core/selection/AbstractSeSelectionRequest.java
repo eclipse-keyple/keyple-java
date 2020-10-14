@@ -14,26 +14,26 @@ package org.eclipse.keyple.core.selection;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
-import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.CardResponse;
 
 /**
- * The AbstractSeSelectionRequest class combines a SeSelector with additional helper methods useful
- * to the selection process done in {@link SeSelection}.
+ * The AbstractSeSelectionRequest class combines a CardSelector with additional helper methods
+ * useful to the selection process done in {@link SeSelection}.
  *
  * <p>This class may also be extended to add particular features specific to a card family.
  */
 public abstract class AbstractSeSelectionRequest<T extends AbstractApduCommandBuilder> {
-  protected final SeSelector seSelector;
+  protected final CardSelector cardSelector;
 
   /** optional command builder list of command to be executed following the selection process */
   private final List<T> commandBuilders = new ArrayList<T>();
 
-  public AbstractSeSelectionRequest(SeSelector seSelector) {
-    this.seSelector = seSelector;
+  public AbstractSeSelectionRequest(CardSelector cardSelector) {
+    this.cardSelector = cardSelector;
   }
 
   /**
@@ -47,11 +47,11 @@ public abstract class AbstractSeSelectionRequest<T extends AbstractApduCommandBu
     for (T commandBuilder : commandBuilders) {
       seSelectionApduRequests.add(commandBuilder.getApduRequest());
     }
-    return new CardRequest(seSelector, seSelectionApduRequests);
+    return new CardRequest(cardSelector, seSelectionApduRequests);
   }
 
-  public SeSelector getSeSelector() {
-    return seSelector;
+  public CardSelector getCardSelector() {
+    return cardSelector;
   }
 
   /**

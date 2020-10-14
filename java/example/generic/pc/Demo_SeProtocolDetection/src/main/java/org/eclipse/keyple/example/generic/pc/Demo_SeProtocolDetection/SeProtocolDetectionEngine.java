@@ -17,8 +17,8 @@ import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
@@ -84,9 +84,9 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverAsynchronou
           /* Add a generic selector */
           seSelection.prepareSelection(
               new GenericSeSelectionRequest(
-                  SeSelector.builder()
+                  CardSelector.builder()
                       .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                      .atrFilter(new SeSelector.AtrFilter(".*"))
+                      .atrFilter(new CardSelector.AtrFilter(".*"))
                       .build()));
           break;
       }

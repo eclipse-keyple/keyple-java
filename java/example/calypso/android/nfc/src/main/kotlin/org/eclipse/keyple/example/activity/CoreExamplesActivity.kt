@@ -25,8 +25,8 @@ import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest
 import org.eclipse.keyple.core.selection.SeSelection
 import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing
 import org.eclipse.keyple.core.seproxy.Reader
-import org.eclipse.keyple.core.seproxy.SeSelector
-import org.eclipse.keyple.core.seproxy.SeSelector.AidSelector
+import org.eclipse.keyple.core.seproxy.CardSelector
+import org.eclipse.keyple.core.seproxy.CardSelector.AidSelector
 import org.eclipse.keyple.core.seproxy.event.ObservableReader
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException
@@ -94,12 +94,12 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             /* AID based selection (1st selection, later indexed 0) */
             seSelection.prepareSelection(
                     GenericSeSelectionRequest(
-                            SeSelector.builder()
+                            CardSelector.builder()
                                     .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
                                     .aidSelector(AidSelector.builder()
                                             .aidToSelect(seAidPrefix)
-                                            .fileOccurrence(SeSelector.AidSelector.FileOccurrence.FIRST)
-                                            .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build())
+                                            .fileOccurrence(CardSelector.AidSelector.FileOccurrence.FIRST)
+                                            .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI).build())
                                     .build()))
 
             /* Do the selection and display the result */
@@ -118,12 +118,12 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             /* next selection (2nd selection, later indexed 1) */
             seSelection.prepareSelection(
                     GenericSeSelectionRequest(
-                            SeSelector.builder()
+                            CardSelector.builder()
                                     .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
-                                    .aidSelector(SeSelector.AidSelector.builder()
+                                    .aidSelector(CardSelector.AidSelector.builder()
                                             .aidToSelect(seAidPrefix)
-                                            .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
-                                            .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build())
+                                            .fileOccurrence(CardSelector.AidSelector.FileOccurrence.NEXT)
+                                            .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI).build())
                                     .build()))
 
             /* Do the selection and display the result */
@@ -170,34 +170,34 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             /* AID based selection (1st selection, later indexed 0) */
             seSelection.prepareSelection(
                     GenericSeSelectionRequest(
-                            SeSelector.builder()
+                            CardSelector.builder()
                                     .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
-                                    .aidSelector(SeSelector.AidSelector.builder()
+                                    .aidSelector(CardSelector.AidSelector.builder()
                                             .aidToSelect(seAidPrefix)
-                                            .fileOccurrence(SeSelector.AidSelector.FileOccurrence.FIRST)
-                                            .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build())
+                                            .fileOccurrence(CardSelector.AidSelector.FileOccurrence.FIRST)
+                                            .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI).build())
                                     .build()))
 
             /* next selection (2nd selection, later indexed 1) */
             seSelection.prepareSelection(
                     GenericSeSelectionRequest(
-                            SeSelector.builder()
+                            CardSelector.builder()
                                     .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
-                                    .aidSelector(SeSelector.AidSelector.builder()
+                                    .aidSelector(CardSelector.AidSelector.builder()
                                             .aidToSelect(seAidPrefix)
-                                            .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
-                                            .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build())
+                                            .fileOccurrence(CardSelector.AidSelector.FileOccurrence.NEXT)
+                                            .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI).build())
                                     .build()))
 
             /* next selection (3rd selection, later indexed 2) */
             seSelection.prepareSelection(
                     GenericSeSelectionRequest(
-                            SeSelector.builder()
+                            CardSelector.builder()
                                     .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
-                                    .aidSelector(SeSelector.AidSelector.builder()
+                                    .aidSelector(CardSelector.AidSelector.builder()
                                             .aidToSelect(seAidPrefix)
-                                            .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
-                                            .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build())
+                                            .fileOccurrence(CardSelector.AidSelector.FileOccurrence.NEXT)
+                                            .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI).build())
                                     .build()))
 
             addActionEvent("Calypso PO selection for prefix: $seAidPrefix")
@@ -249,10 +249,10 @@ class CoreExamplesActivity : AbstractExampleActivity() {
         val aid = CalypsoClassicInfo.AID
 
         /*
-         * Generic selection: configures a SeSelector with all the desired attributes to make the
+         * Generic selection: configures a CardSelector with all the desired attributes to make the
          * selection
          */
-        val seSelector = GenericSeSelectionRequest(SeSelector.builder()
+        val cardSelector = GenericSeSelectionRequest(CardSelector.builder()
                 .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
                 .aidSelector(AidSelector.builder()
                         .aidToSelect(aid).build())
@@ -261,7 +261,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
         /*
         * Add the selection case to the current selection (we could have added other cases here)
         */
-        seSelection.prepareSelection(seSelector)
+        seSelection.prepareSelection(cardSelector)
 
         /*
          * Provide the Reader with the selection operation to be processed when a card is inserted.
@@ -342,11 +342,11 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             val aid = CalypsoClassicInfo.AID
 
             /*
-             * Generic selection: configures a SeSelector with all the desired attributes to make
+             * Generic selection: configures a CardSelector with all the desired attributes to make
              * the selection and read additional information afterwards
              */
             val genericSeSelectionRequest = GenericSeSelectionRequest(
-                    SeSelector.builder().seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name).aidSelector(
+                    CardSelector.builder().seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name).aidSelector(
                             AidSelector.builder().aidToSelect(aid).build()).build())
 
             /**
@@ -396,7 +396,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
     /**
      * Create a new class extending AbstractSeSelectionRequest
      */
-    inner class GenericSeSelectionRequest(seSelector: SeSelector) : AbstractSeSelectionRequest<AbstractApduCommandBuilder>(seSelector) {
+    inner class GenericSeSelectionRequest(cardSelector: CardSelector) : AbstractSeSelectionRequest<AbstractApduCommandBuilder>(cardSelector) {
         override fun parse(cardResponse: CardResponse): AbstractMatchingSe {
             class GenericMatchingSe(
                 selectionResponse: CardResponse
