@@ -31,7 +31,7 @@ import org.eclipse.keyple.core.selection.SeSelection
 import org.eclipse.keyple.core.seproxy.CardSelector.AidSelector
 import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing
 import org.eclipse.keyple.core.seproxy.Reader
-import org.eclipse.keyple.core.seproxy.SeProxyService
+import org.eclipse.keyple.core.seproxy.SmartCardService
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse
 import org.eclipse.keyple.core.seproxy.event.ObservableReader
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent
@@ -46,7 +46,7 @@ import org.eclipse.keyple.example.util.configProtocol
 import timber.log.Timber
 
 /**
- * Example of @[SeProxyService] implementation based on the @[AndroidNfcPlugin]
+ * Example of @[SmartCardService] implementation based on the @[AndroidNfcPlugin]
  *
  * By default the plugin only listens to events when your application activity is in the foreground.
  * To activate NFC events while you application is not in the foreground, add the following
