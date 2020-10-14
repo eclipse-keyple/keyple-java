@@ -176,6 +176,16 @@ final class ServerVirtualObservableReader extends AbstractServerVirtualReader
   }
 
   /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
+  @Override
+  public boolean isContactless() {
+    return reader.isContactless();
+  }
+
+  /**
    * (package-private)<br>
    * Return the master reader if any, null if none
    *

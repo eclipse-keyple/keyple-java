@@ -12,15 +12,12 @@
 package org.eclipse.keyple.plugin.remotese.virtualse.impl;
 
 import java.util.List;
-import java.util.Map;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerReader;
@@ -132,36 +129,6 @@ abstract class AbstractServerVirtualReader implements RemoteSeServerReader, Prox
    * @since 1.0
    */
   @Override
-  public void addSeProtocolSetting(SeProtocol seProtocol, String protocolRule) {
-    reader.addSeProtocolSetting(seProtocol, protocolRule);
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
-  @Override
-  public void setSeProtocolSetting(Map<SeProtocol, String> protocolSetting) {
-    reader.setSeProtocolSetting(protocolSetting);
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
-  @Override
-  public TransmissionMode getTransmissionMode() {
-    return reader.getTransmissionMode();
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
-  @Override
   public String getName() {
     return reader.getName();
   }
@@ -192,5 +159,37 @@ abstract class AbstractServerVirtualReader implements RemoteSeServerReader, Prox
   @Override
   public void releaseChannel() {
     reader.releaseChannel();
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
+  @Override
+  public void activateProtocol(String readerProtocolName, String applicationProtocolName) {
+    throw new IllegalArgumentException(
+        "activateProtocol method is not implemented in plugin remote, use it only locally");
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
+  @Override
+  public void deactivateProtocol(String readerProtocolName) {
+    throw new IllegalArgumentException(
+        "deactivateProtocol method is not implemented in plugin remote, use it only locally");
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
+  @Override
+  public boolean isContactless() {
+    return reader.isContactless();
   }
 }

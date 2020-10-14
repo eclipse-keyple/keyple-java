@@ -15,7 +15,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
@@ -23,8 +22,6 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
@@ -123,14 +120,8 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
           case IS_SE_PRESENT:
             response = isSePresent();
             break;
-          case ADD_SE_PROTOCOL_SETTING:
-            response = addSeProtocolSetting();
-            break;
-          case SET_SE_PROTOCOL_SETTING:
-            response = setSeProtocolSetting();
-            break;
-          case GET_TRANSMISSION_MODE:
-            response = getTransmissionMode();
+          case IS_READER_CONTACTLESS:
+            response = isReaderContactless();
             break;
           case START_SE_DETECTION:
             response = startSeDetection();
@@ -306,70 +297,18 @@ abstract class AbstractNativeSeService extends AbstractKeypleMessageHandler {
 
     /**
      * (private)<br>
-     * Add SE Protocol Setting
+     * Is Reader Contactless ?
      *
      * @return a not null reference.
      * @throws KeypleReaderIOException if a reader IO error occurs.
      */
-    private KeypleMessageDto addSeProtocolSetting() {
-
-      // Extract info from the message
-      JsonObject bodyObject =
-          KeypleJsonParser.getParser().fromJson(msg.getBody(), JsonObject.class);
-
-      SeProtocol seProtocol =
-          KeypleJsonParser.getParser()
-              .fromJson(bodyObject.get("seProtocol").toString(), SeProtocol.class);
-
-      String protocolRule = bodyObject.get("protocolRule").getAsString();
+    private KeypleMessageDto isReaderContactless() {
 
       // Execute the action on the reader
-      reader.addSeProtocolSetting(seProtocol, protocolRule);
+      boolean isContactless = reader.isContactless();
 
       // Build response
-      return new KeypleMessageDto(msg).setBody(null);
-    }
-
-    /**
-     * (private)<br>
-     * Set SE Protocol Setting
-     *
-     * @return a not null reference.
-     * @throws KeypleReaderIOException if a reader IO error occurs.
-     */
-    private KeypleMessageDto setSeProtocolSetting() {
-
-      // Extract info from the message
-      JsonObject bodyObject =
-          KeypleJsonParser.getParser().fromJson(msg.getBody(), JsonObject.class);
-
-      Map<SeProtocol, String> protocolSetting =
-          KeypleJsonParser.getParser()
-              .fromJson(
-                  bodyObject.get("protocolSetting").getAsString(),
-                  new TypeToken<Map<SeProtocol, String>>() {}.getType());
-
-      // Execute the action on the reader
-      reader.setSeProtocolSetting(protocolSetting);
-
-      // Build response
-      return new KeypleMessageDto(msg).setBody(null);
-    }
-
-    /**
-     * (private)<br>
-     * Get Transmission Mode
-     *
-     * @return a not null reference.
-     * @throws KeypleReaderIOException if a reader IO error occurs.
-     */
-    private KeypleMessageDto getTransmissionMode() {
-
-      // Execute the action on the reader
-      TransmissionMode transmissionMode = reader.getTransmissionMode();
-
-      // Build response
-      String body = KeypleJsonParser.getParser().toJson(transmissionMode, TransmissionMode.class);
+      String body = KeypleJsonParser.getParser().toJson(isContactless, Boolean.class);
       return new KeypleMessageDto(msg).setBody(body);
     }
 

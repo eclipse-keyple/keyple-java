@@ -26,7 +26,6 @@ import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
@@ -261,45 +260,18 @@ public class AbstractNativeSeServiceTest extends BaseNativeSeTest {
   }
 
   @Test
-  public void addSeProtocolSetting() {
+  public void isContactless() {
     // init
-    KeypleMessageDto requestDto = getAddSeProtocolSettingDto("aSessionId");
+    doReturn(true).when(readerMocked).isContactless();
+    KeypleMessageDto requestDto = getIsContactless("aSessionId");
     // execute
     KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
     assertThat(responseDto.getAction())
-        .isEqualTo(KeypleMessageDto.Action.ADD_SE_PROTOCOL_SETTING.name());
-    assertThat(responseDto.getBody()).isNull();
-  }
-
-  @Test
-  public void setSeProtocolSetting() {
-    // init
-    KeypleMessageDto requestDto = getSetSeProtocolSettingDto("aSessionId");
-    // execute
-    KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
-    // results
-    assertMetadataMatches(requestDto, responseDto);
-    assertThat(responseDto.getAction())
-        .isEqualTo(KeypleMessageDto.Action.SET_SE_PROTOCOL_SETTING.name());
-    assertThat(responseDto.getBody()).isNull();
-  }
-
-  @Test
-  public void getTransmissionMode() {
-    // init
-    doReturn(TransmissionMode.CONTACTS).when(readerMocked).getTransmissionMode();
-    KeypleMessageDto requestDto = getGetTransmissionModeDto("aSessionId");
-    // execute
-    KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
-    // results
-    assertMetadataMatches(requestDto, responseDto);
-    assertThat(responseDto.getAction())
-        .isEqualTo(KeypleMessageDto.Action.GET_TRANSMISSION_MODE.name());
-    TransmissionMode bodyValue =
-        KeypleJsonParser.getParser().fromJson(responseDto.getBody(), TransmissionMode.class);
-    assertThat(bodyValue).isEqualTo(TransmissionMode.CONTACTS);
+        .isEqualTo(KeypleMessageDto.Action.IS_READER_CONTACTLESS.name());
+    boolean bodyValue = KeypleJsonParser.getParser().fromJson(responseDto.getBody(), Boolean.class);
+    assertThat(bodyValue).isTrue();
   }
 
   @Test

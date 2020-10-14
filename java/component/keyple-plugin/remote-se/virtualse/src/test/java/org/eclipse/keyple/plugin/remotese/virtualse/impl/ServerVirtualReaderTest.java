@@ -21,8 +21,6 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.junit.Before;
 import org.junit.Test;
@@ -157,97 +155,6 @@ public class ServerVirtualReaderTest {
     reader.isSePresent();
   }
 
-  @Test
-  public void addSeProtocolSetting_shouldDelegateMethodToVirtualReader() {
-
-    // init request
-    SeProtocol seProtocol = SampleFactory.getSeProtocol();
-    String protocolRule = "protocolRule";
-
-    // init response
-    doNothing().when(virtualReaderMocked).addSeProtocolSetting(seProtocol, protocolRule);
-
-    // execute
-    reader.addSeProtocolSetting(seProtocol, protocolRule);
-
-    // verify
-    verify(virtualReaderMocked).addSeProtocolSetting(seProtocol, protocolRule);
-    verifyNoMoreInteractions(virtualReaderMocked);
-  }
-
-  @Test(expected = KeypleReaderIOException.class)
-  public void addSeProtocolSetting_whenError_shouldThrowOriginalException() {
-
-    // init request
-    SeProtocol seProtocol = SampleFactory.getSeProtocol();
-    String protocolRule = "protocolRule";
-
-    // init response
-    doThrow(new KeypleReaderIOException("test"))
-        .when(virtualReaderMocked)
-        .addSeProtocolSetting(seProtocol, protocolRule);
-
-    // execute
-    reader.addSeProtocolSetting(seProtocol, protocolRule);
-  }
-
-  @Test
-  public void setSeProtocolSetting_shouldDelegateMethodToVirtualReader() {
-
-    // init request
-    Map<SeProtocol, String> seProtocolSetting = SampleFactory.getSeProtocolSetting();
-
-    // init response
-    doNothing().when(virtualReaderMocked).setSeProtocolSetting(seProtocolSetting);
-
-    // execute
-    reader.setSeProtocolSetting(seProtocolSetting);
-
-    // verify
-    verify(virtualReaderMocked).setSeProtocolSetting(seProtocolSetting);
-    verifyNoMoreInteractions(virtualReaderMocked);
-  }
-
-  @Test(expected = KeypleReaderIOException.class)
-  public void setSeProtocolSetting_whenError_shouldThrowOriginalException() {
-
-    // init request
-    Map<SeProtocol, String> seProtocolSetting = SampleFactory.getSeProtocolSetting();
-
-    // init response
-    doThrow(new KeypleReaderIOException("test"))
-        .when(virtualReaderMocked)
-        .setSeProtocolSetting(seProtocolSetting);
-
-    // execute
-    reader.setSeProtocolSetting(seProtocolSetting);
-  }
-
-  @Test
-  public void getTransmissionMode_shouldDelegateMethodToVirtualReader() {
-
-    // init
-    doReturn(TransmissionMode.CONTACTS).when(virtualReaderMocked).getTransmissionMode();
-
-    // execute
-    TransmissionMode result = reader.getTransmissionMode();
-
-    // verify
-    verify(virtualReaderMocked).getTransmissionMode();
-    verifyNoMoreInteractions(virtualReaderMocked);
-    assertThat(result).isEqualTo(TransmissionMode.CONTACTS);
-  }
-
-  @Test(expected = KeypleReaderIOException.class)
-  public void getTransmissionMode_whenError_shouldThrowOriginalException() {
-
-    // init
-    doThrow(new KeypleReaderIOException("test")).when(virtualReaderMocked).getTransmissionMode();
-
-    // execute
-    reader.getTransmissionMode();
-  }
-
   @SuppressWarnings("ResultOfMethodCallIgnored")
   @Test
   public void getName_shouldDelegateMethodToVirtualReader() {
@@ -263,6 +170,41 @@ public class ServerVirtualReaderTest {
     verify(virtualReaderMocked).getName();
     verifyNoMoreInteractions(virtualReaderMocked);
     assertThat(result).isSameAs(name);
+  }
+
+  @Test
+  public void isContactless_shouldDelegateMethodToVirtualReader() {
+
+    // init
+    doReturn(true).when(virtualReaderMocked).isContactless();
+
+    // execute
+    boolean result = reader.isContactless();
+
+    // verify
+    verify(virtualReaderMocked).isContactless();
+    verifyNoMoreInteractions(virtualReaderMocked);
+    assertThat(result).isTrue();
+  }
+
+  @Test(expected = KeypleReaderIOException.class)
+  public void isContactless_whenError_shouldThrowOriginalException() {
+
+    // init
+    doThrow(new KeypleReaderIOException("test")).when(virtualReaderMocked).isContactless();
+
+    // execute
+    reader.isContactless();
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  public void activateProtocol__shouldThrowUOE() {
+    reader.activateProtocol("any", "any");
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  public void deactivateProtocol__shouldThrowUOE() {
+    reader.deactivateProtocol("any");
   }
 
   @Test

@@ -20,8 +20,6 @@ import java.util.*;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
@@ -203,131 +201,39 @@ public class VirtualReaderTest {
   }
 
   @Test
-  public void addSeProtocolSetting_whenOk_shouldCallTheHandlerAndReturnResponses() {
-
-    // init request
-    SeProtocol seProtocol = SampleFactory.getSeProtocol();
-
-    // init response
-    KeypleMessageDto responseDto =
-        new KeypleMessageDto() //
-            .setAction(KeypleMessageDto.Action.ADD_SE_PROTOCOL_SETTING.name()) //
-            .setVirtualReaderName(reader.getName()) //
-            .setNativeReaderName(reader.nativeReaderName);
-
-    doReturn(responseDto).when(node).sendRequest(any(KeypleMessageDto.class));
-
-    // execute
-    reader.addSeProtocolSetting(seProtocol, "protocolRule");
-  }
-
-  @Test(expected = KeypleTimeoutException.class)
-  public void addSeProtocolSetting_whenNodeTimeout_shouldThrowKTE() {
-
-    // init response
-    mockTimeout();
-
-    // init request
-    SeProtocol seProtocol = SampleFactory.getSeProtocol();
-
-    // execute
-    reader.addSeProtocolSetting(seProtocol, "protocolRule");
-  }
-
-  @Test(expected = KeypleReaderIOException.class)
-  public void addSeProtocolSetting_whenError_shouldThrowOriginalException() {
-
-    // init response
-    mockError();
-
-    // init request
-    SeProtocol seProtocol = SampleFactory.getSeProtocol();
-
-    // execute
-    reader.addSeProtocolSetting(seProtocol, "protocolRule");
-  }
-
-  @Test
-  public void setSeProtocolSetting_whenOk_shouldCallTheHandlerAndReturnResponses() {
-
-    // init request
-    Map<SeProtocol, String> seProtocolSetting = SampleFactory.getSeProtocolSetting();
-
-    // init response
-    KeypleMessageDto responseDto =
-        new KeypleMessageDto() //
-            .setAction(KeypleMessageDto.Action.SET_SE_PROTOCOL_SETTING.name()) //
-            .setVirtualReaderName(reader.getName()) //
-            .setNativeReaderName(reader.nativeReaderName);
-
-    doReturn(responseDto).when(node).sendRequest(any(KeypleMessageDto.class));
-
-    // execute
-    reader.setSeProtocolSetting(seProtocolSetting);
-  }
-
-  @Test(expected = KeypleTimeoutException.class)
-  public void setSeProtocolSetting_whenNodeTimeout_shouldThrowKTE() {
-
-    // init response
-    mockTimeout();
-
-    // init request
-    Map<SeProtocol, String> seProtocolSetting = SampleFactory.getSeProtocolSetting();
-
-    // execute
-    reader.setSeProtocolSetting(seProtocolSetting);
-  }
-
-  @Test(expected = KeypleReaderIOException.class)
-  public void setSeProtocolSetting_whenError_shouldThrowOriginalException() {
-
-    // init response
-    mockError();
-
-    // init request
-    Map<SeProtocol, String> seProtocolSetting = SampleFactory.getSeProtocolSetting();
-
-    // execute
-    reader.setSeProtocolSetting(seProtocolSetting);
-  }
-
-  @Test
-  public void getTransmissionMode_whenOk_shouldCallTheHandlerAndReturnResponses() {
+  public void isReaderContactless_whenOk_shouldCallTheHandlerAndReturnResponses() {
 
     // init
     KeypleMessageDto responseDto =
         new KeypleMessageDto() //
-            .setAction(KeypleMessageDto.Action.GET_TRANSMISSION_MODE.name()) //
+            .setAction(KeypleMessageDto.Action.IS_READER_CONTACTLESS.name()) //
             .setVirtualReaderName(reader.getName()) //
             .setNativeReaderName(reader.nativeReaderName) //
-            .setBody(
-                KeypleJsonParser.getParser()
-                    .toJson(TransmissionMode.CONTACTS, TransmissionMode.class));
+            .setBody(KeypleJsonParser.getParser().toJson(true, Boolean.class));
 
     doReturn(responseDto).when(node).sendRequest(any(KeypleMessageDto.class));
 
     // execute
-    TransmissionMode result = reader.getTransmissionMode();
+    boolean result = reader.isContactless();
 
     // verify
-    assertThat(result).isEqualTo(TransmissionMode.CONTACTS);
+    assertThat(result).isTrue();
   }
 
   @Test(expected = KeypleTimeoutException.class)
-  public void getTransmissionMode_whenNodeTimeout_shouldThrowKTE() {
+  public void isReaderContactless_whenNodeTimeout_shouldThrowKTE() {
     // init
     mockTimeout();
     // execute
-    reader.getTransmissionMode();
+    reader.isContactless();
   }
 
   @Test(expected = KeypleReaderIOException.class)
-  public void getTransmissionMode_whenError_shouldThrowOriginalException() {
+  public void isReaderContactless_whenError_shouldThrowOriginalException() {
     // init
     mockError();
     // execute
-    reader.getTransmissionMode();
+    reader.isContactless();
   }
 
   @Test
@@ -366,6 +272,16 @@ public class VirtualReaderTest {
   public void getSessionId_whenIsSet_shouldReturnCurrentValue() {
     String sessionId = reader.getSessionId();
     assertThat(sessionId).isEqualTo("val1");
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  public void activateProtocol__shouldThrowUOE() {
+    reader.activateProtocol("any", "any");
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  public void deactivateProtocol__shouldThrowUOE() {
+    reader.deactivateProtocol("any");
   }
 
   private void mockTimeout() {
