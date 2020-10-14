@@ -6,8 +6,8 @@ apply plugin: 'jacoco'
 apply plugin: 'org.sonarqube'
 
 sourceCompatibility = 1.6
-archivesBaseName = "keyple-java-plugin-remotese-virtualse"
-project.description ='Keyple Plugin Remote SE (Virtual SE)'
+archivesBaseName = "keyple-java-plugin-remote-native"
+project.description ='Keyple Plugin Remote (Native)'
 
 //copy license file from root folder to each generated artifact
 task copyLICENSEplugin(type: Copy) {
@@ -46,6 +46,19 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 //publish javadoc, sources and jar
 artifacts {
     archives sourcesJar, javadocJar
+}
+
+task jarTest (type: Jar) {
+    from sourceSets.test.output
+    classifier = 'test'
+}
+
+configurations {
+    testOutput
+}
+
+artifacts {
+    testOutput jarTest
 }
 
 //sign if needed (based on the doSign variable)
@@ -158,19 +171,19 @@ uploadArchives {
 
 task installPlugin{
     group 'keyple'
-    description 'Builds and installs the Keyple Plugin Remote SE (Virtual SE) into maven local repository'
-    dependsOn ':java:component:keyple-plugin:remote-se:keyple-plugin-remotese-virtualse:uploadArchives'
+    description 'Builds and installs the Keyple Plugin Remote (Native) into maven local repository'
+    dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-native:uploadArchives'
 
     doLast {
-        println 'Keyple Plugin Remote SE (Virtual SE) has been installed into maven local repo at path : ' + project.getRepositories().get(0).getAt("url")
+        println 'Keyple Plugin Remote (Native) has been installed into maven local repo at path : ' + project.getRepositories().get(0).getAt("url")
     }
 }
 
 dependencies {
 
     //use keyple library : core
-    //api project(path:':java:component:keyple-plugin:remote-se:keyple-plugin-remotese-core')
-    api group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remotese-core', version: project.version
+    //api project(path:':java:component:keyple-plugin:remote:keyple-plugin-remote-core')
+    api group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remote-core', version: project.version
 
     implementation "com.google.code.gson:gson:${gson_version}"
 
@@ -192,9 +205,6 @@ dependencies {
 
     //add slf4j simple logger implementation
     testImplementation "org.slf4j:slf4j-simple:${slf4jsimple_version}"
-
-    // https://github.com/awaitility/awaitility
-    testImplementation 'org.awaitility:awaitility:4.0.3'
 }
 
 jacocoTestReport {

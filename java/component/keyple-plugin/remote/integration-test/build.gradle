@@ -4,8 +4,8 @@ apply plugin: 'jacoco'
 apply plugin: 'org.sonarqube'
 
 sourceCompatibility = 1.6
-archivesBaseName = "keyple-java-plugin-remotese-integration-test"
-project.description ='Integration tests of Keyple Plugin Remote SE, only for testing'
+archivesBaseName = "keyple-java-plugin-remote-integration-test"
+project.description ='Integration tests of Keyple Plugin Remote, only for testing'
 
 
 dependencies {
@@ -13,13 +13,13 @@ dependencies {
     Test
      */
 
-    implementation project(path:':java:component:keyple-plugin:remote-se:keyple-plugin-remotese-core')
+    implementation project(path:':java:component:keyple-plugin:remote:keyple-plugin-remote-core')
 
-    implementation project(path:':java:component:keyple-plugin:remote-se:keyple-plugin-remotese-nativese')
+    implementation project(path:':java:component:keyple-plugin:remote:keyple-plugin-remote-native')
 
-    implementation project(path:':java:component:keyple-plugin:remote-se:keyple-plugin-remotese-nativese', configuration: 'testOutput')
+    implementation project(path:':java:component:keyple-plugin:remote:keyple-plugin-remote-native', configuration: 'testOutput')
 
-    implementation project(path:':java:component:keyple-plugin:remote-se:keyple-plugin-remotese-virtualse')
+    implementation project(path:':java:component:keyple-plugin:remote:keyple-plugin-remote-virtual')
 
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-stub', version: project.version
 
