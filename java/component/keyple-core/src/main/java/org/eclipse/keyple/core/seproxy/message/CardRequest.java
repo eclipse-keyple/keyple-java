@@ -13,7 +13,7 @@ package org.eclipse.keyple.core.seproxy.message;
 
 import java.io.Serializable;
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.CardSelector;
 
 /**
  * List of APDU requests that will result in a {@link CardResponse}
@@ -22,8 +22,8 @@ import org.eclipse.keyple.core.seproxy.SeSelector;
  */
 public final class CardRequest implements Serializable {
 
-  /** +/seSelector is either an AID or an ATR regular expression */
-  private final SeSelector seSelector;
+  /** +/cardSelector is either an AID or an ATR regular expression */
+  private final CardSelector cardSelector;
 
   /**
    * contains a group of APDUCommand to operate on the selected card application by the card reader.
@@ -34,33 +34,33 @@ public final class CardRequest implements Serializable {
    * The constructor called by a ProxyReader in order to open a logical channel, to send a set of
    * APDU commands to a card application, or both of them.
    *
-   * @param seSelector the SeSelector containing the selection information to process the card
+   * @param cardSelector the CardSelector containing the selection information to process the card
    *     selection
    * @param apduRequests a optional list of {@link ApduRequest} to execute after a successful
    *     selection process
    */
-  public CardRequest(SeSelector seSelector, List<ApduRequest> apduRequests) {
-    this.seSelector = seSelector;
+  public CardRequest(CardSelector cardSelector, List<ApduRequest> apduRequests) {
+    this.cardSelector = cardSelector;
     this.apduRequests = apduRequests;
   }
 
   /**
-   * Constructor to be used when the card is already selected (without {@link SeSelector})
+   * Constructor to be used when the card is already selected (without {@link CardSelector})
    *
    * @param apduRequests a list of ApudRequest
    */
   public CardRequest(List<ApduRequest> apduRequests) {
-    this.seSelector = null;
+    this.cardSelector = null;
     this.apduRequests = apduRequests;
   }
 
   /**
-   * Gets the card seSelector.
+   * Gets the card cardSelector.
    *
-   * @return the current card seSelector
+   * @return the current card cardSelector
    */
-  public SeSelector getSeSelector() {
-    return seSelector;
+  public CardSelector getCardSelector() {
+    return cardSelector;
   }
 
   /**
@@ -76,6 +76,6 @@ public final class CardRequest implements Serializable {
   @Override
   public String toString() {
     return String.format(
-        "CardRequest:{REQUESTS = %s, SELECTOR = %s}", getApduRequests(), getSeSelector());
+        "CardRequest:{REQUESTS = %s, SELECTOR = %s}", getApduRequests(), getCardSelector());
   }
 }

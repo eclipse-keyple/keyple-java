@@ -17,7 +17,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.*;
 import org.eclipse.keyple.core.CoreBaseTest;
-import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -80,9 +80,9 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     // mock ATR
     when(r.getATR()).thenReturn(ByteArrayUtil.fromHex(ATR));
 
-    SeSelector seSelector = getAtrSelector();
+    CardSelector cardSelector = getAtrSelector();
 
-    CardRequest cardRequest = new CardRequest(seSelector, new ArrayList<ApduRequest>());
+    CardRequest cardRequest = new CardRequest(cardSelector, new ArrayList<ApduRequest>());
 
     CardResponse cardResponse = r.processSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
@@ -97,9 +97,9 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     // mock ATR to fail
     when(r.getATR()).thenReturn(ByteArrayUtil.fromHex("1000"));
 
-    SeSelector seSelector = getAtrSelector();
+    CardSelector cardSelector = getAtrSelector();
 
-    CardRequest cardRequest = new CardRequest(seSelector, new ArrayList<ApduRequest>());
+    CardRequest cardRequest = new CardRequest(cardSelector, new ArrayList<ApduRequest>());
 
     CardResponse cardResponse = r.processSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
@@ -115,9 +115,9 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
     when(r.transmitApdu(any(byte[].class))).thenReturn(RESP_SUCCESS);
 
-    SeSelector seSelector = getAidSelector();
+    CardSelector cardSelector = getAidSelector();
 
-    CardRequest cardRequest = new CardRequest(seSelector, new ArrayList<ApduRequest>());
+    CardRequest cardRequest = new CardRequest(cardSelector, new ArrayList<ApduRequest>());
 
     CardResponse cardResponse = r.processSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
@@ -129,9 +129,9 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
     when(r.transmitApdu(any(byte[].class))).thenReturn(RESP_FAIL);
 
-    SeSelector seSelector = getAidSelector();
+    CardSelector cardSelector = getAidSelector();
 
-    CardRequest cardRequest = new CardRequest(seSelector, new ArrayList<ApduRequest>());
+    CardRequest cardRequest = new CardRequest(cardSelector, new ArrayList<ApduRequest>());
 
     CardResponse cardResponse = r.processSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
@@ -146,14 +146,14 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     // use a SmartSelectionReader object
     BlankSmartSelectionReader r = getSmartSpy(PLUGIN_NAME, READER_NAME);
 
-    when(r.openChannelForAid(any(SeSelector.AidSelector.class)))
+    when(r.openChannelForAid(any(CardSelector.AidSelector.class)))
         .thenReturn(new ApduResponse(RESP_SUCCESS, STATUS_CODE_LIST));
     when(r.getATR()).thenReturn(ByteArrayUtil.fromHex(ATR));
     when(r.transmitApdu(any(byte[].class))).thenReturn(RESP_SUCCESS);
 
-    SeSelector seSelector = getAidSelector();
+    CardSelector cardSelector = getAidSelector();
 
-    CardRequest cardRequest = new CardRequest(seSelector, new ArrayList<ApduRequest>());
+    CardRequest cardRequest = new CardRequest(cardSelector, new ArrayList<ApduRequest>());
 
     CardResponse cardResponse = r.processSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
@@ -174,16 +174,17 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     // mock aid to success
     when(r.transmitApdu(any(byte[].class))).thenReturn(RESP_SUCCESS);
 
-    SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter(ATR);
-    SeSelector.AidSelector aidSelector = SeSelector.AidSelector.builder().aidToSelect(AID).build();
+    CardSelector.AtrFilter atrFilter = new CardSelector.AtrFilter(ATR);
+    CardSelector.AidSelector aidSelector =
+        CardSelector.AidSelector.builder().aidToSelect(AID).build();
     aidSelector.addSuccessfulStatusCode(STATUS_CODE_1);
     aidSelector.addSuccessfulStatusCode(STATUS_CODE_2);
 
     // select both
-    SeSelector seSelector =
-        SeSelector.builder().atrFilter(atrFilter).aidSelector(aidSelector).build();
+    CardSelector cardSelector =
+        CardSelector.builder().atrFilter(atrFilter).aidSelector(aidSelector).build();
 
-    CardRequest cardRequest = new CardRequest(seSelector, new ArrayList<ApduRequest>());
+    CardRequest cardRequest = new CardRequest(cardSelector, new ArrayList<ApduRequest>());
 
     CardResponse cardResponse = r.processSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
@@ -199,9 +200,9 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
   public void select_no_param() throws Exception {
     AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
 
-    SeSelector seSelector = SeSelector.builder().build();
+    CardSelector cardSelector = CardSelector.builder().build();
 
-    CardRequest cardRequest = new CardRequest(seSelector, new ArrayList<ApduRequest>());
+    CardRequest cardRequest = new CardRequest(cardSelector, new ArrayList<ApduRequest>());
 
     CardResponse cardResponse = r.processSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
@@ -231,18 +232,19 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     return r;
   }
 
-  public static SeSelector getAidSelector() {
-    SeSelector.AidSelector aidSelector = SeSelector.AidSelector.builder().aidToSelect(AID).build();
+  public static CardSelector getAidSelector() {
+    CardSelector.AidSelector aidSelector =
+        CardSelector.AidSelector.builder().aidToSelect(AID).build();
     aidSelector.addSuccessfulStatusCode(STATUS_CODE_1);
     aidSelector.addSuccessfulStatusCode(STATUS_CODE_2);
 
-    return SeSelector.builder().aidSelector(aidSelector).build();
+    return CardSelector.builder().aidSelector(aidSelector).build();
   }
 
-  public static SeSelector getAtrSelector() {
+  public static CardSelector getAtrSelector() {
 
-    SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter(ATR);
+    CardSelector.AtrFilter atrFilter = new CardSelector.AtrFilter(ATR);
 
-    return SeSelector.builder().atrFilter(atrFilter).build();
+    return CardSelector.builder().atrFilter(atrFilter).build();
   }
 }

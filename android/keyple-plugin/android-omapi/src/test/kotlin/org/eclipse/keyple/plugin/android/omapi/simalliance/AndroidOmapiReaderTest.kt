@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.android.omapi.simalliance
 import io.mockk.every
 import io.mockk.mockk
 import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing
-import org.eclipse.keyple.core.seproxy.SeSelector
+import org.eclipse.keyple.core.seproxy.CardSelector
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.seproxy.message.ApduRequest
 import org.eclipse.keyple.core.seproxy.message.CardRequest
@@ -53,11 +53,11 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
 
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
-        val seRequest = CardRequest(SeSelector.builder()
+        val seRequest = CardRequest(CardSelector.builder()
                 .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
-                .aidSelector(SeSelector.AidSelector.builder().aidToSelect(PO_AID)
-                        .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
-                        .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build())
+                .aidSelector(CardSelector.AidSelector.builder().aidToSelect(PO_AID)
+                        .fileOccurrence(CardSelector.AidSelector.FileOccurrence.NEXT)
+                        .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI).build())
                 .build(),
                 poApduRequestList)
 
@@ -71,11 +71,11 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
 
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
-        val seRequest = CardRequest(SeSelector.builder()
+        val seRequest = CardRequest(CardSelector.builder()
                 .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
-                .aidSelector(SeSelector.AidSelector.builder().aidToSelect(PO_AID)
-                        .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
-                        .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build())
+                .aidSelector(CardSelector.AidSelector.builder().aidToSelect(PO_AID)
+                        .fileOccurrence(CardSelector.AidSelector.FileOccurrence.NEXT)
+                        .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI).build())
                 .build(),
                 poApduRequestList)
 

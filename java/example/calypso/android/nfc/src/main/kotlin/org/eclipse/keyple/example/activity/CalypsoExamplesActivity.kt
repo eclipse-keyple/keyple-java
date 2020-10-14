@@ -31,7 +31,7 @@ import org.eclipse.keyple.core.selection.SeSelection
 import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing
 import org.eclipse.keyple.core.seproxy.Reader
 import org.eclipse.keyple.core.seproxy.SeProxyService
-import org.eclipse.keyple.core.seproxy.SeSelector.AidSelector
+import org.eclipse.keyple.core.seproxy.CardSelector.AidSelector
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse
 import org.eclipse.keyple.core.seproxy.event.ObservableReader
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent
@@ -312,7 +312,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
         */
 
         /*
-         * Generic selection: configures a SeSelector with all the desired attributes to make the
+         * Generic selection: configures a CardSelector with all the desired attributes to make the
          * selection
          */
         val selectionRequest = PoSelectionRequest(PoSelector.builder().seProtocol(

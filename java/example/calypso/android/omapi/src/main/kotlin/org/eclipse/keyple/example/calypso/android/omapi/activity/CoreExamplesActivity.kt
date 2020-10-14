@@ -17,8 +17,8 @@ import kotlinx.android.synthetic.main.activity_core_examples.toolbar
 import org.eclipse.keyple.core.selection.SeSelection
 import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing
 import org.eclipse.keyple.core.seproxy.Reader
-import org.eclipse.keyple.core.seproxy.SeSelector
-import org.eclipse.keyple.core.seproxy.SeSelector.AidSelector
+import org.eclipse.keyple.core.seproxy.CardSelector
+import org.eclipse.keyple.core.seproxy.CardSelector.AidSelector
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.message.CardRequest
 import org.eclipse.keyple.core.seproxy.message.ChannelControl
@@ -71,10 +71,10 @@ class CoreExamplesActivity : ExamplesActivity() {
                 readers.forEach {
                     addHeaderEvent("Starting explicitAidSelection with $poAid on Reader ${it.key}")
 
-                    val seSelector = SeSelector.builder()
+                    val cardSelector = CardSelector.builder()
                             .aidSelector(AidSelector.builder().aidToSelect(poAid).build())
                             .build()
-                    val seRequest = CardRequest(seSelector, null)
+                    val seRequest = CardRequest(cardSelector, null)
 
                     addActionEvent("Sending CardRequest to select: $poAid")
                     try {
@@ -111,7 +111,7 @@ class CoreExamplesActivity : ExamplesActivity() {
 
         /* AID based selection (1st selection, later indexed 0) */
         seSelection.prepareSelection(GenericSeSelectionRequest(
-                SeSelector.builder()
+                CardSelector.builder()
                         .aidSelector(AidSelector.builder()
                                 .aidToSelect(seAidPrefix)
                                 .fileOccurrence(AidSelector.FileOccurrence.FIRST)
@@ -120,7 +120,7 @@ class CoreExamplesActivity : ExamplesActivity() {
 
         /* next selection (2nd selection, later indexed 1) */
         seSelection.prepareSelection(GenericSeSelectionRequest(
-                SeSelector.builder()
+                CardSelector.builder()
                 .aidSelector(AidSelector.builder()
                         .aidToSelect(seAidPrefix)
                         .fileOccurrence(AidSelector.FileOccurrence.NEXT)
@@ -129,7 +129,7 @@ class CoreExamplesActivity : ExamplesActivity() {
 
         /* next selection (3rd selection, later indexed 2) */
         seSelection.prepareSelection(GenericSeSelectionRequest(
-                SeSelector.builder()
+                CardSelector.builder()
                         .aidSelector(AidSelector.builder()
                                 .aidToSelect(seAidPrefix)
                                 .fileOccurrence(AidSelector.FileOccurrence.NEXT)
@@ -191,7 +191,7 @@ class CoreExamplesActivity : ExamplesActivity() {
                      * physical channel open
                      */
                     seSelection.prepareSelection(GenericSeSelectionRequest(
-                            SeSelector.builder()
+                            CardSelector.builder()
                                     .aidSelector(AidSelector.builder()
                                             .aidToSelect(seAidPrefix)
                                             .fileOccurrence(AidSelector.FileOccurrence.FIRST)
@@ -210,7 +210,7 @@ class CoreExamplesActivity : ExamplesActivity() {
                     seSelection.prepareReleaseSeChannel()
 
                     seSelection.prepareSelection(GenericSeSelectionRequest(
-                            SeSelector.builder()
+                            CardSelector.builder()
                                     .aidSelector(AidSelector.builder()
                                             .aidToSelect(seAidPrefix)
                                             .fileOccurrence(AidSelector.FileOccurrence.NEXT)

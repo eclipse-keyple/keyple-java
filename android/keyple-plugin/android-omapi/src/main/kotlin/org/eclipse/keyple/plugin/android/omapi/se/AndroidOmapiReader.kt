@@ -18,7 +18,7 @@ import androidx.annotation.RequiresApi
 import java.io.IOException
 import java.util.NoSuchElementException
 import kotlin.experimental.or
-import org.eclipse.keyple.core.seproxy.SeSelector
+import org.eclipse.keyple.core.seproxy.CardSelector
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.seproxy.message.ApduResponse
 import org.eclipse.keyple.core.util.ByteArrayUtil
@@ -63,7 +63,7 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
      * @throws KeypleReaderIOException if the communication with the reader or the card has failed
      */
     @Throws(KeypleReaderIOException::class)
-    override fun openChannelForAid(aidSelector: SeSelector.AidSelector): ApduResponse {
+    override fun openChannelForAid(aidSelector: CardSelector.AidSelector): ApduResponse {
         if (aidSelector.aidToSelect == null) {
             try {
                 openChannel = session?.openBasicChannel(null)

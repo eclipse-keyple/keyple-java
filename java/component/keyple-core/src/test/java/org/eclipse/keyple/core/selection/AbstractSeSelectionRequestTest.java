@@ -16,7 +16,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import java.util.List;
 import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.core.command.SeCommand;
-import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.CardResponse;
@@ -30,24 +30,24 @@ public class AbstractSeSelectionRequestTest {
   private static final String APDU2 = "00 11 2233 01 22";
 
   @Test
-  public void testGetSeSelector() {
-    SeSelector seSelector =
-        SeSelector.builder()
+  public void testGetCardSelector() {
+    CardSelector cardSelector =
+        CardSelector.builder()
             .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-            .aidSelector(SeSelector.AidSelector.builder().aidToSelect(AID).build())
+            .aidSelector(CardSelector.AidSelector.builder().aidToSelect(AID).build())
             .build();
-    TestSeSelectionRequest testSeSelectionRequest = new TestSeSelectionRequest(seSelector);
-    assertThat(testSeSelectionRequest.getSeSelector()).isEqualTo(seSelector);
+    TestSeSelectionRequest testSeSelectionRequest = new TestSeSelectionRequest(cardSelector);
+    assertThat(testSeSelectionRequest.getCardSelector()).isEqualTo(cardSelector);
   }
 
   @Test
   public void testAddCommandBuilder_GetCommandBuilders_getSelectionRequest() {
-    SeSelector seSelector =
-        SeSelector.builder()
+    CardSelector cardSelector =
+        CardSelector.builder()
             .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-            .aidSelector(SeSelector.AidSelector.builder().aidToSelect(AID).build())
+            .aidSelector(CardSelector.AidSelector.builder().aidToSelect(AID).build())
             .build();
-    TestSeSelectionRequest testSeSelectionRequest = new TestSeSelectionRequest(seSelector);
+    TestSeSelectionRequest testSeSelectionRequest = new TestSeSelectionRequest(cardSelector);
     ApduRequest apduRequest1 = new ApduRequest(ByteArrayUtil.fromHex(APDU1), true);
     ApduRequest apduRequest2 = new ApduRequest(ByteArrayUtil.fromHex(APDU2), true);
     TestCommandBuilder builder1 = new TestCommandBuilder(TestCommands.COMMAND1, apduRequest1);
@@ -65,8 +65,8 @@ public class AbstractSeSelectionRequestTest {
 
   private static class TestSeSelectionRequest
       extends AbstractSeSelectionRequest<AbstractApduCommandBuilder> {
-    public TestSeSelectionRequest(SeSelector seSelector) {
-      super(seSelector);
+    public TestSeSelectionRequest(CardSelector cardSelector) {
+      super(cardSelector);
     }
 
     @Override

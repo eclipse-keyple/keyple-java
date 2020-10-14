@@ -30,10 +30,10 @@ import org.eclipse.keyple.calypso.transaction.SamSelector;
 import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
+import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -83,7 +83,9 @@ public class StoredValue_DebitInSession_Pcsc {
           new PoSelectionRequest(
               PoSelector.builder()
                   .aidSelector(
-                      SeSelector.AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
+                      CardSelector.AidSelector.builder()
+                          .aidToSelect(CalypsoClassicInfo.AID)
+                          .build())
                   .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                   .build());
 

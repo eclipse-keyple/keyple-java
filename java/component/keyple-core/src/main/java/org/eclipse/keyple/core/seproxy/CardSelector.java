@@ -19,12 +19,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The SeSelector class groups the information and methods used to select a particular secure
+ * The CardSelector class groups the information and methods used to select a particular secure
  * element
  */
-public class SeSelector implements Serializable {
+public class CardSelector implements Serializable {
   /** logger */
-  private static final Logger logger = LoggerFactory.getLogger(SeSelector.class);
+  private static final Logger logger = LoggerFactory.getLogger(CardSelector.class);
 
   private final String seProtocol;
   private final AidSelector aidSelector;
@@ -40,7 +40,7 @@ public class SeSelector implements Serializable {
    * according to ISO7816-4<br>
    * - optional successfulSelectionStatusCodes define a list of accepted SW1SW2 codes (in addition
    * to 9000). Allows, for example, to manage the selection of the invalidated cards.<br>
-   * - AidSelector could be missing in SeSelector when operating a card which don’t support the
+   * - AidSelector could be missing in CardSelector when operating a card which don’t support the
    * Select Application command (as it is the case for SAM).
    */
   public static final class AidSelector implements Serializable {
@@ -163,7 +163,7 @@ public class SeSelector implements Serializable {
        * @return the builder instance
        */
       public AidSelectorBuilder fileOccurrence(
-          SeSelector.AidSelector.FileOccurrence fileOccurrence) {
+          CardSelector.AidSelector.FileOccurrence fileOccurrence) {
         this.fileOccurrence = fileOccurrence;
         return this;
       }
@@ -175,7 +175,7 @@ public class SeSelector implements Serializable {
        * @return the builder instance
        */
       public AidSelectorBuilder fileControlInformation(
-          SeSelector.AidSelector.FileControlInformation fileControlInformation) {
+          CardSelector.AidSelector.FileControlInformation fileControlInformation) {
         this.fileControlInformation = fileControlInformation;
         return this;
       }
@@ -185,8 +185,8 @@ public class SeSelector implements Serializable {
        *
        * @return a new instance
        */
-      public SeSelector.AidSelector build() {
-        return new SeSelector.AidSelector(this);
+      public CardSelector.AidSelector build() {
+        return new CardSelector.AidSelector(this);
       }
     }
 
@@ -328,9 +328,9 @@ public class SeSelector implements Serializable {
   /**
    * Private constructor
    *
-   * @param builder the SeSelector builder
+   * @param builder the CardSelector builder
    */
-  protected SeSelector(SeSelectorBuilder builder) {
+  protected CardSelector(CardSelectorBuilder builder) {
     this.seProtocol = builder.seProtocol;
     this.aidSelector = builder.aidSelector;
     this.atrFilter = builder.atrFilter;
@@ -345,17 +345,17 @@ public class SeSelector implements Serializable {
   }
 
   /**
-   * Create a SeSelector to perform the card selection<br>
+   * Create a CardSelector to perform the card selection<br>
    *
    * @since 0.9
    */
-  public static class SeSelectorBuilder {
+  public static class CardSelectorBuilder {
     private String seProtocol;
-    private SeSelector.AtrFilter atrFilter;
-    private SeSelector.AidSelector aidSelector;
+    private CardSelector.AtrFilter atrFilter;
+    private CardSelector.AidSelector aidSelector;
 
     /** Private constructor */
-    protected SeSelectorBuilder() {}
+    protected CardSelectorBuilder() {}
 
     /**
      * Sets the card protocol.
@@ -363,7 +363,7 @@ public class SeSelector implements Serializable {
      * @param seProtocol A not empty String.
      * @return the builder instance
      */
-    public SeSelectorBuilder seProtocol(String seProtocol) {
+    public CardSelectorBuilder seProtocol(String seProtocol) {
       this.seProtocol = seProtocol;
       return this;
     }
@@ -374,7 +374,7 @@ public class SeSelector implements Serializable {
      * @param atrFilter the {@link AtrFilter} of the targeted card
      * @return the builder instance
      */
-    public SeSelectorBuilder atrFilter(SeSelector.AtrFilter atrFilter) {
+    public CardSelectorBuilder atrFilter(CardSelector.AtrFilter atrFilter) {
       this.atrFilter = atrFilter;
       return this;
     }
@@ -385,18 +385,18 @@ public class SeSelector implements Serializable {
      * @param aidSelector the {@link AidSelector} of the targeted card
      * @return the builder instance
      */
-    public SeSelectorBuilder aidSelector(SeSelector.AidSelector aidSelector) {
+    public CardSelectorBuilder aidSelector(CardSelector.AidSelector aidSelector) {
       this.aidSelector = aidSelector;
       return this;
     }
 
     /**
-     * Build a new {@code SeSelector}.
+     * Build a new {@code CardSelector}.
      *
      * @return a new instance
      */
-    public SeSelector build() {
-      return new SeSelector(this);
+    public CardSelector build() {
+      return new CardSelector(this);
     }
   }
 
@@ -405,8 +405,8 @@ public class SeSelector implements Serializable {
    *
    * @return a new builder instance
    */
-  public static SeSelectorBuilder builder() {
-    return new SeSelectorBuilder();
+  public static CardSelectorBuilder builder() {
+    return new CardSelectorBuilder();
   }
 
   /**
@@ -438,7 +438,7 @@ public class SeSelector implements Serializable {
 
   @Override
   public String toString() {
-    return "SeSelector{"
+    return "CardSelector{"
         + "seProtocol="
         + seProtocol
         + ", aidSelector="
