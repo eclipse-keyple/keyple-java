@@ -157,7 +157,7 @@ public class SeSelectionTest extends CoreBaseTest {
 
     // create a selection response
     AbstractDefaultSelectionsResponse defaultSelectionsResponse;
-    List<CardResponse> cardResponse = new ArrayList<CardResponse>();
+    List<CardResponse> cardResponses = new ArrayList<CardResponse>();
 
     ApduResponse apduResponse =
         new ApduResponse(
@@ -175,9 +175,9 @@ public class SeSelectionTest extends CoreBaseTest {
 
     CardResponse cardResponse = new CardResponse(true, true, selectionStatus, apduResponses);
 
-    cardResponse.add(cardResponse);
+    cardResponses.add(cardResponse);
 
-    defaultSelectionsResponse = new DefaultSelectionsResponse(cardResponse);
+    defaultSelectionsResponse = new DefaultSelectionsResponse(cardResponses);
 
     // process the selection response with the SeSelection
     SelectionsResult selectionsResult = null;
@@ -202,7 +202,7 @@ public class SeSelectionTest extends CoreBaseTest {
 
     // create a selection response
     AbstractDefaultSelectionsResponse defaultSelectionsResponse;
-    List<CardResponse> cardResponse = new ArrayList<CardResponse>();
+    List<CardResponse> cardResponses = new ArrayList<CardResponse>();
 
     ApduResponse apduResponse =
         new ApduResponse(
@@ -220,9 +220,9 @@ public class SeSelectionTest extends CoreBaseTest {
 
     CardResponse cardResponse = new CardResponse(true, true, selectionStatus, apduResponses);
 
-    cardResponse.add(cardResponse);
+    cardResponses.add(cardResponse);
 
-    defaultSelectionsResponse = new DefaultSelectionsResponse(cardResponse);
+    defaultSelectionsResponse = new DefaultSelectionsResponse(cardResponses);
 
     // process the selection response with the SeSelection
     SelectionsResult selectionsResult = null;
