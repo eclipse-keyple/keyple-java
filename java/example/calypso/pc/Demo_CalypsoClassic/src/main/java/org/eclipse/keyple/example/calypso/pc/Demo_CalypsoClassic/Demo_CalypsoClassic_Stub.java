@@ -13,7 +13,7 @@ package org.eclipse.keyple.example.calypso.pc.Demo_CalypsoClassic;
 
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalArgumentException;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
@@ -43,14 +43,14 @@ public class Demo_CalypsoClassic_Stub {
   public static void main(String[] args) throws InterruptedException {
     final Logger logger = LoggerFactory.getLogger(Demo_CalypsoClassic_Stub.class);
 
-    /* Get the instance of the SeProxyService (Singleton pattern) */
-    SeProxyService seProxyService = SeProxyService.getInstance();
+    /* Get the instance of the SmartCardService (Singleton pattern) */
+    SmartCardService smartCardService = SmartCardService.getInstance();
 
     final String STUB_PLUGIN_NAME = "stub1";
 
     /* Register Stub plugin in the platform */
     ReaderPlugin stubPlugin =
-        seProxyService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
+        smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
 
     /* Setting up the transaction engine (implements Observer) */
     CalypsoClassicTransactionEngine transactionEngine = new CalypsoClassicTransactionEngine();

@@ -48,7 +48,7 @@ public class RemoteSePluginEventTest extends VirtualReaderBaseTest {
     Assert.assertEquals(0, remoteSePlugin.countObservers());
     clearMasterNSlave();
     unregisterPlugins();
-    Assert.assertEquals(0, seProxyService.getPlugins().size());
+    Assert.assertEquals(0, smartCardService.getPlugins().size());
   }
 
   /**

@@ -226,7 +226,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
         /* We retrieve the reader object from its name. */
         try {
           samReader =
-              SeProxyService.getInstance().getPlugin(event.getPluginName()).getReader(readerName);
+              SmartCardService.getInstance().getPlugin(event.getPluginName()).getReader(readerName);
         } catch (KeyplePluginNotFoundException e) {
           logger.error("Plugin not found {}", event.getPluginName());
           return;

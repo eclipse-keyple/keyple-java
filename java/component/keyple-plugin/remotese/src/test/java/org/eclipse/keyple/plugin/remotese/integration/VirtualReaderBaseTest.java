@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remotese.integration;
 
-import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
@@ -39,7 +39,7 @@ public class VirtualReaderBaseTest {
   protected final String CLIENT_NODE_ID = "testClientNodeId";
   protected final String SERVER_NODE_ID = "testServerNodeId";
 
-  protected SeProxyService seProxyService = SeProxyService.getInstance();
+  protected SmartCardService smartCardService = SmartCardService.getInstance();
 
   protected final String REMOTE_SE_PLUGIN_NAME = "remoteseplugin1";
 
@@ -74,16 +74,16 @@ public class VirtualReaderBaseTest {
   }
 
   protected void unregisterPlugins() {
-    seProxyService.unregisterPlugin(Integration.SLAVE_POOL_STUB);
-    seProxyService.unregisterPlugin(Integration.SLAVE_STUB);
-    seProxyService.unregisterPlugin(REMOTE_SE_PLUGIN_NAME);
+    smartCardService.unregisterPlugin(Integration.SLAVE_POOL_STUB);
+    smartCardService.unregisterPlugin(Integration.SLAVE_STUB);
+    smartCardService.unregisterPlugin(REMOTE_SE_PLUGIN_NAME);
   }
 
   public void disconnectReader(String readerName) {
     logger.info("Remove all readers from stub plugin");
     StubPlugin stubPlugin = null;
     try {
-      stubPlugin = (StubPlugin) SeProxyService.getInstance().getPlugin(Integration.SLAVE_STUB);
+      stubPlugin = (StubPlugin) SmartCardService.getInstance().getPlugin(Integration.SLAVE_STUB);
 
       // Set<Reader> readers = stubPlugin.getReaders();
 

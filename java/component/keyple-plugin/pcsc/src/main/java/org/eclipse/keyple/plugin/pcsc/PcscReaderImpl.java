@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.pcsc;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 import javax.smartcardio.*;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotSupportedException;
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableLocalReader;
@@ -505,7 +505,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     if (isContactless == null) {
       /* First time initialisation, the transmission mode has not yet been determined or fixed explicitly, let's ask the plugin to determine it (only once) */
       isContactless =
-          ((PcscPluginImpl) SeProxyService.getInstance().getPlugin(getPluginName()))
+          ((PcscPluginImpl) SmartCardService.getInstance().getPlugin(getPluginName()))
               .isContactless(getName());
     }
     return isContactless;

@@ -13,7 +13,7 @@ package org.eclipse.keyple.core.seproxy.event;
 
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 
 /**
@@ -126,7 +126,7 @@ public final class ReaderEvent {
    * @since 0.9
    */
   public ReaderPlugin getPlugin() {
-    return SeProxyService.getInstance().getPlugin(pluginName);
+    return SmartCardService.getInstance().getPlugin(pluginName);
   }
 
   /**

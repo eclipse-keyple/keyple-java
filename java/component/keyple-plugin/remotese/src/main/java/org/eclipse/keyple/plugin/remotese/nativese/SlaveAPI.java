@@ -19,7 +19,7 @@ import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -54,7 +54,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
   private static final Logger logger = LoggerFactory.getLogger(SlaveAPI.class);
 
   private final DtoNode dtoNode; // bind node
-  private final SeProxyService seProxyService;
+  private final SmartCardService smartCardService;
 
   private final RemoteMethodTxEngine rmTxEngine; // rm command processor
   private final String masterNodeId; // master node id used for connect, disconnect, and events
@@ -67,43 +67,43 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
   /**
    * Constructor with a default timeout DEFAULT_RPC_TIMEOUT and single threaded executorService
    *
-   * @param seProxyService : instance of the seProxyService
+   * @param smartCardService : instance of the smartCardService
    * @param dtoNode : Define which DTO sender will be called when a DTO needs to be sent.
    * @param masterNodeId : Master Node Id to connect to
    */
-  public SlaveAPI(SeProxyService seProxyService, DtoNode dtoNode, String masterNodeId) {
-    this(seProxyService, dtoNode, masterNodeId, DEFAULT_RPC_TIMEOUT);
+  public SlaveAPI(SmartCardService smartCardService, DtoNode dtoNode, String masterNodeId) {
+    this(smartCardService, dtoNode, masterNodeId, DEFAULT_RPC_TIMEOUT);
   }
 
   /**
    * Constructor with custom timeout and single threaded executorService
    *
-   * @param seProxyService : instance of the seProxyService
+   * @param smartCardService : instance of the smartCardService
    * @param dtoNode : Define which DTO sender will be called when a DTO needs to be sent.
    * @param masterNodeId : Master Node Id to connect to
    * @param timeout : timeout to be used before a request is abandonned
    */
   public SlaveAPI(
-      SeProxyService seProxyService, DtoNode dtoNode, String masterNodeId, long timeout) {
-    this(seProxyService, dtoNode, masterNodeId, timeout, Executors.newSingleThreadExecutor());
+      SmartCardService smartCardService, DtoNode dtoNode, String masterNodeId, long timeout) {
+    this(smartCardService, dtoNode, masterNodeId, timeout, Executors.newSingleThreadExecutor());
   }
 
   /**
    * Constructor with custom timeout and custom executorService
    *
-   * @param seProxyService : instance of the seProxyService
+   * @param smartCardService : instance of the smartCardService
    * @param dtoNode : Define which DTO sender will be called when a DTO needs to be sent.
    * @param masterNodeId : Master Node Id to connect to
    * @param timeout : timeout to be used before a request is abandonned
    * @param executorService : use an external executorService to execute async task
    */
   public SlaveAPI(
-      SeProxyService seProxyService,
+      SmartCardService smartCardService,
       DtoNode dtoNode,
       String masterNodeId,
       long timeout,
       ExecutorService executorService) {
-    this.seProxyService = seProxyService;
+    this.smartCardService = smartCardService;
     this.dtoNode = dtoNode;
     this.rmTxEngine = new RemoteMethodTxEngine(dtoNode, timeout, executorService);
     this.masterNodeId = masterNodeId;
@@ -361,8 +361,8 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
     logger.trace(
         "Find local reader by name {} in {} plugin(s)",
         nativeReaderName,
-        seProxyService.getPlugins().size());
-    final Collection<ReaderPlugin> plugins = seProxyService.getPlugins().values();
+        smartCardService.getPlugins().size());
+    final Collection<ReaderPlugin> plugins = smartCardService.getPlugins().values();
     for (ReaderPlugin plugin : plugins) {
       try {
         return plugin.getReader(nativeReaderName);

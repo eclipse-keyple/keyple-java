@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
 import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.CardResponse;
@@ -51,7 +51,7 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
 
   @Before
   public void setUp() throws Exception {
-    Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
+    Assert.assertEquals(0, SmartCardService.getInstance().getPlugins().size());
 
     initMasterNSlave();
 
@@ -68,8 +68,8 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
     clearMasterNSlave();
     unregisterPlugins();
     // clean plugin
-    seProxyService.unregisterPlugin(RSE_PLUGIN);
-    Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
+    smartCardService.unregisterPlugin(RSE_PLUGIN);
+    Assert.assertEquals(0, SmartCardService.getInstance().getPlugins().size());
   }
 
   /**
@@ -84,7 +84,7 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
     // create a specific MasterAPI with a fake DtoNode
     MasterAPI masterAPI =
         new MasterAPI(
-            SeProxyService.getInstance(),
+            SmartCardService.getInstance(),
             Integration.getFakeDtoNode(),
             RPC_TIMEOUT,
             MasterAPI.PLUGIN_TYPE_DEFAULT,

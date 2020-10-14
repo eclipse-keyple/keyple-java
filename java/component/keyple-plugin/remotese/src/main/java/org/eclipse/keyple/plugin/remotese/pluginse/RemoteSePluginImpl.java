@@ -44,7 +44,7 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
 
   /**
    * RemoteSePlugin is wrapped into MasterAPI and instantiated like a standard plugin
-   * by @SeProxyService. Use MasterAPI
+   * by @SmartCardService. Use MasterAPI
    */
   RemoteSePluginImpl(
       VirtualReaderSessionFactory sessionManager,

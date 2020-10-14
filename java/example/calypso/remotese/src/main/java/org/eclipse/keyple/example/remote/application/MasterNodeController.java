@@ -16,7 +16,7 @@ import org.eclipse.keyple.calypso.transaction.SamResourceManager;
 import org.eclipse.keyple.calypso.transaction.SamResourceManagerFactory;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -108,7 +108,7 @@ public class MasterNodeController {
        * Configure the SAM Resource Manager
        */
       ReaderPlugin samStubPlugin =
-          SeProxyService.getInstance().registerPlugin(new StubPluginFactory(STUB_MASTER));
+          SmartCardService.getInstance().registerPlugin(new StubPluginFactory(STUB_MASTER));
 
       /* Plug the SAM stub reader. */
       ((StubPlugin) samStubPlugin).plugStubReader("samReader", true);
@@ -135,7 +135,7 @@ public class MasterNodeController {
       // In this case, node is used as the dtosender (can be client or server)
       masterAPI =
           new MasterAPI(
-              SeProxyService.getInstance(),
+              SmartCardService.getInstance(),
               node,
               RPC_TIMEOUT,
               MasterAPI.PLUGIN_TYPE_DEFAULT,
