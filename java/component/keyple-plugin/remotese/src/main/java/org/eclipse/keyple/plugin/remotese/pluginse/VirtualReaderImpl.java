@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.CardRequest;
@@ -98,7 +98,7 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
    * Blocking TransmitSeRequests
    *
    * @param cardRequests : List of CardRequest to be transmitted to the card
-   * @param multiSeRequestProcessing the multi card processing mode
+   * @param multiSelectionProcessing the multi card processing mode
    * @param channelControl indicates if the channel has to be closed at the end of the processing
    * @return List of CardResponse from the card
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
@@ -106,13 +106,13 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
   @Override
   protected List<CardResponse> processSeRequests(
       List<CardRequest> cardRequests,
-      MultiSeRequestProcessing multiSeRequestProcessing,
+      MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl) {
 
     RmTransmitSetTx transmit =
         new RmTransmitSetTx(
             cardRequests,
-            multiSeRequestProcessing,
+            multiSelectionProcessing,
             channelControl,
             session.getSessionId(),
             this.getNativeReaderName(),

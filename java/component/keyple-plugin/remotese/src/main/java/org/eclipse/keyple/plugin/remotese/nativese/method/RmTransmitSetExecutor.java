@@ -15,7 +15,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.CardResponse;
@@ -56,15 +56,15 @@ public class RmTransmitSetExecutor implements IRemoteMethodExecutor {
     KeypleDto keypleDto = transportDto.getKeypleDTO();
     TransportDto out = null;
     List<CardResponse> cardResponse = null;
-    MultiSeRequestProcessing multiSeRequestProcessing;
+    MultiSelectionProcessing multiSelectionProcessing;
     ChannelControl channelControl;
 
     // parse body
     JsonObject bodyJsonO = JsonParser.getGson().fromJson(keypleDto.getBody(), JsonObject.class);
 
     // extract info
-    multiSeRequestProcessing =
-        MultiSeRequestProcessing.valueOf(bodyJsonO.get("multiSeRequestProcessing").getAsString());
+    multiSelectionProcessing =
+        MultiSelectionProcessing.valueOf(bodyJsonO.get("multiSelectionProcessing").getAsString());
 
     channelControl = ChannelControl.valueOf(bodyJsonO.get("channelControl").getAsString());
 
@@ -80,7 +80,7 @@ public class RmTransmitSetExecutor implements IRemoteMethodExecutor {
         "Execute locally cardRequests : {} with params {} {}",
         cardRequests,
         channelControl,
-        multiSeRequestProcessing);
+        multiSelectionProcessing);
 
     try {
       // find native reader by name
@@ -88,7 +88,7 @@ public class RmTransmitSetExecutor implements IRemoteMethodExecutor {
 
       // execute transmitSet
       cardResponse =
-          reader.transmitSeRequests(cardRequests, multiSeRequestProcessing, channelControl);
+          reader.transmitSeRequests(cardRequests, multiSelectionProcessing, channelControl);
 
       // prepare response
       String parseBody =

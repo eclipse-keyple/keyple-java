@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.android.omapi
 import io.mockk.MockKAnnotations
 import io.mockk.unmockkAll
 import java.io.IOException
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing
 import org.eclipse.keyple.core.seproxy.SeSelector
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
@@ -95,7 +95,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         nativeReader = mockReaderWithExceptionOnOpenLogicalChannel(IOException())
         reader = buildOmapiReaderImpl(nativeReader)
         // test
-        reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        reader.transmitSeRequests(getSampleSeRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
     @Test(expected = KeypleReaderIOException::class)
@@ -103,7 +103,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         nativeReader = mockReaderWithExceptionOnOpenLogicalChannel(SecurityException())
         reader = buildOmapiReaderImpl(nativeReader)
         // test
-        reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        reader.transmitSeRequests(getSampleSeRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
     @Test(expected = IllegalArgumentException::class)
@@ -111,7 +111,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         nativeReader = mockReaderWithExceptionOnOpenLogicalChannel(NoSuchElementException())
         reader = buildOmapiReaderImpl(nativeReader)
         // test
-        val cardResponseList = reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        val cardResponseList = reader.transmitSeRequests(getSampleSeRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
         Assert.assertFalse(cardResponseList[0].selectionStatus.hasMatched()) // If container is not found a null responsed is returned
     }
 
@@ -120,7 +120,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         nativeReader = mockReaderWithNullOnOpenLogicalChannel()
         reader = buildOmapiReaderImpl(nativeReader)
         // test
-        reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        reader.transmitSeRequests(getSampleSeRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
     @Test(expected = KeypleReaderIOException::class)
@@ -128,7 +128,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         nativeReader = mockReaderWithNullOnOpenBasicChannel()
         reader = buildOmapiReaderImpl(nativeReader)
         // test
-        reader.transmitSeRequests(getNoAidSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        reader.transmitSeRequests(getNoAidSampleSeRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
     @Test(expected = KeypleReaderIOException::class)
@@ -136,7 +136,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         nativeReader = mockReaderWithExceptionOnOpenBasicChannel(IOException())
         reader = buildOmapiReaderImpl(nativeReader)
         // test
-        reader.transmitSeRequests(getNoAidSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        reader.transmitSeRequests(getNoAidSampleSeRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
     @Test(expected = KeypleReaderIOException::class)
@@ -144,7 +144,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         nativeReader = mockReaderWithExceptionOnOpenBasicChannel(SecurityException())
         reader = buildOmapiReaderImpl(nativeReader)
         // test
-        reader.transmitSeRequests(getNoAidSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        reader.transmitSeRequests(getNoAidSampleSeRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
     @Test(expected = IllegalArgumentException::class)
@@ -155,7 +155,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader = buildOmapiReaderImpl(nativeReader)
 
         // test
-        val cardResponseList = reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        val cardResponseList = reader.transmitSeRequests(getSampleSeRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
 
         // assert
         Assert.assertFalse(cardResponseList[0].selectionStatus.hasMatched())
@@ -175,7 +175,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         // test
         val seRequests = ArrayList<CardRequest>()
         seRequests.add(seRequest)
-        val cardResponseList = reader.transmitSeRequests(seRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        val cardResponseList = reader.transmitSeRequests(seRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
 
         // assert
         Assert.assertFalse(cardResponseList[0].selectionStatus.hasMatched())
@@ -189,7 +189,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader = buildOmapiReaderImpl(nativeReader)
 
         // test
-        reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        reader.transmitSeRequests(getSampleSeRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
     @Test
@@ -200,7 +200,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader = buildOmapiReaderImpl(nativeReader)
 
         // test
-        val cardResponseList = reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER)
+        val cardResponseList = reader.transmitSeRequests(getSampleSeRequest(), MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER)
         Assert.assertNotNull(cardResponseList)
     }
 
@@ -212,7 +212,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader = buildOmapiReaderImpl(nativeReader)
 
         // test
-        reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER)
+        reader.transmitSeRequests(getSampleSeRequest(), MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER)
     }
 
     @Test(expected = KeypleReaderIOException::class)
@@ -222,7 +222,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         reader = buildOmapiReaderImpl(nativeReader)
 
         // test
-        reader.transmitSeRequests(getSampleSeRequest(), MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        reader.transmitSeRequests(getSampleSeRequest(), MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
     }
 
     private fun getSampleSeRequest(): List<CardRequest> {

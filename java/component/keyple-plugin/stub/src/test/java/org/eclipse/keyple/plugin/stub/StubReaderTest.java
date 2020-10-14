@@ -23,7 +23,7 @@ import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.*;
@@ -815,7 +815,7 @@ public class StubReaderTest extends BaseStubTest {
     List<CardResponse> cardResponse =
         ((ProxyReader) reader)
             .transmitSeRequests(
-                requests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+                requests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
     // assert
     Assert.assertTrue(cardResponse.get(0).getApduResponses().get(0).isSuccessful());
@@ -844,7 +844,7 @@ public class StubReaderTest extends BaseStubTest {
     List<CardResponse> cardResponse =
         ((ProxyReader) reader)
             .transmitSeRequests(
-                requests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+                requests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
   }
 
   @Test
@@ -871,7 +871,7 @@ public class StubReaderTest extends BaseStubTest {
       List<CardResponse> cardResponse =
           ((ProxyReader) reader)
               .transmitSeRequests(
-                  cardRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+                  cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
@@ -904,7 +904,7 @@ public class StubReaderTest extends BaseStubTest {
       List<CardResponse> cardResponse =
           ((ProxyReader) reader)
               .transmitSeRequests(
-                  cardRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+                  cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
@@ -939,7 +939,7 @@ public class StubReaderTest extends BaseStubTest {
       List<CardResponse> cardResponse =
           ((ProxyReader) reader)
               .transmitSeRequests(
-                  cardRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+                  cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
@@ -974,7 +974,7 @@ public class StubReaderTest extends BaseStubTest {
       List<CardResponse> cardResponse =
           ((ProxyReader) reader)
               .transmitSeRequests(
-                  cardRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+                  cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
       Assert.assertEquals(3, cardResponse.size());
       Assert.assertEquals(4, cardResponse.get(0).getApduResponses().size());
       Assert.assertEquals(4, cardResponse.get(1).getApduResponses().size());
@@ -1445,7 +1445,7 @@ public class StubReaderTest extends BaseStubTest {
     }
 
     SeSelection seSelection = new SeSelection();
-    // SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.PROCESS_ALL,
+    // SeSelection seSelection = new SeSelection(MultiSelectionProcessing.PROCESS_ALL,
     // ChannelControl.CLOSE_AFTER);
     GenericSeSelectionRequest genericSeSelectionRequest =
         new GenericSeSelectionRequest(

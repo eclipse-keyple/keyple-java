@@ -12,7 +12,7 @@
 package org.eclipse.keyple.core.seproxy.message;
 
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
@@ -26,7 +26,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
  * The {@link CardResponse} contains the result of the selection and the responses to the APDUs.
  *
  * <p>The {@link CardRequest} are transmitted individually ({@link #transmitSeRequest(CardRequest,
- * ChannelControl)} or by a list {@link #transmitSeRequests(List, MultiSeRequestProcessing,
+ * ChannelControl)} or by a list {@link #transmitSeRequests(List, MultiSelectionProcessing,
  * ChannelControl)} allowing applications to provide several selection patterns with various
  * options.
  *
@@ -44,12 +44,12 @@ public interface ProxyReader extends Reader {
    * #transmitSeRequest(CardRequest, ChannelControl)} (see this method for further explanation of
    * how the process works).
    *
-   * <p>If the multiSeRequestProcessing parameter equals to {@link
-   * MultiSeRequestProcessing#FIRST_MATCH}, the iteration over the {@link CardRequest} list is
+   * <p>If the multiSelectionProcessing parameter equals to {@link
+   * MultiSelectionProcessing#FIRST_MATCH}, the iteration over the {@link CardRequest} list is
    * interrupted at the first processing that leads to an open logical channel state. In this case,
    * the list of {@link CardResponse} may be shorter than the list of SeRequests provided as input.
    *
-   * <p>If it equals to {@link MultiSeRequestProcessing#PROCESS_ALL}, all the {@link CardRequest}
+   * <p>If it equals to {@link MultiSelectionProcessing#PROCESS_ALL}, all the {@link CardRequest}
    * are processed and the logical channel is closed after each process.<br>
    * The physical channel is managed by the ChannelControl parameter as in {@link
    * #transmitSeRequest(CardRequest, ChannelControl)}.
@@ -59,7 +59,7 @@ public interface ProxyReader extends Reader {
    * IllegalStateException exception will be thrown in case of inconsistency.
    *
    * @param cardRequests A not empty CardRequest list.
-   * @param multiSeRequestProcessing The multi card processing flag (must be not null).
+   * @param multiSelectionProcessing The multi card processing flag (must be not null).
    * @param channelControl indicates if the physical channel has to be closed at the end of the
    *     processing (must be not null).
    * @return A not null response list (can be empty).
@@ -70,7 +70,7 @@ public interface ProxyReader extends Reader {
    */
   List<CardResponse> transmitSeRequests(
       List<CardRequest> cardRequests,
-      MultiSeRequestProcessing multiSeRequestProcessing,
+      MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl);
 
   /**

@@ -12,7 +12,7 @@
 package org.eclipse.keyple.core.seproxy.message;
 
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 
 /**
@@ -23,7 +23,7 @@ import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
  *
  * <ul>
  *   <li>A list of {@link CardRequest} corresponding to one or more selection cases.
- *   <li>A {@link MultiSeRequestProcessing} indicator specifying whether all planned selections are
+ *   <li>A {@link MultiSelectionProcessing} indicator specifying whether all planned selections are
  *       to be executed or whether to stop at the first one that is successful.
  *   <li>A {@link ChannelControl} indicator controlling the physical channel to stipulate whether it
  *       should be closed or left open at the end of the selection process.
@@ -37,7 +37,7 @@ import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 public final class DefaultSelectionsRequest extends AbstractDefaultSelectionsRequest {
 
   private final List<CardRequest> selectionCardRequests;
-  private final MultiSeRequestProcessing multiSeRequestProcessing;
+  private final MultiSelectionProcessing multiSelectionProcessing;
   private final ChannelControl channelControl;
 
   /**
@@ -45,9 +45,9 @@ public final class DefaultSelectionsRequest extends AbstractDefaultSelectionsReq
    * This object is constructed from a list of selection cases and two enum constants guiding the
    * expected behaviour of the selection process.
    *
-   * <p>The {@link MultiSeRequestProcessing} enum is used to attempt to execute all the selection
-   * cases: {@link MultiSeRequestProcessing#PROCESS_ALL} (for example in order to list all the
-   * applications present in a secure element) or {@link MultiSeRequestProcessing#FIRST_MATCH} (to
+   * <p>The {@link MultiSelectionProcessing} enum is used to attempt to execute all the selection
+   * cases: {@link MultiSelectionProcessing#PROCESS_ALL} (for example in order to list all the
+   * applications present in a secure element) or {@link MultiSelectionProcessing#FIRST_MATCH} (to
    * target a single application).
    *
    * <p>The {@link ChannelControl} enum controls the closing of the physical channel at the end of
@@ -59,22 +59,22 @@ public final class DefaultSelectionsRequest extends AbstractDefaultSelectionsReq
    *
    * @param selectionCardRequests A list of {@link CardRequest} embedding the selection data (must
    *     be not null).
-   * @param multiSeRequestProcessing The multi request processing mode (must be not null).
+   * @param multiSelectionProcessing The multi request processing mode (must be not null).
    * @param channelControl The channel control (must be not null).
    * @since 0.9
    */
   public DefaultSelectionsRequest(
       List<CardRequest> selectionCardRequests,
-      MultiSeRequestProcessing multiSeRequestProcessing,
+      MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl) {
     this.selectionCardRequests = selectionCardRequests;
-    this.multiSeRequestProcessing = multiSeRequestProcessing;
+    this.multiSelectionProcessing = multiSelectionProcessing;
     this.channelControl = channelControl;
   }
 
   /** {@inheritDoc} */
-  public final MultiSeRequestProcessing getMultiSeRequestProcessing() {
-    return multiSeRequestProcessing;
+  public final MultiSelectionProcessing getMultiSelectionProcessing() {
+    return multiSelectionProcessing;
   }
 
   /** {@inheritDoc} */

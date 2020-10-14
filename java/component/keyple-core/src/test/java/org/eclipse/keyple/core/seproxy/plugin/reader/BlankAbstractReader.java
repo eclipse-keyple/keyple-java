@@ -12,7 +12,7 @@
 package org.eclipse.keyple.core.seproxy.plugin.reader;
 
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
 import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
@@ -27,7 +27,7 @@ public class BlankAbstractReader extends AbstractReader {
   @Override
   protected List<CardResponse> processSeRequests(
       List<CardRequest> cardRequests,
-      MultiSeRequestProcessing multiSeRequestProcessing,
+      MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl) {
     return null;
   }

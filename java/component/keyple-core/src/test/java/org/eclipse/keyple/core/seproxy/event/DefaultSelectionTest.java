@@ -17,7 +17,7 @@ import static org.mockito.Mockito.doThrow;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.CardResponse;
@@ -63,7 +63,7 @@ public class DefaultSelectionTest {
 
     // configure parameters
     List<CardRequest> selections = new ArrayList<CardRequest>();
-    MultiSeRequestProcessing multi = MultiSeRequestProcessing.PROCESS_ALL;
+    MultiSelectionProcessing multi = MultiSelectionProcessing.PROCESS_ALL;
     ChannelControl channel = ChannelControl.CLOSE_AFTER;
     ObservableReader.NotificationMode mode = ObservableReader.NotificationMode.ALWAYS;
 
@@ -93,7 +93,7 @@ public class DefaultSelectionTest {
 
     // configure parameters
     List<CardRequest> selections = new ArrayList<CardRequest>();
-    MultiSeRequestProcessing multi = MultiSeRequestProcessing.PROCESS_ALL;
+    MultiSelectionProcessing multi = MultiSelectionProcessing.PROCESS_ALL;
     ChannelControl channel = ChannelControl.CLOSE_AFTER;
     ObservableReader.NotificationMode mode = ObservableReader.NotificationMode.MATCHED_ONLY;
 
@@ -123,7 +123,7 @@ public class DefaultSelectionTest {
 
     // configure parameters
     List<CardRequest> selections = new ArrayList<CardRequest>();
-    MultiSeRequestProcessing multi = MultiSeRequestProcessing.PROCESS_ALL;
+    MultiSelectionProcessing multi = MultiSelectionProcessing.PROCESS_ALL;
     ChannelControl channel = ChannelControl.CLOSE_AFTER;
     ObservableReader.NotificationMode mode = ObservableReader.NotificationMode.MATCHED_ONLY;
 
@@ -147,7 +147,7 @@ public class DefaultSelectionTest {
 
     // configure parameters
     List<CardRequest> selections = new ArrayList<CardRequest>();
-    MultiSeRequestProcessing multi = MultiSeRequestProcessing.PROCESS_ALL;
+    MultiSelectionProcessing multi = MultiSelectionProcessing.PROCESS_ALL;
     ChannelControl channel = ChannelControl.CLOSE_AFTER;
     ObservableReader.NotificationMode mode = ObservableReader.NotificationMode.ALWAYS;
 

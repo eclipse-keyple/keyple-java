@@ -133,7 +133,7 @@ public class ManagedSamResourceManagerDefaultTest extends CalypsoBaseTest {
     doReturn(selectionResponses)
         .when(reader)
         .transmitSeRequests(
-            any(List.class), any(MultiSeRequestProcessing.class), any(ChannelControl.class));
+            any(List.class), any(MultiSelectionProcessing.class), any(ChannelControl.class));
 
     // create a list of mock readers
     ConcurrentMap<String, Reader> readers = new ConcurrentHashMap<String, Reader>();

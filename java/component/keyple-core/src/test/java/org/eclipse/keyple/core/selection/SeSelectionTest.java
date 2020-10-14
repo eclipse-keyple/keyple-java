@@ -15,7 +15,7 @@ import java.util.*;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.core.command.SeCommand;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
@@ -54,7 +54,7 @@ public class SeSelectionTest extends CoreBaseTest {
 
     // check common flags
     Assert.assertEquals(
-        MultiSeRequestProcessing.FIRST_MATCH, selectionOperation.getMultiSeRequestProcessing());
+        MultiSelectionProcessing.FIRST_MATCH, selectionOperation.getMultiSelectionProcessing());
     Assert.assertEquals(ChannelControl.KEEP_OPEN, selectionOperation.getChannelControl());
 
     // get the serequest set

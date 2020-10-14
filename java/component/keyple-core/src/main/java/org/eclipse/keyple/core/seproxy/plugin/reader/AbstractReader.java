@@ -12,7 +12,7 @@
 package org.eclipse.keyple.core.seproxy.plugin.reader;
 
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.CardResponse;
@@ -83,8 +83,8 @@ public abstract class AbstractReader implements ProxyReader {
   /**
    * {@inheritDoc}
    *
-   * <p>This implementation of {@link ProxyReader#transmitSeRequests(List, MultiSeRequestProcessing,
-   * ChannelControl)} is based on {@link #processSeRequests(List, MultiSeRequestProcessing,
+   * <p>This implementation of {@link ProxyReader#transmitSeRequests(List, MultiSelectionProcessing,
+   * ChannelControl)} is based on {@link #processSeRequests(List, MultiSelectionProcessing,
    * ChannelControl)}.<br>
    * It adds a logging of exchanges including a measure of execution time, available at the debug
    * level.
@@ -92,7 +92,7 @@ public abstract class AbstractReader implements ProxyReader {
   @Override
   public final List<CardResponse> transmitSeRequests(
       List<CardRequest> cardRequests,
-      MultiSeRequestProcessing multiSeRequestProcessing,
+      MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl) {
 
     List<CardResponse> cardResponse;
@@ -109,7 +109,7 @@ public abstract class AbstractReader implements ProxyReader {
     }
 
     try {
-      cardResponse = processSeRequests(cardRequests, multiSeRequestProcessing, channelControl);
+      cardResponse = processSeRequests(cardRequests, multiSelectionProcessing, channelControl);
     } catch (KeypleReaderIOException ex) {
       if (logger.isDebugEnabled()) {
         long timeStamp = System.nanoTime();
@@ -140,22 +140,22 @@ public abstract class AbstractReader implements ProxyReader {
   /**
    * This method is the actual implementation of the process of transmitting a list of {@link
    * CardRequest} as defined by {@link ProxyReader#transmitSeRequests(List,
-   * MultiSeRequestProcessing, ChannelControl)}.
+   * MultiSelectionProcessing, ChannelControl)}.
    *
    * @param cardRequests A not empty list of not null {@link CardRequest}.
-   * @param multiSeRequestProcessing The multi card processing flag (must be not null).
+   * @param multiSelectionProcessing The multi card processing flag (must be not null).
    * @param channelControl indicates if the physical channel has to be closed at the end of the
    *     processing (must be not null).
    * @return A not empty response list (can be empty).
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @throws IllegalArgumentException if one of the arguments is null.
    * @throws IllegalStateException in case of configuration inconsistency.
-   * @see ProxyReader#transmitSeRequests(List, MultiSeRequestProcessing, ChannelControl)
+   * @see ProxyReader#transmitSeRequests(List, MultiSelectionProcessing, ChannelControl)
    * @since 0.9
    */
   protected abstract List<CardResponse> processSeRequests(
       List<CardRequest> cardRequests,
-      MultiSeRequestProcessing multiSeRequestProcessing,
+      MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl);
 
   /**
