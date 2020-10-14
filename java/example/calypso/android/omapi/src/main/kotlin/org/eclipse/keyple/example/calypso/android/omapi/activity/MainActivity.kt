@@ -26,7 +26,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.eclipse.keyple.core.seproxy.Reader
-import org.eclipse.keyple.core.seproxy.SeProxyService
+import org.eclipse.keyple.core.seproxy.SmartCardService
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException
 import org.eclipse.keyple.example.calypso.android.omapi.R
@@ -76,7 +76,7 @@ class MainActivity : BasicActivity(), View.OnClickListener {
     private suspend fun connectOmapi(): Map<String, Reader> = withContext(Dispatchers.IO) {
         var readers: Map<String, Reader> ? = null
         for (x in 1..MAX_TRIES) {
-            readers = SeProxyService.getInstance().getPlugin(PLUGIN_NAME).readers
+            readers = SmartCardService.getInstance().getPlugin(PLUGIN_NAME).readers
             if (readers == null || readers.size < 1) {
                 Timber.d("No readers found in OMAPI Keyple Plugin")
                 Timber.d("Retrying in 1 second")
