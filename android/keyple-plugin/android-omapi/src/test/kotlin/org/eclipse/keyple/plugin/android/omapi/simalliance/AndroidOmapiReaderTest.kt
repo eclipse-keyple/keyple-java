@@ -13,8 +13,8 @@ package org.eclipse.keyple.plugin.android.omapi.simalliance
 
 import io.mockk.every
 import io.mockk.mockk
-import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing
 import org.eclipse.keyple.core.seproxy.CardSelector
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.seproxy.message.ApduRequest
 import org.eclipse.keyple.core.seproxy.message.CardRequest
