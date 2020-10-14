@@ -24,7 +24,7 @@ import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -73,14 +73,14 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
 
   public DefaultSelectionNotification_Stub() throws InterruptedException {
 
-    /* Get the instance of the SeProxyService (Singleton pattern) */
-    SeProxyService seProxyService = SeProxyService.getInstance();
+    /* Get the instance of the SmartCardService (Singleton pattern) */
+    SmartCardService smartCardService = SmartCardService.getInstance();
 
     final String STUB_PLUGIN_NAME = "stub1";
 
     /* Register Stub plugin in the platform */
     ReaderPlugin stubPlugin =
-        seProxyService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
+        smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
 
     /* Plug the PO stub reader. */
     ((StubPlugin) stubPlugin).plugStubReader("poReader", true);
@@ -188,7 +188,7 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
                       .getActiveMatchingSe();
 
           poReader =
-              SeProxyService.getInstance()
+              SmartCardService.getInstance()
                   .getPlugin(event.getPluginName())
                   .getReader(event.getReaderName());
         } catch (KeyplePluginNotFoundException e) {

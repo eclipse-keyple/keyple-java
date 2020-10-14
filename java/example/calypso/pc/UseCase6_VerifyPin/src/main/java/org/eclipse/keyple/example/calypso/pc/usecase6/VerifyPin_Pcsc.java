@@ -28,7 +28,7 @@ import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.example.common.ReaderUtilities;
@@ -112,12 +112,12 @@ public class VerifyPin_Pcsc {
 
   public static void main(String[] args) {
 
-    // Get the instance of the SeProxyService (Singleton pattern)
-    SeProxyService seProxyService = SeProxyService.getInstance();
+    // Get the instance of the SmartCardService (Singleton pattern)
+    SmartCardService smartCardService = SmartCardService.getInstance();
 
-    // Register the PcscPlugin with SeProxyService, get the corresponding generic ReaderPlugin in
+    // Register the PcscPlugin with SmartCardService, get the corresponding generic ReaderPlugin in
     // return
-    ReaderPlugin readerPlugin = seProxyService.registerPlugin(new PcscPluginFactory());
+    ReaderPlugin readerPlugin = smartCardService.registerPlugin(new PcscPluginFactory());
 
     // Get and configure the PO reader
     poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());

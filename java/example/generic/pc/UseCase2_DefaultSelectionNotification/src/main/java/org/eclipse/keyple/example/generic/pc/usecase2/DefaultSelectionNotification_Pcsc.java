@@ -16,7 +16,7 @@ import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -66,12 +66,12 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
   private static final Object waitForEnd = new Object();
 
   public DefaultSelectionNotification_Pcsc() throws InterruptedException {
-    // Get the instance of the SeProxyService (Singleton pattern)
-    SeProxyService seProxyService = SeProxyService.getInstance();
+    // Get the instance of the SmartCardService (Singleton pattern)
+    SmartCardService smartCardService = SmartCardService.getInstance();
 
-    // Register the PcscPlugin with SeProxyService, get the corresponding generic ReaderPlugin in
+    // Register the PcscPlugin with SmartCardService, get the corresponding generic ReaderPlugin in
     // return
-    ReaderPlugin readerPlugin = seProxyService.registerPlugin(new PcscPluginFactory());
+    ReaderPlugin readerPlugin = smartCardService.registerPlugin(new PcscPluginFactory());
 
     // Get and configure the PO reader
     Reader reader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());

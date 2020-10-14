@@ -13,7 +13,7 @@ package org.eclipse.keyple.example.remote.application;
 
 import java.io.IOException;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
@@ -97,7 +97,7 @@ public class SlaveNodeController {
         }.start();
 
         // if slave is server, must specify which master to connect to
-        slaveAPI = new SlaveAPI(SeProxyService.getInstance(), node, masterNodeId);
+        slaveAPI = new SlaveAPI(SmartCardService.getInstance(), node, masterNodeId);
 
         initPoReader();
 
@@ -125,7 +125,7 @@ public class SlaveNodeController {
               });
       // if slave is client, master is the configured server
       slaveAPI =
-          new SlaveAPI(SeProxyService.getInstance(), node, ((ClientNode) node).getServerNodeId());
+          new SlaveAPI(SmartCardService.getInstance(), node, ((ClientNode) node).getServerNodeId());
 
       initPoReader();
     }
@@ -144,11 +144,11 @@ public class SlaveNodeController {
 
       logger.info("|{}| Create Local StubPlugin", node.getNodeId());
 
-      /* Get the instance of the SeProxyService (Singleton pattern) */
-      SeProxyService seProxyService = SeProxyService.getInstance();
+      /* Get the instance of the SmartCardService (Singleton pattern) */
+      SmartCardService smartCardService = SmartCardService.getInstance();
 
-      /* Assign PcscPlugin to the SeProxyService */
-      ReaderPlugin stubPlugin = seProxyService.registerPlugin(new StubPluginFactory(STUB_SLAVE));
+      /* Assign PcscPlugin to the SmartCardService */
+      ReaderPlugin stubPlugin = smartCardService.registerPlugin(new StubPluginFactory(STUB_SLAVE));
 
       ObservablePlugin.PluginObserver observer =
           new ObservablePlugin.PluginObserver() {

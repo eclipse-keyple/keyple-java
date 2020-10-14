@@ -20,7 +20,7 @@ import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.CardSelector;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
@@ -62,7 +62,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
   @Before
   public void setUp() throws Exception {
-    Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
+    Assert.assertEquals(0, SmartCardService.getInstance().getPlugins().size());
 
     initMasterNSlave();
 
@@ -83,7 +83,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
     unregisterPlugins();
 
-    Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
+    Assert.assertEquals(0, SmartCardService.getInstance().getPlugins().size());
   }
 
   /**

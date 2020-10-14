@@ -12,7 +12,7 @@
 package org.eclipse.keyple.example.generic.pc.Demo_ObservableReaderNotification;
 
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.example.common.generic.stub.StubSe1;
 import org.eclipse.keyple.example.common.generic.stub.StubSe2;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
@@ -31,7 +31,7 @@ public class Demo_ObservableReaderNotification_Stub {
     ObservableReaderNotificationEngine demoEngine = new ObservableReaderNotificationEngine();
 
     // Set Stub plugin
-    SeProxyService seProxyService = SeProxyService.getInstance();
+    SmartCardService smartCardService = SmartCardService.getInstance();
 
     final String STUB_PLUGIN_NAME = "stub1";
     final String READER1_NAME = "Reader1";
@@ -39,7 +39,7 @@ public class Demo_ObservableReaderNotification_Stub {
 
     // Register Stub plugin in the platform
     ReaderPlugin stubPlugin =
-        seProxyService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
+        smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
 
     // Set observers
     logger.info("Set plugin observer.");

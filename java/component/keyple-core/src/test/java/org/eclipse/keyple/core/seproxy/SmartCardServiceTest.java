@@ -36,12 +36,12 @@ import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("PMD.SignatureDeclareThrowsException")
 @RunWith(MockitoJUnitRunner.class)
-public class SeProxyServiceTest {
+public class SmartCardServiceTest {
 
-  private static final Logger logger = LoggerFactory.getLogger(SeProxyServiceTest.class);
+  private static final Logger logger = LoggerFactory.getLogger(SmartCardServiceTest.class);
 
   // class to test
-  SeProxyService proxyService;
+  SmartCardService proxyService;
 
   AbstractPlugin plugin1 = new MockAbstractThreadedPlugin(PLUGIN_NAME_1);
 
@@ -54,13 +54,13 @@ public class SeProxyServiceTest {
   static String PLUGIN_NAME_1 = "plugin1";
   static String PLUGIN_NAME_2 = "plugin2";
 
-  public SeProxyServiceTest() {}
+  public SmartCardServiceTest() {}
 
   @Before
   public void setupBeforeEach() {
 
     // init class to test
-    proxyService = SeProxyService.getInstance();
+    proxyService = SmartCardService.getInstance();
 
     Assert.assertEquals(0, proxyService.getPlugins().size());
 
@@ -76,9 +76,9 @@ public class SeProxyServiceTest {
     // test that version follows semver guidelines
     String regex =
         "^([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+[0-9A-Za-z-]+)?$";
-    String version = SeProxyService.getInstance().getVersion();
-    logger.info("Version of SeProxyService {}", version);
-    System.out.println("Version of SeProxyService " + version);
+    String version = SmartCardService.getInstance().getVersion();
+    logger.info("Version of SmartCardService {}", version);
+    System.out.println("Version of SmartCardService " + version);
     assertTrue(version.matches(regex));
   }
 

@@ -18,7 +18,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.plugin.remotese.integration.Integration;
@@ -38,7 +38,7 @@ public class VirtualObservableReaderTest extends VirtualReaderBaseTest {
 
   @Before
   public void setUp() throws Exception {
-    Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
+    Assert.assertEquals(0, SmartCardService.getInstance().getPlugins().size());
     initMasterNSlave();
 
     // configure and connect a Mock Reader
@@ -52,7 +52,7 @@ public class VirtualObservableReaderTest extends VirtualReaderBaseTest {
   public void tearDown() throws Exception {
     Integration.unregisterAllPlugin(RemoteSePluginImpl.DEFAULT_PLUGIN_NAME);
 
-    Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
+    Assert.assertEquals(0, SmartCardService.getInstance().getPlugins().size());
   }
 
   /**

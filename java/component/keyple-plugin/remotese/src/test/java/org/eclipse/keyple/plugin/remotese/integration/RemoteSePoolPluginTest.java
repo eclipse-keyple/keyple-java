@@ -12,7 +12,7 @@
 package org.eclipse.keyple.plugin.remotese.integration;
 
 import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.RemoteSePoolPlugin;
@@ -37,7 +37,7 @@ public class RemoteSePoolPluginTest {
   private StubPoolPlugin stubPoolPlugin;
   private SlaveAPI slaveAPI;
 
-  private SeProxyService seProxyService = SeProxyService.getInstance();
+  private SmartCardService smartCardService = SmartCardService.getInstance();
 
   // created by masterAPI
   private RemoteSePoolPlugin remoteSePoolPlugin;
@@ -51,7 +51,7 @@ public class RemoteSePoolPluginTest {
   @Before
   public void setUp() throws Exception {
 
-    Assert.assertEquals(0, seProxyService.getPlugins().size());
+    Assert.assertEquals(0, smartCardService.getPlugins().size());
 
     // create local transportfactory
     factory = new LocalTransportFactory(SERVER_NODE_ID);
@@ -67,7 +67,7 @@ public class RemoteSePoolPluginTest {
     stubPoolPlugin.plugStubPoolReader(REF_GROUP1, "stub1", stubSe);
 
     // configure Slave with Stub Pool plugin and local server node
-    slaveAPI = new SlaveAPI(SeProxyService.getInstance(), factory.getServer(), "");
+    slaveAPI = new SlaveAPI(SmartCardService.getInstance(), factory.getServer(), "");
 
     // bind slaveAPI to stubPoolPlugin
     slaveAPI.registerReaderPoolPlugin(stubPoolPlugin);
@@ -79,7 +79,7 @@ public class RemoteSePoolPluginTest {
     // configure Master with RemoteSe Pool plugin and client node
     masterAPI =
         new MasterAPI(
-            SeProxyService.getInstance(),
+            SmartCardService.getInstance(),
             factory.getClient(CLIENT_NODE_ID),
             10000,
             MasterAPI.PLUGIN_TYPE_POOL,
@@ -90,15 +90,15 @@ public class RemoteSePoolPluginTest {
 
   @After
   public void tearDown() throws Exception {
-    SeProxyService.getInstance().unregisterPlugin(stubPoolPlugin.getName());
-    SeProxyService.getInstance().unregisterPlugin(remoteSePoolPlugin.getName());
+    SmartCardService.getInstance().unregisterPlugin(stubPoolPlugin.getName());
+    SmartCardService.getInstance().unregisterPlugin(remoteSePoolPlugin.getName());
     remoteSePoolPlugin = null;
     stubPoolPlugin = null;
     masterAPI = null;
     factory = null;
     slaveAPI = null;
 
-    Assert.assertEquals(0, seProxyService.getPlugins().size());
+    Assert.assertEquals(0, smartCardService.getPlugins().size());
   }
 
   /** Test allocate SUCCESS */

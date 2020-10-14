@@ -19,7 +19,7 @@ import java.util.Properties;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 
@@ -113,7 +113,7 @@ public final class ReaderUtilities {
    */
   private static Reader getReaderByName(String pattern) {
     Pattern p = Pattern.compile(pattern);
-    Collection<ReaderPlugin> readerPlugins = SeProxyService.getInstance().getPlugins().values();
+    Collection<ReaderPlugin> readerPlugins = SmartCardService.getInstance().getPlugins().values();
     for (ReaderPlugin plugin : readerPlugins) {
       Collection<Reader> readers = plugin.getReaders().values();
       for (Reader reader : readers) {

@@ -48,7 +48,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
   private String contactlessReaderRegexFilter;
 
   /**
-   * Singleton instance of SeProxyService 'volatile' qualifier ensures that read access to the
+   * Singleton instance of SmartCardService 'volatile' qualifier ensures that read access to the
    * object will only be allowed once the object has been fully initialized.
    *
    * <p>This qualifier is required for "lazy-singleton" pattern with double-check method, to be

@@ -21,17 +21,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The Class SeProxyService. This singleton is the entry point of the card Proxy Service, its
+ * The Class SmartCardService. This singleton is the entry point of the card Proxy Service, its
  * instance has to be called by a ticketing application in order to establish a link with a card’s
  * application.
  */
-public final class SeProxyService {
+public final class SmartCardService {
 
   /** Field logger */
-  private static final Logger logger = LoggerFactory.getLogger(SeProxyService.class);
+  private static final Logger logger = LoggerFactory.getLogger(SmartCardService.class);
 
-  /** singleton instance of SeProxyService */
-  private static final SeProxyService uniqueInstance = new SeProxyService();
+  /** singleton instance of SmartCardService */
+  private static final SmartCardService uniqueInstance = new SmartCardService();
 
   /** the list of readers’ plugins interfaced with the card Proxy Service */
   private final Map<String, ReaderPlugin> plugins = new ConcurrentHashMap<String, ReaderPlugin>();
@@ -39,15 +39,15 @@ public final class SeProxyService {
   /** Field MONITOR, this is the object we will be synchronizing on ("the monitor") */
   private final Object MONITOR = new Object();
 
-  /** Instantiates a new SeProxyService. */
-  private SeProxyService() {}
+  /** Instantiates a new SmartCardService. */
+  private SmartCardService() {}
 
   /**
-   * Gets the single instance of SeProxyService.
+   * Gets the single instance of SmartCardService.
    *
-   * @return single instance of SeProxyService
+   * @return single instance of SmartCardService
    */
-  public static SeProxyService getInstance() {
+  public static SmartCardService getInstance() {
     return uniqueInstance;
   }
 

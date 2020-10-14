@@ -19,7 +19,7 @@ import org.eclipse.keyple.calypso.transaction.SamResourceManager;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
@@ -63,7 +63,7 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
         /** a new virtual reader is connected, let's configure it */
         try {
           ReaderPlugin remoteSEPlugin =
-              SeProxyService.getInstance().getPlugin(event.getPluginName());
+              SmartCardService.getInstance().getPlugin(event.getPluginName());
 
           Reader poReader = remoteSEPlugin.getReader(event.getReaderNames().first());
 
