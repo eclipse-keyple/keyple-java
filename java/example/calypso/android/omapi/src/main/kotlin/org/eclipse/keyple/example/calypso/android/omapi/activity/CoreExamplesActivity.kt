@@ -15,10 +15,10 @@ import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_core_examples.eventRecyclerView
 import kotlinx.android.synthetic.main.activity_core_examples.toolbar
 import org.eclipse.keyple.core.selection.SeSelection
-import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing
-import org.eclipse.keyple.core.seproxy.Reader
 import org.eclipse.keyple.core.seproxy.CardSelector
 import org.eclipse.keyple.core.seproxy.CardSelector.AidSelector
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing
+import org.eclipse.keyple.core.seproxy.Reader
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.message.CardRequest
 import org.eclipse.keyple.core.seproxy.message.ChannelControl

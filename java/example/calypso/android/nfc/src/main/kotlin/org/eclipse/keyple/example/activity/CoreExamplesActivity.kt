@@ -23,10 +23,10 @@ import org.eclipse.keyple.core.command.AbstractApduCommandBuilder
 import org.eclipse.keyple.core.selection.AbstractMatchingSe
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest
 import org.eclipse.keyple.core.selection.SeSelection
-import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing
-import org.eclipse.keyple.core.seproxy.Reader
 import org.eclipse.keyple.core.seproxy.CardSelector
 import org.eclipse.keyple.core.seproxy.CardSelector.AidSelector
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing
+import org.eclipse.keyple.core.seproxy.Reader
 import org.eclipse.keyple.core.seproxy.event.ObservableReader
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException
