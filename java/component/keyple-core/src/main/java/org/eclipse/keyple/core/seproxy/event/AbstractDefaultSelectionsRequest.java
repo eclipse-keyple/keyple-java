@@ -12,7 +12,7 @@
 package org.eclipse.keyple.core.seproxy.event;
 
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
 import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 
@@ -33,7 +33,7 @@ public abstract class AbstractDefaultSelectionsRequest {
    * @return A not null value.
    * @since 0.9
    */
-  protected abstract MultiSeRequestProcessing getMultiSeRequestProcessing();
+  protected abstract MultiSelectionProcessing getMultiSelectionProcessing();
 
   /**
    * Gets the indication whether the logic channel is to be kept open or closed

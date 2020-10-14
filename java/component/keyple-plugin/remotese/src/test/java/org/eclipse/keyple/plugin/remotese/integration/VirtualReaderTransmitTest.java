@@ -12,7 +12,7 @@
 package org.eclipse.keyple.plugin.remotese.integration;
 
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
@@ -73,7 +73,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
       ((ProxyReader) virtualReader)
           .transmitSeRequests(
               SampleFactory.getASeRequestList(),
-              MultiSeRequestProcessing.FIRST_MATCH,
+              MultiSelectionProcessing.FIRST_MATCH,
               ChannelControl.KEEP_OPEN);
       // should throw KeypleReaderException
       Assert.assertTrue(false);
@@ -167,7 +167,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
     // test
     ((ProxyReader) virtualReader)
         .transmitSeRequests(
-            requests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+            requests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
   }
 
   @Test
@@ -187,7 +187,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
       ((ProxyReader) virtualReader)
           .transmitSeRequests(
-              cardRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+              cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
     } catch (KeypleReaderIOException ex) {
       logger.info(
@@ -217,7 +217,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
       ((ProxyReader) virtualReader)
           .transmitSeRequests(
-              cardRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+              cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
     } catch (KeypleReaderIOException ex) {
       logger.info(
@@ -249,7 +249,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
       ((ProxyReader) virtualReader)
           .transmitSeRequests(
-              cardRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+              cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
     } catch (KeypleReaderIOException ex) {
       logger.info(
@@ -281,7 +281,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
       ((ProxyReader) virtualReader)
           .transmitSeRequests(
-              cardRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+              cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
     } catch (KeypleReaderIOException ex) {
       logger.info(

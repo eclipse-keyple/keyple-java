@@ -23,7 +23,7 @@ import org.eclipse.keyple.core.command.AbstractApduCommandBuilder
 import org.eclipse.keyple.core.selection.AbstractMatchingSe
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest
 import org.eclipse.keyple.core.selection.SeSelection
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing
 import org.eclipse.keyple.core.seproxy.Reader
 import org.eclipse.keyple.core.seproxy.SeSelector
 import org.eclipse.keyple.core.seproxy.SeSelector.AidSelector
@@ -159,7 +159,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
         useCase = null
 
         if (reader.isSePresent) {
-            seSelection = SeSelection(MultiSeRequestProcessing.PROCESS_ALL)
+            seSelection = SeSelection(MultiSelectionProcessing.PROCESS_ALL)
 
             /* Close the channel after the selection to force the selection of all applications */
             seSelection.prepareReleaseSeChannel()

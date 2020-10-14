@@ -13,7 +13,7 @@ package org.eclipse.keyple.core.selection;
 
 import java.util.*;
 import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
@@ -43,21 +43,21 @@ public final class SeSelection {
   private final List<AbstractSeSelectionRequest<? extends AbstractApduCommandBuilder>>
       seSelectionRequests =
           new ArrayList<AbstractSeSelectionRequest<? extends AbstractApduCommandBuilder>>();
-  private final MultiSeRequestProcessing multiSeRequestProcessing;
+  private final MultiSelectionProcessing multiSelectionProcessing;
   private ChannelControl channelControl = ChannelControl.KEEP_OPEN;
 
   /**
    * Constructor.
    *
-   * @param multiSeRequestProcessing the multi card processing mode
+   * @param multiSelectionProcessing the multi card processing mode
    */
-  public SeSelection(MultiSeRequestProcessing multiSeRequestProcessing) {
-    this.multiSeRequestProcessing = multiSeRequestProcessing;
+  public SeSelection(MultiSelectionProcessing multiSelectionProcessing) {
+    this.multiSelectionProcessing = multiSelectionProcessing;
   }
 
   /** Alternate constructor for standard usages. */
   public SeSelection() {
-    this(MultiSeRequestProcessing.FIRST_MATCH);
+    this(MultiSelectionProcessing.FIRST_MATCH);
   }
 
   /**
@@ -206,7 +206,7 @@ public final class SeSelection {
     /* Communicate with the card to do the selection */
     List<CardResponse> cardResponse =
         ((ProxyReader) reader)
-            .transmitSeRequests(selectionRequests, multiSeRequestProcessing, channelControl);
+            .transmitSeRequests(selectionRequests, multiSelectionProcessing, channelControl);
 
     return processSelection(new DefaultSelectionsResponse(cardResponse));
   }
@@ -225,6 +225,6 @@ public final class SeSelection {
       selectionRequests.add(seSelectionRequest.getSelectionRequest());
     }
     return new DefaultSelectionsRequest(
-        selectionRequests, multiSeRequestProcessing, channelControl);
+        selectionRequests, multiSelectionProcessing, channelControl);
   }
 }

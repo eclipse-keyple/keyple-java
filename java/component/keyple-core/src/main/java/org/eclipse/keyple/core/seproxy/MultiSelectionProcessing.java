@@ -15,7 +15,7 @@ package org.eclipse.keyple.core.seproxy;
  * indicates whether the selection process should stop after the first matching or process all
  * requests in the CardRequest Set
  */
-public enum MultiSeRequestProcessing {
+public enum MultiSelectionProcessing {
   /** The selection process stops as soon as a selection case is successful. */
   FIRST_MATCH,
   /** The selection process performs all the selection cases provided in the Set of CardRequest. */

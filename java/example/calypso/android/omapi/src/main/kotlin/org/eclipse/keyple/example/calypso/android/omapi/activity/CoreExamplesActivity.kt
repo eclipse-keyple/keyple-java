@@ -15,7 +15,7 @@ import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_core_examples.eventRecyclerView
 import kotlinx.android.synthetic.main.activity_core_examples.toolbar
 import org.eclipse.keyple.core.selection.SeSelection
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing
 import org.eclipse.keyple.core.seproxy.Reader
 import org.eclipse.keyple.core.seproxy.SeSelector
 import org.eclipse.keyple.core.seproxy.SeSelector.AidSelector
@@ -101,7 +101,7 @@ class CoreExamplesActivity : ExamplesActivity() {
     private fun groupedMultiSelection() {
         addHeaderEvent("UseCase Generic #3: AID based grouped explicit multiple selection")
 
-        val seSelection = SeSelection(MultiSeRequestProcessing.PROCESS_ALL)
+        val seSelection = SeSelection(MultiSelectionProcessing.PROCESS_ALL)
 
         /* Close the channel after the selection in order to secure the selection of all applications */
         seSelection.prepareReleaseSeChannel()

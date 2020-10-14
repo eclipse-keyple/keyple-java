@@ -15,7 +15,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.CardResponse;
@@ -35,7 +35,7 @@ public class RmTransmitSetTx extends AbstractRemoteMethodTx<List<CardResponse>> 
   private static final Logger logger = LoggerFactory.getLogger(RmTransmitSetTx.class);
 
   private final List<CardRequest> cardRequests;
-  private final MultiSeRequestProcessing multiSeRequestProcessing;
+  private final MultiSelectionProcessing multiSelectionProcessing;
   private final ChannelControl channelControl;
 
   @Override
@@ -45,7 +45,7 @@ public class RmTransmitSetTx extends AbstractRemoteMethodTx<List<CardResponse>> 
 
   public RmTransmitSetTx(
       List<CardRequest> cardRequests,
-      MultiSeRequestProcessing multiSeRequestProcessing,
+      MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl,
       String sessionId,
       String nativeReaderName,
@@ -54,7 +54,7 @@ public class RmTransmitSetTx extends AbstractRemoteMethodTx<List<CardResponse>> 
       String slaveNodeId) {
     super(sessionId, nativeReaderName, virtualReaderName, slaveNodeId, requesterNodeId);
     this.cardRequests = cardRequests;
-    this.multiSeRequestProcessing = multiSeRequestProcessing;
+    this.multiSelectionProcessing = multiSelectionProcessing;
     this.channelControl = channelControl;
   }
 
@@ -68,7 +68,7 @@ public class RmTransmitSetTx extends AbstractRemoteMethodTx<List<CardResponse>> 
         JsonParser.getGson()
             .toJson(cardRequests, new TypeToken<ArrayList<CardRequest>>() {}.getType()));
 
-    body.addProperty("multiSeRequestProcessing", multiSeRequestProcessing.name());
+    body.addProperty("multiSelectionProcessing", multiSelectionProcessing.name());
 
     body.addProperty("channelControl", channelControl.name());
 

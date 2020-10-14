@@ -12,7 +12,7 @@
 package org.eclipse.keyple.core.seproxy.plugin.reader;
 
 import java.util.*;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -395,7 +395,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
   }
 
   /**
-   * Local implementation of {@link AbstractReader#processSeRequests(List, MultiSeRequestProcessing,
+   * Local implementation of {@link AbstractReader#processSeRequests(List, MultiSelectionProcessing,
    * ChannelControl)}
    *
    * <p>{@inheritDoc}<br>
@@ -405,7 +405,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
   @Override
   protected final List<CardResponse> processSeRequests(
       List<CardRequest> cardRequests,
-      MultiSeRequestProcessing multiSeRequestProcessing,
+      MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl) {
 
     List<CardResponse> cardResponses = new ArrayList<CardResponse>();
@@ -439,7 +439,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
         throw ex;
       }
       cardResponses.add(cardResponse);
-      if (multiSeRequestProcessing == MultiSeRequestProcessing.PROCESS_ALL) {
+      if (multiSelectionProcessing == MultiSelectionProcessing.PROCESS_ALL) {
         /* multi CardRequest case: just close the logical channel and go on with the next selection. */
         closeLogicalChannel();
       } else {
@@ -459,7 +459,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
   }
 
   /**
-   * Local implementation of {@link AbstractReader#processSeRequests(List, MultiSeRequestProcessing,
+   * Local implementation of {@link AbstractReader#processSeRequests(List, MultiSelectionProcessing,
    * ChannelControl)}
    *
    * <p>{@inheritDoc}<br>
@@ -622,7 +622,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * @return cardResponse A not null {@link CardResponse}.
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @throws IllegalStateException in case of configuration inconsistency.
-   * @see #processSeRequests(List, MultiSeRequestProcessing, ChannelControl)
+   * @see #processSeRequests(List, MultiSelectionProcessing, ChannelControl)
    * @see #processSeRequest(CardRequest, ChannelControl)
    * @since 0.9
    */

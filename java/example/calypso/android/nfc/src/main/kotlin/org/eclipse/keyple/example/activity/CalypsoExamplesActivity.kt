@@ -28,7 +28,7 @@ import org.eclipse.keyple.calypso.transaction.PoSelector.InvalidatedPo
 import org.eclipse.keyple.calypso.transaction.PoTransaction
 import org.eclipse.keyple.core.selection.SeResource
 import org.eclipse.keyple.core.selection.SeSelection
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing
 import org.eclipse.keyple.core.seproxy.Reader
 import org.eclipse.keyple.core.seproxy.SeProxyService
 import org.eclipse.keyple.core.seproxy.SeSelector.AidSelector
@@ -224,7 +224,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
         addHeaderEvent("UseCase Generic #3: AID based grouped explicit multiple selection")
         addHeaderEvent("Reader  NAME = ${reader.name}")
 
-        seSelection = SeSelection(MultiSeRequestProcessing.PROCESS_ALL)
+        seSelection = SeSelection(MultiSelectionProcessing.PROCESS_ALL)
 
         /* operate card selection (change the AID here to adapt it to the card used for the test) */
         val seAidPrefix = CalypsoClassicInfo.AID_PREFIX

@@ -15,7 +15,7 @@ import java.util.Map;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
@@ -55,7 +55,7 @@ public class GroupedMultiSelection_Pcsc {
     // Check if a card is present in the reader
     if (reader.isSePresent()) {
 
-      SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.PROCESS_ALL);
+      SeSelection seSelection = new SeSelection(MultiSelectionProcessing.PROCESS_ALL);
 
       // operate the card selection (change the AID here to adapt it to the card used for the test)
       String seAidPrefix = "A000000404012509";

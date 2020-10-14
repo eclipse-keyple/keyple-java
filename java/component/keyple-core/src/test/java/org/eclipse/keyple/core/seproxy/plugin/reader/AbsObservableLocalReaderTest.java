@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
 import org.eclipse.keyple.core.CoreBaseTest;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.message.*;
@@ -303,7 +303,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     doReturn(getCardResponses())
         .when(r)
         .processSeRequests(
-            any(List.class), any(MultiSeRequestProcessing.class), any(ChannelControl.class));
+            any(List.class), any(MultiSelectionProcessing.class), any(ChannelControl.class));
     return r;
   }
 

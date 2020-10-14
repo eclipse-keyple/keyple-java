@@ -19,7 +19,7 @@ import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.core.CoreBaseTest;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
@@ -66,7 +66,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     try {
       // test
       reader.processSeRequests(
-          cardRequests, MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
+          cardRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
       fail("A KeypleReaderIOException was expected");
     } catch (KeypleReaderIOException ex) {
       assertThat(ex.getCardResponses().size()).isEqualTo(1);
@@ -82,7 +82,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     try {
       // test
       reader.processSeRequests(
-          cardRequests, MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
+          cardRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
       fail("A KeypleReaderIOException was expected");
     } catch (KeypleReaderIOException ex) {
       assertThat(ex.getCardResponses().size()).isEqualTo(2);
@@ -100,7 +100,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     try {
       // test
       reader.processSeRequests(
-          cardRequests, MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
+          cardRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
       fail("A KeypleReaderIOException was expected");
     } catch (KeypleReaderIOException ex) {
       assertThat(ex.getCardResponses().size()).isEqualTo(3);
@@ -119,7 +119,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
       // test
       List<CardResponse> responses =
           reader.processSeRequests(
-              cardRequests, MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
+              cardRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
       assertThat(responses.size()).isEqualTo(3);
       assertThat(responses.get(0).getApduResponses().size()).isEqualTo(4);
       assertThat(responses.get(1).getApduResponses().size()).isEqualTo(4);
@@ -139,7 +139,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
       // test
       List<CardResponse> responses =
           reader.processSeRequests(
-              cardRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
+              cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
       assertThat(responses.size()).isEqualTo(1);
       assertThat(responses.get(0).getApduResponses().size()).isEqualTo(4);
     } catch (KeypleReaderException ex) {

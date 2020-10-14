@@ -15,7 +15,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -104,12 +104,12 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
 
     reader.transmitSeRequests(
         StubReaderTest.getRequestIsoDepSetSample(),
-        MultiSeRequestProcessing.FIRST_MATCH,
+        MultiSelectionProcessing.FIRST_MATCH,
         ChannelControl.KEEP_OPEN);
   }
 
   /**
-   * Successful transmitSeRequests with MultiSeRequestProcessing and ChannelControl
+   * Successful transmitSeRequests with MultiSelectionProcessing and ChannelControl
    *
    * @throws Exception
    */
@@ -123,12 +123,12 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
     // test transmitSeRequests with Parameters
     ((ProxyReader) virtualReader)
         .transmitSeRequests(
-            cardRequests, MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
+            cardRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
 
     // condition -> the nativeReader execute the method executed on the virtual reader
     verify(nativeReader, times(1))
         .transmitSeRequests(
-            cardRequests, MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
+            cardRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
   }
 
   @Test
@@ -141,13 +141,13 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
     // test transmitSeRequest without parameter
     ((ProxyReader) virtualReader)
         .transmitSeRequests(
-            cardRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+            cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
     // condition -> the nativeReader execute the method executed on the virtual reader
     verify(nativeReader, times(1))
         .transmitSeRequests(
             cardRequests,
-            MultiSeRequestProcessing.FIRST_MATCH,
+            MultiSelectionProcessing.FIRST_MATCH,
             ChannelControl.KEEP_OPEN); // default value
     // when no param is
     // specified
@@ -200,7 +200,7 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
         .when(mockReader)
         .transmitSeRequests(
             ArgumentMatchers.<CardRequest>anyList(),
-            any(MultiSeRequestProcessing.class),
+            any(MultiSelectionProcessing.class),
             any(ChannelControl.class));
 
     // Configure slaveAPI to find mockReader
