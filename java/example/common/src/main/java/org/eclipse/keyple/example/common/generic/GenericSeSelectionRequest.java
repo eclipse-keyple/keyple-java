@@ -12,7 +12,7 @@
 package org.eclipse.keyple.example.common.generic;
 
 import org.eclipse.keyple.core.selection.AbstractCardSelectionRequest;
-import org.eclipse.keyple.core.selection.AbstractMatchingSe;
+import org.eclipse.keyple.core.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.message.CardResponse;
 
@@ -23,12 +23,12 @@ public class GenericCardSelectionRequest extends AbstractCardSelectionRequest {
   }
 
   @Override
-  protected AbstractMatchingSe parse(CardResponse cardResponse) {
-    class GenericMatchingSe extends AbstractMatchingSe {
-      public GenericMatchingSe(CardResponse selectionResponse) {
+  protected AbstractSmartCard parse(CardResponse cardResponse) {
+    class GenericSmartCard extends AbstractSmartCard {
+      public GenericSmartCard(CardResponse selectionResponse) {
         super(selectionResponse);
       }
     }
-    return new GenericMatchingSe(cardResponse);
+    return new GenericSmartCard(cardResponse);
   }
 }

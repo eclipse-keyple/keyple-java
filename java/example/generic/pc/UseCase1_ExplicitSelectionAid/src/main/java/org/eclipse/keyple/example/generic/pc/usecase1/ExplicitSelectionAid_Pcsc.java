@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.generic.pc.usecase1;
 
-import org.eclipse.keyple.core.selection.AbstractMatchingSe;
+import org.eclipse.keyple.core.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.CardSelector;
@@ -95,14 +95,14 @@ public class ExplicitSelectionAid_Pcsc {
       // Actual card communication: operate through a single request the card selection
       SelectionsResult selectionsResult = cardSelection.processExplicitSelection(reader);
       if (selectionsResult.hasActiveSelection()) {
-        AbstractMatchingSe matchingSe = selectionsResult.getActiveMatchingSe();
+        AbstractSmartCard smartCard = selectionsResult.getActiveSmartCard();
         logger.info("The selection of the card has succeeded.");
-        if (matchingSe.hasFci()) {
-          String fci = ByteArrayUtil.toHex(matchingSe.getFciBytes());
+        if (smartCard.hasFci()) {
+          String fci = ByteArrayUtil.toHex(smartCard.getFciBytes());
           logger.info("Application FCI = {}", fci);
         }
-        if (matchingSe.hasAtr()) {
-          String atr = ByteArrayUtil.toHex(matchingSe.getAtrBytes());
+        if (smartCard.hasAtr()) {
+          String atr = ByteArrayUtil.toHex(smartCard.getAtrBytes());
           logger.info("Secure Element ATR = {}", atr);
         }
       } else {

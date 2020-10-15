@@ -16,12 +16,12 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.message.CardResponse;
 
 /**
- * AbstractMatchingSe is the class to manage the elements of the result of a selection.<br>
+ * AbstractSmartCard is the class to manage the elements of the result of a selection.<br>
  * This class should be extended for the management of specific card.<br>
  * Nevertheless it gives access to the generic parameters common to all SEs which are the FCI
  * (response to select command) and the ATR (card's answer to reset) when they are available.
  */
-public abstract class AbstractMatchingSe {
+public abstract class AbstractSmartCard {
   private final byte[] fciBytes;
   private final byte[] atrBytes;
 
@@ -30,7 +30,7 @@ public abstract class AbstractMatchingSe {
    *
    * @param selectionResponse the response from the card
    */
-  protected AbstractMatchingSe(CardResponse selectionResponse) {
+  protected AbstractSmartCard(CardResponse selectionResponse) {
     ApduResponse fci = selectionResponse.getSelectionStatus().getFci();
     if (fci != null) {
       this.fciBytes = fci.getBytes();
@@ -63,7 +63,7 @@ public abstract class AbstractMatchingSe {
     if (hasFci()) {
       return fciBytes;
     }
-    throw new IllegalStateException("No FCI is available in this AbstractMatchingSe");
+    throw new IllegalStateException("No FCI is available in this AbstractSmartCard");
   }
 
   /**
@@ -74,6 +74,6 @@ public abstract class AbstractMatchingSe {
     if (hasAtr()) {
       return atrBytes;
     }
-    throw new IllegalStateException("No ATR is available in this AbstractMatchingSe");
+    throw new IllegalStateException("No ATR is available in this AbstractSmartCard");
   }
 }

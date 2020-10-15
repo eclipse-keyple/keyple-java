@@ -71,7 +71,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                          * Check if PO has been selected successfuly
                          */
                         if (selectionsResult.hasActiveSelection()) {
-                            val matchedSe = selectionsResult.activeMatchingSe
+                            val matchedSe = selectionsResult.activeSmartCard
                             addResultEvent("The selection of the card has succeeded.")
                             addResultEvent("Application FCI = ${ByteArrayUtil.toHex(matchedSe.fciBytes)}")
                         } else {
@@ -146,7 +146,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                         val selectionsResult = cardSelection.processExplicitSelection(reader)
 
                         if (selectionsResult.hasActiveSelection()) {
-                            val calypsoPo = selectionsResult.activeMatchingSe as CalypsoPo
+                            val calypsoPo = selectionsResult.activeSmartCard as CalypsoPo
 
                             addResultEvent("Selection succeeded for P0 with aid $poAid")
 
@@ -217,9 +217,9 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                         val selectionsResult = cardSelection.processExplicitSelection(reader)
 
                         if (selectionsResult.hasActiveSelection()) {
-                            val calypsoPo = selectionsResult.activeMatchingSe as CalypsoPo
+                            val calypsoPo = selectionsResult.activeSmartCard as CalypsoPo
 
-                            // val calypsoPo = matchingSelection.matchingSe as CalypsoPo
+                            // val calypsoPo = matchingSelection.smartCard as CalypsoPo
                             addResultEvent("Selection succeeded for P0 with aid $poAid")
 
                             val environmentAndHolder = calypsoPo.getFileBySfi(sfiHoplinkEFEnvironment).data.content

@@ -12,7 +12,7 @@
 package org.eclipse.keyple.example.generic.pc.usecase3;
 
 import java.util.Map;
-import org.eclipse.keyple.core.selection.AbstractMatchingSe;
+import org.eclipse.keyple.core.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.CardSelector;
@@ -105,14 +105,12 @@ public class GroupedMultiSelection_Pcsc {
       // Actual card communication: operate through a single request the card selection
       SelectionsResult selectionsResult = cardSelection.processExplicitSelection(reader);
 
-      if (selectionsResult.getMatchingSelections().size() > 0) {
-        for (Map.Entry<Integer, AbstractMatchingSe> entry :
-            selectionsResult.getMatchingSelections().entrySet()) {
-          AbstractMatchingSe matchingSe = entry.getValue();
-          String atr =
-              matchingSe.hasAtr() ? ByteArrayUtil.toHex(matchingSe.getAtrBytes()) : "no ATR";
-          String fci =
-              matchingSe.hasFci() ? ByteArrayUtil.toHex(matchingSe.getFciBytes()) : "no FCI";
+      if (selectionsResult.getSmartCardlections().size() > 0) {
+        for (Map.Entry<Integer, AbstractSmartCard> entry :
+            selectionsResult.getSmartCardlections().entrySet()) {
+          AbstractSmartCard smartCard = entry.getValue();
+          String atr = smartCard.hasAtr() ? ByteArrayUtil.toHex(smartCard.getAtrBytes()) : "no ATR";
+          String fci = smartCard.hasFci() ? ByteArrayUtil.toHex(smartCard.getFciBytes()) : "no FCI";
           logger.info(
               "Selection status for selection (indexed {}): \n\t\tATR: {}\n\t\tFCI: {}",
               entry.getKey(),

@@ -20,7 +20,7 @@ import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.core.selection.AbstractCardSelectionRequest;
-import org.eclipse.keyple.core.selection.AbstractMatchingSe;
+import org.eclipse.keyple.core.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.CardSelector;
@@ -408,7 +408,7 @@ public class StubReaderTest extends BaseStubTest {
   }
 
   @Test
-  public void testInsertMatchingSe() throws Exception {
+  public void testInsertSmartCard() throws Exception {
     stubPlugin.plugStubReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
@@ -682,15 +682,15 @@ public class StubReaderTest extends BaseStubTest {
                         .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                         .build());
 
-            /* Prepare selector, ignore AbstractMatchingSe here */
+            /* Prepare selector, ignore AbstractSmartCard here */
             cardSelection.prepareSelection(poSelectionRequest);
 
             try {
               SelectionsResult selectionsResult = cardSelection.processExplicitSelection(reader);
 
-              AbstractMatchingSe matchingSe = selectionsResult.getActiveMatchingSe();
+              AbstractSmartCard smartCard = selectionsResult.getActiveSmartCard();
 
-              Assert.assertNotNull(matchingSe);
+              Assert.assertNotNull(smartCard);
 
             } catch (KeypleReaderException e) {
               Assert.fail("Unexcepted exception");
@@ -1434,13 +1434,13 @@ public class StubReaderTest extends BaseStubTest {
       }
 
       @Override
-      protected AbstractMatchingSe parse(CardResponse cardResponse) {
-        class GenericMatchingSe extends AbstractMatchingSe {
-          public GenericMatchingSe(CardResponse selectionResponse) {
+      protected AbstractSmartCard parse(CardResponse cardResponse) {
+        class GenericSmartCard extends AbstractSmartCard {
+          public GenericSmartCard(CardResponse selectionResponse) {
             super(selectionResponse);
           }
         }
-        return new GenericMatchingSe(cardResponse);
+        return new GenericSmartCard(cardResponse);
       }
     }
 
@@ -1454,7 +1454,7 @@ public class StubReaderTest extends BaseStubTest {
                 .atrFilter(new CardSelector.AtrFilter("3B.*"))
                 .build());
 
-    /* Prepare selector, ignore AbstractMatchingSe here */
+    /* Prepare selector, ignore AbstractSmartCard here */
     cardSelection.prepareSelection(genericCardSelectionRequest);
 
     try {

@@ -56,7 +56,7 @@ import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionIlle
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoSamIOException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoSessionAuthenticationException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoUnauthorizedKvcException;
-import org.eclipse.keyple.core.selection.SeResource;
+import org.eclipse.keyple.core.selection.CardResource;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
@@ -122,7 +122,7 @@ public class PoTransaction {
    * @param poResource the PO resource (combination of {@link Reader} and {@link CalypsoPo})
    * @param poSecuritySettings a list of security settings ({@link PoSecuritySettings}) used in
    */
-  public PoTransaction(SeResource<CalypsoPo> poResource, PoSecuritySettings poSecuritySettings) {
+  public PoTransaction(CardResource<CalypsoPo> poResource, PoSecuritySettings poSecuritySettings) {
 
     this(poResource);
 
@@ -140,10 +140,10 @@ public class PoTransaction {
    *
    * @param poResource the PO resource (combination of {@link Reader} and {@link CalypsoPo})
    */
-  public PoTransaction(SeResource<CalypsoPo> poResource) {
+  public PoTransaction(CardResource<CalypsoPo> poResource) {
     this.poReader = (ProxyReader) poResource.getReader();
 
-    this.calypsoPo = poResource.getMatchingSe();
+    this.calypsoPo = poResource.getSmartCard();
 
     modificationsCounter = calypsoPo.getModificationsCounter();
 

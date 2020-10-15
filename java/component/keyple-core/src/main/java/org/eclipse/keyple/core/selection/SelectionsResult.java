@@ -17,28 +17,28 @@ import java.util.Map;
 /**
  * The SelectionsResult class holds the result of a selection process.
  *
- * <p>Embeds a map of {@link AbstractMatchingSe}. At most one of these matching card is active.<br>
- * Provides a set of methods to retrieve the active selection (getActiveMatchingSe) or a particular
+ * <p>Embeds a map of {@link AbstractSmartCard}. At most one of these matching card is active.<br>
+ * Provides a set of methods to retrieve the active selection (getActiveSmartCard) or a particular
  * matching card specified by its index.
  */
 public final class SelectionsResult {
   private Integer activeSelectionIndex = null;
-  private final Map<Integer, AbstractMatchingSe> matchingSeMap =
-      new HashMap<Integer, AbstractMatchingSe>();
+  private final Map<Integer, AbstractSmartCard> smartCardMap =
+      new HashMap<Integer, AbstractSmartCard>();
 
   /** Constructor */
   SelectionsResult() {}
 
   /**
-   * Append a {@link AbstractMatchingSe} to the internal list
+   * Append a {@link AbstractSmartCard} to the internal list
    *
    * @param selectionIndex the index of the selection that resulted in the matching card
-   * @param matchingSe the matching card to add
+   * @param smartCard the matching card to add
    * @param isSelected true if the currently added matching card is selected (its logical channel is
    *     open)
    */
-  void addMatchingSe(int selectionIndex, AbstractMatchingSe matchingSe, boolean isSelected) {
-    if (matchingSe != null) matchingSeMap.put(selectionIndex, matchingSe);
+  void addSmartCard(int selectionIndex, AbstractSmartCard smartCard, boolean isSelected) {
+    if (smartCard != null) smartCardMap.put(selectionIndex, smartCard);
     // if the current selection is active, we keep its index
     if (isSelected) {
       activeSelectionIndex = selectionIndex;
@@ -52,29 +52,29 @@ public final class SelectionsResult {
    * @return the currently active matching card
    * @throws IllegalStateException if no active matching card is found
    */
-  public AbstractMatchingSe getActiveMatchingSe() {
-    AbstractMatchingSe matchingSe = matchingSeMap.get(activeSelectionIndex);
-    if (matchingSe == null) {
+  public AbstractSmartCard getActiveSmartCard() {
+    AbstractSmartCard smartCard = smartCardMap.get(activeSelectionIndex);
+    if (smartCard == null) {
       throw new IllegalStateException("No active Matching card is available");
     }
-    return matchingSe;
+    return smartCard;
   }
 
-  /** @return the {@link AbstractMatchingSe} map */
-  public Map<Integer, AbstractMatchingSe> getMatchingSelections() {
-    return matchingSeMap;
+  /** @return the {@link AbstractSmartCard} map */
+  public Map<Integer, AbstractSmartCard> getSmartCardlections() {
+    return smartCardMap;
   }
 
   /**
-   * Gets the {@link AbstractMatchingSe} for the specified index.
+   * Gets the {@link AbstractSmartCard} for the specified index.
    *
-   * <p>Returns null if no {@link AbstractMatchingSe} was found.
+   * <p>Returns null if no {@link AbstractSmartCard} was found.
    *
    * @param selectionIndex the selection index
-   * @return the {@link AbstractMatchingSe} or null
+   * @return the {@link AbstractSmartCard} or null
    */
-  public AbstractMatchingSe getMatchingSe(int selectionIndex) {
-    return matchingSeMap.get(selectionIndex);
+  public AbstractSmartCard getSmartCard(int selectionIndex) {
+    return smartCardMap.get(selectionIndex);
   }
 
   /** @return true if an active selection is present */
@@ -84,13 +84,13 @@ public final class SelectionsResult {
 
   /**
    * Get the matching status of a selection for which the index is provided. <br>
-   * Checks for the presence of an entry in the MatchingSe Map for the given index
+   * Checks for the presence of an entry in the SmartCard Map for the given index
    *
    * @param selectionIndex the selection index
    * @return true if the selection has matched
    */
   public boolean hasSelectionMatched(int selectionIndex) {
-    return matchingSeMap.containsKey(selectionIndex);
+    return smartCardMap.containsKey(selectionIndex);
   }
 
   /** @return the index of the active selection */

@@ -22,8 +22,8 @@ import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.SamIdentifier;
 import org.eclipse.keyple.calypso.transaction.SamResourceManager;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
+import org.eclipse.keyple.core.selection.CardResource;
 import org.eclipse.keyple.core.selection.CardSelection;
-import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -84,25 +84,25 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
               (CalypsoPo)
                   cardSelection
                       .processDefaultSelection(event.getDefaultSelectionsResponse())
-                      .getActiveMatchingSe();
+                      .getActiveSmartCard();
         } catch (KeypleException e) {
           logger.error("Keyple Exception: {}", e.getMessage());
         }
 
         // retrieve PO virtual reader
         Reader poReader = null;
-        SeResource<CalypsoSam> samResource = null;
+        CardResource<CalypsoSam> samResource = null;
         try {
           poReader = masterAPI.getPlugin().getReader(event.getReaderName());
 
           // create a Po Resource
-          SeResource<CalypsoPo> poResource = new SeResource<CalypsoPo>(poReader, calypsoPo);
+          CardResource<CalypsoPo> poResource = new CardResource<CalypsoPo>(poReader, calypsoPo);
 
           // PO has matched
           // executeReadEventLog(poResource);
 
           /*
-           * Get a SeResource<CalypsoSam> to perform authentication
+           * Get a CardResource<CalypsoSam> to perform authentication
            */
           samResource =
               samResourceManager.allocateSamResource(
@@ -125,7 +125,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
           logger.error("SAM resource allocation error exception {}", e.getMessage());
         } finally {
           /*
-           * Release SeResource<CalypsoSam>
+           * Release CardResource<CalypsoSam>
            */
 
           if (samResource != null) {
@@ -154,7 +154,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
    *
    * @param poResource : Reference to the matching PO embeeded in a PoResource
    */
-  private void executeReadEventLog(SeResource<CalypsoPo> poResource) {
+  private void executeReadEventLog(CardResource<CalypsoPo> poResource) {
     try {
 
       logger.info("{} Observer notification: the selection of the PO has succeeded.", nodeId);
@@ -189,7 +189,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
        * Retrieve the data read from the CalyspoPo updated during the transaction process
        */
       ElementaryFile efEventLog =
-          poResource.getMatchingSe().getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+          poResource.getSmartCard().getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
       String eventLog = ByteArrayUtil.toHex(efEventLog.getData().getContent());
 
       /* Log the result */
@@ -220,7 +220,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
    * @param poResource : Reference to the matching PO embeeded in a PoResource
    */
   private void executeCalypso4_PoAuthentication(
-      SeResource<CalypsoPo> poResource, SeResource<CalypsoSam> samResource) {
+      CardResource<CalypsoPo> poResource, CardResource<CalypsoSam> samResource) {
     try {
 
       /* Go on with the reading of the first record of the EventLog file */
@@ -238,7 +238,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
        */
       poTransaction.processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT);
 
-      if (!poResource.getMatchingSe().isDfRatified()) {
+      if (!poResource.getSmartCard().isDfRatified()) {
         logger.warn("========= Previous Secure Session was not ratified. =====================");
       }
       /*
@@ -251,7 +251,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
        * Retrieve the data read from the CalyspoPo updated during the transaction process
        */
       ElementaryFile efEventLog =
-          poResource.getMatchingSe().getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
+          poResource.getSmartCard().getFileBySfi(CalypsoClassicInfo.SFI_EventLog);
       String eventLog = ByteArrayUtil.toHex(efEventLog.getData().getContent());
 
       /* Log the result */

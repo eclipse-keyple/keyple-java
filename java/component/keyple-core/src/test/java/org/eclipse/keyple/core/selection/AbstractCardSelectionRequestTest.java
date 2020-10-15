@@ -70,7 +70,7 @@ public class AbstractCardSelectionRequestTest {
     }
 
     @Override
-    protected AbstractMatchingSe parse(CardResponse cardResponse) {
+    protected AbstractSmartCard parse(CardResponse cardResponse) {
       return null;
     }
   }

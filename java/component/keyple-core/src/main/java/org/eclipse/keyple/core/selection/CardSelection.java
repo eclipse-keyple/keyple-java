@@ -37,7 +37,7 @@ public final class CardSelection {
   private static final Logger logger = LoggerFactory.getLogger(CardSelection.class);
 
   /*
-   * list of selection requests used to build the AbstractMatchingSe list in return of
+   * list of selection requests used to build the AbstractSmartCard list in return of
    * processSelection methods
    */
   private final List<AbstractCardSelectionRequest<? extends AbstractApduCommandBuilder>>
@@ -98,12 +98,12 @@ public final class CardSelection {
    *
    * <p>The responses from the List of {@link CardResponse} is parsed and checked.
    *
-   * <p>A {@link AbstractMatchingSe} list is build and returned. Non matching card are signaled by a
+   * <p>A {@link AbstractSmartCard} list is build and returned. Non matching card are signaled by a
    * null element in the list
    *
    * @param defaultSelectionsResponse the selection response
    * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
-   *     including {@link AbstractMatchingSe} and {@link CardResponse}.
+   *     including {@link AbstractSmartCard} and {@link CardResponse}.
    * @throws KeypleException if the selection process failed
    */
   private SelectionsResult processSelection(
@@ -120,10 +120,10 @@ public final class CardSelection {
           && cardResponse.getSelectionStatus() != null
           && cardResponse.getSelectionStatus().hasMatched()) {
         /*
-         * create a AbstractMatchingSe with the class deduced from the selection request
+         * create a AbstractSmartCard with the class deduced from the selection request
          * during the selection preparation
          */
-        AbstractMatchingSe matchingSe = cardSelectionRequests.get(index).parse(cardResponse);
+        AbstractSmartCard smartCard = cardSelectionRequests.get(index).parse(cardResponse);
 
         // determine if the current matching card is selected
         SelectionStatus selectionStatus = cardResponse.getSelectionStatus();
@@ -134,7 +134,7 @@ public final class CardSelection {
           isSelected = false;
         }
 
-        selectionsResult.addMatchingSe(index, matchingSe, isSelected);
+        selectionsResult.addSmartCard(index, smartCard, isSelected);
       }
       index++;
     }
@@ -143,14 +143,14 @@ public final class CardSelection {
 
   /**
    * Parses the response to a selection operation sent to a card and return a list of {@link
-   * AbstractMatchingSe}
+   * AbstractSmartCard}
    *
    * <p>Selection cases that have not matched the current card are set to null.
    *
    * @param defaultSelectionsResponse the response from the reader to the {@link
    *     AbstractDefaultSelectionsRequest}
    * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
-   *     including {@link AbstractMatchingSe} and {@link CardResponse}.
+   *     including {@link AbstractSmartCard} and {@link CardResponse}.
    * @throws KeypleException if an error occurs during the selection process
    */
   public SelectionsResult processDefaultSelection(
@@ -174,7 +174,7 @@ public final class CardSelection {
   }
 
   /**
-   * Execute the selection process and return a list of {@link AbstractMatchingSe}.
+   * Execute the selection process and return a list of {@link AbstractSmartCard}.
    *
    * <p>Selection requests are transmitted to the card through the supplied Reader.
    *
@@ -189,7 +189,7 @@ public final class CardSelection {
    *
    * @param reader the Reader on which the selection is made
    * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
-   *     including {@link AbstractMatchingSe} and {@link CardResponse}.
+   *     including {@link AbstractSmartCard} and {@link CardResponse}.
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @throws KeypleException if an error occurs during the selection process
    */

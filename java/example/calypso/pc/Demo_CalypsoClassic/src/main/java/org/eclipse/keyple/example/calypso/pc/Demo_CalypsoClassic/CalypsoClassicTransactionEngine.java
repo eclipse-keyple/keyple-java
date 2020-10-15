@@ -28,8 +28,8 @@ import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.SamSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.SamSelector;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
+import org.eclipse.keyple.core.selection.CardResource;
 import org.eclipse.keyple.core.selection.CardSelection;
-import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
@@ -79,7 +79,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
 
   private Reader poReader;
   private Reader samReader;
-  private SeResource<CalypsoSam> samResource = null;
+  private CardResource<CalypsoSam> samResource = null;
 
   private CardSelection cardSelection;
 
@@ -94,7 +94,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
     this.samReader = samReader;
   }
 
-  private SeResource<CalypsoSam> getSamResource() {
+  private CardResource<CalypsoSam> getSamResource() {
     // Create a SAM resource after selecting the SAM
     CardSelection samSelection = new CardSelection();
 
@@ -107,7 +107,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
       if (samReader.isSePresent()) {
         SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
         if (selectionsResult.hasActiveSelection()) {
-          calypsoSam = (CalypsoSam) selectionsResult.getActiveMatchingSe();
+          calypsoSam = (CalypsoSam) selectionsResult.getActiveSmartCard();
         } else {
           throw new IllegalStateException("Unable to open a logical channel for SAM!");
         }
@@ -119,7 +119,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
     } catch (KeypleException e) {
       throw new IllegalStateException("Reader exception: " + e.getMessage());
     }
-    return new SeResource<CalypsoSam>(samReader, calypsoSam);
+    return new CardResource<CalypsoSam>(samReader, calypsoSam);
   }
 
   /**
@@ -361,7 +361,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
   public void processSeMatch(AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
     CalypsoPo calypsoPo =
         (CalypsoPo)
-            cardSelection.processDefaultSelection(defaultSelectionsResponse).getActiveMatchingSe();
+            cardSelection.processDefaultSelection(defaultSelectionsResponse).getActiveSmartCard();
     if (calypsoPo != null) {
       logger.info("DF RT header: {}", calypsoPo.getDirectoryHeader());
 
@@ -393,7 +393,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
         PoSecuritySettings poSecuritySettings = CalypsoUtilities.getSecuritySettings(samResource);
 
         PoTransaction poTransaction =
-            new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPo), poSecuritySettings);
+            new PoTransaction(new CardResource<CalypsoPo>(poReader, calypsoPo), poSecuritySettings);
 
         doCalypsoReadWriteTransaction(calypsoPo, poTransaction, true);
 

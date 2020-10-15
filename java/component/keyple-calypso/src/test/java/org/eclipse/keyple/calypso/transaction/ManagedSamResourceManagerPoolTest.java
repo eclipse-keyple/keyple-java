@@ -19,7 +19,7 @@ import static org.mockito.Mockito.doReturn;
 import org.eclipse.keyple.calypso.CalypsoBaseTest;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
-import org.eclipse.keyple.core.selection.SeResource;
+import org.eclipse.keyple.core.selection.CardResource;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
@@ -54,7 +54,7 @@ public class ManagedSamResourceManagerPoolTest extends CalypsoBaseTest {
 
     // test
     try {
-      SeResource<CalypsoSam> out =
+      CardResource<CalypsoSam> out =
           srmSpy.allocateSamResource(
               SamResourceManager.AllocationMode.BLOCKING,
               SamIdentifier.builder()
@@ -88,7 +88,7 @@ public class ManagedSamResourceManagerPoolTest extends CalypsoBaseTest {
     long start = System.currentTimeMillis();
 
     // test
-    SeResource<CalypsoSam> out =
+    CardResource<CalypsoSam> out =
         srmSpy.allocateSamResource(
             SamResourceManager.AllocationMode.BLOCKING,
             SamIdentifier.builder()

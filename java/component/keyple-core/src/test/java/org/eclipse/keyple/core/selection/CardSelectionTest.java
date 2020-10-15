@@ -147,7 +147,7 @@ public class CardSelectionTest extends CoreBaseTest {
     }
 
     Assert.assertFalse(selectionsResult.hasActiveSelection());
-    Assert.assertEquals(0, selectionsResult.getMatchingSelections().size());
+    Assert.assertEquals(0, selectionsResult.getSmartCardlections().size());
   }
 
   @Test
@@ -189,7 +189,7 @@ public class CardSelectionTest extends CoreBaseTest {
 
     Assert.assertFalse(selectionsResult.hasActiveSelection());
     try {
-      selectionsResult.getActiveMatchingSe();
+      selectionsResult.getActiveSmartCard();
     } catch (Exception e) {
       Assert.assertTrue(e.getMessage().contains("No active Matching card is available"));
     }
@@ -233,7 +233,7 @@ public class CardSelectionTest extends CoreBaseTest {
     }
 
     Assert.assertTrue(selectionsResult.hasActiveSelection());
-    Assert.assertNotNull(selectionsResult.getActiveMatchingSe());
+    Assert.assertNotNull(selectionsResult.getActiveSmartCard());
   }
 
   /*
@@ -318,14 +318,14 @@ public class CardSelectionTest extends CoreBaseTest {
     }
 
     @Override
-    protected AbstractMatchingSe parse(CardResponse cardResponse) {
-      return new MatchingSe(cardResponse);
+    protected AbstractSmartCard parse(CardResponse cardResponse) {
+      return new SmartCard(cardResponse);
     }
   }
 
   /** Matching card instantiation */
-  private final class MatchingSe extends AbstractMatchingSe {
-    MatchingSe(CardResponse selectionResponse) {
+  private final class SmartCard extends AbstractSmartCard {
+    SmartCard(CardResponse selectionResponse) {
       super(selectionResponse);
     }
   }

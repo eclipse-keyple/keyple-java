@@ -15,7 +15,7 @@ import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
 
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
-import org.eclipse.keyple.core.selection.AbstractMatchingSe;
+import org.eclipse.keyple.core.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.Reader;
@@ -103,8 +103,8 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverAsynchronou
   public void processSeMatch(AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
     /* get the card that matches one of the two selection targets */
     if (cardSelection.processDefaultSelection(defaultSelectionsResponse).hasActiveSelection()) {
-      AbstractMatchingSe selectedSe =
-          cardSelection.processDefaultSelection(defaultSelectionsResponse).getActiveMatchingSe();
+      AbstractSmartCard selectedSe =
+          cardSelection.processDefaultSelection(defaultSelectionsResponse).getActiveSmartCard();
     } else {
       // TODO check this. Shouldn't an exception have been raised before?
       System.out.println("No selection matched!");

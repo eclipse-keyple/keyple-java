@@ -16,7 +16,7 @@ import static org.eclipse.keyple.plugin.stub.StubReaderTest.hoplinkSE;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.core.selection.AbstractCardSelectionRequest;
-import org.eclipse.keyple.core.selection.AbstractMatchingSe;
+import org.eclipse.keyple.core.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.CardSelector;
@@ -188,7 +188,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
   }
 
   @Test
-  public void testInsertMatchingSe() throws InterruptedException {
+  public void testInsertSmartCard() throws InterruptedException {
 
     // CountDown lock
     final CountDownLatch lock = new CountDownLatch(1);
@@ -429,7 +429,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                 .atrFilter(new CardSelector.AtrFilter("3B.*"))
                 .build());
 
-    /* Prepare selector, ignore AbstractMatchingSe here */
+    /* Prepare selector, ignore AbstractSmartCard here */
     cardSelection.prepareSelection(genericCardSelectionRequest);
 
     logger.info("Process explicit card selection");
@@ -443,11 +443,11 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
     logger.info("Explicit card selection result : {}", selectionsResult);
 
-    AbstractMatchingSe matchingSe = selectionsResult.getActiveMatchingSe();
+    AbstractSmartCard smartCard = selectionsResult.getActiveSmartCard();
 
     nativeReader.removeSe();
 
-    Assert.assertNotNull(matchingSe);
+    Assert.assertNotNull(smartCard);
   }
 
   @Test
@@ -471,7 +471,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                         .atrFilter(new CardSelector.AtrFilter("3B.*"))
                         .build());
 
-            /* Prepare selector, ignore AbstractMatchingSe here */
+            /* Prepare selector, ignore AbstractSmartCard here */
             cardSelection.prepareSelection(genericCardSelectionRequest);
 
             logger.info("Process explicit card selection");
@@ -488,9 +488,9 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
             logger.info("Explicit card selection result : {}", selectionsResult);
 
-            AbstractMatchingSe matchingSe = selectionsResult.getActiveMatchingSe();
+            AbstractSmartCard smartCard = selectionsResult.getActiveSmartCard();
 
-            Assert.assertNotNull(matchingSe);
+            Assert.assertNotNull(smartCard);
 
             // unlock thread
             lock.countDown();
@@ -531,13 +531,13 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     }
 
     @Override
-    protected AbstractMatchingSe parse(CardResponse cardResponse) {
-      class GenericMatchingSe extends AbstractMatchingSe {
-        public GenericMatchingSe(CardResponse selectionResponse) {
+    protected AbstractSmartCard parse(CardResponse cardResponse) {
+      class GenericSmartCard extends AbstractSmartCard {
+        public GenericSmartCard(CardResponse selectionResponse) {
           super(selectionResponse);
         }
       }
-      return new GenericMatchingSe(cardResponse);
+      return new GenericSmartCard(cardResponse);
     }
   }
 }

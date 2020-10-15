@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.eclipse.keyple.calypso.CalypsoBaseTest;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
-import org.eclipse.keyple.core.selection.SeResource;
+import org.eclipse.keyple.core.selection.CardResource;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -59,7 +59,7 @@ public class ManagedSamResourceManagerDefaultTest extends CalypsoBaseTest {
     Boolean exceptionThrown = false;
 
     // test
-    SeResource<CalypsoSam> out = null;
+    CardResource<CalypsoSam> out = null;
     try {
       out =
           srmSpy.allocateSamResource(
@@ -91,7 +91,7 @@ public class ManagedSamResourceManagerDefaultTest extends CalypsoBaseTest {
     long start = System.currentTimeMillis();
 
     // test
-    SeResource<CalypsoSam> out =
+    CardResource<CalypsoSam> out =
         srmSpy.allocateSamResource(
             SamResourceManager.AllocationMode.BLOCKING,
             SamIdentifier.builder().samRevision(SamRevision.AUTO).build());

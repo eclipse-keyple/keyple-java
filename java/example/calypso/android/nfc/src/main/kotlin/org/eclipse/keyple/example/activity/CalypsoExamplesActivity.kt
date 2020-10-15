@@ -26,7 +26,7 @@ import org.eclipse.keyple.calypso.transaction.PoSelectionRequest
 import org.eclipse.keyple.calypso.transaction.PoSelector
 import org.eclipse.keyple.calypso.transaction.PoSelector.InvalidatedPo
 import org.eclipse.keyple.calypso.transaction.PoTransaction
-import org.eclipse.keyple.core.selection.SeResource
+import org.eclipse.keyple.core.selection.CardResource
 import org.eclipse.keyple.core.selection.CardSelection
 import org.eclipse.keyple.core.seproxy.CardSelector.AidSelector
 import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing
@@ -207,11 +207,11 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
         try {
             val selectionsResult = cardSelection.processExplicitSelection(reader)
             if (selectionsResult.hasActiveSelection()) {
-                    val matchingSe = selectionsResult.activeMatchingSe
+                    val smartCard = selectionsResult.activeSmartCard
                     addResultEvent("Selection status for selection " +
                             "(indexed $index): \n\t\t" +
-                            "ATR: ${ByteArrayUtil.toHex(matchingSe.atrBytes)}\n\t\t" +
-                            "FCI: ${ByteArrayUtil.toHex(matchingSe.fciBytes)}")
+                            "ATR: ${ByteArrayUtil.toHex(smartCard.atrBytes)}\n\t\t" +
+                            "FCI: ${ByteArrayUtil.toHex(smartCard.fciBytes)}")
             } else {
                 addResultEvent("The selection did not match for case $index.")
             }
@@ -272,11 +272,11 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
 
                 if (selectionResult.matchingSelections.size > 0) {
                     selectionResult.matchingSelections.forEach {
-                        val matchingSe = it.value
+                        val smartCard = it.value
                         addResultEvent("Selection status for selection " +
                                 "(indexed ${it.key}): \n\t\t" +
-                                "ATR: ${ByteArrayUtil.toHex(matchingSe.atrBytes)}\n\t\t" +
-                                "FCI: ${ByteArrayUtil.toHex(matchingSe.fciBytes)}")
+                                "ATR: ${ByteArrayUtil.toHex(smartCard.atrBytes)}\n\t\t" +
+                                "FCI: ${ByteArrayUtil.toHex(smartCard.fciBytes)}")
                     }
                     addResultEvent("End of selection")
                 } else {
@@ -340,7 +340,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                     when (event?.eventType) {
                         ReaderEvent.EventType.SE_MATCHED -> {
                             addResultEvent("SE_MATCHED event: A card corresponding to request has been detected")
-                            val selectedSe = cardSelection.processDefaultSelection(event.defaultSelectionsResponse).activeMatchingSe
+                            val selectedSe = cardSelection.processDefaultSelection(event.defaultSelectionsResponse).activeSmartCard
                             if (selectedSe != null) {
                                 addResultEvent("Observer notification: the selection of the card has succeeded. End of the card processing.")
                                 addResultEvent("Application FCI = ${ByteArrayUtil.toHex(selectedSe.fciBytes)}")
@@ -426,7 +426,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                 val selectionsResult = cardSelection.processExplicitSelection(reader)
 
                 if (selectionsResult.hasActiveSelection()) {
-                    val matchedSe = selectionsResult.activeMatchingSe
+                    val matchedSe = selectionsResult.activeSmartCard
                     addResultEvent("The selection of the card has succeeded.")
                     addResultEvent("Application FCI = ${ByteArrayUtil.toHex(matchedSe.fciBytes)}")
                     addResultEvent("End of the generic card processing.")
@@ -547,7 +547,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
             addResultEvent("1st PO exchange: aid selection")
 
             if (selectionsResult.hasActiveSelection()) {
-                val calypsoPo = selectionsResult.activeMatchingSe as CalypsoPo
+                val calypsoPo = selectionsResult.activeSmartCard as CalypsoPo
 
                 addResultEvent("Calypso PO selection: ")
                 addResultEvent("AID: ${ByteArrayUtil.fromHex(CalypsoClassicInfo.AID)}")
@@ -560,7 +560,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                 addResultEvent("Environment file data: ${ByteArrayUtil.toHex(environmentAndHolder)}")
 
                 addResultEvent("2nd PO exchange: read the event log file")
-                val poTransaction = PoTransaction(SeResource(reader, calypsoPo))
+                val poTransaction = PoTransaction(CardResource(reader, calypsoPo))
 
                 /*
                  * Prepare the reading order and keep the associated parser for later use once the

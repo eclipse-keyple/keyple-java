@@ -23,9 +23,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SeResourceTest extends CoreBaseTest {
+public class CardResourceTest extends CoreBaseTest {
 
-  private static final Logger logger = LoggerFactory.getLogger(SeResourceTest.class);
+  private static final Logger logger = LoggerFactory.getLogger(CardResourceTest.class);
 
   @Before
   public void setUp() throws Exception {
@@ -39,25 +39,25 @@ public class SeResourceTest extends CoreBaseTest {
     SelectionStatus selectionStatus =
         new SelectionStatus(
             new AnswerToReset(ByteArrayUtil.fromHex("3B00000000000000")), null, false);
-    MatchingSe matchingSe = new MatchingSe(new CardResponse(true, true, selectionStatus, null));
+    SmartCard smartCard = new SmartCard(new CardResponse(true, true, selectionStatus, null));
     Reader reader = null;
-    LocalSeResource localSeResource = new LocalSeResource(reader, matchingSe);
-    Assert.assertEquals(matchingSe, localSeResource.getMatchingSe());
-    Assert.assertEquals(null, localSeResource.getReader());
+    LocalCardResource localCardResource = new LocalCardResource(reader, smartCard);
+    Assert.assertEquals(smartCard, localCardResource.getSmartCard());
+    Assert.assertEquals(null, localCardResource.getReader());
   }
 
   /** Matching card instantiation */
-  private final class MatchingSe extends AbstractMatchingSe {
-    MatchingSe(CardResponse selectionResponse) {
+  private final class SmartCard extends AbstractSmartCard {
+    SmartCard(CardResponse selectionResponse) {
       super(selectionResponse);
     }
   }
 
-  /** SeResource instantiation */
-  private final class LocalSeResource extends SeResource<MatchingSe> {
+  /** CardResource instantiation */
+  private final class LocalCardResource extends CardResource<SmartCard> {
 
-    protected LocalSeResource(Reader reader, MatchingSe matchingSe) {
-      super(reader, matchingSe);
+    protected LocalCardResource(Reader reader, SmartCard smartCard) {
+      super(reader, smartCard);
     }
   }
 }

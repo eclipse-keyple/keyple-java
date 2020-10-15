@@ -23,7 +23,7 @@ import static org.eclipse.keyple.calypso.transaction.PoTransaction.SvSettings.Ne
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.calypso.KeyReference;
-import org.eclipse.keyple.core.selection.SeResource;
+import org.eclipse.keyple.core.selection.CardResource;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
 import org.eclipse.keyple.core.seproxy.message.CardResponse;
@@ -50,7 +50,7 @@ public class PoSecuritySettingsTest {
   public void poSecuritySettings_nominal() {
     Reader samReader = null;
     CalypsoSam calypsoSam = createCalypsoSam();
-    SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
+    CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
     PoSecuritySettings poSecuritySettings =
         new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)
             .sessionDefaultKif(AccessLevel.SESSION_LVL_PERSO, DEFAULT_KIF_PERSO)
@@ -91,7 +91,7 @@ public class PoSecuritySettingsTest {
   public void poSecuritySettings_modificationMode_default() {
     Reader samReader = null;
     CalypsoSam calypsoSam = createCalypsoSam();
-    SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
+    CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
     PoSecuritySettings poSecuritySettings =
         new PoSecuritySettings.PoSecuritySettingsBuilder(samResource).build();
     assertThat(poSecuritySettings.getSessionModificationMode()).isEqualTo(ATOMIC);
@@ -101,7 +101,7 @@ public class PoSecuritySettingsTest {
   public void poSecuritySettings_modificationMode_Atomic() {
     Reader samReader = null;
     CalypsoSam calypsoSam = createCalypsoSam();
-    SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
+    CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
     PoSecuritySettings poSecuritySettings =
         new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)
             .sessionModificationMode(ATOMIC)
@@ -113,7 +113,7 @@ public class PoSecuritySettingsTest {
   public void poSecuritySettings_modificationMode_Multiple() {
     Reader samReader = null;
     CalypsoSam calypsoSam = createCalypsoSam();
-    SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
+    CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
     PoSecuritySettings poSecuritySettings =
         new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)
             .sessionModificationMode(MULTIPLE)
@@ -125,7 +125,7 @@ public class PoSecuritySettingsTest {
   public void poSecuritySettings_ratificationMode_default() {
     Reader samReader = null;
     CalypsoSam calypsoSam = createCalypsoSam();
-    SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
+    CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
     PoSecuritySettings poSecuritySettings =
         new PoSecuritySettings.PoSecuritySettingsBuilder(samResource).build();
     assertThat(poSecuritySettings.getRatificationMode()).isEqualTo(RatificationMode.CLOSE_RATIFIED);
@@ -135,7 +135,7 @@ public class PoSecuritySettingsTest {
   public void poSecuritySettings_ratificationMode_CloseRatified() {
     Reader samReader = null;
     CalypsoSam calypsoSam = createCalypsoSam();
-    SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
+    CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
     PoSecuritySettings poSecuritySettings =
         new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)
             .ratificationMode(RatificationMode.CLOSE_RATIFIED)
@@ -147,7 +147,7 @@ public class PoSecuritySettingsTest {
   public void poSecuritySettings_ratificationMode_CloseNotRatified() {
     Reader samReader = null;
     CalypsoSam calypsoSam = createCalypsoSam();
-    SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
+    CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
     PoSecuritySettings poSecuritySettings =
         new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)
             .ratificationMode(RatificationMode.CLOSE_NOT_RATIFIED)
@@ -160,7 +160,7 @@ public class PoSecuritySettingsTest {
   public void poSecuritySettings_pinTransmissionMode_default() {
     Reader samReader = null;
     CalypsoSam calypsoSam = createCalypsoSam();
-    SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
+    CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
     PoSecuritySettings poSecuritySettings =
         new PoSecuritySettings.PoSecuritySettingsBuilder(samResource).build();
     assertThat(poSecuritySettings.getPinTransmissionMode()).isEqualTo(ENCRYPTED);
@@ -170,7 +170,7 @@ public class PoSecuritySettingsTest {
   public void poSecuritySettings_pinTransmissionMode_plain() {
     Reader samReader = null;
     CalypsoSam calypsoSam = createCalypsoSam();
-    SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
+    CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
     PoSecuritySettings poSecuritySettings =
         new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)
             .pinTransmissionMode(PLAIN)
@@ -182,7 +182,7 @@ public class PoSecuritySettingsTest {
   public void poSecuritySettings_pinTransmissionMode_encrypted() {
     Reader samReader = null;
     CalypsoSam calypsoSam = createCalypsoSam();
-    SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
+    CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
     PoSecuritySettings poSecuritySettings =
         new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)
             .pinTransmissionMode(ENCRYPTED)
@@ -194,7 +194,7 @@ public class PoSecuritySettingsTest {
   public void poSecuritySettings_authorizedKvcList() {
     Reader samReader = null;
     CalypsoSam calypsoSam = createCalypsoSam();
-    SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
+    CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
     List<Byte> authorizedKvcs = new ArrayList<Byte>();
     authorizedKvcs.add((byte) 0x12);
     authorizedKvcs.add((byte) 0x34);
@@ -211,7 +211,7 @@ public class PoSecuritySettingsTest {
   public void poSecuritySettings_defaultPinCipheringKey() {
     Reader samReader = null;
     CalypsoSam calypsoSam = createCalypsoSam();
-    SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
+    CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
     PoSecuritySettings poSecuritySettings =
         new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)
             .pinCipheringKey((byte) 0x11, (byte) 0x22)
@@ -232,7 +232,7 @@ public class PoSecuritySettingsTest {
   public void poSecuritySettings_negativeSvBalance() {
     Reader samReader = null;
     CalypsoSam calypsoSam = createCalypsoSam();
-    SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
+    CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
     PoSecuritySettings poSecuritySettings =
         new PoSecuritySettings.PoSecuritySettingsBuilder(samResource).build();
     assertThat(poSecuritySettings.getSvNegativeBalance()).isEqualTo(FORBIDDEN);
