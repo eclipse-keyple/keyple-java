@@ -28,8 +28,8 @@ import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.SamSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.SamSelector;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
+import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.selection.SeResource;
-import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
@@ -81,7 +81,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
   private Reader samReader;
   private SeResource<CalypsoSam> samResource = null;
 
-  private SeSelection seSelection;
+  private CardSelection cardSelection;
 
   /* Constructor */
   public CalypsoClassicTransactionEngine() {
@@ -96,7 +96,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
 
   private SeResource<CalypsoSam> getSamResource() {
     // Create a SAM resource after selecting the SAM
-    SeSelection samSelection = new SeSelection();
+    CardSelection samSelection = new CardSelection();
 
     SamSelector samSelector = SamSelector.builder().samRevision(C1).serialNumber(".*").build();
 
@@ -294,7 +294,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
     /*
      * Initialize the selection process
      */
-    seSelection = new SeSelection();
+    cardSelection = new CardSelection();
 
     /* operate multiple PO selections */
     String poFakeAid1 = "AABBCCDDEE"; // fake AID 1
@@ -303,7 +303,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
     /*
      * Add selection case 1: Fake AID1, protocol ISO, target rev 3
      */
-    seSelection.prepareSelection(
+    cardSelection.prepareSelection(
         new PoSelectionRequest(
             PoSelector.builder()
                 .aidSelector(AidSelector.builder().aidToSelect(poFakeAid1).build())
@@ -329,12 +329,12 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
     poSelectionRequestCalypsoAid.prepareReadRecordFile(
         CalypsoClassicInfo.SFI_EventLog, CalypsoClassicInfo.RECORD_NUMBER_1);
 
-    seSelection.prepareSelection(poSelectionRequestCalypsoAid);
+    cardSelection.prepareSelection(poSelectionRequestCalypsoAid);
 
     /*
      * Add selection case 3: Fake AID2, unspecified protocol, target rev 2 or 3
      */
-    seSelection.prepareSelection(
+    cardSelection.prepareSelection(
         new PoSelectionRequest(
             PoSelector.builder()
                 .seProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
@@ -345,7 +345,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
     /*
      * Add selection case 4: ATR selection, rev 1 atrregex
      */
-    seSelection.prepareSelection(
+    cardSelection.prepareSelection(
         new PoSelectionRequest(
             PoSelector.builder()
                 .seProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
@@ -353,7 +353,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
                 .invalidatedPo(InvalidatedPo.REJECT)
                 .build()));
 
-    return seSelection.getSelectionOperation();
+    return cardSelection.getSelectionOperation();
   }
 
   /** Do the PO selection and possibly go on with Calypso transactions. */
@@ -361,7 +361,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
   public void processSeMatch(AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
     CalypsoPo calypsoPo =
         (CalypsoPo)
-            seSelection.processDefaultSelection(defaultSelectionsResponse).getActiveMatchingSe();
+            cardSelection.processDefaultSelection(defaultSelectionsResponse).getActiveMatchingSe();
     if (calypsoPo != null) {
       logger.info("DF RT header: {}", calypsoPo.getDirectoryHeader());
 

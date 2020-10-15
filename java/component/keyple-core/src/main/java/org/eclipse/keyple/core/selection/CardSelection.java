@@ -26,23 +26,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The SeSelection class handles the card selection process.
+ * The CardSelection class handles the card selection process.
  *
  * <p>It provides a way to do an explicit card selection or to post process a default card
  * selection. <br>
  * The channel is kept open by default, but can be closed after each selection cases (see
  * PrepareReleaseSeChannel).
  */
-public final class SeSelection {
-  private static final Logger logger = LoggerFactory.getLogger(SeSelection.class);
+public final class CardSelection {
+  private static final Logger logger = LoggerFactory.getLogger(CardSelection.class);
 
   /*
    * list of selection requests used to build the AbstractMatchingSe list in return of
    * processSelection methods
    */
-  private final List<AbstractSeSelectionRequest<? extends AbstractApduCommandBuilder>>
-      seSelectionRequests =
-          new ArrayList<AbstractSeSelectionRequest<? extends AbstractApduCommandBuilder>>();
+  private final List<AbstractCardSelectionRequest<? extends AbstractApduCommandBuilder>>
+      cardSelectionRequests =
+          new ArrayList<AbstractCardSelectionRequest<? extends AbstractApduCommandBuilder>>();
   private final MultiSelectionProcessing multiSelectionProcessing;
   private ChannelControl channelControl = ChannelControl.KEEP_OPEN;
 
@@ -51,12 +51,12 @@ public final class SeSelection {
    *
    * @param multiSelectionProcessing the multi card processing mode
    */
-  public SeSelection(MultiSelectionProcessing multiSelectionProcessing) {
+  public CardSelection(MultiSelectionProcessing multiSelectionProcessing) {
     this.multiSelectionProcessing = multiSelectionProcessing;
   }
 
   /** Alternate constructor for standard usages. */
-  public SeSelection() {
+  public CardSelection() {
     this(MultiSelectionProcessing.FIRST_MATCH);
   }
 
@@ -66,18 +66,18 @@ public final class SeSelection {
    *
    * <p>
    *
-   * @param seSelectionRequest the selector to prepare
+   * @param cardSelectionRequest the selector to prepare
    * @return the selection index giving the current selection position in the selection request.
    */
   public int prepareSelection(
-      AbstractSeSelectionRequest<? extends AbstractApduCommandBuilder> seSelectionRequest) {
+      AbstractCardSelectionRequest<? extends AbstractApduCommandBuilder> cardSelectionRequest) {
     if (logger.isTraceEnabled()) {
-      logger.trace("SELECTORREQUEST = {}", seSelectionRequest.getSelectionRequest());
+      logger.trace("SELECTIONREQUEST = {}", cardSelectionRequest.getSelectionRequest());
     }
     /* keep the selection request */
-    seSelectionRequests.add(seSelectionRequest);
+    cardSelectionRequests.add(cardSelectionRequest);
     /* return the selection index (starting at 0) */
-    return seSelectionRequests.size() - 1;
+    return cardSelectionRequests.size() - 1;
   }
 
   /**
@@ -123,7 +123,7 @@ public final class SeSelection {
          * create a AbstractMatchingSe with the class deduced from the selection request
          * during the selection preparation
          */
-        AbstractMatchingSe matchingSe = seSelectionRequests.get(index).parse(cardResponse);
+        AbstractMatchingSe matchingSe = cardSelectionRequests.get(index).parse(cardResponse);
 
         // determine if the current matching card is selected
         SelectionStatus selectionStatus = cardResponse.getSelectionStatus();
@@ -195,9 +195,9 @@ public final class SeSelection {
    */
   public SelectionsResult processExplicitSelection(Reader reader) {
     List<CardRequest> selectionRequests = new ArrayList<CardRequest>();
-    for (AbstractSeSelectionRequest<? extends AbstractApduCommandBuilder> seSelectionRequest :
-        seSelectionRequests) {
-      selectionRequests.add(seSelectionRequest.getSelectionRequest());
+    for (AbstractCardSelectionRequest<? extends AbstractApduCommandBuilder> cardSelectionRequest :
+        cardSelectionRequests) {
+      selectionRequests.add(cardSelectionRequest.getSelectionRequest());
     }
     if (logger.isTraceEnabled()) {
       logger.trace("Transmit SELECTIONREQUEST ({} request(s))", selectionRequests.size());
@@ -220,9 +220,9 @@ public final class SeSelection {
    */
   public AbstractDefaultSelectionsRequest getSelectionOperation() {
     List<CardRequest> selectionRequests = new ArrayList<CardRequest>();
-    for (AbstractSeSelectionRequest<? extends AbstractApduCommandBuilder> seSelectionRequest :
-        seSelectionRequests) {
-      selectionRequests.add(seSelectionRequest.getSelectionRequest());
+    for (AbstractCardSelectionRequest<? extends AbstractApduCommandBuilder> cardSelectionRequest :
+        cardSelectionRequests) {
+      selectionRequests.add(cardSelectionRequest.getSelectionRequest());
     }
     return new DefaultSelectionsRequest(
         selectionRequests, multiSelectionProcessing, channelControl);

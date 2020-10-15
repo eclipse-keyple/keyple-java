@@ -21,8 +21,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.eclipse.keyple.core.command.AbstractApduCommandBuilder
 import org.eclipse.keyple.core.selection.AbstractMatchingSe
-import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest
-import org.eclipse.keyple.core.selection.SeSelection
+import org.eclipse.keyple.core.selection.AbstractCardSelectionRequest
+import org.eclipse.keyple.core.selection.CardSelection
 import org.eclipse.keyple.core.seproxy.CardSelector
 import org.eclipse.keyple.core.seproxy.CardSelector.AidSelector
 import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing
@@ -89,11 +89,11 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             val seAidPrefix = CalypsoClassicInfo.AID_PREFIX
 
             /* First selection case */
-            seSelection = SeSelection()
+            cardSelection = CardSelection()
 
             /* AID based selection (1st selection, later indexed 0) */
-            seSelection.prepareSelection(
-                    GenericSeSelectionRequest(
+            cardSelection.prepareSelection(
+                    GenericCardSelectionRequest(
                             CardSelector.builder()
                                     .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
                                     .aidSelector(AidSelector.builder()
@@ -104,20 +104,20 @@ class CoreExamplesActivity : AbstractExampleActivity() {
 
             /* Do the selection and display the result */
             addActionEvent("FIRST MATCH Calypso PO selection for prefix: $seAidPrefix")
-            doAndAnalyseSelection(reader, seSelection, 1)
+            doAndAnalyseSelection(reader, cardSelection, 1)
 
             /*
               * New selection: get the next application occurrence matching the same AID, close the
               * physical channel after
               */
-            seSelection = SeSelection()
+            cardSelection = CardSelection()
 
             /* Close the channel after the selection */
-            seSelection.prepareReleaseSeChannel()
+            cardSelection.prepareReleaseSeChannel()
 
             /* next selection (2nd selection, later indexed 1) */
-            seSelection.prepareSelection(
-                    GenericSeSelectionRequest(
+            cardSelection.prepareSelection(
+                    GenericCardSelectionRequest(
                             CardSelector.builder()
                                     .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
                                     .aidSelector(CardSelector.AidSelector.builder()
@@ -128,16 +128,16 @@ class CoreExamplesActivity : AbstractExampleActivity() {
 
             /* Do the selection and display the result */
             addActionEvent("NEXT MATCH Calypso PO selection for prefix: $seAidPrefix")
-            doAndAnalyseSelection(reader, seSelection, 2)
+            doAndAnalyseSelection(reader, cardSelection, 2)
         } else {
             addResultEvent("No cards were detected.")
         }
         eventRecyclerView.smoothScrollToPosition(events.size - 1)
     }
 
-    private fun doAndAnalyseSelection(reader: Reader, seSelection: SeSelection, index: Int) {
+    private fun doAndAnalyseSelection(reader: Reader, cardSelection: CardSelection, index: Int) {
         try {
-            val selectionsResult = seSelection.processExplicitSelection(reader)
+            val selectionsResult = cardSelection.processExplicitSelection(reader)
             if (selectionsResult.hasActiveSelection()) {
                     val matchingSe = selectionsResult.activeMatchingSe
                     addResultEvent("Selection status for selection " +
@@ -159,17 +159,17 @@ class CoreExamplesActivity : AbstractExampleActivity() {
         useCase = null
 
         if (reader.isSePresent) {
-            seSelection = SeSelection(MultiSelectionProcessing.PROCESS_ALL)
+            cardSelection = CardSelection(MultiSelectionProcessing.PROCESS_ALL)
 
             /* Close the channel after the selection to force the selection of all applications */
-            seSelection.prepareReleaseSeChannel()
+            cardSelection.prepareReleaseSeChannel()
 
             /* operate card selection (change the AID here to adapt it to the card used for the test) */
             val seAidPrefix = CalypsoClassicInfo.AID_PREFIX
 
             /* AID based selection (1st selection, later indexed 0) */
-            seSelection.prepareSelection(
-                    GenericSeSelectionRequest(
+            cardSelection.prepareSelection(
+                    GenericCardSelectionRequest(
                             CardSelector.builder()
                                     .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
                                     .aidSelector(CardSelector.AidSelector.builder()
@@ -179,8 +179,8 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                                     .build()))
 
             /* next selection (2nd selection, later indexed 1) */
-            seSelection.prepareSelection(
-                    GenericSeSelectionRequest(
+            cardSelection.prepareSelection(
+                    GenericCardSelectionRequest(
                             CardSelector.builder()
                                     .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
                                     .aidSelector(CardSelector.AidSelector.builder()
@@ -190,8 +190,8 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                                     .build()))
 
             /* next selection (3rd selection, later indexed 2) */
-            seSelection.prepareSelection(
-                    GenericSeSelectionRequest(
+            cardSelection.prepareSelection(
+                    GenericCardSelectionRequest(
                             CardSelector.builder()
                                     .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
                                     .aidSelector(CardSelector.AidSelector.builder()
@@ -206,7 +206,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             * Actual card communication: operate through a single request the card selection
             */
             try {
-                val selectionResult = seSelection.processExplicitSelection(reader)
+                val selectionResult = cardSelection.processExplicitSelection(reader)
 
                 if (selectionResult.matchingSelections.size > 0) {
                     selectionResult.matchingSelections.forEach {
@@ -238,7 +238,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
         /*
          * Prepare a card selection
          */
-        seSelection = SeSelection()
+        cardSelection = CardSelection()
 
         /*
         * Setting of an AID based selection
@@ -252,7 +252,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
          * Generic selection: configures a CardSelector with all the desired attributes to make the
          * selection
          */
-        val cardSelector = GenericSeSelectionRequest(CardSelector.builder()
+        val cardSelector = GenericCardSelectionRequest(CardSelector.builder()
                 .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
                 .aidSelector(AidSelector.builder()
                         .aidToSelect(aid).build())
@@ -261,12 +261,12 @@ class CoreExamplesActivity : AbstractExampleActivity() {
         /*
         * Add the selection case to the current selection (we could have added other cases here)
         */
-        seSelection.prepareSelection(cardSelector)
+        cardSelection.prepareSelection(cardSelector)
 
         /*
          * Provide the Reader with the selection operation to be processed when a card is inserted.
          */
-        (reader as ObservableReader).setDefaultSelectionRequest(seSelection.selectionOperation,
+        (reader as ObservableReader).setDefaultSelectionRequest(cardSelection.selectionOperation,
                 ObservableReader.NotificationMode.MATCHED_ONLY, ObservableReader.PollingMode.REPEATING)
 
         // (reader as ObservableReader).addObserver(this) //ALready done in onCreate
@@ -279,7 +279,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                     when (event?.eventType) {
                         ReaderEvent.EventType.SE_MATCHED -> {
                             addResultEvent("SE_MATCHED event: A card corresponding to request has been detected")
-                            val selectedSe = seSelection.processDefaultSelection(event.defaultSelectionsResponse).activeMatchingSe
+                            val selectedSe = cardSelection.processDefaultSelection(event.defaultSelectionsResponse).activeMatchingSe
                             if (selectedSe != null) {
                                 addResultEvent("Observer notification: the selection of the card has succeeded. End of the card processing.")
                                 addResultEvent("Application FCI = ${ByteArrayUtil.toHex(selectedSe.fciBytes)}")
@@ -331,7 +331,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             /*
              * Prepare the card selection
              */
-            seSelection = SeSelection()
+            cardSelection = CardSelection()
 
             /*
              * Setting of an AID based selection (in this example a Calypso REV3 PO)
@@ -345,19 +345,19 @@ class CoreExamplesActivity : AbstractExampleActivity() {
              * Generic selection: configures a CardSelector with all the desired attributes to make
              * the selection and read additional information afterwards
              */
-            val genericSeSelectionRequest = GenericSeSelectionRequest(
+            val genericCardSelectionRequest = GenericCardSelectionRequest(
                     CardSelector.builder().seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name).aidSelector(
                             AidSelector.builder().aidToSelect(aid).build()).build())
 
             /**
              * Prepare Selection
              */
-            seSelection.prepareSelection(genericSeSelectionRequest)
+            cardSelection.prepareSelection(genericCardSelectionRequest)
 
             /*
              * Provide the Reader with the selection operation to be processed when a card is inserted.
              */
-            (reader as ObservableReader).setDefaultSelectionRequest(seSelection.selectionOperation,
+            (reader as ObservableReader).setDefaultSelectionRequest(cardSelection.selectionOperation,
                     ObservableReader.NotificationMode.MATCHED_ONLY, ObservableReader.PollingMode.SINGLESHOT)
 
             /**
@@ -367,7 +367,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
 
             addActionEvent("Calypso PO selection: $aid")
             try {
-                val selectionsResult = seSelection.processExplicitSelection(reader)
+                val selectionsResult = cardSelection.processExplicitSelection(reader)
 
                 if (selectionsResult.hasActiveSelection()) {
                     val matchedSe = selectionsResult.activeMatchingSe
@@ -394,9 +394,9 @@ class CoreExamplesActivity : AbstractExampleActivity() {
     }
 
     /**
-     * Create a new class extending AbstractSeSelectionRequest
+     * Create a new class extending AbstractCardSelectionRequest
      */
-    inner class GenericSeSelectionRequest(cardSelector: CardSelector) : AbstractSeSelectionRequest<AbstractApduCommandBuilder>(cardSelector) {
+    inner class GenericCardSelectionRequest(cardSelector: CardSelector) : AbstractCardSelectionRequest<AbstractApduCommandBuilder>(cardSelector) {
         override fun parse(cardResponse: CardResponse): AbstractMatchingSe {
             class GenericMatchingSe(
                 selectionResponse: CardResponse

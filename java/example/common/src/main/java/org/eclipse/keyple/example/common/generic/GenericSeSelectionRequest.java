@@ -11,14 +11,14 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.common.generic;
 
+import org.eclipse.keyple.core.selection.AbstractCardSelectionRequest;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
-import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
 import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.message.CardResponse;
 
-/** Create a new class extending AbstractSeSelectionRequest */
-public class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
-  public GenericSeSelectionRequest(CardSelector cardSelector) {
+/** Create a new class extending AbstractCardSelectionRequest */
+public class GenericCardSelectionRequest extends AbstractCardSelectionRequest {
+  public GenericCardSelectionRequest(CardSelector cardSelector) {
     super(cardSelector);
   }
 

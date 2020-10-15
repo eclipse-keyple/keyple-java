@@ -30,9 +30,9 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SeSelectionTest extends CoreBaseTest {
+public class CardSelectionTest extends CoreBaseTest {
 
-  private static final Logger logger = LoggerFactory.getLogger(SeSelectionTest.class);
+  private static final Logger logger = LoggerFactory.getLogger(CardSelectionTest.class);
 
   @Before
   public void setUp() {
@@ -43,14 +43,14 @@ public class SeSelectionTest extends CoreBaseTest {
 
   @Test
   public void prepareSelection() {
-    SeSelection seSelection = createSeSelection();
+    CardSelection cardSelection = createCardSelection();
 
     // let's check if the result is as expected
     // (see createSelectionSelectionSelection to have a look at the expected values)
 
     // get the selection operation
     DefaultSelectionsRequest selectionOperation =
-        (DefaultSelectionsRequest) seSelection.getSelectionOperation();
+        (DefaultSelectionsRequest) cardSelection.getSelectionOperation();
 
     // check common flags
     Assert.assertEquals(
@@ -121,10 +121,10 @@ public class SeSelectionTest extends CoreBaseTest {
 
   @Test
   public void processDefaultSelectionNull() {
-    SeSelection seSelection = Mockito.mock(SeSelection.class);
+    CardSelection cardSelection = Mockito.mock(CardSelection.class);
 
     try {
-      Assert.assertNull(seSelection.processDefaultSelection(null));
+      Assert.assertNull(cardSelection.processDefaultSelection(null));
     } catch (KeypleException e) {
       Assert.fail("Exception raised: " + e.getMessage());
     }
@@ -132,7 +132,7 @@ public class SeSelectionTest extends CoreBaseTest {
 
   @Test
   public void processDefaultSelectionEmpty() {
-    SeSelection seSelection = createSeSelection();
+    CardSelection cardSelection = createCardSelection();
 
     AbstractDefaultSelectionsResponse defaultSelectionsResponse;
     List<CardResponse> cardResponse = new ArrayList<CardResponse>();
@@ -141,7 +141,7 @@ public class SeSelectionTest extends CoreBaseTest {
 
     SelectionsResult selectionsResult = null;
     try {
-      selectionsResult = seSelection.processDefaultSelection(defaultSelectionsResponse);
+      selectionsResult = cardSelection.processDefaultSelection(defaultSelectionsResponse);
     } catch (KeypleException e) {
       Assert.fail("Exception raised: " + e.getMessage());
     }
@@ -152,8 +152,8 @@ public class SeSelectionTest extends CoreBaseTest {
 
   @Test
   public void processDefaultSelectionNotMatching() {
-    // create a SeSelection
-    SeSelection seSelection = createSeSelection();
+    // create a CardSelection
+    CardSelection cardSelection = createCardSelection();
 
     // create a selection response
     AbstractDefaultSelectionsResponse defaultSelectionsResponse;
@@ -179,10 +179,10 @@ public class SeSelectionTest extends CoreBaseTest {
 
     defaultSelectionsResponse = new DefaultSelectionsResponse(cardResponses);
 
-    // process the selection response with the SeSelection
+    // process the selection response with the CardSelection
     SelectionsResult selectionsResult = null;
     try {
-      selectionsResult = seSelection.processDefaultSelection(defaultSelectionsResponse);
+      selectionsResult = cardSelection.processDefaultSelection(defaultSelectionsResponse);
     } catch (KeypleException e) {
       Assert.fail("Exception raised: " + e.getMessage());
     }
@@ -197,8 +197,8 @@ public class SeSelectionTest extends CoreBaseTest {
 
   @Test
   public void processDefaultSelectionMatching() {
-    // create a SeSelection
-    SeSelection seSelection = createSeSelection();
+    // create a CardSelection
+    CardSelection cardSelection = createCardSelection();
 
     // create a selection response
     AbstractDefaultSelectionsResponse defaultSelectionsResponse;
@@ -224,10 +224,10 @@ public class SeSelectionTest extends CoreBaseTest {
 
     defaultSelectionsResponse = new DefaultSelectionsResponse(cardResponses);
 
-    // process the selection response with the SeSelection
+    // process the selection response with the CardSelection
     SelectionsResult selectionsResult = null;
     try {
-      selectionsResult = seSelection.processDefaultSelection(defaultSelectionsResponse);
+      selectionsResult = cardSelection.processDefaultSelection(defaultSelectionsResponse);
     } catch (KeypleException e) {
       Assert.fail("Exception raised: " + e.getMessage());
     }
@@ -237,10 +237,10 @@ public class SeSelectionTest extends CoreBaseTest {
   }
 
   /*
-   * @Test public void processExplicitSelection() { // create a SeSelection SeSelection
-   * seSelection = createSeSelection();
+   * @Test public void processExplicitSelection() { // create a CardSelection CardSelection
+   * cardSelection = createCardSelection();
    *
-   * AbstractLocalReader r = Mockito.spy(new Reader("SeSelectionP", "SeSelectionR"));
+   * AbstractLocalReader r = Mockito.spy(new Reader("CardSelectionP", "CardSelectionR"));
    *
    * // success apdu doReturn(ByteArrayUtil.fromHex(
    * "001122334455669000")).when(r).transmitApdu(ByteArrayUtil.fromHex( "001122334455669000"));
@@ -253,9 +253,9 @@ public class SeSelectionTest extends CoreBaseTest {
    * // physical channel is open doReturn(true).when(r).isPhysicalChannelOpen(); }
    */
 
-  /** Create a SeSelection object */
-  private SeSelection createSeSelection() {
-    SeSelection seSelection = new SeSelection();
+  /** Create a CardSelection object */
+  private CardSelection createCardSelection() {
+    CardSelection cardSelection = new CardSelection();
 
     // create and add two selection cases
     CardSelector.AidSelector aidSelector =
@@ -281,7 +281,7 @@ public class SeSelectionTest extends CoreBaseTest {
             SeCommandTest.COMMAND_1,
             new ApduRequest("Apdu 66778899AABB", ByteArrayUtil.fromHex("66778899AABB"), true)));
 
-    seSelection.prepareSelection(new SeSelectionRequest(cardSelector1, commandBuilders));
+    cardSelection.prepareSelection(new CardSelectionRequest(cardSelector1, commandBuilders));
 
     aidSelector =
         CardSelector.AidSelector.builder()
@@ -298,15 +298,15 @@ public class SeSelectionTest extends CoreBaseTest {
             .aidSelector(aidSelector)
             .build();
 
-    seSelection.prepareSelection(new SeSelectionRequest(cardSelector2, null));
+    cardSelection.prepareSelection(new CardSelectionRequest(cardSelector2, null));
 
-    return seSelection;
+    return cardSelection;
   }
 
   /** Selection Request instantiation */
-  private final class SeSelectionRequest extends AbstractSeSelectionRequest {
+  private final class CardSelectionRequest extends AbstractCardSelectionRequest {
 
-    public SeSelectionRequest(
+    public CardSelectionRequest(
         CardSelector cardSelector, List<AbstractApduCommandBuilder> commandBuilders) {
       super(cardSelector);
 

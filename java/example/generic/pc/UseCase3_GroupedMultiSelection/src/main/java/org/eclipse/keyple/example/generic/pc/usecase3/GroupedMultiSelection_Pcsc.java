@@ -13,7 +13,7 @@ package org.eclipse.keyple.example.generic.pc.usecase3;
 
 import java.util.Map;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
-import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
@@ -22,7 +22,7 @@ import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
-import org.eclipse.keyple.example.common.generic.GenericSeSelectionRequest;
+import org.eclipse.keyple.example.common.generic.GenericCardSelectionRequest;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.slf4j.Logger;
@@ -55,14 +55,14 @@ public class GroupedMultiSelection_Pcsc {
     // Check if a card is present in the reader
     if (reader.isSePresent()) {
 
-      SeSelection seSelection = new SeSelection(MultiSelectionProcessing.PROCESS_ALL);
+      CardSelection cardSelection = new CardSelection(MultiSelectionProcessing.PROCESS_ALL);
 
       // operate the card selection (change the AID here to adapt it to the card used for the test)
       String seAidPrefix = "A000000404012509";
 
       // AID based selection (1st selection, later indexed 0)
-      seSelection.prepareSelection(
-          new GenericSeSelectionRequest(
+      cardSelection.prepareSelection(
+          new GenericCardSelectionRequest(
               CardSelector.builder()
                   .aidSelector(
                       CardSelector.AidSelector.builder()
@@ -74,8 +74,8 @@ public class GroupedMultiSelection_Pcsc {
                   .build()));
 
       // next selection (2nd selection, later indexed 1)
-      seSelection.prepareSelection(
-          new GenericSeSelectionRequest(
+      cardSelection.prepareSelection(
+          new GenericCardSelectionRequest(
               CardSelector.builder()
                   .aidSelector(
                       CardSelector.AidSelector.builder()
@@ -87,8 +87,8 @@ public class GroupedMultiSelection_Pcsc {
                   .build()));
 
       // next selection (3rd selection, later indexed 2)
-      seSelection.prepareSelection(
-          new GenericSeSelectionRequest(
+      cardSelection.prepareSelection(
+          new GenericCardSelectionRequest(
               CardSelector.builder()
                   .aidSelector(
                       CardSelector.AidSelector.builder()
@@ -100,10 +100,10 @@ public class GroupedMultiSelection_Pcsc {
                   .build()));
 
       // close the channel after the selection to force the selection of all applications
-      seSelection.prepareReleaseSeChannel();
+      cardSelection.prepareReleaseSeChannel();
 
       // Actual card communication: operate through a single request the card selection
-      SelectionsResult selectionsResult = seSelection.processExplicitSelection(reader);
+      SelectionsResult selectionsResult = cardSelection.processExplicitSelection(reader);
 
       if (selectionsResult.getMatchingSelections().size() > 0) {
         for (Map.Entry<Integer, AbstractMatchingSe> entry :

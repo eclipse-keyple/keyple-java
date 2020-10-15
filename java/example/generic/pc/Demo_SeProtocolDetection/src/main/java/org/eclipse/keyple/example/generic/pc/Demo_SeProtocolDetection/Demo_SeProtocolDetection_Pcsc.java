@@ -77,7 +77,7 @@ public class Demo_SeProtocolDetection_Pcsc {
     // Set Default selection
     ((ObservableReader) poReader)
         .setDefaultSelectionRequest(
-            observer.prepareSeSelection(),
+            observer.prepareCardSelection(),
             ObservableReader.NotificationMode.ALWAYS,
             ObservableReader.PollingMode.REPEATING);
 

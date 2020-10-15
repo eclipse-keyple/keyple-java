@@ -19,9 +19,9 @@ import org.eclipse.keyple.calypso.command.po.builder.IncreaseCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
+import org.eclipse.keyple.core.selection.AbstractCardSelectionRequest;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
-import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
-import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
@@ -483,7 +483,7 @@ public class StubReaderTest extends BaseStubTest {
     // add observer
     reader.addObserver(readerObs);
 
-    SeSelection seSelection = new SeSelection();
+    CardSelection cardSelection = new CardSelection();
 
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
@@ -493,11 +493,11 @@ public class StubReaderTest extends BaseStubTest {
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
 
-    seSelection.prepareSelection(poSelectionRequest);
+    cardSelection.prepareSelection(poSelectionRequest);
 
     ((ObservableReader) reader)
         .setDefaultSelectionRequest(
-            seSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
+            cardSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
 
     // set PollingMode to Continue
     reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
@@ -548,7 +548,7 @@ public class StubReaderTest extends BaseStubTest {
 
     String poAid = "A000000291A000000192"; // not matching poAid
 
-    SeSelection seSelection = new SeSelection();
+    CardSelection cardSelection = new CardSelection();
 
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
@@ -558,11 +558,11 @@ public class StubReaderTest extends BaseStubTest {
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
 
-    seSelection.prepareSelection(poSelectionRequest);
+    cardSelection.prepareSelection(poSelectionRequest);
 
     ((ObservableReader) reader)
         .setDefaultSelectionRequest(
-            seSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
+            cardSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
 
     reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
 
@@ -622,7 +622,7 @@ public class StubReaderTest extends BaseStubTest {
 
     String poAid = "A000000291A000000192"; // not matching poAid
 
-    SeSelection seSelection = new SeSelection();
+    CardSelection cardSelection = new CardSelection();
 
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
@@ -632,11 +632,11 @@ public class StubReaderTest extends BaseStubTest {
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
 
-    seSelection.prepareSelection(poSelectionRequest);
+    cardSelection.prepareSelection(poSelectionRequest);
 
     ((ObservableReader) reader)
         .setDefaultSelectionRequest(
-            seSelection.getSelectionOperation(), ObservableReader.NotificationMode.ALWAYS);
+            cardSelection.getSelectionOperation(), ObservableReader.NotificationMode.ALWAYS);
 
     reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
 
@@ -672,7 +672,7 @@ public class StubReaderTest extends BaseStubTest {
         new ObservableReader.ReaderObserver() {
           @Override
           public void update(ReaderEvent event) {
-            SeSelection seSelection = new SeSelection();
+            CardSelection cardSelection = new CardSelection();
 
             PoSelectionRequest poSelectionRequest =
                 new PoSelectionRequest(
@@ -683,10 +683,10 @@ public class StubReaderTest extends BaseStubTest {
                         .build());
 
             /* Prepare selector, ignore AbstractMatchingSe here */
-            seSelection.prepareSelection(poSelectionRequest);
+            cardSelection.prepareSelection(poSelectionRequest);
 
             try {
-              SelectionsResult selectionsResult = seSelection.processExplicitSelection(reader);
+              SelectionsResult selectionsResult = cardSelection.processExplicitSelection(reader);
 
               AbstractMatchingSe matchingSe = selectionsResult.getActiveMatchingSe();
 
@@ -755,7 +755,7 @@ public class StubReaderTest extends BaseStubTest {
     // add observer
     reader.addObserver(readerObs);
 
-    SeSelection seSelection = new SeSelection();
+    CardSelection cardSelection = new CardSelection();
 
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
@@ -765,10 +765,10 @@ public class StubReaderTest extends BaseStubTest {
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
 
-    seSelection.prepareSelection(poSelectionRequest);
+    cardSelection.prepareSelection(poSelectionRequest);
 
     reader.setDefaultSelectionRequest(
-        seSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
+        cardSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
 
     reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
 
@@ -1426,10 +1426,10 @@ public class StubReaderTest extends BaseStubTest {
   }
 
   public static void genericSelectSe(Reader reader) {
-    /** Create a new local class extending AbstractSeSelectionRequest */
-    class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
+    /** Create a new local class extending AbstractCardSelectionRequest */
+    class GenericCardSelectionRequest extends AbstractCardSelectionRequest {
 
-      public GenericSeSelectionRequest(CardSelector cardSelector) {
+      public GenericCardSelectionRequest(CardSelector cardSelector) {
         super(cardSelector);
       }
 
@@ -1444,21 +1444,21 @@ public class StubReaderTest extends BaseStubTest {
       }
     }
 
-    SeSelection seSelection = new SeSelection();
-    // SeSelection seSelection = new SeSelection(MultiSelectionProcessing.PROCESS_ALL,
+    CardSelection cardSelection = new CardSelection();
+    // CardSelection cardSelection = new CardSelection(MultiSelectionProcessing.PROCESS_ALL,
     // ChannelControl.CLOSE_AFTER);
-    GenericSeSelectionRequest genericSeSelectionRequest =
-        new GenericSeSelectionRequest(
+    GenericCardSelectionRequest genericCardSelectionRequest =
+        new GenericCardSelectionRequest(
             CardSelector.builder()
                 .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .atrFilter(new CardSelector.AtrFilter("3B.*"))
                 .build());
 
     /* Prepare selector, ignore AbstractMatchingSe here */
-    seSelection.prepareSelection(genericSeSelectionRequest);
+    cardSelection.prepareSelection(genericCardSelectionRequest);
 
     try {
-      seSelection.processExplicitSelection(reader);
+      cardSelection.processExplicitSelection(reader);
     } catch (KeypleException e) {
       Assert.fail("Unexpected exception");
     }

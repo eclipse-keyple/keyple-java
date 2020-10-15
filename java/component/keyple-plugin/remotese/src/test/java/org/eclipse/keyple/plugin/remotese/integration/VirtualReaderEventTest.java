@@ -15,9 +15,9 @@ import static org.eclipse.keyple.plugin.stub.StubReaderTest.hoplinkSE;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import org.eclipse.keyple.core.selection.AbstractCardSelectionRequest;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
-import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
-import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.SmartCardService;
@@ -253,20 +253,20 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     // register observer
     virtualReader.addObserver(obs);
 
-    SeSelection seSelection = new SeSelection();
+    CardSelection cardSelection = new CardSelection();
 
-    GenericSeSelectionRequest genericSeSelectionRequest =
-        new GenericSeSelectionRequest(
+    GenericCardSelectionRequest genericCardSelectionRequest =
+        new GenericCardSelectionRequest(
             CardSelector.builder()
                 .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .build());
 
-    seSelection.prepareSelection(genericSeSelectionRequest);
+    cardSelection.prepareSelection(genericCardSelectionRequest);
 
     ((ObservableReader) virtualReader)
         .setDefaultSelectionRequest(
-            seSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
+            cardSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
 
     nativeReader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
 
@@ -310,20 +310,20 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
     String poAid = "A000000291A000000192"; // not matching poAid
 
-    SeSelection seSelection = new SeSelection();
+    CardSelection cardSelection = new CardSelection();
 
-    GenericSeSelectionRequest genericSeSelectionRequest =
-        new GenericSeSelectionRequest(
+    GenericCardSelectionRequest genericCardSelectionRequest =
+        new GenericCardSelectionRequest(
             CardSelector.builder()
                 .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .build());
 
-    seSelection.prepareSelection(genericSeSelectionRequest);
+    cardSelection.prepareSelection(genericCardSelectionRequest);
 
     ((ObservableReader) virtualReader)
         .setDefaultSelectionRequest(
-            seSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
+            cardSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
 
     // wait 1 second
     logger.debug("Wait 1 second before inserting card");
@@ -377,20 +377,20 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
     String poAid = "A000000291A000000192"; // not matching poAid
 
-    SeSelection seSelection = new SeSelection();
+    CardSelection cardSelection = new CardSelection();
 
-    GenericSeSelectionRequest genericSeSelectionRequest =
-        new GenericSeSelectionRequest(
+    GenericCardSelectionRequest genericCardSelectionRequest =
+        new GenericCardSelectionRequest(
             CardSelector.builder()
                 .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .build());
 
-    seSelection.prepareSelection(genericSeSelectionRequest);
+    cardSelection.prepareSelection(genericCardSelectionRequest);
 
     ((ObservableReader) virtualReader)
         .setDefaultSelectionRequest(
-            seSelection.getSelectionOperation(), ObservableReader.NotificationMode.ALWAYS);
+            cardSelection.getSelectionOperation(), ObservableReader.NotificationMode.ALWAYS);
 
     // wait 1 second
     logger.debug("Wait 1 second before inserting card");
@@ -421,22 +421,22 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     nativeReader.insertSe(hoplinkSE());
 
     logger.info("Prepare card selection");
-    SeSelection seSelection = new SeSelection();
-    GenericSeSelectionRequest genericSeSelectionRequest =
-        new GenericSeSelectionRequest(
+    CardSelection cardSelection = new CardSelection();
+    GenericCardSelectionRequest genericCardSelectionRequest =
+        new GenericCardSelectionRequest(
             CardSelector.builder()
                 .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .atrFilter(new CardSelector.AtrFilter("3B.*"))
                 .build());
 
     /* Prepare selector, ignore AbstractMatchingSe here */
-    seSelection.prepareSelection(genericSeSelectionRequest);
+    cardSelection.prepareSelection(genericCardSelectionRequest);
 
     logger.info("Process explicit card selection");
 
     SelectionsResult selectionsResult = null;
     try {
-      selectionsResult = seSelection.processExplicitSelection(virtualReader);
+      selectionsResult = cardSelection.processExplicitSelection(virtualReader);
     } catch (KeypleException e) {
       Assert.fail("Unexpected exception");
     }
@@ -463,22 +463,22 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
             Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
             logger.info("Prepare card selection");
-            SeSelection seSelection = new SeSelection();
-            GenericSeSelectionRequest genericSeSelectionRequest =
-                new GenericSeSelectionRequest(
+            CardSelection cardSelection = new CardSelection();
+            GenericCardSelectionRequest genericCardSelectionRequest =
+                new GenericCardSelectionRequest(
                     CardSelector.builder()
                         .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                         .atrFilter(new CardSelector.AtrFilter("3B.*"))
                         .build());
 
             /* Prepare selector, ignore AbstractMatchingSe here */
-            seSelection.prepareSelection(genericSeSelectionRequest);
+            cardSelection.prepareSelection(genericCardSelectionRequest);
 
             logger.info("Process explicit card selection");
 
             SelectionsResult selectionsResult = null;
             try {
-              selectionsResult = seSelection.processExplicitSelection(virtualReader);
+              selectionsResult = cardSelection.processExplicitSelection(virtualReader);
 
             } catch (KeypleReaderException e) {
               Assert.fail("Unexpected exception");
@@ -524,9 +524,9 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
    * HeLPERS
    */
 
-  /** Create a new class extending AbstractSeSelectionRequest */
-  private class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
-    public GenericSeSelectionRequest(CardSelector cardSelector) {
+  /** Create a new class extending AbstractCardSelectionRequest */
+  private class GenericCardSelectionRequest extends AbstractCardSelectionRequest {
+    public GenericCardSelectionRequest(CardSelector cardSelector) {
       super(cardSelector);
     }
 

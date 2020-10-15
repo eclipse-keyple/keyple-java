@@ -16,14 +16,14 @@ import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
-import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.common.generic.AbstractReaderObserverAsynchronousEngine;
-import org.eclipse.keyple.example.common.generic.GenericSeSelectionRequest;
+import org.eclipse.keyple.example.common.generic.GenericCardSelectionRequest;
 
 /**
  * This code demonstrates the multi-protocols capability of the Keyple SeProxy
@@ -42,7 +42,7 @@ import org.eclipse.keyple.example.common.generic.GenericSeSelectionRequest;
  */
 public class SeProtocolDetectionEngine extends AbstractReaderObserverAsynchronousEngine {
   private Reader reader;
-  private SeSelection seSelection;
+  private CardSelection cardSelection;
 
   public SeProtocolDetectionEngine() {
     super();
@@ -53,9 +53,9 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverAsynchronou
     this.reader = poReader;
   }
 
-  public AbstractDefaultSelectionsRequest prepareSeSelection() {
+  public AbstractDefaultSelectionsRequest prepareCardSelection() {
 
-    seSelection = new SeSelection();
+    cardSelection = new CardSelection();
 
     // process SDK defined protocols
     for (ContactlessCardCommonProtocols protocol : ContactlessCardCommonProtocols.values()) {
@@ -71,7 +71,7 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverAsynchronou
                       .invalidatedPo(InvalidatedPo.REJECT)
                       .build());
 
-          seSelection.prepareSelection(poSelectionRequest);
+          cardSelection.prepareSelection(poSelectionRequest);
           break;
         case NFC_A_ISO_14443_3A:
         case NFC_B_ISO_14443_3B:
@@ -82,8 +82,8 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverAsynchronou
           break;
         default:
           /* Add a generic selector */
-          seSelection.prepareSelection(
-              new GenericSeSelectionRequest(
+          cardSelection.prepareSelection(
+              new GenericCardSelectionRequest(
                   CardSelector.builder()
                       .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                       .atrFilter(new CardSelector.AtrFilter(".*"))
@@ -91,7 +91,7 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverAsynchronou
           break;
       }
     }
-    return seSelection.getSelectionOperation();
+    return cardSelection.getSelectionOperation();
   }
 
   /**
@@ -102,9 +102,9 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverAsynchronou
   @Override
   public void processSeMatch(AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
     /* get the card that matches one of the two selection targets */
-    if (seSelection.processDefaultSelection(defaultSelectionsResponse).hasActiveSelection()) {
+    if (cardSelection.processDefaultSelection(defaultSelectionsResponse).hasActiveSelection()) {
       AbstractMatchingSe selectedSe =
-          seSelection.processDefaultSelection(defaultSelectionsResponse).getActiveMatchingSe();
+          cardSelection.processDefaultSelection(defaultSelectionsResponse).getActiveMatchingSe();
     } else {
       // TODO check this. Shouldn't an exception have been raised before?
       System.out.println("No selection matched!");

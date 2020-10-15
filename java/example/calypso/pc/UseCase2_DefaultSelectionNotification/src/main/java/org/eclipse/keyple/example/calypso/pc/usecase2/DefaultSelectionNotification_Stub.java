@@ -20,8 +20,8 @@ import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
+import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.selection.SeResource;
-import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SmartCardService;
@@ -69,7 +69,7 @@ import org.slf4j.LoggerFactory;
 public class DefaultSelectionNotification_Stub implements ReaderObserver {
   private static final Logger logger =
       LoggerFactory.getLogger(DefaultSelectionNotification_Stub.class);
-  private final SeSelection seSelection;
+  private final CardSelection cardSelection;
 
   public DefaultSelectionNotification_Stub() throws InterruptedException {
 
@@ -102,7 +102,7 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
     /*
      * Prepare a Calypso PO selection
      */
-    seSelection = new SeSelection();
+    cardSelection = new CardSelection();
 
     /*
      * Setting of an AID based selection of a Calypso REV3 PO
@@ -132,14 +132,14 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
     /*
      * Add the selection case to the current selection (we could have added other cases here)
      */
-    seSelection.prepareSelection(poSelectionRequest);
+    cardSelection.prepareSelection(poSelectionRequest);
 
     /*
      * Provide the Reader with the selection operation to be processed when a PO is inserted.
      */
     ((ObservableReader) poReader)
         .setDefaultSelectionRequest(
-            seSelection.getSelectionOperation(),
+            cardSelection.getSelectionOperation(),
             ObservableReader.NotificationMode.MATCHED_ONLY,
             ObservableReader.PollingMode.REPEATING);
 
@@ -183,7 +183,7 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
         try {
           calypsoPo =
               (CalypsoPo)
-                  seSelection
+                  cardSelection
                       .processDefaultSelection(event.getDefaultSelectionsResponse())
                       .getActiveMatchingSe();
 

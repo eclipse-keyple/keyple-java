@@ -18,8 +18,8 @@ import org.eclipse.keyple.calypso.transaction.ElementaryFile;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.selection.SeResource;
-import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SmartCardService;
@@ -93,7 +93,7 @@ public class Rev1Selection_Pcsc {
       // based on ATR
       //
       // Select the first application matching the selection.
-      SeSelection seSelection = new SeSelection();
+      CardSelection cardSelection = new CardSelection();
 
       // Calypso selection: configures a PoSelectionRequest with all the desired attributes to
       // make the selection and read additional information afterwards
@@ -114,12 +114,12 @@ public class Rev1Selection_Pcsc {
 
       // Add the selection case to the current selection (we could have added other cases
       // here)
-      seSelection.prepareSelection(poSelectionRequest);
+      cardSelection.prepareSelection(poSelectionRequest);
 
       // Actual PO communication: operate through a single request the Calypso PO selection
       // and the file read
       CalypsoPo calypsoPo =
-          (CalypsoPo) seSelection.processExplicitSelection(poReader).getActiveMatchingSe();
+          (CalypsoPo) cardSelection.processExplicitSelection(poReader).getActiveMatchingSe();
       logger.info("The selection of the PO has succeeded.");
 
       // Retrieve the data read from the CalyspoPo updated during the transaction process
