@@ -27,8 +27,8 @@ import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.SamSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.SamSelector;
+import org.eclipse.keyple.core.selection.CardResource;
 import org.eclipse.keyple.core.selection.CardSelection;
-import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.Reader;
@@ -100,8 +100,7 @@ public class StoredValue_DebitInSession_Pcsc {
 
       // Actual PO communication: operate through a single request the Calypso PO selection
       // and the file read
-      calypsoPo =
-          (CalypsoPo) cardSelection.processExplicitSelection(poReader).getActiveMatchingSe();
+      calypsoPo = (CalypsoPo) cardSelection.processExplicitSelection(poReader).getActiveSmartCard();
       return true;
     } else {
       logger.error("No PO were detected.");
@@ -145,7 +144,7 @@ public class StoredValue_DebitInSession_Pcsc {
       if (samReader.isSePresent()) {
         SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
         if (selectionsResult.hasActiveSelection()) {
-          calypsoSam = (CalypsoSam) selectionsResult.getActiveMatchingSe();
+          calypsoSam = (CalypsoSam) selectionsResult.getActiveSmartCard();
         } else {
           throw new IllegalStateException("Unable to open a logical channel for SAM!");
         }
@@ -157,7 +156,7 @@ public class StoredValue_DebitInSession_Pcsc {
     } catch (KeypleException e) {
       throw new IllegalStateException("Reader exception: " + e.getMessage());
     }
-    SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
+    CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
 
     // display basic information about the readers and SAM
     logger.info("=============== UseCase Calypso #8: Stored Value Debit in Session ==");
@@ -173,8 +172,8 @@ public class StoredValue_DebitInSession_Pcsc {
               .build();
 
       // Create the PO resource
-      SeResource<CalypsoPo> poResource;
-      poResource = new SeResource<CalypsoPo>(poReader, calypsoPo);
+      CardResource<CalypsoPo> poResource;
+      poResource = new CardResource<CalypsoPo>(poReader, calypsoPo);
 
       PoTransaction poTransaction = new PoTransaction(poResource, poSecuritySettings);
 

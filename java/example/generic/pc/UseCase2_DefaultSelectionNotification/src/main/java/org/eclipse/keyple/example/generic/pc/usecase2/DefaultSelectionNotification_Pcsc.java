@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.generic.pc.usecase2;
 
-import org.eclipse.keyple.core.selection.AbstractMatchingSe;
+import org.eclipse.keyple.core.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.Reader;
@@ -130,12 +130,12 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
     switch (event.getEventType()) {
       case SE_MATCHED:
         // the selection has one target, get the result at index 0
-        AbstractMatchingSe selectedSe = null;
+        AbstractSmartCard selectedSe = null;
         try {
           selectedSe =
               cardSelection
                   .processDefaultSelection(event.getDefaultSelectionsResponse())
-                  .getActiveMatchingSe();
+                  .getActiveSmartCard();
         } catch (KeypleException e) {
           logger.error("Exception: {}", e.getMessage());
           try {

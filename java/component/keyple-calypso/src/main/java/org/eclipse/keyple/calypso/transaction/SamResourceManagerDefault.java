@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
-import org.eclipse.keyple.core.selection.SeResource;
+import org.eclipse.keyple.core.selection.CardResource;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -106,7 +106,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
   }
 
   /**
-   * Remove a {@link SeResource} from the current {@code SeResourceCalypsoSam>} list
+   * Remove a {@link CardResource} from the current {@code CardResource CalypsoSam>} list
    *
    * @param samReader the SAM reader of the resource to remove from the list.
    */
@@ -118,14 +118,14 @@ public class SamResourceManagerDefault extends SamResourceManager {
         logger.trace(
             "Freed SAM resource: READER = {}, SAM_REVISION = {}, SAM_SERIAL_NUMBER = {}",
             samReader.getName(),
-            managedSamResource.getMatchingSe().getSamRevision(),
-            ByteArrayUtil.toHex(managedSamResource.getMatchingSe().getSerialNumber()));
+            managedSamResource.getSmartCard().getSamRevision(),
+            ByteArrayUtil.toHex(managedSamResource.getSmartCard().getSerialNumber()));
       }
     }
   }
 
   @Override
-  public SeResource<CalypsoSam> allocateSamResource(
+  public CardResource<CalypsoSam> allocateSamResource(
       AllocationMode allocationMode, SamIdentifier samIdentifier) {
     long maxBlockingDate = System.currentTimeMillis() + maxBlockingTime;
     boolean noSamResourceLogged = false;
@@ -177,7 +177,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
   }
 
   @Override
-  public void freeSamResource(SeResource<CalypsoSam> samResource) {
+  public void freeSamResource(CardResource<CalypsoSam> samResource) {
     synchronized (localManagedSamResources) {
       ManagedSamResource managedSamResource =
           localManagedSamResources.get(samResource.getReader().getName());
@@ -309,7 +309,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
     /**
      * Handle {@link ReaderEvent}
      *
-     * <p>Create {@link SeResource<CalypsoSam>}
+     * <p>Create {@link CardResource <CalypsoSam>}
      *
      * @param event the reader event
      */
@@ -343,7 +343,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
               newSamResource = createSamResource(samReader);
             } catch (CalypsoNoSamResourceAvailableException e) {
               logger.error(
-                  "Failed to create a SeResource<CalypsoSam> from {}", samReader.getName());
+                  "Failed to create a CardResource<CalypsoSam> from {}", samReader.getName());
             }
             /* failures are ignored */
             if (newSamResource != null) {
@@ -351,8 +351,8 @@ public class SamResourceManagerDefault extends SamResourceManager {
                 logger.trace(
                     "Created SAM resource: READER = {}, SAM_REVISION = {}, SAM_SERIAL_NUMBER = {}",
                     event.getReaderName(),
-                    newSamResource.getMatchingSe().getSamRevision(),
-                    ByteArrayUtil.toHex(newSamResource.getMatchingSe().getSerialNumber()));
+                    newSamResource.getSmartCard().getSamRevision(),
+                    ByteArrayUtil.toHex(newSamResource.getSmartCard().getSerialNumber()));
               }
               localManagedSamResources.put(samReader.getName(), newSamResource);
             }
@@ -394,12 +394,12 @@ public class SamResourceManagerDefault extends SamResourceManager {
 
   /**
    * (package-private)<br>
-   * Inner class to handle specific attributes associated with an {@code SeResource<CalypsoSam>} in
-   * the {@link SamResourceManager} context.
+   * Inner class to handle specific attributes associated with an {@code CardResource<CalypsoSam>}
+   * in the {@link SamResourceManager} context.
    *
    * @since 0.9
    */
-  static class ManagedSamResource extends SeResource<CalypsoSam> {
+  static class ManagedSamResource extends CardResource<CalypsoSam> {
     /** the free/busy enum status */
     public enum SamResourceStatus {
       FREE,

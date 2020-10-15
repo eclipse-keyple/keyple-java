@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.generic.pc.usecase4;
 
-import org.eclipse.keyple.core.selection.AbstractMatchingSe;
+import org.eclipse.keyple.core.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.CardSelector;
@@ -36,10 +36,10 @@ public class SequentialMultiSelection_Pcsc {
   private static void doAndAnalyseSelection(Reader reader, CardSelection cardSelection, int index) {
     SelectionsResult selectionsResult = cardSelection.processExplicitSelection(reader);
     if (selectionsResult.hasActiveSelection()) {
-      AbstractMatchingSe matchingSe = selectionsResult.getActiveMatchingSe();
+      AbstractSmartCard smartCard = selectionsResult.getActiveSmartCard();
       logger.info("The card matched the selection {}.", index);
-      String atr = matchingSe.hasAtr() ? ByteArrayUtil.toHex(matchingSe.getAtrBytes()) : "no ATR";
-      String fci = matchingSe.hasFci() ? ByteArrayUtil.toHex(matchingSe.getFciBytes()) : "no FCI";
+      String atr = smartCard.hasAtr() ? ByteArrayUtil.toHex(smartCard.getAtrBytes()) : "no ATR";
+      String fci = smartCard.hasFci() ? ByteArrayUtil.toHex(smartCard.getFciBytes()) : "no FCI";
       logger.info("Selection status for case {}: \n\t\tATR: {}\n\t\tFCI: {}", index, atr, fci);
     } else {
       logger.info("The selection did not match for case {}.", index);

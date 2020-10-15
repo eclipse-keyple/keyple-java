@@ -22,25 +22,25 @@ import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
 
-public class AbstractMatchingSeTest {
+public class AbstractSmartCardTest {
   private static final String FCI_REV31 =
       "6F238409315449432E49434131A516BF0C13C708 0000000011223344 53070A3C23121410019000";
   private static final String ATR1 = "3B3F9600805A0080C120000012345678829000";
 
   @Test
   public void testHasAtr_true_HasFci_false_getAtrBytes() {
-    TestMatchingSe testMatchingSe;
+    TestSmartCard testSmartCard;
     AnswerToReset answerToReset = new AnswerToReset(ByteArrayUtil.fromHex(ATR1));
     SelectionStatus selectionStatus = new SelectionStatus(answerToReset, null, true);
     CardResponse cardResponse =
         new CardResponse(true, false, selectionStatus, new ArrayList<ApduResponse>());
-    testMatchingSe = new TestMatchingSe(cardResponse);
-    assertThat(testMatchingSe.hasAtr()).isTrue();
-    assertThat(testMatchingSe.hasFci()).isFalse();
-    assertThat(testMatchingSe.getAtrBytes()).isEqualTo(ByteArrayUtil.fromHex(ATR1));
+    testSmartCard = new TestSmartCard(cardResponse);
+    assertThat(testSmartCard.hasAtr()).isTrue();
+    assertThat(testSmartCard.hasFci()).isFalse();
+    assertThat(testSmartCard.getAtrBytes()).isEqualTo(ByteArrayUtil.fromHex(ATR1));
     try {
       // should raise an IllegalStateException
-      testMatchingSe.getFciBytes();
+      testSmartCard.getFciBytes();
     } catch (IllegalStateException e) {
       return;
     }
@@ -49,18 +49,18 @@ public class AbstractMatchingSeTest {
 
   @Test
   public void testHasAtr_false_HasFci_true_getFciBytes() {
-    TestMatchingSe testMatchingSe;
+    TestSmartCard testSmartCard;
     ApduResponse fci = new ApduResponse(ByteArrayUtil.fromHex(FCI_REV31), null);
     SelectionStatus selectionStatus = new SelectionStatus(null, fci, true);
     CardResponse cardResponse =
         new CardResponse(true, false, selectionStatus, new ArrayList<ApduResponse>());
-    testMatchingSe = new TestMatchingSe(cardResponse);
-    assertThat(testMatchingSe.hasAtr()).isFalse();
-    assertThat(testMatchingSe.hasFci()).isTrue();
-    assertThat(testMatchingSe.getFciBytes()).isEqualTo(ByteArrayUtil.fromHex(FCI_REV31));
+    testSmartCard = new TestSmartCard(cardResponse);
+    assertThat(testSmartCard.hasAtr()).isFalse();
+    assertThat(testSmartCard.hasFci()).isTrue();
+    assertThat(testSmartCard.getFciBytes()).isEqualTo(ByteArrayUtil.fromHex(FCI_REV31));
     try {
       // should raise an IllegalStateException
-      testMatchingSe.getAtrBytes();
+      testSmartCard.getAtrBytes();
     } catch (IllegalStateException e) {
       return;
     }
@@ -69,21 +69,21 @@ public class AbstractMatchingSeTest {
 
   @Test
   public void testHasAtr_true_HasFci_true_getAtrBytes_getFciBytes() {
-    TestMatchingSe testMatchingSe;
+    TestSmartCard testSmartCard;
     AnswerToReset answerToReset = new AnswerToReset(ByteArrayUtil.fromHex(ATR1));
     ApduResponse fci = new ApduResponse(ByteArrayUtil.fromHex(FCI_REV31), null);
     SelectionStatus selectionStatus = new SelectionStatus(answerToReset, fci, true);
     CardResponse cardResponse =
         new CardResponse(true, false, selectionStatus, new ArrayList<ApduResponse>());
-    testMatchingSe = new TestMatchingSe(cardResponse);
-    assertThat(testMatchingSe.hasAtr()).isTrue();
-    assertThat(testMatchingSe.hasFci()).isTrue();
-    assertThat(testMatchingSe.getAtrBytes()).isEqualTo(ByteArrayUtil.fromHex(ATR1));
-    assertThat(testMatchingSe.getFciBytes()).isEqualTo(ByteArrayUtil.fromHex(FCI_REV31));
+    testSmartCard = new TestSmartCard(cardResponse);
+    assertThat(testSmartCard.hasAtr()).isTrue();
+    assertThat(testSmartCard.hasFci()).isTrue();
+    assertThat(testSmartCard.getAtrBytes()).isEqualTo(ByteArrayUtil.fromHex(ATR1));
+    assertThat(testSmartCard.getFciBytes()).isEqualTo(ByteArrayUtil.fromHex(FCI_REV31));
   }
 
-  private static class TestMatchingSe extends AbstractMatchingSe {
-    protected TestMatchingSe(CardResponse selectionResponse) {
+  private static class TestSmartCard extends AbstractSmartCard {
+    protected TestSmartCard(CardResponse selectionResponse) {
       super(selectionResponse);
     }
   }

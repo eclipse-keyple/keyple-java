@@ -16,13 +16,13 @@ import static org.eclipse.keyple.calypso.command.sam.SamRevision.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
-import org.eclipse.keyple.core.selection.AbstractMatchingSe;
+import org.eclipse.keyple.core.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CalypsoSam extends AbstractMatchingSe {
+public class CalypsoSam extends AbstractSmartCard {
   private static final Logger logger = LoggerFactory.getLogger(CalypsoSam.class);
 
   private final SamRevision samRevision;

@@ -20,8 +20,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.eclipse.keyple.core.command.AbstractApduCommandBuilder
-import org.eclipse.keyple.core.selection.AbstractMatchingSe
 import org.eclipse.keyple.core.selection.AbstractCardSelectionRequest
+import org.eclipse.keyple.core.selection.AbstractSmartCard
 import org.eclipse.keyple.core.selection.CardSelection
 import org.eclipse.keyple.core.seproxy.CardSelector
 import org.eclipse.keyple.core.seproxy.CardSelector.AidSelector
@@ -139,11 +139,11 @@ class CoreExamplesActivity : AbstractExampleActivity() {
         try {
             val selectionsResult = cardSelection.processExplicitSelection(reader)
             if (selectionsResult.hasActiveSelection()) {
-                    val matchingSe = selectionsResult.activeMatchingSe
+                    val smartCard = selectionsResult.activeSmartCard
                     addResultEvent("Selection status for selection " +
                             "(indexed $index): \n\t\t" +
-                            "ATR: ${ByteArrayUtil.toHex(matchingSe.atrBytes)}\n\t\t" +
-                            "FCI: ${ByteArrayUtil.toHex(matchingSe.fciBytes)}")
+                            "ATR: ${ByteArrayUtil.toHex(smartCard.atrBytes)}\n\t\t" +
+                            "FCI: ${ByteArrayUtil.toHex(smartCard.fciBytes)}")
             } else {
                 addResultEvent("The selection did not match for case $index.")
             }
@@ -210,11 +210,11 @@ class CoreExamplesActivity : AbstractExampleActivity() {
 
                 if (selectionResult.matchingSelections.size > 0) {
                     selectionResult.matchingSelections.forEach {
-                        val matchingSe = it.value
+                        val smartCard = it.value
                         addResultEvent("Selection status for selection " +
                                 "(indexed ${it.key}): \n\t\t" +
-                                "ATR: ${ByteArrayUtil.toHex(matchingSe.atrBytes)}\n\t\t" +
-                                "FCI: ${ByteArrayUtil.toHex(matchingSe.fciBytes)}")
+                                "ATR: ${ByteArrayUtil.toHex(smartCard.atrBytes)}\n\t\t" +
+                                "FCI: ${ByteArrayUtil.toHex(smartCard.fciBytes)}")
                     }
                     addResultEvent("End of selection")
                 } else {
@@ -279,7 +279,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                     when (event?.eventType) {
                         ReaderEvent.EventType.SE_MATCHED -> {
                             addResultEvent("SE_MATCHED event: A card corresponding to request has been detected")
-                            val selectedSe = cardSelection.processDefaultSelection(event.defaultSelectionsResponse).activeMatchingSe
+                            val selectedSe = cardSelection.processDefaultSelection(event.defaultSelectionsResponse).activeSmartCard
                             if (selectedSe != null) {
                                 addResultEvent("Observer notification: the selection of the card has succeeded. End of the card processing.")
                                 addResultEvent("Application FCI = ${ByteArrayUtil.toHex(selectedSe.fciBytes)}")
@@ -370,7 +370,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                 val selectionsResult = cardSelection.processExplicitSelection(reader)
 
                 if (selectionsResult.hasActiveSelection()) {
-                    val matchedSe = selectionsResult.activeMatchingSe
+                    val matchedSe = selectionsResult.activeSmartCard
                     addResultEvent("The selection of the card has succeeded.")
                     addResultEvent("Application FCI = ${ByteArrayUtil.toHex(matchedSe.fciBytes)}")
                     addResultEvent("End of the generic card processing.")
@@ -397,11 +397,11 @@ class CoreExamplesActivity : AbstractExampleActivity() {
      * Create a new class extending AbstractCardSelectionRequest
      */
     inner class GenericCardSelectionRequest(cardSelector: CardSelector) : AbstractCardSelectionRequest<AbstractApduCommandBuilder>(cardSelector) {
-        override fun parse(cardResponse: CardResponse): AbstractMatchingSe {
-            class GenericMatchingSe(
+        override fun parse(cardResponse: CardResponse): AbstractSmartCard {
+            class GenericSmartCard(
                 selectionResponse: CardResponse
-            ) : AbstractMatchingSe(selectionResponse)
-            return GenericMatchingSe(cardResponse)
+            ) : AbstractSmartCard(selectionResponse)
+            return GenericSmartCard(cardResponse)
         }
     }
 }

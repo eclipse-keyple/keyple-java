@@ -20,8 +20,8 @@ import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
+import org.eclipse.keyple.core.selection.CardResource;
 import org.eclipse.keyple.core.selection.CardSelection;
-import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SmartCardService;
@@ -149,7 +149,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
               (CalypsoPo)
                   cardSelection
                       .processDefaultSelection(event.getDefaultSelectionsResponse())
-                      .getActiveMatchingSe();
+                      .getActiveSmartCard();
 
           poReader =
               SmartCardService.getInstance()
@@ -178,7 +178,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
         logger.info("= #### 2nd PO exchange: reading transaction of the EventLog file.");
 
         PoTransaction poTransaction =
-            new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPo));
+            new PoTransaction(new CardResource<CalypsoPo>(poReader, calypsoPo));
 
         // Prepare the reading order and keep the associated parser for later use once the
         // transaction has been processed.

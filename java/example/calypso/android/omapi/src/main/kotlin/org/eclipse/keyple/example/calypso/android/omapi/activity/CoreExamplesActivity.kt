@@ -149,11 +149,11 @@ class CoreExamplesActivity : ExamplesActivity() {
                         val selectionsResult = cardSelection.processExplicitSelection(reader)
                         if (selectionsResult.matchingSelections.size> 0) {
                             selectionsResult.matchingSelections.forEach {
-                                val matchingSe = it.value
+                                val smartCard = it.value
                                 addResultEvent("Selection status for selection " +
                                         "(indexed ${it.key}): \n\t\t" +
-                                        "ATR: ${ByteArrayUtil.toHex(matchingSe.atrBytes)}\n\t\t" +
-                                        "FCI: ${ByteArrayUtil.toHex(matchingSe.fciBytes)}")
+                                        "ATR: ${ByteArrayUtil.toHex(smartCard.atrBytes)}\n\t\t" +
+                                        "FCI: ${ByteArrayUtil.toHex(smartCard.fciBytes)}")
                             }
                         } else {
                             addResultEvent("No cards matched the selection.")
@@ -232,12 +232,12 @@ class CoreExamplesActivity : ExamplesActivity() {
         addActionEvent("Sending multiSelection request based on AID Prefix $seAidPrefix to ${reader.name}")
         val selectionsResult = cardSelection.processExplicitSelection(reader)
         if (selectionsResult.hasActiveSelection()) {
-            val matchingSe = selectionsResult.activeMatchingSe
+            val smartCard = selectionsResult.activeSmartCard
             addResultEvent("The card matched the selection $index.")
 
             addResultEvent("Selection status for case $index: \n\t\t" +
-                    "ATR: ${ByteArrayUtil.toHex(matchingSe.atrBytes)}\n\t\t" +
-                    "FCI: ${ByteArrayUtil.toHex(matchingSe.fciBytes)}")
+                    "ATR: ${ByteArrayUtil.toHex(smartCard.atrBytes)}\n\t\t" +
+                    "FCI: ${ByteArrayUtil.toHex(smartCard.fciBytes)}")
         } else {
             addResultEvent("The selection did not match for case $index.")
         }

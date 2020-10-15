@@ -15,7 +15,7 @@ import java.util.*;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
-import org.eclipse.keyple.core.selection.AbstractMatchingSe;
+import org.eclipse.keyple.core.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
@@ -23,8 +23,8 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
  * The CalypsoPo class gathers all the information about the current PO retrieved from the response
  * to the select application command.
  *
- * <p>An instance of CalypsoPo can be obtained by casting the AbstractMatchingSe object from the
- * selection process (e.g. (CalypsoPo) matchingSelection.getMatchingSe())
+ * <p>An instance of CalypsoPo can be obtained by casting the AbstractSmartCard object from the
+ * selection process (e.g. (CalypsoPo) matchingSelection.getSmartCard())
  *
  * <p>The various information contained in CalypsoPo is accessible by getters and includes:
  *
@@ -37,7 +37,7 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
  *   <li>The invalidation status
  * </ul>
  */
-public class CalypsoPo extends AbstractMatchingSe {
+public class CalypsoPo extends AbstractSmartCard {
   private final boolean isConfidentialSessionModeSupported;
   private final boolean isDeselectRatificationSupported;
   private final boolean isSvFeatureAvailable;

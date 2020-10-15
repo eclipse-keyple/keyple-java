@@ -76,8 +76,8 @@ public abstract class AbstractCardSelectionRequest<T extends AbstractApduCommand
    * Virtual parse method
    *
    * @param cardResponse the card response received
-   * @return a {@link AbstractMatchingSe}
+   * @return a {@link AbstractSmartCard}
    * @throws KeypleException if an error occurs while parsing the card response
    */
-  protected abstract AbstractMatchingSe parse(CardResponse cardResponse);
+  protected abstract AbstractSmartCard parse(CardResponse cardResponse);
 }

@@ -13,20 +13,20 @@ package org.eclipse.keyple.core.selection;
 
 import org.eclipse.keyple.core.seproxy.Reader;
 
-/** The SeResource class groups a AbstractMatchingSe and its associated Reader */
-public class SeResource<T extends AbstractMatchingSe> {
+/** The CardResource class groups a AbstractSmartCard and its associated Reader */
+public class CardResource<T extends AbstractSmartCard> {
   private final Reader reader;
-  private final T matchingSe;
+  private final T smartCard;
 
   /**
    * Constructor
    *
    * @param reader the {@link Reader} with which the card is communicating
-   * @param matchingSe the {@link AbstractMatchingSe} information structure
+   * @param smartCard the {@link AbstractSmartCard} information structure
    */
-  public SeResource(Reader reader, T matchingSe) {
+  public CardResource(Reader reader, T smartCard) {
     this.reader = reader;
-    this.matchingSe = matchingSe;
+    this.smartCard = smartCard;
   }
 
   /** @return the current {@link Reader} for this card */
@@ -34,8 +34,8 @@ public class SeResource<T extends AbstractMatchingSe> {
     return reader;
   }
 
-  /** @return the {@link AbstractMatchingSe} */
-  public T getMatchingSe() {
-    return matchingSe;
+  /** @return the {@link AbstractSmartCard} */
+  public T getSmartCard() {
+    return smartCard;
   }
 }
