@@ -12,7 +12,7 @@
 package org.eclipse.keyple.example.generic.pc.usecase4;
 
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
-import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.Reader;
@@ -20,7 +20,7 @@ import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
-import org.eclipse.keyple.example.common.generic.GenericSeSelectionRequest;
+import org.eclipse.keyple.example.common.generic.GenericCardSelectionRequest;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.slf4j.Logger;
@@ -33,8 +33,8 @@ import org.slf4j.LoggerFactory;
 public class SequentialMultiSelection_Pcsc {
   private static final Logger logger = LoggerFactory.getLogger(SequentialMultiSelection_Pcsc.class);
 
-  private static void doAndAnalyseSelection(Reader reader, SeSelection seSelection, int index) {
-    SelectionsResult selectionsResult = seSelection.processExplicitSelection(reader);
+  private static void doAndAnalyseSelection(Reader reader, CardSelection cardSelection, int index) {
+    SelectionsResult selectionsResult = cardSelection.processExplicitSelection(reader);
     if (selectionsResult.hasActiveSelection()) {
       AbstractMatchingSe matchingSe = selectionsResult.getActiveMatchingSe();
       logger.info("The card matched the selection {}.", index);
@@ -68,19 +68,19 @@ public class SequentialMultiSelection_Pcsc {
     // Check if a card is present in the reader
     if (reader.isSePresent()) {
 
-      SeSelection seSelection;
+      CardSelection cardSelection;
 
       // operate card AID selection (change the AID prefix here to adapt it to the card used for
       // the test [the card should have at least two applications matching the AID prefix])
       String seAidPrefix = "315449432E494341";
 
       // First selection case
-      seSelection = new SeSelection();
+      cardSelection = new CardSelection();
 
       // AID based selection: get the first application occurrence matching the AID, keep the
       // physical channel open
-      seSelection.prepareSelection(
-          new GenericSeSelectionRequest(
+      cardSelection.prepareSelection(
+          new GenericCardSelectionRequest(
               CardSelector.builder()
                   .aidSelector(
                       CardSelector.AidSelector.builder()
@@ -92,14 +92,14 @@ public class SequentialMultiSelection_Pcsc {
                   .build()));
 
       // Do the selection and display the result
-      doAndAnalyseSelection(reader, seSelection, 1);
+      doAndAnalyseSelection(reader, cardSelection, 1);
 
       // New selection: get the next application occurrence matching the same AID, close the
       // physical channel after
-      seSelection = new SeSelection();
+      cardSelection = new CardSelection();
 
-      seSelection.prepareSelection(
-          new GenericSeSelectionRequest(
+      cardSelection.prepareSelection(
+          new GenericCardSelectionRequest(
               CardSelector.builder()
                   .aidSelector(
                       CardSelector.AidSelector.builder()
@@ -111,10 +111,10 @@ public class SequentialMultiSelection_Pcsc {
                   .build()));
 
       // close the channel after the selection
-      seSelection.prepareReleaseSeChannel();
+      cardSelection.prepareReleaseSeChannel();
 
       // Do the selection and display the result
-      doAndAnalyseSelection(reader, seSelection, 2);
+      doAndAnalyseSelection(reader, cardSelection, 2);
 
     } else {
 

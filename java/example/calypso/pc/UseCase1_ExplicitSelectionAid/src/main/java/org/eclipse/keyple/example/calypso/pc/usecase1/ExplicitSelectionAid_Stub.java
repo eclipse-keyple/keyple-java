@@ -18,8 +18,8 @@ import org.eclipse.keyple.calypso.transaction.ElementaryFile;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.selection.SeResource;
-import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
@@ -96,7 +96,7 @@ public class ExplicitSelectionAid_Stub {
       logger.info("= #### 1st PO exchange: AID based selection with reading of Environment file.");
 
       // Prepare a Calypso PO selection
-      SeSelection seSelection = new SeSelection();
+      CardSelection cardSelection = new CardSelection();
 
       // Setting of an AID based selection of a Calypso REV3 PO
       // Select the first application matching the selection AID whatever the card communication
@@ -118,12 +118,12 @@ public class ExplicitSelectionAid_Stub {
 
       // Add the selection case to the current selection (we could have added other cases
       // here)
-      seSelection.prepareSelection(poSelectionRequest);
+      cardSelection.prepareSelection(poSelectionRequest);
 
       // Actual PO communication: operate through a single request the Calypso PO selection
       // and the file read
       CalypsoPo calypsoPo =
-          (CalypsoPo) seSelection.processExplicitSelection(poReader).getActiveMatchingSe();
+          (CalypsoPo) cardSelection.processExplicitSelection(poReader).getActiveMatchingSe();
       logger.info("The selection of the PO has succeeded.");
 
       // Retrieve the data read from the CalyspoPo updated during the transaction process

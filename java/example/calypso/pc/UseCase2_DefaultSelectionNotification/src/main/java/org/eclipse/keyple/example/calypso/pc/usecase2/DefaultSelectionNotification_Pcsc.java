@@ -20,8 +20,8 @@ import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
+import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.selection.SeResource;
-import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SmartCardService;
@@ -66,7 +66,7 @@ import org.slf4j.LoggerFactory;
 public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
   private static final Logger logger =
       LoggerFactory.getLogger(DefaultSelectionNotification_Pcsc.class);
-  private final SeSelection seSelection;
+  private final CardSelection cardSelection;
 
   // This object is used to freeze the main thread while card operations are handle through the
   // observers callbacks. A call to the notify() method would end the program (not demonstrated
@@ -90,7 +90,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
     logger.info("= PO Reader  NAME = {}", poReader.getName());
 
     // Prepare a Calypso PO selection
-    seSelection = new SeSelection();
+    cardSelection = new CardSelection();
 
     // Setting of an AID based selection of a Calypso REV3 PO
     // // Select the first application matching the selection AID whatever the card communication
@@ -110,12 +110,12 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
         CalypsoClassicInfo.SFI_EnvironmentAndHolder, CalypsoClassicInfo.RECORD_NUMBER_1);
 
     // Add the selection case to the current selection (we could have added other cases here)
-    seSelection.prepareSelection(poSelectionRequest);
+    cardSelection.prepareSelection(poSelectionRequest);
 
     // Provide the Reader with the selection operation to be processed when a PO is inserted.
     ((ObservableReader) poReader)
         .setDefaultSelectionRequest(
-            seSelection.getSelectionOperation(),
+            cardSelection.getSelectionOperation(),
             ObservableReader.NotificationMode.MATCHED_ONLY,
             ObservableReader.PollingMode.REPEATING);
 
@@ -147,7 +147,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
         try {
           calypsoPo =
               (CalypsoPo)
-                  seSelection
+                  cardSelection
                       .processDefaultSelection(event.getDefaultSelectionsResponse())
                       .getActiveMatchingSe();
 

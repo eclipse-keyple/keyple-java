@@ -12,7 +12,7 @@
 package org.eclipse.keyple.example.generic.pc.usecase1;
 
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
-import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.Reader;
@@ -20,7 +20,7 @@ import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
-import org.eclipse.keyple.example.common.generic.GenericSeSelectionRequest;
+import org.eclipse.keyple.example.common.generic.GenericCardSelectionRequest;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.slf4j.Logger;
@@ -73,7 +73,7 @@ public class ExplicitSelectionAid_Pcsc {
       logger.info("= #### AID based selection.");
 
       // Prepare the card selection
-      SeSelection seSelection = new SeSelection();
+      CardSelection cardSelection = new CardSelection();
 
       // Setting of an AID based selection (in this example a Calypso REV3 PO)
       //
@@ -82,18 +82,18 @@ public class ExplicitSelectionAid_Pcsc {
 
       // Generic selection: configures a CardSelector with all the desired attributes to make
       // the selection and read additional information afterwards
-      GenericSeSelectionRequest genericSeSelectionRequest =
-          new GenericSeSelectionRequest(
+      GenericCardSelectionRequest genericCardSelectionRequest =
+          new GenericCardSelectionRequest(
               CardSelector.builder()
                   .aidSelector(CardSelector.AidSelector.builder().aidToSelect(seAid).build())
                   .build());
 
       // Add the selection case to the current selection (we could have added other cases
       // here)
-      seSelection.prepareSelection(genericSeSelectionRequest);
+      cardSelection.prepareSelection(genericCardSelectionRequest);
 
       // Actual card communication: operate through a single request the card selection
-      SelectionsResult selectionsResult = seSelection.processExplicitSelection(reader);
+      SelectionsResult selectionsResult = cardSelection.processExplicitSelection(reader);
       if (selectionsResult.hasActiveSelection()) {
         AbstractMatchingSe matchingSe = selectionsResult.getActiveMatchingSe();
         logger.info("The selection of the card has succeeded.");

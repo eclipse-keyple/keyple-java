@@ -17,7 +17,7 @@ import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
 import org.eclipse.keyple.calypso.command.sam.builder.security.UnlockCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronizedExchangesException;
-import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
+import org.eclipse.keyple.core.selection.AbstractCardSelectionRequest;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.message.CardResponse;
 
@@ -28,7 +28,7 @@ import org.eclipse.keyple.core.seproxy.message.CardResponse;
  * This unlock command is currently the only one allowed during the SAM selection process.
  */
 public class SamSelectionRequest
-    extends AbstractSeSelectionRequest<
+    extends AbstractCardSelectionRequest<
         AbstractSamCommandBuilder<? extends AbstractSamResponseParser>> {
   /**
    * Create a {@link SamSelectionRequest}

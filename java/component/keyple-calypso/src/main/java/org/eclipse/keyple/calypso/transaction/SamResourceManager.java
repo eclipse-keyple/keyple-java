@@ -14,8 +14,8 @@ package org.eclipse.keyple.calypso.transaction;
 import static org.eclipse.keyple.calypso.command.sam.SamRevision.AUTO;
 
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
+import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.selection.SeResource;
-import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
@@ -76,7 +76,7 @@ public abstract class SamResourceManager {
    */
   protected SamResourceManagerDefault.ManagedSamResource createSamResource(Reader samReader) {
 
-    SeSelection samSelection = new SeSelection();
+    CardSelection samSelection = new CardSelection();
 
     /* Prepare selector */
     samSelection.prepareSelection(

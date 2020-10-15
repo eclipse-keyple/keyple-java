@@ -16,7 +16,7 @@ import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.SamResourceManager;
-import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SmartCardService;
@@ -67,10 +67,10 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
 
           Reader poReader = remoteSEPlugin.getReader(event.getReaderNames().first());
 
-          logger.info("{} Configure SeSelection", nodeId);
+          logger.info("{} Configure CardSelection", nodeId);
 
           /* set default selection request */
-          final SeSelection seSelection = new SeSelection();
+          final CardSelection cardSelection = new CardSelection();
 
           /*
            * Setting of an AID based selection of a Calypso REV3 PO
@@ -96,7 +96,7 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
            * Add the selection case to the current selection (we could have added other
            * cases here)
            */
-          seSelection.prepareSelection(poSelectionRequest);
+          cardSelection.prepareSelection(poSelectionRequest);
 
           logger.info("{} setDefaultSelectionRequest for PoReader {}", nodeId, poReader.getName());
 
@@ -106,7 +106,7 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
            */
           ((ObservableReader) poReader)
               .setDefaultSelectionRequest(
-                  seSelection.getSelectionOperation(),
+                  cardSelection.getSelectionOperation(),
                   ObservableReader.NotificationMode.MATCHED_ONLY);
 
           // observe reader events
@@ -115,7 +115,8 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
 
           ((ObservableReader) poReader)
               .addObserver(
-                  new PoVirtualReaderObserver(masterAPI, samResourceManager, seSelection, nodeId));
+                  new PoVirtualReaderObserver(
+                      masterAPI, samResourceManager, cardSelection, nodeId));
 
         } catch (KeypleReaderNotFoundException e) {
           logger.error(e.getMessage());

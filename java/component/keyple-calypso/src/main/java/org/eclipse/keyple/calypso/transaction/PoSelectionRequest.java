@@ -18,7 +18,7 @@ import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronizedExchangesException;
-import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
+import org.eclipse.keyple.core.selection.AbstractCardSelectionRequest;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.slf4j.Logger;
@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 /** Specialized selection request to manage the specific characteristics of Calypso POs */
 public class PoSelectionRequest
-    extends AbstractSeSelectionRequest<
+    extends AbstractCardSelectionRequest<
         AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> {
   private static final Logger logger = LoggerFactory.getLogger(PoSelectionRequest.class);
   private final PoClass poClass;

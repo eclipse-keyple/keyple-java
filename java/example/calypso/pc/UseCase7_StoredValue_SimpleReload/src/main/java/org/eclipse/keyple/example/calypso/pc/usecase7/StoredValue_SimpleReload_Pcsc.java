@@ -26,8 +26,8 @@ import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.SamSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.SamSelector;
+import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.selection.SeResource;
-import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.Reader;
@@ -69,7 +69,7 @@ public class StoredValue_SimpleReload_Pcsc {
       logger.info("= ##### 1st PO exchange: AID based selection with reading of Environment file.");
 
       // Prepare a Calypso PO selection
-      SeSelection seSelection = new SeSelection();
+      CardSelection cardSelection = new CardSelection();
 
       // Setting of an AID based selection of a Calypso REV3 PO
       //
@@ -91,11 +91,12 @@ public class StoredValue_SimpleReload_Pcsc {
       // Add the selection case to the current selection
       //
       // (we could have added other cases here)
-      seSelection.prepareSelection(poSelectionRequest);
+      cardSelection.prepareSelection(poSelectionRequest);
 
       // Actual PO communication: operate through a single request the Calypso PO selection
       // and the file read
-      calypsoPo = (CalypsoPo) seSelection.processExplicitSelection(poReader).getActiveMatchingSe();
+      calypsoPo =
+          (CalypsoPo) cardSelection.processExplicitSelection(poReader).getActiveMatchingSe();
       return true;
     } else {
       logger.error("No PO were detected.");
@@ -128,7 +129,7 @@ public class StoredValue_SimpleReload_Pcsc {
     ((PcscReader) samReader).setContactless(false).setIsoProtocol(PcscReader.IsoProtocol.T0);
 
     // Create a SAM resource after selecting the SAM
-    SeSelection samSelection = new SeSelection();
+    CardSelection samSelection = new CardSelection();
 
     SamSelector samSelector = SamSelector.builder().samRevision(C1).serialNumber(".*").build();
 

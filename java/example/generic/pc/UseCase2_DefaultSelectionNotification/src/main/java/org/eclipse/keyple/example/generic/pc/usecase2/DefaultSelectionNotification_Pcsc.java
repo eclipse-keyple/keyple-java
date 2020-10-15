@@ -12,7 +12,7 @@
 package org.eclipse.keyple.example.generic.pc.usecase2;
 
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
-import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
@@ -25,7 +25,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.common.ReaderUtilities;
-import org.eclipse.keyple.example.common.generic.GenericSeSelectionRequest;
+import org.eclipse.keyple.example.common.generic.GenericCardSelectionRequest;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.slf4j.Logger;
@@ -57,7 +57,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
   private static final Logger logger =
       LoggerFactory.getLogger(DefaultSelectionNotification_Pcsc.class);
   private String seAid = "A0000004040125090101";
-  private SeSelection seSelection;
+  private CardSelection cardSelection;
   /**
    * This object is used to freeze the main thread while card operations are handle through the
    * observers callbacks. A call to the notify() method would end the program (not demonstrated
@@ -82,7 +82,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
     logger.info("= Card reader  NAME = {}", reader.getName());
 
     // Prepare a card selection
-    seSelection = new SeSelection();
+    cardSelection = new CardSelection();
 
     // Setting of an AID based selection
     //
@@ -91,20 +91,20 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
 
     // Generic selection: configures a CardSelector with all the desired attributes to make the
     // selection
-    GenericSeSelectionRequest cardSelector =
-        new GenericSeSelectionRequest(
+    GenericCardSelectionRequest cardSelector =
+        new GenericCardSelectionRequest(
             CardSelector.builder()
                 .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(seAid).build())
                 .build());
 
     // Add the selection case to the current selection (we could have added other cases here)
-    seSelection.prepareSelection(cardSelector);
+    cardSelection.prepareSelection(cardSelector);
 
     // Provide the Reader with the selection operation to be processed when a card is inserted.
     ((ObservableReader) reader)
         .setDefaultSelectionRequest(
-            seSelection.getSelectionOperation(),
+            cardSelection.getSelectionOperation(),
             ObservableReader.NotificationMode.MATCHED_ONLY,
             ObservableReader.PollingMode.REPEATING);
 
@@ -133,7 +133,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
         AbstractMatchingSe selectedSe = null;
         try {
           selectedSe =
-              seSelection
+              cardSelection
                   .processDefaultSelection(event.getDefaultSelectionsResponse())
                   .getActiveMatchingSe();
         } catch (KeypleException e) {

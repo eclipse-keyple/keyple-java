@@ -18,7 +18,7 @@ import org.eclipse.keyple.calypso.transaction.CalypsoPo
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest
 import org.eclipse.keyple.calypso.transaction.PoSelector
 import org.eclipse.keyple.calypso.transaction.PoSelector.InvalidatedPo
-import org.eclipse.keyple.core.selection.SeSelection
+import org.eclipse.keyple.core.selection.CardSelection
 import org.eclipse.keyple.core.seproxy.CardSelector.AidSelector
 import org.eclipse.keyple.core.seproxy.Reader
 import org.eclipse.keyple.core.util.ByteArrayUtil
@@ -50,7 +50,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                      * Select the first application matching the selection AID whatever the card
                      * communication protocol and keep the logical channel open after the selection
                      */
-                    val seSelection = SeSelection()
+                    val cardSelection = CardSelection()
 
                     /*
                      * Configuration of Selection request
@@ -61,11 +61,11 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                             PoSelector.builder()
                                     .aidSelector(AidSelector.builder().aidToSelect(poAid).build())
                                         .invalidatedPo(InvalidatedPo.REJECT).build())
-                    seSelection.prepareSelection(poSelectionRequest)
+                    cardSelection.prepareSelection(poSelectionRequest)
 
                     try {
                         addActionEvent("Process explicit selection")
-                        val selectionsResult = seSelection.processExplicitSelection(reader)
+                        val selectionsResult = cardSelection.processExplicitSelection(reader)
 
                         /**
                          * Check if PO has been selected successfuly
@@ -113,7 +113,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                     /*
                      * Prepare a Calypso PO selection
                      */
-                    val seSelection = SeSelection()
+                    val cardSelection = CardSelection()
                     val poSelectionRequest = PoSelectionRequest(
                             PoSelector.builder()
                                     .aidSelector(AidSelector.builder().aidToSelect(poAid).build())
@@ -135,7 +135,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                      *
                      * Ignore the returned index since we have only one selection here.
                      */
-                    seSelection.prepareSelection(poSelectionRequest)
+                    cardSelection.prepareSelection(poSelectionRequest)
 
                     /*
                      * Actual PO communication: operate through a single request the Calypso PO
@@ -143,7 +143,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                      */
                     addActionEvent("Process explicit selection for $poAid and reading Environment and transport event")
                     try {
-                        val selectionsResult = seSelection.processExplicitSelection(reader)
+                        val selectionsResult = cardSelection.processExplicitSelection(reader)
 
                         if (selectionsResult.hasActiveSelection()) {
                             val calypsoPo = selectionsResult.activeMatchingSe as CalypsoPo
@@ -174,7 +174,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                     /*
                      * Prepare a Calypso PO selection
                      */
-                    val seSelection = SeSelection()
+                    val cardSelection = CardSelection()
 
                     /*
                      * Setting of an AID based selection of a Calypso REV3 PO
@@ -207,14 +207,14 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                      *
                      * Ignore the returned index since we have only one selection here.
                      */
-                    seSelection.prepareSelection(poSelectionRequest)
+                    cardSelection.prepareSelection(poSelectionRequest)
 
                     /*
                      * Actual PO communication: operate through a single request the Calypso PO
                      * selection and the file read
                      */
                     try {
-                        val selectionsResult = seSelection.processExplicitSelection(reader)
+                        val selectionsResult = cardSelection.processExplicitSelection(reader)
 
                         if (selectionsResult.hasActiveSelection()) {
                             val calypsoPo = selectionsResult.activeMatchingSe as CalypsoPo

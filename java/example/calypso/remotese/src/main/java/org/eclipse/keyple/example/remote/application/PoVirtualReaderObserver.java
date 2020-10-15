@@ -22,8 +22,8 @@ import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.SamIdentifier;
 import org.eclipse.keyple.calypso.transaction.SamResourceManager;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
+import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.selection.SeResource;
-import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -45,25 +45,25 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
 
   private final MasterAPI masterAPI;
   private final String nodeId; // for logging purposes
-  private final SeSelection seSelection;
+  private final CardSelection cardSelection;
   private final SamResourceManager samResourceManager;
 
   /**
    * Create a new Observer for a PO Virtual Reader
    *
    * @param masterAPI : master API
-   * @param seSelection : the default selection configured on the reader
+   * @param cardSelection : the default selection configured on the reader
    * @param nodeId : master node id, used for logging
    * @param samResourceManager : SAM Resource Manager required for transactions
    */
   PoVirtualReaderObserver(
       MasterAPI masterAPI,
       SamResourceManager samResourceManager,
-      SeSelection seSelection,
+      CardSelection cardSelection,
       String nodeId) {
     this.masterAPI = masterAPI;
     this.nodeId = nodeId;
-    this.seSelection = seSelection;
+    this.cardSelection = cardSelection;
     this.samResourceManager = samResourceManager;
   }
 
@@ -82,7 +82,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
         try {
           calypsoPo =
               (CalypsoPo)
-                  seSelection
+                  cardSelection
                       .processDefaultSelection(event.getDefaultSelectionsResponse())
                       .getActiveMatchingSe();
         } catch (KeypleException e) {
