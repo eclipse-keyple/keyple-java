@@ -15,7 +15,7 @@ import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 
 /**
  * (package-private)<br>
- * Allow {@link ProxyReader}s and {@link ReaderPlugin}s to be named.
+ * Allow {@link ProxyReader}s and {@link Plugin}s to be named.
  */
 interface ProxyElement {
 

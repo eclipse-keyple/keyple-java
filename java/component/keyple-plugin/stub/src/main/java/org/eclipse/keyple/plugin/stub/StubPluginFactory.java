@@ -11,8 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.stub;
 
+import org.eclipse.keyple.core.seproxy.Plugin;
 import org.eclipse.keyple.core.seproxy.PluginFactory;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 
 /** Instantiate a {@link StubPlugin} with a custom plugin name */
@@ -36,7 +36,7 @@ public class StubPluginFactory implements PluginFactory {
 
   /** {@inheritDoc} */
   @Override
-  public ReaderPlugin getPlugin() {
+  public Plugin getPlugin() {
     try {
       return new StubPluginImpl(pluginName);
     } catch (Exception e) {

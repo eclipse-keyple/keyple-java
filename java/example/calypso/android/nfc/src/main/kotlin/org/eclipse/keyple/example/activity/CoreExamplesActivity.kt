@@ -208,8 +208,8 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             try {
                 val selectionResult = cardSelection.processExplicitSelection(reader)
 
-                if (selectionResult.matchingSelections.size > 0) {
-                    selectionResult.matchingSelections.forEach {
+                if (selectionResult.matchingSmartCards.size > 0) {
+                    selectionResult.matchingSmartCards.forEach {
                         val smartCard = it.value
                         addResultEvent("Selection status for selection " +
                                 "(indexed ${it.key}): \n\t\t" +

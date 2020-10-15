@@ -29,8 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implementation of Sam Resource Manager working a {@link ReaderPlugin} (either Stub or Pcsc) It is
- * meant to work with a Keyple Pcsc Plugin or a Keyple Stub Plugin.
+ * Implementation of Sam Resource Manager working a {@link Plugin} (either Stub or Pcsc) It is meant
+ * to work with a Keyple Pcsc Plugin or a Keyple Stub Plugin.
  */
 public class SamResourceManagerDefault extends SamResourceManager {
   private static final Logger logger = LoggerFactory.getLogger(SamResourceManagerDefault.class);
@@ -39,7 +39,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
       new ConcurrentHashMap<String, ManagedSamResource>();
   final SamResourceManagerDefault.ReaderObserver readerObserver; // only used with observable
   // readers
-  protected final ReaderPlugin samReaderPlugin;
+  protected final Plugin samReaderPlugin;
   /* the maximum time (in milliseconds) during which the BLOCKING mode will wait */
   private final int maxBlockingTime;
   /*
@@ -50,7 +50,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
   /**
    * Protected constructor, use the {@link SamResourceManagerFactory}
    *
-   * @param readerPlugin the plugin through which SAM readers are accessible
+   * @param plugin the plugin through which SAM readers are accessible
    * @param samReaderFilter the regular expression defining how to identify SAM readers among
    *     others.
    * @param maxBlockingTime the maximum duration for which the allocateSamResource method will
@@ -59,7 +59,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
    * @throws KeypleReaderException thrown if an error occurs while getting the readers list.
    */
   protected SamResourceManagerDefault(
-      ReaderPlugin readerPlugin, String samReaderFilter, int maxBlockingTime, int sleepTime) {
+      Plugin plugin, String samReaderFilter, int maxBlockingTime, int sleepTime) {
     /*
      * Assign parameters
      */
@@ -71,7 +71,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
     }
     this.sleepTime = sleepTime;
     this.maxBlockingTime = maxBlockingTime;
-    this.samReaderPlugin = readerPlugin;
+    this.samReaderPlugin = plugin;
 
     readerObserver = new SamResourceManagerDefault.ReaderObserver();
     logger.info(
@@ -94,7 +94,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
         logger.trace("Reader not matching: {}", samReaderName);
       }
     }
-    if (readerPlugin instanceof ObservablePlugin) {
+    if (plugin instanceof ObservablePlugin) {
 
       // add an observer to monitor reader and SAM insertions
 

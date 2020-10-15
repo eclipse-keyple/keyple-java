@@ -14,8 +14,8 @@ package org.eclipse.keyple.example.remote.application;
 import java.io.IOException;
 import org.eclipse.keyple.calypso.transaction.SamResourceManager;
 import org.eclipse.keyple.calypso.transaction.SamResourceManagerFactory;
+import org.eclipse.keyple.core.seproxy.Plugin;
 import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
@@ -107,7 +107,7 @@ public class MasterNodeController {
       /*
        * Configure the SAM Resource Manager
        */
-      ReaderPlugin samStubPlugin =
+      Plugin samStubPlugin =
           SmartCardService.getInstance().registerPlugin(new StubPluginFactory(STUB_MASTER));
 
       /* Plug the SAM stub reader. */
@@ -144,7 +144,7 @@ public class MasterNodeController {
       // observe remote card plugin for events
       logger.info(
           "{} Observe SeRemotePlugin for Plugin Events and Reader Events", node.getNodeId());
-      ReaderPlugin rsePlugin = masterAPI.getPlugin();
+      Plugin rsePlugin = masterAPI.getPlugin();
 
       // add a custom observer for the Remote Card plugin
       ((ObservablePlugin) rsePlugin)

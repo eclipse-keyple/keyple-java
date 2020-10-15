@@ -20,8 +20,8 @@ import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.core.selection.CardResource;
 import org.eclipse.keyple.core.selection.CardSelection;
+import org.eclipse.keyple.core.seproxy.Plugin;
 import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -67,12 +67,12 @@ public class Rev1Selection_Pcsc {
     // Get the instance of the SmartCardService (Singleton pattern)
     SmartCardService smartCardService = SmartCardService.getInstance();
 
-    // Register the PcscPlugin with SmartCardService, get the corresponding generic ReaderPlugin in
+    // Register the PcscPlugin with SmartCardService, get the corresponding generic Plugin in
     // return
-    ReaderPlugin readerPlugin = smartCardService.registerPlugin(new PcscPluginFactory());
+    Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory());
 
     // Get and configure the PO reader
-    Reader poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
+    Reader poReader = plugin.getReader(ReaderUtilities.getContactlessReaderName());
     ((PcscReader) poReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     /* Activate protocols */

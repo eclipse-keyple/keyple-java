@@ -147,7 +147,7 @@ public class CardSelectionTest extends CoreBaseTest {
     }
 
     Assert.assertFalse(selectionsResult.hasActiveSelection());
-    Assert.assertEquals(0, selectionsResult.getSmartCardlections().size());
+    Assert.assertEquals(0, selectionsResult.getMatchingSmartCards().size());
   }
 
   @Test

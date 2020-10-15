@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.calypso.transaction;
 
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+import org.eclipse.keyple.core.seproxy.Plugin;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 
@@ -28,7 +28,7 @@ public abstract class SamResourceManagerFactory {
    *
    * <p>Setup a plugin observer if the reader plugin is observable.
    *
-   * @param readerPlugin the plugin through which SAM readers are accessible
+   * @param plugin the plugin through which SAM readers are accessible
    * @param samReaderFilter the regular expression defining how to identify SAM readers among
    *     others.
    * @param maxBlockingTime the maximum duration for which the allocateSamResource method will
@@ -38,13 +38,13 @@ public abstract class SamResourceManagerFactory {
    * @return SamResourceManager working with a default plugin
    */
   public static SamResourceManager instantiate(
-      ReaderPlugin readerPlugin, String samReaderFilter, int maxBlockingTime, int sleepTime) {
-    return new SamResourceManagerDefault(readerPlugin, samReaderFilter, maxBlockingTime, sleepTime);
+      Plugin plugin, String samReaderFilter, int maxBlockingTime, int sleepTime) {
+    return new SamResourceManagerDefault(plugin, samReaderFilter, maxBlockingTime, sleepTime);
   }
 
-  public static SamResourceManager instantiate(ReaderPlugin readerPlugin, String samReaderFilter) {
+  public static SamResourceManager instantiate(Plugin plugin, String samReaderFilter) {
     return new SamResourceManagerDefault(
-        readerPlugin, samReaderFilter, MAX_BLOCKING_TIME, DEFAULT_SLEEP_TIME);
+        plugin, samReaderFilter, MAX_BLOCKING_TIME, DEFAULT_SLEEP_TIME);
   }
 
   /**

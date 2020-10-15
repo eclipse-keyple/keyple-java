@@ -109,8 +109,8 @@ public abstract class AbstractObservablePlugin extends AbstractPlugin
   }
 
   /**
-   * This method shall be called only from a plugin implementing AbstractPlugin. Push a
-   * PluginEvent of the selected AbstractPlugin to its registered Observer.
+   * This method shall be called only from a plugin implementing AbstractPlugin. Push a PluginEvent
+   * of the selected AbstractPlugin to its registered Observer.
    *
    * @param event the event
    */

@@ -147,8 +147,8 @@ class CoreExamplesActivity : ExamplesActivity() {
                     addActionEvent("Sending multiSelection request based on AID Prefix $seAidPrefix to ${reader.name}")
                     try {
                         val selectionsResult = cardSelection.processExplicitSelection(reader)
-                        if (selectionsResult.matchingSelections.size> 0) {
-                            selectionsResult.matchingSelections.forEach {
+                        if (selectionsResult.matchingSmartCards.size> 0) {
+                            selectionsResult.matchingSmartCards.forEach {
                                 val smartCard = it.value
                                 addResultEvent("Selection status for selection " +
                                         "(indexed ${it.key}): \n\t\t" +

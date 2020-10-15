@@ -25,8 +25,8 @@ import org.eclipse.keyple.calypso.transaction.SamSelector;
 import org.eclipse.keyple.core.selection.CardResource;
 import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
+import org.eclipse.keyple.core.seproxy.Plugin;
 import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -83,8 +83,7 @@ public class PoAuthentication_Stub {
     final String STUB_PLUGIN_NAME = "stub1";
 
     // Register Stub plugin in the platform
-    ReaderPlugin stubPlugin =
-        smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
+    Plugin stubPlugin = smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
 
     // Plug PO and SAM stub reader.
     ((StubPlugin) stubPlugin).plugStubReader("poReader", true);

@@ -140,7 +140,7 @@ public class ManagedSamResourceManagerDefaultTest extends CalypsoBaseTest {
     readers.put(reader.getName(), reader);
 
     // create the mock plugin
-    ReaderPlugin plugin = Mockito.mock(ReaderPlugin.class);
+    Plugin plugin = Mockito.mock(Plugin.class);
     when(plugin.getReaders()).thenReturn(readers);
     when(plugin.getReader(SAM_READER_NAME)).thenReturn(reader);
 

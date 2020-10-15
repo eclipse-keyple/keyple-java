@@ -34,7 +34,7 @@ public final class SmartCardService {
   private static final SmartCardService uniqueInstance = new SmartCardService();
 
   /** the list of readers’ plugins interfaced with the card Proxy Service */
-  private final Map<String, ReaderPlugin> plugins = new ConcurrentHashMap<String, ReaderPlugin>();
+  private final Map<String, Plugin> plugins = new ConcurrentHashMap<String, Plugin>();
 
   /** Field MONITOR, this is the object we will be synchronizing on ("the monitor") */
   private final Object MONITOR = new Object();
@@ -56,9 +56,9 @@ public final class SmartCardService {
    *
    * @param pluginFactory : plugin factory to instantiate plugin to be added
    * @throws KeyplePluginInstantiationException if instantiation failed
-   * @return ReaderPlugin : registered reader plugin
+   * @return Plugin : registered reader plugin
    */
-  public ReaderPlugin registerPlugin(PluginFactory pluginFactory) {
+  public Plugin registerPlugin(PluginFactory pluginFactory) {
 
     if (pluginFactory == null) {
       throw new IllegalArgumentException("Factory must not be null");
@@ -70,7 +70,7 @@ public final class SmartCardService {
         logger.warn("Plugin has already been registered to the platform : {}", pluginName);
         return this.plugins.get(pluginName);
       } else {
-        ReaderPlugin pluginInstance = pluginFactory.getPlugin();
+        Plugin pluginInstance = pluginFactory.getPlugin();
         logger.info("Registering a new Plugin to the platform : {}", pluginName);
         this.plugins.put(pluginName, pluginInstance);
         return pluginInstance;
@@ -86,7 +86,7 @@ public final class SmartCardService {
    */
   public boolean unregisterPlugin(String pluginName) {
     synchronized (MONITOR) {
-      final ReaderPlugin removedPlugin = plugins.remove(pluginName);
+      final Plugin removedPlugin = plugins.remove(pluginName);
       if (removedPlugin != null) {
         logger.info("Unregistering a plugin from the platform : {}", removedPlugin.getName());
       } else {
@@ -113,7 +113,7 @@ public final class SmartCardService {
    *
    * @return the plugin names and plugin instances map of interfaced reader’s plugins.
    */
-  public synchronized Map<String, ReaderPlugin> getPlugins() {
+  public synchronized Map<String, Plugin> getPlugins() {
     return plugins;
   }
 
@@ -124,13 +124,13 @@ public final class SmartCardService {
    * @return the plugin
    * @throws KeyplePluginNotFoundException if the wanted plugin is not found
    */
-  public synchronized ReaderPlugin getPlugin(String name) {
+  public synchronized Plugin getPlugin(String name) {
     synchronized (MONITOR) {
-      ReaderPlugin readerPlugin = plugins.get(name);
-      if (readerPlugin == null) {
+      Plugin plugin = plugins.get(name);
+      if (plugin == null) {
         throw new KeyplePluginNotFoundException(name);
       }
-      return readerPlugin;
+      return plugin;
     }
   }
 
