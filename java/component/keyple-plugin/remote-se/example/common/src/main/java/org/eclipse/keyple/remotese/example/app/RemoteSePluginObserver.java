@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerPlugin;
 import org.eclipse.keyple.plugin.remotese.virtualse.RemoteSeServerReader;
@@ -130,7 +130,7 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(AID).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());

@@ -24,6 +24,7 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.eclipse.keyple.plugin.remotese.core.KeypleServerAsync;
 import org.eclipse.keyple.plugin.remotese.core.impl.AbstractKeypleNode;
@@ -153,10 +154,12 @@ public abstract class BaseScenario {
       nativeReader = (StubReader) nativePlugin.getReader(NATIVE_READER_NAME);
       assertThat(nativeReader).isNull();
     } catch (KeypleReaderNotFoundException e) {
-      nativePlugin.plugStubReader(NATIVE_READER_NAME, true);
+      nativePlugin.plugStubReader(NATIVE_READER_NAME, true, true);
       nativeReader = (StubReader) nativePlugin.getReader(NATIVE_READER_NAME);
-      // configure the procotol settings
-      // nativeReader.activateProtocol("","");//todo
+      // activate ISO_14443_4
+      nativeReader.activateProtocol(
+          StubSupportedProtocols.ISO_14443_4.name(),
+          ContactlessCardCommonProtocols.ISO_14443_4.name());
     }
     // nativeReader should be reset
     try {
@@ -164,10 +167,12 @@ public abstract class BaseScenario {
       assertThat(nativeReader2).isNull();
     } catch (KeypleReaderNotFoundException e) {
       // plug a second reader
-      nativePlugin.plugStubReader(NATIVE_READER_NAME_2, true);
+      nativePlugin.plugStubReader(NATIVE_READER_NAME_2, true, true);
       nativeReader2 = (StubReader) nativePlugin.getReader(NATIVE_READER_NAME_2);
-      // nativeReader.activateProtocol("","");//todo
-
+      // activate ISO_14443_4
+      nativeReader2.activateProtocol(
+          StubSupportedProtocols.ISO_14443_4.name(),
+          ContactlessCardCommonProtocols.ISO_14443_4.name());
     }
   }
 

@@ -147,6 +147,7 @@ public abstract class BaseNativeSeTest {
   }
 
   public static SeRequest getASeRequest() {
+    String poAid = "A000000291A000000191";
     List<ApduRequest> poApduRequests;
     poApduRequests =
         Collections.singletonList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
