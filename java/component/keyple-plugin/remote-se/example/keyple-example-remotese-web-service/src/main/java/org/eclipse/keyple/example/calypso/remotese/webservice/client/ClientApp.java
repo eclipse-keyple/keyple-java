@@ -16,18 +16,14 @@ import javax.inject.Inject;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
-import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
+import org.eclipse.keyple.plugin.pcsc.PcscSupportedProtocols;
 import org.eclipse.keyple.plugin.remotese.nativese.NativeSeClientService;
 import org.eclipse.keyple.plugin.remotese.nativese.RemoteServiceParameters;
 import org.eclipse.keyple.plugin.remotese.nativese.impl.NativeSeClientServiceFactory;
-import org.eclipse.keyple.plugin.stub.StubPlugin;
-import org.eclipse.keyple.plugin.stub.StubPluginFactory;
-import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
-import org.eclipse.keyple.plugin.stub.StubReader;
+import org.eclipse.keyple.plugin.stub.*;
 import org.eclipse.keyple.remotese.example.model.TransactionResult;
 import org.eclipse.keyple.remotese.example.model.UserInfo;
 import org.eclipse.keyple.remotese.example.se.StubCalypsoClassic;
@@ -105,10 +101,10 @@ public class ClientApp {
     // retrieve the connected the reader
     nativeReader = nativePlugin.getReaders().values().iterator().next();
 
-    // configure the procotol settings
-    nativeReader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+    // configure the procotol ISO_14443_4
+    nativeReader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // insert a Stub SE
     ((StubReader) nativeReader).insertSe(new StubCalypsoClassic());
@@ -141,14 +137,12 @@ public class ClientApp {
     }
 
     // configure pcsc specific configuration to handle contactless
-    ((PcscReader) nativeReader)
-        .setTransmissionMode(TransmissionMode.CONTACTLESS)
-        .setIsoProtocol(PcscReader.IsoProtocol.T1);
+    ((PcscReader) nativeReader).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     // configure the procotol settings
-    nativeReader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        PcscProtocolSetting.getAllSettings().get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+    nativeReader.activateProtocol(
+        PcscSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     LOGGER.info(
         "Client - Native reader was configured with PCSC reader : {} with a SE",

@@ -13,13 +13,9 @@ package org.eclipse.keyple.core.util.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import java.util.Map;
 import org.eclipse.keyple.core.command.SeCommand;
 import org.eclipse.keyple.core.command.exception.KeypleSeCommandException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 
 /** Json Parser for Keyple DTO and Keyple DTO body */
 public final class KeypleJsonParser {
@@ -51,13 +47,8 @@ public final class KeypleJsonParser {
   private static GsonBuilder initGsonBuilder() {
     GsonBuilder init = new GsonBuilder();
     // init keyple default adapter
-    init.registerTypeAdapter(SeProtocol.class, new SeProtocolTypeAdapter())
-        .registerTypeAdapter(
-            new TypeToken<Map<SeProtocol, String>>() {}.getType(),
-            new SeProtocolSettingSerializer())
-        .registerTypeAdapter(byte[].class, new HexArrayTypeAdapter())
+    init.registerTypeAdapter(byte[].class, new HexArrayTypeAdapter())
         .registerTypeAdapter(SeCommand.class, new SeCommandTypeAdapter())
-        .registerTypeAdapter(SeCommonProtocols.class, new SeCommonProtocolsSerializer())
         .registerTypeAdapter(BodyError.class, new BodyErrorSerializer())
         .registerTypeHierarchyAdapter(Throwable.class, new ThrowableSerializer())
         .registerTypeAdapter(KeypleReaderIOException.class, new KeypleReaderIOExceptionSerializer())

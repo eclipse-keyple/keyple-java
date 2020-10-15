@@ -15,7 +15,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
-import java.util.Map;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
@@ -25,8 +24,6 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.junit.After;
 import org.junit.Before;
@@ -175,99 +172,6 @@ public class ServerVirtualObservableReaderTest extends RemoteSeServerBaseTest {
 
     // execute
     reader.isSePresent();
-  }
-
-  @Test
-  public void addSeProtocolSetting_shouldDelegateMethodToVirtualReader() {
-
-    // init request
-    SeProtocol seProtocol = SampleFactory.getSeProtocol();
-    String protocolRule = "protocolRule";
-
-    // init response
-    doNothing().when(virtualObservableReaderMocked).addSeProtocolSetting(seProtocol, protocolRule);
-
-    // execute
-    reader.addSeProtocolSetting(seProtocol, protocolRule);
-
-    // verify
-    verify(virtualObservableReaderMocked).addSeProtocolSetting(seProtocol, protocolRule);
-    verifyNoMoreInteractions(virtualObservableReaderMocked);
-  }
-
-  @Test(expected = KeypleReaderIOException.class)
-  public void addSeProtocolSetting_whenError_shouldThrowOriginalException() {
-
-    // init request
-    SeProtocol seProtocol = SampleFactory.getSeProtocol();
-    String protocolRule = "protocolRule";
-
-    // init response
-    doThrow(new KeypleReaderIOException("test"))
-        .when(virtualObservableReaderMocked)
-        .addSeProtocolSetting(seProtocol, protocolRule);
-
-    // execute
-    reader.addSeProtocolSetting(seProtocol, protocolRule);
-  }
-
-  @Test
-  public void setSeProtocolSetting_shouldDelegateMethodToVirtualReader() {
-
-    // init request
-    Map<SeProtocol, String> seProtocolSetting = SampleFactory.getSeProtocolSetting();
-
-    // init response
-    doNothing().when(virtualObservableReaderMocked).setSeProtocolSetting(seProtocolSetting);
-
-    // execute
-    reader.setSeProtocolSetting(seProtocolSetting);
-
-    // verify
-    verify(virtualObservableReaderMocked).setSeProtocolSetting(seProtocolSetting);
-    verifyNoMoreInteractions(virtualObservableReaderMocked);
-  }
-
-  @Test(expected = KeypleReaderIOException.class)
-  public void setSeProtocolSetting_whenError_shouldThrowOriginalException() {
-
-    // init request
-    Map<SeProtocol, String> seProtocolSetting = SampleFactory.getSeProtocolSetting();
-
-    // init response
-    doThrow(new KeypleReaderIOException("test"))
-        .when(virtualObservableReaderMocked)
-        .setSeProtocolSetting(seProtocolSetting);
-
-    // execute
-    reader.setSeProtocolSetting(seProtocolSetting);
-  }
-
-  @Test
-  public void getTransmissionMode_shouldDelegateMethodToVirtualReader() {
-
-    // init
-    doReturn(TransmissionMode.CONTACTS).when(virtualObservableReaderMocked).getTransmissionMode();
-
-    // execute
-    TransmissionMode result = reader.getTransmissionMode();
-
-    // verify
-    verify(virtualObservableReaderMocked).getTransmissionMode();
-    verifyNoMoreInteractions(virtualObservableReaderMocked);
-    assertThat(result).isEqualTo(TransmissionMode.CONTACTS);
-  }
-
-  @Test(expected = KeypleReaderIOException.class)
-  public void getTransmissionMode_whenError_shouldThrowOriginalException() {
-
-    // init
-    doThrow(new KeypleReaderIOException("test"))
-        .when(virtualObservableReaderMocked)
-        .getTransmissionMode();
-
-    // execute
-    reader.getTransmissionMode();
   }
 
   @SuppressWarnings("ResultOfMethodCallIgnored")

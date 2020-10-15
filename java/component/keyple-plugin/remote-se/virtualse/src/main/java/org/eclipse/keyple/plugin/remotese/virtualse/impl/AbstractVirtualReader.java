@@ -19,8 +19,6 @@ import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractReader;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
@@ -136,60 +134,44 @@ abstract class AbstractVirtualReader extends AbstractReader {
    * @since 1.0
    */
   @Override
-  public void addSeProtocolSetting(SeProtocol seProtocol, String protocolRule) {
-
-    // Build the message
-    JsonObject body = new JsonObject();
-    body.addProperty("seProtocol", seProtocol.getName());
-    body.addProperty("protocolRule", protocolRule);
-
-    // Send the message as a request even if no return is expected
-    sendRequest(KeypleMessageDto.Action.ADD_SE_PROTOCOL_SETTING, body);
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
-  @Override
-  public void setSeProtocolSetting(Map<SeProtocol, String> protocolSetting) {
-
-    // Build the message
-    JsonObject body = new JsonObject();
-    body.addProperty(
-        "protocolSetting",
-        KeypleJsonParser.getParser()
-            .toJson(protocolSetting, new TypeToken<Map<SeProtocol, String>>() {}.getType()));
-
-    // Send the message as a request even if no return is expected
-    sendRequest(KeypleMessageDto.Action.SET_SE_PROTOCOL_SETTING, body);
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
-  @Override
-  public TransmissionMode getTransmissionMode() {
-
-    // Send the message as a request
-    KeypleMessageDto response = sendRequest(KeypleMessageDto.Action.GET_TRANSMISSION_MODE, null);
-
-    // Extract the response
-    return KeypleJsonParser.getParser().fromJson(response.getBody(), TransmissionMode.class);
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @since 1.0
-   */
-  @Override
   public void releaseChannel() {
     // Send the message as a request even if no return is expected
     sendRequest(KeypleMessageDto.Action.RELEASE_CHANNEL, null);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
+  @Override
+  public void activateProtocol(String readerProtocolName, String applicationProtocolName) {
+    throw new UnsupportedOperationException(
+        "activateProtocol method is not implemented in plugin remote, use it only locally");
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
+  @Override
+  public void deactivateProtocol(String readerProtocolName) {
+    throw new UnsupportedOperationException(
+        "activateProtocol method is not implemented in plugin remote, use it only locally");
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
+  @Override
+  public boolean isContactless() {
+    KeypleMessageDto response = sendRequest(KeypleMessageDto.Action.IS_READER_CONTACTLESS, null);
+
+    // Extract the response
+    return KeypleJsonParser.getParser().fromJson(response.getBody(), Boolean.class);
   }
 
   /**

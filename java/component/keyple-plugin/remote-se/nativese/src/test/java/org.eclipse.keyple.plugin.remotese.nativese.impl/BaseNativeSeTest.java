@@ -15,15 +15,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
 
 import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
 import java.util.*;
 import org.assertj.core.util.Lists;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
@@ -100,6 +96,15 @@ public abstract class BaseNativeSeTest {
         .setBody(null);
   }
 
+  public static KeypleMessageDto getIsContactless(String sessionId) {
+    return new KeypleMessageDto() //
+        .setSessionId(sessionId) //
+        .setAction(KeypleMessageDto.Action.IS_READER_CONTACTLESS.name()) //
+        .setServerNodeId("serverNodeId") //
+        .setClientNodeId("clientNodeId") //
+        .setBody(null);
+  }
+
   public static KeypleMessageDto getStartSeDetection(String sessionId) {
     JsonObject body = new JsonObject();
     body.addProperty("pollingMode", ObservableReader.PollingMode.REPEATING.name());
@@ -130,55 +135,6 @@ public abstract class BaseNativeSeTest {
         .setServerNodeId("serverNodeId") //
         .setClientNodeId("clientNodeId") //
         .setBody(body.toString());
-  }
-
-  public static KeypleMessageDto getAddSeProtocolSettingDto(String sessionId) {
-    JsonObject body = new JsonObject();
-    body.addProperty("seProtocol", SeCommonProtocols.PROTOCOL_ISO14443_4.getName());
-    body.addProperty("protocolRule", "protocolRule");
-    return new KeypleMessageDto() //
-        .setSessionId(sessionId) //
-        .setAction(KeypleMessageDto.Action.ADD_SE_PROTOCOL_SETTING.name()) //
-        .setServerNodeId("serverNodeId") //
-        .setClientNodeId("clientNodeId") //
-        .setBody(body.toString());
-  }
-
-  public static KeypleMessageDto getSetSeProtocolSettingDto(String sessionId) {
-    Map<SeProtocol, String> protocolSetting = new HashMap<SeProtocol, String>();
-    protocolSetting.put(
-        new SeProtocol() {
-          @Override
-          public String getName() {
-            return SeCommonProtocols.PROTOCOL_ISO14443_4.getName();
-          }
-
-          @Override
-          public TransmissionMode getTransmissionMode() {
-            return TransmissionMode.CONTACTS;
-          }
-        },
-        "protocolRule");
-    JsonObject body = new JsonObject();
-    body.addProperty(
-        "protocolSetting",
-        KeypleJsonParser.getParser()
-            .toJson(protocolSetting, new TypeToken<Map<SeProtocol, String>>() {}.getType()));
-    return new KeypleMessageDto() //
-        .setSessionId(sessionId) //
-        .setAction(KeypleMessageDto.Action.SET_SE_PROTOCOL_SETTING.name()) //
-        .setServerNodeId("serverNodeId") //
-        .setClientNodeId("clientNodeId") //
-        .setBody(body.toString());
-  }
-
-  public static KeypleMessageDto getGetTransmissionModeDto(String sessionId) {
-    return new KeypleMessageDto() //
-        .setSessionId(sessionId) //
-        .setAction(KeypleMessageDto.Action.GET_TRANSMISSION_MODE.name()) //
-        .setServerNodeId("serverNodeId") //
-        .setClientNodeId("clientNodeId") //
-        .setBody(null);
   }
 
   public static KeypleMessageDto getReleaseChannelDto(String sessionId) {

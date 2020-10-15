@@ -20,7 +20,7 @@ import org.eclipse.keyple.plugin.stub.StubSecureElement;
  */
 public class StubCalypsoClassic extends StubSecureElement {
 
-  private static final String SE_PROTOCOL = "PROTOCOL_ISO14443_4";
+  private static final String SE_PROTOCOL = "ISO_14443_4";
   private static final String ATR_HEX = "3B8880010000000000718100F9";
 
   public StubCalypsoClassic() {
@@ -69,7 +69,7 @@ public class StubCalypsoClassic extends StubSecureElement {
   }
 
   @Override
-  public String getSeProcotol() {
+  public String getSeProtocol() {
     return SE_PROTOCOL;
   }
 }

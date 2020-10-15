@@ -18,9 +18,8 @@ import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactsCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 public class SampleFactory {
@@ -60,7 +59,7 @@ public class SampleFactory {
     SeSelector seSelector =
         SeSelector.builder() //
             .aidSelector(aidSelector) //
-            .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4) //
+            .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name()) //
             .build();
 
     SeRequest seRequest = new SeRequest(seSelector, poApduRequests);
@@ -101,7 +100,7 @@ public class SampleFactory {
     SeSelector seSelector =
         SeSelector.builder() //
             .aidSelector(aidSelector) //
-            .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4) //
+            .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name()) //
             .build();
 
     SeRequest seRequest = new SeRequest(seSelector, poApduRequests);
@@ -133,7 +132,7 @@ public class SampleFactory {
     SeSelector aidSeSelector =
         SeSelector.builder() //
             .aidSelector(aidSelector) //
-            .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4) //
+            .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name()) //
             .build();
 
     SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter("/regex/");
@@ -141,7 +140,7 @@ public class SampleFactory {
     SeSelector seAtrSelector =
         SeSelector.builder() //
             .atrFilter(atrFilter) //
-            .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3) //
+            .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name()) //
             .build();
 
     SeRequest seRequest = new SeRequest(aidSeSelector, poApduRequests);
@@ -171,27 +170,6 @@ public class SampleFactory {
         new SeResponse(true, true, new SelectionStatus(null, apdu, true), apduResponses));
 
     return seResponses;
-  }
-
-  public static SeProtocol getSeProtocol() {
-    return new SeProtocol() {
-      @Override
-      public String getName() {
-        return SeCommonProtocols.PROTOCOL_ISO14443_4.name();
-      }
-
-      @Override
-      public TransmissionMode getTransmissionMode() {
-        return TransmissionMode.CONTACTS;
-      }
-    };
-  }
-
-  public static Map<SeProtocol, String> getSeProtocolSetting() {
-    Map<SeProtocol, String> seProtocolSetting = new HashMap<SeProtocol, String>();
-    SeProtocol seProtocol = getSeProtocol();
-    seProtocolSetting.put(seProtocol, "protocolRule");
-    return seProtocolSetting;
   }
 
   public static DefaultSelectionsResponse getDefaultSelectionsResponse() {
