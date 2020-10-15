@@ -234,9 +234,9 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
                 .aidSelector(CardSelector.AidSelector.builder()
                         .aidToSelect(PO_AID).build()).build(), poApduRequestList)
 
-        val cardRequestSet = ArrayList<CardRequest>()
-        cardRequestSet.add(cardRequest)
-        return cardRequestSet
+        val cardRequestList = ArrayList<CardRequest>()
+        cardRequestList.add(cardRequest)
+        return cardRequestList
     }
 
     private fun getNoAidSampleCardRequest(): List<CardRequest> {
@@ -246,8 +246,8 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         val cardRequest = CardRequest(CardSelector.builder()
                 .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name).build(), poApduRequestList)
 
-        val cardRequestSet = ArrayList<CardRequest>()
-        cardRequestSet.add(cardRequest)
-        return cardRequestSet
+        val cardRequestList = ArrayList<CardRequest>()
+        cardRequestList.add(cardRequest)
+        return cardRequestList
     }
 }
