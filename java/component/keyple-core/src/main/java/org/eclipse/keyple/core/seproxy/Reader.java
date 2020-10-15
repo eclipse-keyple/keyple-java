@@ -32,7 +32,7 @@ public interface Reader extends ProxyElement {
   /**
    * Checks if is the card present.
    *
-   * @return true if a Secure Element is present in the reader
+   * @return true if a card is present in the reader
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @since 0.9
    */

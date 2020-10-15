@@ -25,8 +25,8 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
  * The {@link CardRequest} optionally carries the card selection data and an APDU list.<br>
  * The {@link CardResponse} contains the result of the selection and the responses to the APDUs.
  *
- * <p>The {@link CardRequest} are transmitted individually ({@link #transmitSeRequest(CardRequest,
- * ChannelControl)} or by a list {@link #transmitSeRequests(List, MultiSelectionProcessing,
+ * <p>The {@link CardRequest} are transmitted individually ({@link #transmitCardRequest(CardRequest,
+ * ChannelControl)} or by a list {@link #transmitCardRequests(List, MultiSelectionProcessing,
  * ChannelControl)} allowing applications to provide several selection patterns with various
  * options.
  *
@@ -41,18 +41,19 @@ public interface ProxyReader extends Reader {
    * Transmits the list of {@link CardRequest } and gets in return a list of {@link CardResponse}.
    *
    * <p>The actual processing of each {@link CardRequest} is similar to that performed by {@link
-   * #transmitSeRequest(CardRequest, ChannelControl)} (see this method for further explanation of
+   * #transmitCardRequest(CardRequest, ChannelControl)} (see this method for further explanation of
    * how the process works).
    *
    * <p>If the multiSelectionProcessing parameter equals to {@link
    * MultiSelectionProcessing#FIRST_MATCH}, the iteration over the {@link CardRequest} list is
    * interrupted at the first processing that leads to an open logical channel state. In this case,
-   * the list of {@link CardResponse} may be shorter than the list of SeRequests provided as input.
+   * the list of {@link CardResponse} may be shorter than the list of CardRequests provided as
+   * input.
    *
    * <p>If it equals to {@link MultiSelectionProcessing#PROCESS_ALL}, all the {@link CardRequest}
    * are processed and the logical channel is closed after each process.<br>
    * The physical channel is managed by the ChannelControl parameter as in {@link
-   * #transmitSeRequest(CardRequest, ChannelControl)}.
+   * #transmitCardRequest(CardRequest, ChannelControl)}.
    *
    * <p>In the case of a selection specifying a card protocol, it is imperative to activate it
    * previously with the method {@link Reader#activateProtocol(String, String)}. An
@@ -68,7 +69,7 @@ public interface ProxyReader extends Reader {
    * @throws IllegalStateException in case of configuration inconsistency.
    * @since 0.9
    */
-  List<CardResponse> transmitSeRequests(
+  List<CardResponse> transmitCardRequests(
       List<CardRequest> cardRequests,
       MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl);
@@ -122,7 +123,7 @@ public interface ProxyReader extends Reader {
    * @throws IllegalArgumentException if one of the arguments is null.
    * @since 0.9
    */
-  CardResponse transmitSeRequest(CardRequest cardRequest, ChannelControl channelControl);
+  CardResponse transmitCardRequest(CardRequest cardRequest, ChannelControl channelControl);
 
   /**
    * Release the communication channel previously established with the card.

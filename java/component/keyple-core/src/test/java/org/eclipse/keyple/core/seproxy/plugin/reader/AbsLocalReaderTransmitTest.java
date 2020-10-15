@@ -65,7 +65,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     List<CardRequest> cardRequests = getPartialRequestList(reader, 0);
     try {
       // test
-      reader.processSeRequests(
+      reader.processCardRequests(
           cardRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
       fail("A KeypleReaderIOException was expected");
     } catch (KeypleReaderIOException ex) {
@@ -81,7 +81,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     List<CardRequest> cardRequests = getPartialRequestList(reader, 1);
     try {
       // test
-      reader.processSeRequests(
+      reader.processCardRequests(
           cardRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
       fail("A KeypleReaderIOException was expected");
     } catch (KeypleReaderIOException ex) {
@@ -99,7 +99,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     List<CardRequest> cardRequests = getPartialRequestList(reader, 2);
     try {
       // test
-      reader.processSeRequests(
+      reader.processCardRequests(
           cardRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
       fail("A KeypleReaderIOException was expected");
     } catch (KeypleReaderIOException ex) {
@@ -118,7 +118,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     try {
       // test
       List<CardResponse> responses =
-          reader.processSeRequests(
+          reader.processCardRequests(
               cardRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
       assertThat(responses.size()).isEqualTo(3);
       assertThat(responses.get(0).getApduResponses().size()).isEqualTo(4);
@@ -138,7 +138,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     try {
       // test
       List<CardResponse> responses =
-          reader.processSeRequests(
+          reader.processCardRequests(
               cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
       assertThat(responses.size()).isEqualTo(1);
       assertThat(responses.get(0).getApduResponses().size()).isEqualTo(4);
@@ -154,7 +154,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     CardRequest cardRequest = getPartialRequest(reader, 0);
     try {
       // test
-      reader.processSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
+      reader.processCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
     } catch (KeypleReaderIOException ex) {
       logger.error("", ex);
       assertThat(ex.getCardResponse().getApduResponses().size()).isEqualTo(0);
@@ -168,7 +168,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     CardRequest cardRequest = getPartialRequest(reader, 1);
     try {
       // test
-      reader.processSeRequest(cardRequest, ChannelControl.CLOSE_AFTER);
+      reader.processCardRequest(cardRequest, ChannelControl.CLOSE_AFTER);
       fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
@@ -183,7 +183,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     CardRequest cardRequest = getPartialRequest(reader, 2);
     try {
       // test
-      reader.processSeRequest(cardRequest, ChannelControl.CLOSE_AFTER);
+      reader.processCardRequest(cardRequest, ChannelControl.CLOSE_AFTER);
       fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
@@ -198,7 +198,8 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     CardRequest cardRequest = getPartialRequest(reader, 3);
     try {
       // test
-      CardResponse cardResponse = reader.processSeRequest(cardRequest, ChannelControl.CLOSE_AFTER);
+      CardResponse cardResponse =
+          reader.processCardRequest(cardRequest, ChannelControl.CLOSE_AFTER);
       assertThat(cardResponse.getApduResponses().size()).isEqualTo(3);
     } catch (KeypleReaderException ex) {
       fail("Should not throw exception");

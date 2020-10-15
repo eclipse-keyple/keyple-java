@@ -98,15 +98,15 @@ public class StubReaderTest extends BaseStubTest {
         new ObservableReader.ReaderObserver() {
           @Override
           public void update(ReaderEvent event) {
-            if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED) {
+            if (event.getEventType() == ReaderEvent.EventType.CARD_INSERTED) {
               Assert.assertEquals(event.getReaderName(), reader.getName());
               Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-              Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+              Assert.assertEquals(ReaderEvent.EventType.CARD_INSERTED, event.getEventType());
 
               logger.debug("testInsert event is correct");
 
               lock.countDown();
-            } else if (event.getEventType() == ReaderEvent.EventType.SE_REMOVED) {
+            } else if (event.getEventType() == ReaderEvent.EventType.CARD_REMOVED) {
               lock.countDown();
             }
           }
@@ -158,15 +158,15 @@ public class StubReaderTest extends BaseStubTest {
             if (event_i == 1) {
               Assert.assertEquals(event.getReaderName(), reader.getName());
               Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-              Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+              Assert.assertEquals(ReaderEvent.EventType.CARD_INSERTED, event.getEventType());
               insertLock.countDown();
             }
 
-            // analyze the second event, should be a SE_REMOVED
+            // analyze the second event, should be a CARD_REMOVED
             if (event_i == 2) {
               Assert.assertEquals(event.getReaderName(), reader.getName());
               Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-              Assert.assertEquals(ReaderEvent.EventType.SE_REMOVED, event.getEventType());
+              Assert.assertEquals(ReaderEvent.EventType.CARD_REMOVED, event.getEventType());
               removeLock.countDown();
             }
             event_i++;
@@ -181,7 +181,7 @@ public class StubReaderTest extends BaseStubTest {
     // test
     reader.insertSe(hoplinkSE());
 
-    // lock thread for 2 seconds max to wait for the event SE_INSERTED
+    // lock thread for 2 seconds max to wait for the event CARD_INSERTED
     insertLock.await(2, TimeUnit.SECONDS);
 
     Assert.assertEquals(0, insertLock.getCount()); // should be 0 because insertLock is
@@ -190,7 +190,7 @@ public class StubReaderTest extends BaseStubTest {
     ((ProxyReader) reader).releaseChannel();
     reader.removeSe();
 
-    // lock thread for 2 seconds max to wait for the event SE_REMOVED
+    // lock thread for 2 seconds max to wait for the event CARD_REMOVED
     removeLock.await(2, TimeUnit.SECONDS);
 
     Assert.assertEquals(0, removeLock.getCount()); // should be 0 because removeLock is
@@ -228,27 +228,27 @@ public class StubReaderTest extends BaseStubTest {
             if (event_i == 1) {
               Assert.assertEquals(event.getReaderName(), reader.getName());
               Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-              Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+              Assert.assertEquals(ReaderEvent.EventType.CARD_INSERTED, event.getEventType());
               firstInsertLock.countDown();
             }
 
-            // analyze the second event, should be a SE_REMOVED
+            // analyze the second event, should be a CARD_REMOVED
             if (event_i == 2) {
               Assert.assertEquals(event.getReaderName(), reader.getName());
               Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-              Assert.assertEquals(ReaderEvent.EventType.SE_REMOVED, event.getEventType());
+              Assert.assertEquals(ReaderEvent.EventType.CARD_REMOVED, event.getEventType());
               firstRemoveLock.countDown();
             }
             if (event_i == 3) {
               Assert.assertEquals(event.getReaderName(), reader.getName());
               Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-              Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+              Assert.assertEquals(ReaderEvent.EventType.CARD_INSERTED, event.getEventType());
               secondInsertLock.countDown();
             }
             if (event_i == 4) {
               Assert.assertEquals(event.getReaderName(), reader.getName());
               Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-              Assert.assertEquals(ReaderEvent.EventType.SE_REMOVED, event.getEventType());
+              Assert.assertEquals(ReaderEvent.EventType.CARD_REMOVED, event.getEventType());
               secondRemoveLock.countDown();
             }
             event_i++;
@@ -266,7 +266,7 @@ public class StubReaderTest extends BaseStubTest {
 
     // Thread.sleep(200);
 
-    // lock thread for 2 seconds max to wait for the event SE_INSERTED
+    // lock thread for 2 seconds max to wait for the event CARD_INSERTED
     firstInsertLock.await(2, TimeUnit.SECONDS);
     Assert.assertEquals(0, firstInsertLock.getCount()); // should be 0 because insertLock is
     // countDown by obs
@@ -275,7 +275,7 @@ public class StubReaderTest extends BaseStubTest {
     ((ProxyReader) reader).releaseChannel();
     reader.removeSe();
 
-    // lock thread for 2 seconds max to wait for the event SE_REMOVED
+    // lock thread for 2 seconds max to wait for the event CARD_REMOVED
     firstRemoveLock.await(2, TimeUnit.SECONDS);
     Assert.assertEquals(0, firstRemoveLock.getCount()); // should be 0 because removeLock is
     // countDown by obs
@@ -288,7 +288,7 @@ public class StubReaderTest extends BaseStubTest {
     // test second sequence
     reader.insertSe(hoplinkSE());
 
-    // lock thread for 2 seconds max to wait for the event SE_INSERTED
+    // lock thread for 2 seconds max to wait for the event CARD_INSERTED
     secondInsertLock.await(2, TimeUnit.SECONDS);
 
     Assert.assertEquals(0, secondInsertLock.getCount()); // should be 0 because insertLock is
@@ -301,7 +301,7 @@ public class StubReaderTest extends BaseStubTest {
 
     reader.removeSe();
 
-    // lock thread for 2 seconds max to wait for the event SE_REMOVED
+    // lock thread for 2 seconds max to wait for the event CARD_REMOVED
     secondRemoveLock.await(2, TimeUnit.SECONDS);
     Assert.assertEquals(0, secondRemoveLock.getCount()); // should be 0 because removeLock is
     // countDown by obs
@@ -333,27 +333,27 @@ public class StubReaderTest extends BaseStubTest {
             if (event_i == 1) {
               Assert.assertEquals(event.getReaderName(), reader.getName());
               Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-              Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+              Assert.assertEquals(ReaderEvent.EventType.CARD_INSERTED, event.getEventType());
               firstInsertLock.countDown();
             }
 
-            // analyze the second event, should be a SE_REMOVED
+            // analyze the second event, should be a CARD_REMOVED
             if (event_i == 2) {
               Assert.assertEquals(event.getReaderName(), reader.getName());
               Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-              Assert.assertEquals(ReaderEvent.EventType.SE_REMOVED, event.getEventType());
+              Assert.assertEquals(ReaderEvent.EventType.CARD_REMOVED, event.getEventType());
               firstRemoveLock.countDown();
             }
             if (event_i == 3) {
               Assert.assertEquals(event.getReaderName(), reader.getName());
               Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-              Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+              Assert.assertEquals(ReaderEvent.EventType.CARD_INSERTED, event.getEventType());
               secondInsertLock.countDown();
             }
             if (event_i == 4) {
               Assert.assertEquals(event.getReaderName(), reader.getName());
               Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-              Assert.assertEquals(ReaderEvent.EventType.SE_REMOVED, event.getEventType());
+              Assert.assertEquals(ReaderEvent.EventType.CARD_REMOVED, event.getEventType());
               secondRemoveLock.countDown();
             }
             event_i++;
@@ -369,7 +369,7 @@ public class StubReaderTest extends BaseStubTest {
     // test first sequence
     reader.insertSe(hoplinkSE());
 
-    // lock thread for 2 seconds max to wait for the event SE_INSERTED
+    // lock thread for 2 seconds max to wait for the event CARD_INSERTED
     firstInsertLock.await(2, TimeUnit.SECONDS);
     Assert.assertEquals(0, firstInsertLock.getCount()); // should be 0 because insertLock is
     // countDown by obs
@@ -377,7 +377,7 @@ public class StubReaderTest extends BaseStubTest {
     ((ProxyReader) reader).releaseChannel();
     reader.removeSe();
 
-    // lock thread for 2 seconds max to wait for the event SE_REMOVED
+    // lock thread for 2 seconds max to wait for the event CARD_REMOVED
     firstRemoveLock.await(2, TimeUnit.SECONDS);
     Assert.assertEquals(0, firstRemoveLock.getCount()); // should be 0 because removeLock is
     // countDown by obs
@@ -389,7 +389,7 @@ public class StubReaderTest extends BaseStubTest {
     // test second sequence
     reader.insertSe(hoplinkSE());
 
-    // lock thread for 2 seconds max to wait for the event SE_INSERTED
+    // lock thread for 2 seconds max to wait for the event CARD_INSERTED
     secondInsertLock.await(2, TimeUnit.SECONDS);
 
     reader.stopSeDetection();
@@ -399,7 +399,7 @@ public class StubReaderTest extends BaseStubTest {
     ((ProxyReader) reader).releaseChannel();
     reader.removeSe();
 
-    // lock thread for 2 seconds max to wait for the event SE_REMOVED
+    // lock thread for 2 seconds max to wait for the event CARD_REMOVED
     secondRemoveLock.await(2, TimeUnit.SECONDS);
     Assert.assertEquals(0, secondRemoveLock.getCount()); // should be 0 because removeLock is
     // countDown by obs
@@ -427,10 +427,10 @@ public class StubReaderTest extends BaseStubTest {
         new ObservableReader.ReaderObserver() {
           @Override
           public void update(ReaderEvent event) {
-            if (event.getEventType() == ReaderEvent.EventType.SE_MATCHED) {
+            if (event.getEventType() == ReaderEvent.EventType.CARD_MATCHED) {
               Assert.assertEquals(event.getReaderName(), reader.getName());
               Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-              Assert.assertEquals(ReaderEvent.EventType.SE_MATCHED, event.getEventType());
+              Assert.assertEquals(ReaderEvent.EventType.CARD_MATCHED, event.getEventType());
               Assert.assertTrue(
                   ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
                       .getSelectionCardResponses()
@@ -531,8 +531,8 @@ public class StubReaderTest extends BaseStubTest {
         new ObservableReader.ReaderObserver() {
           @Override
           public void update(ReaderEvent event) {
-            // only SE_REMOVED event should be thrown
-            if (event.getEventType() != ReaderEvent.EventType.SE_REMOVED) {
+            // only CARD_REMOVED event should be thrown
+            if (event.getEventType() != ReaderEvent.EventType.CARD_REMOVED) {
               lock.countDown(); // should not be called
             }
           }
@@ -599,8 +599,8 @@ public class StubReaderTest extends BaseStubTest {
         new ObservableReader.ReaderObserver() {
           @Override
           public void update(ReaderEvent event) {
-            // Only SE_INSERTED/SE_REMOVED event are thrown
-            if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED) {
+            // Only CARD_INSERTED/CARD_REMOVED event are thrown
+            if (event.getEventType() == ReaderEvent.EventType.CARD_INSERTED) {
               Assert.assertEquals(event.getReaderName(), reader.getName());
               Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
 
@@ -743,8 +743,8 @@ public class StubReaderTest extends BaseStubTest {
           @Override
           public void update(ReaderEvent event) {
 
-            if (ReaderEvent.EventType.SE_MATCHED == event.getEventType()) {
-              logger.info("SE_MATCHED event received");
+            if (ReaderEvent.EventType.CARD_MATCHED == event.getEventType()) {
+              logger.info("CARD_MATCHED event received");
               logger.info("Notify card processed after 0ms");
               ((ProxyReader) reader).releaseChannel();
               lock.countDown();
@@ -814,7 +814,7 @@ public class StubReaderTest extends BaseStubTest {
     // test
     List<CardResponse> cardResponse =
         ((ProxyReader) reader)
-            .transmitSeRequests(
+            .transmitCardRequests(
                 requests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
     // assert
@@ -843,7 +843,7 @@ public class StubReaderTest extends BaseStubTest {
     // test
     List<CardResponse> cardResponse =
         ((ProxyReader) reader)
-            .transmitSeRequests(
+            .transmitCardRequests(
                 requests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
   }
 
@@ -870,7 +870,7 @@ public class StubReaderTest extends BaseStubTest {
     try {
       List<CardResponse> cardResponse =
           ((ProxyReader) reader)
-              .transmitSeRequests(
+              .transmitCardRequests(
                   cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
       Assert.fail("Should throw exception");
 
@@ -903,7 +903,7 @@ public class StubReaderTest extends BaseStubTest {
     try {
       List<CardResponse> cardResponse =
           ((ProxyReader) reader)
-              .transmitSeRequests(
+              .transmitCardRequests(
                   cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
       Assert.fail("Should throw exception");
 
@@ -938,7 +938,7 @@ public class StubReaderTest extends BaseStubTest {
     try {
       List<CardResponse> cardResponse =
           ((ProxyReader) reader)
-              .transmitSeRequests(
+              .transmitCardRequests(
                   cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
       Assert.fail("Should throw exception");
 
@@ -973,7 +973,7 @@ public class StubReaderTest extends BaseStubTest {
     try {
       List<CardResponse> cardResponse =
           ((ProxyReader) reader)
-              .transmitSeRequests(
+              .transmitCardRequests(
                   cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
       Assert.assertEquals(3, cardResponse.size());
       Assert.assertEquals(4, cardResponse.get(0).getApduResponses().size());
@@ -1006,7 +1006,7 @@ public class StubReaderTest extends BaseStubTest {
     // test
     try {
       CardResponse cardResponse =
-          ((ProxyReader) reader).transmitSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
+          ((ProxyReader) reader).transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
@@ -1036,7 +1036,7 @@ public class StubReaderTest extends BaseStubTest {
     // test
     try {
       CardResponse cardResponse =
-          ((ProxyReader) reader).transmitSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
+          ((ProxyReader) reader).transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
@@ -1066,7 +1066,7 @@ public class StubReaderTest extends BaseStubTest {
     // test
     try {
       CardResponse cardResponse =
-          ((ProxyReader) reader).transmitSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
+          ((ProxyReader) reader).transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
@@ -1096,7 +1096,7 @@ public class StubReaderTest extends BaseStubTest {
     // test
     try {
       CardResponse cardResponse =
-          ((ProxyReader) reader).transmitSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
+          ((ProxyReader) reader).transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
       Assert.assertEquals(3, cardResponse.getApduResponses().size());
     } catch (KeypleReaderException ex) {
       Assert.fail("Should not throw exception");

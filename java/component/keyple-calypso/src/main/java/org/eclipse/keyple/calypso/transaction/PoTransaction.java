@@ -477,7 +477,7 @@ public class PoTransaction {
 
     CardResponse poCardResponse;
     try {
-      poCardResponse = poReader.transmitSeRequest(poCardRequest, channelControl);
+      poCardResponse = poReader.transmitCardRequest(poCardRequest, channelControl);
       // if the ratification command was added and no error occured then the response has been
       // received
       ratificationCommandResponseReceived = ratificationCommandAdded;
@@ -1187,7 +1187,7 @@ public class PoTransaction {
 
   private CardResponse safePoTransmit(CardRequest poCardRequest, ChannelControl channelControl) {
     try {
-      return poReader.transmitSeRequest(poCardRequest, channelControl);
+      return poReader.transmitCardRequest(poCardRequest, channelControl);
     } catch (KeypleReaderIOException e) {
       throw new CalypsoPoIOException("PO IO Exception while transmitting commands.", e);
     }

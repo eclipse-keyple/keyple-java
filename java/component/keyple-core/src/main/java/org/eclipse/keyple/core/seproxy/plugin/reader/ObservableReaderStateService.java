@@ -157,7 +157,7 @@ public class ObservableReaderStateService {
 
     /**
      * Set up SeInsertionDetection to use polling of the {@link Reader#isSePresent()} method to
-     * detect SE_INSERTED
+     * detect CARD_INSERTED
      *
      * @return A non null reference
      * @since 1.0
@@ -216,7 +216,7 @@ public class ObservableReaderStateService {
 
     /**
      * Set up SeRemovalDetection with to use polling of the {@link Reader#isSePresent()} method to
-     * detect SE_REMOVED
+     * detect CARD_REMOVED
      *
      * @return A non null reference
      * @since 1.0

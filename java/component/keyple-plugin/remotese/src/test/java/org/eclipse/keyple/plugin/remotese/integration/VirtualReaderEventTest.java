@@ -87,7 +87,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
   }
 
   /**
-   * Test SE_INSERTED Reader Event throwing and catching
+   * Test CARD_INSERTED Reader Event throwing and catching
    *
    * @throws Exception
    */
@@ -102,7 +102,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
           public void update(ReaderEvent event) {
             Assert.assertEquals(event.getReaderName(), virtualReader.getName());
             Assert.assertEquals(event.getPluginName(), masterAPI.getPlugin().getName());
-            Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+            Assert.assertEquals(ReaderEvent.EventType.CARD_INSERTED, event.getEventType());
             logger.debug("Reader Event is correct, release lock");
             lock.countDown();
           }
@@ -130,7 +130,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
   }
 
   /**
-   * Test SE_REMOVED Reader Event throwing and catching
+   * Test CARD_REMOVED Reader Event throwing and catching
    *
    * @throws Exception
    */
@@ -144,16 +144,16 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         new ObservableReader.ReaderObserver() {
           @Override
           public void update(ReaderEvent event) {
-            if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED) {
-              // we expect the first event to be SE_INSERTED
+            if (event.getEventType() == ReaderEvent.EventType.CARD_INSERTED) {
+              // we expect the first event to be CARD_INSERTED
               Assert.assertEquals(2, lock.getCount());
               lock.countDown();
             } else {
-              // the next event should be SE_REMOVED
+              // the next event should be CARD_REMOVED
               Assert.assertEquals(1, lock.getCount());
               Assert.assertEquals(event.getReaderName(), virtualReader.getName());
               Assert.assertEquals(event.getPluginName(), masterAPI.getPlugin().getName());
-              Assert.assertEquals(ReaderEvent.EventType.SE_REMOVED, event.getEventType());
+              Assert.assertEquals(ReaderEvent.EventType.CARD_REMOVED, event.getEventType());
               logger.debug("Reader Event is correct, release lock");
               lock.countDown();
             }
@@ -200,7 +200,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
           public void update(ReaderEvent event) {
             Assert.assertEquals(event.getReaderName(), virtualReader.getName());
             Assert.assertEquals(event.getPluginName(), masterAPI.getPlugin().getName());
-            Assert.assertEquals(ReaderEvent.EventType.SE_MATCHED, event.getEventType());
+            Assert.assertEquals(ReaderEvent.EventType.CARD_MATCHED, event.getEventType());
             Assert.assertTrue(
                 ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
                     .getSelectionCardResponses()
@@ -358,8 +358,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
             Assert.assertEquals(event.getReaderName(), virtualReader.getName());
             Assert.assertEquals(event.getPluginName(), masterAPI.getPlugin().getName());
 
-            // an SE_INSERTED event is thrown
-            Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+            // an CARD_INSERTED event is thrown
+            Assert.assertEquals(ReaderEvent.EventType.CARD_INSERTED, event.getEventType());
 
             // card has not match
             Assert.assertFalse(
@@ -461,7 +461,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
           @Override
           public void update(final ReaderEvent event) {
 
-            Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+            Assert.assertEquals(ReaderEvent.EventType.CARD_INSERTED, event.getEventType());
             logger.info("Prepare card selection");
             CardSelection cardSelection = new CardSelection();
             GenericCardSelectionRequest genericCardSelectionRequest =

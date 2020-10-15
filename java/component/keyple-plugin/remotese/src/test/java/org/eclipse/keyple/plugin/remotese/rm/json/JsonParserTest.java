@@ -36,13 +36,13 @@ public class JsonParserTest {
 
   /** Test Serialization of Keyple Card Proxy Objects */
   @Test
-  public void testHoplinkSeRequestList() {
-    List<CardRequest> cardRequests = SampleFactory.getASeRequestList_ISO14443_4();
+  public void testHoplinkCardRequestList() {
+    List<CardRequest> cardRequests = SampleFactory.getACardRequestList_ISO14443_4();
     testSerializeDeserializeObj(cardRequests, Set.class);
   }
 
   @Test
-  public void testCompleteSeRequestList() {
+  public void testCompleteCardRequestList() {
     List<CardRequest> cardRequests = SampleFactory.getCompleteRequestList();
     testSerializeDeserializeObj(cardRequests, Set.class);
   }
@@ -90,7 +90,7 @@ public class JsonParserTest {
         new ReaderEvent(
             "PLUGIN",
             "READER",
-            ReaderEvent.EventType.SE_INSERTED,
+            ReaderEvent.EventType.CARD_INSERTED,
             new DefaultSelectionsResponse(SampleFactory.getCompleteResponseSet()));
     testSerializeDeserializeObj(readerEvent, ReaderEvent.class);
   }

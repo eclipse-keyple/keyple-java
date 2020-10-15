@@ -83,14 +83,14 @@ public abstract class AbstractReader implements ProxyReader {
   /**
    * {@inheritDoc}
    *
-   * <p>This implementation of {@link ProxyReader#transmitSeRequests(List, MultiSelectionProcessing,
-   * ChannelControl)} is based on {@link #processSeRequests(List, MultiSelectionProcessing,
-   * ChannelControl)}.<br>
+   * <p>This implementation of {@link ProxyReader#transmitCardRequests(List,
+   * MultiSelectionProcessing, ChannelControl)} is based on {@link #processCardRequests(List,
+   * MultiSelectionProcessing, ChannelControl)}.<br>
    * It adds a logging of exchanges including a measure of execution time, available at the debug
    * level.
    */
   @Override
-  public final List<CardResponse> transmitSeRequests(
+  public final List<CardResponse> transmitCardRequests(
       List<CardRequest> cardRequests,
       MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl) {
@@ -102,21 +102,21 @@ public abstract class AbstractReader implements ProxyReader {
       long elapsed10ms = (timeStamp - before) / 100000;
       this.before = timeStamp;
       logger.debug(
-          "[{}] transmit => SEREQUESTLIST = {}, elapsed {} ms.",
+          "[{}] transmit => CARDREQUESTLIST = {}, elapsed {} ms.",
           this.getName(),
           cardRequests,
           elapsed10ms / 10.0);
     }
 
     try {
-      cardResponse = processSeRequests(cardRequests, multiSelectionProcessing, channelControl);
+      cardResponse = processCardRequests(cardRequests, multiSelectionProcessing, channelControl);
     } catch (KeypleReaderIOException ex) {
       if (logger.isDebugEnabled()) {
         long timeStamp = System.nanoTime();
         long elapsed10ms = (timeStamp - before) / 100000;
         this.before = timeStamp;
         logger.debug(
-            "[{}] transmit => SEREQUESTLIST IO failure. elapsed {}",
+            "[{}] transmit => CARDREQUESTLIST IO failure. elapsed {}",
             this.getName(),
             elapsed10ms / 10.0);
       } /* Throw an exception with the responses collected so far. */
@@ -139,7 +139,7 @@ public abstract class AbstractReader implements ProxyReader {
 
   /**
    * This method is the actual implementation of the process of transmitting a list of {@link
-   * CardRequest} as defined by {@link ProxyReader#transmitSeRequests(List,
+   * CardRequest} as defined by {@link ProxyReader#transmitCardRequests(List,
    * MultiSelectionProcessing, ChannelControl)}.
    *
    * @param cardRequests A not empty list of not null {@link CardRequest}.
@@ -150,10 +150,10 @@ public abstract class AbstractReader implements ProxyReader {
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @throws IllegalArgumentException if one of the arguments is null.
    * @throws IllegalStateException in case of configuration inconsistency.
-   * @see ProxyReader#transmitSeRequests(List, MultiSelectionProcessing, ChannelControl)
+   * @see ProxyReader#transmitCardRequests(List, MultiSelectionProcessing, ChannelControl)
    * @since 0.9
    */
-  protected abstract List<CardResponse> processSeRequests(
+  protected abstract List<CardResponse> processCardRequests(
       List<CardRequest> cardRequests,
       MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl);
@@ -161,13 +161,13 @@ public abstract class AbstractReader implements ProxyReader {
   /**
    * {@inheritDoc}
    *
-   * <p>This implementation of {@link ProxyReader#transmitSeRequest(CardRequest, ChannelControl)} is
-   * based on {@link #processSeRequest(CardRequest, ChannelControl)}.<br>
+   * <p>This implementation of {@link ProxyReader#transmitCardRequest(CardRequest, ChannelControl)}
+   * is based on {@link #processCardRequest(CardRequest, ChannelControl)}.<br>
    * It adds a logging of exchanges including a measure of execution time, available at the debug
    * level.
    */
   @Override
-  public final CardResponse transmitSeRequest(
+  public final CardResponse transmitCardRequest(
       CardRequest cardRequest, ChannelControl channelControl) {
 
     CardResponse cardResponse;
@@ -177,21 +177,21 @@ public abstract class AbstractReader implements ProxyReader {
       long elapsed10ms = (timeStamp - before) / 100000;
       this.before = timeStamp;
       logger.debug(
-          "[{}] transmit => SEREQUEST = {}, elapsed {} ms.",
+          "[{}] transmit => CARDREQUEST = {}, elapsed {} ms.",
           this.getName(),
           cardRequest,
           elapsed10ms / 10.0);
     }
 
     try {
-      cardResponse = processSeRequest(cardRequest, channelControl);
+      cardResponse = processCardRequest(cardRequest, channelControl);
     } catch (KeypleReaderIOException ex) {
       if (logger.isDebugEnabled()) {
         long timeStamp = System.nanoTime();
         long elapsed10ms = (timeStamp - before) / 100000;
         this.before = timeStamp;
         logger.debug(
-            "[{}] transmit => SEREQUEST IO failure. elapsed {}",
+            "[{}] transmit => CARDREQUEST IO failure. elapsed {}",
             this.getName(),
             elapsed10ms / 10.0);
       }
@@ -215,7 +215,7 @@ public abstract class AbstractReader implements ProxyReader {
 
   /**
    * This method is the actual implementation of the process of a {@link CardRequest} as defined by
-   * {@link ProxyReader#transmitSeRequest(CardRequest, ChannelControl)}
+   * {@link ProxyReader#transmitCardRequest(CardRequest, ChannelControl)}
    *
    * @param cardRequest The {@link CardRequest} to be processed (can be null).
    * @return cardResponse A not null {@link CardResponse}.
@@ -223,9 +223,9 @@ public abstract class AbstractReader implements ProxyReader {
    *     processing (must be not null).
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @throws IllegalArgumentException if one of the arguments is null.
-   * @see ProxyReader#transmitSeRequest(CardRequest, ChannelControl)
+   * @see ProxyReader#transmitCardRequest(CardRequest, ChannelControl)
    * @since 0.9
    */
-  protected abstract CardResponse processSeRequest(
+  protected abstract CardResponse processCardRequest(
       CardRequest cardRequest, ChannelControl channelControl);
 }

@@ -88,7 +88,7 @@ public class RmTransmitSetExecutor implements IRemoteMethodExecutor {
 
       // execute transmitSet
       cardResponse =
-          reader.transmitSeRequests(cardRequests, multiSelectionProcessing, channelControl);
+          reader.transmitCardRequests(cardRequests, multiSelectionProcessing, channelControl);
 
       // prepare response
       String parseBody =

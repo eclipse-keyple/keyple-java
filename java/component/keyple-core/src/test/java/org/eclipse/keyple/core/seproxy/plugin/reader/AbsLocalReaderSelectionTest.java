@@ -84,7 +84,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     CardRequest cardRequest = new CardRequest(cardSelector, new ArrayList<ApduRequest>());
 
-    CardResponse cardResponse = r.processSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
+    CardResponse cardResponse = r.processCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
     assertThat(cardResponse.getSelectionStatus().hasMatched()).isTrue();
 
@@ -101,7 +101,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     CardRequest cardRequest = new CardRequest(cardSelector, new ArrayList<ApduRequest>());
 
-    CardResponse cardResponse = r.processSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
+    CardResponse cardResponse = r.processCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
     assertThat(cardResponse.getSelectionStatus().hasMatched()).isFalse();
   }
@@ -119,7 +119,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     CardRequest cardRequest = new CardRequest(cardSelector, new ArrayList<ApduRequest>());
 
-    CardResponse cardResponse = r.processSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
+    CardResponse cardResponse = r.processCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
     assertThat(cardResponse.getSelectionStatus().hasMatched()).isTrue();
   }
@@ -133,7 +133,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     CardRequest cardRequest = new CardRequest(cardSelector, new ArrayList<ApduRequest>());
 
-    CardResponse cardResponse = r.processSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
+    CardResponse cardResponse = r.processCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
     assertThat(cardResponse.getSelectionStatus().hasMatched()).isFalse();
   }
@@ -155,7 +155,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     CardRequest cardRequest = new CardRequest(cardSelector, new ArrayList<ApduRequest>());
 
-    CardResponse cardResponse = r.processSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
+    CardResponse cardResponse = r.processCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
     assertThat(cardResponse.getSelectionStatus().hasMatched()).isTrue();
   }
@@ -186,7 +186,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     CardRequest cardRequest = new CardRequest(cardSelector, new ArrayList<ApduRequest>());
 
-    CardResponse cardResponse = r.processSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
+    CardResponse cardResponse = r.processCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
     assertThat(cardResponse.getSelectionStatus().hasMatched()).isTrue();
   }
@@ -204,7 +204,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     CardRequest cardRequest = new CardRequest(cardSelector, new ArrayList<ApduRequest>());
 
-    CardResponse cardResponse = r.processSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
+    CardResponse cardResponse = r.processCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
     assertThat(cardResponse.getSelectionStatus().hasMatched()).isTrue();
   }

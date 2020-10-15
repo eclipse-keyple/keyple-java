@@ -103,7 +103,7 @@ public class ExplicitSelectionAid_Pcsc {
         }
         if (smartCard.hasAtr()) {
           String atr = ByteArrayUtil.toHex(smartCard.getAtrBytes());
-          logger.info("Secure Element ATR = {}", atr);
+          logger.info("Card ATR = {}", atr);
         }
       } else {
         logger.info("The selection of the application " + seAid + " failed.");

@@ -34,7 +34,7 @@ public final class ReaderEvent {
 
   /**
    * The different types of reader events, reflecting the status of the reader regarding the
-   * presence of a Secure Element.
+   * presence of a card.
    *
    * @since 0.9
    */
@@ -44,13 +44,13 @@ public final class ReaderEvent {
     TIMEOUT_ERROR,
 
     /** A card has been inserted. */
-    SE_INSERTED,
+    CARD_INSERTED,
 
     /** A card has been inserted and the default requests process has been successfully operated. */
-    SE_MATCHED,
+    CARD_MATCHED,
 
     /** The card has been removed and is no longer able to communicate with the reader */
-    SE_REMOVED
+    CARD_REMOVED
   }
 
   /** The type of event */
@@ -109,8 +109,8 @@ public final class ReaderEvent {
 
   /**
    * Gets the default selection response that may be present when the event is {@link
-   * EventType#SE_INSERTED}, always present when the event is {@link EventType#SE_MATCHED} and null
-   * in the others cases.
+   * EventType#CARD_INSERTED}, always present when the event is {@link EventType#CARD_MATCHED} and
+   * null in the others cases.
    *
    * @return A nullable value.
    * @since 0.9

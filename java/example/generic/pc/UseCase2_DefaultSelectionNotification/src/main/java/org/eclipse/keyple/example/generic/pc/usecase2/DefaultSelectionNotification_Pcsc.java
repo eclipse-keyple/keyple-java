@@ -128,7 +128,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
   @Override
   public void update(ReaderEvent event) {
     switch (event.getEventType()) {
-      case SE_MATCHED:
+      case CARD_MATCHED:
         // the selection has one target, get the result at index 0
         AbstractSmartCard selectedSe = null;
         try {
@@ -156,18 +156,18 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
               "The selection of the card has failed. Should not have occurred due to the MATCHED_ONLY selection mode.");
         }
         break;
-      case SE_INSERTED:
+      case CARD_INSERTED:
         logger.error(
-            "SE_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.");
+            "CARD_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.");
         break;
-      case SE_REMOVED:
+      case CARD_REMOVED:
         logger.info("There is no PO inserted anymore. Return to the waiting state...");
         break;
       default:
         break;
     }
-    if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED
-        || event.getEventType() == ReaderEvent.EventType.SE_MATCHED) {
+    if (event.getEventType() == ReaderEvent.EventType.CARD_INSERTED
+        || event.getEventType() == ReaderEvent.EventType.CARD_MATCHED) {
       // Informs the underlying layer of the end of the card processing, in order to manage the
       // removal sequence.
       try {

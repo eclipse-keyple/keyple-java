@@ -66,7 +66,7 @@ public class RmTransmitExecutor implements IRemoteMethodExecutor {
       ProxyReader reader = (ProxyReader) slaveAPI.findLocalReader(nativeReaderName);
 
       // execute transmitSet
-      cardResponse = reader.transmitSeRequest(cardRequest, channelControl);
+      cardResponse = reader.transmitCardRequest(cardRequest, channelControl);
 
       // prepare response
       String parseBody = JsonParser.getGson().toJson(cardResponse, CardResponse.class);

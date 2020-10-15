@@ -77,7 +77,7 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
         event.getDefaultSelectionsResponse());
 
     switch (event.getEventType()) {
-      case SE_MATCHED:
+      case CARD_MATCHED:
         CalypsoPo calypsoPo = null;
         try {
           calypsoPo =
@@ -134,11 +134,11 @@ public class PoVirtualReaderObserver implements ObservableReader.ReaderObserver 
           }
         }
         break;
-      case SE_INSERTED:
-        logger.info("{} SE_INSERTED {} {}", nodeId, event.getPluginName(), event.getReaderName());
+      case CARD_INSERTED:
+        logger.info("{} CARD_INSERTED {} {}", nodeId, event.getPluginName(), event.getReaderName());
         break;
-      case SE_REMOVED:
-        logger.info("{} SE_REMOVED {} {}", nodeId, event.getPluginName(), event.getReaderName());
+      case CARD_REMOVED:
+        logger.info("{} CARD_REMOVED {} {}", nodeId, event.getPluginName(), event.getReaderName());
         break;
 
       case TIMEOUT_ERROR:

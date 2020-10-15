@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
  *
  * <p>The job waits indefinitely for the waitForCardPresent method to return.
  *
- * <p>When a card is present, an internal SE_INSERTED event is fired.
+ * <p>When a card is present, an internal CARD_INSERTED event is fired.
  *
  * <p>If a communication problem with the reader occurs (KeypleReaderIOException) an internal
  * STOP_DETECT event is fired.
@@ -50,7 +50,7 @@ class SmartInsertionMonitoringJob extends AbstractMonitoringJob {
         }
         try {
           if (reader.waitForCardPresent()) {
-            state.onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
+            state.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_INSERTED);
           }
         } catch (KeypleReaderIOException e) {
           if (logger.isTraceEnabled()) {

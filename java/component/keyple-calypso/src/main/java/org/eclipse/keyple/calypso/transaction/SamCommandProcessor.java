@@ -144,7 +144,7 @@ class SamCommandProcessor {
     CardResponse samCardResponse;
     try {
       samCardResponse =
-          samReader.transmitSeRequest(new CardRequest(apduRequests), ChannelControl.KEEP_OPEN);
+          samReader.transmitCardRequest(new CardRequest(apduRequests), ChannelControl.KEEP_OPEN);
     } catch (KeypleReaderIOException e) {
       throw new CalypsoSamIOException("SAM IO Exception while getting terminal challenge.", e);
     }
@@ -406,7 +406,7 @@ class SamCommandProcessor {
     CardResponse samCardResponse;
 
     try {
-      samCardResponse = samReader.transmitSeRequest(samCardRequest, ChannelControl.KEEP_OPEN);
+      samCardResponse = samReader.transmitCardRequest(samCardRequest, ChannelControl.KEEP_OPEN);
     } catch (KeypleReaderIOException e) {
       throw new CalypsoSamIOException("SAM IO Exception while transmitting digest data.", e);
     }
@@ -465,7 +465,7 @@ class SamCommandProcessor {
 
     CardResponse samCardResponse;
     try {
-      samCardResponse = samReader.transmitSeRequest(samCardRequest, ChannelControl.KEEP_OPEN);
+      samCardResponse = samReader.transmitCardRequest(samCardRequest, ChannelControl.KEEP_OPEN);
     } catch (KeypleReaderIOException e) {
       throw new CalypsoSamIOException(
           "SAM IO Exception while transmitting digest authentication data.", e);
@@ -558,7 +558,7 @@ class SamCommandProcessor {
 
     // execute the command
     CardResponse samCardResponse =
-        samReader.transmitSeRequest(samCardRequest, ChannelControl.KEEP_OPEN);
+        samReader.transmitCardRequest(samCardRequest, ChannelControl.KEEP_OPEN);
 
     ApduResponse cardCipherPinResponse =
         samCardResponse.getApduResponses().get(cardCipherPinCmdIndex);
@@ -619,7 +619,7 @@ class SamCommandProcessor {
 
     // execute the command
     CardResponse samCardResponse =
-        samReader.transmitSeRequest(samCardRequest, ChannelControl.KEEP_OPEN);
+        samReader.transmitCardRequest(samCardRequest, ChannelControl.KEEP_OPEN);
 
     ApduResponse svPrepareResponse =
         samCardResponse.getApduResponses().get(svPrepareOperationCmdIndex);
@@ -750,7 +750,7 @@ class SamCommandProcessor {
 
     // execute the command
     CardResponse samCardResponse =
-        samReader.transmitSeRequest(samCardRequest, ChannelControl.KEEP_OPEN);
+        samReader.transmitCardRequest(samCardRequest, ChannelControl.KEEP_OPEN);
 
     ApduResponse svCheckResponse = samCardResponse.getApduResponses().get(0);
 

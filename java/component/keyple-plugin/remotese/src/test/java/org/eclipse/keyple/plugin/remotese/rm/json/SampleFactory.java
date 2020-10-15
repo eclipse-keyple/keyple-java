@@ -38,7 +38,7 @@ public class SampleFactory {
 
   public static AbstractDefaultSelectionsRequest getSelectionRequest() {
     return new DefaultSelectionsRequest(
-        getASeRequestList_ISO14443_4(),
+        getACardRequestList_ISO14443_4(),
         MultiSelectionProcessing.FIRST_MATCH,
         ChannelControl.KEEP_OPEN);
   }
@@ -47,7 +47,7 @@ public class SampleFactory {
     return ObservableReader.NotificationMode.ALWAYS;
   }
 
-  public static List<CardRequest> getASeRequestList_ISO14443_4() {
+  public static List<CardRequest> getACardRequestList_ISO14443_4() {
     String poAid = "A000000291A000000191";
 
     List<ApduRequest> poApduRequests;
@@ -71,7 +71,7 @@ public class SampleFactory {
     return cardRequests;
   }
 
-  public static List<CardRequest> getASeRequestList() {
+  public static List<CardRequest> getACardRequestList() {
     String poAid = "A000000291A000000191";
 
     List<ApduRequest> poApduRequests;
@@ -86,7 +86,7 @@ public class SampleFactory {
     return cardRequests;
   }
 
-  public static CardRequest getASeRequest_ISO14443_4() {
+  public static CardRequest getACardRequest_ISO14443_4() {
     String poAid = "A000000291A000000191";
 
     List<ApduRequest> poApduRequests;
@@ -105,7 +105,7 @@ public class SampleFactory {
     return cardRequest;
   }
 
-  public static CardRequest getASeRequest() {
+  public static CardRequest getACardRequest() {
     String poAid = "A000000291A000000191";
 
     List<ApduRequest> poApduRequests;

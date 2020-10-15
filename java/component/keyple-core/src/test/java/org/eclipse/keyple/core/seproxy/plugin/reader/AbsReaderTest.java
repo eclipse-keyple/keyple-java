@@ -64,30 +64,31 @@ public class AbsReaderTest extends CoreBaseTest {
   @Test
   public void ts_transmit_null() throws Exception {
     AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
-    r.transmitSeRequests(null, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
+    r.transmitCardRequests(null, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
     // we're just waiting right here for no exceptions to be thrown.
     verify(r, times(1))
-        .transmitSeRequests(null, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
+        .transmitCardRequests(
+            null, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
   }
 
   @Test
   public void ts_transmit2_null() throws Exception {
     AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
-    r.transmitSeRequests(null, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+    r.transmitCardRequests(null, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
     // we're just waiting right here for no exceptions to be thrown.
     verify(r, times(1))
-        .transmitSeRequests(null, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+        .transmitCardRequests(null, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
   }
 
   @Test
   public void ts_transmit() throws Exception {
     AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
-    List<CardRequest> cardRequests = getSeRequestList();
+    List<CardRequest> cardRequests = getCardRequestList();
     List<CardResponse> responses =
-        r.transmitSeRequests(
+        r.transmitCardRequests(
             cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
     verify(r, times(1))
-        .processSeRequests(
+        .processCardRequests(
             cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
     Assert.assertNotNull(responses);
   }
@@ -99,9 +100,9 @@ public class AbsReaderTest extends CoreBaseTest {
   @Test
   public void transmit() throws Exception {
     AbstractReader r = getSpy(PLUGIN_NAME, READER_NAME);
-    CardRequest request = CardRequestTest.getSeRequestSample();
-    CardResponse response = r.transmitSeRequest(request, ChannelControl.CLOSE_AFTER);
-    verify(r, times(1)).processSeRequest(request, ChannelControl.CLOSE_AFTER);
+    CardRequest request = CardRequestTest.getCardRequestSample();
+    CardResponse response = r.transmitCardRequest(request, ChannelControl.CLOSE_AFTER);
+    verify(r, times(1)).processCardRequest(request, ChannelControl.CLOSE_AFTER);
     Assert.assertNotNull(response);
   }
 
@@ -119,17 +120,17 @@ public class AbsReaderTest extends CoreBaseTest {
    */
   public static AbstractReader getSpy(String pluginName, String readerName) {
     AbstractReader r = Mockito.spy(new BlankAbstractReader(pluginName, readerName));
-    when(r.processSeRequest(any(CardRequest.class), any(ChannelControl.class)))
+    when(r.processCardRequest(any(CardRequest.class), any(ChannelControl.class)))
         .thenReturn(CardResponseTest.getACardResponse());
-    when(r.processSeRequests(
+    when(r.processCardRequests(
             any(List.class), any(MultiSelectionProcessing.class), any(ChannelControl.class)))
         .thenReturn(getCardResponses());
     return r;
   }
 
-  public static List<CardRequest> getSeRequestList() {
+  public static List<CardRequest> getCardRequestList() {
     List<CardRequest> cardRequests = new ArrayList<CardRequest>();
-    cardRequests.add(CardRequestTest.getSeRequestSample());
+    cardRequests.add(CardRequestTest.getCardRequestSample());
     return cardRequests;
   }
 

@@ -74,11 +74,11 @@ class CoreExamplesActivity : ExamplesActivity() {
                     val cardSelector = CardSelector.builder()
                             .aidSelector(AidSelector.builder().aidToSelect(poAid).build())
                             .build()
-                    val seRequest = CardRequest(cardSelector, null)
+                    val cardRequest = CardRequest(cardSelector, null)
 
                     addActionEvent("Sending CardRequest to select: $poAid")
                     try {
-                        val cardResponse = (it.value as ProxyReader).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN)
+                        val cardResponse = (it.value as ProxyReader).transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN)
 
                         if (cardResponse?.selectionStatus?.hasMatched() == true) {
                             addResultEvent("The selection of the PO has succeeded.")

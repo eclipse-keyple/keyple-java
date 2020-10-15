@@ -127,7 +127,7 @@ public class StubPoolPluginTest extends BaseStubTest {
     Assert.assertEquals(0, stubPoolPlugin.listAllocatedReaders().size());
   }
 
-  /** Stub Secure Element */
+  /** Stub Card */
   private static final StubSecureElement stubSe =
       new StubSecureElement() {
         @Override

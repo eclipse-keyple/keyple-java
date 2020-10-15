@@ -23,10 +23,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This plugin allows to simulate Secure Element communication by creating @{@link StubReaderImpl}
- * and @{@link StubSecureElement}. Plug a new StubReader with StubPlugin#plugStubReader and insert
- * an implementation of your own of {@link StubSecureElement} to start simulation communication.
- * This class is a singleton, use StubPlugin#getInstance to access it
+ * This plugin allows to simulate card communication by creating @{@link StubReaderImpl} and @{@link
+ * StubSecureElement}. Plug a new StubReader with StubPlugin#plugStubReader and insert an
+ * implementation of your own of {@link StubSecureElement} to start simulation communication. This
+ * class is a singleton, use StubPlugin#getInstance to access it
  */
 final class StubPluginImpl extends AbstractThreadedObservablePlugin implements StubPlugin {
 

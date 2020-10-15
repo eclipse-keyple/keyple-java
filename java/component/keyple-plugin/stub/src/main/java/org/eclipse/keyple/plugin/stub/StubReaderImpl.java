@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Simulates communication with a {@link StubSecureElement}. StubReader is observable, it raises
- * {@link org.eclipse.keyple.core.seproxy.event.ReaderEvent} : SE_INSERTED, SE_REMOVED
+ * {@link org.eclipse.keyple.core.seproxy.event.ReaderEvent} : CARD_INSERTED, CARD_REMOVED
  */
 class StubReaderImpl extends AbstractObservableLocalReader
     implements StubReader, SmartInsertionReader, SmartRemovalReader {
@@ -144,13 +144,13 @@ class StubReaderImpl extends AbstractObservableLocalReader
   }
 
   /*
-   * STATE CONTROLLERS FOR INSERTING AND REMOVING SECURE ELEMENT
+   * STATE CONTROLLERS FOR INSERTING AND REMOVING CARD
    */
 
   /**
    * Inserts the provided card.<br>
    *
-   * @param _se stub secure element to be inserted in the reader
+   * @param _se stub card to be inserted in the reader
    * @throws KeypleReaderProtocolNotFoundException if the card protocol is not found
    */
   public synchronized void insertSe(StubSecureElement _se) {

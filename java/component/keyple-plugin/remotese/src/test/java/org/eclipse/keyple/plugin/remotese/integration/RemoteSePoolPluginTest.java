@@ -131,7 +131,7 @@ public class RemoteSePoolPluginTest {
     Assert.assertNotNull(reader2);
   }
 
-  /** Stub Secure Element */
+  /** Stub card */
   private static final StubSecureElement stubSe =
       new StubSecureElement() {
         @Override
