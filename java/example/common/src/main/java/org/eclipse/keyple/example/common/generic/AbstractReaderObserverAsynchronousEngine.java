@@ -34,7 +34,7 @@ public abstract class AbstractReaderObserverAsynchronousEngine
       LoggerFactory.getLogger(AbstractReaderObserverAsynchronousEngine.class);
 
   /**
-   * Method to be implemented by the application to handle the SE_MATCHED reader event.<br>
+   * Method to be implemented by the application to handle the CARD_MATCHED reader event.<br>
    * The response to the default selections request is provided in argument.
    *
    * @param defaultSelectionsResponse the default selections response
@@ -42,23 +42,23 @@ public abstract class AbstractReaderObserverAsynchronousEngine
   protected abstract void processSeMatch(
       AbstractDefaultSelectionsResponse defaultSelectionsResponse);
 
-  /** Method to be implemented by the application to handle the SE_INSERTED reader event */
+  /** Method to be implemented by the application to handle the CARD_INSERTED reader event */
   protected abstract void processSeInserted();
 
   /**
-   * Method to be implemented by the application to handle the SE_REMOVED reader event at the end of
-   * the card processing
+   * Method to be implemented by the application to handle the CARD_REMOVED reader event at the end
+   * of the card processing
    */
   protected abstract void processSeRemoved();
 
   /**
-   * Method to be implemented by the application to handle the SE_REMOVED reader event during the
+   * Method to be implemented by the application to handle the CARD_REMOVED reader event during the
    * card processing
    */
   protected abstract void processUnexpectedSeRemoval();
 
   /**
-   * This flag helps to determine whether the SE_REMOVED event was expected or not (case of card
+   * This flag helps to determine whether the CARD_REMOVED event was expected or not (case of card
    * withdrawal during processing).
    */
   boolean currentlyProcessingSe = false;
@@ -134,24 +134,25 @@ public abstract class AbstractReaderObserverAsynchronousEngine
    * received event.<br>
    * Processing is done asynchronously in a separate thread and any exceptions raised by the
    * application are caught.<br>
-   * Note: in the case of SE_MATCHED, the received event also carries the response to the default
+   * Note: in the case of CARD_MATCHED, the received event also carries the response to the default
    * selection.
    *
-   * @param event the reader event, either SE_MATCHED, SE_INSERTED, SE_REMOVED or TIMEOUT_ERROR
+   * @param event the reader event, either CARD_MATCHED, CARD_INSERTED, CARD_REMOVED or
+   *     TIMEOUT_ERROR
    */
   public final void update(final ReaderEvent event) {
     logger.info("New reader event: {}", event.getReaderName());
 
     switch (event.getEventType()) {
-      case SE_INSERTED:
+      case CARD_INSERTED:
         runProcessSeInserted(event);
         break;
 
-      case SE_MATCHED:
+      case CARD_MATCHED:
         runProcessSeMatched(event);
         break;
 
-      case SE_REMOVED:
+      case CARD_REMOVED:
         if (currentlyProcessingSe) {
           processUnexpectedSeRemoval(); // to clean current card processing
           logger.error("Unexpected card Removal");

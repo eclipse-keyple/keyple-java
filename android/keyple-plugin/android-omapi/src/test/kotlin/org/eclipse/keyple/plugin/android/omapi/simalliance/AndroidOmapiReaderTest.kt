@@ -53,7 +53,7 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
 
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
-        val seRequest = CardRequest(CardSelector.builder()
+        val cardRequest = CardRequest(CardSelector.builder()
                 .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(PO_AID)
                         .fileOccurrence(CardSelector.AidSelector.FileOccurrence.NEXT)
@@ -61,7 +61,7 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
                 .build(),
                 poApduRequestList)
 
-        reader.transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN)
+        reader.transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN)
     }
 
     @Test
@@ -71,7 +71,7 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
 
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
-        val seRequest = CardRequest(CardSelector.builder()
+        val cardRequest = CardRequest(CardSelector.builder()
                 .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(PO_AID)
                         .fileOccurrence(CardSelector.AidSelector.FileOccurrence.NEXT)
@@ -79,11 +79,11 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
                 .build(),
                 poApduRequestList)
 
-        val seRequests = ArrayList<CardRequest>()
-        seRequests.add(seRequest)
+        val cardRequests = ArrayList<CardRequest>()
+        cardRequests.add(cardRequest)
 
-        reader.transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN)
-        val cardResponseList = reader.transmitSeRequests(seRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        reader.transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN)
+        val cardResponseList = reader.transmitCardRequests(cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
 
         // assert
         Assert.assertNotNull(cardResponseList[0])

@@ -47,7 +47,7 @@ public class DefaultSelectionTest {
     // test
     ReaderEvent event = r.processSeInsertedTest();
 
-    Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+    Assert.assertEquals(ReaderEvent.EventType.CARD_INSERTED, event.getEventType());
     Assert.assertNull(event.getDefaultSelectionsResponse());
     Assert.assertEquals(PLUGIN_NAME, event.getPluginName());
     Assert.assertEquals(READER_NAME, event.getReaderName());
@@ -69,14 +69,14 @@ public class DefaultSelectionTest {
 
     // mock return matching selection
     List<CardResponse> responses = getNotMatchingResponses();
-    doReturn(responses).when(r).transmitSeRequests(selections, multi, channel);
+    doReturn(responses).when(r).transmitCardRequests(selections, multi, channel);
 
     // test
     r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel), mode);
     ReaderEvent event = r.processSeInsertedTest();
 
     // assert
-    Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+    Assert.assertEquals(ReaderEvent.EventType.CARD_INSERTED, event.getEventType());
     Assert.assertEquals(
         responses, event.getDefaultSelectionsResponse().getSelectionCardResponses());
     Assert.assertEquals(PLUGIN_NAME, event.getPluginName());
@@ -100,13 +100,13 @@ public class DefaultSelectionTest {
     // mock
     // return success selection
     List<CardResponse> responses = AbsObservableLocalReaderTest.getMatchingResponses();
-    doReturn(responses).when(r).transmitSeRequests(selections, multi, channel);
+    doReturn(responses).when(r).transmitCardRequests(selections, multi, channel);
 
     // test
     r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel), mode);
     ReaderEvent event = r.processSeInsertedTest();
 
-    Assert.assertEquals(ReaderEvent.EventType.SE_MATCHED, event.getEventType());
+    Assert.assertEquals(ReaderEvent.EventType.CARD_MATCHED, event.getEventType());
     Assert.assertEquals(
         responses, event.getDefaultSelectionsResponse().getSelectionCardResponses());
     Assert.assertEquals(PLUGIN_NAME, event.getPluginName());
@@ -128,7 +128,7 @@ public class DefaultSelectionTest {
     ObservableReader.NotificationMode mode = ObservableReader.NotificationMode.MATCHED_ONLY;
 
     // mock return matching selection
-    doReturn(getNotMatchingResponses()).when(r).transmitSeRequests(selections, multi, channel);
+    doReturn(getNotMatchingResponses()).when(r).transmitCardRequests(selections, multi, channel);
 
     // test
     r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel), mode);
@@ -154,7 +154,7 @@ public class DefaultSelectionTest {
     // throw IO
     doThrow(new KeypleReaderIOException("io error when selecting"))
         .when(r)
-        .transmitSeRequests(selections, multi, channel);
+        .transmitCardRequests(selections, multi, channel);
 
     // test
     r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel), mode);

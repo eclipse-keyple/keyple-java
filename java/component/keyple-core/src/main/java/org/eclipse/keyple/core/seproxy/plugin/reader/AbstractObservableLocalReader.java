@@ -44,9 +44,9 @@ import org.slf4j.LoggerFactory;
  *       <p>A number of cases arise:
  *       <ul>
  *         <li>A default selection is defined: in this case it is played and its result leads to an
- *             event notification SE_INSERTED or SE_MATCHED or no event (see
+ *             event notification CARD_INSERTED or CARD_MATCHED or no event (see
  *             setDefaultSelectionRequest)
- *         <li>There is no default selection: a SE_INSERTED event is then notified.
+ *         <li>There is no default selection: a CARD_INSERTED event is then notified.
  *             <p>In the case where an event has been notified to the application, the state machine
  *             changes to the WAIT_FOR_SE_PROCESSING state otherwise it remains in the
  *             WAIT_FOR_SE_INSERTION state.
@@ -64,7 +64,7 @@ import org.slf4j.LoggerFactory;
  *       <p>If the instruction given is continue (ObservableReader.PollingMode.REPEATING) then the
  *       state machine changes to WAIT_FOR_SE_REMOVAL.
  *   <li>WAIT_FOR_SE_REMOVAL:
- *       <p>Waiting for the card to be removed. When the card is removed, a SE_REMOVED event is
+ *       <p>Waiting for the card to be removed. When the card is removed, a CARD_REMOVED event is
  *       notified to the application and the state machine changes to the WAIT_FOR_SE_INSERTION or
  *       WAIT_FOR_START_DETECTION state according the polling mode (ObservableReader.PollingMode).
  * </ol>
@@ -89,9 +89,9 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
    */
   public enum InternalEvent {
     /** A card has been inserted */
-    SE_INSERTED,
+    CARD_INSERTED,
     /** The card has been removed */
-    SE_REMOVED,
+    CARD_REMOVED,
     /** The application has completed the processing of the card */
     SE_PROCESSED,
     /** The application has requested the start of card detection */
@@ -254,7 +254,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
     } else {
       /*
        * if the card is no longer present but one of the channels is still open, then the
-       * SE_REMOVED notification is performed and the channels are closed.
+       * CARD_REMOVED notification is performed and the channels are closed.
        */
       if (isLogicalChannelOpen() || isPhysicalChannelOpen()) {
         processSeRemoved();
@@ -328,7 +328,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
    * A combination of defining the default selection request and starting the card detection.
    *
    * @param defaultSelectionsRequest the selection request to be operated
-   * @param notificationMode indicates whether a SE_INSERTED event should be notified even if the
+   * @param notificationMode indicates whether a CARD_INSERTED event should be notified even if the
    *     selection has failed (ALWAYS) or whether the card insertion should be ignored in this case
    *     (MATCHED_ONLY).
    * @param pollingMode indicates the action to be followed after processing the card: if CONTINUE,
@@ -372,10 +372,10 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
    * <p>It will return a ReaderEvent in the following cases:
    *
    * <ul>
-   *   <li>SE_INSERTED: if no default selection request was defined
-   *   <li>SE_MATCHED: if a default selection request was defined in any mode and a card matched the
-   *       selection
-   *   <li>SE_INSERTED: if a default selection request was defined in ALWAYS mode but no card
+   *   <li>CARD_INSERTED: if no default selection request was defined
+   *   <li>CARD_MATCHED: if a default selection request was defined in any mode and a card matched
+   *       the selection
+   *   <li>CARD_INSERTED: if a default selection request was defined in ALWAYS mode but no card
    *       matched the selection (the DefaultSelectionsResponse is however transmitted)
    * </ul>
    *
@@ -391,10 +391,10 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
     }
     if (defaultSelectionsRequest == null) {
       if (logger.isTraceEnabled()) {
-        logger.trace("[{}] no default selection request defined, notify SE_INSERTED", getName());
+        logger.trace("[{}] no default selection request defined, notify CARD_INSERTED", getName());
       }
       /* no default request is defined, just notify the card insertion */
-      return new ReaderEvent(getPluginName(), getName(), ReaderEvent.EventType.SE_INSERTED, null);
+      return new ReaderEvent(getPluginName(), getName(), ReaderEvent.EventType.CARD_INSERTED, null);
     } else {
       /*
        * a default request is defined, send it and notify according to the notification mode
@@ -403,8 +403,8 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
       boolean aSeMatched = false;
       try {
         List<CardResponse> cardResponses =
-            transmitSeRequests(
-                defaultSelectionsRequest.getSelectionSeRequests(),
+            transmitCardRequests(
+                defaultSelectionsRequest.getSelectionCardRequests(),
                 defaultSelectionsRequest.getMultiSelectionProcessing(),
                 defaultSelectionsRequest.getChannelControl());
 
@@ -424,7 +424,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
             return new ReaderEvent(
                 getPluginName(),
                 getName(),
-                ReaderEvent.EventType.SE_MATCHED,
+                ReaderEvent.EventType.CARD_MATCHED,
                 new DefaultSelectionsResponse(cardResponses));
           } else {
             if (logger.isTraceEnabled()) {
@@ -438,15 +438,15 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
         } else {
           // ObservableReader.NotificationMode.ALWAYS
           if (aSeMatched) {
-            /* the card matched, notify a SE_MATCHED event with the received response */
+            /* the card matched, notify a CARD_MATCHED event with the received response */
             return new ReaderEvent(
                 getPluginName(),
                 getName(),
-                ReaderEvent.EventType.SE_MATCHED,
+                ReaderEvent.EventType.CARD_MATCHED,
                 new DefaultSelectionsResponse(cardResponses));
           } else {
             /*
-             * the card didn't match, notify an SE_INSERTED event with the received
+             * the card didn't match, notify an CARD_INSERTED event with the received
              * response
              */
             if (logger.isTraceEnabled()) {
@@ -456,7 +456,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
             return new ReaderEvent(
                 getPluginName(),
                 getName(),
-                ReaderEvent.EventType.SE_INSERTED,
+                ReaderEvent.EventType.CARD_INSERTED,
                 new DefaultSelectionsResponse(cardResponses));
           }
         }
@@ -526,7 +526,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
   final void processSeRemoved() {
     closeLogicalAndPhysicalChannels();
     notifyObservers(
-        new ReaderEvent(getPluginName(), getName(), ReaderEvent.EventType.SE_REMOVED, null));
+        new ReaderEvent(getPluginName(), getName(), ReaderEvent.EventType.CARD_REMOVED, null));
   }
 
   /**

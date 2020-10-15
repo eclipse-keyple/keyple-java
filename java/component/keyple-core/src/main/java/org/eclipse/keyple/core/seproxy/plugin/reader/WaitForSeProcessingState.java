@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * <ul>
  *   <li>Upon SE_PROCESSED event, the machine changes state for WAIT_FOR_SE_REMOVAL or
  *       WAIT_FOR_SE_DETECTION according to the {@link ObservableReader.PollingMode} setting.
- *   <li>Upon SE_REMOVED event, the machine changes state for WAIT_FOR_SE_INSERTION or
+ *   <li>Upon CARD_REMOVED event, the machine changes state for WAIT_FOR_SE_INSERTION or
  *       WAIT_FOR_SE_DETECTION according to the {@link ObservableReader.PollingMode} setting.
  *   <li>Upon STOP_DETECT event, the machine changes state for WAIT_FOR_SE_DETECTION.
  * </ul>
@@ -60,17 +60,17 @@ class WaitForSeProcessingState extends AbstractObservableState {
           switchState(MonitoringState.WAIT_FOR_SE_REMOVAL);
         } else {
           // We close the channels now and notify the application of
-          // the SE_REMOVED event.
+          // the CARD_REMOVED event.
           this.reader.processSeRemoved();
           switchState(MonitoringState.WAIT_FOR_START_DETECTION);
         }
         break;
 
-      case SE_REMOVED:
+      case CARD_REMOVED:
         // the card has been removed, we close all channels and return to
         // the currentState of waiting
         // for insertion
-        // We notify the application of the SE_REMOVED event.
+        // We notify the application of the CARD_REMOVED event.
         reader.processSeRemoved();
         if (reader.getPollingMode() == ObservableReader.PollingMode.REPEATING) {
           switchState(MonitoringState.WAIT_FOR_SE_INSERTION);

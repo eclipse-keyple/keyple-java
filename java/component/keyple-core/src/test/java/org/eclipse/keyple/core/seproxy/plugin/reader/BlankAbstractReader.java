@@ -25,7 +25,7 @@ public class BlankAbstractReader extends AbstractReader {
   }
 
   @Override
-  protected List<CardResponse> processSeRequests(
+  protected List<CardResponse> processCardRequests(
       List<CardRequest> cardRequests,
       MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl) {
@@ -33,7 +33,8 @@ public class BlankAbstractReader extends AbstractReader {
   }
 
   @Override
-  protected CardResponse processSeRequest(CardRequest cardRequest, ChannelControl channelControl) {
+  protected CardResponse processCardRequest(
+      CardRequest cardRequest, ChannelControl channelControl) {
     return null;
   }
 

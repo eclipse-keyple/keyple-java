@@ -176,7 +176,7 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
   @Override
   public void update(ReaderEvent event) {
     switch (event.getEventType()) {
-      case SE_MATCHED:
+      case CARD_MATCHED:
         boolean transactionComplete = false;
         CalypsoPo calypsoPo = null;
         Reader poReader = null;
@@ -261,11 +261,11 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
         }
         logger.info("= #### End of the Calypso PO processing.");
         break;
-      case SE_INSERTED:
+      case CARD_INSERTED:
         logger.error(
-            "SE_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.");
+            "CARD_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.");
         break;
-      case SE_REMOVED:
+      case CARD_REMOVED:
         logger.info("There is no PO inserted anymore. Return to the waiting state...");
         break;
       default:

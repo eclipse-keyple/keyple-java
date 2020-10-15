@@ -72,7 +72,7 @@ public class WaitForSeInsertionStateJobExecutorTest extends CoreBaseTest {
      * input SE_inserted SE_matched
      */
     // card matched
-    doReturn(new ReaderEvent("", "", ReaderEvent.EventType.SE_MATCHED, null))
+    doReturn(new ReaderEvent("", "", ReaderEvent.EventType.CARD_MATCHED, null))
         .when(r)
         .processSeInserted();
     doReturn(true).when(r).waitForCardPresent();
@@ -93,7 +93,7 @@ public class WaitForSeInsertionStateJobExecutorTest extends CoreBaseTest {
      * input card inserted card doesnt matched
      */
     // card not matched
-    doReturn(new ReaderEvent("", "", ReaderEvent.EventType.SE_INSERTED, null))
+    doReturn(new ReaderEvent("", "", ReaderEvent.EventType.CARD_INSERTED, null))
         .when(r)
         .processSeInserted();
     doReturn(true).when(r).waitForCardPresent();

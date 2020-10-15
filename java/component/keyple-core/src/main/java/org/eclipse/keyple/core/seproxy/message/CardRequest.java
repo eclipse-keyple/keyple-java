@@ -67,7 +67,7 @@ public final class CardRequest implements Serializable {
    * Gets the apdu requests.
    *
    * @return the group of APDUs to be transmitted to the card application for this instance of
-   *     SERequest.
+   *     CardRequest.
    */
   public List<ApduRequest> getApduRequests() {
     return apduRequests;

@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * disappearance of the card at the end of the transaction.
  *
  * <p>It is based on sending a neutral APDU command as long as the card is responding, an internal
- * SE_REMOVED event is fired when the card is no longer responding.
+ * CARD_REMOVED event is fired when the card is no longer responding.
  *
  * <p>By default a delay of 200 ms is inserted between each APDU sending .
  */
@@ -82,7 +82,7 @@ class CardAbsentPingMonitoringJob extends AbstractMonitoringJob {
                   logger.debug("[{}] the card stopped responding", reader.getName());
                 }
                 loop.set(false);
-                state.onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
+                state.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_REMOVED);
                 return;
               }
               retries++;

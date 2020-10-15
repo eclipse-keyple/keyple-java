@@ -57,8 +57,8 @@ public class CardSelectionTest extends CoreBaseTest {
         MultiSelectionProcessing.FIRST_MATCH, selectionOperation.getMultiSelectionProcessing());
     Assert.assertEquals(ChannelControl.KEEP_OPEN, selectionOperation.getChannelControl());
 
-    // get the serequest set
-    List<CardRequest> selectionCardRequests = selectionOperation.getSelectionSeRequests();
+    // get the cardRequest set
+    List<CardRequest> selectionCardRequests = selectionOperation.getSelectionCardRequests();
     Assert.assertEquals(2, selectionCardRequests.size());
 
     // get the two card requests

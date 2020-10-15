@@ -71,8 +71,8 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
       StubReaderTest.genericSelectSe(virtualReader);
 
       ((ProxyReader) virtualReader)
-          .transmitSeRequests(
-              SampleFactory.getASeRequestList(),
+          .transmitCardRequests(
+              SampleFactory.getACardRequestList(),
               MultiSelectionProcessing.FIRST_MATCH,
               ChannelControl.KEEP_OPEN);
       // should throw KeypleReaderException
@@ -95,7 +95,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
       StubReaderTest.genericSelectSe(((ProxyReader) virtualReader));
 
       ((ProxyReader) virtualReader)
-          .transmitSeRequest(SampleFactory.getASeRequest(), ChannelControl.KEEP_OPEN);
+          .transmitCardRequest(SampleFactory.getACardRequest(), ChannelControl.KEEP_OPEN);
       // should throw KeypleReaderException
       Assert.assertTrue(false);
 
@@ -137,12 +137,12 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
       // ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true, (byte) 0x20);
       // List<ApduRequest> poApduRequests=
       // Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
-      // CardRequest seRequest = new CardRequest(poApduRequestList);
-      // Set<CardRequest> seRequests = new LinkedHashSet<CardRequest>();
-      // seRequests.add(seRequest);
+      // CardRequest cardRequest = new CardRequest(poApduRequestList);
+      // Set<CardRequest> cardRequests = new LinkedHashSet<CardRequest>();
+      // cardRequests.add(cardRequest);
       //
       // List<CardResponse> cardResponse = ((ProxyReader)
-      // virtualReader).transmitSet(seRequests);
+      // virtualReader).transmitSet(cardRequests);
       // // assert
       // Assert.assertTrue(cardResponse.get(0).getApduResponses().get(0).isSuccessful());
       //
@@ -166,7 +166,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
     // test
     ((ProxyReader) virtualReader)
-        .transmitSeRequests(
+        .transmitCardRequests(
             requests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
   }
 
@@ -186,7 +186,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
       StubReaderTest.genericSelectSe(virtualReader);
 
       ((ProxyReader) virtualReader)
-          .transmitSeRequests(
+          .transmitCardRequests(
               cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
     } catch (KeypleReaderIOException ex) {
@@ -216,7 +216,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
       StubReaderTest.genericSelectSe(virtualReader);
 
       ((ProxyReader) virtualReader)
-          .transmitSeRequests(
+          .transmitCardRequests(
               cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
     } catch (KeypleReaderIOException ex) {
@@ -248,7 +248,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
       StubReaderTest.genericSelectSe(virtualReader);
 
       ((ProxyReader) virtualReader)
-          .transmitSeRequests(
+          .transmitCardRequests(
               cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
     } catch (KeypleReaderIOException ex) {
@@ -280,7 +280,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
       StubReaderTest.genericSelectSe(virtualReader);
 
       ((ProxyReader) virtualReader)
-          .transmitSeRequests(
+          .transmitCardRequests(
               cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
     } catch (KeypleReaderIOException ex) {
@@ -311,7 +311,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
     try {
       StubReaderTest.genericSelectSe(virtualReader);
 
-      ((ProxyReader) virtualReader).transmitSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
+      ((ProxyReader) virtualReader).transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
     } catch (KeypleReaderIOException ex) {
       logger.info(
@@ -338,7 +338,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
     try {
       StubReaderTest.genericSelectSe(virtualReader);
 
-      ((ProxyReader) virtualReader).transmitSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
+      ((ProxyReader) virtualReader).transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
     } catch (KeypleReaderIOException ex) {
       logger.info(
@@ -365,7 +365,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
     try {
       StubReaderTest.genericSelectSe(virtualReader);
 
-      ((ProxyReader) virtualReader).transmitSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
+      ((ProxyReader) virtualReader).transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
     } catch (KeypleReaderIOException ex) {
       logger.info(
@@ -392,7 +392,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
       // test
       StubReaderTest.genericSelectSe(virtualReader);
 
-      ((ProxyReader) virtualReader).transmitSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
+      ((ProxyReader) virtualReader).transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
     } catch (KeypleReaderIOException ex) {
       logger.info(

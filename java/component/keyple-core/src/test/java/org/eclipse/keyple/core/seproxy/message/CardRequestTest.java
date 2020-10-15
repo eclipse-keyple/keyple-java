@@ -51,7 +51,7 @@ public class CardRequestTest {
   }
 
   @Test
-  public void testSERequest() {
+  public void testCardRequest() {
     assertNotNull(cardRequest);
   }
 
@@ -157,7 +157,7 @@ public class CardRequestTest {
    * HELPERS FOR OTHERS TESTS SUITE
    */
 
-  public static CardRequest getSeRequestSample() {
+  public static CardRequest getCardRequestSample() {
 
     List<ApduRequest> apdus = getAapduLists();
     Set<Integer> selectionStatusCode = ApduRequestTest.getASuccessFulStatusCode();

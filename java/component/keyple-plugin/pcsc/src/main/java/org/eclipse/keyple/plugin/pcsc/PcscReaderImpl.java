@@ -31,9 +31,9 @@ import org.slf4j.LoggerFactory;
  * for PC/SC based readers.
  *
  * <p>A PC/SC reader is observable ({@link AbstractObservableLocalReader}), autonomous to detect the
- * insertion of secure elements ({@link SmartInsertionReader}, able to detect the removal of a
- * secure element prior an attempt to communicate with it ({@link SmartRemovalReader} and has
- * specific settings ({@link PcscReader}.
+ * insertion of cards ({@link SmartInsertionReader}, able to detect the removal of a card prior an
+ * attempt to communicate with it ({@link SmartRemovalReader} and has specific settings ({@link
+ * PcscReader}.
  *
  * @since 0.9
  */

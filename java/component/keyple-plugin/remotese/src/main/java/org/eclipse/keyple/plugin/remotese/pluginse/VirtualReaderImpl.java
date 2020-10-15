@@ -95,7 +95,7 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
   }
 
   /**
-   * Blocking TransmitSeRequests
+   * Blocking TransmitCardRequests
    *
    * @param cardRequests : List of CardRequest to be transmitted to the card
    * @param multiSelectionProcessing the multi card processing mode
@@ -104,7 +104,7 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */
   @Override
-  protected List<CardResponse> processSeRequests(
+  protected List<CardResponse> processCardRequests(
       List<CardRequest> cardRequests,
       MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl) {
@@ -124,7 +124,7 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
       return transmit.execute(rmTxEngine);
     } catch (KeypleRemoteException e) {
       logger.error(
-          "{} - processSeRequests encounters an exception while communicating with slave. "
+          "{} - processCardRequests encounters an exception while communicating with slave. "
               + "sessionId:{} error:{}",
           this.getName(),
           this.getSession().getSessionId(),
@@ -142,7 +142,8 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */
   @Override
-  protected CardResponse processSeRequest(CardRequest cardRequest, ChannelControl channelControl) {
+  protected CardResponse processCardRequest(
+      CardRequest cardRequest, ChannelControl channelControl) {
 
     RmTransmitTx transmit =
         new RmTransmitTx(
@@ -158,7 +159,7 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
       return transmit.execute(rmTxEngine);
     } catch (KeypleRemoteException e) {
       logger.error(
-          "{} - processSeRequest encounters an exception while communicating with slave. sessionId:{} error:{}",
+          "{} - processCardRequest encounters an exception while communicating with slave. sessionId:{} error:{}",
           this.getName(),
           this.getSession().getSessionId(),
           e.getMessage());

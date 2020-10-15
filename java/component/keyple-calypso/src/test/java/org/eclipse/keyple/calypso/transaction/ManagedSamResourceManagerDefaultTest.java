@@ -132,7 +132,7 @@ public class ManagedSamResourceManagerDefaultTest extends CalypsoBaseTest {
     when(reader.isSePresent()).thenReturn(true);
     doReturn(selectionResponses)
         .when(reader)
-        .transmitSeRequests(
+        .transmitCardRequests(
             any(List.class), any(MultiSelectionProcessing.class), any(ChannelControl.class));
 
     // create a list of mock readers

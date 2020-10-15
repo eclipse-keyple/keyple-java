@@ -324,8 +324,8 @@ public class SamResourceManagerDefault extends SamResourceManager {
       }
       synchronized (localManagedSamResources) {
         switch (event.getEventType()) {
-          case SE_MATCHED:
-          case SE_INSERTED:
+          case CARD_MATCHED:
+          case CARD_INSERTED:
             if (localManagedSamResources.containsKey(samReader.getName())) {
               logger.trace(
                   "Reader is already present in the local samResources -  READERNAME = {}",
@@ -357,7 +357,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
               localManagedSamResources.put(samReader.getName(), newSamResource);
             }
             break;
-          case SE_REMOVED:
+          case CARD_REMOVED:
           case TIMEOUT_ERROR:
             removeResource(samReader);
             break;

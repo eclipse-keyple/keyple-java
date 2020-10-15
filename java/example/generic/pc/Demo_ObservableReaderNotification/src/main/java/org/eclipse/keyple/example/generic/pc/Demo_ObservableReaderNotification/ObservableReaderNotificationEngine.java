@@ -63,7 +63,7 @@ public class ObservableReaderNotificationEngine {
 
     public void update(ReaderEvent event) {
       switch (event.getEventType()) {
-        case SE_MATCHED:
+        case CARD_MATCHED:
           /*
            * Informs the underlying layer of the end of the card processing, in order to
            * manage the removal sequence.
@@ -77,7 +77,7 @@ public class ObservableReaderNotificationEngine {
           }
           break;
 
-        case SE_INSERTED:
+        case CARD_INSERTED:
           /*
            * end of the card processing is automatically done
            */

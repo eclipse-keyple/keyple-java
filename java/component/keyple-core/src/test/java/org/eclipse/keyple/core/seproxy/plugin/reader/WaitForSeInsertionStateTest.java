@@ -68,13 +68,13 @@ public class WaitForSeInsertionStateTest extends CoreBaseTest {
     /*
      * input card inserted card matched
      */
-    doReturn(new ReaderEvent("", "", ReaderEvent.EventType.SE_MATCHED, null))
+    doReturn(new ReaderEvent("", "", ReaderEvent.EventType.CARD_MATCHED, null))
         .when(r)
         .processSeInserted();
 
     /* test */
     waitForInsert.onActivate();
-    waitForInsert.onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
+    waitForInsert.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_INSERTED);
 
     Thread.sleep(WAIT); // wait for the monitoring to act
 
@@ -90,13 +90,13 @@ public class WaitForSeInsertionStateTest extends CoreBaseTest {
     /*
      * input card inserted card doesnt matched Back to Detection
      */
-    doReturn(new ReaderEvent("", "", ReaderEvent.EventType.SE_INSERTED, null))
+    doReturn(new ReaderEvent("", "", ReaderEvent.EventType.CARD_INSERTED, null))
         .when(r)
         .processSeInserted();
 
     /* test */
     waitForInsert.onActivate();
-    waitForInsert.onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
+    waitForInsert.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_INSERTED);
     /* Assert */
 
     Thread.sleep(WAIT); // wait for the monitoring to act

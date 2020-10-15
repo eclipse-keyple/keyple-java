@@ -93,7 +93,7 @@ public class RmTransmitSetTx extends AbstractRemoteMethodTx<List<CardResponse>> 
       KeypleReaderIOException ex =
           JsonParser.getGson().fromJson(keypleDto.getError(), KeypleReaderIOException.class);
       throw new KeypleRemoteException(
-          "An exception occurs while calling the remote method transmitSeRequests", ex);
+          "An exception occurs while calling the remote method transmitCardRequests", ex);
     } else {
       logger.trace("KeypleDto contains a response: {}", keypleDto);
       return JsonParser.getGson()

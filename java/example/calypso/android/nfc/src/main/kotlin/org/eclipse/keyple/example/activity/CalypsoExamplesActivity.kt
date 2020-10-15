@@ -338,8 +338,8 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
             override fun onEventUpdate(event: ReaderEvent?) {
                 CoroutineScope(Dispatchers.Main).launch {
                     when (event?.eventType) {
-                        ReaderEvent.EventType.SE_MATCHED -> {
-                            addResultEvent("SE_MATCHED event: A card corresponding to request has been detected")
+                        ReaderEvent.EventType.CARD_MATCHED -> {
+                            addResultEvent("CARD_MATCHED event: A card corresponding to request has been detected")
                             val selectedSe = cardSelection.processDefaultSelection(event.defaultSelectionsResponse).activeSmartCard
                             if (selectedSe != null) {
                                 addResultEvent("Observer notification: the selection of the card has succeeded. End of the card processing.")
@@ -349,19 +349,19 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                             }
                         }
 
-                        ReaderEvent.EventType.SE_INSERTED -> {
-                            addResultEvent("SE_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.")
+                        ReaderEvent.EventType.CARD_INSERTED -> {
+                            addResultEvent("CARD_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.")
                         }
 
-                        ReaderEvent.EventType.SE_REMOVED -> {
-                            addResultEvent("SE_REMOVED event: There is no PO inserted anymore. Return to the waiting state...")
+                        ReaderEvent.EventType.CARD_REMOVED -> {
+                            addResultEvent("CARD_REMOVED event: There is no PO inserted anymore. Return to the waiting state...")
                         }
 
                         else -> { }
                     }
                     eventRecyclerView.smoothScrollToPosition(events.size - 1)
                 }
-                if (event?.eventType == ReaderEvent.EventType.SE_INSERTED || event?.eventType == ReaderEvent.EventType.SE_MATCHED) {
+                if (event?.eventType == ReaderEvent.EventType.CARD_INSERTED || event?.eventType == ReaderEvent.EventType.CARD_MATCHED) {
                     // TODO make this conditional on the abnormal termination (exception)
                     /*
                      * Informs the underlying layer of the end of the card processing, in order to manage the
@@ -500,19 +500,19 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
             override fun onEventUpdate(event: ReaderEvent?) {
                 CoroutineScope(Dispatchers.Main).launch {
                     when (event?.eventType) {
-                        ReaderEvent.EventType.SE_MATCHED -> {
+                        ReaderEvent.EventType.CARD_MATCHED -> {
                             addResultEvent("Tag detected - card MATCHED")
                             executeCommands(event.defaultSelectionsResponse)
                             reader.finalizeSeProcessing()
                         }
 
-                        ReaderEvent.EventType.SE_INSERTED -> {
+                        ReaderEvent.EventType.CARD_INSERTED -> {
                             addResultEvent("PO detected but AID didn't match with ${CalypsoClassicInfo.AID}")
                             reader.finalizeSeProcessing()
                         }
 
-                        ReaderEvent.EventType.SE_REMOVED -> {
-                            addResultEvent("Tag detected - card SE_REMOVED")
+                        ReaderEvent.EventType.CARD_REMOVED -> {
+                            addResultEvent("Tag detected - card CARD_REMOVED")
                         }
 
                         ReaderEvent.EventType.TIMEOUT_ERROR -> {

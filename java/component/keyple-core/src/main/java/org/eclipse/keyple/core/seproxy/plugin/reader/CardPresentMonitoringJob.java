@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This monitoring job polls the {@link Reader#isSePresent()} method to detect
- * SE_INSERTED/SE_REMOVED
+ * CARD_INSERTED/CARD_REMOVED
  */
 class CardPresentMonitoringJob extends AbstractMonitoringJob {
 
@@ -35,7 +35,7 @@ class CardPresentMonitoringJob extends AbstractMonitoringJob {
    *
    * @param reader : reader that will be polled with the method isSePresent()
    * @param waitTimeout : wait time during two hit of the polling
-   * @param monitorInsertion : if true, polls for SE_INSERTED, else SE_REMOVED
+   * @param monitorInsertion : if true, polls for CARD_INSERTED, else CARD_REMOVED
    */
   public CardPresentMonitoringJob(Reader reader, long waitTimeout, boolean monitorInsertion) {
     this.waitTimeout = waitTimeout;
@@ -58,22 +58,22 @@ class CardPresentMonitoringJob extends AbstractMonitoringJob {
         loop.set(true);
         while (loop.get()) {
           try {
-            // polls for SE_INSERTED
+            // polls for CARD_INSERTED
             if (monitorInsertion && reader.isSePresent()) {
               if (logger.isDebugEnabled()) {
                 logger.debug("[{}] The card is present ", reader.getName());
               }
               loop.set(false);
-              state.onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
+              state.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_INSERTED);
               return;
             }
-            // polls for SE_REMOVED
+            // polls for CARD_REMOVED
             if (!monitorInsertion && !reader.isSePresent()) {
               if (logger.isDebugEnabled()) {
                 logger.debug("[{}] The card is not present ", reader.getName());
               }
               loop.set(false);
-              state.onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
+              state.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_REMOVED);
               return;
             }
 

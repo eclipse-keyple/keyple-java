@@ -127,9 +127,9 @@ public abstract class AbstractLocalReader extends AbstractReader {
 
   /**
    * This abstract method must be implemented by the derived class in order to provide the
-   * information retrieved when powering up the secure element.
+   * information retrieved when powering up the card.
    *
-   * <p>In contact mode, ATR data is the data returned by the Secure Element.
+   * <p>In contact mode, ATR data is the data returned by the card.
    *
    * <p>In contactless mode, as the ATR is not provided by the secured element, it can vary from one
    * plugin to another
@@ -395,15 +395,15 @@ public abstract class AbstractLocalReader extends AbstractReader {
   }
 
   /**
-   * Local implementation of {@link AbstractReader#processSeRequests(List, MultiSelectionProcessing,
-   * ChannelControl)}
+   * Local implementation of {@link AbstractReader#processCardRequests(List,
+   * MultiSelectionProcessing, ChannelControl)}
    *
    * <p>{@inheritDoc}<br>
    *
    * @since 0.9
    */
   @Override
-  protected final List<CardResponse> processSeRequests(
+  protected final List<CardResponse> processCardRequests(
       List<CardRequest> cardRequests,
       MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl) {
@@ -420,7 +420,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
       /* process the CardRequest and append the CardResponse list */
       CardResponse cardResponse;
       try {
-        cardResponse = processSeRequestLogical(cardRequest);
+        cardResponse = processCardRequestLogical(cardRequest);
       } catch (KeypleReaderIOException ex) {
         /*
          * The process has been interrupted. We launch a KeypleReaderException with
@@ -432,7 +432,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
         ex.setCardResponses(cardResponses);
         if (logger.isDebugEnabled()) {
           logger.debug(
-              "[{}] processSeRequests => transmit : process interrupted, collect previous responses {}",
+              "[{}] processCardRequests => transmit : process interrupted, collect previous responses {}",
               this.getName(),
               cardResponses);
         }
@@ -459,15 +459,15 @@ public abstract class AbstractLocalReader extends AbstractReader {
   }
 
   /**
-   * Local implementation of {@link AbstractReader#processSeRequests(List, MultiSelectionProcessing,
-   * ChannelControl)}
+   * Local implementation of {@link AbstractReader#processCardRequests(List,
+   * MultiSelectionProcessing, ChannelControl)}
    *
    * <p>{@inheritDoc}<br>
    *
    * @since 0.9
    */
   @Override
-  protected final CardResponse processSeRequest(
+  protected final CardResponse processCardRequest(
       CardRequest cardRequest, ChannelControl channelControl) {
 
     /* Open the physical channel if needed, determine the current protocol */
@@ -478,7 +478,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
     CardResponse cardResponse;
 
     /* process the CardRequest and keep the CardResponse */
-    cardResponse = processSeRequestLogical(cardRequest);
+    cardResponse = processCardRequestLogical(cardRequest);
 
     /* close the channel if requested */
     if (channelControl == ChannelControl.CLOSE_AFTER) {
@@ -568,7 +568,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * @param cardSelector A not null {@link CardSelector}.
    * @return A not null {@link SelectionStatus}.
    * @throws IllegalStateException in case of configuration inconsistency.
-   * @see #processSeRequestLogical(CardRequest)
+   * @see #processCardRequestLogical(CardRequest)
    */
   private SelectionStatus processSelection(CardSelector cardSelector) {
 
@@ -616,17 +616,17 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * Processes the {@link CardRequest} passed as an argument and returns a {@link CardResponse}.
    *
    * <p>The complete description of the process of transmitting an {@link CardRequest} is described
-   * in {{@link ProxyReader#transmitSeRequest(CardRequest, ChannelControl)}}
+   * in {{@link ProxyReader#transmitCardRequest(CardRequest, ChannelControl)}}
    *
    * @param cardRequest The {@link CardRequest} to be processed (must be not null).
    * @return cardResponse A not null {@link CardResponse}.
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @throws IllegalStateException in case of configuration inconsistency.
-   * @see #processSeRequests(List, MultiSelectionProcessing, ChannelControl)
-   * @see #processSeRequest(CardRequest, ChannelControl)
+   * @see #processCardRequests(List, MultiSelectionProcessing, ChannelControl)
+   * @see #processCardRequest(CardRequest, ChannelControl)
    * @since 0.9
    */
-  private CardResponse processSeRequestLogical(CardRequest cardRequest) {
+  private CardResponse processCardRequestLogical(CardRequest cardRequest) {
 
     SelectionStatus selectionStatus = null;
     CardSelector cardSelector = cardRequest.getCardSelector();

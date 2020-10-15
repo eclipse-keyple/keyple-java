@@ -176,7 +176,7 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
             try {
                 Timber.i("Getting tag proxy")
                 tagProxy = TagProxy.getTagProxy(tag)
-                onEvent(InternalEvent.SE_INSERTED)
+                onEvent(InternalEvent.CARD_INSERTED)
             } catch (e: KeypleReaderException) {
                 Timber.e(e)
             }

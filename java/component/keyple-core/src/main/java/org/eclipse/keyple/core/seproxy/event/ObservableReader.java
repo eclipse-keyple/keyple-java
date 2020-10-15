@@ -14,7 +14,7 @@ package org.eclipse.keyple.core.seproxy.event;
 import org.eclipse.keyple.core.seproxy.Reader;
 
 /**
- * Provides the API to observe Secure Elements in readers.
+ * Provides the API to observe cards in readers.
  *
  * <ul>
  *   <li>Observer management
@@ -140,9 +140,10 @@ public interface ObservableReader extends Reader {
    * Defines the default selection request to be processed when a card is inserted.
    *
    * <p>Depending on the card and the notificationMode parameter, a {@link
-   * org.eclipse.keyple.core.seproxy.event.ReaderEvent.EventType#SE_INSERTED EventType#SE_INSERTED},
-   * {@link org.eclipse.keyple.core.seproxy.event.ReaderEvent.EventType#SE_MATCHED
-   * EventType#SE_MATCHED} or no event at all will be notified to the application observers.
+   * org.eclipse.keyple.core.seproxy.event.ReaderEvent.EventType#CARD_INSERTED
+   * EventType#CARD_INSERTED}, {@link
+   * org.eclipse.keyple.core.seproxy.event.ReaderEvent.EventType#CARD_MATCHED
+   * EventType#CARD_MATCHED} or no event at all will be notified to the application observers.
    *
    * @param defaultSelectionsRequest The default selection request to be operated (should be not
    *     null).
@@ -157,7 +158,7 @@ public interface ObservableReader extends Reader {
    * mode.
    *
    * <p>The notification mode indicates whether a {@link
-   * org.eclipse.keyple.core.seproxy.event.ReaderEvent.EventType#SE_INSERTED} event should be
+   * org.eclipse.keyple.core.seproxy.event.ReaderEvent.EventType#CARD_INSERTED} event should be
    * notified even if the selection has failed ({@link NotificationMode#ALWAYS}) or whether the card
    * insertion should be ignored in this case ({@link NotificationMode#MATCHED_ONLY}).
    *

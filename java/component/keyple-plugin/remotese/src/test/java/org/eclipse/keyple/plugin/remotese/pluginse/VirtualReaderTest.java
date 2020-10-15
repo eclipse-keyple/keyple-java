@@ -73,7 +73,7 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
   }
 
   /**
-   * Invoke a transmitSeRequests on a failing DtoNode, no Dto will be received, timeout should be
+   * Invoke a transmitCardRequests on a failing DtoNode, no Dto will be received, timeout should be
    * thrown
    *
    * @throws Exception
@@ -102,14 +102,14 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
             false,
             new HashMap<String, String>());
 
-    reader.transmitSeRequests(
+    reader.transmitCardRequests(
         StubReaderTest.getRequestIsoDepSetSample(),
         MultiSelectionProcessing.FIRST_MATCH,
         ChannelControl.KEEP_OPEN);
   }
 
   /**
-   * Successful transmitSeRequests with MultiSelectionProcessing and ChannelControl
+   * Successful transmitCardRequests with MultiSelectionProcessing and ChannelControl
    *
    * @throws Exception
    */
@@ -117,17 +117,17 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
   @Ignore
   // TODO Mock does not work, see this#connectMockReader()
   // execute at hand and check logs
-  public void transmitSeRequests_withParameters() throws Exception {
-    List<CardRequest> cardRequests = SampleFactory.getASeRequestList();
+  public void transmitCardRequests_withParameters() throws Exception {
+    List<CardRequest> cardRequests = SampleFactory.getACardRequestList();
 
-    // test transmitSeRequests with Parameters
+    // test transmitCardRequests with Parameters
     ((ProxyReader) virtualReader)
-        .transmitSeRequests(
+        .transmitCardRequests(
             cardRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
 
     // condition -> the nativeReader execute the method executed on the virtual reader
     verify(nativeReader, times(1))
-        .transmitSeRequests(
+        .transmitCardRequests(
             cardRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
   }
 
@@ -135,17 +135,17 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
   @Ignore
   // TODO Mock does not work, see this#connectMockReader()
   // execute at hand and check logs
-  public void transmitSeRequests_withNoParameters() throws Exception {
-    List<CardRequest> cardRequests = SampleFactory.getASeRequestList();
+  public void transmitCardRequests_withNoParameters() throws Exception {
+    List<CardRequest> cardRequests = SampleFactory.getACardRequestList();
 
-    // test transmitSeRequest without parameter
+    // test transmitCardRequest without parameter
     ((ProxyReader) virtualReader)
-        .transmitSeRequests(
+        .transmitCardRequests(
             cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
     // condition -> the nativeReader execute the method executed on the virtual reader
     verify(nativeReader, times(1))
-        .transmitSeRequests(
+        .transmitCardRequests(
             cardRequests,
             MultiSelectionProcessing.FIRST_MATCH,
             ChannelControl.KEEP_OPEN); // default value
@@ -162,29 +162,29 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
   @Ignore
   // TODO Mock does not work, see this#connectMockReader()
   // execute at hand and check logs
-  public void transmitSeRequest_withParameters() throws Exception {
-    CardRequest cardRequest = SampleFactory.getASeRequest();
+  public void transmitCardRequest_withParameters() throws Exception {
+    CardRequest cardRequest = SampleFactory.getACardRequest();
 
-    // test transmitSeRequest with Parameters
-    ((ProxyReader) virtualReader).transmitSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
+    // test transmitCardRequest with Parameters
+    ((ProxyReader) virtualReader).transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
     // condition -> the nativeReader execute the method executed on the virtual reader
-    verify(nativeReader, times(1)).transmitSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
+    verify(nativeReader, times(1)).transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
   }
 
   @Test
   @Ignore
   // TODO Mock does not work, see this#connectMockReader()
   // execute at hand and check logs
-  public void transmitSeRequest_withNoParam() throws Exception {
-    CardRequest cardRequest = SampleFactory.getASeRequest();
+  public void transmitCardRequest_withNoParam() throws Exception {
+    CardRequest cardRequest = SampleFactory.getACardRequest();
 
-    // test transmitSeRequest without parameter
-    ((ProxyReader) virtualReader).transmitSeRequest(cardRequest, ChannelControl.KEEP_OPEN);
+    // test transmitCardRequest without parameter
+    ((ProxyReader) virtualReader).transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
     // condition -> the nativeReader execute the method executed on the virtual reader
     verify(nativeReader, times(1))
-        .transmitSeRequest(cardRequest, ChannelControl.KEEP_OPEN); // default
+        .transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN); // default
     // value when
     // no param is
     // specified
@@ -198,7 +198,7 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
     doReturn(true).when(mockReader).isContactless();
     doReturn(new ArrayList<CardResponse>())
         .when(mockReader)
-        .transmitSeRequests(
+        .transmitCardRequests(
             ArgumentMatchers.<CardRequest>anyList(),
             any(MultiSelectionProcessing.class),
             any(ChannelControl.class));

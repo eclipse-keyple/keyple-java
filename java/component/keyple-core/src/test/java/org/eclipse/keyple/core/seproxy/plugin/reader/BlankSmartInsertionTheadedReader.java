@@ -58,7 +58,7 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
             BlankSmartInsertionTheadedReader.this.getName());
         try {
           if (BlankSmartInsertionTheadedReader.this.waitForCardPresent()) {
-            onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
+            onEvent(AbstractObservableLocalReader.InternalEvent.CARD_INSERTED);
           }
         } catch (KeypleReaderIOException e) {
           logger.trace(

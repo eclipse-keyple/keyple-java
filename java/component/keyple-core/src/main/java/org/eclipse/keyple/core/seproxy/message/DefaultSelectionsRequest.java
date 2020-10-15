@@ -47,8 +47,8 @@ public final class DefaultSelectionsRequest extends AbstractDefaultSelectionsReq
    *
    * <p>The {@link MultiSelectionProcessing} enum is used to attempt to execute all the selection
    * cases: {@link MultiSelectionProcessing#PROCESS_ALL} (for example in order to list all the
-   * applications present in a secure element) or {@link MultiSelectionProcessing#FIRST_MATCH} (to
-   * target a single application).
+   * applications present in a card) or {@link MultiSelectionProcessing#FIRST_MATCH} (to target a
+   * single application).
    *
    * <p>The {@link ChannelControl} enum controls the closing of the physical channel at the end of
    * the selection.
@@ -83,7 +83,7 @@ public final class DefaultSelectionsRequest extends AbstractDefaultSelectionsReq
   }
 
   /** {@inheritDoc} */
-  public final List<CardRequest> getSelectionSeRequests() {
+  public final List<CardRequest> getSelectionCardRequests() {
     return selectionCardRequests;
   }
 }

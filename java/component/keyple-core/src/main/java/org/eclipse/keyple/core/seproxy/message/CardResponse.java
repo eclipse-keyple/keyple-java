@@ -16,8 +16,7 @@ import java.util.List;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /**
- * This POJO is used to transport data from a secure element obtained in response to a {@link
- * CardRequest}..
+ * This POJO is used to transport data from a card obtained in response to a {@link CardRequest}..
  *
  * <p>It includes elements related to the selection of the card.
  *

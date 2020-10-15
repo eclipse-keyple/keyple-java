@@ -59,7 +59,7 @@ public class WaitForSeRemovalStateTest extends CoreBaseTest {
     /* test */
     waitForSeRemovalState.onActivate();
 
-    waitForSeRemovalState.onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
+    waitForSeRemovalState.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_REMOVED);
 
     /* Assert */
     verify(r, times(1)).switchState(WAIT_FOR_START_DETECTION);
@@ -77,7 +77,7 @@ public class WaitForSeRemovalStateTest extends CoreBaseTest {
 
     /* test */
     waitForSeRemovalState.onActivate();
-    waitForSeRemovalState.onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
+    waitForSeRemovalState.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_REMOVED);
 
     /* Assert */
     verify(r, times(1)).switchState(WAIT_FOR_SE_INSERTION);

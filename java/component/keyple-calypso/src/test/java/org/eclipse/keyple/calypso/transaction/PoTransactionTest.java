@@ -1758,7 +1758,7 @@ public class PoTransactionTest {
               }
             })
         .when(mockReader)
-        .transmitSeRequest(any(CardRequest.class), any(ChannelControl.class));
+        .transmitCardRequest(any(CardRequest.class), any(ChannelControl.class));
     return mockReader;
   }
 

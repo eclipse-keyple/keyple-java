@@ -177,7 +177,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     r.startSeDetection(ObservableReader.PollingMode.REPEATING);
 
     // insert card
-    r.onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
+    r.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_INSERTED);
 
     // assert currentState have changed
     Assert.assertEquals(
@@ -192,7 +192,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL, r.getCurrentMonitoringState());
 
     // remove the card
-    r.onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
+    r.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_REMOVED);
 
     // assert currentState have changed
     Assert.assertEquals(
@@ -211,12 +211,12 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
   @Test
   public void communicationClosing_standard() throws Exception {
     AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
-    CardRequest request = CardRequestTest.getSeRequestSample();
+    CardRequest request = CardRequestTest.getCardRequestSample();
     // close after
-    r.transmitSeRequest(request, ChannelControl.CLOSE_AFTER);
+    r.transmitCardRequest(request, ChannelControl.CLOSE_AFTER);
 
     // force closing is not called (only the transmit)
-    verify(r, times(0)).processSeRequest(null, ChannelControl.CLOSE_AFTER);
+    verify(r, times(0)).processCardRequest(null, ChannelControl.CLOSE_AFTER);
   }
 
   /*
@@ -257,7 +257,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     return new ObservableReader.ReaderObserver() {
       @Override
       public void update(ReaderEvent event) {
-        if (event.getEventType() == ReaderEvent.EventType.SE_REMOVED) {
+        if (event.getEventType() == ReaderEvent.EventType.CARD_REMOVED) {
           lock.countDown();
         }
         ;
@@ -269,7 +269,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     return new ObservableReader.ReaderObserver() {
       @Override
       public void update(ReaderEvent event) {
-        if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED) {
+        if (event.getEventType() == ReaderEvent.EventType.CARD_INSERTED) {
           lock.countDown();
         }
         ;
@@ -281,7 +281,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     return new ObservableReader.ReaderObserver() {
       @Override
       public void update(ReaderEvent event) {
-        if (event.getEventType() == ReaderEvent.EventType.SE_MATCHED) {
+        if (event.getEventType() == ReaderEvent.EventType.CARD_MATCHED) {
           lock.countDown();
         }
         ;
@@ -299,10 +299,10 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         Mockito.spy(new BlankObservableLocalReader(pluginName, readerName));
     doReturn(CardResponseTest.getACardResponse())
         .when(r)
-        .processSeRequest(any(CardRequest.class), any(ChannelControl.class));
+        .processCardRequest(any(CardRequest.class), any(ChannelControl.class));
     doReturn(getCardResponses())
         .when(r)
-        .processSeRequests(
+        .processCardRequests(
             any(List.class), any(MultiSelectionProcessing.class), any(ChannelControl.class));
     return r;
   }
