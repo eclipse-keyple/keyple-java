@@ -95,7 +95,6 @@ task setVersion {
     dependsOn ':java:component:keyple-core:setVersion'
     dependsOn ':java:component:keyple-calypso:setVersion'
     dependsOn ':java:component:keyple-plugin:keyple-plugin-pcsc:setVersion'
-    //dependsOn ':java:component:keyple-plugin:keyple-plugin-remote:setVersion'
     dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-core:setVersion'
     dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-native:setVersion'
     dependsOn ':java:component:keyple-plugin:remote:keyple-plugin-remote-virtual:setVersion'
