@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.event;
 
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+import org.eclipse.keyple.core.seproxy.Plugin;
 
 /**
  * Provides the API to observe readers in plugins.
@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.seproxy.ReaderPlugin;
  *
  * @since 0.9
  */
-public interface ObservablePlugin extends ReaderPlugin {
+public interface ObservablePlugin extends Plugin {
 
   /**
    * This interface has to be implemented by plugin observers.

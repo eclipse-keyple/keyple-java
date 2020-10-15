@@ -13,8 +13,8 @@ package org.eclipse.keyple.calypso.transaction;
 
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
 import org.eclipse.keyple.core.selection.CardResource;
+import org.eclipse.keyple.core.seproxy.Plugin;
 import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationNoReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 public class SamResourceManagerPool extends SamResourceManager {
   private static final Logger logger = LoggerFactory.getLogger(SamResourceManagerPool.class);
 
-  protected final ReaderPlugin samReaderPlugin;
+  protected final Plugin samReaderPlugin;
   private final int maxBlockingTime;
   private final int sleepTime;
 

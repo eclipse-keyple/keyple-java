@@ -12,7 +12,7 @@
 package org.eclipse.keyple.example.remote.application;
 
 import java.io.IOException;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+import org.eclipse.keyple.core.seproxy.Plugin;
 import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -148,7 +148,7 @@ public class SlaveNodeController {
       SmartCardService smartCardService = SmartCardService.getInstance();
 
       /* Assign PcscPlugin to the SmartCardService */
-      ReaderPlugin stubPlugin = smartCardService.registerPlugin(new StubPluginFactory(STUB_SLAVE));
+      Plugin stubPlugin = smartCardService.registerPlugin(new StubPluginFactory(STUB_SLAVE));
 
       ObservablePlugin.PluginObserver observer =
           new ObservablePlugin.PluginObserver() {

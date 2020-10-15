@@ -15,8 +15,8 @@ import org.eclipse.keyple.core.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.CardSelector;
+import org.eclipse.keyple.core.seproxy.Plugin;
 import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
@@ -51,12 +51,12 @@ public class SequentialMultiSelection_Pcsc {
     // Get the instance of the SmartCardService (Singleton pattern)
     SmartCardService smartCardService = SmartCardService.getInstance();
 
-    // Register the PcscPlugin with SmartCardService, get the corresponding generic ReaderPlugin in
+    // Register the PcscPlugin with SmartCardService, get the corresponding generic Plugin in
     // return
-    ReaderPlugin readerPlugin = smartCardService.registerPlugin(new PcscPluginFactory());
+    Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory());
 
     // Get and configure the PO reader
-    Reader reader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
+    Reader reader = plugin.getReader(ReaderUtilities.getContactlessReaderName());
     ((PcscReader) reader).setContactless(true);
     ((PcscReader) reader).setIsoProtocol(PcscReader.IsoProtocol.T1);
 

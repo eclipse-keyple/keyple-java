@@ -17,8 +17,8 @@ import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
+import org.eclipse.keyple.core.seproxy.Plugin;
 import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
@@ -40,12 +40,12 @@ public class GroupedMultiSelection_Pcsc {
     // Get the instance of the SmartCardService (Singleton pattern)
     SmartCardService smartCardService = SmartCardService.getInstance();
 
-    // Register the PcscPlugin with SmartCardService, get the corresponding generic ReaderPlugin in
+    // Register the PcscPlugin with SmartCardService, get the corresponding generic Plugin in
     // return
-    ReaderPlugin readerPlugin = smartCardService.registerPlugin(new PcscPluginFactory());
+    Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory());
 
     // Get and configure the PO reader
-    Reader reader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
+    Reader reader = plugin.getReader(ReaderUtilities.getContactlessReaderName());
     ((PcscReader) reader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     logger.info(
@@ -105,9 +105,9 @@ public class GroupedMultiSelection_Pcsc {
       // Actual card communication: operate through a single request the card selection
       SelectionsResult selectionsResult = cardSelection.processExplicitSelection(reader);
 
-      if (selectionsResult.getSmartCardlections().size() > 0) {
+      if (selectionsResult.getMatchingSmartCards().size() > 0) {
         for (Map.Entry<Integer, AbstractSmartCard> entry :
-            selectionsResult.getSmartCardlections().entrySet()) {
+            selectionsResult.getMatchingSmartCards().entrySet()) {
           AbstractSmartCard smartCard = entry.getValue();
           String atr = smartCard.hasAtr() ? ByteArrayUtil.toHex(smartCard.getAtrBytes()) : "no ATR";
           String fci = smartCard.hasFci() ? ByteArrayUtil.toHex(smartCard.getFciBytes()) : "no FCI";

@@ -11,8 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.event;
 
+import org.eclipse.keyple.core.seproxy.Plugin;
 import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 
@@ -120,12 +120,12 @@ public final class ReaderEvent {
   }
 
   /**
-   * Gets the {@link ReaderPlugin} from which the reader that generated the event comes from.
+   * Gets the {@link Plugin} from which the reader that generated the event comes from.
    *
    * @return A not null reference.
    * @since 0.9
    */
-  public ReaderPlugin getPlugin() {
+  public Plugin getPlugin() {
     return SmartCardService.getInstance().getPlugin(pluginName);
   }
 

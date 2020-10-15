@@ -16,8 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.eclipse.keyple.core.seproxy.Plugin;
 import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -362,8 +362,8 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
         "Find local reader by name {} in {} plugin(s)",
         nativeReaderName,
         smartCardService.getPlugins().size());
-    final Collection<ReaderPlugin> plugins = smartCardService.getPlugins().values();
-    for (ReaderPlugin plugin : plugins) {
+    final Collection<Plugin> plugins = smartCardService.getPlugins().values();
+    for (Plugin plugin : plugins) {
       try {
         return plugin.getReader(nativeReaderName);
       } catch (KeypleReaderNotFoundException e) {

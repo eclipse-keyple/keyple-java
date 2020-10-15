@@ -12,7 +12,7 @@
 package org.eclipse.keyple.example.calypso.pc.Demo_CalypsoClassic;
 
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalArgumentException;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+import org.eclipse.keyple.core.seproxy.Plugin;
 import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
@@ -49,8 +49,7 @@ public class Demo_CalypsoClassic_Stub {
     final String STUB_PLUGIN_NAME = "stub1";
 
     /* Register Stub plugin in the platform */
-    ReaderPlugin stubPlugin =
-        smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
+    Plugin stubPlugin = smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
 
     /* Setting up the transaction engine (implements Observer) */
     CalypsoClassicTransactionEngine transactionEngine = new CalypsoClassicTransactionEngine();

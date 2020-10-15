@@ -12,8 +12,8 @@
 package org.eclipse.keyple.example.generic.pc.Demo_ObservableReaderNotification;
 
 import java.util.Collection;
+import org.eclipse.keyple.core.seproxy.Plugin;
 import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -42,8 +42,8 @@ public class ObservableReaderNotificationEngine {
      * We add an observer to each plugin (only one in this example) the readers observers will
      * be added dynamically upon plugin notification (see SpecificPluginObserver.update)
      */
-    Collection<ReaderPlugin> readerPlugins = SmartCardService.getInstance().getPlugins().values();
-    for (ReaderPlugin plugin : readerPlugins) {
+    Collection<Plugin> plugins = SmartCardService.getInstance().getPlugins().values();
+    for (Plugin plugin : plugins) {
 
       if (plugin instanceof ObservablePlugin) {
         logger.info("Add observer PLUGINNAME = {}", plugin.getName());

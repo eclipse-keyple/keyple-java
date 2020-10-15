@@ -94,10 +94,10 @@ public class SmartCardServiceTest {
   public void testRegisterPlugin() {
 
     // register plugin1 by its factory
-    ReaderPlugin testPlugin = proxyService.registerPlugin(factory1);
+    Plugin testPlugin = proxyService.registerPlugin(factory1);
 
     // results
-    Map<String, ReaderPlugin> testPlugins = proxyService.getPlugins();
+    Map<String, Plugin> testPlugins = proxyService.getPlugins();
 
     Assert.assertNotNull(testPlugin);
     Assert.assertEquals(PLUGIN_NAME_1, testPlugin.getName());
@@ -115,7 +115,7 @@ public class SmartCardServiceTest {
     proxyService.registerPlugin(factory1);
 
     // should not be added twice
-    Map<String, ReaderPlugin> testPlugins = proxyService.getPlugins();
+    Map<String, Plugin> testPlugins = proxyService.getPlugins();
     Assert.assertEquals(1, testPlugins.size());
 
     // unregister
@@ -130,7 +130,7 @@ public class SmartCardServiceTest {
     proxyService.registerPlugin(factory2);
 
     // should not be added twice
-    Map<String, ReaderPlugin> testPlugins = proxyService.getPlugins();
+    Map<String, Plugin> testPlugins = proxyService.getPlugins();
     Assert.assertEquals(2, testPlugins.size());
 
     // unregister

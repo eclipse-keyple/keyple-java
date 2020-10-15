@@ -14,12 +14,12 @@ package org.eclipse.keyple.core.seproxy.plugin;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import org.eclipse.keyple.core.seproxy.Plugin;
 import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.exception.*;
 
 /** Observable plugin. These plugin can report when a reader is added or removed. */
-public abstract class AbstractPlugin implements ReaderPlugin {
+public abstract class AbstractPlugin implements Plugin {
 
   /** The name of the plugin */
   private final String name;
@@ -28,7 +28,7 @@ public abstract class AbstractPlugin implements ReaderPlugin {
   protected Map<String, Reader> readers = new ConcurrentHashMap<String, Reader>();
 
   /**
-   * Instantiates a new ReaderPlugin. Retrieve the current readers list.
+   * Instantiates a new Plugin. Retrieve the current readers list.
    *
    * <p>Initialize the list of readers calling the abstract method initNativeReaders
    *

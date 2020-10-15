@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.generic.pc.Demo_SeProtocolDetection;
 
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+import org.eclipse.keyple.core.seproxy.Plugin;
 import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
@@ -48,8 +48,7 @@ public class Demo_SeProtocolDetection_Stub {
     final String STUB_PLUGIN_NAME = "stub1";
 
     // Register Stub plugin in the platform
-    ReaderPlugin stubPlugin =
-        smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
+    Plugin stubPlugin = smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
 
     // create an observer class to handle the card operations
     SeProtocolDetectionEngine observer = new SeProtocolDetectionEngine();

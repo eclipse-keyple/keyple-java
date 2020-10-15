@@ -48,7 +48,7 @@ public class SelectionsResultTest {
     assertThat(selectionsResult.hasSelectionMatched(0)).isTrue();
     assertThat(selectionsResult.hasSelectionMatched(1)).isFalse();
     assertThat(selectionsResult.hasSelectionMatched(2)).isTrue();
-    Map<Integer, AbstractSmartCard> matchingSelections = selectionsResult.getSmartCardlections();
+    Map<Integer, AbstractSmartCard> matchingSelections = selectionsResult.getMatchingSmartCards();
     assertThat(matchingSelections.get(0)).isEqualTo(testSmartCard1);
     assertThat(matchingSelections.get(1)).isEqualTo(null);
     assertThat(matchingSelections.get(2)).isEqualTo(testSmartCard2);
