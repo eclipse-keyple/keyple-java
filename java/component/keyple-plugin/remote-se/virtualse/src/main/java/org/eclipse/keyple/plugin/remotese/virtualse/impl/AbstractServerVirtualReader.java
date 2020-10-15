@@ -168,7 +168,7 @@ abstract class AbstractServerVirtualReader implements RemoteSeServerReader, Prox
    */
   @Override
   public void activateProtocol(String readerProtocolName, String applicationProtocolName) {
-    throw new IllegalArgumentException(
+    throw new UnsupportedOperationException(
         "activateProtocol method is not implemented in plugin remote, use it only locally");
   }
 
@@ -179,7 +179,7 @@ abstract class AbstractServerVirtualReader implements RemoteSeServerReader, Prox
    */
   @Override
   public void deactivateProtocol(String readerProtocolName) {
-    throw new IllegalArgumentException(
+    throw new UnsupportedOperationException(
         "deactivateProtocol method is not implemented in plugin remote, use it only locally");
   }
 
