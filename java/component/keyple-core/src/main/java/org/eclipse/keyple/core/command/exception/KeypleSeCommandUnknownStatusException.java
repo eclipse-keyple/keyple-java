@@ -24,7 +24,7 @@ public class KeypleSeCommandUnknownStatusException extends KeypleSeCommandExcept
    * Constructor allowing to set a message, the command and the status code.
    *
    * @param message the message to identify the exception context (Should not be null)
-   * @param command the SE command (Should not be null)
+   * @param command the card command (Should not be null)
    * @param statusCode the status code (Should not be null)
    * @since 0.9
    */

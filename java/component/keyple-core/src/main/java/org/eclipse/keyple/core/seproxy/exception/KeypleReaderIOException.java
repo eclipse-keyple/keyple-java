@@ -12,20 +12,20 @@
 package org.eclipse.keyple.core.seproxy.exception;
 
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 
 /**
  * The exception {@code KeypleReaderIOException} indicates that some IO operations with the reader
- * or SE have failed, generally when the reader was disconnected or card removed.
+ * or the card have failed, generally when the reader was disconnected or card removed.
  */
 public class KeypleReaderIOException extends KeypleReaderException {
 
   /*
-   * SeResponse and list of SeResponse objects to carry partial responses in case of a breakdown
-   * in communication with the SE.
+   * CardResponse and list of CardResponse objects to carry partial responses in case of a breakdown
+   * in communication with the card.
    */
-  private SeResponse seResponse;
-  private List<SeResponse> seResponses;
+  private CardResponse cardResponse;
+  private List<CardResponse> cardResponses;
 
   /** @param message the message to identify the exception context */
   public KeypleReaderIOException(String message) {
@@ -42,19 +42,19 @@ public class KeypleReaderIOException extends KeypleReaderException {
     super(message, cause);
   }
 
-  public List<SeResponse> getSeResponses() {
-    return seResponses;
+  public List<CardResponse> getCardResponses() {
+    return cardResponses;
   }
 
-  public void setSeResponses(List<SeResponse> seResponses) {
-    this.seResponses = seResponses;
+  public void setCardResponses(List<CardResponse> cardResponse) {
+    this.cardResponses = cardResponse;
   }
 
-  public SeResponse getSeResponse() {
-    return seResponse;
+  public CardResponse getCardResponse() {
+    return cardResponse;
   }
 
-  public void setSeResponse(SeResponse seResponse) {
-    this.seResponse = seResponse;
+  public void setCardResponse(CardResponse cardResponse) {
+    this.cardResponse = cardResponse;
   }
 }

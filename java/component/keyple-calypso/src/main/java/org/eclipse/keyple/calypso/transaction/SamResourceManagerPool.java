@@ -12,10 +12,10 @@
 package org.eclipse.keyple.calypso.transaction;
 
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
-import org.eclipse.keyple.core.selection.SeResource;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+import org.eclipse.keyple.core.selection.CardResource;
+import org.eclipse.keyple.core.seproxy.Plugin;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationNoReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
 import org.slf4j.Logger;
@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 public class SamResourceManagerPool extends SamResourceManager {
   private static final Logger logger = LoggerFactory.getLogger(SamResourceManagerPool.class);
 
-  protected final ReaderPlugin samReaderPlugin;
+  protected final Plugin samReaderPlugin;
   private final int maxBlockingTime;
   private final int sleepTime;
 
@@ -55,7 +55,7 @@ public class SamResourceManagerPool extends SamResourceManager {
 
   /** {@inheritDoc} */
   @Override
-  public SeResource<CalypsoSam> allocateSamResource(
+  public CardResource<CalypsoSam> allocateSamResource(
       AllocationMode allocationMode, SamIdentifier samIdentifier) {
     long maxBlockingDate = System.currentTimeMillis() + maxBlockingTime;
     boolean noSamResourceLogged = false;
@@ -63,7 +63,7 @@ public class SamResourceManagerPool extends SamResourceManager {
     while (true) {
       try {
         // virtually infinite number of readers
-        SeReader samReader =
+        Reader samReader =
             ((ReaderPoolPlugin) samReaderPlugin).allocateReader(samIdentifier.getGroupReference());
         if (samReader != null) {
           SamResourceManagerDefault.ManagedSamResource managedSamResource =
@@ -111,9 +111,9 @@ public class SamResourceManagerPool extends SamResourceManager {
   }
 
   @Override
-  public void freeSamResource(SeResource<CalypsoSam> samResource) {
+  public void freeSamResource(CardResource<CalypsoSam> samResource) {
     // virtually infinite number of readers
     logger.debug("Freeing HSM SAM resource.");
-    ((ReaderPoolPlugin) samReaderPlugin).releaseReader(samResource.getSeReader());
+    ((ReaderPoolPlugin) samReaderPlugin).releaseReader(samResource.getReader());
   }
 }

@@ -12,13 +12,13 @@
 package org.eclipse.keyple.calypso.transaction;
 
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
-import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.CardSelector;
 
 /**
- * The {@link SamSelector} class extends {@link SeSelector} to handle specific Calypso SAM needs
+ * The {@link SamSelector} class extends {@link CardSelector} to handle specific Calypso SAM needs
  * such as model identification.
  */
-public class SamSelector extends SeSelector {
+public class SamSelector extends CardSelector {
   private final SamRevision targetSamRevision;
   private final byte[] unlockData;
 
@@ -68,7 +68,7 @@ public class SamSelector extends SeSelector {
    *
    * @since 0.9
    */
-  public static final class SamSelectorBuilder extends SeSelector.SeSelectorBuilder {
+  public static final class SamSelectorBuilder extends CardSelector.CardSelectorBuilder {
     private SamRevision samRevision;
     private String serialNumber;
     private byte[] unlockData;
@@ -130,8 +130,8 @@ public class SamSelector extends SeSelector {
 
     /** {@inheritDoc} */
     @Override
-    public SamSelectorBuilder seProtocol(String seProtocol) {
-      return (SamSelectorBuilder) super.seProtocol(seProtocol);
+    public SamSelectorBuilder cardProtocol(String cardProtocol) {
+      return (SamSelectorBuilder) super.cardProtocol(cardProtocol);
     }
 
     /** {@inheritDoc} */

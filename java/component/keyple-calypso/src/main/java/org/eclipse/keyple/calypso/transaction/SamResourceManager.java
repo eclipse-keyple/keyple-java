@@ -14,10 +14,10 @@ package org.eclipse.keyple.calypso.transaction;
 import static org.eclipse.keyple.calypso.command.sam.SamRevision.AUTO;
 
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
-import org.eclipse.keyple.core.selection.SeResource;
-import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.CardResource;
+import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -54,7 +54,7 @@ public abstract class SamResourceManager {
    * @throws KeypleReaderException if a reader error occurs
    * @throws KeypleAllocationReaderException if reader allocation fails
    */
-  public abstract SeResource<CalypsoSam> allocateSamResource(
+  public abstract CardResource<CalypsoSam> allocateSamResource(
       AllocationMode allocationMode, SamIdentifier samIdentifier);
 
   /**
@@ -62,7 +62,7 @@ public abstract class SamResourceManager {
    *
    * @param samResource the SAM resource reference to free
    */
-  public abstract void freeSamResource(SeResource<CalypsoSam> samResource);
+  public abstract void freeSamResource(CardResource<CalypsoSam> samResource);
 
   /**
    * Create a SAM resource from the provided SAM reader.
@@ -71,12 +71,12 @@ public abstract class SamResourceManager {
    * the selection.
    *
    * @param samReader the SAM reader with which the APDU exchanges will be done.
-   * @return a {@link SeResource}
+   * @return a {@link CardResource}
    * @throws CalypsoNoSamResourceAvailableException if an error occurs while doing the selection
    */
-  protected SamResourceManagerDefault.ManagedSamResource createSamResource(SeReader samReader) {
+  protected SamResourceManagerDefault.ManagedSamResource createSamResource(Reader samReader) {
 
-    SeSelection samSelection = new SeSelection();
+    CardSelection samSelection = new CardSelection();
 
     /* Prepare selector */
     samSelection.prepareSelection(
@@ -97,7 +97,7 @@ public abstract class SamResourceManager {
       throw new CalypsoNoSamResourceAvailableException("Unable to open a logical channel for SAM!");
     }
 
-    CalypsoSam calypsoSam = (CalypsoSam) selectionsResult.getActiveMatchingSe();
+    CalypsoSam calypsoSam = (CalypsoSam) selectionsResult.getActiveSmartCard();
 
     return new SamResourceManagerDefault.ManagedSamResource(samReader, calypsoSam);
   }

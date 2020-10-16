@@ -16,14 +16,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Ping the SE to detect removal thanks to the method {@link
- * AbstractObservableLocalReader#isSePresentPing()}. This method is invoked in another thread.
+ * Ping the card to detect removal thanks to the method {@link
+ * AbstractObservableLocalReader#isCardPresentPing()}. This method is invoked in another thread.
  *
  * <p>This job should be used by readers who do not have the ability to natively detect the
- * disappearance of the SE at the end of the transaction.
+ * disappearance of the card at the end of the transaction.
  *
- * <p>It is based on sending a neutral APDU command as long as the SE is responding, an internal
- * SE_REMOVED event is fired when the SE is no longer responding.
+ * <p>It is based on sending a neutral APDU command as long as the card is responding, an internal
+ * CARD_REMOVED event is fired when the card is no longer responding.
  *
  * <p>By default a delay of 200 ms is inserted between each APDU sending .
  */
@@ -37,7 +37,7 @@ class CardAbsentPingMonitoringJob extends AbstractMonitoringJob {
   private long removalWait = 200;
 
   /**
-   * Create a job monitor job that ping the SE with the method isSePresentPing()
+   * Create a job monitor job that ping the card with the method isCardPresentPing()
    *
    * @param reader : reference to the reader
    */
@@ -46,7 +46,7 @@ class CardAbsentPingMonitoringJob extends AbstractMonitoringJob {
   }
 
   /**
-   * Create a job monitor job that ping the SE with the method isSePresentPing()
+   * Create a job monitor job that ping the card with the method isCardPresentPing()
    *
    * @param reader : reference to the reader
    * @param removalWait : delay between between each APDU sending
@@ -62,7 +62,7 @@ class CardAbsentPingMonitoringJob extends AbstractMonitoringJob {
 
     /*
      * Loop until one the following condition is met : -
-     * AbstractObservableLocalReader#isSePresentPing returns false, meaning that the SE ping has
+     * AbstractObservableLocalReader#isCardPresentPing returns false, meaning that the card ping has
      * failed - InterruptedException is caught
      */
     job =
@@ -72,17 +72,17 @@ class CardAbsentPingMonitoringJob extends AbstractMonitoringJob {
           @Override
           public void run() {
             if (logger.isDebugEnabled()) {
-              logger.debug("[{}] Polling from isSePresentPing", reader.getName());
+              logger.debug("[{}] Polling from isCardPresentPing", reader.getName());
             }
             // re-init loop value to true
             loop.set(true);
             while (loop.get()) {
-              if (!reader.isSePresentPing()) {
+              if (!reader.isCardPresentPing()) {
                 if (logger.isDebugEnabled()) {
-                  logger.debug("[{}] The SE stopped responding", reader.getName());
+                  logger.debug("[{}] the card stopped responding", reader.getName());
                 }
                 loop.set(false);
-                state.onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
+                state.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_REMOVED);
                 return;
               }
               retries++;

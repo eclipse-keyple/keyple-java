@@ -12,7 +12,7 @@
 package org.eclipse.keyple.plugin.remotese.nativese.method;
 
 import com.google.gson.JsonObject;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
@@ -78,11 +78,11 @@ public class RmSetDefaultSelectionRequestExecutor implements IRemoteMethodExecut
         "Execute locally SetDefaultSelectionRequest : {} - {} - {}",
         notificationMode,
         hasPollingMode ? pollingMode : KeypleDtoHelper.notSpecified(),
-        defaultSelectionsRequest.getSelectionSeRequests());
+        defaultSelectionsRequest.getSelectionCardRequests());
 
     try {
       // find native reader by name
-      SeReader reader = slaveAPI.findLocalReader(nativeReaderName);
+      Reader reader = slaveAPI.findLocalReader(nativeReaderName);
 
       if (reader instanceof ObservableReader) {
         logger.debug(

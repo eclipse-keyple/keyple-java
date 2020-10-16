@@ -14,9 +14,9 @@ package org.eclipse.keyple.example.remote.application;
 import java.io.IOException;
 import org.eclipse.keyple.calypso.transaction.SamResourceManager;
 import org.eclipse.keyple.calypso.transaction.SamResourceManagerFactory;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Plugin;
+import org.eclipse.keyple.core.seproxy.Reader;
+import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -107,18 +107,18 @@ public class MasterNodeController {
       /*
        * Configure the SAM Resource Manager
        */
-      ReaderPlugin samStubPlugin =
-          SeProxyService.getInstance().registerPlugin(new StubPluginFactory(STUB_MASTER));
+      Plugin samStubPlugin =
+          SmartCardService.getInstance().registerPlugin(new StubPluginFactory(STUB_MASTER));
 
       /* Plug the SAM stub reader. */
       ((StubPlugin) samStubPlugin).plugStubReader("samReader", true);
 
-      SeReader samReader = samStubPlugin.getReader("samReader");
+      Reader samReader = samStubPlugin.getReader("samReader");
 
       /* Create 'virtual' and insert a Calypso SAM */
-      StubSecureElement calypsoSamStubSe = new StubSamCalypsoClassic();
+      StubSecureElement calypsoSamStubCard = new StubSamCalypsoClassic();
 
-      ((StubReader) samReader).insertSe(calypsoSamStubSe);
+      ((StubReader) samReader).insertSe(calypsoSamStubCard);
       logger.info("Stub SAM inserted");
 
       /*
@@ -135,18 +135,18 @@ public class MasterNodeController {
       // In this case, node is used as the dtosender (can be client or server)
       masterAPI =
           new MasterAPI(
-              SeProxyService.getInstance(),
+              SmartCardService.getInstance(),
               node,
               RPC_TIMEOUT,
               MasterAPI.PLUGIN_TYPE_DEFAULT,
               REMOTESE_PLUGIN_NAME);
 
-      // observe remote se plugin for events
+      // observe remote card plugin for events
       logger.info(
           "{} Observe SeRemotePlugin for Plugin Events and Reader Events", node.getNodeId());
-      ReaderPlugin rsePlugin = masterAPI.getPlugin();
+      Plugin rsePlugin = masterAPI.getPlugin();
 
-      // add a custom observer for the Remote SE plugin
+      // add a custom observer for the Remote Card plugin
       ((ObservablePlugin) rsePlugin)
           .addObserver(new RemoteSePluginObserver(masterAPI, samResourceManager, node.getNodeId()));
 

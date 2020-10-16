@@ -138,29 +138,29 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
   }
 
   /*
-   * isSePresentPing
+   * isCardPresentPing
    */
 
   @Test
-  public void isSePresentPing_true() throws Exception {
+  public void isCardPresentPing_true() throws Exception {
     r = getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
     doReturn(ByteArrayUtil.fromHex("00")).when(r).transmitApdu(any(byte[].class));
-    Assert.assertEquals(true, r.isSePresentPing());
+    Assert.assertEquals(true, r.isCardPresentPing());
   }
 
   @Test
-  public void isSePresentPing_false() throws Exception {
+  public void isCardPresentPing_false() throws Exception {
     r = getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
     doThrow(new KeypleReaderIOException("ping failed")).when(r).transmitApdu(any(byte[].class));
 
-    Assert.assertEquals(false, r.isSePresentPing());
+    Assert.assertEquals(false, r.isCardPresentPing());
   }
 
   /*
-   * @Test public void seDetected_notMatched() throws Exception {
+   * @Test public void cardDetected_notMatched() throws Exception {
    *
    * r = getSmartSpy(PLUGIN_NAME, READER_NAME, 1);// present one card once for this test
-   * doReturn(false).when(r).processSeInserted();
+   * doReturn(false).when(r).processCardInserted();
    *
    * r.addObserver(getObs()); Thread.sleep(100);
    * r.startSeDetection(ObservableReader.PollingMode.SINGLESHOT); Thread.sleep(100);
@@ -169,10 +169,10 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
    *
    * }
    *
-   * @Test public void seDetected_matched() throws Exception { r = getSmartSpy(PLUGIN_NAME,
+   * @Test public void cardDetected_matched() throws Exception { r = getSmartSpy(PLUGIN_NAME,
    * READER_NAME, 1);// present one card once for this test
    *
-   * doReturn(true).when(r).processSeInserted(); r.addObserver(getObs()); Thread.sleep(100);
+   * doReturn(true).when(r).processCardInserted(); r.addObserver(getObs()); Thread.sleep(100);
    * r.startSeDetection(ObservableReader.PollingMode.REPEATING);
    *
    * Thread.sleep(100);
@@ -184,7 +184,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
    * @Test public void startRemovalSequence_CONTINUE() throws Exception { r =
    * getSmartSpy(PLUGIN_NAME, READER_NAME, 1);// present one card once for this test
    *
-   * doReturn(true).when(r).processSeInserted();
+   * doReturn(true).when(r).processCardInserted();
    *
    * r.addObserver(getObs()); Thread.sleep(100);
    * r.startSeDetection(ObservableReader.PollingMode.REPEATING); Thread.sleep(100);
@@ -194,16 +194,16 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
    *
    * @Test public void startRemovalSequence_STOP() throws Exception { r = getSmartSpy(PLUGIN_NAME,
    * READER_NAME, 1);// present one card once for this test
-   * doReturn(true).when(r).processSeInserted();
+   * doReturn(true).when(r).processCardInserted();
    *
    * r.addObserver(getObs()); r.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
    * //Thread.sleep(100); r.startRemovalSequence(); //Thread.sleep(100);
    *
    * Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentMonitoringState()); }
    *
-   * @Test public void seProcessing_timeout() throws Exception { r = getSmartSpy(PLUGIN_NAME,
+   * @Test public void cardProcessing_timeout() throws Exception { r = getSmartSpy(PLUGIN_NAME,
    * READER_NAME, 1);// present one card once for this test
-   * doReturn(true).when(r).processSeInserted();
+   * doReturn(true).when(r).processCardInserted();
    *
    * CountDownLatch lock = new CountDownLatch(1);
    *
@@ -216,10 +216,10 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
    * Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentMonitoringState());
    * Assert.assertEquals(0, lock.getCount()); }
    *
-   * @Test public void seRemoval_timeout() throws Exception { r = getSmartSpy(PLUGIN_NAME,
+   * @Test public void cardRemoval_timeout() throws Exception { r = getSmartSpy(PLUGIN_NAME,
    * READER_NAME, 1);// present one card once for this test
    *
-   * CountDownLatch lock = new CountDownLatch(1); doReturn(true).when(r).processSeInserted();
+   * CountDownLatch lock = new CountDownLatch(1); doReturn(true).when(r).processCardInserted();
    *
    * // configure reader to raise timeout if SeProcessing is too long r.setThreadWaitTimeout(300);
    * // attach observer to detect TIMEOUT_EVENT r.addObserver(countDownOnTimeout(lock));
@@ -230,10 +230,10 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
    * Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentMonitoringState());
    * Assert.assertEquals(0, lock.getCount()); }
    *
-   * @Test public void seRemoval_sePresence_CONTINUE() throws Exception {
+   * @Test public void cardRemoval_sePresence_CONTINUE() throws Exception {
    *
    * r = getSmartSpy(PLUGIN_NAME, READER_NAME, 1);// present one card once for this test
-   * doReturn(true).when(r).processSeInserted();
+   * doReturn(true).when(r).processCardInserted();
    *
    * // Card removed doThrow(new
    * KeypleReaderIOException("ping failed")).when(r).transmitApdu(any(byte[].class));
@@ -244,10 +244,10 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
    *
    * Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentMonitoringState()); }
    *
-   * @Test public void seRemoval_sePresence_STOP() throws Exception { r = getSmartSpy(PLUGIN_NAME,
+   * @Test public void cardRemoval_sePresence_STOP() throws Exception { r = getSmartSpy(PLUGIN_NAME,
    * READER_NAME, 1);// present one card once for this test
    *
-   * doReturn(true).when(r).processSeInserted(); // Card removed doThrow(new
+   * doReturn(true).when(r).processCardInserted(); // Card removed doThrow(new
    * KeypleReaderIOException("ping failed")).when(r).transmitApdu(any(byte[].class));
    *
    *
@@ -260,10 +260,10 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
    *
    * Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentMonitoringState()); }
    *
-   * @Test public void seRemoval_finalized() throws Throwable { r = getSmartSpy(PLUGIN_NAME,
+   * @Test public void cardRemoval_finalized() throws Throwable { r = getSmartSpy(PLUGIN_NAME,
    * READER_NAME, 1);// present one card once for this test
    *
-   * doReturn(true).when(r).processSeInserted(); // Card removed doThrow(new
+   * doReturn(true).when(r).processCardInserted(); // Card removed doThrow(new
    * KeypleReaderIOException("ping failed")).when(r).transmitApdu(any(byte[].class));
    *
    *

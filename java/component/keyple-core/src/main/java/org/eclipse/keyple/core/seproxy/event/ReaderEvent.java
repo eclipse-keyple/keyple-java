@@ -11,15 +11,15 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.event;
 
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Plugin;
+import org.eclipse.keyple.core.seproxy.Reader;
+import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 
 /**
- * This POJO is used to propagate a change of a SE state in an {@link ObservableReader}.
+ * This POJO is used to propagate a change of a card state in an {@link ObservableReader}.
  *
- * <p>The various events that can occur concern the insertion and removal of an SE from a reader.
+ * <p>The various events that can occur concern the insertion and removal of a card from a reader.
  *
  * <p>When an insertion is made there are two cases depending on whether a default selection has
  * been programmed or not.
@@ -34,7 +34,7 @@ public final class ReaderEvent {
 
   /**
    * The different types of reader events, reflecting the status of the reader regarding the
-   * presence of a Secure Element.
+   * presence of a card.
    *
    * @since 0.9
    */
@@ -43,14 +43,14 @@ public final class ReaderEvent {
     /** An timeout error occurred. */
     TIMEOUT_ERROR,
 
-    /** A SE has been inserted. */
-    SE_INSERTED,
+    /** A card has been inserted. */
+    CARD_INSERTED,
 
-    /** A SE has been inserted and the default requests process has been successfully operated. */
-    SE_MATCHED,
+    /** A card has been inserted and the default requests process has been successfully operated. */
+    CARD_MATCHED,
 
-    /** The SE has been removed and is no longer able to communicate with the reader */
-    SE_REMOVED
+    /** The card has been removed and is no longer able to communicate with the reader */
+    CARD_REMOVED
   }
 
   /** The type of event */
@@ -109,8 +109,8 @@ public final class ReaderEvent {
 
   /**
    * Gets the default selection response that may be present when the event is {@link
-   * EventType#SE_INSERTED}, always present when the event is {@link EventType#SE_MATCHED} and null
-   * in the others cases.
+   * EventType#CARD_INSERTED}, always present when the event is {@link EventType#CARD_MATCHED} and
+   * null in the others cases.
    *
    * @return A nullable value.
    * @since 0.9
@@ -120,22 +120,22 @@ public final class ReaderEvent {
   }
 
   /**
-   * Gets the {@link ReaderPlugin} from which the reader that generated the event comes from.
+   * Gets the {@link Plugin} from which the reader that generated the event comes from.
    *
    * @return A not null reference.
    * @since 0.9
    */
-  public ReaderPlugin getPlugin() {
-    return SeProxyService.getInstance().getPlugin(pluginName);
+  public Plugin getPlugin() {
+    return SmartCardService.getInstance().getPlugin(pluginName);
   }
 
   /**
-   * Gets the {@link SeReader} from which generated event comes from
+   * Gets the {@link Reader} from which generated event comes from
    *
    * @return A not null reference.
    * @since 0.9
    */
-  public SeReader getReader() {
+  public Reader getReader() {
     return getPlugin().getReader(readerName);
   }
 }

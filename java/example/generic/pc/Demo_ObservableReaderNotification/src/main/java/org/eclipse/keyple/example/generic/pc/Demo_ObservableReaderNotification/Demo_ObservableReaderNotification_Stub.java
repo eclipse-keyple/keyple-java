@@ -11,8 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.generic.pc.Demo_ObservableReaderNotification;
 
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.Plugin;
+import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.example.common.generic.stub.StubSe1;
 import org.eclipse.keyple.example.common.generic.stub.StubSe2;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
@@ -31,15 +31,14 @@ public class Demo_ObservableReaderNotification_Stub {
     ObservableReaderNotificationEngine demoEngine = new ObservableReaderNotificationEngine();
 
     // Set Stub plugin
-    SeProxyService seProxyService = SeProxyService.getInstance();
+    SmartCardService smartCardService = SmartCardService.getInstance();
 
     final String STUB_PLUGIN_NAME = "stub1";
     final String READER1_NAME = "Reader1";
     final String READER2_NAME = "Reader2";
 
     // Register Stub plugin in the platform
-    ReaderPlugin stubPlugin =
-        seProxyService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
+    Plugin stubPlugin = smartCardService.registerPlugin(new StubPluginFactory(STUB_PLUGIN_NAME));
 
     // Set observers
     logger.info("Set plugin observer.");
@@ -62,26 +61,26 @@ public class Demo_ObservableReaderNotification_Stub {
 
     StubReader reader2 = (StubReader) (stubPlugin.getReader(READER2_NAME));
 
-    // Create 'virtual' Hoplink and SAM SE
+    // Create 'virtual' Hoplink and SAM card
     StubSecureElement se1 = new StubSe1();
     StubSecureElement se2 = new StubSe2();
 
-    logger.info("Insert SE into reader 1.");
+    logger.info("Insert card into reader 1.");
     reader1.insertSe(se1);
 
     Thread.sleep(100);
 
-    logger.info("Insert SE into reader 2.");
+    logger.info("Insert card into reader 2.");
     reader2.insertSe(se2);
 
     Thread.sleep(100);
 
-    logger.info("Remove SE from reader 1.");
+    logger.info("Remove card from reader 1.");
     reader1.removeSe();
 
     Thread.sleep(100);
 
-    logger.info("Remove SE from reader 2.");
+    logger.info("Remove card from reader 2.");
     reader2.removeSe();
 
     Thread.sleep(100);

@@ -14,8 +14,8 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
+import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
@@ -52,26 +52,26 @@ public class MasterAPI implements DtoHandler {
   /**
    * Build a new MasterAPI with default rpc timeout and default executor service (cached pool)
    *
-   * @param seProxyService : SeProxyService
+   * @param smartCardService : SmartCardService
    * @param dtoNode : outgoing node to send Dto to Slave
    * @throws KeyplePluginInstantiationException if plugin does not instantiate
    */
-  public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode) {
-    this(seProxyService, dtoNode, DEFAULT_RPC_TIMEOUT);
+  public MasterAPI(SmartCardService smartCardService, DtoNode dtoNode) {
+    this(smartCardService, dtoNode, DEFAULT_RPC_TIMEOUT);
   }
 
   /**
    * Build a new MasterAPI with custom rpcTimeout and default executor service (cached pool)
    *
-   * @param seProxyService : SeProxyService
+   * @param smartCardService : SmartCardService
    * @param dtoNode : outgoing node to send Dto to Slave
    * @param rpcTimeout : timeout in milliseconds to wait for an answer from slave before throwing an
    *     exception
    * @throws KeyplePluginInstantiationException if plugin does not instantiate
    */
-  public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode, long rpcTimeout) {
+  public MasterAPI(SmartCardService smartCardService, DtoNode dtoNode, long rpcTimeout) {
     this(
-        seProxyService,
+        smartCardService,
         dtoNode,
         rpcTimeout,
         PLUGIN_TYPE_DEFAULT,
@@ -81,7 +81,7 @@ public class MasterAPI implements DtoHandler {
   /**
    * Build a new MasterAPI with custom rpcTimeout and default executor service (cached pool)
    *
-   * @param seProxyService : SeProxyService
+   * @param smartCardService : SmartCardService
    * @param dtoNode : outgoing node to send Dto to Slave
    * @param rpcTimeout : timeout in milliseconds to wait for an answer from slave before throwing an
    *     exception
@@ -91,13 +91,13 @@ public class MasterAPI implements DtoHandler {
    * @throws KeyplePluginInstantiationException if plugin does not instantiate
    */
   public MasterAPI(
-      SeProxyService seProxyService,
+      SmartCardService smartCardService,
       DtoNode dtoNode,
       long rpcTimeout,
       int pluginType,
       String pluginName) {
     this(
-        seProxyService,
+        smartCardService,
         dtoNode,
         rpcTimeout,
         pluginType,
@@ -108,7 +108,7 @@ public class MasterAPI implements DtoHandler {
   /**
    * Build a new MasterAPI with custom rpcTimeout and custom executor service
    *
-   * @param seProxyService : SeProxyService
+   * @param smartCardService : SmartCardService
    * @param dtoNode : outgoing node to send Dto to Slave
    * @param rpcTimeout : timeout in milliseconds to wait for an answer from slave before throwing an
    *     exception
@@ -119,7 +119,7 @@ public class MasterAPI implements DtoHandler {
    * @throws KeyplePluginInstantiationException if plugin does not instantiate
    */
   public MasterAPI(
-      SeProxyService seProxyService,
+      SmartCardService smartCardService,
       DtoNode dtoNode,
       long rpcTimeout,
       int pluginType,
@@ -128,7 +128,7 @@ public class MasterAPI implements DtoHandler {
 
     logger.info(
         "Init MasterAPI with parameters {} {} {} {} {}",
-        seProxyService,
+        smartCardService,
         dtoNode,
         rpcTimeout,
         pluginType,
@@ -152,14 +152,14 @@ public class MasterAPI implements DtoHandler {
        * // Instantiate Plugin this.plugin = new RemoteSePluginImpl(sessionManager, dtoNode,
        * rpcTimeout, RemoteSePluginImpl.DEFAULT_PLUGIN_NAME);
        */
-      if (seProxyService.isRegistered(pluginName)) {
+      if (smartCardService.isRegistered(pluginName)) {
         throw new IllegalArgumentException(
             "plugin name is already registered to the platform : " + pluginName);
       }
 
       this.plugin =
           (RemoteSePluginImpl)
-              seProxyService.registerPlugin(
+              smartCardService.registerPlugin(
                   new RemoteSePluginFactory(
                       sessionManager, dtoNode, rpcTimeout, pluginName, executorService));
 
@@ -168,14 +168,14 @@ public class MasterAPI implements DtoHandler {
        * this.plugin = new RemoteSePoolPluginImpl(sessionManager, dtoNode, rpcTimeout,
        * RemoteSePluginImpl.DEFAULT_PLUGIN_NAME + "_POOL");
        */
-      if (seProxyService.isRegistered(pluginName)) {
+      if (smartCardService.isRegistered(pluginName)) {
         throw new IllegalArgumentException(
             "plugin name is already registered to the platform : " + pluginName);
       }
 
       this.plugin =
           (RemoteSePoolPluginImpl)
-              seProxyService.registerPlugin(
+              smartCardService.registerPlugin(
                   new RemoteSePoolPluginFactory(
                       sessionManager, dtoNode, rpcTimeout, pluginName, executorService));
     } else {
@@ -199,7 +199,7 @@ public class MasterAPI implements DtoHandler {
   /**
    * Retrieve the Rse Plugin
    *
-   * @return the Remote Se Plugin managing the Virtual Readers
+   * @return the Remote Card Plugin managing the Virtual Readers
    */
   public RemoteSePlugin getPlugin() {
     return plugin;
@@ -317,8 +317,8 @@ public class MasterAPI implements DtoHandler {
    * @throws KeypleReaderNotFoundException : if none reader was found
    */
   private VirtualReaderImpl getReaderBySessionId(String sessionId) {
-    final Collection<SeReader> seReaders = plugin.getReaders().values();
-    for (SeReader reader : seReaders) {
+    final Collection<Reader> readers = plugin.getReaders().values();
+    for (Reader reader : readers) {
 
       if (((VirtualReaderImpl) reader).getSession().getSessionId().equals(sessionId)) {
         return (VirtualReaderImpl) reader;

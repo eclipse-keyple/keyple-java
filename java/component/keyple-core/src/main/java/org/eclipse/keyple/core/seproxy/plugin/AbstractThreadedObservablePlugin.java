@@ -13,7 +13,7 @@ package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
@@ -47,7 +47,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
    * names (or id)
    *
    * @return connected readers' name list
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */
   protected abstract SortedSet<String> fetchNativeReadersNames();
 
@@ -59,9 +59,9 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
    * @param name the reader name
    * @return the list of AbstractReader objects.
    * @throws KeypleReaderNotFoundException if the reader was not found by its name
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */
-  protected abstract SeReader fetchNativeReader(String name);
+  protected abstract Reader fetchNativeReader(String name);
 
   /**
    * Add a plugin observer.
@@ -147,8 +147,8 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
   /**
    * List of names of the physical (native) connected readers This list helps synchronizing physical
    * readers managed by third-party library such as smardcard.io and the list of keyple {@link
-   * org.eclipse.keyple.core.seproxy.SeReader} Insertion, removal, and access operations safely
-   * execute concurrently by multiple threads.
+   * Reader} Insertion, removal, and access operations safely execute concurrently by multiple
+   * threads.
    */
   private final SortedSet<String> nativeReadersNames = new ConcurrentSkipListSet<String>();
 
@@ -180,7 +180,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
      * Adds a reader to the list of known readers (by the plugin)
      */
     private void addReader(String readerName) {
-      SeReader reader = fetchNativeReader(readerName);
+      Reader reader = fetchNativeReader(readerName);
       readers.put(reader.getName(), reader);
       if (logger.isTraceEnabled()) {
         logger.trace(
@@ -196,12 +196,12 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
      * (private)<br>
      * Removes a reader from the list of known readers (by the plugin)
      */
-    private void removeReader(SeReader reader) {
+    private void removeReader(Reader reader) {
       /* removes any possible observers before removing the reader */
       if (reader instanceof ObservableReader) {
         ((ObservableReader) reader).clearObservers();
 
-        // In case where Reader was detecting SE
+        // In case where Reader was detecting the card
         ((ObservableReader) reader).stopSeDetection();
       }
       readers.remove(reader.getName());
@@ -246,8 +246,8 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
        * parse the current readers list, notify for disappeared readers, update
        * readers list
        */
-      final Collection<SeReader> readerCollection = readers.values();
-      for (SeReader reader : readerCollection) {
+      final Collection<Reader> readerCollection = readers.values();
+      for (Reader reader : readerCollection) {
         if (!actualNativeReadersNames.contains(reader.getName())) {
           changedReaderNames.add(reader.getName());
         }
@@ -256,7 +256,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
       if (!changedReaderNames.isEmpty()) {
         notifyChanges(PluginEvent.EventType.READER_DISCONNECTED, changedReaderNames);
         /* list update */
-        for (SeReader reader : readerCollection) {
+        for (Reader reader : readerCollection) {
           if (!actualNativeReadersNames.contains(reader.getName())) {
             removeReader(reader);
           }

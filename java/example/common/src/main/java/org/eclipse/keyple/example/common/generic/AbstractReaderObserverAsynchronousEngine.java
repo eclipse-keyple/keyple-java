@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This abstract class is intended to be extended by the applications classes in which the SE
+ * This abstract class is intended to be extended by the applications classes in which the card
  * insertion, selection, removal is factorized here.<br>
  * In this implementation of the reader observation, the method {@link
  * ObservableReader.ReaderObserver#update(ReaderEvent)} is processed asynchronously from a separate
@@ -34,7 +34,7 @@ public abstract class AbstractReaderObserverAsynchronousEngine
       LoggerFactory.getLogger(AbstractReaderObserverAsynchronousEngine.class);
 
   /**
-   * Method to be implemented by the application to handle the SE_MATCHED reader event.<br>
+   * Method to be implemented by the application to handle the CARD_MATCHED reader event.<br>
    * The response to the default selections request is provided in argument.
    *
    * @param defaultSelectionsResponse the default selections response
@@ -42,26 +42,26 @@ public abstract class AbstractReaderObserverAsynchronousEngine
   protected abstract void processSeMatch(
       AbstractDefaultSelectionsResponse defaultSelectionsResponse);
 
-  /** Method to be implemented by the application to handle the SE_INSERTED reader event */
-  protected abstract void processSeInserted();
+  /** Method to be implemented by the application to handle the CARD_INSERTED reader event */
+  protected abstract void processCardInserted();
 
   /**
-   * Method to be implemented by the application to handle the SE_REMOVED reader event at the end of
-   * the SE processing
+   * Method to be implemented by the application to handle the CARD_REMOVED reader event at the end
+   * of the card processing
    */
   protected abstract void processSeRemoved();
 
   /**
-   * Method to be implemented by the application to handle the SE_REMOVED reader event during the SE
-   * processing
+   * Method to be implemented by the application to handle the CARD_REMOVED reader event during the
+   * card processing
    */
   protected abstract void processUnexpectedSeRemoval();
 
   /**
-   * This flag helps to determine whether the SE_REMOVED event was expected or not (case of SE
+   * This flag helps to determine whether the CARD_REMOVED event was expected or not (case of card
    * withdrawal during processing).
    */
-  boolean currentlyProcessingSe = false;
+  boolean currentlyProcessingCard = false;
 
   /**
    * Process {@link #processSeMatch(AbstractDefaultSelectionsResponse)} in a separate thread
@@ -75,13 +75,13 @@ public abstract class AbstractReaderObserverAsynchronousEngine
             new Runnable() {
               @Override
               public void run() {
-                currentlyProcessingSe = true;
+                currentlyProcessingCard = true;
                 try {
-                  processSeInserted(); // optional, to process alternative AID selection
+                  processCardInserted(); // optional, to process alternative AID selection
                 } catch (KeypleException e) {
                   logger.error("Keyple exception: {}", e.getMessage());
                   /*
-                   * Informs the underlying layer of the end of the SE processing, in order to
+                   * Informs the underlying layer of the end of the card processing, in order to
                    * manage the removal sequence.
                    */
                   try {
@@ -92,7 +92,7 @@ public abstract class AbstractReaderObserverAsynchronousEngine
                     logger.error("Plugin not found exception: {}", ex.getMessage());
                   }
                 }
-                currentlyProcessingSe = false;
+                currentlyProcessingCard = false;
               }
             });
     thread.start();
@@ -105,13 +105,13 @@ public abstract class AbstractReaderObserverAsynchronousEngine
             new Runnable() {
               @Override
               public void run() {
-                currentlyProcessingSe = true;
+                currentlyProcessingCard = true;
                 try {
                   processSeMatch(event.getDefaultSelectionsResponse()); // to process the
                 } catch (KeypleException e) {
                   logger.error("Keyple exception: {}", e.getMessage());
                   /*
-                   * Informs the underlying layer of the end of the SE processing, in order to
+                   * Informs the underlying layer of the end of the card processing, in order to
                    * manage the removal sequence.
                    */
                   try {
@@ -122,7 +122,7 @@ public abstract class AbstractReaderObserverAsynchronousEngine
                     logger.error("Plugin not found exception: {}", ex.getMessage());
                   }
                 }
-                currentlyProcessingSe = false;
+                currentlyProcessingCard = false;
               }
             });
     thread.start();
@@ -134,38 +134,39 @@ public abstract class AbstractReaderObserverAsynchronousEngine
    * received event.<br>
    * Processing is done asynchronously in a separate thread and any exceptions raised by the
    * application are caught.<br>
-   * Note: in the case of SE_MATCHED, the received event also carries the response to the default
+   * Note: in the case of CARD_MATCHED, the received event also carries the response to the default
    * selection.
    *
-   * @param event the reader event, either SE_MATCHED, SE_INSERTED, SE_REMOVED or TIMEOUT_ERROR
+   * @param event the reader event, either CARD_MATCHED, CARD_INSERTED, CARD_REMOVED or
+   *     TIMEOUT_ERROR
    */
   public final void update(final ReaderEvent event) {
     logger.info("New reader event: {}", event.getReaderName());
 
     switch (event.getEventType()) {
-      case SE_INSERTED:
+      case CARD_INSERTED:
         runProcessSeInserted(event);
         break;
 
-      case SE_MATCHED:
+      case CARD_MATCHED:
         runProcessSeMatched(event);
         break;
 
-      case SE_REMOVED:
-        if (currentlyProcessingSe) {
-          processUnexpectedSeRemoval(); // to clean current SE processing
-          logger.error("Unexpected SE Removal");
+      case CARD_REMOVED:
+        if (currentlyProcessingCard) {
+          processUnexpectedSeRemoval(); // to clean current card processing
+          logger.error("Unexpected card Removal");
         } else {
           processSeRemoved();
           if (logger.isInfoEnabled()) {
-            logger.info("Waiting for a SE...");
+            logger.info("Waiting for a card...");
           }
         }
-        currentlyProcessingSe = false;
+        currentlyProcessingCard = false;
         break;
       case TIMEOUT_ERROR:
         logger.error(
-            "Timeout Error: the processing time or the time limit for removing the SE"
+            "Timeout Error: the processing time or the time limit for removing the card"
                 + " has been exceeded.");
         // do the appropriate processing here but do not prevent the return of this update
         // method (e. g. by

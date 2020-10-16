@@ -16,19 +16,19 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 public interface StubReader extends ObservableReader {
 
   /**
-   * Insert a stub se into the reader. Will raise a SE_INSERTED event.
+   * Insert a card Stub into the reader. Will raise a CARD_INSERTED event.
    *
-   * @param _se stub secure element to be inserted in the reader
+   * @param _se stub card to be inserted in the reader
    */
   void insertSe(StubSecureElement _se);
 
-  /** Remove se from reader if any */
+  /** Remove card from reader if any */
   void removeSe();
 
   /**
-   * Get inserted SE
+   * Get inserted card
    *
-   * @return se, can be null if no Se inserted
+   * @return card, can be null if no card inserted
    */
   StubSecureElement getSe();
 }

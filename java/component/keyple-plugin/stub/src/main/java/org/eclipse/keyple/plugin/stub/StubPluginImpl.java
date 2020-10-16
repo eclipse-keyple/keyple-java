@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListSet;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
@@ -23,10 +23,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This plugin allows to simulate Secure Element communication by creating @{@link StubReaderImpl}
- * and @{@link StubSecureElement}. Plug a new StubReader with StubPlugin#plugStubReader and insert
- * an implementation of your own of {@link StubSecureElement} to start simulation communication.
- * This class is a singleton, use StubPlugin#getInstance to access it
+ * This plugin allows to simulate card communication by creating @{@link StubReaderImpl} and @{@link
+ * StubSecureElement}. Plug a new StubReader with StubPlugin#plugStubReader and insert an
+ * implementation of your own of {@link StubSecureElement} to start simulation communication. This
+ * class is a singleton, use StubPlugin#getInstance to access it
  */
 final class StubPluginImpl extends AbstractThreadedObservablePlugin implements StubPlugin {
 
@@ -167,13 +167,13 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
   /**
    * Init native Readers to empty Set
    *
-   * @return the map of SeReader objects.
+   * @return the map of Reader objects.
    * @throws KeypleReaderException if a reader error occurs
    */
   @Override
-  protected ConcurrentMap<String, SeReader> initNativeReaders() {
+  protected ConcurrentMap<String, Reader> initNativeReaders() {
     /* init Stub Readers response object */
-    ConcurrentMap<String, SeReader> newNativeReaders = new ConcurrentHashMap<String, SeReader>();
+    ConcurrentMap<String, Reader> newNativeReaders = new ConcurrentHashMap<String, Reader>();
     return newNativeReaders;
   }
 
@@ -187,8 +187,8 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
    * @return the reader object
    */
   @Override
-  protected SeReader fetchNativeReader(String readerName) {
-    SeReader reader = readers.get(readerName);
+  protected Reader fetchNativeReader(String readerName) {
+    Reader reader = readers.get(readerName);
     if (reader == null && connectedStubNames.contains(readerName)) {
       reader = new StubReaderImpl(this.getName(), readerName);
     }

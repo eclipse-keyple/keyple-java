@@ -15,7 +15,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import java.util.Map;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
@@ -31,31 +31,31 @@ public class SelectionsResultTest {
     SelectionsResult selectionsResult = new SelectionsResult();
     ApduResponse fci1 = new ApduResponse(ByteArrayUtil.fromHex(FCI1), null);
     SelectionStatus selectionStatus1 = new SelectionStatus(null, fci1, true);
-    SeResponse seResponse1 = new SeResponse(true, false, selectionStatus1, null);
+    CardResponse cardResponse1 = new CardResponse(true, false, selectionStatus1, null);
     ApduResponse fci2 = new ApduResponse(ByteArrayUtil.fromHex(FCI2), null);
     SelectionStatus selectionStatus2 = new SelectionStatus(null, fci2, true);
-    SeResponse seResponse2 = new SeResponse(true, false, selectionStatus2, null);
-    TestMatchingSe testMatchingSe1 = new TestMatchingSe(seResponse1);
-    TestMatchingSe testMatchingSe2 = new TestMatchingSe(seResponse2);
-    selectionsResult.addMatchingSe(0, testMatchingSe1, false);
-    selectionsResult.addMatchingSe(2, testMatchingSe2, true);
+    CardResponse cardResponse2 = new CardResponse(true, false, selectionStatus2, null);
+    TestSmartCard testSmartCard1 = new TestSmartCard(cardResponse1);
+    TestSmartCard testSmartCard2 = new TestSmartCard(cardResponse2);
+    selectionsResult.addSmartCard(0, testSmartCard1, false);
+    selectionsResult.addSmartCard(2, testSmartCard2, true);
     assertThat(selectionsResult.hasActiveSelection()).isTrue();
-    AbstractMatchingSe activeMatchingSe = selectionsResult.getActiveMatchingSe();
-    assertThat(activeMatchingSe).isEqualTo(testMatchingSe2);
+    AbstractSmartCard activeSmartCard = selectionsResult.getActiveSmartCard();
+    assertThat(activeSmartCard).isEqualTo(testSmartCard2);
     assertThat(selectionsResult.getActiveSelectionIndex()).isEqualTo(2);
-    assertThat(selectionsResult.getMatchingSe(0)).isEqualTo(testMatchingSe1);
-    assertThat(selectionsResult.getMatchingSe(2)).isEqualTo(testMatchingSe2);
+    assertThat(selectionsResult.getSmartCard(0)).isEqualTo(testSmartCard1);
+    assertThat(selectionsResult.getSmartCard(2)).isEqualTo(testSmartCard2);
     assertThat(selectionsResult.hasSelectionMatched(0)).isTrue();
     assertThat(selectionsResult.hasSelectionMatched(1)).isFalse();
     assertThat(selectionsResult.hasSelectionMatched(2)).isTrue();
-    Map<Integer, AbstractMatchingSe> matchingSelections = selectionsResult.getMatchingSelections();
-    assertThat(matchingSelections.get(0)).isEqualTo(testMatchingSe1);
+    Map<Integer, AbstractSmartCard> matchingSelections = selectionsResult.getSmartCards();
+    assertThat(matchingSelections.get(0)).isEqualTo(testSmartCard1);
     assertThat(matchingSelections.get(1)).isEqualTo(null);
-    assertThat(matchingSelections.get(2)).isEqualTo(testMatchingSe2);
+    assertThat(matchingSelections.get(2)).isEqualTo(testSmartCard2);
   }
 
-  private static class TestMatchingSe extends AbstractMatchingSe {
-    protected TestMatchingSe(SeResponse selectionResponse) {
+  private static class TestSmartCard extends AbstractSmartCard {
+    protected TestSmartCard(CardResponse selectionResponse) {
       super(selectionResponse);
     }
   }

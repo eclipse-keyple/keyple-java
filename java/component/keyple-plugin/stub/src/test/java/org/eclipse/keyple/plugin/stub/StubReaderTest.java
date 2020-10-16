@@ -19,13 +19,13 @@ import org.eclipse.keyple.calypso.command.po.builder.IncreaseCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
-import org.eclipse.keyple.core.selection.AbstractMatchingSe;
-import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
-import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.AbstractCardSelectionRequest;
+import org.eclipse.keyple.core.selection.AbstractSmartCard;
+import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.CardSelector;
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.event.*;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -78,7 +78,7 @@ public class StubReaderTest extends BaseStubTest {
    */
 
   /**
-   * Insert SE check : event and se presence
+   * Insert card check : event and card presence
    *
    * @throws InterruptedException
    */
@@ -89,7 +89,7 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
 
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
-    Assert.assertEquals(false, reader.isSePresent());
+    Assert.assertEquals(false, reader.isCardPresent());
 
     // CountDown lock
     final CountDownLatch lock = new CountDownLatch(2);
@@ -98,15 +98,15 @@ public class StubReaderTest extends BaseStubTest {
         new ObservableReader.ReaderObserver() {
           @Override
           public void update(ReaderEvent event) {
-            if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED) {
+            if (event.getEventType() == ReaderEvent.EventType.CARD_INSERTED) {
               Assert.assertEquals(event.getReaderName(), reader.getName());
               Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-              Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+              Assert.assertEquals(ReaderEvent.EventType.CARD_INSERTED, event.getEventType());
 
               logger.debug("testInsert event is correct");
 
               lock.countDown();
-            } else if (event.getEventType() == ReaderEvent.EventType.SE_REMOVED) {
+            } else if (event.getEventType() == ReaderEvent.EventType.CARD_REMOVED) {
               lock.countDown();
             }
           }
@@ -128,11 +128,11 @@ public class StubReaderTest extends BaseStubTest {
     reader.removeObserver(readerObs);
 
     Assert.assertEquals(0, lock.getCount()); // should be 0 because countDown is called by
-    Assert.assertTrue(reader.isSePresent());
+    Assert.assertTrue(reader.isCardPresent());
   }
 
   /**
-   * Remove SE check : event and se presence
+   * Remove card check : event and card presence
    *
    * @throws InterruptedException
    */
@@ -158,15 +158,15 @@ public class StubReaderTest extends BaseStubTest {
             if (event_i == 1) {
               Assert.assertEquals(event.getReaderName(), reader.getName());
               Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-              Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+              Assert.assertEquals(ReaderEvent.EventType.CARD_INSERTED, event.getEventType());
               insertLock.countDown();
             }
 
-            // analyze the second event, should be a SE_REMOVED
+            // analyze the second event, should be a CARD_REMOVED
             if (event_i == 2) {
               Assert.assertEquals(event.getReaderName(), reader.getName());
               Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-              Assert.assertEquals(ReaderEvent.EventType.SE_REMOVED, event.getEventType());
+              Assert.assertEquals(ReaderEvent.EventType.CARD_REMOVED, event.getEventType());
               removeLock.countDown();
             }
             event_i++;
@@ -181,7 +181,7 @@ public class StubReaderTest extends BaseStubTest {
     // test
     reader.insertSe(hoplinkSE());
 
-    // lock thread for 2 seconds max to wait for the event SE_INSERTED
+    // lock thread for 2 seconds max to wait for the event CARD_INSERTED
     insertLock.await(2, TimeUnit.SECONDS);
 
     Assert.assertEquals(0, insertLock.getCount()); // should be 0 because insertLock is
@@ -190,17 +190,17 @@ public class StubReaderTest extends BaseStubTest {
     ((ProxyReader) reader).releaseChannel();
     reader.removeSe();
 
-    // lock thread for 2 seconds max to wait for the event SE_REMOVED
+    // lock thread for 2 seconds max to wait for the event CARD_REMOVED
     removeLock.await(2, TimeUnit.SECONDS);
 
     Assert.assertEquals(0, removeLock.getCount()); // should be 0 because removeLock is
     // countDown by obs
 
-    Assert.assertFalse(reader.isSePresent());
+    Assert.assertFalse(reader.isCardPresent());
   }
 
   /**
-   * Remove SE check : event and se presence
+   * Remove card check : event and card presence
    *
    * @throws InterruptedException
    */
@@ -228,27 +228,27 @@ public class StubReaderTest extends BaseStubTest {
             if (event_i == 1) {
               Assert.assertEquals(event.getReaderName(), reader.getName());
               Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-              Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+              Assert.assertEquals(ReaderEvent.EventType.CARD_INSERTED, event.getEventType());
               firstInsertLock.countDown();
             }
 
-            // analyze the second event, should be a SE_REMOVED
+            // analyze the second event, should be a CARD_REMOVED
             if (event_i == 2) {
               Assert.assertEquals(event.getReaderName(), reader.getName());
               Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-              Assert.assertEquals(ReaderEvent.EventType.SE_REMOVED, event.getEventType());
+              Assert.assertEquals(ReaderEvent.EventType.CARD_REMOVED, event.getEventType());
               firstRemoveLock.countDown();
             }
             if (event_i == 3) {
               Assert.assertEquals(event.getReaderName(), reader.getName());
               Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-              Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+              Assert.assertEquals(ReaderEvent.EventType.CARD_INSERTED, event.getEventType());
               secondInsertLock.countDown();
             }
             if (event_i == 4) {
               Assert.assertEquals(event.getReaderName(), reader.getName());
               Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-              Assert.assertEquals(ReaderEvent.EventType.SE_REMOVED, event.getEventType());
+              Assert.assertEquals(ReaderEvent.EventType.CARD_REMOVED, event.getEventType());
               secondRemoveLock.countDown();
             }
             event_i++;
@@ -266,7 +266,7 @@ public class StubReaderTest extends BaseStubTest {
 
     // Thread.sleep(200);
 
-    // lock thread for 2 seconds max to wait for the event SE_INSERTED
+    // lock thread for 2 seconds max to wait for the event CARD_INSERTED
     firstInsertLock.await(2, TimeUnit.SECONDS);
     Assert.assertEquals(0, firstInsertLock.getCount()); // should be 0 because insertLock is
     // countDown by obs
@@ -275,7 +275,7 @@ public class StubReaderTest extends BaseStubTest {
     ((ProxyReader) reader).releaseChannel();
     reader.removeSe();
 
-    // lock thread for 2 seconds max to wait for the event SE_REMOVED
+    // lock thread for 2 seconds max to wait for the event CARD_REMOVED
     firstRemoveLock.await(2, TimeUnit.SECONDS);
     Assert.assertEquals(0, firstRemoveLock.getCount()); // should be 0 because removeLock is
     // countDown by obs
@@ -288,7 +288,7 @@ public class StubReaderTest extends BaseStubTest {
     // test second sequence
     reader.insertSe(hoplinkSE());
 
-    // lock thread for 2 seconds max to wait for the event SE_INSERTED
+    // lock thread for 2 seconds max to wait for the event CARD_INSERTED
     secondInsertLock.await(2, TimeUnit.SECONDS);
 
     Assert.assertEquals(0, secondInsertLock.getCount()); // should be 0 because insertLock is
@@ -301,12 +301,12 @@ public class StubReaderTest extends BaseStubTest {
 
     reader.removeSe();
 
-    // lock thread for 2 seconds max to wait for the event SE_REMOVED
+    // lock thread for 2 seconds max to wait for the event CARD_REMOVED
     secondRemoveLock.await(2, TimeUnit.SECONDS);
     Assert.assertEquals(0, secondRemoveLock.getCount()); // should be 0 because removeLock is
     // countDown by obs
 
-    Assert.assertFalse(reader.isSePresent());
+    Assert.assertFalse(reader.isCardPresent());
   }
 
   @Test
@@ -333,27 +333,27 @@ public class StubReaderTest extends BaseStubTest {
             if (event_i == 1) {
               Assert.assertEquals(event.getReaderName(), reader.getName());
               Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-              Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+              Assert.assertEquals(ReaderEvent.EventType.CARD_INSERTED, event.getEventType());
               firstInsertLock.countDown();
             }
 
-            // analyze the second event, should be a SE_REMOVED
+            // analyze the second event, should be a CARD_REMOVED
             if (event_i == 2) {
               Assert.assertEquals(event.getReaderName(), reader.getName());
               Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-              Assert.assertEquals(ReaderEvent.EventType.SE_REMOVED, event.getEventType());
+              Assert.assertEquals(ReaderEvent.EventType.CARD_REMOVED, event.getEventType());
               firstRemoveLock.countDown();
             }
             if (event_i == 3) {
               Assert.assertEquals(event.getReaderName(), reader.getName());
               Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-              Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+              Assert.assertEquals(ReaderEvent.EventType.CARD_INSERTED, event.getEventType());
               secondInsertLock.countDown();
             }
             if (event_i == 4) {
               Assert.assertEquals(event.getReaderName(), reader.getName());
               Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-              Assert.assertEquals(ReaderEvent.EventType.SE_REMOVED, event.getEventType());
+              Assert.assertEquals(ReaderEvent.EventType.CARD_REMOVED, event.getEventType());
               secondRemoveLock.countDown();
             }
             event_i++;
@@ -369,7 +369,7 @@ public class StubReaderTest extends BaseStubTest {
     // test first sequence
     reader.insertSe(hoplinkSE());
 
-    // lock thread for 2 seconds max to wait for the event SE_INSERTED
+    // lock thread for 2 seconds max to wait for the event CARD_INSERTED
     firstInsertLock.await(2, TimeUnit.SECONDS);
     Assert.assertEquals(0, firstInsertLock.getCount()); // should be 0 because insertLock is
     // countDown by obs
@@ -377,7 +377,7 @@ public class StubReaderTest extends BaseStubTest {
     ((ProxyReader) reader).releaseChannel();
     reader.removeSe();
 
-    // lock thread for 2 seconds max to wait for the event SE_REMOVED
+    // lock thread for 2 seconds max to wait for the event CARD_REMOVED
     firstRemoveLock.await(2, TimeUnit.SECONDS);
     Assert.assertEquals(0, firstRemoveLock.getCount()); // should be 0 because removeLock is
     // countDown by obs
@@ -389,7 +389,7 @@ public class StubReaderTest extends BaseStubTest {
     // test second sequence
     reader.insertSe(hoplinkSE());
 
-    // lock thread for 2 seconds max to wait for the event SE_INSERTED
+    // lock thread for 2 seconds max to wait for the event CARD_INSERTED
     secondInsertLock.await(2, TimeUnit.SECONDS);
 
     reader.stopSeDetection();
@@ -399,16 +399,16 @@ public class StubReaderTest extends BaseStubTest {
     ((ProxyReader) reader).releaseChannel();
     reader.removeSe();
 
-    // lock thread for 2 seconds max to wait for the event SE_REMOVED
+    // lock thread for 2 seconds max to wait for the event CARD_REMOVED
     secondRemoveLock.await(2, TimeUnit.SECONDS);
     Assert.assertEquals(0, secondRemoveLock.getCount()); // should be 0 because removeLock is
     // countDown by obs
 
-    Assert.assertFalse(reader.isSePresent());
+    Assert.assertFalse(reader.isCardPresent());
   }
 
   @Test
-  public void testInsertMatchingSe() throws Exception {
+  public void testInsertSmartCard() throws Exception {
     stubPlugin.plugStubReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
@@ -427,26 +427,26 @@ public class StubReaderTest extends BaseStubTest {
         new ObservableReader.ReaderObserver() {
           @Override
           public void update(ReaderEvent event) {
-            if (event.getEventType() == ReaderEvent.EventType.SE_MATCHED) {
+            if (event.getEventType() == ReaderEvent.EventType.CARD_MATCHED) {
               Assert.assertEquals(event.getReaderName(), reader.getName());
               Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-              Assert.assertEquals(ReaderEvent.EventType.SE_MATCHED, event.getEventType());
+              Assert.assertEquals(ReaderEvent.EventType.CARD_MATCHED, event.getEventType());
               Assert.assertTrue(
                   ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                      .getSelectionSeResponses()
+                      .getSelectionCardResponses()
                       .get(0)
                       .getSelectionStatus()
                       .hasMatched());
               Assert.assertArrayEquals(
                   ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                      .getSelectionSeResponses()
+                      .getSelectionCardResponses()
                       .get(0)
                       .getSelectionStatus()
                       .getAtr()
                       .getBytes(),
                   hoplinkSE().getATR());
 
-              // retrieve the expected FCI from the Stub SE running the select application command
+              // retrieve the expected FCI from the card Stub running the select application command
               byte[] aid = ByteArrayUtil.fromHex(poAid);
               byte[] selectApplicationCommand = new byte[6 + aid.length];
               selectApplicationCommand[0] = (byte) 0x00; // CLA
@@ -466,7 +466,7 @@ public class StubReaderTest extends BaseStubTest {
 
               Assert.assertArrayEquals(
                   ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                      .getSelectionSeResponses()
+                      .getSelectionCardResponses()
                       .get(0)
                       .getSelectionStatus()
                       .getFci()
@@ -483,21 +483,21 @@ public class StubReaderTest extends BaseStubTest {
     // add observer
     reader.addObserver(readerObs);
 
-    SeSelection seSelection = new SeSelection();
+    CardSelection cardSelection = new CardSelection();
 
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
+                .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
 
-    seSelection.prepareSelection(poSelectionRequest);
+    cardSelection.prepareSelection(poSelectionRequest);
 
     ((ObservableReader) reader)
         .setDefaultSelectionRequest(
-            seSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
+            cardSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
 
     // set PollingMode to Continue
     reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
@@ -531,8 +531,8 @@ public class StubReaderTest extends BaseStubTest {
         new ObservableReader.ReaderObserver() {
           @Override
           public void update(ReaderEvent event) {
-            // only SE_REMOVED event should be thrown
-            if (event.getEventType() != ReaderEvent.EventType.SE_REMOVED) {
+            // only CARD_REMOVED event should be thrown
+            if (event.getEventType() != ReaderEvent.EventType.CARD_REMOVED) {
               lock.countDown(); // should not be called
             }
           }
@@ -548,21 +548,21 @@ public class StubReaderTest extends BaseStubTest {
 
     String poAid = "A000000291A000000192"; // not matching poAid
 
-    SeSelection seSelection = new SeSelection();
+    CardSelection cardSelection = new CardSelection();
 
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
+                .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
 
-    seSelection.prepareSelection(poSelectionRequest);
+    cardSelection.prepareSelection(poSelectionRequest);
 
     ((ObservableReader) reader)
         .setDefaultSelectionRequest(
-            seSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
+            cardSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
 
     reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
 
@@ -599,15 +599,15 @@ public class StubReaderTest extends BaseStubTest {
         new ObservableReader.ReaderObserver() {
           @Override
           public void update(ReaderEvent event) {
-            // Only SE_INSERTED/SE_REMOVED event are thrown
-            if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED) {
+            // Only CARD_INSERTED/CARD_REMOVED event are thrown
+            if (event.getEventType() == ReaderEvent.EventType.CARD_INSERTED) {
               Assert.assertEquals(event.getReaderName(), reader.getName());
               Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
 
               // card has not match
               Assert.assertFalse(
                   ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                      .getSelectionSeResponses()
+                      .getSelectionCardResponses()
                       .get(0)
                       .getSelectionStatus()
                       .hasMatched());
@@ -622,21 +622,21 @@ public class StubReaderTest extends BaseStubTest {
 
     String poAid = "A000000291A000000192"; // not matching poAid
 
-    SeSelection seSelection = new SeSelection();
+    CardSelection cardSelection = new CardSelection();
 
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
+                .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
 
-    seSelection.prepareSelection(poSelectionRequest);
+    cardSelection.prepareSelection(poSelectionRequest);
 
     ((ObservableReader) reader)
         .setDefaultSelectionRequest(
-            seSelection.getSelectionOperation(), ObservableReader.NotificationMode.ALWAYS);
+            cardSelection.getSelectionOperation(), ObservableReader.NotificationMode.ALWAYS);
 
     reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
 
@@ -672,25 +672,25 @@ public class StubReaderTest extends BaseStubTest {
         new ObservableReader.ReaderObserver() {
           @Override
           public void update(ReaderEvent event) {
-            SeSelection seSelection = new SeSelection();
+            CardSelection cardSelection = new CardSelection();
 
             PoSelectionRequest poSelectionRequest =
                 new PoSelectionRequest(
                     PoSelector.builder()
-                        .seProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
+                        .cardProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
                         .atrFilter(new PoSelector.AtrFilter("3B.*"))
                         .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                         .build());
 
-            /* Prepare selector, ignore AbstractMatchingSe here */
-            seSelection.prepareSelection(poSelectionRequest);
+            /* Prepare selector, ignore AbstractSmartCard here */
+            cardSelection.prepareSelection(poSelectionRequest);
 
             try {
-              SelectionsResult selectionsResult = seSelection.processExplicitSelection(reader);
+              SelectionsResult selectionsResult = cardSelection.processExplicitSelection(reader);
 
-              AbstractMatchingSe matchingSe = selectionsResult.getActiveMatchingSe();
+              AbstractSmartCard smartCard = selectionsResult.getActiveSmartCard();
 
-              Assert.assertNotNull(matchingSe);
+              Assert.assertNotNull(smartCard);
 
             } catch (KeypleReaderException e) {
               Assert.fail("Unexcepted exception");
@@ -743,9 +743,9 @@ public class StubReaderTest extends BaseStubTest {
           @Override
           public void update(ReaderEvent event) {
 
-            if (ReaderEvent.EventType.SE_MATCHED == event.getEventType()) {
-              logger.info("SE_MATCHED event received");
-              logger.info("Notify SE processed after 0ms");
+            if (ReaderEvent.EventType.CARD_MATCHED == event.getEventType()) {
+              logger.info("CARD_MATCHED event received");
+              logger.info("Notify card processed after 0ms");
               ((ProxyReader) reader).releaseChannel();
               lock.countDown();
             }
@@ -755,20 +755,20 @@ public class StubReaderTest extends BaseStubTest {
     // add observer
     reader.addObserver(readerObs);
 
-    SeSelection seSelection = new SeSelection();
+    CardSelection cardSelection = new CardSelection();
 
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
+                .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
 
-    seSelection.prepareSelection(poSelectionRequest);
+    cardSelection.prepareSelection(poSelectionRequest);
 
     reader.setDefaultSelectionRequest(
-        seSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
+        cardSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
 
     reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
 
@@ -798,9 +798,9 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
     // init Request
-    List<SeRequest> requests = getRequestIsoDepSetSample();
+    List<CardRequest> requests = getRequestIsoDepSetSample();
 
-    // init SE
+    // init card
     reader.insertSe(hoplinkSE());
 
     // activate ISO_14443_4
@@ -812,13 +812,13 @@ public class StubReaderTest extends BaseStubTest {
     genericSelectSe(reader);
 
     // test
-    List<SeResponse> seResponse =
+    List<CardResponse> cardResponse =
         ((ProxyReader) reader)
-            .transmitSeRequests(
-                requests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+            .transmitCardRequests(
+                requests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
     // assert
-    Assert.assertTrue(seResponse.get(0).getApduResponses().get(0).isSuccessful());
+    Assert.assertTrue(cardResponse.get(0).getApduResponses().get(0).isSuccessful());
   }
 
   @Test(expected = KeypleReaderException.class)
@@ -827,9 +827,9 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
     // init Request
-    List<SeRequest> requests = getNoResponseRequest();
+    List<CardRequest> requests = getNoResponseRequest();
 
-    // init SE
+    // init card
     reader.insertSe(noApduResponseSE());
 
     // activate ISO_14443_4
@@ -841,10 +841,10 @@ public class StubReaderTest extends BaseStubTest {
     genericSelectSe(reader);
 
     // test
-    List<SeResponse> seResponse =
+    List<CardResponse> cardResponse =
         ((ProxyReader) reader)
-            .transmitSeRequests(
-                requests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+            .transmitCardRequests(
+                requests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
   }
 
   @Test
@@ -853,9 +853,9 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
     // init Request
-    List<SeRequest> seRequests = getPartialRequestList(0);
+    List<CardRequest> cardRequests = getPartialRequestList(0);
 
-    // init SE
+    // init card
     reader.insertSe(partialSE());
 
     // activate ISO_14443_4
@@ -868,15 +868,15 @@ public class StubReaderTest extends BaseStubTest {
 
     // test
     try {
-      List<SeResponse> seResponses =
+      List<CardResponse> cardResponse =
           ((ProxyReader) reader)
-              .transmitSeRequests(
-                  seRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+              .transmitCardRequests(
+                  cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
-      Assert.assertEquals(1, ex.getSeResponses().size());
-      Assert.assertEquals(2, ex.getSeResponses().get(0).getApduResponses().size());
+      Assert.assertEquals(1, ex.getCardResponses().size());
+      Assert.assertEquals(2, ex.getCardResponses().get(0).getApduResponses().size());
     }
   }
 
@@ -886,9 +886,9 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
     // init Request
-    List<SeRequest> seRequests = getPartialRequestList(1);
+    List<CardRequest> cardRequests = getPartialRequestList(1);
 
-    // init SE
+    // init card
     reader.insertSe(partialSE());
 
     // activate ISO_14443_4
@@ -901,17 +901,17 @@ public class StubReaderTest extends BaseStubTest {
 
     // test
     try {
-      List<SeResponse> seResponses =
+      List<CardResponse> cardResponse =
           ((ProxyReader) reader)
-              .transmitSeRequests(
-                  seRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+              .transmitCardRequests(
+                  cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
-      Assert.assertEquals(2, ex.getSeResponses().size());
-      Assert.assertEquals(4, ex.getSeResponses().get(0).getApduResponses().size());
-      Assert.assertEquals(2, ex.getSeResponses().get(1).getApduResponses().size());
-      Assert.assertEquals(2, ex.getSeResponses().get(1).getApduResponses().size());
+      Assert.assertEquals(2, ex.getCardResponses().size());
+      Assert.assertEquals(4, ex.getCardResponses().get(0).getApduResponses().size());
+      Assert.assertEquals(2, ex.getCardResponses().get(1).getApduResponses().size());
+      Assert.assertEquals(2, ex.getCardResponses().get(1).getApduResponses().size());
     }
   }
 
@@ -921,9 +921,9 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
     // init Request
-    List<SeRequest> seRequests = getPartialRequestList(2);
+    List<CardRequest> cardRequests = getPartialRequestList(2);
 
-    // init SE
+    // init card
     reader.insertSe(partialSE());
 
     // activate ISO_14443_4
@@ -936,17 +936,17 @@ public class StubReaderTest extends BaseStubTest {
 
     // test
     try {
-      List<SeResponse> seResponses =
+      List<CardResponse> cardResponse =
           ((ProxyReader) reader)
-              .transmitSeRequests(
-                  seRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+              .transmitCardRequests(
+                  cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
-      Assert.assertEquals(3, ex.getSeResponses().size());
-      Assert.assertEquals(4, ex.getSeResponses().get(0).getApduResponses().size());
-      Assert.assertEquals(4, ex.getSeResponses().get(1).getApduResponses().size());
-      Assert.assertEquals(2, ex.getSeResponses().get(2).getApduResponses().size());
+      Assert.assertEquals(3, ex.getCardResponses().size());
+      Assert.assertEquals(4, ex.getCardResponses().get(0).getApduResponses().size());
+      Assert.assertEquals(4, ex.getCardResponses().get(1).getApduResponses().size());
+      Assert.assertEquals(2, ex.getCardResponses().get(2).getApduResponses().size());
     }
   }
 
@@ -956,9 +956,9 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
     // init Request
-    List<SeRequest> seRequests = getPartialRequestList(3);
+    List<CardRequest> cardRequests = getPartialRequestList(3);
 
-    // init SE
+    // init card
     reader.insertSe(partialSE());
 
     // activate ISO_14443_4
@@ -971,14 +971,14 @@ public class StubReaderTest extends BaseStubTest {
 
     // test
     try {
-      List<SeResponse> seResponses =
+      List<CardResponse> cardResponse =
           ((ProxyReader) reader)
-              .transmitSeRequests(
-                  seRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
-      Assert.assertEquals(3, seResponses.size());
-      Assert.assertEquals(4, seResponses.get(0).getApduResponses().size());
-      Assert.assertEquals(4, seResponses.get(1).getApduResponses().size());
-      Assert.assertEquals(4, seResponses.get(2).getApduResponses().size());
+              .transmitCardRequests(
+                  cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+      Assert.assertEquals(3, cardResponse.size());
+      Assert.assertEquals(4, cardResponse.get(0).getApduResponses().size());
+      Assert.assertEquals(4, cardResponse.get(1).getApduResponses().size());
+      Assert.assertEquals(4, cardResponse.get(2).getApduResponses().size());
     } catch (KeypleReaderException ex) {
       Assert.fail("Should not throw exception");
     }
@@ -990,9 +990,9 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
     // init Request
-    SeRequest seRequest = getPartialRequest(0);
+    CardRequest cardRequest = getPartialRequest(0);
 
-    // init SE
+    // init card
     reader.insertSe(partialSE());
 
     // activate ISO_14443_4
@@ -1005,12 +1005,12 @@ public class StubReaderTest extends BaseStubTest {
 
     // test
     try {
-      SeResponse seResponse =
-          ((ProxyReader) reader).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+      CardResponse cardResponse =
+          ((ProxyReader) reader).transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
-      Assert.assertEquals(0, ex.getSeResponse().getApduResponses().size());
+      Assert.assertEquals(0, ex.getCardResponse().getApduResponses().size());
     }
   }
 
@@ -1020,9 +1020,9 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
     // init Request
-    SeRequest seRequest = getPartialRequest(1);
+    CardRequest cardRequest = getPartialRequest(1);
 
-    // init SE
+    // init card
     reader.insertSe(partialSE());
 
     // activate ISO_14443_4
@@ -1035,12 +1035,12 @@ public class StubReaderTest extends BaseStubTest {
 
     // test
     try {
-      SeResponse seResponse =
-          ((ProxyReader) reader).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+      CardResponse cardResponse =
+          ((ProxyReader) reader).transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
-      Assert.assertEquals(1, ex.getSeResponse().getApduResponses().size());
+      Assert.assertEquals(1, ex.getCardResponse().getApduResponses().size());
     }
   }
 
@@ -1050,9 +1050,9 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
     // init Request
-    SeRequest seRequest = getPartialRequest(2);
+    CardRequest cardRequest = getPartialRequest(2);
 
-    // init SE
+    // init card
     reader.insertSe(partialSE());
 
     // activate ISO_14443_4
@@ -1065,12 +1065,12 @@ public class StubReaderTest extends BaseStubTest {
 
     // test
     try {
-      SeResponse seResponse =
-          ((ProxyReader) reader).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+      CardResponse cardResponse =
+          ((ProxyReader) reader).transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
       Assert.fail("Should throw exception");
 
     } catch (KeypleReaderIOException ex) {
-      Assert.assertEquals(2, ex.getSeResponse().getApduResponses().size());
+      Assert.assertEquals(2, ex.getCardResponse().getApduResponses().size());
     }
   }
 
@@ -1080,9 +1080,9 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
     // init Request
-    SeRequest seRequest = getPartialRequest(3);
+    CardRequest cardRequest = getPartialRequest(3);
 
-    // init SE
+    // init card
     reader.insertSe(partialSE());
 
     // activate ISO_14443_4
@@ -1095,9 +1095,9 @@ public class StubReaderTest extends BaseStubTest {
 
     // test
     try {
-      SeResponse seResponse =
-          ((ProxyReader) reader).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN);
-      Assert.assertEquals(3, seResponse.getApduResponses().size());
+      CardResponse cardResponse =
+          ((ProxyReader) reader).transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
+      Assert.assertEquals(3, cardResponse.getApduResponses().size());
     } catch (KeypleReaderException ex) {
       Assert.fail("Should not throw exception");
     }
@@ -1119,20 +1119,20 @@ public class StubReaderTest extends BaseStubTest {
    * HELPER METHODS
    */
 
-  public static List<SeRequest> getRequestIsoDepSetSample() {
+  public static List<CardRequest> getRequestIsoDepSetSample() {
     String poAid = "A000000291A000000191";
     ReadRecordsCmdBuild poReadRecordCmd_T2Env =
         new ReadRecordsCmdBuild(PoClass.ISO, 0x14, 1, ReadRecordsCmdBuild.ReadMode.ONE_RECORD, 32);
 
     List<ApduRequest> poApduRequests = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
 
-    SeRequest seRequest = new SeRequest(poApduRequests);
+    CardRequest cardRequest = new CardRequest(poApduRequests);
 
-    List<SeRequest> seRequests = new ArrayList<SeRequest>();
+    List<CardRequest> cardRequests = new ArrayList<CardRequest>();
 
-    seRequests.add(seRequest);
+    cardRequests.add(cardRequest);
 
-    return seRequests;
+    return cardRequests;
   }
 
   /*
@@ -1140,20 +1140,20 @@ public class StubReaderTest extends BaseStubTest {
    *
    * An Exception will be thrown.
    */
-  public static List<SeRequest> getNoResponseRequest() {
+  public static List<CardRequest> getNoResponseRequest() {
 
     IncreaseCmdBuild poIncreaseCmdBuild =
         new IncreaseCmdBuild(PoClass.ISO, (byte) 0x14, (byte) 0x01, 0);
 
     List<ApduRequest> poApduRequests = Arrays.asList(poIncreaseCmdBuild.getApduRequest());
 
-    SeRequest seRequest = new SeRequest(poApduRequests);
+    CardRequest cardRequest = new CardRequest(poApduRequests);
 
-    List<SeRequest> seRequests = new ArrayList<SeRequest>();
+    List<CardRequest> cardRequests = new ArrayList<CardRequest>();
 
-    seRequests.add(seRequest);
+    cardRequests.add(cardRequest);
 
-    return seRequests;
+    return cardRequests;
   }
 
   /*
@@ -1161,7 +1161,7 @@ public class StubReaderTest extends BaseStubTest {
    *
    * An Exception will be thrown.
    */
-  public static List<SeRequest> getPartialRequestList(int scenario) {
+  public static List<CardRequest> getPartialRequestList(int scenario) {
     String poAid = "A000000291A000000191";
     ReadRecordsCmdBuild poReadRecord1CmdBuild =
         new ReadRecordsCmdBuild(PoClass.ISO, 0x14, 1, ReadRecordsCmdBuild.ReadMode.ONE_RECORD, 0);
@@ -1188,46 +1188,46 @@ public class StubReaderTest extends BaseStubTest {
     poApduRequests3.add(poReadRecord2CmdBuild.getApduRequest());
     poApduRequests3.add(poReadRecord1CmdBuild.getApduRequest());
 
-    SeRequest seRequest1 = new SeRequest(poApduRequests1);
+    CardRequest cardRequest1 = new CardRequest(poApduRequests1);
 
-    SeRequest seRequest2 = new SeRequest(poApduRequests2);
+    CardRequest cardRequest2 = new CardRequest(poApduRequests2);
 
-    /* This SeRequest fails at step 3 */
-    SeRequest seRequest3 = new SeRequest(poApduRequests3);
+    /* This CardRequest fails at step 3 */
+    CardRequest cardRequest3 = new CardRequest(poApduRequests3);
 
-    SeRequest seRequest4 = new SeRequest(poApduRequests1);
+    CardRequest cardRequest4 = new CardRequest(poApduRequests1);
 
-    List<SeRequest> seRequests = new ArrayList<SeRequest>();
+    List<CardRequest> cardRequests = new ArrayList<CardRequest>();
 
     switch (scenario) {
       case 0:
         /* 0 response */
-        seRequests.add(seRequest3); // fails
-        seRequests.add(seRequest1); // succeeds
-        seRequests.add(seRequest2); // succeeds
+        cardRequests.add(cardRequest3); // fails
+        cardRequests.add(cardRequest1); // succeeds
+        cardRequests.add(cardRequest2); // succeeds
         break;
       case 1:
         /* 1 response */
-        seRequests.add(seRequest1); // succeeds
-        seRequests.add(seRequest3); // fails
-        seRequests.add(seRequest2); // succeeds
+        cardRequests.add(cardRequest1); // succeeds
+        cardRequests.add(cardRequest3); // fails
+        cardRequests.add(cardRequest2); // succeeds
         break;
       case 2:
         /* 2 responses */
-        seRequests.add(seRequest1); // succeeds
-        seRequests.add(seRequest2); // succeeds
-        seRequests.add(seRequest3); // fails
+        cardRequests.add(cardRequest1); // succeeds
+        cardRequests.add(cardRequest2); // succeeds
+        cardRequests.add(cardRequest3); // fails
         break;
       case 3:
         /* 3 responses */
-        seRequests.add(seRequest1); // succeeds
-        seRequests.add(seRequest2); // succeeds
-        seRequests.add(seRequest4); // succeeds
+        cardRequests.add(cardRequest1); // succeeds
+        cardRequests.add(cardRequest2); // succeeds
+        cardRequests.add(cardRequest4); // succeeds
         break;
       default:
     }
 
-    return seRequests;
+    return cardRequests;
   }
 
   /*
@@ -1235,7 +1235,7 @@ public class StubReaderTest extends BaseStubTest {
    *
    * An Exception will be thrown.
    */
-  public static SeRequest getPartialRequest(int scenario) {
+  public static CardRequest getPartialRequest(int scenario) {
     String poAid = "A000000291A000000191";
 
     ReadRecordsCmdBuild poReadRecord1CmdBuild =
@@ -1272,7 +1272,7 @@ public class StubReaderTest extends BaseStubTest {
         break;
     }
 
-    return new SeRequest(poApduRequests);
+    return new CardRequest(poApduRequests);
   }
 
   public static StubSecureElement hoplinkSE() {
@@ -1300,7 +1300,7 @@ public class StubReaderTest extends BaseStubTest {
       }
 
       @Override
-      public String getSeProtocol() {
+      public String getCardProtocol() {
         return "ISO_14443_4";
       }
     };
@@ -1329,7 +1329,7 @@ public class StubReaderTest extends BaseStubTest {
       }
 
       @Override
-      public String getSeProtocol() {
+      public String getCardProtocol() {
         return "CALYPSO_OLD_CARD_PRIME";
       }
     };
@@ -1354,7 +1354,7 @@ public class StubReaderTest extends BaseStubTest {
       }
 
       @Override
-      public String getSeProtocol() {
+      public String getCardProtocol() {
         return "ISO_14443_4";
       }
     };
@@ -1380,7 +1380,7 @@ public class StubReaderTest extends BaseStubTest {
       }
 
       @Override
-      public String getSeProtocol() {
+      public String getCardProtocol() {
         return "ISO_14443_4";
       }
     };
@@ -1415,7 +1415,7 @@ public class StubReaderTest extends BaseStubTest {
       }
 
       @Override
-      public String getSeProtocol() {
+      public String getCardProtocol() {
         return "ISO_14443_4";
       }
     };
@@ -1425,40 +1425,40 @@ public class StubReaderTest extends BaseStubTest {
     return new ApduRequest(ByteArrayUtil.fromHex("FEDCBA98 9005h"), false);
   }
 
-  public static void genericSelectSe(SeReader reader) {
-    /** Create a new local class extending AbstractSeSelectionRequest */
-    class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
+  public static void genericSelectSe(Reader reader) {
+    /** Create a new local class extending AbstractCardSelectionRequest */
+    class GenericCardSelectionRequest extends AbstractCardSelectionRequest {
 
-      public GenericSeSelectionRequest(SeSelector seSelector) {
-        super(seSelector);
+      public GenericCardSelectionRequest(CardSelector cardSelector) {
+        super(cardSelector);
       }
 
       @Override
-      protected AbstractMatchingSe parse(SeResponse seResponse) {
-        class GenericMatchingSe extends AbstractMatchingSe {
-          public GenericMatchingSe(SeResponse selectionResponse) {
+      protected AbstractSmartCard parse(CardResponse cardResponse) {
+        class GenericSmartCard extends AbstractSmartCard {
+          public GenericSmartCard(CardResponse selectionResponse) {
             super(selectionResponse);
           }
         }
-        return new GenericMatchingSe(seResponse);
+        return new GenericSmartCard(cardResponse);
       }
     }
 
-    SeSelection seSelection = new SeSelection();
-    // SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.PROCESS_ALL,
+    CardSelection cardSelection = new CardSelection();
+    // CardSelection cardSelection = new CardSelection(MultiSelectionProcessing.PROCESS_ALL,
     // ChannelControl.CLOSE_AFTER);
-    GenericSeSelectionRequest genericSeSelectionRequest =
-        new GenericSeSelectionRequest(
-            SeSelector.builder()
-                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                .atrFilter(new SeSelector.AtrFilter("3B.*"))
+    GenericCardSelectionRequest genericCardSelectionRequest =
+        new GenericCardSelectionRequest(
+            CardSelector.builder()
+                .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                .atrFilter(new CardSelector.AtrFilter("3B.*"))
                 .build());
 
-    /* Prepare selector, ignore AbstractMatchingSe here */
-    seSelection.prepareSelection(genericSeSelectionRequest);
+    /* Prepare selector, ignore AbstractSmartCard here */
+    cardSelection.prepareSelection(genericCardSelectionRequest);
 
     try {
-      seSelection.processExplicitSelection(reader);
+      cardSelection.processExplicitSelection(reader);
     } catch (KeypleException e) {
       Assert.fail("Unexpected exception");
     }

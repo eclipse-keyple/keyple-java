@@ -14,21 +14,21 @@ package org.eclipse.keyple.core.seproxy.plugin;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Plugin;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.exception.*;
 
 /** Observable plugin. These plugin can report when a reader is added or removed. */
-public abstract class AbstractPlugin implements ReaderPlugin {
+public abstract class AbstractPlugin implements Plugin {
 
   /** The name of the plugin */
   private final String name;
 
   /** The list of readers */
-  protected Map<String, SeReader> readers = new ConcurrentHashMap<String, SeReader>();
+  protected Map<String, Reader> readers = new ConcurrentHashMap<String, Reader>();
 
   /**
-   * Instantiates a new ReaderPlugin. Retrieve the current readers list.
+   * Instantiates a new Plugin. Retrieve the current readers list.
    *
    * <p>Initialize the list of readers calling the abstract method initNativeReaders
    *
@@ -56,7 +56,7 @@ public abstract class AbstractPlugin implements ReaderPlugin {
    * @return the current readers map, can be an empty
    */
   @Override
-  public final Map<String, SeReader> getReaders() {
+  public final Map<String, Reader> getReaders() {
     return readers;
   }
 
@@ -74,16 +74,16 @@ public abstract class AbstractPlugin implements ReaderPlugin {
 
   /**
    * Init connected native readers (from third party library) and returns a map of corresponding
-   * {@link SeReader} whith their name as key.
+   * {@link Reader} whith their name as key.
    *
-   * <p>{@link SeReader} are new instances.
+   * <p>{@link Reader} are new instances.
    *
    * <p>this method is called once in the plugin constructor.
    *
    * @return the map of AbstractReader objects.
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */
-  protected abstract Map<String, SeReader> initNativeReaders();
+  protected abstract Map<String, Reader> initNativeReaders();
 
   /**
    * Gets a specific reader designated by its name in the current readers list
@@ -93,11 +93,11 @@ public abstract class AbstractPlugin implements ReaderPlugin {
    * @throws KeypleReaderNotFoundException if the wanted reader is not found
    */
   @Override
-  public final SeReader getReader(String name) {
-    SeReader seReader = readers.get(name);
-    if (seReader == null) {
+  public final Reader getReader(String name) {
+    Reader reader = readers.get(name);
+    if (reader == null) {
       throw new KeypleReaderNotFoundException(name);
     }
-    return seReader;
+    return reader;
   }
 }

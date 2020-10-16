@@ -12,13 +12,13 @@
 package org.eclipse.keyple.plugin.remotese.integration;
 
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
+import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
 import org.eclipse.keyple.plugin.remotese.rm.json.SampleFactory;
 import org.eclipse.keyple.plugin.stub.StubReader;
@@ -37,7 +37,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
   @Before
   public void setUp() throws Exception {
-    Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
+    Assert.assertEquals(0, SmartCardService.getInstance().getPlugins().size());
 
     initMasterNSlave();
 
@@ -56,7 +56,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
     unregisterPlugins();
 
-    Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
+    Assert.assertEquals(0, SmartCardService.getInstance().getPlugins().size());
   }
 
   /*
@@ -71,9 +71,9 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
       StubReaderTest.genericSelectSe(virtualReader);
 
       ((ProxyReader) virtualReader)
-          .transmitSeRequests(
-              SampleFactory.getASeRequestList(),
-              MultiSeRequestProcessing.FIRST_MATCH,
+          .transmitCardRequests(
+              SampleFactory.getACardRequestList(),
+              MultiSelectionProcessing.FIRST_MATCH,
               ChannelControl.KEEP_OPEN);
       // should throw KeypleReaderException
       Assert.assertTrue(false);
@@ -82,8 +82,8 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
       logger.info("KeypleReaderException was thrown as expected");
       // assert exception is thrown
       Assert.assertNotNull(e);
-      // Assert.assertNotNull(e.getSeResponseSet());
-      // Assert.assertNull(e.getSeResponse());
+      // Assert.assertNotNull(e.getCardResponseSet());
+      // Assert.assertNull(e.getCardResponse());
     }
   }
 
@@ -95,7 +95,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
       StubReaderTest.genericSelectSe(((ProxyReader) virtualReader));
 
       ((ProxyReader) virtualReader)
-          .transmitSeRequest(SampleFactory.getASeRequest(), ChannelControl.KEEP_OPEN);
+          .transmitCardRequest(SampleFactory.getACardRequest(), ChannelControl.KEEP_OPEN);
       // should throw KeypleReaderException
       Assert.assertTrue(false);
 
@@ -103,15 +103,15 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
       logger.info("KeypleReaderException was thrown as expected");
       // assert exception is thrown
       Assert.assertNotNull(e);
-      // Assert.assertNotNull(e.getSeResponseSet());
-      // Assert.assertNull(e.getSeResponse());
+      // Assert.assertNotNull(e.getCardResponseSet());
+      // Assert.assertNull(e.getCardResponse());
       // should not be null but transmit is using transmitSet, this is the reason I guess
       // todo : VirtualReader transmit should not be using transmitSet
     }
   }
 
   /**
-   * Successful Transmit with a Calypso command to a Calypso SE
+   * Successful Transmit with a Calypso command to a Calypso card
    *
    * @throws Exception
    */
@@ -120,7 +120,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
   public void rse_transmit_Hoplink_Sucessfull() throws Exception {
     int N_TIMES = 10;
 
-    // insert SE
+    // insert card
     nativeReader.insertSe(StubReaderTest.hoplinkSE());
 
     Thread.sleep(1000);
@@ -137,269 +137,269 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
       // ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true, (byte) 0x20);
       // List<ApduRequest> poApduRequests=
       // Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
-      // SeRequest seRequest = new SeRequest(poApduRequestList);
-      // Set<SeRequest> seRequests = new LinkedHashSet<SeRequest>();
-      // seRequests.add(seRequest);
+      // CardRequest cardRequest = new CardRequest(poApduRequestList);
+      // Set<CardRequest> cardRequests = new LinkedHashSet<CardRequest>();
+      // cardRequests.add(cardRequest);
       //
-      // List<SeResponse> seResponse = ((ProxyReader)
-      // virtualReader).transmitSet(seRequests);
+      // List<CardResponse> cardResponse = ((ProxyReader)
+      // virtualReader).transmitSet(cardRequests);
       // // assert
-      // Assert.assertTrue(seResponse.get(0).getApduResponses().get(0).isSuccessful());
+      // Assert.assertTrue(cardResponse.get(0).getApduResponses().get(0).isSuccessful());
       //
-      // logger.info("SeResponse returned as expected {}", seResponse.get(0));
+      // logger.info("CardResponse returned as expected {}", cardResponse.get(0));
     }
   }
 
   @Test(expected = KeypleReaderException.class)
   public void rse_transmit_no_response() throws Exception {
 
-    // insert SE
+    // insert card
     nativeReader.insertSe(StubReaderTest.noApduResponseSE());
 
     // wait for card to be detected
     Thread.sleep(500);
 
     // init Request
-    List<SeRequest> requests = StubReaderTest.getNoResponseRequest();
+    List<CardRequest> requests = StubReaderTest.getNoResponseRequest();
 
     StubReaderTest.genericSelectSe(virtualReader);
 
     // test
     ((ProxyReader) virtualReader)
-        .transmitSeRequests(
-            requests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+        .transmitCardRequests(
+            requests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
   }
 
   @Test
   public void transmit_partial_response_set_0() throws InterruptedException {
 
-    // insert SE
+    // insert card
     nativeReader.insertSe(StubReaderTest.partialSE());
 
     // wait for card to be detected
     Thread.sleep(500);
 
     // init Request
-    List<SeRequest> seRequests = StubReaderTest.getPartialRequestList(0);
+    List<CardRequest> cardRequests = StubReaderTest.getPartialRequestList(0);
 
     try {
       StubReaderTest.genericSelectSe(virtualReader);
 
       ((ProxyReader) virtualReader)
-          .transmitSeRequests(
-              seRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+          .transmitCardRequests(
+              cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
     } catch (KeypleReaderIOException ex) {
       logger.info(
           "KeypleReaderException was thrown as expected : {} {}",
-          ex.getSeResponses(),
-          ex.getSeResponse());
+          ex.getCardResponses(),
+          ex.getCardResponse());
 
-      Assert.assertEquals(ex.getSeResponses().size(), 1);
-      Assert.assertEquals(ex.getSeResponses().get(0).getApduResponses().size(), 2);
+      Assert.assertEquals(ex.getCardResponses().size(), 1);
+      Assert.assertEquals(ex.getCardResponses().get(0).getApduResponses().size(), 2);
     }
   }
 
   @Test
   public void transmit_partial_response_set_1() throws InterruptedException {
 
-    // insert SE
+    // insert card
     nativeReader.insertSe(StubReaderTest.partialSE());
 
     // wait for card to be detected
     Thread.sleep(500);
 
     // init Request
-    List<SeRequest> seRequests = StubReaderTest.getPartialRequestList(1);
+    List<CardRequest> cardRequests = StubReaderTest.getPartialRequestList(1);
 
     try {
       StubReaderTest.genericSelectSe(virtualReader);
 
       ((ProxyReader) virtualReader)
-          .transmitSeRequests(
-              seRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+          .transmitCardRequests(
+              cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
     } catch (KeypleReaderIOException ex) {
       logger.info(
           "KeypleReaderException was thrown as expected : {} {}",
-          ex.getSeResponses(),
-          ex.getSeResponse());
-      Assert.assertEquals(ex.getSeResponses().size(), 2);
-      Assert.assertEquals(ex.getSeResponses().get(0).getApduResponses().size(), 4);
-      Assert.assertEquals(ex.getSeResponses().get(1).getApduResponses().size(), 2);
-      Assert.assertEquals(ex.getSeResponses().get(1).getApduResponses().size(), 2);
+          ex.getCardResponses(),
+          ex.getCardResponse());
+      Assert.assertEquals(ex.getCardResponses().size(), 2);
+      Assert.assertEquals(ex.getCardResponses().get(0).getApduResponses().size(), 4);
+      Assert.assertEquals(ex.getCardResponses().get(1).getApduResponses().size(), 2);
+      Assert.assertEquals(ex.getCardResponses().get(1).getApduResponses().size(), 2);
     }
   }
 
   @Test
   public void transmit_partial_response_set_2() throws InterruptedException {
 
-    // insert SE
+    // insert card
     nativeReader.insertSe(StubReaderTest.partialSE());
 
     // wait for card to be detected
     Thread.sleep(500);
 
     // init Request
-    List<SeRequest> seRequests = StubReaderTest.getPartialRequestList(2);
+    List<CardRequest> cardRequests = StubReaderTest.getPartialRequestList(2);
 
     // test
     try {
       StubReaderTest.genericSelectSe(virtualReader);
 
       ((ProxyReader) virtualReader)
-          .transmitSeRequests(
-              seRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+          .transmitCardRequests(
+              cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
     } catch (KeypleReaderIOException ex) {
       logger.info(
           "KeypleReaderException was thrown as expected : {} {}",
-          ex.getSeResponses(),
-          ex.getSeResponse());
-      Assert.assertEquals(ex.getSeResponses().size(), 3);
-      Assert.assertEquals(ex.getSeResponses().get(0).getApduResponses().size(), 4);
-      Assert.assertEquals(ex.getSeResponses().get(1).getApduResponses().size(), 4);
-      Assert.assertEquals(ex.getSeResponses().get(2).getApduResponses().size(), 2);
+          ex.getCardResponses(),
+          ex.getCardResponse());
+      Assert.assertEquals(ex.getCardResponses().size(), 3);
+      Assert.assertEquals(ex.getCardResponses().get(0).getApduResponses().size(), 4);
+      Assert.assertEquals(ex.getCardResponses().get(1).getApduResponses().size(), 4);
+      Assert.assertEquals(ex.getCardResponses().get(2).getApduResponses().size(), 2);
     }
   }
 
   @Test
   public void transmit_partial_response_set_3() throws InterruptedException {
 
-    // insert SE
+    // insert card
     nativeReader.insertSe(StubReaderTest.partialSE());
 
     // wait for card to be detected
     Thread.sleep(500);
 
     // init Request
-    List<SeRequest> seRequests = StubReaderTest.getPartialRequestList(3);
+    List<CardRequest> cardRequests = StubReaderTest.getPartialRequestList(3);
 
     // test
     try {
       StubReaderTest.genericSelectSe(virtualReader);
 
       ((ProxyReader) virtualReader)
-          .transmitSeRequests(
-              seRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+          .transmitCardRequests(
+              cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
     } catch (KeypleReaderIOException ex) {
       logger.info(
           "KeypleReaderException was thrown as expected : {} {}",
-          ex.getSeResponses(),
-          ex.getSeResponse());
-      Assert.assertEquals(ex.getSeResponses().size(), 3);
-      Assert.assertEquals(ex.getSeResponses().get(0).getApduResponses().size(), 4);
-      Assert.assertEquals(ex.getSeResponses().get(1).getApduResponses().size(), 4);
-      Assert.assertEquals(ex.getSeResponses().get(2).getApduResponses().size(), 4);
+          ex.getCardResponses(),
+          ex.getCardResponse());
+      Assert.assertEquals(ex.getCardResponses().size(), 3);
+      Assert.assertEquals(ex.getCardResponses().get(0).getApduResponses().size(), 4);
+      Assert.assertEquals(ex.getCardResponses().get(1).getApduResponses().size(), 4);
+      Assert.assertEquals(ex.getCardResponses().get(2).getApduResponses().size(), 4);
     }
   }
 
   @Test
   public void transmit_partial_response_0() throws InterruptedException {
 
-    // insert SE
+    // insert card
     nativeReader.insertSe(StubReaderTest.partialSE());
 
     // wait for card to be detected
     Thread.sleep(500);
 
     // init Request
-    SeRequest seRequest = StubReaderTest.getPartialRequest(0);
+    CardRequest cardRequest = StubReaderTest.getPartialRequest(0);
 
     // test
     try {
       StubReaderTest.genericSelectSe(virtualReader);
 
-      ((ProxyReader) virtualReader).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+      ((ProxyReader) virtualReader).transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
     } catch (KeypleReaderIOException ex) {
       logger.info(
           "KeypleReaderException was thrown as expected : {} {}",
-          ex.getSeResponses(),
-          ex.getSeResponse());
-      Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 0);
+          ex.getCardResponses(),
+          ex.getCardResponse());
+      Assert.assertEquals(ex.getCardResponse().getApduResponses().size(), 0);
     }
   }
 
   @Test
   public void transmit_partial_response_1() throws InterruptedException {
 
-    // insert SE
+    // insert card
     nativeReader.insertSe(StubReaderTest.partialSE());
 
     // wait for card to be detected
     Thread.sleep(500);
 
     // init Request
-    SeRequest seRequest = StubReaderTest.getPartialRequest(1);
+    CardRequest cardRequest = StubReaderTest.getPartialRequest(1);
 
     // test
     try {
       StubReaderTest.genericSelectSe(virtualReader);
 
-      ((ProxyReader) virtualReader).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+      ((ProxyReader) virtualReader).transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
     } catch (KeypleReaderIOException ex) {
       logger.info(
           "KeypleReaderException was thrown as expected : {} {}",
-          ex.getSeResponses(),
-          ex.getSeResponse());
-      Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 1);
+          ex.getCardResponses(),
+          ex.getCardResponse());
+      Assert.assertEquals(ex.getCardResponse().getApduResponses().size(), 1);
     }
   }
 
   @Test
   public void transmit_partial_response_2() throws InterruptedException {
 
-    // insert SE
+    // insert card
     nativeReader.insertSe(StubReaderTest.partialSE());
 
     // wait for card to be detected
     Thread.sleep(500);
 
     // init Request
-    SeRequest seRequest = StubReaderTest.getPartialRequest(2);
+    CardRequest cardRequest = StubReaderTest.getPartialRequest(2);
 
     // test
     try {
       StubReaderTest.genericSelectSe(virtualReader);
 
-      ((ProxyReader) virtualReader).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+      ((ProxyReader) virtualReader).transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
     } catch (KeypleReaderIOException ex) {
       logger.info(
-          "KeypleReaderException was thrown as expected : set : {}, seResponse : {}",
-          ex.getSeResponses(),
-          ex.getSeResponse());
-      Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 2);
+          "KeypleReaderException was thrown as expected : set : {}, cardResponse : {}",
+          ex.getCardResponses(),
+          ex.getCardResponse());
+      Assert.assertEquals(ex.getCardResponse().getApduResponses().size(), 2);
     }
   }
 
   @Test
   public void transmit_partial_response_3() throws InterruptedException {
 
-    // insert SE
+    // insert card
     nativeReader.insertSe(StubReaderTest.partialSE());
 
     // wait for card to be detected
     Thread.sleep(500);
 
     // init Request
-    SeRequest seRequest = StubReaderTest.getPartialRequest(3);
+    CardRequest cardRequest = StubReaderTest.getPartialRequest(3);
 
     try {
       // test
       StubReaderTest.genericSelectSe(virtualReader);
 
-      ((ProxyReader) virtualReader).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+      ((ProxyReader) virtualReader).transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
     } catch (KeypleReaderIOException ex) {
       logger.info(
           "KeypleReaderException was thrown as expected : {} {}",
-          ex.getSeResponses(),
-          ex.getSeResponse());
-      Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 3);
+          ex.getCardResponses(),
+          ex.getCardResponse());
+      Assert.assertEquals(ex.getCardResponse().getApduResponses().size(), 3);
     }
   }
 }

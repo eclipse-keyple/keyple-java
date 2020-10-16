@@ -13,7 +13,7 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import java.util.SortedSet;
 import java.util.concurrent.ExecutorService;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationNoReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
@@ -23,8 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Remote SE Plugin Creates a virtual reader when a remote readers connect Manages the dispatch of
- * events received from remote readers
+ * Remote reader Plugin Creates a virtual reader when a remote readers connect Manages the dispatch
+ * of events received from remote readers
  */
 class RemoteSePoolPluginImpl extends RemoteSePluginImpl implements RemoteSePoolPlugin {
 
@@ -60,7 +60,7 @@ class RemoteSePoolPluginImpl extends RemoteSePluginImpl implements RemoteSePoolP
   }
 
   @Override
-  public SeReader allocateReader(String groupReference) {
+  public Reader allocateReader(String groupReference) {
 
     if (slaveNodeId == null) {
       throw new IllegalStateException(
@@ -88,20 +88,20 @@ class RemoteSePoolPluginImpl extends RemoteSePluginImpl implements RemoteSePoolP
   }
 
   @Override
-  public void releaseReader(SeReader seReader) {
+  public void releaseReader(Reader reader) {
     // call remote method for releaseReader
     if (slaveNodeId == null) {
       throw new IllegalStateException(
           "RemoteSePluginPool is not bind to any Slave Node, invoke RemoteSePluginPool#bind() first");
     }
 
-    if (!(seReader instanceof VirtualReaderImpl)) {
+    if (!(reader instanceof VirtualReaderImpl)) {
       throw new IllegalStateException(
-          "RemoteSePluginPool can release only VirtualReader, seReader is type of "
-              + seReader.getClass().getSimpleName());
+          "RemoteSePluginPool can release only VirtualReader, reader is type of "
+              + reader.getClass().getSimpleName());
     }
 
-    VirtualReaderImpl virtualReader = (VirtualReaderImpl) seReader;
+    VirtualReaderImpl virtualReader = (VirtualReaderImpl) reader;
 
     // call remote method for releaseReader
     RmPoolReleaseTx releaseTx =

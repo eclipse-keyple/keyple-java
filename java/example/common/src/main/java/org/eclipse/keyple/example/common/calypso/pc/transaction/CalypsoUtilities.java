@@ -19,7 +19,7 @@ import java.io.InputStream;
 import java.util.Properties;
 import org.eclipse.keyple.calypso.transaction.CalypsoSam;
 import org.eclipse.keyple.calypso.transaction.PoSecuritySettings;
-import org.eclipse.keyple.core.selection.SeResource;
+import org.eclipse.keyple.core.selection.CardResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +51,7 @@ public final class CalypsoUtilities {
 
   private CalypsoUtilities() {}
 
-  public static PoSecuritySettings getSecuritySettings(SeResource<CalypsoSam> samResource) {
+  public static PoSecuritySettings getSecuritySettings(CardResource<CalypsoSam> samResource) {
 
     // The default KIF values for personalization, loading and debiting
     final byte DEFAULT_KIF_PERSO = (byte) 0x21;

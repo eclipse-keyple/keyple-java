@@ -239,7 +239,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
     return new ObservableReader.ReaderObserver() {
       @Override
       public void update(ReaderEvent event) {
-        if (event.getEventType() == ReaderEvent.EventType.SE_REMOVED) {
+        if (event.getEventType() == ReaderEvent.EventType.CARD_REMOVED) {
           logger.info("[{}] Card Removed.", event.getReaderName());
           if (lock != null) {
             lock.countDown();
@@ -254,7 +254,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
     return new ObservableReader.ReaderObserver() {
       @Override
       public void update(ReaderEvent event) {
-        if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED) {
+        if (event.getEventType() == ReaderEvent.EventType.CARD_INSERTED) {
           logger.info("[{}] Card Inserted.", event.getReaderName());
           if (lock != null) {
             lock.countDown();
@@ -269,7 +269,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
     return new ObservableReader.ReaderObserver() {
       @Override
       public void update(ReaderEvent event) {
-        if (event.getEventType() == ReaderEvent.EventType.SE_MATCHED) {
+        if (event.getEventType() == ReaderEvent.EventType.CARD_MATCHED) {
           lock.countDown();
         }
         ;

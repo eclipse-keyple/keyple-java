@@ -11,13 +11,13 @@
  ************************************************************************************** */
 package org.eclipse.keyple.calypso.transaction;
 
-import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.CardSelector;
 
 /**
- * The {@link PoSelector} class extends {@link SeSelector} to handle specific PO features such as
+ * The {@link PoSelector} class extends {@link CardSelector} to handle specific PO features such as
  * the additional successful status codes list (in response to a select application command)
  */
-public final class PoSelector extends SeSelector {
+public final class PoSelector extends CardSelector {
   private static final int SW_PO_INVALIDATED = 0x6283;
 
   /**
@@ -44,7 +44,7 @@ public final class PoSelector extends SeSelector {
    *
    * @since 0.9
    */
-  public static final class PoSelectorBuilder extends SeSelector.SeSelectorBuilder {
+  public static final class PoSelectorBuilder extends CardSelector.CardSelectorBuilder {
     private InvalidatedPo invalidatedPo;
 
     private PoSelectorBuilder() {
@@ -64,8 +64,8 @@ public final class PoSelector extends SeSelector {
 
     /** {@inheritDoc} */
     @Override
-    public PoSelectorBuilder seProtocol(String seProtocol) {
-      return (PoSelectorBuilder) super.seProtocol(seProtocol);
+    public PoSelectorBuilder cardProtocol(String cardProtocol) {
+      return (PoSelectorBuilder) super.cardProtocol(cardProtocol);
     }
 
     /** {@inheritDoc} */

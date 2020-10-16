@@ -15,12 +15,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.message.CardRequest;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.rm.IRemoteMethodExecutor;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
@@ -55,44 +55,45 @@ public class RmTransmitSetExecutor implements IRemoteMethodExecutor {
   public TransportDto execute(TransportDto transportDto) {
     KeypleDto keypleDto = transportDto.getKeypleDTO();
     TransportDto out = null;
-    List<SeResponse> seResponses = null;
-    MultiSeRequestProcessing multiSeRequestProcessing;
+    List<CardResponse> cardResponse = null;
+    MultiSelectionProcessing multiSelectionProcessing;
     ChannelControl channelControl;
 
     // parse body
     JsonObject bodyJsonO = JsonParser.getGson().fromJson(keypleDto.getBody(), JsonObject.class);
 
     // extract info
-    multiSeRequestProcessing =
-        MultiSeRequestProcessing.valueOf(bodyJsonO.get("multiSeRequestProcessing").getAsString());
+    multiSelectionProcessing =
+        MultiSelectionProcessing.valueOf(bodyJsonO.get("multiSelectionProcessing").getAsString());
 
     channelControl = ChannelControl.valueOf(bodyJsonO.get("channelControl").getAsString());
 
-    List<SeRequest> seRequests =
+    List<CardRequest> cardRequests =
         JsonParser.getGson()
             .fromJson(
-                bodyJsonO.get("seRequests").getAsString(),
-                new TypeToken<ArrayList<SeRequest>>() {}.getType());
+                bodyJsonO.get("cardRequests").getAsString(),
+                new TypeToken<ArrayList<CardRequest>>() {}.getType());
 
     // prepare transmitSet on nativeReader
     String nativeReaderName = keypleDto.getNativeReaderName();
     logger.trace(
-        "Execute locally seRequests : {} with params {} {}",
-        seRequests,
+        "Execute locally cardRequests : {} with params {} {}",
+        cardRequests,
         channelControl,
-        multiSeRequestProcessing);
+        multiSelectionProcessing);
 
     try {
       // find native reader by name
       ProxyReader reader = (ProxyReader) slaveAPI.findLocalReader(nativeReaderName);
 
       // execute transmitSet
-      seResponses = reader.transmitSeRequests(seRequests, multiSeRequestProcessing, channelControl);
+      cardResponse =
+          reader.transmitCardRequests(cardRequests, multiSelectionProcessing, channelControl);
 
       // prepare response
       String parseBody =
           JsonParser.getGson()
-              .toJson(seResponses, new TypeToken<ArrayList<SeResponse>>() {}.getType());
+              .toJson(cardResponse, new TypeToken<ArrayList<CardResponse>>() {}.getType());
       out =
           transportDto.nextTransportDTO(
               KeypleDtoHelper.buildResponse(

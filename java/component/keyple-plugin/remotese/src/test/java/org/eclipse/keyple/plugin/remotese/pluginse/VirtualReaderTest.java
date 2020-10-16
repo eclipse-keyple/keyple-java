@@ -15,14 +15,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
+import org.eclipse.keyple.core.seproxy.Reader;
+import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.message.CardRequest;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.plugin.remotese.integration.Integration;
 import org.eclipse.keyple.plugin.remotese.integration.VirtualReaderBaseTest;
 import org.eclipse.keyple.plugin.remotese.rm.json.SampleFactory;
@@ -51,7 +51,7 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
 
   @Before
   public void setUp() throws Exception {
-    Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
+    Assert.assertEquals(0, SmartCardService.getInstance().getPlugins().size());
 
     initMasterNSlave();
 
@@ -68,12 +68,12 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
     clearMasterNSlave();
     unregisterPlugins();
     // clean plugin
-    seProxyService.unregisterPlugin(RSE_PLUGIN);
-    Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
+    smartCardService.unregisterPlugin(RSE_PLUGIN);
+    Assert.assertEquals(0, SmartCardService.getInstance().getPlugins().size());
   }
 
   /**
-   * Invoke a transmitSeRequests on a failing DtoNode, no Dto will be received, timeout should be
+   * Invoke a transmitCardRequests on a failing DtoNode, no Dto will be received, timeout should be
    * thrown
    *
    * @throws Exception
@@ -84,7 +84,7 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
     // create a specific MasterAPI with a fake DtoNode
     MasterAPI masterAPI =
         new MasterAPI(
-            SeProxyService.getInstance(),
+            SmartCardService.getInstance(),
             Integration.getFakeDtoNode(),
             RPC_TIMEOUT,
             MasterAPI.PLUGIN_TYPE_DEFAULT,
@@ -102,14 +102,14 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
             false,
             new HashMap<String, String>());
 
-    reader.transmitSeRequests(
+    reader.transmitCardRequests(
         StubReaderTest.getRequestIsoDepSetSample(),
-        MultiSeRequestProcessing.FIRST_MATCH,
+        MultiSelectionProcessing.FIRST_MATCH,
         ChannelControl.KEEP_OPEN);
   }
 
   /**
-   * Successful transmitSeRequests with MultiSeRequestProcessing and ChannelControl
+   * Successful transmitCardRequests with MultiSelectionProcessing and ChannelControl
    *
    * @throws Exception
    */
@@ -117,37 +117,37 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
   @Ignore
   // TODO Mock does not work, see this#connectMockReader()
   // execute at hand and check logs
-  public void transmitSeRequests_withParameters() throws Exception {
-    List<SeRequest> seRequests = SampleFactory.getASeRequestList();
+  public void transmitCardRequests_withParameters() throws Exception {
+    List<CardRequest> cardRequests = SampleFactory.getACardRequestList();
 
-    // test transmitSeRequests with Parameters
+    // test transmitCardRequests with Parameters
     ((ProxyReader) virtualReader)
-        .transmitSeRequests(
-            seRequests, MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
+        .transmitCardRequests(
+            cardRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
 
     // condition -> the nativeReader execute the method executed on the virtual reader
     verify(nativeReader, times(1))
-        .transmitSeRequests(
-            seRequests, MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
+        .transmitCardRequests(
+            cardRequests, MultiSelectionProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
   }
 
   @Test
   @Ignore
   // TODO Mock does not work, see this#connectMockReader()
   // execute at hand and check logs
-  public void transmitSeRequests_withNoParameters() throws Exception {
-    List<SeRequest> seRequests = SampleFactory.getASeRequestList();
+  public void transmitCardRequests_withNoParameters() throws Exception {
+    List<CardRequest> cardRequests = SampleFactory.getACardRequestList();
 
-    // test transmitSeRequest without parameter
+    // test transmitCardRequest without parameter
     ((ProxyReader) virtualReader)
-        .transmitSeRequests(
-            seRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+        .transmitCardRequests(
+            cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
     // condition -> the nativeReader execute the method executed on the virtual reader
     verify(nativeReader, times(1))
-        .transmitSeRequests(
-            seRequests,
-            MultiSeRequestProcessing.FIRST_MATCH,
+        .transmitCardRequests(
+            cardRequests,
+            MultiSelectionProcessing.FIRST_MATCH,
             ChannelControl.KEEP_OPEN); // default value
     // when no param is
     // specified
@@ -162,29 +162,29 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
   @Ignore
   // TODO Mock does not work, see this#connectMockReader()
   // execute at hand and check logs
-  public void transmitSeRequest_withParameters() throws Exception {
-    SeRequest seRequest = SampleFactory.getASeRequest();
+  public void transmitCardRequest_withParameters() throws Exception {
+    CardRequest cardRequest = SampleFactory.getACardRequest();
 
-    // test transmitSeRequest with Parameters
-    ((ProxyReader) virtualReader).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+    // test transmitCardRequest with Parameters
+    ((ProxyReader) virtualReader).transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
     // condition -> the nativeReader execute the method executed on the virtual reader
-    verify(nativeReader, times(1)).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+    verify(nativeReader, times(1)).transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
   }
 
   @Test
   @Ignore
   // TODO Mock does not work, see this#connectMockReader()
   // execute at hand and check logs
-  public void transmitSeRequest_withNoParam() throws Exception {
-    SeRequest seRequest = SampleFactory.getASeRequest();
+  public void transmitCardRequest_withNoParam() throws Exception {
+    CardRequest cardRequest = SampleFactory.getACardRequest();
 
-    // test transmitSeRequest without parameter
-    ((ProxyReader) virtualReader).transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN);
+    // test transmitCardRequest without parameter
+    ((ProxyReader) virtualReader).transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
 
     // condition -> the nativeReader execute the method executed on the virtual reader
     verify(nativeReader, times(1))
-        .transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN); // default
+        .transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN); // default
     // value when
     // no param is
     // specified
@@ -196,19 +196,19 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
     ProxyReader mockReader = Mockito.spy(ProxyReader.class);
     doReturn(readerName).when(mockReader).getName();
     doReturn(true).when(mockReader).isContactless();
-    doReturn(new ArrayList<SeResponse>())
+    doReturn(new ArrayList<CardResponse>())
         .when(mockReader)
-        .transmitSeRequests(
-            ArgumentMatchers.<SeRequest>anyList(),
-            any(MultiSeRequestProcessing.class),
+        .transmitCardRequests(
+            ArgumentMatchers.<CardRequest>anyList(),
+            any(MultiSelectionProcessing.class),
             any(ChannelControl.class));
 
     // Configure slaveAPI to find mockReader
     // TODO : findLocalReader real method is called, the mock does not work maybe due to
     // multiple thread...
     doReturn(mockReader).when(slaveAPI).findLocalReader(any(String.class));
-    doCallRealMethod().when(slaveAPI).connectReader(any(SeReader.class));
-    doCallRealMethod().when(slaveAPI).connectReader(any(SeReader.class), any(Map.class));
+    doCallRealMethod().when(slaveAPI).connectReader(any(Reader.class));
+    doCallRealMethod().when(slaveAPI).connectReader(any(Reader.class), any(Map.class));
 
     slaveAPI.connectReader(mockReader);
 

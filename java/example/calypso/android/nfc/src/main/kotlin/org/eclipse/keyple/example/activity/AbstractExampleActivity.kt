@@ -26,8 +26,8 @@ import kotlinx.android.synthetic.main.activity_calypso_examples.drawerLayout
 import kotlinx.android.synthetic.main.activity_calypso_examples.eventRecyclerView
 import kotlinx.android.synthetic.main.activity_calypso_examples.navigationView
 import kotlinx.android.synthetic.main.activity_calypso_examples.toolbar
-import org.eclipse.keyple.core.selection.SeSelection
-import org.eclipse.keyple.core.seproxy.SeProxyService
+import org.eclipse.keyple.core.selection.CardSelection
+import org.eclipse.keyple.core.seproxy.SmartCardService
 import org.eclipse.keyple.core.seproxy.event.ObservableReader
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent
 import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols
@@ -60,7 +60,7 @@ abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnN
     protected lateinit var reader: AndroidNfcReader
 
     protected var useCase: UseCase? = null
-    protected lateinit var seSelection: SeSelection
+    protected lateinit var cardSelection: CardSelection
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,7 +85,7 @@ abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnN
         /**
          * Register AndroidNfc plugin Factory
          */
-        val plugin = SeProxyService.getInstance().registerPlugin(AndroidNfcPluginFactory())
+        val plugin = SmartCardService.getInstance().registerPlugin(AndroidNfcPluginFactory())
 
         /**
          *  remove the observer if it already exist

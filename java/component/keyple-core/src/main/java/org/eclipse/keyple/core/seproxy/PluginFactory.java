@@ -27,9 +27,9 @@ public interface PluginFactory {
   /**
    * Retrieve an instance of a plugin (can be a singleton or not)
    *
-   * @return instance of a ReaderPlugin
+   * @return instance of a Plugin
    * @throws KeyplePluginInstantiationException if instantiation failed, mostly when the third party
-   *     library which manages the Se Reader interface is not ready
+   *     library which manages the card Reader interface is not ready
    */
-  ReaderPlugin getPlugin();
+  Plugin getPlugin();
 }

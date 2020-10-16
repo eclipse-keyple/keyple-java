@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +56,7 @@ public class ObservableReaderStateService {
 
   /**
    * Thread safe method to communicate an internal event to this reader Use this method to inform
-   * the reader of external event like a tag discovered or a Se inserted
+   * the reader of external event like a tag discovered or a card inserted
    *
    * @param event internal event
    * @since 0.9
@@ -143,26 +143,26 @@ public class ObservableReaderStateService {
      * @return A non null reference
      * @since 1.0
      */
-    SeProcessingStep waitForSeInsertionWithNativeDetection();
+    SeProcessingStep WaitForCardInsertionWithNativeDetection();
 
     /**
-     * Set up SeInsertionDetection to detect the SE insertion thanks to the method {@link
+     * Set up SeInsertionDetection to detect the card insertion thanks to the method {@link
      * SmartInsertionReader#waitForCardPresent()}.
      *
      * @return A non null reference
      * @throws KeypleReaderIOException if reader does not implements SmartInsertionReader
      * @since 1.0
      */
-    SeProcessingStep waitForSeInsertionWithSmartDetection();
+    SeProcessingStep WaitForCardInsertionWithSmartDetection();
 
     /**
-     * Set up SeInsertionDetection to use polling of the {@link SeReader#isSePresent()} method to
-     * detect SE_INSERTED
+     * Set up SeInsertionDetection to use polling of the {@link Reader#isCardPresent()} method to
+     * detect CARD_INSERTED
      *
      * @return A non null reference
      * @since 1.0
      */
-    SeProcessingStep waitForSeInsertionWithPollingDetection();
+    SeProcessingStep WaitForCardInsertionWithPollingDetection();
   }
 
   /**
@@ -177,7 +177,7 @@ public class ObservableReaderStateService {
      * @return A non null reference
      * @since 1.0
      */
-    SeRemovalStep waitForSeProcessingWithNativeDetection();
+    SeRemovalStep WaitForCardProcessingWithNativeDetection();
 
     /**
      * Set up SeProcessingDetection to detect processing thanks to the method {@link
@@ -187,7 +187,7 @@ public class ObservableReaderStateService {
      * @throws KeypleReaderIOException if reader does not implements SmartRemovalReader
      * @since 1.0
      */
-    SeRemovalStep waitForSeProcessingWithSmartDetection();
+    SeRemovalStep WaitForCardProcessingWithSmartDetection();
   }
 
   /**
@@ -202,7 +202,7 @@ public class ObservableReaderStateService {
      * @return A non null reference
      * @since 1.0
      */
-    BuilderStep waitForSeRemovalWithNativeDetection();
+    BuilderStep WaitForCardRemovalWithNativeDetection();
 
     /**
      * Set up SeRemovalDetection to detect processing thanks to the method {@link
@@ -212,16 +212,16 @@ public class ObservableReaderStateService {
      * @throws KeypleReaderIOException if reader does not implements SmartRemovalReader
      * @since 1.0
      */
-    BuilderStep waitForSeRemovalWithSmartDetection();
+    BuilderStep WaitForCardRemovalWithSmartDetection();
 
     /**
-     * Set up SeRemovalDetection with to use polling of the {@link SeReader#isSePresent()} method to
-     * detect SE_REMOVED
+     * Set up SeRemovalDetection with to use polling of the {@link Reader#isCardPresent()} method to
+     * detect CARD_REMOVED
      *
      * @return A non null reference
      * @since 1.0
      */
-    BuilderStep waitForSeRemovalWithPollingDetection();
+    BuilderStep WaitForCardRemovalWithPollingDetection();
   }
 
   /**
@@ -256,94 +256,96 @@ public class ObservableReaderStateService {
           new WaitForStartDetectState(this.reader));
     }
 
-    /** @see SeInsertionStep#waitForSeInsertionWithNativeDetection() */
+    /** @see SeInsertionStep#WaitForCardInsertionWithNativeDetection() */
     @Override
-    public SeProcessingStep waitForSeInsertionWithNativeDetection() {
+    public SeProcessingStep WaitForCardInsertionWithNativeDetection() {
       states.put(
           AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-          new WaitForSeInsertionState(this.reader));
+          new WaitForCardInsertionState(this.reader));
       return this;
     }
 
-    /** @see SeInsertionStep#waitForSeInsertionWithPollingDetection() */
+    /** @see SeInsertionStep#WaitForCardInsertionWithPollingDetection() */
     @Override
-    public SeProcessingStep waitForSeInsertionWithPollingDetection() {
+    public SeProcessingStep WaitForCardInsertionWithPollingDetection() {
       CardPresentMonitoringJob cardPresentMonitoringJob =
           new CardPresentMonitoringJob(reader, 200, true);
       states.put(
           AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-          new WaitForSeInsertionState(this.reader, cardPresentMonitoringJob, this.executorService));
+          new WaitForCardInsertionState(
+              this.reader, cardPresentMonitoringJob, this.executorService));
       return this;
     }
 
-    /** @see SeInsertionStep#waitForSeInsertionWithSmartDetection() */
+    /** @see SeInsertionStep#WaitForCardInsertionWithSmartDetection() */
     @Override
-    public SeProcessingStep waitForSeInsertionWithSmartDetection() {
+    public SeProcessingStep WaitForCardInsertionWithSmartDetection() {
       if (!(reader instanceof SmartInsertionReader))
         throw new KeypleReaderIOException("Reader should implement SmartInsertionReader");
       final SmartInsertionMonitoringJob smartInsertionMonitoringJob =
           new SmartInsertionMonitoringJob((SmartInsertionReader) reader);
       states.put(
           AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-          new WaitForSeInsertionState(
+          new WaitForCardInsertionState(
               this.reader, smartInsertionMonitoringJob, this.executorService));
       return this;
     }
 
-    /** @see SeProcessingStep#waitForSeProcessingWithNativeDetection() */
+    /** @see SeProcessingStep#WaitForCardProcessingWithNativeDetection() */
     @Override
-    public SeRemovalStep waitForSeProcessingWithNativeDetection() {
+    public SeRemovalStep WaitForCardProcessingWithNativeDetection() {
       this.states.put(
           AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-          new WaitForSeProcessingState(this.reader));
+          new WaitForCardProcessingState(this.reader));
       return this;
     }
 
-    /** @see SeProcessingStep#waitForSeProcessingWithSmartDetection() */
+    /** @see SeProcessingStep#WaitForCardProcessingWithSmartDetection() */
     @Override
-    public SeRemovalStep waitForSeProcessingWithSmartDetection() {
+    public SeRemovalStep WaitForCardProcessingWithSmartDetection() {
       if (!(reader instanceof SmartRemovalReader))
         throw new KeypleReaderIOException("Reader should implement SmartRemovalReader");
       final SmartRemovalMonitoringJob smartRemovalMonitoringJob =
           new SmartRemovalMonitoringJob((SmartRemovalReader) reader);
       this.states.put(
           AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-          new WaitForSeProcessingState(
+          new WaitForCardProcessingState(
               this.reader, smartRemovalMonitoringJob, this.executorService));
       return this;
     }
 
-    /** @see SeRemovalStep#waitForSeRemovalWithNativeDetection() */
+    /** @see SeRemovalStep#WaitForCardRemovalWithNativeDetection() */
     @Override
-    public BuilderStep waitForSeRemovalWithNativeDetection() {
+    public BuilderStep WaitForCardRemovalWithNativeDetection() {
       states.put(
           AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-          new WaitForSeRemovalState(this.reader));
+          new WaitForCardRemovalState(this.reader));
       return this;
     }
 
-    /** @see SeRemovalStep#waitForSeRemovalWithPollingDetection() */
+    /** @see SeRemovalStep#WaitForCardRemovalWithPollingDetection() */
     @Override
-    public BuilderStep waitForSeRemovalWithPollingDetection() {
+    public BuilderStep WaitForCardRemovalWithPollingDetection() {
       CardAbsentPingMonitoringJob cardAbsentPingMonitoringJob =
           new CardAbsentPingMonitoringJob(this.reader);
       states.put(
           AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-          new WaitForSeRemovalState(
+          new WaitForCardRemovalState(
               this.reader, cardAbsentPingMonitoringJob, this.executorService));
       return this;
     }
 
-    /** @see SeRemovalStep#waitForSeRemovalWithSmartDetection() */
+    /** @see SeRemovalStep#WaitForCardRemovalWithSmartDetection() */
     @Override
-    public BuilderStep waitForSeRemovalWithSmartDetection() {
+    public BuilderStep WaitForCardRemovalWithSmartDetection() {
       if (!(reader instanceof SmartRemovalReader))
         throw new KeypleReaderIOException("Reader should implement SmartRemovalReader");
       final SmartRemovalMonitoringJob smartRemovalMonitoringJob =
           new SmartRemovalMonitoringJob((SmartRemovalReader) reader);
       states.put(
           AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-          new WaitForSeRemovalState(this.reader, smartRemovalMonitoringJob, this.executorService));
+          new WaitForCardRemovalState(
+              this.reader, smartRemovalMonitoringJob, this.executorService));
       return this;
     }
 

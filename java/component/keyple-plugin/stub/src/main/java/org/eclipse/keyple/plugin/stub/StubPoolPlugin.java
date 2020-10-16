@@ -11,8 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.stub;
 
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
-import org.eclipse.keyple.core.seproxy.SeReader;
 
 /**
  * StubPoolPlugin allows to simulate a {@link org.eclipse.keyple.core.seproxy.ReaderPoolPlugin} and
@@ -26,10 +26,10 @@ public interface StubPoolPlugin extends ReaderPoolPlugin {
    *
    * @param groupReference : group refence of the new stub reader
    * @param readerName : name of the new stub reader
-   * @param se : insert a se at creation (can be null)
+   * @param card : insert a card at creation (can be null)
    * @return created StubReader
    */
-  SeReader plugStubPoolReader(String groupReference, String readerName, StubSecureElement se);
+  Reader plugStubPoolReader(String groupReference, String readerName, StubSecureElement card);
 
   /**
    * Unplug synchronously a new reader by groupReference. A READER_DISCONNECTED event will be

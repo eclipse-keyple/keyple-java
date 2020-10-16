@@ -12,8 +12,8 @@
 package org.eclipse.keyple.example.remote.application;
 
 import java.io.IOException;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.Plugin;
+import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
@@ -97,7 +97,7 @@ public class SlaveNodeController {
         }.start();
 
         // if slave is server, must specify which master to connect to
-        slaveAPI = new SlaveAPI(SeProxyService.getInstance(), node, masterNodeId);
+        slaveAPI = new SlaveAPI(SmartCardService.getInstance(), node, masterNodeId);
 
         initPoReader();
 
@@ -125,7 +125,7 @@ public class SlaveNodeController {
               });
       // if slave is client, master is the configured server
       slaveAPI =
-          new SlaveAPI(SeProxyService.getInstance(), node, ((ClientNode) node).getServerNodeId());
+          new SlaveAPI(SmartCardService.getInstance(), node, ((ClientNode) node).getServerNodeId());
 
       initPoReader();
     }
@@ -144,11 +144,11 @@ public class SlaveNodeController {
 
       logger.info("|{}| Create Local StubPlugin", node.getNodeId());
 
-      /* Get the instance of the SeProxyService (Singleton pattern) */
-      SeProxyService seProxyService = SeProxyService.getInstance();
+      /* Get the instance of the SmartCardService (Singleton pattern) */
+      SmartCardService smartCardService = SmartCardService.getInstance();
 
-      /* Assign PcscPlugin to the SeProxyService */
-      ReaderPlugin stubPlugin = seProxyService.registerPlugin(new StubPluginFactory(STUB_SLAVE));
+      /* Assign PcscPlugin to the SmartCardService */
+      Plugin stubPlugin = smartCardService.registerPlugin(new StubPluginFactory(STUB_SLAVE));
 
       ObservablePlugin.PluginObserver observer =
           new ObservablePlugin.PluginObserver() {
@@ -170,7 +170,7 @@ public class SlaveNodeController {
       // get the created proxy reader
       localReader = (StubReader) stubPlugin.getReader(nativeReaderName);
 
-      // start se detectino in REPEATING MODE
+      // start card detectino in REPEATING MODE
       localReader.startSeDetection(ObservableReader.PollingMode.REPEATING);
 
     } catch (InterruptedException e) {
@@ -182,13 +182,13 @@ public class SlaveNodeController {
     }
   }
 
-  public void insertStubSe(StubSecureElement se) {
-    logger.info("|{}| insert SE  ", node.getNodeId());
-    localReader.insertSe(se);
+  public void insertStubSe(StubSecureElement card) {
+    logger.info("|{}| insert card  ", node.getNodeId());
+    localReader.insertSe(card);
   }
 
   public void removeSe() {
-    logger.info("|{}| remove SE ", node.getNodeId());
+    logger.info("|{}| remove card ", node.getNodeId());
     localReader.removeSe();
   }
 
@@ -198,7 +198,7 @@ public class SlaveNodeController {
     slaveAPI.disconnectReader(sessionId, localReader.getName());
   }
 
-  public void executeScenario(final StubSecureElement se, final Boolean killAtEnd)
+  public void executeScenario(final StubSecureElement card, final Boolean killAtEnd)
       throws KeypleReaderNotFoundException, InterruptedException, KeypleReaderException,
           KeypleRemoteException {
     // logger.info("------------------------");
@@ -211,10 +211,10 @@ public class SlaveNodeController {
 
     // logger.info("--------------------------------------------------");
     logger.info("|{}| Session created on server {}", node.getNodeId(), sessionId);
-    // logger.info("Wait 2 seconds, then insert SE");
+    // logger.info("Wait 2 seconds, then insert card");
     // logger.info("--------------------------------------------------");
-    this.insertStubSe(se);
-    logger.info("|{}| Wait 2 seconds for PO read/session, then remove SE", node.getNodeId());
+    this.insertStubSe(card);
+    logger.info("|{}| Wait 2 seconds for PO read/session, then remove the card", node.getNodeId());
     Thread.sleep(2000);
     this.removeSe();
     Thread.sleep(2000);

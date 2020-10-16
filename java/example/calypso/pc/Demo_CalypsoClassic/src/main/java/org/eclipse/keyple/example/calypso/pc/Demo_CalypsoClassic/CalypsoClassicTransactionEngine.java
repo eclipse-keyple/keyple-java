@@ -28,10 +28,10 @@ import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.SamSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.SamSelector;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException;
-import org.eclipse.keyple.core.selection.SeResource;
-import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.CardResource;
+import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
@@ -67,8 +67,8 @@ import org.slf4j.profiler.Profiler;
  *       doCalypsoReadWriteTransaction}).
  * </ol>
  *
- * <p>The Calypso transactions demonstrated here shows the Keyple API in use with Calypso SE (PO and
- * SAM).
+ * <p>The Calypso transactions demonstrated here shows the Keyple API in use with Calypso card (PO
+ * and SAM).
  *
  * <p>Read the doc of each methods for further details.
  */
@@ -77,11 +77,11 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
   private static final Logger logger =
       LoggerFactory.getLogger(CalypsoClassicTransactionEngine.class);
 
-  private SeReader poReader;
-  private SeReader samReader;
-  private SeResource<CalypsoSam> samResource = null;
+  private Reader poReader;
+  private Reader samReader;
+  private CardResource<CalypsoSam> samResource = null;
 
-  private SeSelection seSelection;
+  private CardSelection cardSelection;
 
   /* Constructor */
   public CalypsoClassicTransactionEngine() {
@@ -89,14 +89,14 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
   }
 
   /* Assign readers to the transaction engine */
-  public void setReaders(SeReader poReader, SeReader samReader) {
+  public void setReaders(Reader poReader, Reader samReader) {
     this.poReader = poReader;
     this.samReader = samReader;
   }
 
-  private SeResource<CalypsoSam> getSamResource() {
+  private CardResource<CalypsoSam> getSamResource() {
     // Create a SAM resource after selecting the SAM
-    SeSelection samSelection = new SeSelection();
+    CardSelection samSelection = new CardSelection();
 
     SamSelector samSelector = SamSelector.builder().samRevision(C1).serialNumber(".*").build();
 
@@ -104,10 +104,10 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
     samSelection.prepareSelection(new SamSelectionRequest(samSelector));
     CalypsoSam calypsoSam;
     try {
-      if (samReader.isSePresent()) {
+      if (samReader.isCardPresent()) {
         SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
         if (selectionsResult.hasActiveSelection()) {
-          calypsoSam = (CalypsoSam) selectionsResult.getActiveMatchingSe();
+          calypsoSam = (CalypsoSam) selectionsResult.getActiveSmartCard();
         } else {
           throw new IllegalStateException("Unable to open a logical channel for SAM!");
         }
@@ -119,7 +119,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
     } catch (KeypleException e) {
       throw new IllegalStateException("Reader exception: " + e.getMessage());
     }
-    return new SeResource<CalypsoSam>(samReader, calypsoSam);
+    return new CardResource<CalypsoSam>(samReader, calypsoSam);
   }
 
   /**
@@ -233,7 +233,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
       /*
        * [------------------------------------]
        *
-       * Place to analyze the PO profile available in seResponse: Environment/Holder,
+       * Place to analyze the PO profile available in cardResponse: Environment/Holder,
        * EventLog, ContractList.
        *
        * The information available allows the determination of the contract to be read.
@@ -266,7 +266,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
       /*
        * [------------------------------------]
        *
-       * Place to analyze the Contract (in seResponse).
+       * Place to analyze the Contract (in cardResponse).
        *
        * The content of the contract will grant or not access.
        *
@@ -294,7 +294,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
     /*
      * Initialize the selection process
      */
-    seSelection = new SeSelection();
+    cardSelection = new CardSelection();
 
     /* operate multiple PO selections */
     String poFakeAid1 = "AABBCCDDEE"; // fake AID 1
@@ -303,7 +303,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
     /*
      * Add selection case 1: Fake AID1, protocol ISO, target rev 3
      */
-    seSelection.prepareSelection(
+    cardSelection.prepareSelection(
         new PoSelectionRequest(
             PoSelector.builder()
                 .aidSelector(AidSelector.builder().aidToSelect(poFakeAid1).build())
@@ -329,15 +329,15 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
     poSelectionRequestCalypsoAid.prepareReadRecordFile(
         CalypsoClassicInfo.SFI_EventLog, CalypsoClassicInfo.RECORD_NUMBER_1);
 
-    seSelection.prepareSelection(poSelectionRequestCalypsoAid);
+    cardSelection.prepareSelection(poSelectionRequestCalypsoAid);
 
     /*
      * Add selection case 3: Fake AID2, unspecified protocol, target rev 2 or 3
      */
-    seSelection.prepareSelection(
+    cardSelection.prepareSelection(
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
+                .cardProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
                 .aidSelector(AidSelector.builder().aidToSelect(poFakeAid2).build())
                 .invalidatedPo(InvalidatedPo.REJECT)
                 .build()));
@@ -345,15 +345,15 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
     /*
      * Add selection case 4: ATR selection, rev 1 atrregex
      */
-    seSelection.prepareSelection(
+    cardSelection.prepareSelection(
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
+                .cardProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
                 .atrFilter(new PoSelector.AtrFilter(CalypsoClassicInfo.ATR_REV1_REGEX))
                 .invalidatedPo(InvalidatedPo.REJECT)
                 .build()));
 
-    return seSelection.getSelectionOperation();
+    return cardSelection.getSelectionOperation();
   }
 
   /** Do the PO selection and possibly go on with Calypso transactions. */
@@ -361,7 +361,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
   public void processSeMatch(AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
     CalypsoPo calypsoPo =
         (CalypsoPo)
-            seSelection.processDefaultSelection(defaultSelectionsResponse).getActiveMatchingSe();
+            cardSelection.processDefaultSelection(defaultSelectionsResponse).getActiveSmartCard();
     if (calypsoPo != null) {
       logger.info("DF RT header: {}", calypsoPo.getDirectoryHeader());
 
@@ -393,7 +393,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
         PoSecuritySettings poSecuritySettings = CalypsoUtilities.getSecuritySettings(samResource);
 
         PoTransaction poTransaction =
-            new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPo), poSecuritySettings);
+            new PoTransaction(new CardResource<CalypsoPo>(poReader, calypsoPo), poSecuritySettings);
 
         doCalypsoReadWriteTransaction(calypsoPo, poTransaction, true);
 
@@ -410,17 +410,17 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
   }
 
   @Override
-  public void processSeInserted() {
-    logger.error("Unexpected SE insertion event");
+  public void processCardInserted() {
+    logger.error("Unexpected card insertion event");
   }
 
   @Override
   public void processSeRemoved() {
-    logger.error("SE removal event");
+    logger.error("Card removal event");
   }
 
   @Override
   public void processUnexpectedSeRemoval() {
-    logger.error("Unexpected SE removal event");
+    logger.error("Unexpected card removal event");
   }
 }

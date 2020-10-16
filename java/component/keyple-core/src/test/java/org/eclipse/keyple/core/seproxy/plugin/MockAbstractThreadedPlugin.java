@@ -15,7 +15,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractReader;
 
 public class MockAbstractThreadedPlugin extends AbstractThreadedObservablePlugin {
@@ -38,8 +38,8 @@ public class MockAbstractThreadedPlugin extends AbstractThreadedObservablePlugin
   }
 
   @Override
-  protected ConcurrentMap<String, SeReader> initNativeReaders() {
-    return new ConcurrentHashMap<String, SeReader>();
+  protected ConcurrentMap<String, Reader> initNativeReaders() {
+    return new ConcurrentHashMap<String, Reader>();
   }
 
   @Override

@@ -13,7 +13,7 @@ package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 
 /** This mock plugin fails when instantiate */
@@ -24,7 +24,7 @@ public class BlankAbstractPlugin extends AbstractPlugin {
   }
 
   @Override
-  protected ConcurrentMap<String, SeReader> initNativeReaders() throws KeypleReaderIOException {
-    return new ConcurrentHashMap<String, SeReader>();
+  protected ConcurrentMap<String, Reader> initNativeReaders() throws KeypleReaderIOException {
+    return new ConcurrentHashMap<String, Reader>();
   }
 }

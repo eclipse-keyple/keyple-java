@@ -12,10 +12,10 @@
 package org.eclipse.keyple.core.seproxy.plugin.reader;
 
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
+import org.eclipse.keyple.core.seproxy.message.CardRequest;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
 
 /** A blank class extending AbstractReader only purpose is to be tested and spied by mockito */
 public class BlankAbstractReader extends AbstractReader {
@@ -25,20 +25,21 @@ public class BlankAbstractReader extends AbstractReader {
   }
 
   @Override
-  protected List<SeResponse> processSeRequests(
-      List<SeRequest> seRequests,
-      MultiSeRequestProcessing multiSeRequestProcessing,
+  protected List<CardResponse> processCardRequests(
+      List<CardRequest> cardRequests,
+      MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl) {
     return null;
   }
 
   @Override
-  protected SeResponse processSeRequest(SeRequest seRequest, ChannelControl channelControl) {
+  protected CardResponse processCardRequest(
+      CardRequest cardRequest, ChannelControl channelControl) {
     return null;
   }
 
   @Override
-  public boolean isSePresent() {
+  public boolean isCardPresent() {
     return false;
   }
 
@@ -46,7 +47,7 @@ public class BlankAbstractReader extends AbstractReader {
   public void activateProtocol(String readerProtocolName, String applicationProtocolName) {}
 
   @Override
-  public void deactivateProtocol(String seProtocol) {}
+  public void deactivateProtocol(String cardProtocol) {}
 
   @Override
   public boolean isContactless() {

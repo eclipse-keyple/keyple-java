@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remotese.integration;
 
-import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.junit.After;
@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Test Virtual Reader Parameters with stub plugin and hoplink SE */
+/** Test Virtual Reader Parameters with stub plugin and hoplink card */
 public class VirtualReaderParameterTest extends VirtualReaderBaseTest {
 
   private static final Logger logger = LoggerFactory.getLogger(VirtualReaderParameterTest.class);
@@ -30,7 +30,7 @@ public class VirtualReaderParameterTest extends VirtualReaderBaseTest {
 
   @Before
   public void setUp() throws Exception {
-    Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
+    Assert.assertEquals(0, SmartCardService.getInstance().getPlugins().size());
 
     initMasterNSlave();
   }
@@ -43,7 +43,7 @@ public class VirtualReaderParameterTest extends VirtualReaderBaseTest {
 
     unregisterPlugins();
 
-    Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
+    Assert.assertEquals(0, SmartCardService.getInstance().getPlugins().size());
   }
 
   @Test

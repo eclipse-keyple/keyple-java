@@ -17,9 +17,9 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Properties;
 import java.util.regex.Pattern;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Plugin;
+import org.eclipse.keyple.core.seproxy.Reader;
+import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 
@@ -100,23 +100,23 @@ public final class ReaderUtilities {
     if (filter == null) {
       throw new IllegalStateException(readerTypeRegex + " property not found.");
     }
-    SeReader seReader = getReaderByName(filter);
-    return seReader.getName();
+    Reader reader = getReaderByName(filter);
+    return reader.getName();
   }
 
   /**
    * Get the terminal which names match the expected pattern
    *
    * @param pattern Pattern
-   * @return SeReader
+   * @return Reader
    * @throws KeypleReaderException the reader is not found or readers are not initialized
    */
-  private static SeReader getReaderByName(String pattern) {
+  private static Reader getReaderByName(String pattern) {
     Pattern p = Pattern.compile(pattern);
-    Collection<ReaderPlugin> readerPlugins = SeProxyService.getInstance().getPlugins().values();
-    for (ReaderPlugin plugin : readerPlugins) {
-      Collection<SeReader> seReaders = plugin.getReaders().values();
-      for (SeReader reader : seReaders) {
+    Collection<Plugin> plugins = SmartCardService.getInstance().getPlugins().values();
+    for (Plugin plugin : plugins) {
+      Collection<Reader> readers = plugin.getReaders().values();
+      for (Reader reader : readers) {
         if (p.matcher(reader.getName()).matches()) {
           return reader;
         }

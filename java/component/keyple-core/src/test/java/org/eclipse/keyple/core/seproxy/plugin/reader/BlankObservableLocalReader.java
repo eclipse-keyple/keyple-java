@@ -29,9 +29,9 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
   public final ObservableReaderStateService initStateService() {
 
     return ObservableReaderStateService.builder(this)
-        .waitForSeInsertionWithNativeDetection()
-        .waitForSeProcessingWithNativeDetection()
-        .waitForSeRemovalWithNativeDetection()
+        .WaitForCardInsertionWithNativeDetection()
+        .WaitForCardProcessingWithNativeDetection()
+        .WaitForCardRemovalWithNativeDetection()
         .build();
   }
 
@@ -79,11 +79,11 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
 
   /**
    * The purpose of this method is to provide certain test methods with public access to
-   * processSeInserted that is package-private.
+   * processCardInserted that is package-private.
    *
-   * @return ReaderEvent returned by processSeInserted
+   * @return ReaderEvent returned by processCardInserted
    */
-  public ReaderEvent processSeInsertedTest() {
-    return processSeInserted();
+  public ReaderEvent processCardInsertedTest() {
+    return processCardInserted();
   }
 }

@@ -11,13 +11,13 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.plugin.reader;
 
-import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 
 /**
- * Interface implemented by readers able to handle natively the SE selection process (e.g. Android
+ * Interface implemented by readers able to handle natively the card selection process (e.g. Android
  * OMAPI readers).
  */
 public interface SmartSelectionReader extends ProxyReader {
@@ -26,10 +26,10 @@ public interface SmartSelectionReader extends ProxyReader {
    * Opens a logical channel for the provided AID
    *
    * @param aidSelector the selection data
-   * @return an ApduResponse containing the SE answer to selection
-   * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @return an ApduResponse containing the card answer to selection
+   * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */
-  ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector);
+  ApduResponse openChannelForAid(CardSelector.AidSelector aidSelector);
 
   /** Closes the logical channel explicitly. */
   void closeLogicalChannel();

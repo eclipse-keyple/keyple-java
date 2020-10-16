@@ -69,10 +69,10 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
             if (nosounds != null && nosounds == "1") {
                 flags = flags or NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS
             }
-            for (seProtocol in this.protocolsMap.keys) {
-                if (AndroidNfcSupportedProtocols.ISO_14443_4.name == seProtocol) {
+            for (cardProtocol in this.protocolsMap.keys) {
+                if (AndroidNfcSupportedProtocols.ISO_14443_4.name == cardProtocol) {
                     flags = flags or NfcAdapter.FLAG_READER_NFC_B or NfcAdapter.FLAG_READER_NFC_A
-                } else if (AndroidNfcSupportedProtocols.MIFARE_ULTRA_LIGHT.name == seProtocol || AndroidNfcSupportedProtocols.MIFARE_CLASSIC.name == seProtocol) {
+                } else if (AndroidNfcSupportedProtocols.MIFARE_ULTRA_LIGHT.name == cardProtocol || AndroidNfcSupportedProtocols.MIFARE_CLASSIC.name == cardProtocol) {
                     flags = flags or NfcAdapter.FLAG_READER_NFC_A
                 }
             }
@@ -100,15 +100,15 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
 
         return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             ObservableReaderStateService.builder(this)
-                    .waitForSeInsertionWithNativeDetection()
-                    .waitForSeProcessingWithNativeDetection()
-                    .waitForSeRemovalWithPollingDetection()
+                    .WaitForCardInsertionWithNativeDetection()
+                    .WaitForCardProcessingWithNativeDetection()
+                    .WaitForCardRemovalWithPollingDetection()
                     .build()
         } else {
             ObservableReaderStateService.builder(this)
-                    .waitForSeInsertionWithNativeDetection()
-                    .waitForSeProcessingWithNativeDetection()
-                    .waitForSeRemovalWithSmartDetection()
+                    .WaitForCardInsertionWithNativeDetection()
+                    .WaitForCardProcessingWithNativeDetection()
+                    .WaitForCardRemovalWithSmartDetection()
                     .build()
         }
     }
@@ -176,7 +176,7 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
             try {
                 Timber.i("Getting tag proxy")
                 tagProxy = TagProxy.getTagProxy(tag)
-                onEvent(InternalEvent.SE_INSERTED)
+                onEvent(InternalEvent.CARD_INSERTED)
             } catch (e: KeypleReaderException) {
                 Timber.e(e)
             }
@@ -185,7 +185,7 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
 
     /**
      *
-     * @return true if a SE is present
+     * @return true if a card is present
      */
     public override fun checkSePresence(): Boolean {
         return tagProxy != null
@@ -258,10 +258,10 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
     }
 
     /**
-     * Activates the provided SE protocol.
+     * Activates the provided card protocol.
      *
      *
-     *  * Ask the plugin to take this protocol into account if an SE using this protocol is
+     *  * Ask the plugin to take this protocol into account if a card using this protocol is
      * identified during the selection phase.
      *  * Activates the detection of SEs using this protocol (if the plugin allows it).
      *
@@ -274,10 +274,10 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
     }
 
     /**
-     * Deactivates the provided SE protocol.
+     * Deactivates the provided card protocol.
      *
      *
-     *  * Ask the plugin to ignore this protocol if an SE using this protocol is identified during
+     *  * Ask the plugin to ignore this protocol if a card using this protocol is identified during
      * the selection phase.
      *  * Inhibits the detection of SEs using this protocol (if the plugin allows it).
      *

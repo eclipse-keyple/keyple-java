@@ -12,14 +12,14 @@
 package org.eclipse.keyple.core.seproxy.plugin.reader;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This monitoring job polls the {@link SeReader#isSePresent()} method to detect
- * SE_INSERTED/SE_REMOVED
+ * This monitoring job polls the {@link Reader#isCardPresent()} method to detect
+ * CARD_INSERTED/CARD_REMOVED
  */
 class CardPresentMonitoringJob extends AbstractMonitoringJob {
 
@@ -27,17 +27,17 @@ class CardPresentMonitoringJob extends AbstractMonitoringJob {
 
   private final long waitTimeout;
   private final boolean monitorInsertion;
-  private final SeReader reader;
+  private final Reader reader;
   private final AtomicBoolean loop = new AtomicBoolean();
 
   /**
    * Build a monitoring job to detect the card insertion
    *
-   * @param reader : reader that will be polled with the method isSePresent()
+   * @param reader : reader that will be polled with the method isCardPresent()
    * @param waitTimeout : wait time during two hit of the polling
-   * @param monitorInsertion : if true, polls for SE_INSERTED, else SE_REMOVED
+   * @param monitorInsertion : if true, polls for CARD_INSERTED, else CARD_REMOVED
    */
-  public CardPresentMonitoringJob(SeReader reader, long waitTimeout, boolean monitorInsertion) {
+  public CardPresentMonitoringJob(Reader reader, long waitTimeout, boolean monitorInsertion) {
     this.waitTimeout = waitTimeout;
     this.reader = reader;
     this.monitorInsertion = monitorInsertion;
@@ -52,28 +52,28 @@ class CardPresentMonitoringJob extends AbstractMonitoringJob {
       @Override
       public void run() {
         if (logger.isDebugEnabled()) {
-          logger.debug("[{}] Polling from isSePresent", reader.getName());
+          logger.debug("[{}] Polling from isCardPresent", reader.getName());
         }
         // re-init loop value to true
         loop.set(true);
         while (loop.get()) {
           try {
-            // polls for SE_INSERTED
-            if (monitorInsertion && reader.isSePresent()) {
+            // polls for CARD_INSERTED
+            if (monitorInsertion && reader.isCardPresent()) {
               if (logger.isDebugEnabled()) {
-                logger.debug("[{}] The SE is present ", reader.getName());
+                logger.debug("[{}] The card is present ", reader.getName());
               }
               loop.set(false);
-              state.onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
+              state.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_INSERTED);
               return;
             }
-            // polls for SE_REMOVED
-            if (!monitorInsertion && !reader.isSePresent()) {
+            // polls for CARD_REMOVED
+            if (!monitorInsertion && !reader.isCardPresent()) {
               if (logger.isDebugEnabled()) {
-                logger.debug("[{}] The SE is not present ", reader.getName());
+                logger.debug("[{}] The card is not present ", reader.getName());
               }
               loop.set(false);
-              state.onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
+              state.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_REMOVED);
               return;
             }
 
@@ -84,7 +84,7 @@ class CardPresentMonitoringJob extends AbstractMonitoringJob {
           retries++;
 
           if (logger.isTraceEnabled()) {
-            logger.trace("[{}] isSePresent polling retries : {}", reader.getName(), retries);
+            logger.trace("[{}] isCardPresent polling retries : {}", reader.getName(), retries);
           }
           try {
             // wait a bit

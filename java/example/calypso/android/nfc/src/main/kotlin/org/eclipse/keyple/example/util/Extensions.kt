@@ -25,7 +25,7 @@ fun AndroidNfcReader.configFlags(presenceCheckDelay: Int? = null, noPlateformSou
     skipNdefCheck?.let { this.setParameter("FLAG_READER_SKIP_NDEF_CHECK", "$skipNdefCheck") }
 }
 
-fun AndroidNfcReader.configProtocol(seCommonProtocols: ContactlessCardCommonProtocols) {
+fun AndroidNfcReader.configProtocol(cardCommonProtocols: ContactlessCardCommonProtocols) {
     TODO("update with new protocols management")
     // this.activateProtocol(seCommonProtocols.name)
 }

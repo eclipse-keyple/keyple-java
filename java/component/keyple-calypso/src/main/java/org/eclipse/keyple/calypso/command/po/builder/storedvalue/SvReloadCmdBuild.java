@@ -142,7 +142,7 @@ public final class SvReloadCmdBuild extends AbstractPoCommandBuilder<SvReloadRes
    * <p>A check is made to see if the object has been finalized. If not, an exception {@link
    * IllegalStateException} is thrown.
    *
-   * @param apduResponse the response data from the SE
+   * @param apduResponse the response data from the the card
    * @return a {@link SvReloadRespPars} object
    */
   @Override

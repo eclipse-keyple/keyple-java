@@ -15,11 +15,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.seproxy.message.CardRequest;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.rm.AbstractRemoteMethodTx;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
@@ -30,12 +30,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Handle the Transmit keypleDTO serialization and deserialization */
-public class RmTransmitSetTx extends AbstractRemoteMethodTx<List<SeResponse>> {
+public class RmTransmitSetTx extends AbstractRemoteMethodTx<List<CardResponse>> {
 
   private static final Logger logger = LoggerFactory.getLogger(RmTransmitSetTx.class);
 
-  private final List<SeRequest> seRequests;
-  private final MultiSeRequestProcessing multiSeRequestProcessing;
+  private final List<CardRequest> cardRequests;
+  private final MultiSelectionProcessing multiSelectionProcessing;
   private final ChannelControl channelControl;
 
   @Override
@@ -44,8 +44,8 @@ public class RmTransmitSetTx extends AbstractRemoteMethodTx<List<SeResponse>> {
   }
 
   public RmTransmitSetTx(
-      List<SeRequest> seRequests,
-      MultiSeRequestProcessing multiSeRequestProcessing,
+      List<CardRequest> cardRequests,
+      MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl,
       String sessionId,
       String nativeReaderName,
@@ -53,8 +53,8 @@ public class RmTransmitSetTx extends AbstractRemoteMethodTx<List<SeResponse>> {
       String requesterNodeId,
       String slaveNodeId) {
     super(sessionId, nativeReaderName, virtualReaderName, slaveNodeId, requesterNodeId);
-    this.seRequests = seRequests;
-    this.multiSeRequestProcessing = multiSeRequestProcessing;
+    this.cardRequests = cardRequests;
+    this.multiSelectionProcessing = multiSelectionProcessing;
     this.channelControl = channelControl;
   }
 
@@ -64,11 +64,11 @@ public class RmTransmitSetTx extends AbstractRemoteMethodTx<List<SeResponse>> {
     JsonObject body = new JsonObject();
 
     body.addProperty(
-        "seRequests",
+        "cardRequests",
         JsonParser.getGson()
-            .toJson(seRequests, new TypeToken<ArrayList<SeRequest>>() {}.getType()));
+            .toJson(cardRequests, new TypeToken<ArrayList<CardRequest>>() {}.getType()));
 
-    body.addProperty("multiSeRequestProcessing", multiSeRequestProcessing.name());
+    body.addProperty("multiSelectionProcessing", multiSelectionProcessing.name());
 
     body.addProperty("channelControl", channelControl.name());
 
@@ -84,7 +84,7 @@ public class RmTransmitSetTx extends AbstractRemoteMethodTx<List<SeResponse>> {
   }
 
   @Override
-  public List<SeResponse> parseResponse(KeypleDto keypleDto) {
+  public List<CardResponse> parseResponse(KeypleDto keypleDto) {
 
     // logger.trace("KeypleDto : {}", keypleDto);
 
@@ -93,11 +93,11 @@ public class RmTransmitSetTx extends AbstractRemoteMethodTx<List<SeResponse>> {
       KeypleReaderIOException ex =
           JsonParser.getGson().fromJson(keypleDto.getError(), KeypleReaderIOException.class);
       throw new KeypleRemoteException(
-          "An exception occurs while calling the remote method transmitSeRequests", ex);
+          "An exception occurs while calling the remote method transmitCardRequests", ex);
     } else {
       logger.trace("KeypleDto contains a response: {}", keypleDto);
       return JsonParser.getGson()
-          .fromJson(keypleDto.getBody(), new TypeToken<ArrayList<SeResponse>>() {}.getType());
+          .fromJson(keypleDto.getBody(), new TypeToken<ArrayList<CardResponse>>() {}.getType());
     }
   }
 }

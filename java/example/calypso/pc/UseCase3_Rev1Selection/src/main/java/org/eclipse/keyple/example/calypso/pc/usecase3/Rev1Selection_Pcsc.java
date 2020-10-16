@@ -18,11 +18,11 @@ import org.eclipse.keyple.calypso.transaction.ElementaryFile;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
-import org.eclipse.keyple.core.selection.SeResource;
-import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.selection.CardResource;
+import org.eclipse.keyple.core.selection.CardSelection;
+import org.eclipse.keyple.core.seproxy.Plugin;
+import org.eclipse.keyple.core.seproxy.Reader;
+import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
@@ -42,17 +42,17 @@ import org.slf4j.LoggerFactory;
  *   <li>
  *       <h2>Scenario:</h2>
  *       <ul>
- *         <li>Check if a B' protocol SE is in the reader, select a Calypso PO Rev1 (ATR selection),
- *             select the DF RT (ticketing), operate a simple Calypso PO transaction (simple plain
- *             read, not involving a Calypso SAM).
+ *         <li>Check if a B' protocol card is in the reader, select a Calypso PO Rev1 (ATR
+ *             selection), select the DF RT (ticketing), operate a simple Calypso PO transaction
+ *             (simple plain read, not involving a Calypso SAM).
  *         <li><code>
  * Explicit Selection
- * </code> means that it is the terminal application which start the SE processing.
+ * </code> means that it is the terminal application which start the card processing.
  *         <li>PO messages:
  *             <ul>
- *               <li>A first SE message to do an ATR based selection and DF selection of the SE in
- *                   the reader
- *               <li>A second SE message to operate the simple Calypso transaction
+ *               <li>A first card message to do an ATR based selection and DF selection of the card
+ *                   in the reader
+ *               <li>A second card message to operate the simple Calypso transaction
  *             </ul>
  *       </ul>
  * </ul>
@@ -64,15 +64,15 @@ public class Rev1Selection_Pcsc {
 
   public static void main(String[] args) {
 
-    // Get the instance of the SeProxyService (Singleton pattern)
-    SeProxyService seProxyService = SeProxyService.getInstance();
+    // Get the instance of the SmartCardService (Singleton pattern)
+    SmartCardService smartCardService = SmartCardService.getInstance();
 
-    // Register the PcscPlugin with SeProxyService, get the corresponding generic ReaderPlugin in
+    // Register the PcscPlugin with SmartCardService, get the corresponding generic Plugin in
     // return
-    ReaderPlugin readerPlugin = seProxyService.registerPlugin(new PcscPluginFactory());
+    Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory());
 
     // Get and configure the PO reader
-    SeReader poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
+    Reader poReader = plugin.getReader(ReaderUtilities.getContactlessReaderName());
     ((PcscReader) poReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     /* Activate protocols */
@@ -85,7 +85,7 @@ public class Rev1Selection_Pcsc {
     logger.info("= PO Reader  NAME = {}", poReader.getName());
 
     // Check if a PO is present in the reader
-    if (poReader.isSePresent()) {
+    if (poReader.isCardPresent()) {
 
       logger.info("= #### 1st PO exchange: ATR based selection with reading of Environment file.");
 
@@ -93,14 +93,14 @@ public class Rev1Selection_Pcsc {
       // based on ATR
       //
       // Select the first application matching the selection.
-      SeSelection seSelection = new SeSelection();
+      CardSelection cardSelection = new CardSelection();
 
       // Calypso selection: configures a PoSelectionRequest with all the desired attributes to
       // make the selection and read additional information afterwards
       PoSelectionRequest poSelectionRequest =
           new PoSelectionRequest(
               PoSelector.builder()
-                  .seProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
+                  .cardProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
                   .atrFilter(new AtrFilter(PO_ATR_REGEX))
                   .invalidatedPo(InvalidatedPo.REJECT)
                   .build());
@@ -114,12 +114,12 @@ public class Rev1Selection_Pcsc {
 
       // Add the selection case to the current selection (we could have added other cases
       // here)
-      seSelection.prepareSelection(poSelectionRequest);
+      cardSelection.prepareSelection(poSelectionRequest);
 
       // Actual PO communication: operate through a single request the Calypso PO selection
       // and the file read
       CalypsoPo calypsoPo =
-          (CalypsoPo) seSelection.processExplicitSelection(poReader).getActiveMatchingSe();
+          (CalypsoPo) cardSelection.processExplicitSelection(poReader).getActiveSmartCard();
       logger.info("The selection of the PO has succeeded.");
 
       // Retrieve the data read from the CalyspoPo updated during the transaction process
@@ -135,7 +135,7 @@ public class Rev1Selection_Pcsc {
       logger.info("= #### 2nd PO exchange: reading transaction of the EventLog file.");
 
       PoTransaction poTransaction =
-          new PoTransaction(new SeResource<CalypsoPo>(poReader, calypsoPo));
+          new PoTransaction(new CardResource<CalypsoPo>(poReader, calypsoPo));
 
       // Prepare the reading order and keep the associated parser for later use once the
       // transaction has been processed. We provide the expected record length since the REV1

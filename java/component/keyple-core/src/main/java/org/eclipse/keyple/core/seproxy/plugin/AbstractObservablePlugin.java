@@ -20,14 +20,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link AbstractObservablePlugin} class provides the means to observe a plugin
- * (insertion/removal of readers).
+ * This class class provides the means to make a plugin observable.
+ *
+ * <p>It allows:
+ *
+ * <ul>
+ *   <li>the management of the observers (add/remove/count) (see the {@link
+ *       org.eclipse.keyple.core.seproxy.event.ObservablePlugin.PluginObserver} interface)
+ *   <li>the notification of {@link PluginEvent} to all the observers
+ * </ul>
+ *
+ * @since 0.9
  */
 public abstract class AbstractObservablePlugin extends AbstractPlugin
     implements ObservablePluginNotifier {
   private static final Logger logger = LoggerFactory.getLogger(AbstractObservablePlugin.class);
 
-  /* The observers of this object */
   private List<ObservablePlugin.PluginObserver> observers;
   /*
    * this object will be used to synchronize the access to the observers list in order to be
@@ -36,22 +44,20 @@ public abstract class AbstractObservablePlugin extends AbstractPlugin
   private final Object sync = new Object();
 
   /**
-   * Instantiates a observable plugin.
+   * Constructor.
    *
-   * @param name name of the plugin
+   * @param name A not empty String containing the name of the plugin
    * @throws KeypleReaderException when an issue is raised with reader
+   * @since 0.9
    */
   protected AbstractObservablePlugin(String name) {
     super(name);
   }
 
   /**
-   * Add a plugin observer.
+   * {@inheritDoc}
    *
-   * <p>The observer will receive all the events produced by this plugin (reader insertion, removal,
-   * etc.)
-   *
-   * @param observer the observer object
+   * @since 0.9
    */
   @Override
   public void addObserver(final ObservablePlugin.PluginObserver observer) {
@@ -73,11 +79,9 @@ public abstract class AbstractObservablePlugin extends AbstractPlugin
   }
 
   /**
-   * Remove a plugin observer.
+   * {@inheritDoc}
    *
-   * <p>The observer will do not receive any of the events produced by this plugin.
-   *
-   * @param observer the observer object
+   * @since 0.9
    */
   @Override
   public void removeObserver(final ObservablePlugin.PluginObserver observer) {
@@ -94,7 +98,11 @@ public abstract class AbstractObservablePlugin extends AbstractPlugin
     }
   }
 
-  /** Remove all observers at once */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public void clearObservers() {
     if (observers != null) {
@@ -102,17 +110,20 @@ public abstract class AbstractObservablePlugin extends AbstractPlugin
     }
   }
 
-  /** @return the number of observers */
+  /**
+   * {@inheritDoc}
+   *
+   * @since 0.9
+   */
   @Override
   public final int countObservers() {
     return observers == null ? 0 : observers.size();
   }
 
   /**
-   * This method shall be called only from a SE Proxy plugin implementing AbstractPlugin. Push a
-   * PluginEvent of the selected AbstractPlugin to its registered Observer.
+   * {@inheritDoc}
    *
-   * @param event the event
+   * @since 0.9
    */
   @Override
   public final void notifyObservers(final PluginEvent event) {

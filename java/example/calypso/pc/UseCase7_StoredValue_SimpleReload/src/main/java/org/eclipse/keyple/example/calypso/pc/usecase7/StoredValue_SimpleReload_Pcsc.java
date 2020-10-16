@@ -26,13 +26,13 @@ import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.SamSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.SamSelector;
-import org.eclipse.keyple.core.selection.SeResource;
-import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.CardResource;
+import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.CardSelector;
+import org.eclipse.keyple.core.seproxy.Plugin;
+import org.eclipse.keyple.core.seproxy.Reader;
+import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.example.common.ReaderUtilities;
@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  */
 public class StoredValue_SimpleReload_Pcsc {
   private static final Logger logger = LoggerFactory.getLogger(StoredValue_SimpleReload_Pcsc.class);
-  private static SeReader poReader;
+  private static Reader poReader;
   private static CalypsoPo calypsoPo;
 
   /**
@@ -65,15 +65,15 @@ public class StoredValue_SimpleReload_Pcsc {
    */
   private static boolean selectPo() {
     /* Check if a PO is present in the reader */
-    if (poReader.isSePresent()) {
+    if (poReader.isCardPresent()) {
       logger.info("= ##### 1st PO exchange: AID based selection with reading of Environment file.");
 
       // Prepare a Calypso PO selection
-      SeSelection seSelection = new SeSelection();
+      CardSelection cardSelection = new CardSelection();
 
       // Setting of an AID based selection of a Calypso REV3 PO
       //
-      // Select the first application matching the selection AID whatever the SE communication
+      // Select the first application matching the selection AID whatever the card communication
       // protocol keep the logical channel open after the selection
 
       // Calypso selection: configures a PoSelectionRequest with all the desired attributes to
@@ -82,18 +82,20 @@ public class StoredValue_SimpleReload_Pcsc {
           new PoSelectionRequest(
               PoSelector.builder()
                   .aidSelector(
-                      SeSelector.AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
+                      CardSelector.AidSelector.builder()
+                          .aidToSelect(CalypsoClassicInfo.AID)
+                          .build())
                   .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                   .build());
 
       // Add the selection case to the current selection
       //
       // (we could have added other cases here)
-      seSelection.prepareSelection(poSelectionRequest);
+      cardSelection.prepareSelection(poSelectionRequest);
 
       // Actual PO communication: operate through a single request the Calypso PO selection
       // and the file read
-      calypsoPo = (CalypsoPo) seSelection.processExplicitSelection(poReader).getActiveMatchingSe();
+      calypsoPo = (CalypsoPo) cardSelection.processExplicitSelection(poReader).getActiveSmartCard();
       return true;
     } else {
       logger.error("No PO were detected.");
@@ -110,23 +112,23 @@ public class StoredValue_SimpleReload_Pcsc {
    */
   public static void main(String[] args) {
 
-    // Get the instance of the SeProxyService (Singleton pattern)
-    SeProxyService seProxyService = SeProxyService.getInstance();
+    // Get the instance of the SmartCardService (Singleton pattern)
+    SmartCardService smartCardService = SmartCardService.getInstance();
 
-    // Register the PcscPlugin with SeProxyService, get the corresponding generic ReaderPlugin in
+    // Register the PcscPlugin with SmartCardService, get the corresponding generic Plugin in
     // return
-    ReaderPlugin readerPlugin = seProxyService.registerPlugin(new PcscPluginFactory());
+    Plugin plugin = smartCardService.registerPlugin(new PcscPluginFactory());
 
     // Get and configure the PO reader
-    poReader = readerPlugin.getReader(ReaderUtilities.getContactlessReaderName());
+    poReader = plugin.getReader(ReaderUtilities.getContactlessReaderName());
     ((PcscReader) poReader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     // Get and configure the SAM reader
-    SeReader samReader = readerPlugin.getReader(ReaderUtilities.getContactReaderName());
+    Reader samReader = plugin.getReader(ReaderUtilities.getContactReaderName());
     ((PcscReader) samReader).setContactless(false).setIsoProtocol(PcscReader.IsoProtocol.T0);
 
     // Create a SAM resource after selecting the SAM
-    SeSelection samSelection = new SeSelection();
+    CardSelection samSelection = new CardSelection();
 
     SamSelector samSelector = SamSelector.builder().samRevision(C1).serialNumber(".*").build();
 
@@ -134,10 +136,10 @@ public class StoredValue_SimpleReload_Pcsc {
     samSelection.prepareSelection(new SamSelectionRequest(samSelector));
     CalypsoSam calypsoSam;
     try {
-      if (samReader.isSePresent()) {
+      if (samReader.isCardPresent()) {
         SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
         if (selectionsResult.hasActiveSelection()) {
-          calypsoSam = (CalypsoSam) selectionsResult.getActiveMatchingSe();
+          calypsoSam = (CalypsoSam) selectionsResult.getActiveSmartCard();
         } else {
           throw new IllegalStateException("Unable to open a logical channel for SAM!");
         }
@@ -149,12 +151,12 @@ public class StoredValue_SimpleReload_Pcsc {
     } catch (KeypleException e) {
       throw new IllegalStateException("Reader exception: " + e.getMessage());
     }
-    SeResource<CalypsoSam> samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
+    CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
 
     // display basic information about the readers and SAM
     logger.info("=============== UseCase Calypso #7: Stored Value Simple Reload =====");
     logger.info("= PO Reader  NAME = {}", poReader.getName());
-    logger.info("= SAM Reader  NAME = {}", samResource.getSeReader().getName());
+    logger.info("= SAM Reader  NAME = {}", samResource.getReader().getName());
 
     if (selectPo()) {
       // Security settings
@@ -163,8 +165,8 @@ public class StoredValue_SimpleReload_Pcsc {
           new PoSecuritySettings.PoSecuritySettingsBuilder(samResource).build();
 
       // Create the PO resource
-      SeResource<CalypsoPo> poResource;
-      poResource = new SeResource<CalypsoPo>(poReader, calypsoPo);
+      CardResource<CalypsoPo> poResource;
+      poResource = new CardResource<CalypsoPo>(poReader, calypsoPo);
 
       // Create a secured PoTransaction
       PoTransaction poTransaction = new PoTransaction(poResource, poSecuritySettings);

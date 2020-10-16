@@ -12,8 +12,8 @@
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import java.util.concurrent.ExecutorService;
+import org.eclipse.keyple.core.seproxy.Plugin;
 import org.eclipse.keyple.core.seproxy.PluginFactory;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
 
@@ -44,7 +44,7 @@ class RemoteSePluginFactory implements PluginFactory {
     return pluginName;
   }
 
-  public ReaderPlugin getPlugin() {
+  public Plugin getPlugin() {
     try {
       return new RemoteSePluginImpl(
           sessionManager, dtoSender, rpc_timeout, pluginName, executorService);

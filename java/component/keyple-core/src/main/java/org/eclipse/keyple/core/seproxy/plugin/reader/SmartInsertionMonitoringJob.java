@@ -16,12 +16,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Detect the SE insertion thanks to the method {@link SmartInsertionReader#waitForCardPresent()}.
+ * Detect the card insertion thanks to the method {@link SmartInsertionReader#waitForCardPresent()}.
  * This method is invoked in another thread.
  *
  * <p>The job waits indefinitely for the waitForCardPresent method to return.
  *
- * <p>When an SE is present, an internal SE_INSERTED event is fired.
+ * <p>When a card is present, an internal CARD_INSERTED event is fired.
  *
  * <p>If a communication problem with the reader occurs (KeypleReaderIOException) an internal
  * STOP_DETECT event is fired.
@@ -50,12 +50,12 @@ class SmartInsertionMonitoringJob extends AbstractMonitoringJob {
         }
         try {
           if (reader.waitForCardPresent()) {
-            state.onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
+            state.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_INSERTED);
           }
         } catch (KeypleReaderIOException e) {
           if (logger.isTraceEnabled()) {
             logger.trace(
-                "[{}] waitForCardPresent => Error while polling SE with waitForCardPresent",
+                "[{}] waitForCardPresent => Error while polling card with waitForCardPresent",
                 reader.getName());
           }
           state.onEvent(AbstractObservableLocalReader.InternalEvent.STOP_DETECT);

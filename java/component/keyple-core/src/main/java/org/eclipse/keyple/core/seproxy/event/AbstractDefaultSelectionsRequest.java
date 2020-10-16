@@ -12,9 +12,9 @@
 package org.eclipse.keyple.core.seproxy.event;
 
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
+import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
 
 /**
  * This abstract class defines the POJO used to carry the default selection request data.
@@ -33,7 +33,7 @@ public abstract class AbstractDefaultSelectionsRequest {
    * @return A not null value.
    * @since 0.9
    */
-  protected abstract MultiSeRequestProcessing getMultiSeRequestProcessing();
+  protected abstract MultiSelectionProcessing getMultiSelectionProcessing();
 
   /**
    * Gets the indication whether the logic channel is to be kept open or closed
@@ -49,5 +49,5 @@ public abstract class AbstractDefaultSelectionsRequest {
    * @return A not empty list.
    * @since 0.9
    */
-  protected abstract List<SeRequest> getSelectionSeRequests();
+  protected abstract List<CardRequest> getSelectionCardRequests();
 }

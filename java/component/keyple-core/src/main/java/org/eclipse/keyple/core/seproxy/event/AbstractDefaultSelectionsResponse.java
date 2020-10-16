@@ -12,7 +12,7 @@
 package org.eclipse.keyple.core.seproxy.event;
 
 import java.util.List;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.message.CardResponse;
 
 /**
  * This abstract class defines the POJO used to carry the response to a default selection request.
@@ -31,5 +31,5 @@ public abstract class AbstractDefaultSelectionsResponse {
    * @return A not empty list.
    * @since 0.9
    */
-  protected abstract List<SeResponse> getSelectionSeResponses();
+  protected abstract List<CardResponse> getSelectionCardResponses();
 }

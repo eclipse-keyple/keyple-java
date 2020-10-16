@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
 import org.eclipse.keyple.core.CoreBaseTest;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
+import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.message.*;
@@ -46,7 +46,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
 
   /** ==== Card presence management ====================================== */
   @Test
-  public void isSePresent_false() throws Exception {
+  public void isCardPresent_false() throws Exception {
     AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
 
     final CountDownLatch lock = new CountDownLatch(1);
@@ -56,7 +56,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     when(r.isPhysicalChannelOpen()).thenReturn(true);
 
     // test
-    Assert.assertFalse(r.isSePresent());
+    Assert.assertFalse(r.isCardPresent());
 
     // wait
     lock.await(100, TimeUnit.MILLISECONDS);
@@ -65,12 +65,12 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
   }
 
   @Test
-  public void isSePresent_true() throws Exception {
+  public void isCardPresent_true() throws Exception {
     AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
     when(r.checkSePresence()).thenReturn(true);
 
     // test
-    Assert.assertTrue(r.isSePresent());
+    Assert.assertTrue(r.isCardPresent());
     verify(r, times(0)).processSeRemoved();
   }
 
@@ -176,23 +176,23 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     // start detection
     r.startSeDetection(ObservableReader.PollingMode.REPEATING);
 
-    // insert SE
-    r.onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
+    // insert card
+    r.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_INSERTED);
 
     // assert currentState have changed
     Assert.assertEquals(
         AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
         r.getCurrentMonitoringState());
 
-    // SE has been processed
+    // the card has been processed
     r.finalizeSeProcessing();
 
     // assert currentState have changed
     Assert.assertEquals(
         AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL, r.getCurrentMonitoringState());
 
-    // remove SE
-    r.onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
+    // remove the card
+    r.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_REMOVED);
 
     // assert currentState have changed
     Assert.assertEquals(
@@ -211,12 +211,12 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
   @Test
   public void communicationClosing_standard() throws Exception {
     AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
-    SeRequest request = SeRequestTest.getSeRequestSample();
+    CardRequest request = CardRequestTest.getCardRequestSample();
     // close after
-    r.transmitSeRequest(request, ChannelControl.CLOSE_AFTER);
+    r.transmitCardRequest(request, ChannelControl.CLOSE_AFTER);
 
     // force closing is not called (only the transmit)
-    verify(r, times(0)).processSeRequest(null, ChannelControl.CLOSE_AFTER);
+    verify(r, times(0)).processCardRequest(null, ChannelControl.CLOSE_AFTER);
   }
 
   /*
@@ -257,7 +257,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     return new ObservableReader.ReaderObserver() {
       @Override
       public void update(ReaderEvent event) {
-        if (event.getEventType() == ReaderEvent.EventType.SE_REMOVED) {
+        if (event.getEventType() == ReaderEvent.EventType.CARD_REMOVED) {
           lock.countDown();
         }
         ;
@@ -269,7 +269,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     return new ObservableReader.ReaderObserver() {
       @Override
       public void update(ReaderEvent event) {
-        if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED) {
+        if (event.getEventType() == ReaderEvent.EventType.CARD_INSERTED) {
           lock.countDown();
         }
         ;
@@ -281,7 +281,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     return new ObservableReader.ReaderObserver() {
       @Override
       public void update(ReaderEvent event) {
-        if (event.getEventType() == ReaderEvent.EventType.SE_MATCHED) {
+        if (event.getEventType() == ReaderEvent.EventType.CARD_MATCHED) {
           lock.countDown();
         }
         ;
@@ -297,17 +297,17 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
   public static AbstractObservableLocalReader getSpy(String pluginName, String readerName) {
     AbstractObservableLocalReader r =
         Mockito.spy(new BlankObservableLocalReader(pluginName, readerName));
-    doReturn(SeResponseTest.getASeResponse())
+    doReturn(CardResponseTest.getACardResponse())
         .when(r)
-        .processSeRequest(any(SeRequest.class), any(ChannelControl.class));
-    doReturn(getSeResponses())
+        .processCardRequest(any(CardRequest.class), any(ChannelControl.class));
+    doReturn(getCardResponses())
         .when(r)
-        .processSeRequests(
-            any(List.class), any(MultiSeRequestProcessing.class), any(ChannelControl.class));
+        .processCardRequests(
+            any(List.class), any(MultiSelectionProcessing.class), any(ChannelControl.class));
     return r;
   }
 
-  public static List<SeResponse> getMatchingResponses() {
+  public static List<CardResponse> getMatchingResponses() {
     SelectionStatus selectionStatus =
         new SelectionStatus(
             null,
@@ -315,19 +315,19 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
                 AbsLocalReaderTransmitTest.RESP_SUCCESS,
                 AbsLocalReaderSelectionTest.STATUS_CODE_LIST),
             true);
-    SeResponse seResponse = new SeResponse(true, false, selectionStatus, null);
-    return Arrays.asList(seResponse);
+    CardResponse cardResponse = new CardResponse(true, false, selectionStatus, null);
+    return Arrays.asList(cardResponse);
   }
 
-  public static List<SeResponse> getNotMatchingResponses() {
+  public static List<CardResponse> getNotMatchingResponses() {
     SelectionStatus selectionStatus =
         new SelectionStatus(
             null,
             new ApduResponse(
                 AbsLocalReaderTransmitTest.RESP_FAIL, AbsLocalReaderSelectionTest.STATUS_CODE_LIST),
             false);
-    SeResponse seResponse = new SeResponse(false, false, selectionStatus, null);
-    return Arrays.asList(seResponse);
+    CardResponse cardResponse = new CardResponse(false, false, selectionStatus, null);
+    return Arrays.asList(cardResponse);
   }
 
   public static ObservableReader.ReaderObserver getReaderObserver() {
@@ -337,9 +337,9 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     };
   }
 
-  public static List<SeResponse> getSeResponses() {
-    List<SeResponse> responses = new ArrayList<SeResponse>();
-    responses.add(SeResponseTest.getASeResponse());
+  public static List<CardResponse> getCardResponses() {
+    List<CardResponse> responses = new ArrayList<CardResponse>();
+    responses.add(CardResponseTest.getACardResponse());
     return responses;
   }
 }

@@ -17,18 +17,18 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException
 
 /**
  * The ReaderPoolPlugin interface provides methods to handle the access to an undefined number of
- * SeReader resources.
+ * Reader resources.
  *
- * <p>It is typically used to define a ReaderPlugin built on top of an HSM interface that can
- * allocate a large number of virtual reader slots.
+ * <p>It is typically used to define a Plugin built on top of an HSM interface that can allocate a
+ * large number of virtual reader slots.
  *
  * <p>A ReaderPoolPlugin can't be observable.
  */
-public interface ReaderPoolPlugin extends ReaderPlugin {
+public interface ReaderPoolPlugin extends Plugin {
   /**
    * Gets a list of group references that will be used as an argument to allocateReader.
    *
-   * <p>A group reference can represent a family of SeReader with all the same characteristics (e.g.
+   * <p>A group reference can represent a family of Reader with all the same characteristics (e.g.
    * SAM with identical key sets).
    *
    * @return a list of String
@@ -36,27 +36,27 @@ public interface ReaderPoolPlugin extends ReaderPlugin {
   SortedSet<String> getReaderGroupReferences();
 
   /**
-   * Obtains an available SeReader resource and makes it exclusive to the caller until the
+   * Obtains an available Reader resource and makes it exclusive to the caller until the
    * releaseReader method is called.
    *
    * <p>The allocated reader belongs to the group targeted with provided reference.
    *
    * @param groupReference the reference of the group to which the reader belongs (may be null
    *     depending on the implementation made)
-   * @return a SeReader object
+   * @return a Reader object
    * @throws KeypleAllocationReaderException if the allocation failed due to a technical error
    * @throws KeypleAllocationNoReaderException if the allocation failed due to lack of available
    *     reader
    */
-  SeReader allocateReader(String groupReference);
+  Reader allocateReader(String groupReference);
 
   /**
-   * Releases a SeReader previously allocated with allocateReader.
+   * Releases a Reader previously allocated with allocateReader.
    *
    * <p>This method must be called as soon as the reader is no longer needed by the caller of
    * allocateReader in order to free the resource.
    *
-   * @param seReader the SeReader to be released.
+   * @param reader the Reader to be released.
    */
-  void releaseReader(SeReader seReader);
+  void releaseReader(Reader reader);
 }
