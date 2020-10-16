@@ -14,6 +14,7 @@ package org.eclipse.keyple.plugin.android.omapi.se
 import android.content.Context
 import android.se.omapi.SEService
 import androidx.annotation.RequiresApi
+import org.eclipse.keyple.core.seproxy.Reader
 import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiPlugin
 import org.eclipse.keyple.plugin.android.omapi.PLUGIN_NAME
 import timber.log.Timber
@@ -35,9 +36,9 @@ internal object AndroidOmapiPlugin : AbstractAndroidOmapiPlugin<android.se.omapi
         return seService?.readers
     }
 
-    override fun mapToSeReader(nativeReader: android.se.omapi.Reader): org.eclipse.keyple.core.seproxy.Reader {
+    override fun mapToSeReader(nativeReader: android.se.omapi.Reader): Reader {
         Timber.d("Reader available name : %s", nativeReader.name)
-        Timber.d("Reader available isSePresent : %S", nativeReader.isSecureElementPresent)
+        Timber.d("Reader available isCardPresent : %S", nativeReader.isSecureElementPresent)
         return AndroidOmapiReader(nativeReader, PLUGIN_NAME, nativeReader.name)
     }
 

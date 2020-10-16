@@ -43,7 +43,7 @@ public abstract class AbstractReaderObserverAsynchronousEngine
       AbstractDefaultSelectionsResponse defaultSelectionsResponse);
 
   /** Method to be implemented by the application to handle the CARD_INSERTED reader event */
-  protected abstract void processSeInserted();
+  protected abstract void processCardInserted();
 
   /**
    * Method to be implemented by the application to handle the CARD_REMOVED reader event at the end
@@ -61,7 +61,7 @@ public abstract class AbstractReaderObserverAsynchronousEngine
    * This flag helps to determine whether the CARD_REMOVED event was expected or not (case of card
    * withdrawal during processing).
    */
-  boolean currentlyProcessingSe = false;
+  boolean currentlyProcessingCard = false;
 
   /**
    * Process {@link #processSeMatch(AbstractDefaultSelectionsResponse)} in a separate thread
@@ -75,9 +75,9 @@ public abstract class AbstractReaderObserverAsynchronousEngine
             new Runnable() {
               @Override
               public void run() {
-                currentlyProcessingSe = true;
+                currentlyProcessingCard = true;
                 try {
-                  processSeInserted(); // optional, to process alternative AID selection
+                  processCardInserted(); // optional, to process alternative AID selection
                 } catch (KeypleException e) {
                   logger.error("Keyple exception: {}", e.getMessage());
                   /*
@@ -92,7 +92,7 @@ public abstract class AbstractReaderObserverAsynchronousEngine
                     logger.error("Plugin not found exception: {}", ex.getMessage());
                   }
                 }
-                currentlyProcessingSe = false;
+                currentlyProcessingCard = false;
               }
             });
     thread.start();
@@ -105,7 +105,7 @@ public abstract class AbstractReaderObserverAsynchronousEngine
             new Runnable() {
               @Override
               public void run() {
-                currentlyProcessingSe = true;
+                currentlyProcessingCard = true;
                 try {
                   processSeMatch(event.getDefaultSelectionsResponse()); // to process the
                 } catch (KeypleException e) {
@@ -122,7 +122,7 @@ public abstract class AbstractReaderObserverAsynchronousEngine
                     logger.error("Plugin not found exception: {}", ex.getMessage());
                   }
                 }
-                currentlyProcessingSe = false;
+                currentlyProcessingCard = false;
               }
             });
     thread.start();
@@ -153,7 +153,7 @@ public abstract class AbstractReaderObserverAsynchronousEngine
         break;
 
       case CARD_REMOVED:
-        if (currentlyProcessingSe) {
+        if (currentlyProcessingCard) {
           processUnexpectedSeRemoval(); // to clean current card processing
           logger.error("Unexpected card Removal");
         } else {
@@ -162,7 +162,7 @@ public abstract class AbstractReaderObserverAsynchronousEngine
             logger.info("Waiting for a card...");
           }
         }
-        currentlyProcessingSe = false;
+        currentlyProcessingCard = false;
         break;
       case TIMEOUT_ERROR:
         logger.error(

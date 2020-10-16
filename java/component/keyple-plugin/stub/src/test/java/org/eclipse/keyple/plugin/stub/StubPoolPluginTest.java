@@ -45,10 +45,10 @@ public class StubPoolPluginTest extends BaseStubTest {
     StubPoolPluginImpl stubPoolPlugin =
         (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME).getPlugin();
 
-    Reader reader = stubPoolPlugin.plugStubPoolReader("anyGroup", "anyName", stubSe);
+    Reader reader = stubPoolPlugin.plugStubPoolReader("anyGroup", "anyName", stubCard);
 
     Assert.assertEquals(1, stubPoolPlugin.getReaders().size());
-    Assert.assertEquals(true, reader.isSePresent());
+    Assert.assertEquals(true, reader.isCardPresent());
     Assert.assertEquals(1, stubPoolPlugin.getReaderGroupReferences().size());
   }
 
@@ -59,7 +59,7 @@ public class StubPoolPluginTest extends BaseStubTest {
         (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME).getPlugin();
 
     // plug a reader
-    stubPoolPlugin.plugStubPoolReader("anyGroup", "anyName", stubSe);
+    stubPoolPlugin.plugStubPoolReader("anyGroup", "anyName", stubCard);
 
     // unplug the reader
     stubPoolPlugin.unplugStubPoolReader("anyGroup");
@@ -76,8 +76,8 @@ public class StubPoolPluginTest extends BaseStubTest {
         (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME).getPlugin();
 
     // plug readers
-    stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubSe);
-    stubPoolPlugin.plugStubPoolReader("group2", "stub2", stubSe);
+    stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubCard);
+    stubPoolPlugin.plugStubPoolReader("group2", "stub2", stubCard);
 
     // allocate Reader
     Reader reader = stubPoolPlugin.allocateReader("group1");
@@ -98,8 +98,8 @@ public class StubPoolPluginTest extends BaseStubTest {
         (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME).getPlugin();
 
     // plug readers
-    stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubSe);
-    stubPoolPlugin.plugStubPoolReader("group2", "stub2", stubSe);
+    stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubCard);
+    stubPoolPlugin.plugStubPoolReader("group2", "stub2", stubCard);
 
     // allocate Reader
     Reader reader = stubPoolPlugin.allocateReader("group1");
@@ -114,8 +114,8 @@ public class StubPoolPluginTest extends BaseStubTest {
         (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME).getPlugin();
 
     // plug readers
-    stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubSe);
-    stubPoolPlugin.plugStubPoolReader("group2", "stub2", stubSe);
+    stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubCard);
+    stubPoolPlugin.plugStubPoolReader("group2", "stub2", stubCard);
 
     // allocate Reader
     Reader reader = stubPoolPlugin.allocateReader("group1");
@@ -128,7 +128,7 @@ public class StubPoolPluginTest extends BaseStubTest {
   }
 
   /** Stub Card */
-  private static final StubSecureElement stubSe =
+  private static final StubSecureElement stubCard =
       new StubSecureElement() {
         @Override
         public byte[] getATR() {
@@ -136,7 +136,7 @@ public class StubPoolPluginTest extends BaseStubTest {
         }
 
         @Override
-        public String getSeProtocol() {
+        public String getCardProtocol() {
           return "PROTOCOL_ISO7816_3";
         }
       };

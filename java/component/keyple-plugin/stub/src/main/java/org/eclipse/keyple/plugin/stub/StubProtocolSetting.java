@@ -57,8 +57,8 @@ public final class StubProtocolSetting {
   public static Map<String, String> getSpecificSettings(
       Set<StubSupportedProtocols> specificProtocols) {
     Map<String, String> map = new HashMap<String, String>();
-    for (StubSupportedProtocols seCommonProtocols : specificProtocols) {
-      map.put(seCommonProtocols.name(), settings.get(seCommonProtocols));
+    for (StubSupportedProtocols cardCommonProtocols : specificProtocols) {
+      map.put(cardCommonProtocols.name(), settings.get(cardCommonProtocols));
     }
     return map;
   }

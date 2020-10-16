@@ -63,7 +63,7 @@ internal abstract class AbstractAndroidOmapiPluginTest<T, V> {
             val reader = androidOmapiPlugin.mapToSeReader(omapiReader)
             Assert.assertNotNull(reader)
             Assert.assertEquals(it.key, reader.name)
-            Assert.assertEquals(it.value, reader.isSePresent)
+            Assert.assertEquals(it.value, reader.isCardPresent)
         }
     }
 

@@ -372,7 +372,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
      */
 
     try {
-      if (samReader.isSePresent()) {
+      if (samReader.isCardPresent()) {
         logger.trace("Create SAM resource: {}", samReader.getName());
         synchronized (localManagedSamResources) {
           localManagedSamResources.put(samReader.getName(), createSamResource(samReader));

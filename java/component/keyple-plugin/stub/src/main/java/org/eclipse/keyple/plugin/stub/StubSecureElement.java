@@ -45,7 +45,7 @@ public abstract class StubSecureElement {
    *
    * @return A not empty String.
    */
-  public abstract String getSeProtocol();
+  public abstract String getCardProtocol();
 
   Map<String, String> hexCommands = new HashMap<String, String>();
 

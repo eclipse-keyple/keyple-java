@@ -88,9 +88,9 @@ class VirtualReaderImpl extends AbstractReader implements VirtualReader {
   }
 
   @Override
-  public boolean isSePresent() {
+  public boolean isCardPresent() {
     logger.warn(
-        "{} isSePresent is not implemented in VirtualReader, returns false", this.getName());
+        "{} isCardPresent is not implemented in VirtualReader, returns false", this.getName());
     return false; // not implemented
   }
 

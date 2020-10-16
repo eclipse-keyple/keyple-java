@@ -64,7 +64,7 @@ public class RemoteSePoolPluginTest {
     stubPoolPlugin = Integration.createStubPoolPlugin();
 
     // plug readers
-    stubPoolPlugin.plugStubPoolReader(REF_GROUP1, "stub1", stubSe);
+    stubPoolPlugin.plugStubPoolReader(REF_GROUP1, "stub1", stubCard);
 
     // configure Slave with Stub Pool plugin and local server node
     slaveAPI = new SlaveAPI(SmartCardService.getInstance(), factory.getServer(), "");
@@ -132,7 +132,7 @@ public class RemoteSePoolPluginTest {
   }
 
   /** Stub card */
-  private static final StubSecureElement stubSe =
+  private static final StubSecureElement stubCard =
       new StubSecureElement() {
         @Override
         public byte[] getATR() {
@@ -140,7 +140,7 @@ public class RemoteSePoolPluginTest {
         }
 
         @Override
-        public String getSeProtocol() {
+        public String getCardProtocol() {
           return "ISO_14443_4";
         }
       };

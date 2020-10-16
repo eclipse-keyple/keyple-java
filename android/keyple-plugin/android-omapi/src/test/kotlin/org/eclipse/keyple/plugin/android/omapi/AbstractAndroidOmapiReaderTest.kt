@@ -87,7 +87,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
 
     @Test
     fun isSEPresent() {
-        Assert.assertEquals(true, reader.isSePresent)
+        Assert.assertEquals(true, reader.isCardPresent)
     }
 
     @Test(expected = KeypleReaderIOException::class)
@@ -168,7 +168,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
 
         // wrong protocol
         val cardRequest = CardRequest(CardSelector.builder()
-                .seProtocol("MIFARE_ULTRA_LIGHT")
+                .cardProtocol("MIFARE_ULTRA_LIGHT")
                 .aidSelector(CardSelector.AidSelector.builder()
                         .aidToSelect(poAid).build()).build(), ArrayList())
 
@@ -230,7 +230,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
         val cardRequest = CardRequest(CardSelector.builder()
-                .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
+                .cardProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
                 .aidSelector(CardSelector.AidSelector.builder()
                         .aidToSelect(PO_AID).build()).build(), poApduRequestList)
 
@@ -244,7 +244,7 @@ internal abstract class AbstractAndroidOmapiReaderTest<T, V : AbstractAndroidOma
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
         val cardRequest = CardRequest(CardSelector.builder()
-                .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name).build(), poApduRequestList)
+                .cardProtocol(ContactsCardCommonProtocols.ISO_7816_3.name).build(), poApduRequestList)
 
         val cardRequestList = ArrayList<CardRequest>()
         cardRequestList.add(cardRequest)

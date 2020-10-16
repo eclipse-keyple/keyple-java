@@ -47,7 +47,7 @@ public class PoSelectionRequestTest {
     poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .atrFilter(new PoSelector.AtrFilter(".*"))
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());

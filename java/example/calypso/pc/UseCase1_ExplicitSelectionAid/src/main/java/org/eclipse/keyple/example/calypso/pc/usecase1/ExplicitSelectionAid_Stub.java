@@ -80,17 +80,17 @@ public class ExplicitSelectionAid_Stub {
     }
 
     // Create 'virtual' Calypso PO
-    StubSecureElement calypsoStubSe = new StubCalypsoClassic();
+    StubSecureElement calypsoStubCard = new StubCalypsoClassic();
 
     logger.info("Insert stub PO.");
-    poReader.insertSe(calypsoStubSe);
+    poReader.insertSe(calypsoStubCard);
 
     logger.info(
         "=============== UseCase Calypso #1: AID based explicit selection ==================");
     logger.info("= PO Reader  NAME = {}", poReader.getName());
 
     // Check if a PO is present in the reader
-    if (poReader.isSePresent()) {
+    if (poReader.isCardPresent()) {
 
       logger.info("= #### 1st PO exchange: AID based selection with reading of Environment file.");
 
@@ -106,7 +106,7 @@ public class ExplicitSelectionAid_Stub {
       PoSelectionRequest poSelectionRequest =
           new PoSelectionRequest(
               PoSelector.builder()
-                  .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                  .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                   .aidSelector(AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
                   .invalidatedPo(InvalidatedPo.REJECT)
                   .build());

@@ -155,20 +155,20 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
         addHeaderEvent("Reader  NAME = ${reader.name}")
 
         /*Check if a card is present in the reader */
-        if (reader.isSePresent) {
+        if (reader.isCardPresent) {
             /*
               * operate card AID selection (change the AID prefix here to adapt it to the card used for
               * the test [the card should have at least two applications matching the AID prefix])
               */
-            val seAidPrefix = CalypsoClassicInfo.AID_PREFIX
+            val cardAidPrefix = CalypsoClassicInfo.AID_PREFIX
 
             /* First selection case */
             cardSelection = CardSelection()
 
             /* AID based selection (1st selection, later indexed 0) */
-            val selectionRequest1st = PoSelectionRequest(PoSelector.builder().seProtocol(
+            val selectionRequest1st = PoSelectionRequest(PoSelector.builder().cardProtocol(
                     ContactlessCardCommonProtocols.ISO_14443_4.name).aidSelector(AidSelector.builder().aidToSelect(
-                    seAidPrefix).fileOccurrence(
+                    cardAidPrefix).fileOccurrence(
                     AidSelector.FileOccurrence.FIRST).fileControlInformation(
                     AidSelector.FileControlInformation.FCI).build()).invalidatedPo(InvalidatedPo.REJECT).build())
 
@@ -187,8 +187,8 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
             /* Close the channel after the selection */
             cardSelection.prepareReleaseSeChannel()
 
-            val selectionRequest2nd = PoSelectionRequest(PoSelector.builder().seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name).aidSelector(
-                    AidSelector.builder().aidToSelect(seAidPrefix).fileOccurrence(
+            val selectionRequest2nd = PoSelectionRequest(PoSelector.builder().cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name).aidSelector(
+                    AidSelector.builder().aidToSelect(cardAidPrefix).fileOccurrence(
                     AidSelector.FileOccurrence.NEXT).fileControlInformation(
                     AidSelector.FileControlInformation.FCI).build()).invalidatedPo(InvalidatedPo.REJECT).build())
 
@@ -227,36 +227,36 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
         cardSelection = CardSelection(MultiSelectionProcessing.PROCESS_ALL)
 
         /* operate card selection (change the AID here to adapt it to the card used for the test) */
-        val seAidPrefix = CalypsoClassicInfo.AID_PREFIX
+        val cardAidPrefix = CalypsoClassicInfo.AID_PREFIX
 
         /* Close the channel after the selection to force the selection of all applications */
         cardSelection.prepareReleaseSeChannel()
 
         useCase = null
 
-        if (reader.isSePresent) {
+        if (reader.isCardPresent) {
             /* AID based selection (1st selection, later indexed 0) */
-            val selectionRequest1st = PoSelectionRequest(PoSelector.builder().seProtocol(
+            val selectionRequest1st = PoSelectionRequest(PoSelector.builder().cardProtocol(
                     ContactlessCardCommonProtocols.ISO_14443_4.name).aidSelector(
-                    AidSelector.builder().aidToSelect(seAidPrefix).fileOccurrence(
+                    AidSelector.builder().aidToSelect(cardAidPrefix).fileOccurrence(
                     AidSelector.FileOccurrence.FIRST).fileControlInformation(
                     AidSelector.FileControlInformation.FCI).build()).invalidatedPo(InvalidatedPo.REJECT).build())
 
             cardSelection.prepareSelection(selectionRequest1st)
 
             /* next selection (2nd selection, later indexed 1) */
-            val selectionRequest2nd = PoSelectionRequest(PoSelector.builder().seProtocol(
+            val selectionRequest2nd = PoSelectionRequest(PoSelector.builder().cardProtocol(
                     ContactlessCardCommonProtocols.ISO_14443_4.name).aidSelector(
-                    AidSelector.builder().aidToSelect(seAidPrefix).fileOccurrence(
+                    AidSelector.builder().aidToSelect(cardAidPrefix).fileOccurrence(
                             AidSelector.FileOccurrence.NEXT).fileControlInformation(
                             AidSelector.FileControlInformation.FCI).build()).invalidatedPo(InvalidatedPo.REJECT).build())
 
             cardSelection.prepareSelection(selectionRequest2nd)
 
             /* next selection (3rd selection, later indexed 2) */
-            val selectionRequest3rd = PoSelectionRequest(PoSelector.builder().seProtocol(
+            val selectionRequest3rd = PoSelectionRequest(PoSelector.builder().cardProtocol(
                     ContactlessCardCommonProtocols.ISO_14443_4.name).aidSelector(
-                    AidSelector.builder().aidToSelect(seAidPrefix).fileOccurrence(
+                    AidSelector.builder().aidToSelect(cardAidPrefix).fileOccurrence(
                             AidSelector.FileOccurrence.NEXT).fileControlInformation(
                             AidSelector.FileControlInformation.FCI).build()).invalidatedPo(InvalidatedPo.REJECT).build())
 
@@ -315,7 +315,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
          * Generic selection: configures a CardSelector with all the desired attributes to make the
          * selection
          */
-        val selectionRequest = PoSelectionRequest(PoSelector.builder().seProtocol(
+        val selectionRequest = PoSelectionRequest(PoSelector.builder().cardProtocol(
                 ContactlessCardCommonProtocols.ISO_14443_4.name).aidSelector(
                         AidSelector.builder().aidToSelect(aid).build()).invalidatedPo(InvalidatedPo.REJECT).build())
 
@@ -340,8 +340,8 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                     when (event?.eventType) {
                         ReaderEvent.EventType.CARD_MATCHED -> {
                             addResultEvent("CARD_MATCHED event: A card corresponding to request has been detected")
-                            val selectedSe = cardSelection.processDefaultSelection(event.defaultSelectionsResponse).activeSmartCard
-                            if (selectedSe != null) {
+                            val selectedCard = cardSelection.processDefaultSelection(event.defaultSelectionsResponse).activeSmartCard
+                            if (selectedCard != null) {
                                 addResultEvent("Observer notification: the selection of the card has succeeded. End of the card processing.")
                                 addResultEvent("Application FCI = ${ByteArrayUtil.toHex(selectedSe.fciBytes)}")
                             } else {
@@ -397,11 +397,11 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
 
         val aid = CalypsoClassicInfo.AID
 
-        if (reader.isSePresent) {
+        if (reader.isCardPresent) {
             /**
              * configure Protocol
              */
-            val selectionRequest = PoSelectionRequest(PoSelector.builder().seProtocol(
+            val selectionRequest = PoSelectionRequest(PoSelector.builder().cardProtocol(
                     ContactlessCardCommonProtocols.ISO_14443_4.name).aidSelector(
                             AidSelector.builder().aidToSelect(aid).build()).invalidatedPo(InvalidatedPo.REJECT).build())
 
@@ -426,7 +426,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                 val selectionsResult = cardSelection.processExplicitSelection(reader)
 
                 if (selectionsResult.hasActiveSelection()) {
-                    val matchedSe = selectionsResult.activeSmartCard
+                    val matchedCard = selectionsResult.activeSmartCard
                     addResultEvent("The selection of the card has succeeded.")
                     addResultEvent("Application FCI = ${ByteArrayUtil.toHex(matchedSe.fciBytes)}")
                     addResultEvent("End of the generic card processing.")
@@ -462,7 +462,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
              * Calypso selection: configures a PoSelector with all the desired attributes to make
              * the selection and read additional information afterwards
              */
-        val poSelectionRequest = PoSelectionRequest(PoSelector.builder().seProtocol(
+        val poSelectionRequest = PoSelectionRequest(PoSelector.builder().cardProtocol(
                 ContactlessCardCommonProtocols.ISO_14443_4.name).aidSelector(
                 AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build()).invalidatedPo(
                 InvalidatedPo.REJECT).build())

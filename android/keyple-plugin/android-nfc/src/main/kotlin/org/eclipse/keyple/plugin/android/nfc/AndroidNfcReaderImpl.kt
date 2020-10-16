@@ -69,10 +69,10 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
             if (nosounds != null && nosounds == "1") {
                 flags = flags or NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS
             }
-            for (seProtocol in this.protocolsMap.keys) {
-                if (AndroidNfcSupportedProtocols.ISO_14443_4.name == seProtocol) {
+            for (cardProtocol in this.protocolsMap.keys) {
+                if (AndroidNfcSupportedProtocols.ISO_14443_4.name == cardProtocol) {
                     flags = flags or NfcAdapter.FLAG_READER_NFC_B or NfcAdapter.FLAG_READER_NFC_A
-                } else if (AndroidNfcSupportedProtocols.MIFARE_ULTRA_LIGHT.name == seProtocol || AndroidNfcSupportedProtocols.MIFARE_CLASSIC.name == seProtocol) {
+                } else if (AndroidNfcSupportedProtocols.MIFARE_ULTRA_LIGHT.name == cardProtocol || AndroidNfcSupportedProtocols.MIFARE_CLASSIC.name == cardProtocol) {
                     flags = flags or NfcAdapter.FLAG_READER_NFC_A
                 }
             }
@@ -100,15 +100,15 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
 
         return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             ObservableReaderStateService.builder(this)
-                    .waitForSeInsertionWithNativeDetection()
-                    .waitForSeProcessingWithNativeDetection()
-                    .waitForSeRemovalWithPollingDetection()
+                    .WaitForCardInsertionWithNativeDetection()
+                    .WaitForCardProcessingWithNativeDetection()
+                    .WaitForCardRemovalWithPollingDetection()
                     .build()
         } else {
             ObservableReaderStateService.builder(this)
-                    .waitForSeInsertionWithNativeDetection()
-                    .waitForSeProcessingWithNativeDetection()
-                    .waitForSeRemovalWithSmartDetection()
+                    .WaitForCardInsertionWithNativeDetection()
+                    .WaitForCardProcessingWithNativeDetection()
+                    .WaitForCardRemovalWithSmartDetection()
                     .build()
         }
     }

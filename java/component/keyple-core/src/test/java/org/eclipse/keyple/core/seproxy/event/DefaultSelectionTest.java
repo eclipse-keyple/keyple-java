@@ -39,13 +39,13 @@ public class DefaultSelectionTest {
    * no default selection
    */
   @Test
-  public void seInserted() throws Exception {
+  public void cardInserted() throws Exception {
     // empty reader
     BlankObservableLocalReader r =
         (BlankObservableLocalReader) AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
 
     // test
-    ReaderEvent event = r.processSeInsertedTest();
+    ReaderEvent event = r.processCardInsertedTest();
 
     Assert.assertEquals(ReaderEvent.EventType.CARD_INSERTED, event.getEventType());
     Assert.assertNull(event.getDefaultSelectionsResponse());
@@ -57,7 +57,7 @@ public class DefaultSelectionTest {
    * selection is not successful
    */
   @Test
-  public void seInserted_ALWAYS() throws Exception {
+  public void cardInserted_ALWAYS() throws Exception {
     BlankObservableLocalReader r =
         (BlankObservableLocalReader) AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
 
@@ -73,7 +73,7 @@ public class DefaultSelectionTest {
 
     // test
     r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel), mode);
-    ReaderEvent event = r.processSeInsertedTest();
+    ReaderEvent event = r.processCardInsertedTest();
 
     // assert
     Assert.assertEquals(ReaderEvent.EventType.CARD_INSERTED, event.getEventType());
@@ -87,7 +87,7 @@ public class DefaultSelectionTest {
    * selection is successful
    */
   @Test
-  public void seMatched_MATCHED_ONLY() throws Exception {
+  public void cardMatched_MATCHED_ONLY() throws Exception {
     BlankObservableLocalReader r =
         (BlankObservableLocalReader) AbsObservableLocalReaderTest.getSpy(PLUGIN_NAME, READER_NAME);
 
@@ -104,7 +104,7 @@ public class DefaultSelectionTest {
 
     // test
     r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel), mode);
-    ReaderEvent event = r.processSeInsertedTest();
+    ReaderEvent event = r.processCardInsertedTest();
 
     Assert.assertEquals(ReaderEvent.EventType.CARD_MATCHED, event.getEventType());
     Assert.assertEquals(
@@ -132,7 +132,7 @@ public class DefaultSelectionTest {
 
     // test
     r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel), mode);
-    ReaderEvent event = r.processSeInsertedTest();
+    ReaderEvent event = r.processCardInsertedTest();
 
     Assert.assertEquals(null, event);
   }
@@ -158,10 +158,10 @@ public class DefaultSelectionTest {
 
     // test
     r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel), mode);
-    r.processSeInsertedTest();
+    r.processCardInsertedTest();
 
     // test
-    ReaderEvent event = r.processSeInsertedTest();
+    ReaderEvent event = r.processCardInsertedTest();
     Assert.assertEquals(null, event);
   }
 }

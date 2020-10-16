@@ -66,13 +66,13 @@ public class SequentialMultiSelection_Pcsc {
     logger.info("= Card reader  NAME = {}", reader.getName());
 
     // Check if a card is present in the reader
-    if (reader.isSePresent()) {
+    if (reader.isCardPresent()) {
 
       CardSelection cardSelection;
 
       // operate card AID selection (change the AID prefix here to adapt it to the card used for
       // the test [the card should have at least two applications matching the AID prefix])
-      String seAidPrefix = "315449432E494341";
+      String cardAidPrefix = "315449432E494341";
 
       // First selection case
       cardSelection = new CardSelection();
@@ -84,7 +84,7 @@ public class SequentialMultiSelection_Pcsc {
               CardSelector.builder()
                   .aidSelector(
                       CardSelector.AidSelector.builder()
-                          .aidToSelect(seAidPrefix)
+                          .aidToSelect(cardAidPrefix)
                           .fileOccurrence(CardSelector.AidSelector.FileOccurrence.FIRST)
                           .fileControlInformation(
                               CardSelector.AidSelector.FileControlInformation.FCI)
@@ -103,7 +103,7 @@ public class SequentialMultiSelection_Pcsc {
               CardSelector.builder()
                   .aidSelector(
                       CardSelector.AidSelector.builder()
-                          .aidToSelect(seAidPrefix)
+                          .aidToSelect(cardAidPrefix)
                           .fileOccurrence(CardSelector.AidSelector.FileOccurrence.NEXT)
                           .fileControlInformation(
                               CardSelector.AidSelector.FileControlInformation.FCI)

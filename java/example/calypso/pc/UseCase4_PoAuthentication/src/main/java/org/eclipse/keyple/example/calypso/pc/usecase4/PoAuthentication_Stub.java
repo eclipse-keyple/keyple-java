@@ -101,16 +101,16 @@ public class PoAuthentication_Stub {
         StubSupportedProtocols.ISO_7816_3.name(), ContactsCardCommonProtocols.ISO_7816_3.name());
 
     // Create 'virtual' Calypso PO
-    StubSecureElement calypsoStubSe = new StubCalypsoClassic();
+    StubSecureElement calypsoStubCard = new StubCalypsoClassic();
 
     logger.info("Insert stub PO.");
-    ((StubReader) poReader).insertSe(calypsoStubSe);
+    ((StubReader) poReader).insertSe(calypsoStubCard);
 
     // Create 'virtual' Calypso SAM
-    StubSecureElement calypsoSamStubSe = new StubSamCalypsoClassic();
+    StubSecureElement calypsoSamStubCard = new StubSamCalypsoClassic();
 
     logger.info("Insert stub SAM.");
-    ((StubReader) samReader).insertSe(calypsoSamStubSe);
+    ((StubReader) samReader).insertSe(calypsoSamStubCard);
 
     // Create a SAM resource after selecting the SAM
     CardSelection samSelection = new CardSelection();
@@ -121,7 +121,7 @@ public class PoAuthentication_Stub {
     samSelection.prepareSelection(new SamSelectionRequest(samSelector));
     CalypsoSam calypsoSam;
     try {
-      if (samReader.isSePresent()) {
+      if (samReader.isCardPresent()) {
         SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
         if (selectionsResult.hasActiveSelection()) {
           calypsoSam = (CalypsoSam) selectionsResult.getActiveSmartCard();
@@ -143,7 +143,7 @@ public class PoAuthentication_Stub {
     logger.info("= SAM Reader  NAME = {}", samReader.getName());
 
     // Check if a PO is present in the reader
-    if (poReader.isSePresent()) {
+    if (poReader.isCardPresent()) {
 
       logger.info("= ##### 1st PO exchange: AID based selection with reading of Environment file.");
 
@@ -159,7 +159,7 @@ public class PoAuthentication_Stub {
       PoSelectionRequest poSelectionRequest =
           new PoSelectionRequest(
               PoSelector.builder()
-                  .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                  .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                   .aidSelector(AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
                   .invalidatedPo(InvalidatedPo.REJECT)
                   .build());

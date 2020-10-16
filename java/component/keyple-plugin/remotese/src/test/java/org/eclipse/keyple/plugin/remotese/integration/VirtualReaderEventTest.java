@@ -258,7 +258,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     GenericCardSelectionRequest genericCardSelectionRequest =
         new GenericCardSelectionRequest(
             CardSelector.builder()
-                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .build());
 
@@ -315,7 +315,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     GenericCardSelectionRequest genericCardSelectionRequest =
         new GenericCardSelectionRequest(
             CardSelector.builder()
-                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .build());
 
@@ -382,7 +382,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     GenericCardSelectionRequest genericCardSelectionRequest =
         new GenericCardSelectionRequest(
             CardSelector.builder()
-                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .build());
 
@@ -425,7 +425,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     GenericCardSelectionRequest genericCardSelectionRequest =
         new GenericCardSelectionRequest(
             CardSelector.builder()
-                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .atrFilter(new CardSelector.AtrFilter("3B.*"))
                 .build());
 
@@ -467,7 +467,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
             GenericCardSelectionRequest genericCardSelectionRequest =
                 new GenericCardSelectionRequest(
                     CardSelector.builder()
-                        .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                        .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                         .atrFilter(new CardSelector.AtrFilter("3B.*"))
                         .build());
 

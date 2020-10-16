@@ -71,7 +71,7 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
   public void startRemovalSequence() throws Exception {
 
     // card matched
-    doReturn(true).when(r).processSeInserted();
+    doReturn(true).when(r).processCardInserted();
 
     r.addObserver(getObs());
     Thread.sleep(100);
@@ -87,7 +87,7 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
   public void startRemovalSequence_CONTINUE() throws Exception {
 
     // card matched
-    doReturn(true).when(r).processSeInserted();
+    doReturn(true).when(r).processCardInserted();
     // use mocked BlankSmartPresenceTheadedReader methods
 
     r.addObserver(getObs());
@@ -104,8 +104,8 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
   public void startRemovalSequence_noping_STOP() throws Exception {
 
     // card matched
-    doReturn(true).when(r).processSeInserted();
-    doReturn(false).when(r).isSePresentPing();
+    doReturn(true).when(r).processCardInserted();
+    doReturn(false).when(r).isCardPresentPing();
 
     r.addObserver(getObs());
     r.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
@@ -121,9 +121,9 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
   public void startRemovalSequence_ping_STOP() throws Exception {
 
     // card matched
-    doReturn(true).when(r).processSeInserted();
-    // doReturn(true).when(r).isSePresentPing();
-    doReturn(true).when(r).isSePresent();
+    doReturn(true).when(r).processCardInserted();
+    // doReturn(true).when(r).isCardPresentPing();
+    doReturn(true).when(r).isCardPresent();
 
     r.addObserver(getObs());
     r.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);

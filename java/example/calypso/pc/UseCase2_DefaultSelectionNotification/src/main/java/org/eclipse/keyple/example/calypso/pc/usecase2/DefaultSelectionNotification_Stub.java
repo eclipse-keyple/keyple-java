@@ -117,7 +117,7 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
                 .invalidatedPo(InvalidatedPo.REJECT)
                 .build());
@@ -150,13 +150,13 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
     logger.info("= #### file is ready to be processed as soon as the PO is detected.");
 
     /* Create 'virtual' Calypso PO */
-    StubSecureElement calypsoStubSe = new StubCalypsoClassic();
+    StubSecureElement calypsoStubCard = new StubCalypsoClassic();
 
     /* Wait a while. */
     Thread.sleep(100);
 
     logger.info("Insert stub PO.");
-    ((StubReader) poReader).insertSe(calypsoStubSe);
+    ((StubReader) poReader).insertSe(calypsoStubCard);
 
     /* Wait a while. */
     Thread.sleep(1000);

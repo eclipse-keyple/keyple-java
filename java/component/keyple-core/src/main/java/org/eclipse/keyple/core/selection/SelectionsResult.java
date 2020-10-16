@@ -61,7 +61,7 @@ public final class SelectionsResult {
   }
 
   /** @return the {@link AbstractSmartCard} map */
-  public Map<Integer, AbstractSmartCard> getMatchingSmartCards() {
+  public Map<Integer, AbstractSmartCard> getSmartCards() {
     return smartCardMap;
   }
 

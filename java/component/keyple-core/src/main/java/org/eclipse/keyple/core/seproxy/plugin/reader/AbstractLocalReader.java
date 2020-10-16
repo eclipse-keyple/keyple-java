@@ -92,7 +92,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */
   @Override
-  public boolean isSePresent() {
+  public boolean isCardPresent() {
     return checkSePresence();
   }
 
@@ -102,7 +102,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    *
    * <p>This method must be implemented by the ProxyReader plugin (e.g. Pcsc reader plugin).
    *
-   * <p>This method is invoked by isSePresent.
+   * <p>This method is invoked by isCardPresent.
    *
    * @return true if the card is present
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
@@ -576,15 +576,15 @@ public abstract class AbstractLocalReader extends AbstractReader {
     ApduResponse fciResponse;
     boolean hasMatched = true;
 
-    if (cardSelector.getSeProtocol() != null && useDefaultProtocol) {
+    if (cardSelector.getCardProtocol() != null && useDefaultProtocol) {
       throw new IllegalStateException(
-          "Protocol " + cardSelector.getSeProtocol() + " not associated to a reader protocol.");
+          "Protocol " + cardSelector.getCardProtocol() + " not associated to a reader protocol.");
     }
 
     // check protocol if enabled
-    if (cardSelector.getSeProtocol() == null
+    if (cardSelector.getCardProtocol() == null
         || useDefaultProtocol
-        || cardSelector.getSeProtocol().equals(currentProtocol)) {
+        || cardSelector.getCardProtocol().equals(currentProtocol)) {
       // protocol check succeeded, check ATR if enabled
       byte[] atr = getATR();
       answerToReset = new AnswerToReset(atr);

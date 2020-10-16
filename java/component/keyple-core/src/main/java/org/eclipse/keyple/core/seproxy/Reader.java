@@ -36,7 +36,7 @@ public interface Reader extends ProxyElement {
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    * @since 0.9
    */
-  boolean isSePresent();
+  boolean isCardPresent();
 
   /**
    * Activates the provided card protocol and assigns it a name.

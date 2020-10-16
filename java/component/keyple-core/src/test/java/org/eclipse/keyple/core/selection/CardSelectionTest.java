@@ -147,7 +147,7 @@ public class CardSelectionTest extends CoreBaseTest {
     }
 
     Assert.assertFalse(selectionsResult.hasActiveSelection());
-    Assert.assertEquals(0, selectionsResult.getMatchingSmartCards().size());
+    Assert.assertEquals(0, selectionsResult.getSmartCards().size());
   }
 
   @Test
@@ -266,7 +266,7 @@ public class CardSelectionTest extends CoreBaseTest {
             .build();
     CardSelector cardSelector1 =
         CardSelector.builder()
-            .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+            .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
             .aidSelector(aidSelector)
             .build();
 
@@ -293,7 +293,7 @@ public class CardSelectionTest extends CoreBaseTest {
 
     CardSelector cardSelector2 =
         CardSelector.builder()
-            .seProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
+            .cardProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
             .atrFilter(new CardSelector.AtrFilter(".*"))
             .aidSelector(aidSelector)
             .build();

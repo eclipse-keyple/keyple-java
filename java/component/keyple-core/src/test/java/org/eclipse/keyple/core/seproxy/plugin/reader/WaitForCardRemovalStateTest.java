@@ -25,12 +25,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RunWith(Parameterized.class)
-public class WaitForSeRemovalStateTest extends CoreBaseTest {
+public class WaitForCardRemovalStateTest extends CoreBaseTest {
 
-  private static final Logger logger = LoggerFactory.getLogger(WaitForSeRemovalStateTest.class);
+  private static final Logger logger = LoggerFactory.getLogger(WaitForCardRemovalStateTest.class);
 
-  final String PLUGIN_NAME = "WaitForSeRemovalJobExecutorTestP";
-  final String READER_NAME = "WaitForSeRemovalStateJobExecutorTest";
+  final String PLUGIN_NAME = "WaitForCardRemovalJobExecutorTestP";
+  final String READER_NAME = "WaitForCardRemovalStateJobExecutorTest";
 
   static final Integer X_TIMES = 5; // run tests multiple times to reproduce flaky
 
@@ -52,14 +52,14 @@ public class WaitForSeRemovalStateTest extends CoreBaseTest {
      * ------------ input polling mode is STOP card has been removed within timeout
      */
     AbstractObservableLocalReader r = AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
-    WaitForSeRemovalState waitForSeRemovalState = new WaitForSeRemovalState(r);
+    WaitForCardRemovalState waitForCardRemovalState = new WaitForCardRemovalState(r);
     doReturn(ObservableReader.PollingMode.SINGLESHOT).when(r).getPollingMode();
     doNothing().when(r).processSeRemoved();
 
     /* test */
-    waitForSeRemovalState.onActivate();
+    waitForCardRemovalState.onActivate();
 
-    waitForSeRemovalState.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_REMOVED);
+    waitForCardRemovalState.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_REMOVED);
 
     /* Assert */
     verify(r, times(1)).switchState(WAIT_FOR_START_DETECTION);
@@ -71,13 +71,13 @@ public class WaitForSeRemovalStateTest extends CoreBaseTest {
      * ------------ input polling mode is CONTINUE card has been removed within timeout
      */
     AbstractObservableLocalReader r = AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
-    WaitForSeRemovalState waitForSeRemovalState = new WaitForSeRemovalState(r);
+    WaitForCardRemovalState waitForCardRemovalState = new WaitForCardRemovalState(r);
     doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();
     doNothing().when(r).processSeRemoved();
 
     /* test */
-    waitForSeRemovalState.onActivate();
-    waitForSeRemovalState.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_REMOVED);
+    waitForCardRemovalState.onActivate();
+    waitForCardRemovalState.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_REMOVED);
 
     /* Assert */
     verify(r, times(1)).switchState(WAIT_FOR_SE_INSERTION);

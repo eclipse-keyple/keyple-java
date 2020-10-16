@@ -130,8 +130,8 @@ public class SamSelector extends CardSelector {
 
     /** {@inheritDoc} */
     @Override
-    public SamSelectorBuilder seProtocol(String seProtocol) {
-      return (SamSelectorBuilder) super.seProtocol(seProtocol);
+    public SamSelectorBuilder cardProtocol(String cardProtocol) {
+      return (SamSelectorBuilder) super.cardProtocol(cardProtocol);
     }
 
     /** {@inheritDoc} */

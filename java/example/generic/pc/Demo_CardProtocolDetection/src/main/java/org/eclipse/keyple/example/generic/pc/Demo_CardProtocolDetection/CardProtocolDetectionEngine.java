@@ -66,7 +66,7 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverAsynchronou
           PoSelectionRequest poSelectionRequest =
               new PoSelectionRequest(
                   PoSelector.builder()
-                      .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                      .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                       .aidSelector(AidSelector.builder().aidToSelect(HoplinkAID).build())
                       .invalidatedPo(InvalidatedPo.REJECT)
                       .build());
@@ -85,7 +85,7 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverAsynchronou
           cardSelection.prepareSelection(
               new GenericCardSelectionRequest(
                   CardSelector.builder()
-                      .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                      .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                       .atrFilter(new CardSelector.AtrFilter(".*"))
                       .build()));
           break;
@@ -103,7 +103,7 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverAsynchronou
   public void processSeMatch(AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
     /* get the card that matches one of the two selection targets */
     if (cardSelection.processDefaultSelection(defaultSelectionsResponse).hasActiveSelection()) {
-      AbstractSmartCard selectedSe =
+      AbstractSmartCard selectedCard =
           cardSelection.processDefaultSelection(defaultSelectionsResponse).getActiveSmartCard();
     } else {
       // TODO check this. Shouldn't an exception have been raised before?
@@ -112,7 +112,7 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverAsynchronou
   }
 
   @Override
-  public void processSeInserted() {
+  public void processCardInserted() {
     System.out.println("Unexpected card insertion event");
   }
 
