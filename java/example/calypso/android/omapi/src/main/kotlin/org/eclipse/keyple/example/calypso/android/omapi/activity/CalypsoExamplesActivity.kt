@@ -73,7 +73,7 @@ class CalypsoExamplesActivity : ExamplesActivity() {
                         if (selectionsResult.hasActiveSelection()) {
                             val matchedCard = selectionsResult.activeSmartCard
                             addResultEvent("The selection of the card has succeeded.")
-                            addResultEvent("Application FCI = ${ByteArrayUtil.toHex(matchedSe.fciBytes)}")
+                            addResultEvent("Application FCI = ${ByteArrayUtil.toHex(matchedCard.fciBytes)}")
                         } else {
                             addResultEvent("The selection of the PO Failed")
                         }
