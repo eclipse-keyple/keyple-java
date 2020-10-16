@@ -20,7 +20,7 @@ Releases:
 * KEYP-346 : reorganization and renaming of many packages and classes 
 
 ### keyple-java-core 0.9a
-* KEYP-320 : Plugin and SeReader no longer implement the Comparable interface
+* KEYP-320 : ReaderPlugin and SeReader no longer implement the Comparable interface
 * KEYP-319 : added a method finalizeSeProcessing to ObservableReader to handle abnormal transaction terminations
 * KEYP-318 : added a direct access to the plugin and reader that generated a ReaderEvent
 * KEYP-317 : changed ChannelControl access
@@ -217,7 +217,7 @@ Release train components:
 * SE Proxy API: generic universal interface to interface a smartcard reader; transmission of grouped APDU commands; observable reader notification
 * Transaction API: management of an explicit application selection on a reader; setting of a default selection operation on an observed reader
 * Known issues/limits 
-  * Allows the cast of Plugin & SeReader native classes: could cause a misusage of the API by ticketing application. A Plugin factory would be necessary for the setting of plugins to the SE Proxy Service.
+  * Allows the cast of ReaderPlugin & SeReader native classes: could cause a misusage of the API by ticketing application. A ReaderPlugin factory would be necessary for the setting of plugins to the SE Proxy Service.
   * The support for non-ISO Secure Element (memory cards) is limited.
   * Selecting an already selected SE raises a null pointer exception (#73). The re-selection checking has weaknesses (#51). A time-based mechanism should be added to avoid multiple selections.
 
