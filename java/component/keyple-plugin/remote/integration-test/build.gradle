@@ -21,7 +21,8 @@ dependencies {
 
     implementation project(path:':java:component:keyple-plugin:remote:keyple-plugin-remote-virtual')
 
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-stub', version: project.version
+    //implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-stub', version: project.version
+    implementation project(path:':java:component:keyple-plugin:keyple-plugin-stub')
 
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: project.version
 

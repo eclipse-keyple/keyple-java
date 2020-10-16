@@ -1,13 +1,13 @@
-# keyple-example-remotese-web-socket project
+# keyple-example-remote-web-socket project
 
-This projects aims at demonstrating how straight forward is the implementation of the asynchronous mode of the Remote SE Plugin. 
+This projects aims at demonstrating how straight forward is the implementation of the asynchronous mode of the Remote Plugin. 
 
 The native reader is plugged on the client device which communicates with the server through a web socket.
 
 Running the example, a complete scenario is executed :
 - client and server components are initialized
 - server starts up
-- a Stub calypso SE is inserted in the native reader (client side)
+- a Stub calypso Card is inserted in the native reader (client side)
 - a remote transaction is executed by the server
 - server shutdowns
 

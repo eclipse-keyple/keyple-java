@@ -12,8 +12,8 @@ dependencies {
     
     /* Keyple dependencies */
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: keyple_version
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remotese-nativese', version: keyple_version
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remotese-virtualse', version: keyple_version
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remote-native', version: keyple_version
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remote-virtual', version: keyple_version
 
     /* Keyple plugin dependencies */
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-stub', version: keyple_version
@@ -31,7 +31,7 @@ dependencies {
     testImplementation 'io.rest-assured:rest-assured'
 }
 
-group 'org.eclipse.keyple.example.calypso.remotese'
+group 'org.eclipse.keyple.example.calypso.remote'
 version '1.0.0-SNAPSHOT'
 
 compileJava {

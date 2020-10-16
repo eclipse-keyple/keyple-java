@@ -1,8 +1,8 @@
-# Keyple Remote SE Plugin (Core library)
+# Keyple Remote Plugin (Core library)
 
-The **Keyple Remote SE Plugin** allows a terminal to communicate with a "native" SE reader plugged into another terminal.
+The **Keyple Remote Plugin** allows a terminal to communicate with a "native" reader plugged into another terminal.
 
-In a Calypso context, it is useful when your SAM reader and/or your PO reader aren't connected to the same terminal. With the **Keyple Remote SE Plugin**, you can open Calypso transaction within a distributed architecture.
+In a Calypso context, it is useful when your SAM reader and/or your PO reader aren't connected to the same terminal. With the **Keyple Remote Plugin**, you can open Calypso transaction within a distributed architecture.
 
 ## Table of Contents
 
@@ -10,27 +10,27 @@ In a Calypso context, it is useful when your SAM reader and/or your PO reader ar
 * [About Core library](#about-core-library)
 * [How to use it ?](#how-to-use-it-)
 * [Use cases](#use-cases)
-    * [Remote SE Server Plugin](#remote-se-server-plugin)
-    * [Remote SE Client Plugin](#remote-se-client-plugin)
-    * [Remote SE Pool Client Plugin](#remote-se-pool-client-plugin)
+    * [Remote Server Plugin](#remote-se-server-plugin)
+    * [Remote Client Plugin](#remote-se-client-plugin)
+    * [Remote Pool Client Plugin](#remote-se-pool-client-plugin)
 * [Public Global API](#public-global-api)
 * [Network configuration](#network-configuration)
     * [Full-Duplex Asynchronous communication](#full-duplex-asynchronous-communication)
     * [Client-Server Synchronous communication](#client-server-synchronous-communication)
 * [Exchanged data](#exchanged-data)
 * [Annexes](#annexes)
-    * [Remote SE Server Plugin API (class diagram)](#remote-se-server-plugin-api-class-diagram)
-    * [Remote SE Client Plugin API (class diagram)](#remote-se-client-plugin-api-class-diagram)
-    * [Remote SE Pool Client Plugin API (class diagram)](#remote-se-pool-client-plugin-api-class-diagram)
-    * [Remote SE Server Plugin (sequence diagram)](#remote-se-server-plugin-sequence-diagram)
+    * [Remote Server Plugin API (class diagram)](#remote-se-server-plugin-api-class-diagram)
+    * [Remote Client Plugin API (class diagram)](#remote-se-client-plugin-api-class-diagram)
+    * [Remote Pool Client Plugin API (class diagram)](#remote-se-pool-client-plugin-api-class-diagram)
+    * [Remote Server Plugin (sequence diagram)](#remote-se-server-plugin-sequence-diagram)
     * [Internal Class Diagram](#internal-class-diagram)
 
 ## Overview
 
-The **Keyple Remote SE Plugin** is divided into two main libraries, and one common library :
-* The **[Native SE](../nativese/README.md)** library (`keyple-plugin-remotese-nativese`) : This library must be used by the application installed on the terminal having local access to the SE reader.
-* The **[Virtual SE](../virtualse/README.md)** library (`keyple-plugin-remotese-virtualse`) : This library must be used by the application installed on the terminal not having local access to the SE reader and that wishes to control the reader remotely.
-* The **Core** library (`keyple-plugin-remotese-core`) : The common library.
+The **Keyple Remote Plugin** is divided into two main libraries, and one common library :
+* The **[Native](../native/README.md)** library (`keyple-plugin-remote-nativese`) : This library must be used by the application installed on the terminal having local access to the reader.
+* The **[Virtual](../virtual/README.md)** library (`keyple-plugin-remote-virtualse`) : This library must be used by the application installed on the terminal not having local access to the reader and that wishes to control the reader remotely.
+* The **Core** library (`keyple-plugin-remote-core`) : The common library.
 
 ## About Core library
 
@@ -48,13 +48,13 @@ The **Core** library contains all the common components used by **Native SE** an
 
 ## Use cases
 
-### Remote SE Server Plugin
+### Remote Server Plugin
 
 ![RemoteSe_Component_RemoteSeServerPlugin_SeReader_API](../../../../../docs/img/remote-se/component/RemoteSe_Component_RemoteSeServerPlugin_SeReader_API.svg)
 
 ![RemoteSe_Component_RemoteSeServerPlugin_ObservableReader_API](../../../../../docs/img/remote-se/component/RemoteSe_Component_RemoteSeServerPlugin_ObservableReader_API.svg)
 
-### Remote SE Client Plugin
+### Remote Client Plugin
 
 ![RemoteSe_Component_RemoteSeClientPlugin_SeReader_API](../../../../../docs/img/remote-se/component/RemoteSe_Component_RemoteSeClientPlugin_SeReader_API.svg)
 
@@ -64,7 +64,7 @@ The **Core** library contains all the common components used by **Native SE** an
 
 ![RemoteSe_Component_RemoteSeClientObservablePlugin_ObservableReader_API](../../../../../docs/img/remote-se/component/RemoteSe_Component_RemoteSeClientObservablePlugin_ObservableReader_API.svg)
 
-### Remote SE Pool Client Plugin
+### Remote Pool Client Plugin
 
 ![RemoteSe_Component_RemoteSePoolClientPlugin_SeReader_API](../../../../../docs/img/remote-se/component/RemoteSe_Component_RemoteSePoolClientPlugin_SeReader_API.svg)
 
@@ -98,11 +98,11 @@ The POJO object `KeypleMessageDto` contains data exchanged between **Native SE**
 
 ## Annexes
 
-### Remote SE Server Plugin API (class diagram)
+### Remote Server Plugin API (class diagram)
 
 ![RemoteSe_Class_RemoteSeServerPlugin_API](../../../../../docs/img/remote-se/class/RemoteSe_Class_RemoteSeServerPlugin_API.svg)
 
-### Remote SE Client Plugin API (class diagram)
+### Remote Client Plugin API (class diagram)
 
 ![RemoteSe_Class_RemoteSeClientPlugin_API](../../../../../docs/img/remote-se/class/RemoteSe_Class_RemoteSeClientPlugin_API.svg)
 
