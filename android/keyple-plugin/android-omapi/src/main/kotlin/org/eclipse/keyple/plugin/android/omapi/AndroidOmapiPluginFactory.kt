@@ -15,8 +15,8 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.annotation.VisibleForTesting
+import org.eclipse.keyple.core.plugin.factory.PluginFactory
 import org.eclipse.keyple.core.reader.Plugin
-import org.eclipse.keyple.core.reader.PluginFactory
 import org.eclipse.keyple.core.reader.exception.KeyplePluginInstantiationException
 
 /**

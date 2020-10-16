@@ -12,7 +12,7 @@
 package org.eclipse.keyple.core.reader.exception;
 
 import java.util.List;
-import org.eclipse.keyple.core.reader.message.CardResponse;
+import org.eclipse.keyple.core.card.message.CardResponse;
 
 /**
  * The exception {@code KeypleReaderIOException} indicates that some IO operations with the reader

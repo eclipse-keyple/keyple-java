@@ -18,9 +18,9 @@ import org.eclipse.keyple.calypso.transaction.CalypsoPo
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest
 import org.eclipse.keyple.calypso.transaction.PoSelector
 import org.eclipse.keyple.calypso.transaction.PoSelector.InvalidatedPo
-import org.eclipse.keyple.core.reader.CardSelector.AidSelector
+import org.eclipse.keyple.core.card.selection.CardSelection
+import org.eclipse.keyple.core.card.selection.CardSelector.AidSelector
 import org.eclipse.keyple.core.reader.Reader
-import org.eclipse.keyple.core.selection.CardSelection
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.example.calypso.android.omapi.R
 import org.eclipse.keyple.example.calypso.android.omapi.utils.AidEnum

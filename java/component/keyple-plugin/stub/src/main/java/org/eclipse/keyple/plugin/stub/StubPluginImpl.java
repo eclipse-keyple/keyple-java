@@ -15,10 +15,10 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListSet;
+import org.eclipse.keyple.core.plugin.AbstractThreadedObservablePlugin;
 import org.eclipse.keyple.core.reader.Reader;
 import org.eclipse.keyple.core.reader.exception.KeypleReaderException;
 import org.eclipse.keyple.core.reader.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.reader.plugin.AbstractThreadedObservablePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

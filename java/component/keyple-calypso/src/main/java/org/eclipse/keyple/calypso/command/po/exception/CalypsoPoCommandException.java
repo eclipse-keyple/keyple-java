@@ -12,7 +12,7 @@
 package org.eclipse.keyple.calypso.command.po.exception;
 
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
-import org.eclipse.keyple.core.command.exception.KeypleCardCommandException;
+import org.eclipse.keyple.core.card.command.exception.KeypleCardCommandException;
 
 /**
  * The exception {@code CalypsoPoCommandException} is the parent abstract class of all Keyple PO

@@ -15,7 +15,7 @@ import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.parser.security.CloseSessionRespPars;
-import org.eclipse.keyple.core.reader.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /** This class provides the dedicated constructor to build the Close Secure Session APDU command. */

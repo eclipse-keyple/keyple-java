@@ -12,7 +12,7 @@
 package org.eclipse.keyple.core.reader.event;
 
 import java.util.List;
-import org.eclipse.keyple.core.reader.message.CardResponse;
+import org.eclipse.keyple.core.card.message.CardResponse;
 
 /**
  * This abstract class defines the POJO used to carry the response to a default selection request.

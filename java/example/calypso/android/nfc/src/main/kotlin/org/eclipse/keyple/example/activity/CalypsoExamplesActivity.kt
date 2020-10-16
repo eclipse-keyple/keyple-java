@@ -26,8 +26,10 @@ import org.eclipse.keyple.calypso.transaction.PoSelectionRequest
 import org.eclipse.keyple.calypso.transaction.PoSelector
 import org.eclipse.keyple.calypso.transaction.PoSelector.InvalidatedPo
 import org.eclipse.keyple.calypso.transaction.PoTransaction
-import org.eclipse.keyple.core.reader.CardSelector.AidSelector
-import org.eclipse.keyple.core.reader.MultiSelectionProcessing
+import org.eclipse.keyple.core.card.selection.CardResource
+import org.eclipse.keyple.core.card.selection.CardSelection
+import org.eclipse.keyple.core.card.selection.CardSelector.AidSelector
+import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing
 import org.eclipse.keyple.core.reader.Reader
 import org.eclipse.keyple.core.reader.SmartCardService
 import org.eclipse.keyple.core.reader.event.AbstractDefaultSelectionsResponse
@@ -37,8 +39,6 @@ import org.eclipse.keyple.core.reader.exception.KeyplePluginNotFoundException
 import org.eclipse.keyple.core.reader.exception.KeypleReaderException
 import org.eclipse.keyple.core.reader.exception.KeypleReaderNotFoundException
 import org.eclipse.keyple.core.reader.util.ContactlessCardCommonProtocols
-import org.eclipse.keyple.core.selection.CardResource
-import org.eclipse.keyple.core.selection.CardSelection
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.example.calypso.android.nfc.R
 import org.eclipse.keyple.example.util.CalypsoClassicInfo

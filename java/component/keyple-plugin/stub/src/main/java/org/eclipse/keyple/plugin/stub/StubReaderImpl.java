@@ -12,15 +12,15 @@
 package org.eclipse.keyple.plugin.stub;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.eclipse.keyple.core.plugin.reader.AbstractObservableLocalReader;
+import org.eclipse.keyple.core.plugin.reader.ObservableReaderStateService;
+import org.eclipse.keyple.core.plugin.reader.SmartInsertionReader;
+import org.eclipse.keyple.core.plugin.reader.SmartRemovalReader;
 import org.eclipse.keyple.core.reader.event.ReaderEvent;
 import org.eclipse.keyple.core.reader.exception.KeypleReaderException;
 import org.eclipse.keyple.core.reader.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.reader.exception.KeypleReaderProtocolNotFoundException;
 import org.eclipse.keyple.core.reader.exception.KeypleReaderProtocolNotSupportedException;
-import org.eclipse.keyple.core.reader.plugin.reader.AbstractObservableLocalReader;
-import org.eclipse.keyple.core.reader.plugin.reader.ObservableReaderStateService;
-import org.eclipse.keyple.core.reader.plugin.reader.SmartInsertionReader;
-import org.eclipse.keyple.core.reader.plugin.reader.SmartRemovalReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

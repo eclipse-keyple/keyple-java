@@ -15,7 +15,7 @@ import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.parser.security.SamGetChallengeRespPars;
-import org.eclipse.keyple.core.reader.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /** Builder for the SAM Get Challenge APDU command. */
 public class SamGetChallengeCmdBuild extends AbstractSamCommandBuilder<SamGetChallengeRespPars> {

@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.calypso.command.po;
 
-import org.eclipse.keyple.core.command.CardCommand;
+import org.eclipse.keyple.core.card.command.CardCommand;
 
 public enum CalypsoPoCommand implements CardCommand {
 

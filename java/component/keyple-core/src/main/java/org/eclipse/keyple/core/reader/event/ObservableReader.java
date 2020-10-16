@@ -11,8 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.reader.event;
 
+import org.eclipse.keyple.core.card.message.ChannelControl;
 import org.eclipse.keyple.core.reader.Reader;
-import org.eclipse.keyple.core.reader.message.ChannelControl;
 
 /**
  * Provides the API to observe cards in readers.

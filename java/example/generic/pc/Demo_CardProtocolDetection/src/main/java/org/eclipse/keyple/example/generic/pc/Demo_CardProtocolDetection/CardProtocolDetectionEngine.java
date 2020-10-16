@@ -15,13 +15,13 @@ import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
 
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
-import org.eclipse.keyple.core.reader.CardSelector;
+import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
+import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.core.reader.Reader;
 import org.eclipse.keyple.core.reader.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.reader.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.reader.util.ContactlessCardCommonProtocols;
-import org.eclipse.keyple.core.selection.AbstractSmartCard;
-import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.example.common.generic.AbstractReaderObserverAsynchronousEngine;
 import org.eclipse.keyple.example.common.generic.GenericCardSelectionRequest;
 

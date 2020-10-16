@@ -16,7 +16,7 @@
  * AbstractDefaultSelectionsRequest} and {@link
  * org.eclipse.keyple.core.reader.event.AbstractDefaultSelectionsResponse
  * AbstractDefaultSelectionsResponse} is provided by Keyple in the package {@link
- * org.eclipse.keyple.core.reader.message}.
+ * org.eclipse.keyple.core.card.message}.
  *
  * @since 0.9
  */

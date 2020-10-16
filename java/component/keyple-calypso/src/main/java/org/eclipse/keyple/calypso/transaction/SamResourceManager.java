@@ -14,13 +14,13 @@ package org.eclipse.keyple.calypso.transaction;
 import static org.eclipse.keyple.calypso.command.sam.SamRevision.AUTO;
 
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
+import org.eclipse.keyple.core.card.selection.CardResource;
+import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.SelectionsResult;
 import org.eclipse.keyple.core.reader.Reader;
 import org.eclipse.keyple.core.reader.exception.KeypleAllocationReaderException;
 import org.eclipse.keyple.core.reader.exception.KeypleException;
 import org.eclipse.keyple.core.reader.exception.KeypleReaderException;
-import org.eclipse.keyple.core.selection.CardResource;
-import org.eclipse.keyple.core.selection.CardSelection;
-import org.eclipse.keyple.core.selection.SelectionsResult;
 
 /**
  * Management of SAM resources:

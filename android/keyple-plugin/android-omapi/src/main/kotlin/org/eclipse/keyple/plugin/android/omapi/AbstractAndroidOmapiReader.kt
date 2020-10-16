@@ -11,8 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.omapi
 
-import org.eclipse.keyple.core.reader.plugin.reader.AbstractLocalReader
-import org.eclipse.keyple.core.reader.plugin.reader.SmartSelectionReader
+import org.eclipse.keyple.core.plugin.reader.AbstractLocalReader
+import org.eclipse.keyple.core.plugin.reader.SmartSelectionReader
 
 /**
  * Communicates with Android readers throught the Open Mobile API see org.simalliance.openmobileapi.Reader

@@ -14,7 +14,7 @@ package org.eclipse.keyple.calypso.command.po.parser.security;
 import java.util.Arrays;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.security.OpenSession32CmdBuild;
-import org.eclipse.keyple.core.reader.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 public final class OpenSession32RespPars extends AbstractOpenSessionRespPars {
 

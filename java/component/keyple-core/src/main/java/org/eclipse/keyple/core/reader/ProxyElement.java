@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.reader;
 
-import org.eclipse.keyple.core.reader.message.ProxyReader;
+import org.eclipse.keyple.core.card.message.ProxyReader;
 
 /**
  * (package-private)<br>

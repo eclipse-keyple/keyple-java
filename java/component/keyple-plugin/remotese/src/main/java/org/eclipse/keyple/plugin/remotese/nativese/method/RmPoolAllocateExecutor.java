@@ -12,11 +12,11 @@
 package org.eclipse.keyple.plugin.remotese.nativese.method;
 
 import com.google.gson.JsonObject;
+import org.eclipse.keyple.core.card.message.CardResponse;
 import org.eclipse.keyple.core.reader.Reader;
 import org.eclipse.keyple.core.reader.ReaderPoolPlugin;
 import org.eclipse.keyple.core.reader.exception.KeypleAllocationNoReaderException;
 import org.eclipse.keyple.core.reader.exception.KeypleAllocationReaderException;
-import org.eclipse.keyple.core.reader.message.CardResponse;
 import org.eclipse.keyple.plugin.remotese.rm.IRemoteMethodExecutor;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;

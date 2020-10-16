@@ -11,10 +11,10 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.common.generic;
 
-import org.eclipse.keyple.core.reader.CardSelector;
-import org.eclipse.keyple.core.reader.message.CardResponse;
-import org.eclipse.keyple.core.selection.AbstractCardSelectionRequest;
-import org.eclipse.keyple.core.selection.AbstractSmartCard;
+import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.selection.AbstractCardSelectionRequest;
+import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
+import org.eclipse.keyple.core.card.selection.CardSelector;
 
 /** Create a new class extending AbstractCardSelectionRequest */
 public class GenericCardSelectionRequest extends AbstractCardSelectionRequest {

@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import org.eclipse.keyple.core.plugin.factory.PluginFactory;
 import org.eclipse.keyple.core.reader.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.reader.exception.KeyplePluginNotFoundException;
 import org.slf4j.Logger;

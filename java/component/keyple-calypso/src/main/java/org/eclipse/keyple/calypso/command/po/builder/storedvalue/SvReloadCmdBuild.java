@@ -14,7 +14,7 @@ package org.eclipse.keyple.calypso.command.po.builder.storedvalue;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.*;
 import org.eclipse.keyple.calypso.command.po.parser.storedvalue.SvReloadRespPars;
-import org.eclipse.keyple.core.reader.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
  * The Class SvReloadCmdBuild. This class provides the dedicated constructor to build the SV Reload

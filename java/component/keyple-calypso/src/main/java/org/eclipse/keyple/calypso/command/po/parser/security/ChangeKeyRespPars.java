@@ -16,8 +16,8 @@ import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.builder.security.ChangeKeyCmdBuild;
 import org.eclipse.keyple.calypso.command.po.exception.*;
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.reader.message.ApduResponse;
+import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 public class ChangeKeyRespPars extends AbstractPoResponseParser {
   private static final Map<Integer, StatusProperties> STATUS_TABLE;

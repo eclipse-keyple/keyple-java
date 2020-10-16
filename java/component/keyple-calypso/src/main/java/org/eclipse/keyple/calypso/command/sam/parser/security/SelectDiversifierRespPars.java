@@ -17,7 +17,7 @@ import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
 import org.eclipse.keyple.calypso.command.sam.builder.security.SelectDiversifierCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamAccessForbiddenException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
-import org.eclipse.keyple.core.reader.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
  * Select diversifier response parser. See specs: Calypso / page 54 / 7.4.2 - Session MAC

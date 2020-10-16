@@ -17,8 +17,8 @@ import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.security.*;
 import org.eclipse.keyple.calypso.command.po.exception.*;
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.reader.message.ApduResponse;
+import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /** Open session response parser. See specs: Calypso / page 100 / 9.5.1 - Open secure session */

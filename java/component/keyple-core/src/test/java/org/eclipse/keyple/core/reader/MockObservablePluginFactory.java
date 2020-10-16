@@ -11,8 +11,9 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.reader;
 
+import org.eclipse.keyple.core.plugin.MockAbstractThreadedPlugin;
+import org.eclipse.keyple.core.plugin.factory.PluginFactory;
 import org.eclipse.keyple.core.reader.exception.KeyplePluginInstantiationException;
-import org.eclipse.keyple.core.reader.plugin.MockAbstractThreadedPlugin;
 
 public class MockObservablePluginFactory implements PluginFactory {
 

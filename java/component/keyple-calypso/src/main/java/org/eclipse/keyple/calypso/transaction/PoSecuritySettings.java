@@ -16,7 +16,7 @@ import static org.eclipse.keyple.calypso.transaction.PoTransaction.SessionSettin
 import java.util.EnumMap;
 import java.util.List;
 import org.eclipse.keyple.calypso.KeyReference;
-import org.eclipse.keyple.core.selection.CardResource;
+import org.eclipse.keyple.core.card.selection.CardResource;
 
 /**
  * A class dedicated to managing the security settings involved in managing secure sessions.

@@ -17,10 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException;
-import org.eclipse.keyple.core.reader.message.AnswerToReset;
-import org.eclipse.keyple.core.reader.message.ApduResponse;
-import org.eclipse.keyple.core.reader.message.CardResponse;
-import org.eclipse.keyple.core.reader.message.SelectionStatus;
+import org.eclipse.keyple.core.card.message.AnswerToReset;
+import org.eclipse.keyple.core.card.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.SelectionStatus;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
 

@@ -11,7 +11,9 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.generic.pc.usecase2;
 
-import org.eclipse.keyple.core.reader.CardSelector;
+import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
+import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.core.reader.Plugin;
 import org.eclipse.keyple.core.reader.Reader;
 import org.eclipse.keyple.core.reader.SmartCardService;
@@ -22,8 +24,6 @@ import org.eclipse.keyple.core.reader.exception.KeypleException;
 import org.eclipse.keyple.core.reader.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.reader.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.reader.util.ContactlessCardCommonProtocols;
-import org.eclipse.keyple.core.selection.AbstractSmartCard;
-import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.generic.GenericCardSelectionRequest;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;

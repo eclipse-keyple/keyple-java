@@ -12,10 +12,10 @@
 package org.eclipse.keyple.calypso.command.po;
 
 import org.eclipse.keyple.calypso.command.po.exception.*;
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.command.CardCommand;
-import org.eclipse.keyple.core.command.exception.KeypleCardCommandException;
-import org.eclipse.keyple.core.reader.message.ApduResponse;
+import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.card.command.CardCommand;
+import org.eclipse.keyple.core.card.command.exception.KeypleCardCommandException;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 public abstract class AbstractPoResponseParser extends AbstractApduResponseParser {
 

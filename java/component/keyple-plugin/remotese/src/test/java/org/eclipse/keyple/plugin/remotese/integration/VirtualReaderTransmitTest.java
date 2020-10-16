@@ -12,13 +12,13 @@
 package org.eclipse.keyple.plugin.remotese.integration;
 
 import java.util.List;
-import org.eclipse.keyple.core.reader.MultiSelectionProcessing;
+import org.eclipse.keyple.core.card.message.CardRequest;
+import org.eclipse.keyple.core.card.message.ChannelControl;
+import org.eclipse.keyple.core.card.message.ProxyReader;
+import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
 import org.eclipse.keyple.core.reader.SmartCardService;
 import org.eclipse.keyple.core.reader.exception.KeypleReaderException;
 import org.eclipse.keyple.core.reader.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.reader.message.CardRequest;
-import org.eclipse.keyple.core.reader.message.ChannelControl;
-import org.eclipse.keyple.core.reader.message.ProxyReader;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
 import org.eclipse.keyple.plugin.remotese.rm.json.SampleFactory;
 import org.eclipse.keyple.plugin.stub.StubReader;

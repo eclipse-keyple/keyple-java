@@ -11,8 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.stub;
 
+import org.eclipse.keyple.core.plugin.factory.PluginFactory;
 import org.eclipse.keyple.core.reader.Plugin;
-import org.eclipse.keyple.core.reader.PluginFactory;
 import org.eclipse.keyple.core.reader.exception.KeyplePluginInstantiationException;
 
 /** Instantiate a {@link StubPlugin} with a custom plugin name */

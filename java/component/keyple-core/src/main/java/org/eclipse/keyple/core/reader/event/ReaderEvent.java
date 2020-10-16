@@ -11,10 +11,10 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.reader.event;
 
+import org.eclipse.keyple.core.card.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.reader.Plugin;
 import org.eclipse.keyple.core.reader.Reader;
 import org.eclipse.keyple.core.reader.SmartCardService;
-import org.eclipse.keyple.core.reader.message.DefaultSelectionsResponse;
 
 /**
  * This POJO is used to propagate a change of a card state in an {@link ObservableReader}.

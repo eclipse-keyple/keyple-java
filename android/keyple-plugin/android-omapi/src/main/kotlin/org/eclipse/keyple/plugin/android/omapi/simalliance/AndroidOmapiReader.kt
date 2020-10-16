@@ -13,10 +13,9 @@ package org.eclipse.keyple.plugin.android.omapi.simalliance
 
 import java.io.IOException
 import kotlin.experimental.or
-import org.eclipse.keyple.core.reader.CardSelector
+import org.eclipse.keyple.core.card.message.ApduResponse
+import org.eclipse.keyple.core.card.selection.CardSelector
 import org.eclipse.keyple.core.reader.exception.KeypleReaderIOException
-import org.eclipse.keyple.core.reader.message.ApduResponse
-import org.eclipse.keyple.core.reader.plugin.reader.AbstractLocalReader
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiReader
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiSupportedProtocols

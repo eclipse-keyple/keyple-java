@@ -12,9 +12,9 @@
 package org.eclipse.keyple.core.reader.event;
 
 import java.util.List;
-import org.eclipse.keyple.core.reader.MultiSelectionProcessing;
-import org.eclipse.keyple.core.reader.message.CardRequest;
-import org.eclipse.keyple.core.reader.message.ChannelControl;
+import org.eclipse.keyple.core.card.message.CardRequest;
+import org.eclipse.keyple.core.card.message.ChannelControl;
+import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
 
 /**
  * This abstract class defines the POJO used to carry the default selection request data.

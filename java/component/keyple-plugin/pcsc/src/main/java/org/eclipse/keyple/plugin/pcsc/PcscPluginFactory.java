@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.pcsc;
 
-import org.eclipse.keyple.core.reader.PluginFactory;
+import org.eclipse.keyple.core.plugin.factory.PluginFactory;
 import org.eclipse.keyple.core.reader.exception.KeyplePluginInstantiationException;
 
 /**

@@ -11,20 +11,20 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.reader.event;
 
-import static org.eclipse.keyple.core.reader.plugin.reader.AbsObservableLocalReaderTest.getNotMatchingResponses;
+import static org.eclipse.keyple.core.plugin.reader.AbsObservableLocalReaderTest.getNotMatchingResponses;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.keyple.core.reader.MultiSelectionProcessing;
+import org.eclipse.keyple.core.card.message.CardRequest;
+import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.ChannelControl;
+import org.eclipse.keyple.core.card.message.DefaultSelectionsRequest;
+import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
+import org.eclipse.keyple.core.plugin.reader.AbsObservableLocalReaderTest;
+import org.eclipse.keyple.core.plugin.reader.BlankObservableLocalReader;
 import org.eclipse.keyple.core.reader.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.reader.message.CardRequest;
-import org.eclipse.keyple.core.reader.message.CardResponse;
-import org.eclipse.keyple.core.reader.message.ChannelControl;
-import org.eclipse.keyple.core.reader.message.DefaultSelectionsRequest;
-import org.eclipse.keyple.core.reader.plugin.reader.AbsObservableLocalReaderTest;
-import org.eclipse.keyple.core.reader.plugin.reader.BlankObservableLocalReader;
 import org.junit.Assert;
 import org.junit.Test;
 
