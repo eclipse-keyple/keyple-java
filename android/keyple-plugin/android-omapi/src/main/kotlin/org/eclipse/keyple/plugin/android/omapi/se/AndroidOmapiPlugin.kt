@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.android.omapi.se
 import android.content.Context
 import android.se.omapi.SEService
 import androidx.annotation.RequiresApi
-import org.eclipse.keyple.core.seproxy.Reader
+import org.eclipse.keyple.core.reader.Reader
 import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiPlugin
 import org.eclipse.keyple.plugin.android.omapi.PLUGIN_NAME
 import timber.log.Timber

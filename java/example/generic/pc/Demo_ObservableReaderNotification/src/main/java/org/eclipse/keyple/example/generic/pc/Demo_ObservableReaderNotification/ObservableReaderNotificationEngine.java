@@ -12,15 +12,15 @@
 package org.eclipse.keyple.example.generic.pc.Demo_ObservableReaderNotification;
 
 import java.util.Collection;
-import org.eclipse.keyple.core.seproxy.Plugin;
-import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.SmartCardService;
-import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.PluginEvent;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.reader.Plugin;
+import org.eclipse.keyple.core.reader.Reader;
+import org.eclipse.keyple.core.reader.SmartCardService;
+import org.eclipse.keyple.core.reader.event.ObservablePlugin;
+import org.eclipse.keyple.core.reader.event.ObservableReader;
+import org.eclipse.keyple.core.reader.event.PluginEvent;
+import org.eclipse.keyple.core.reader.event.ReaderEvent;
+import org.eclipse.keyple.core.reader.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.reader.exception.KeypleReaderNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -12,7 +12,7 @@
 package org.eclipse.keyple.plugin.android.nfc
 
 import java.io.IOException
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
+import org.eclipse.keyple.core.reader.exception.KeypleReaderException
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

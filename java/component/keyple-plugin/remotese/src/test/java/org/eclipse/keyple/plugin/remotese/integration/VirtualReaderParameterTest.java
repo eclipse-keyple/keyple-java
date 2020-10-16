@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remotese.integration;
 
-import org.eclipse.keyple.core.seproxy.SmartCardService;
+import org.eclipse.keyple.core.reader.SmartCardService;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.junit.After;

@@ -17,9 +17,9 @@ import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
 import org.eclipse.keyple.calypso.command.sam.builder.security.UnlockCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronizedExchangesException;
+import org.eclipse.keyple.core.reader.message.ApduResponse;
+import org.eclipse.keyple.core.reader.message.CardResponse;
 import org.eclipse.keyple.core.selection.AbstractCardSelectionRequest;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
-import org.eclipse.keyple.core.seproxy.message.CardResponse;
 
 /**
  * Specialized selection request to manage the specific characteristics of Calypso SAMs<br>

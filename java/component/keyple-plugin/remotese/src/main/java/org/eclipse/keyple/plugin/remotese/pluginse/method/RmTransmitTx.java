@@ -12,10 +12,10 @@
 package org.eclipse.keyple.plugin.remotese.pluginse.method;
 
 import com.google.gson.JsonObject;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.message.CardRequest;
-import org.eclipse.keyple.core.seproxy.message.CardResponse;
-import org.eclipse.keyple.core.seproxy.message.ChannelControl;
+import org.eclipse.keyple.core.reader.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.reader.message.CardRequest;
+import org.eclipse.keyple.core.reader.message.CardResponse;
+import org.eclipse.keyple.core.reader.message.ChannelControl;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.rm.AbstractRemoteMethodTx;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;

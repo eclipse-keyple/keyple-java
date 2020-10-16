@@ -12,13 +12,13 @@
 package org.eclipse.keyple.example.calypso.pc.Demo_CalypsoClassic;
 
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalArgumentException;
-import org.eclipse.keyple.core.seproxy.Plugin;
-import org.eclipse.keyple.core.seproxy.SmartCardService;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.reader.Plugin;
+import org.eclipse.keyple.core.reader.SmartCardService;
+import org.eclipse.keyple.core.reader.event.ObservableReader;
+import org.eclipse.keyple.core.reader.exception.KeyplePluginInstantiationException;
+import org.eclipse.keyple.core.reader.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.reader.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.reader.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.common.calypso.stub.StubCalypsoClassic;
 import org.eclipse.keyple.example.common.calypso.stub.StubSamCalypsoClassic;
 import org.eclipse.keyple.plugin.stub.StubPlugin;

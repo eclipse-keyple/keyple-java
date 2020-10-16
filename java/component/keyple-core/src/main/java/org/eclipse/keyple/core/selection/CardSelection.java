@@ -13,15 +13,20 @@ package org.eclipse.keyple.core.selection;
 
 import java.util.*;
 import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
-import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
-import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
+import org.eclipse.keyple.core.reader.MultiSelectionProcessing;
+import org.eclipse.keyple.core.reader.Reader;
+import org.eclipse.keyple.core.reader.event.AbstractDefaultSelectionsRequest;
+import org.eclipse.keyple.core.reader.event.AbstractDefaultSelectionsResponse;
+import org.eclipse.keyple.core.reader.event.ReaderEvent;
+import org.eclipse.keyple.core.reader.exception.KeypleException;
+import org.eclipse.keyple.core.reader.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.reader.message.CardRequest;
+import org.eclipse.keyple.core.reader.message.CardResponse;
+import org.eclipse.keyple.core.reader.message.ChannelControl;
+import org.eclipse.keyple.core.reader.message.DefaultSelectionsRequest;
+import org.eclipse.keyple.core.reader.message.DefaultSelectionsResponse;
+import org.eclipse.keyple.core.reader.message.ProxyReader;
+import org.eclipse.keyple.core.reader.message.SelectionStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,9 +97,8 @@ public final class CardSelection {
   }
 
   /**
-   * Process the selection response either from a {@link
-   * org.eclipse.keyple.core.seproxy.event.ReaderEvent} (default selection) or from an explicit
-   * selection.
+   * Process the selection response either from a {@link ReaderEvent} (default selection) or from an
+   * explicit selection.
    *
    * <p>The responses from the List of {@link CardResponse} is parsed and checked.
    *

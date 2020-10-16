@@ -17,7 +17,7 @@ import org.eclipse.keyple.calypso.command.sam.exception.*;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.command.CardCommand;
 import org.eclipse.keyple.core.command.exception.KeypleCardCommandException;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.reader.message.ApduResponse;
 
 public abstract class AbstractSamResponseParser extends AbstractApduResponseParser {
 

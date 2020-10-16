@@ -12,7 +12,7 @@
 package org.eclipse.keyple.calypso.command.po.parser.security;
 
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.reader.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
 

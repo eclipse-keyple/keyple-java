@@ -15,9 +15,9 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Java6Assertions.shouldHaveThrown;
 import static org.eclipse.keyple.calypso.command.sam.SamRevision.*;
 
-import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
-import org.eclipse.keyple.core.seproxy.message.CardResponse;
-import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
+import org.eclipse.keyple.core.reader.message.AnswerToReset;
+import org.eclipse.keyple.core.reader.message.CardResponse;
+import org.eclipse.keyple.core.reader.message.SelectionStatus;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
 

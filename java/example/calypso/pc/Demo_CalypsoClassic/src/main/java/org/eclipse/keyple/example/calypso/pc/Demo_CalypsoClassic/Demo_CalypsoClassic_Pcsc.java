@@ -11,14 +11,14 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.calypso.pc.Demo_CalypsoClassic;
 
-import org.eclipse.keyple.core.seproxy.Plugin;
-import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.SmartCardService;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.util.ContactlessCardCommonProtocols;
-import org.eclipse.keyple.core.seproxy.util.ContactsCardCommonProtocols;
+import org.eclipse.keyple.core.reader.Plugin;
+import org.eclipse.keyple.core.reader.Reader;
+import org.eclipse.keyple.core.reader.SmartCardService;
+import org.eclipse.keyple.core.reader.event.ObservableReader;
+import org.eclipse.keyple.core.reader.exception.KeypleException;
+import org.eclipse.keyple.core.reader.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.reader.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.reader.util.ContactsCardCommonProtocols;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;

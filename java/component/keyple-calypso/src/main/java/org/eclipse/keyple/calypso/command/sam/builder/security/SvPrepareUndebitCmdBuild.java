@@ -15,7 +15,7 @@ import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
 import org.eclipse.keyple.calypso.command.sam.CalypsoSamCommand;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.parser.security.SvPrepareOperationRespPars;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.reader.message.ApduResponse;
 
 /** Builder for the SAM SV Undebit APDU command. */
 public class SvPrepareUndebitCmdBuild

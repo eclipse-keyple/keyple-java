@@ -19,7 +19,7 @@ import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamAccessForbidde
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCounterOverflowException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamDataAccessException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.reader.message.ApduResponse;
 
 /** Digest init response parser. See specs: Calypso / page 54 / 7.4.2 - Session MAC computation */
 public class DigestInitRespPars extends AbstractSamResponseParser {

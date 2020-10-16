@@ -11,9 +11,9 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.selection;
 
-import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
-import org.eclipse.keyple.core.seproxy.message.CardResponse;
+import org.eclipse.keyple.core.reader.message.AnswerToReset;
+import org.eclipse.keyple.core.reader.message.ApduResponse;
+import org.eclipse.keyple.core.reader.message.CardResponse;
 
 /**
  * AbstractSmartCard is the class to manage the elements of the result of a selection.

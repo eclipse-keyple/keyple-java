@@ -12,10 +12,10 @@
 package org.eclipse.keyple.core.selection;
 
 import org.eclipse.keyple.core.CoreBaseTest;
-import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
-import org.eclipse.keyple.core.seproxy.message.CardResponse;
-import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
+import org.eclipse.keyple.core.reader.Reader;
+import org.eclipse.keyple.core.reader.message.AnswerToReset;
+import org.eclipse.keyple.core.reader.message.CardResponse;
+import org.eclipse.keyple.core.reader.message.SelectionStatus;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Before;

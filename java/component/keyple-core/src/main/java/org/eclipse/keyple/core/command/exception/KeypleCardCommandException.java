@@ -12,7 +12,7 @@
 package org.eclipse.keyple.core.command.exception;
 
 import org.eclipse.keyple.core.command.CardCommand;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
+import org.eclipse.keyple.core.reader.exception.KeypleException;
 
 /**
  * This exception is the parent abstract class of all Keyple card APDU commands exceptions.

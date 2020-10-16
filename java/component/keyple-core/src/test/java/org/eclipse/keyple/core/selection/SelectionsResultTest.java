@@ -14,9 +14,9 @@ package org.eclipse.keyple.core.selection;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import java.util.Map;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
-import org.eclipse.keyple.core.seproxy.message.CardResponse;
-import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
+import org.eclipse.keyple.core.reader.message.ApduResponse;
+import org.eclipse.keyple.core.reader.message.CardResponse;
+import org.eclipse.keyple.core.reader.message.SelectionStatus;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
 

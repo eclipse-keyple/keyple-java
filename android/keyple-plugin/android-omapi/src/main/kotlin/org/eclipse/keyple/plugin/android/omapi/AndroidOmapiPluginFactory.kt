@@ -15,9 +15,9 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.annotation.VisibleForTesting
-import org.eclipse.keyple.core.seproxy.Plugin
-import org.eclipse.keyple.core.seproxy.PluginFactory
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException
+import org.eclipse.keyple.core.reader.Plugin
+import org.eclipse.keyple.core.reader.PluginFactory
+import org.eclipse.keyple.core.reader.exception.KeyplePluginInstantiationException
 
 /**
  * Build asynchronously the Android OMAPI plugin.

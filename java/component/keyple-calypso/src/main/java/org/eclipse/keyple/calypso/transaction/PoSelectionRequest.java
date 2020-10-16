@@ -18,9 +18,9 @@ import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronizedExchangesException;
+import org.eclipse.keyple.core.reader.message.ApduResponse;
+import org.eclipse.keyple.core.reader.message.CardResponse;
 import org.eclipse.keyple.core.selection.AbstractCardSelectionRequest;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
-import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

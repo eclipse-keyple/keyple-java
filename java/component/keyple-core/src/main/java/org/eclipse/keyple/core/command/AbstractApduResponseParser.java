@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.core.command.exception.KeypleCardCommandException;
 import org.eclipse.keyple.core.command.exception.KeypleCardCommandUnknownStatusException;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.reader.message.ApduResponse;
 
 /**
  * This abstract class defines the parser used to handle APDU's response.

@@ -13,13 +13,13 @@ package org.eclipse.keyple.plugin.android.omapi.simalliance
 
 import io.mockk.every
 import io.mockk.mockk
-import org.eclipse.keyple.core.seproxy.CardSelector
-import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
-import org.eclipse.keyple.core.seproxy.message.ApduRequest
-import org.eclipse.keyple.core.seproxy.message.CardRequest
-import org.eclipse.keyple.core.seproxy.message.ChannelControl
-import org.eclipse.keyple.core.seproxy.util.ContactsCardCommonProtocols
+import org.eclipse.keyple.core.reader.CardSelector
+import org.eclipse.keyple.core.reader.MultiSelectionProcessing
+import org.eclipse.keyple.core.reader.exception.KeypleReaderIOException
+import org.eclipse.keyple.core.reader.message.ApduRequest
+import org.eclipse.keyple.core.reader.message.CardRequest
+import org.eclipse.keyple.core.reader.message.ChannelControl
+import org.eclipse.keyple.core.reader.util.ContactsCardCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiReaderTest
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiSupportedProtocols

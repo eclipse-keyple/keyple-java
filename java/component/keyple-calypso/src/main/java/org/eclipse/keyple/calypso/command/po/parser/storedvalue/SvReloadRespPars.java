@@ -21,7 +21,7 @@ import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoSessionBufferOve
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamAccessForbiddenException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCounterOverflowException;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.reader.message.ApduResponse;
 
 /**
  * SV Reload (00B8) response parser. See specs: Calypso Stored Value balance (signed binaries'

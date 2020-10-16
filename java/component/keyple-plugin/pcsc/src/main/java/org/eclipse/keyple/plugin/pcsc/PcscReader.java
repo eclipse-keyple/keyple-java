@@ -12,8 +12,8 @@
 package org.eclipse.keyple.plugin.pcsc;
 
 import javax.smartcardio.Card;
-import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.reader.Reader;
+import org.eclipse.keyple.core.reader.event.ObservableReader;
 
 /**
  * Interface extending {@link ObservableReader}) and allowing to set the operating parameters of a

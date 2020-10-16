@@ -11,9 +11,9 @@
  ************************************************************************************** */
 package org.eclipse.keyple.calypso.transaction;
 
-import org.eclipse.keyple.core.seproxy.Plugin;
-import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.reader.Plugin;
+import org.eclipse.keyple.core.reader.ReaderPoolPlugin;
+import org.eclipse.keyple.core.reader.exception.KeypleReaderException;
 
 /** Factory that builds a SamResourceManager depending on the plugin used */
 public abstract class SamResourceManagerFactory {

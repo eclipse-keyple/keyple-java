@@ -15,7 +15,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.core.seproxy.message.ApduRequest;
+import org.eclipse.keyple.core.reader.message.ApduRequest;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Test;

@@ -20,10 +20,10 @@ import android.os.Build
 import android.os.Bundle
 import java.io.IOException
 import java.util.HashMap
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableLocalReader
-import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderStateService
+import org.eclipse.keyple.core.reader.exception.KeypleReaderException
+import org.eclipse.keyple.core.reader.exception.KeypleReaderIOException
+import org.eclipse.keyple.core.reader.plugin.reader.AbstractObservableLocalReader
+import org.eclipse.keyple.core.reader.plugin.reader.ObservableReaderStateService
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import timber.log.Timber
 

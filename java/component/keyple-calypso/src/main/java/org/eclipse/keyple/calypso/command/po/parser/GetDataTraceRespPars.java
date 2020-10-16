@@ -18,7 +18,7 @@ import org.eclipse.keyple.calypso.command.po.builder.GetDataTraceCmdBuild;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoDataAccessException;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalParameterException;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.reader.message.ApduResponse;
 
 /**
  * Returns the traceability data obtained from the Get Data command response.

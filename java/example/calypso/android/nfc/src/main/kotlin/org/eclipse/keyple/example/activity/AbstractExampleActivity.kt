@@ -26,11 +26,11 @@ import kotlinx.android.synthetic.main.activity_calypso_examples.drawerLayout
 import kotlinx.android.synthetic.main.activity_calypso_examples.eventRecyclerView
 import kotlinx.android.synthetic.main.activity_calypso_examples.navigationView
 import kotlinx.android.synthetic.main.activity_calypso_examples.toolbar
+import org.eclipse.keyple.core.reader.SmartCardService
+import org.eclipse.keyple.core.reader.event.ObservableReader
+import org.eclipse.keyple.core.reader.event.ReaderEvent
+import org.eclipse.keyple.core.reader.util.ContactlessCardCommonProtocols
 import org.eclipse.keyple.core.selection.CardSelection
-import org.eclipse.keyple.core.seproxy.SmartCardService
-import org.eclipse.keyple.core.seproxy.event.ObservableReader
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent
-import org.eclipse.keyple.core.seproxy.util.ContactlessCardCommonProtocols
 import org.eclipse.keyple.example.adapter.EventAdapter
 import org.eclipse.keyple.example.calypso.android.nfc.R
 import org.eclipse.keyple.example.model.ChoiceEventModel

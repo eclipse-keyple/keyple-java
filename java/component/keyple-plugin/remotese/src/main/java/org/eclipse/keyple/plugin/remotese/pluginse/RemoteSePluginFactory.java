@@ -12,9 +12,9 @@
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import java.util.concurrent.ExecutorService;
-import org.eclipse.keyple.core.seproxy.Plugin;
-import org.eclipse.keyple.core.seproxy.PluginFactory;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
+import org.eclipse.keyple.core.reader.Plugin;
+import org.eclipse.keyple.core.reader.PluginFactory;
+import org.eclipse.keyple.core.reader.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
 
 /** Used internally by MasterAPI to create the {@link RemoteSePlugin} */

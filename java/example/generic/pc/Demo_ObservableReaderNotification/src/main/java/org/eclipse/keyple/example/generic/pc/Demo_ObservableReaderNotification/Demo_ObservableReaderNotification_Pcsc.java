@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.generic.pc.Demo_ObservableReaderNotification;
 
-import org.eclipse.keyple.core.seproxy.SmartCardService;
+import org.eclipse.keyple.core.reader.SmartCardService;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

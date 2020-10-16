@@ -20,7 +20,7 @@ import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoDataAccessExcept
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoSecurityContextException;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoSessionBufferOverflowException;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.reader.message.ApduResponse;
 
 /** Rehabilitate response parser. */
 public final class RehabilitateRespPars extends AbstractPoResponseParser {

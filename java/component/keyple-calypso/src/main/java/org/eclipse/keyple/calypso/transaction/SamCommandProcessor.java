@@ -32,10 +32,14 @@ import org.eclipse.keyple.calypso.command.sam.parser.security.SvPrepareOperation
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronizedExchangesException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoSamIOException;
 import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
+import org.eclipse.keyple.core.reader.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.reader.message.ApduRequest;
+import org.eclipse.keyple.core.reader.message.ApduResponse;
+import org.eclipse.keyple.core.reader.message.CardRequest;
+import org.eclipse.keyple.core.reader.message.CardResponse;
+import org.eclipse.keyple.core.reader.message.ChannelControl;
+import org.eclipse.keyple.core.reader.message.ProxyReader;
 import org.eclipse.keyple.core.selection.CardResource;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

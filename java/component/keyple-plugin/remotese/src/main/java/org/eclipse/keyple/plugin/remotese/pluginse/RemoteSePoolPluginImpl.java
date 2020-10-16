@@ -13,9 +13,9 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import java.util.SortedSet;
 import java.util.concurrent.ExecutorService;
-import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationNoReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
+import org.eclipse.keyple.core.reader.Reader;
+import org.eclipse.keyple.core.reader.exception.KeypleAllocationNoReaderException;
+import org.eclipse.keyple.core.reader.exception.KeypleAllocationReaderException;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTxPoolEngine;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;

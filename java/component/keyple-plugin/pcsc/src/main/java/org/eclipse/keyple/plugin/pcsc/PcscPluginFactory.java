@@ -11,8 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.pcsc;
 
-import org.eclipse.keyple.core.seproxy.PluginFactory;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
+import org.eclipse.keyple.core.reader.PluginFactory;
+import org.eclipse.keyple.core.reader.exception.KeyplePluginInstantiationException;
 
 /**
  * Provides a factory to get the {@link PcscPlugin}.

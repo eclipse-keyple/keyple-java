@@ -13,7 +13,7 @@ package org.eclipse.keyple.example.util
 
 import android.content.Context
 import android.os.Build
-import org.eclipse.keyple.core.seproxy.util.ContactlessCardCommonProtocols
+import org.eclipse.keyple.core.reader.util.ContactlessCardCommonProtocols
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader
 
 /**

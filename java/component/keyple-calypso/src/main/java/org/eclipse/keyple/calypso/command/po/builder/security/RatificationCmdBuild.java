@@ -12,7 +12,7 @@
 package org.eclipse.keyple.calypso.command.po.builder.security;
 
 import org.eclipse.keyple.calypso.command.PoClass;
-import org.eclipse.keyple.core.seproxy.message.ApduRequest;
+import org.eclipse.keyple.core.reader.message.ApduRequest;
 
 /**
  * The RatificationCmdBuild class provides the ApduRequest dedicated to the ratification command,

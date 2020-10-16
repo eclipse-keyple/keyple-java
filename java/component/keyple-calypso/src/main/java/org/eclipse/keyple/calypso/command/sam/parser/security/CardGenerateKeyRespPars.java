@@ -19,7 +19,7 @@ import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamAccessForbidde
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamDataAccessException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIncorrectInputDataException;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.reader.message.ApduResponse;
 
 public class CardGenerateKeyRespPars extends AbstractSamResponseParser {
 

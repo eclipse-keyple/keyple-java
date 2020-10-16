@@ -21,7 +21,7 @@ import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamAccessForbidde
 import org.eclipse.keyple.calypso.transaction.SvDebitLogRecord;
 import org.eclipse.keyple.calypso.transaction.SvLoadLogRecord;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.reader.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /** SV Get (007C) response parser. See specs: Calypso */

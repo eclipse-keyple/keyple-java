@@ -13,10 +13,10 @@ package org.eclipse.keyple.plugin.remotese.integration;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
-import org.eclipse.keyple.core.seproxy.event.PluginEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.reader.event.ObservablePlugin;
+import org.eclipse.keyple.core.reader.event.PluginEvent;
+import org.eclipse.keyple.core.reader.exception.KeypleReaderException;
+import org.eclipse.keyple.core.reader.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.plugin.remotese.pluginse.RemoteSePlugin;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
 import org.eclipse.keyple.plugin.stub.StubReader;

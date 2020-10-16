@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.stub;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.reader.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 public abstract class StubSecureElement {

@@ -14,7 +14,7 @@ package org.eclipse.keyple.calypso.command.po.builder;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.eclipse.keyple.calypso.command.PoClass;
-import org.eclipse.keyple.core.seproxy.message.ApduRequest;
+import org.eclipse.keyple.core.reader.message.ApduRequest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;

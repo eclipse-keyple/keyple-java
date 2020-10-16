@@ -17,7 +17,7 @@ import static org.assertj.core.api.Java6Assertions.shouldHaveThrown;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.builder.security.SamReadEventCounterCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.parser.security.SamReadEventCounterRespPars;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.reader.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;

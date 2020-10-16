@@ -16,7 +16,7 @@ import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.parser.security.VerifyPinRespPars;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.reader.message.ApduResponse;
 
 public class VerifyPinCmdBuild extends AbstractPoCommandBuilder<VerifyPinRespPars> {
   private static final CalypsoPoCommand command = CalypsoPoCommand.VERIFY_PIN;

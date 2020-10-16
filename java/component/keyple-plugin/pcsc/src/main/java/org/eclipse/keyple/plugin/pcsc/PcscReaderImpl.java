@@ -14,21 +14,21 @@ package org.eclipse.keyple.plugin.pcsc;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 import javax.smartcardio.*;
-import org.eclipse.keyple.core.seproxy.SmartCardService;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotSupportedException;
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableLocalReader;
-import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderStateService;
-import org.eclipse.keyple.core.seproxy.plugin.reader.SmartInsertionReader;
-import org.eclipse.keyple.core.seproxy.plugin.reader.SmartRemovalReader;
+import org.eclipse.keyple.core.reader.Reader;
+import org.eclipse.keyple.core.reader.SmartCardService;
+import org.eclipse.keyple.core.reader.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.reader.exception.KeypleReaderProtocolNotSupportedException;
+import org.eclipse.keyple.core.reader.plugin.reader.AbstractObservableLocalReader;
+import org.eclipse.keyple.core.reader.plugin.reader.ObservableReaderStateService;
+import org.eclipse.keyple.core.reader.plugin.reader.SmartInsertionReader;
+import org.eclipse.keyple.core.reader.plugin.reader.SmartRemovalReader;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Package private class implementing the {@link org.eclipse.keyple.core.seproxy.Reader} interface
- * for PC/SC based readers.
+ * Package private class implementing the {@link Reader} interface for PC/SC based readers.
  *
  * <p>A PC/SC reader is observable ({@link AbstractObservableLocalReader}), autonomous to detect the
  * insertion of cards ({@link SmartInsertionReader}, able to detect the removal of a card prior an

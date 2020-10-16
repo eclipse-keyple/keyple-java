@@ -11,13 +11,13 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.generic.pc.usecase4;
 
+import org.eclipse.keyple.core.reader.CardSelector;
+import org.eclipse.keyple.core.reader.Plugin;
+import org.eclipse.keyple.core.reader.Reader;
+import org.eclipse.keyple.core.reader.SmartCardService;
 import org.eclipse.keyple.core.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.selection.CardSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.CardSelector;
-import org.eclipse.keyple.core.seproxy.Plugin;
-import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.SmartCardService;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.generic.GenericCardSelectionRequest;

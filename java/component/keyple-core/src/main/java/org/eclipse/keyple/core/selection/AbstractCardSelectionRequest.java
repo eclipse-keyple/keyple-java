@@ -14,11 +14,11 @@ package org.eclipse.keyple.core.selection;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
-import org.eclipse.keyple.core.seproxy.CardSelector;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-import org.eclipse.keyple.core.seproxy.message.ApduRequest;
-import org.eclipse.keyple.core.seproxy.message.CardRequest;
-import org.eclipse.keyple.core.seproxy.message.CardResponse;
+import org.eclipse.keyple.core.reader.CardSelector;
+import org.eclipse.keyple.core.reader.exception.KeypleException;
+import org.eclipse.keyple.core.reader.message.ApduRequest;
+import org.eclipse.keyple.core.reader.message.CardRequest;
+import org.eclipse.keyple.core.reader.message.CardResponse;
 
 /**
  * The AbstractCardSelectionRequest class combines a CardSelector with additional helper methods

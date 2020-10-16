@@ -17,7 +17,7 @@ import android.nfc.tech.MifareClassic
 import android.nfc.tech.MifareUltralight
 import android.nfc.tech.TagTechnology
 import java.io.IOException
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
+import org.eclipse.keyple.core.reader.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.slf4j.LoggerFactory
 

@@ -11,12 +11,12 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.common.generic;
 
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.reader.event.AbstractDefaultSelectionsResponse;
+import org.eclipse.keyple.core.reader.event.ObservableReader;
+import org.eclipse.keyple.core.reader.event.ReaderEvent;
+import org.eclipse.keyple.core.reader.exception.KeypleException;
+import org.eclipse.keyple.core.reader.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.reader.exception.KeypleReaderNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

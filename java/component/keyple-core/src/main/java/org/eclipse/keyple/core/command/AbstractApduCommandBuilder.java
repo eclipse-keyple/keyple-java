@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.command;
 
-import org.eclipse.keyple.core.seproxy.message.ApduRequest;
+import org.eclipse.keyple.core.reader.message.ApduRequest;
 
 /**
  * Generic APDU command builder.

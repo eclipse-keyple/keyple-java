@@ -11,13 +11,10 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.stub;
 
-import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
+import org.eclipse.keyple.core.reader.Reader;
+import org.eclipse.keyple.core.reader.ReaderPoolPlugin;
 
-/**
- * StubPoolPlugin allows to simulate a {@link org.eclipse.keyple.core.seproxy.ReaderPoolPlugin} and
- * a {@link StubSecureElement}
- */
+/** StubPoolPlugin allows to simulate a {@link ReaderPoolPlugin} and a {@link StubSecureElement} */
 public interface StubPoolPlugin extends ReaderPoolPlugin {
 
   /**

@@ -13,7 +13,7 @@ package org.eclipse.keyple.calypso.command.po.builder.security;
 
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
-import org.eclipse.keyple.core.seproxy.message.ApduRequest;
+import org.eclipse.keyple.core.reader.message.ApduRequest;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Test;

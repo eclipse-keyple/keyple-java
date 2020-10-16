@@ -13,15 +13,20 @@ package org.eclipse.keyple.plugin.remotese.rm.json;
 
 import java.io.IOException;
 import java.util.*;
-import org.eclipse.keyple.core.seproxy.CardSelector;
-import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.util.ContactlessCardCommonProtocols;
-import org.eclipse.keyple.core.seproxy.util.ContactsCardCommonProtocols;
+import org.eclipse.keyple.core.reader.CardSelector;
+import org.eclipse.keyple.core.reader.MultiSelectionProcessing;
+import org.eclipse.keyple.core.reader.event.AbstractDefaultSelectionsRequest;
+import org.eclipse.keyple.core.reader.event.ObservableReader;
+import org.eclipse.keyple.core.reader.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.reader.message.ApduRequest;
+import org.eclipse.keyple.core.reader.message.ApduResponse;
+import org.eclipse.keyple.core.reader.message.CardRequest;
+import org.eclipse.keyple.core.reader.message.CardResponse;
+import org.eclipse.keyple.core.reader.message.ChannelControl;
+import org.eclipse.keyple.core.reader.message.DefaultSelectionsRequest;
+import org.eclipse.keyple.core.reader.message.SelectionStatus;
+import org.eclipse.keyple.core.reader.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.reader.util.ContactsCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 public class SampleFactory {

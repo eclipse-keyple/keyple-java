@@ -20,7 +20,7 @@ import org.eclipse.keyple.calypso.command.po.builder.SelectFileCmdBuild;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoDataAccessException;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoIllegalParameterException;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.reader.message.ApduResponse;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.core.util.bertlv.TLV;
 import org.eclipse.keyple.core.util.bertlv.Tag;

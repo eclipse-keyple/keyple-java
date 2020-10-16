@@ -12,10 +12,10 @@
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import java.util.*;
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderNotifier;
+import org.eclipse.keyple.core.reader.event.AbstractDefaultSelectionsRequest;
+import org.eclipse.keyple.core.reader.event.ObservableReader;
+import org.eclipse.keyple.core.reader.event.ReaderEvent;
+import org.eclipse.keyple.core.reader.plugin.reader.ObservableReaderNotifier;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.pluginse.method.RmSetDefaultSelectionRequestTx;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTxEngine;

@@ -11,9 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.calypso.command.po.parser.storedvalue;
 
-import static org.junit.Assert.*;
-
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.reader.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Test;

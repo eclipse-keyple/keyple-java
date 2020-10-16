@@ -15,18 +15,18 @@ import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
 
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
+import org.eclipse.keyple.core.reader.CardSelector;
+import org.eclipse.keyple.core.reader.Reader;
+import org.eclipse.keyple.core.reader.event.AbstractDefaultSelectionsRequest;
+import org.eclipse.keyple.core.reader.event.AbstractDefaultSelectionsResponse;
+import org.eclipse.keyple.core.reader.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.selection.CardSelection;
-import org.eclipse.keyple.core.seproxy.CardSelector;
-import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
-import org.eclipse.keyple.core.seproxy.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.common.generic.AbstractReaderObserverAsynchronousEngine;
 import org.eclipse.keyple.example.common.generic.GenericCardSelectionRequest;
 
 /**
- * This code demonstrates the multi-protocols capability of the Keyple SeProxy
+ * This code demonstrates the multi-protocols capability of the Keyple SmartCardService
  *
  * <ul>
  *   <li>instantiates a PC/SC plugin for a reader which name matches the regular expression provided

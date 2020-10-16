@@ -18,9 +18,9 @@ import androidx.annotation.RequiresApi
 import java.io.IOException
 import java.util.NoSuchElementException
 import kotlin.experimental.or
-import org.eclipse.keyple.core.seproxy.CardSelector
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
-import org.eclipse.keyple.core.seproxy.message.ApduResponse
+import org.eclipse.keyple.core.reader.CardSelector
+import org.eclipse.keyple.core.reader.exception.KeypleReaderIOException
+import org.eclipse.keyple.core.reader.message.ApduResponse
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiReader
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiSupportedProtocols

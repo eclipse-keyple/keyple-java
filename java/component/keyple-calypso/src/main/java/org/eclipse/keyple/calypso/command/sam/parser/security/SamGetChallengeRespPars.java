@@ -16,7 +16,7 @@ import java.util.Map;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
 import org.eclipse.keyple.calypso.command.sam.builder.security.SamGetChallengeCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamIllegalParameterException;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.reader.message.ApduResponse;
 
 /** SAM get challenge. See specs: Calypso / Page 108 / 9.5.4 - Get challenge */
 public class SamGetChallengeRespPars extends AbstractSamResponseParser {

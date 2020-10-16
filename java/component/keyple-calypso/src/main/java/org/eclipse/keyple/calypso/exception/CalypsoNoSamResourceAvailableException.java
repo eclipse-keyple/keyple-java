@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.calypso.exception;
 
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
+import org.eclipse.keyple.core.reader.exception.KeypleException;
 
 /**
  * The exception {@code CalypsoNoSamResourceAvailableException} indicates that there are no SAM

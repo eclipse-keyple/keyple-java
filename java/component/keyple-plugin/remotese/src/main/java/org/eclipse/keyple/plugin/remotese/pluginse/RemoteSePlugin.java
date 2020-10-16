@@ -11,9 +11,9 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
-import org.eclipse.keyple.core.seproxy.Plugin;
-import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.reader.Plugin;
+import org.eclipse.keyple.core.reader.event.ObservablePlugin;
+import org.eclipse.keyple.core.reader.exception.KeypleReaderNotFoundException;
 
 /**
  * RemoteSePlugin manages Virtual Reader. Use its ObservablePlugin capacities to get notified when a

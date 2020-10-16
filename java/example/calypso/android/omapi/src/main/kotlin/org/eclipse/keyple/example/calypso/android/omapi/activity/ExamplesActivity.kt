@@ -22,8 +22,8 @@ import kotlinx.android.synthetic.main.activity_core_examples.drawerLayout
 import kotlinx.android.synthetic.main.activity_core_examples.eventRecyclerView
 import kotlinx.android.synthetic.main.activity_core_examples.navigationView
 import kotlinx.android.synthetic.main.activity_core_examples.toolbar
-import org.eclipse.keyple.core.seproxy.Reader
-import org.eclipse.keyple.core.seproxy.SmartCardService
+import org.eclipse.keyple.core.reader.Reader
+import org.eclipse.keyple.core.reader.SmartCardService
 import org.eclipse.keyple.example.calypso.android.omapi.R
 import org.eclipse.keyple.example.calypso.android.omapi.adapter.EventAdapter
 import org.eclipse.keyple.example.calypso.android.omapi.model.ChoiceEventModel

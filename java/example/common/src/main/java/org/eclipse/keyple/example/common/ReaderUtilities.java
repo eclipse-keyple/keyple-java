@@ -17,11 +17,11 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Properties;
 import java.util.regex.Pattern;
-import org.eclipse.keyple.core.seproxy.Plugin;
-import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.SmartCardService;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.reader.Plugin;
+import org.eclipse.keyple.core.reader.Reader;
+import org.eclipse.keyple.core.reader.SmartCardService;
+import org.eclipse.keyple.core.reader.exception.KeypleReaderException;
+import org.eclipse.keyple.core.reader.exception.KeypleReaderNotFoundException;
 
 public final class ReaderUtilities {
   private static Properties properties;

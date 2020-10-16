@@ -39,7 +39,7 @@ import org.eclipse.keyple.calypso.command.po.parser.security.CloseSessionRespPar
 import org.eclipse.keyple.calypso.command.po.parser.security.PoGetChallengeRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.VerifyPinRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.storedvalue.SvGetRespPars;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.reader.message.ApduResponse;
 import org.eclipse.keyple.core.util.Assert;
 
 /** Utility class used to check Calypso specific data. */

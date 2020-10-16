@@ -16,11 +16,11 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import java.util.List;
 import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.core.command.CardCommand;
-import org.eclipse.keyple.core.seproxy.CardSelector;
-import org.eclipse.keyple.core.seproxy.message.ApduRequest;
-import org.eclipse.keyple.core.seproxy.message.CardRequest;
-import org.eclipse.keyple.core.seproxy.message.CardResponse;
-import org.eclipse.keyple.core.seproxy.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.reader.CardSelector;
+import org.eclipse.keyple.core.reader.message.ApduRequest;
+import org.eclipse.keyple.core.reader.message.CardRequest;
+import org.eclipse.keyple.core.reader.message.CardResponse;
+import org.eclipse.keyple.core.reader.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
 

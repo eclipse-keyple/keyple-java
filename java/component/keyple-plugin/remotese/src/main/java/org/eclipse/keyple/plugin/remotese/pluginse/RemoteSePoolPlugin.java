@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
-import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
+import org.eclipse.keyple.core.reader.ReaderPoolPlugin;
 
 /** Using a RemoteSePoolPlugin is slightly different */
 public interface RemoteSePoolPlugin extends RemoteSePlugin, ReaderPoolPlugin {

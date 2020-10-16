@@ -12,7 +12,7 @@
 package org.eclipse.keyple.calypso.util;
 
 import java.io.ByteArrayOutputStream;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.reader.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /** @author f.razakarivony */
