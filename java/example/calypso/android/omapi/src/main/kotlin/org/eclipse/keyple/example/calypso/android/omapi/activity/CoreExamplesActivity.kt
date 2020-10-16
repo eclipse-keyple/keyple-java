@@ -144,11 +144,11 @@ class CoreExamplesActivity : ExamplesActivity() {
         } else {
             readers.values.forEach { reader: Reader ->
                 if (reader.isCardPresent) {
-                    addActionEvent("Sending multiSelection request based on AID Prefix $seAidPrefix to ${reader.name}")
+                    addActionEvent("Sending multiSelection request based on AID Prefix $cardAidPrefix to ${reader.name}")
                     try {
                         val selectionsResult = cardSelection.processExplicitSelection(reader)
-                        if (selectionsResult.matchingSmartCards.size> 0) {
-                            selectionsResult.matchingSmartCards.forEach {
+                        if (selectionsResult.smartCards.size> 0) {
+                            selectionsResult.smartCards.forEach {
                                 val smartCard = it.value
                                 addResultEvent("Selection status for selection " +
                                         "(indexed ${it.key}): \n\t\t" +
@@ -229,7 +229,7 @@ class CoreExamplesActivity : ExamplesActivity() {
 
     @Throws(KeypleReaderException::class)
     private fun doAndAnalyseSelection(reader: Reader, cardSelection: CardSelection, index: Int, cardAidPrefix: String) {
-        addActionEvent("Sending multiSelection request based on AID Prefix $seAidPrefix to ${reader.name}")
+        addActionEvent("Sending multiSelection request based on AID Prefix $cardAidPrefix to ${reader.name}")
         val selectionsResult = cardSelection.processExplicitSelection(reader)
         if (selectionsResult.hasActiveSelection()) {
             val smartCard = selectionsResult.activeSmartCard

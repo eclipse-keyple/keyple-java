@@ -175,7 +175,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
             cardSelection.prepareSelection(selectionRequest1st)
 
             /* Do the selection and display the result */
-            addActionEvent("FIRST MATCH Calypso PO selection for prefix: $seAidPrefix")
+            addActionEvent("FIRST MATCH Calypso PO selection for prefix: $cardAidPrefix")
             doAndAnalyseSelection(reader, cardSelection, 1)
 
             /*
@@ -195,7 +195,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
             cardSelection.prepareSelection(selectionRequest2nd)
 
             /* Do the selection and display the result */
-            addActionEvent("NEXT MATCH Calypso PO selection for prefix: $seAidPrefix")
+            addActionEvent("NEXT MATCH Calypso PO selection for prefix: $cardAidPrefix")
             doAndAnalyseSelection(reader, cardSelection, 2)
         } else {
             addResultEvent("No cards were detected.")
@@ -262,7 +262,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
 
             cardSelection.prepareSelection(selectionRequest3rd)
 
-            addActionEvent("Calypso PO selection for prefix: $seAidPrefix")
+            addActionEvent("Calypso PO selection for prefix: $cardAidPrefix")
 
             /*
             * Actual card communication: operate through a single request the card selection
@@ -270,8 +270,8 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
             try {
                 val selectionResult = cardSelection.processExplicitSelection(reader)
 
-                if (selectionResult.matchingSmartCards.size > 0) {
-                    selectionResult.matchingSmartCards.forEach {
+                if (selectionResult.smartCards.size > 0) {
+                    selectionResult.smartCards.forEach {
                         val smartCard = it.value
                         addResultEvent("Selection status for selection " +
                                 "(indexed ${it.key}): \n\t\t" +
@@ -343,7 +343,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                             val selectedCard = cardSelection.processDefaultSelection(event.defaultSelectionsResponse).activeSmartCard
                             if (selectedCard != null) {
                                 addResultEvent("Observer notification: the selection of the card has succeeded. End of the card processing.")
-                                addResultEvent("Application FCI = ${ByteArrayUtil.toHex(selectedSe.fciBytes)}")
+                                addResultEvent("Application FCI = ${ByteArrayUtil.toHex(selectedCard.fciBytes)}")
                             } else {
                                 addResultEvent("The selection of the card has failed. Should not have occurred due to the MATCHED_ONLY selection mode.")
                             }
@@ -428,7 +428,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                 if (selectionsResult.hasActiveSelection()) {
                     val matchedCard = selectionsResult.activeSmartCard
                     addResultEvent("The selection of the card has succeeded.")
-                    addResultEvent("Application FCI = ${ByteArrayUtil.toHex(matchedSe.fciBytes)}")
+                    addResultEvent("Application FCI = ${ByteArrayUtil.toHex(matchedCard.fciBytes)}")
                     addResultEvent("End of the generic card processing.")
                 } else {
                     addResultEvent("The selection of the card has failed.")
