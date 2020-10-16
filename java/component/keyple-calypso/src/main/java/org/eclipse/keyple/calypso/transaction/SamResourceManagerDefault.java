@@ -279,7 +279,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
                 if (readerObserver != null) {
                   logger.trace("Remove observer and stop detection READERNAME = {}", readerName);
                   ((ObservableReader) samReader).removeObserver(readerObserver);
-                  ((ObservableReader) samReader).stopSeDetection();
+                  ((ObservableReader) samReader).stopCardDetection();
                 } else {
                   removeResource(samReader);
                   logger.trace(
@@ -386,7 +386,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
     if (samReader instanceof ObservableReader && readerObserver != null) {
       logger.trace("Add observer and start detection READERNAME = {}", samReader.getName());
       ((ObservableReader) samReader).addObserver(readerObserver);
-      ((ObservableReader) samReader).startSeDetection(ObservableReader.PollingMode.REPEATING);
+      ((ObservableReader) samReader).startCardDetection(ObservableReader.PollingMode.REPEATING);
     } else {
       logger.trace("Sam Reader is not an ObservableReader = {}", samReader.getName());
     }

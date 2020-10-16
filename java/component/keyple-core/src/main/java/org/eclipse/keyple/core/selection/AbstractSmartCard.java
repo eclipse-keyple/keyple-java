@@ -16,10 +16,17 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.message.CardResponse;
 
 /**
- * AbstractSmartCard is the class to manage the elements of the result of a selection.<br>
- * This class should be extended for the management of specific card.<br>
- * Nevertheless it gives access to the generic parameters common to all SEs which are the FCI
- * (response to select command) and the ATR (card's answer to reset) when they are available.
+ * AbstractSmartCard is the class to manage the elements of the result of a selection.
+ *
+ * <p>This class should be extended for the management of specific card.<br>
+ * Nevertheless it gives access to the generic parameters common to all cards which are:
+ *
+ * <ul>
+ *   <li>the FCI (response to select command)
+ *   <li>the ATR (card's answer to reset)
+ * </ul>
+ *
+ * when they are available.
  */
 public abstract class AbstractSmartCard {
   private final byte[] fciBytes;

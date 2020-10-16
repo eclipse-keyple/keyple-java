@@ -171,7 +171,7 @@ public class SlaveNodeController {
       localReader = (StubReader) stubPlugin.getReader(nativeReaderName);
 
       // start card detectino in REPEATING MODE
-      localReader.startSeDetection(ObservableReader.PollingMode.REPEATING);
+      localReader.startCardDetection(ObservableReader.PollingMode.REPEATING);
 
     } catch (InterruptedException e) {
       e.printStackTrace();

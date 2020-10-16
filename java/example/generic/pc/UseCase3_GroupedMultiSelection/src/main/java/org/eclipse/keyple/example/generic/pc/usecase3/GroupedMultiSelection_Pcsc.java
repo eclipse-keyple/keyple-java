@@ -100,7 +100,7 @@ public class GroupedMultiSelection_Pcsc {
                   .build()));
 
       // close the channel after the selection to force the selection of all applications
-      cardSelection.prepareReleaseSeChannel();
+      cardSelection.prepareReleaseChannel();
 
       // Actual card communication: operate through a single request the card selection
       SelectionsResult selectionsResult = cardSelection.processExplicitSelection(reader);

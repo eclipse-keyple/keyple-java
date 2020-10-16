@@ -104,7 +104,7 @@ class CoreExamplesActivity : ExamplesActivity() {
         val cardSelection = CardSelection(MultiSelectionProcessing.PROCESS_ALL)
 
         /* Close the channel after the selection in order to secure the selection of all applications */
-        cardSelection.prepareReleaseSeChannel()
+        cardSelection.prepareReleaseChannel()
 
         /* operate card selection (change the AID here to adapt it to the card used for the test) */
         val cardAidPrefix = "A000000404012509"
@@ -207,7 +207,7 @@ class CoreExamplesActivity : ExamplesActivity() {
                     cardSelection = CardSelection()
 
                     /* Close the channel after the selection */
-                    cardSelection.prepareReleaseSeChannel()
+                    cardSelection.prepareReleaseChannel()
 
                     cardSelection.prepareSelection(GenericCardSelectionRequest(
                             CardSelector.builder()

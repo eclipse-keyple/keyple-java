@@ -52,7 +52,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     final CountDownLatch lock = new CountDownLatch(1);
     r.addObserver(onRemovedCountDown(lock));
 
-    when(r.checkSePresence()).thenReturn(false);
+    when(r.checkCardPresence()).thenReturn(false);
     when(r.isPhysicalChannelOpen()).thenReturn(true);
 
     // test
@@ -67,7 +67,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
   @Test
   public void isCardPresent_true() throws Exception {
     AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
-    when(r.checkSePresence()).thenReturn(true);
+    when(r.checkCardPresence()).thenReturn(true);
 
     // test
     Assert.assertTrue(r.isCardPresent());
@@ -158,7 +158,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         r.getCurrentMonitoringState());
 
     // start detection
-    r.startSeDetection(ObservableReader.PollingMode.REPEATING);
+    r.startCardDetection(ObservableReader.PollingMode.REPEATING);
 
     // assert currentState have changed
     Assert.assertEquals(
@@ -166,7 +166,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         r.getCurrentMonitoringState());
 
     // stop detection
-    r.stopSeDetection();
+    r.stopCardDetection();
 
     // assert currentState have changed
     Assert.assertEquals(
@@ -174,7 +174,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         r.getCurrentMonitoringState());
 
     // start detection
-    r.startSeDetection(ObservableReader.PollingMode.REPEATING);
+    r.startCardDetection(ObservableReader.PollingMode.REPEATING);
 
     // insert card
     r.onEvent(AbstractObservableLocalReader.InternalEvent.CARD_INSERTED);

@@ -11,9 +11,9 @@
  ************************************************************************************** */
 package org.eclipse.keyple.calypso.command.po;
 
-import org.eclipse.keyple.core.command.SeCommand;
+import org.eclipse.keyple.core.command.CardCommand;
 
-public enum CalypsoPoCommand implements SeCommand {
+public enum CalypsoPoCommand implements CardCommand {
 
   /** The po get data. */
   GET_DATA_FCI("Get Data'FCI'", (byte) 0xCA),

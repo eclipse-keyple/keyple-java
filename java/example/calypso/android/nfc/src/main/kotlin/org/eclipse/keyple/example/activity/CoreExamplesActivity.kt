@@ -33,7 +33,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException
 import org.eclipse.keyple.core.seproxy.message.CardResponse
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols
+import org.eclipse.keyple.core.seproxy.util.ContactlessCardCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.example.calypso.android.nfc.R
 import org.eclipse.keyple.example.util.CalypsoClassicInfo
@@ -113,7 +113,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             cardSelection = CardSelection()
 
             /* Close the channel after the selection */
-            cardSelection.prepareReleaseSeChannel()
+            cardSelection.prepareReleaseChannel()
 
             /* next selection (2nd selection, later indexed 1) */
             cardSelection.prepareSelection(
@@ -162,7 +162,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             cardSelection = CardSelection(MultiSelectionProcessing.PROCESS_ALL)
 
             /* Close the channel after the selection to force the selection of all applications */
-            cardSelection.prepareReleaseSeChannel()
+            cardSelection.prepareReleaseChannel()
 
             /* operate card selection (change the AID here to adapt it to the card used for the test) */
             val cardAidPrefix = CalypsoClassicInfo.AID_PREFIX

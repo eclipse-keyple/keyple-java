@@ -111,7 +111,7 @@ public class SequentialMultiSelection_Pcsc {
                   .build()));
 
       // close the channel after the selection
-      cardSelection.prepareReleaseSeChannel();
+      cardSelection.prepareReleaseChannel();
 
       // Do the selection and display the result
       doAndAnalyseSelection(reader, cardSelection, 2);

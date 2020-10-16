@@ -30,13 +30,13 @@ import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 public abstract class AbstractApduCommandBuilder {
 
   /**
-   * The reference field {@link SeCommand} is used to find the type of command concerned when
+   * The reference field {@link CardCommand} is used to find the type of command concerned when
    * manipulating a list of abstract builder objects. Unfortunately, the diversity of these objects
    * does not allow the use of simple generic methods.
    *
    * @since 0.9
    */
-  protected final SeCommand commandRef;
+  protected final CardCommand commandRef;
 
   private String name;
 
@@ -55,7 +55,7 @@ public abstract class AbstractApduCommandBuilder {
    * @param request request
    * @since 0.9
    */
-  public AbstractApduCommandBuilder(SeCommand commandRef, ApduRequest request) {
+  public AbstractApduCommandBuilder(CardCommand commandRef, ApduRequest request) {
     this.commandRef = commandRef;
     this.name = commandRef.getName();
     this.request = request;
@@ -81,12 +81,12 @@ public abstract class AbstractApduCommandBuilder {
   }
 
   /**
-   * Gets {@link SeCommand} the current command identification
+   * Gets {@link CardCommand} the current command identification
    *
    * @return A non null reference
    * @since 0.9
    */
-  public SeCommand getCommandRef() {
+  public CardCommand getCommandRef() {
     return commandRef;
   }
 

@@ -148,7 +148,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    * @since 0.9
    */
   @Override
-  protected boolean checkSePresence() {
+  protected boolean checkCardPresence() {
     try {
       return terminal.isCardPresent();
     } catch (CardException e) {
@@ -488,7 +488,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   }
 
   /**
-   * Return the mode of transmission used to communicate with the SEs<br>
+   * Return the mode of transmission used to communicate with the cards<br>
    * The transmission mode can set explicitly with setParameter(SETTING_KEY_TRANSMISSION_MODE,
    * MODE). In this case, this parameter has priority.
    *

@@ -15,8 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.sam.exception.*;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.command.SeCommand;
-import org.eclipse.keyple.core.command.exception.KeypleSeCommandException;
+import org.eclipse.keyple.core.command.CardCommand;
+import org.eclipse.keyple.core.command.exception.KeypleCardCommandException;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 public abstract class AbstractSamResponseParser extends AbstractApduResponseParser {
@@ -61,13 +61,13 @@ public abstract class AbstractSamResponseParser extends AbstractApduResponsePars
 
   /** {@inheritDoc} */
   @Override
-  protected final KeypleSeCommandException buildCommandException(
-      Class<? extends KeypleSeCommandException> exceptionClass,
+  protected final KeypleCardCommandException buildCommandException(
+      Class<? extends KeypleCardCommandException> exceptionClass,
       String message,
-      SeCommand commandRef,
+      CardCommand commandRef,
       Integer statusCode) {
 
-    KeypleSeCommandException e;
+    KeypleCardCommandException e;
     CalypsoSamCommand command = (CalypsoSamCommand) commandRef;
     if (exceptionClass == CalypsoSamAccessForbiddenException.class) {
       e = new CalypsoSamAccessForbiddenException(message, command, statusCode);
@@ -94,7 +94,7 @@ public abstract class AbstractSamResponseParser extends AbstractApduResponsePars
   public void checkStatus() {
     try {
       super.checkStatus();
-    } catch (KeypleSeCommandException e) {
+    } catch (KeypleCardCommandException e) {
       throw (CalypsoSamCommandException) e;
     }
   }

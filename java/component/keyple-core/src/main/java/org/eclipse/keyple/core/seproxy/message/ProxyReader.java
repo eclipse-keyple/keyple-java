@@ -18,7 +18,7 @@ import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 
 /**
- * A {@link ProxyReader} is an {@link Reader} with methods for communicating with SEs.
+ * A {@link ProxyReader} is an {@link Reader} with methods for communicating with cards.
  *
  * <p>Exchanges are made using {@link CardRequest} which in return result in {@link CardResponse}.
  * <br>

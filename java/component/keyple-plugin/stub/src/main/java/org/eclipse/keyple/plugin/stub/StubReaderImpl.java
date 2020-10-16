@@ -105,7 +105,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
   }
 
   @Override
-  protected synchronized boolean checkSePresence() {
+  protected synchronized boolean checkCardPresence() {
     return card != null;
   }
 
@@ -186,7 +186,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
   public boolean waitForCardPresent() {
     loopWaitCard.set(true);
     while (loopWaitCard.get()) {
-      if (checkSePresence()) {
+      if (checkCardPresence()) {
         return true;
       }
       try {
@@ -215,7 +215,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
   public boolean waitForCardAbsentNative() {
     loopWaitCardRemoval.set(true);
     while (loopWaitCardRemoval.get()) {
-      if (!checkSePresence()) {
+      if (!checkCardPresence()) {
         logger.trace("[{}] card removed", this.getName());
         return true;
       }

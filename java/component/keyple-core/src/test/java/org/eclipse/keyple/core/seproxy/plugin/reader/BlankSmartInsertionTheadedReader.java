@@ -71,7 +71,7 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
   }
 
   @Override
-  public boolean checkSePresence() {
+  public boolean checkCardPresence() {
     return false;
   }
 

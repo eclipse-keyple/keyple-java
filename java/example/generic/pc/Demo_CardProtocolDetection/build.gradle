@@ -12,15 +12,15 @@ ext {
     keyple_v = project.hasProperty("keyple_version") ? keyple_version : '+'
 }
 
-mainClassName = 'org.eclipse.keyple.example.generic.pc.Demo_SeProtocolDetection.Demo_SeProtocolDetection_Pcsc'
+mainClassName = 'org.eclipse.keyple.example.generic.pc.Demo_CardProtocolDetection.Demo_CardProtocolDetection_Pcsc'
 
 task('runPcsc', dependsOn: 'classes', type: JavaExec, group:'application') {
-    main = 'org.eclipse.keyple.example.generic.pc.Demo_SeProtocolDetection.Demo_SeProtocolDetection_Pcsc'
+    main = 'org.eclipse.keyple.example.generic.pc.Demo_CardProtocolDetection.Demo_CardProtocolDetection_Pcsc'
     classpath = sourceSets.main.runtimeClasspath
 }
 
 task('runStub', dependsOn: 'classes', type: JavaExec, group:'application') {
-    main = 'org.eclipse.keyple.example.generic.pc.Demo_SeProtocolDetection.Demo_SeProtocolDetection_Stub'
+    main = 'org.eclipse.keyple.example.generic.pc.Demo_CardProtocolDetection.Demo_CardProtocolDetection_Stub'
     classpath = sourceSets.main.runtimeClasspath
 }
 

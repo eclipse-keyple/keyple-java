@@ -14,14 +14,14 @@ package org.eclipse.keyple.core.selection;
 import java.util.*;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
-import org.eclipse.keyple.core.command.SeCommand;
+import org.eclipse.keyple.core.command.CardCommand;
 import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.seproxy.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Before;
@@ -274,11 +274,11 @@ public class CardSelectionTest extends CoreBaseTest {
     List<AbstractApduCommandBuilder> commandBuilders = new ArrayList<AbstractApduCommandBuilder>();
     commandBuilders.add(
         new CommandBuilder(
-            SeCommandTest.COMMAND_1,
+            CardCommandTest.COMMAND_1,
             new ApduRequest("Apdu 001122334455", ByteArrayUtil.fromHex("001122334455"), false)));
     commandBuilders.add(
         new CommandBuilder(
-            SeCommandTest.COMMAND_1,
+            CardCommandTest.COMMAND_1,
             new ApduRequest("Apdu 66778899AABB", ByteArrayUtil.fromHex("66778899AABB"), true)));
 
     cardSelection.prepareSelection(new CardSelectionRequest(cardSelector1, commandBuilders));
@@ -332,19 +332,19 @@ public class CardSelectionTest extends CoreBaseTest {
 
   private final class CommandBuilder extends AbstractApduCommandBuilder {
 
-    public CommandBuilder(SeCommand commandRef, ApduRequest request) {
+    public CommandBuilder(CardCommand commandRef, ApduRequest request) {
       super(commandRef, request);
     }
   }
 
-  public enum SeCommandTest implements SeCommand {
+  public enum CardCommandTest implements CardCommand {
     COMMAND_1("COMMAND_1", (byte) 0xC1),
     COMMAND_2("COMMAND_2", (byte) 0xC2);
 
     private final String name;
     private final byte instructionByte;
 
-    SeCommandTest(String name, byte instructionByte) {
+    CardCommandTest(String name, byte instructionByte) {
       this.name = name;
       this.instructionByte = instructionByte;
     }

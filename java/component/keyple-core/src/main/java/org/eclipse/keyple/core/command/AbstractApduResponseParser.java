@@ -13,8 +13,8 @@ package org.eclipse.keyple.core.command;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.keyple.core.command.exception.KeypleSeCommandException;
-import org.eclipse.keyple.core.command.exception.KeypleSeCommandUnknownStatusException;
+import org.eclipse.keyple.core.command.exception.KeypleCardCommandException;
+import org.eclipse.keyple.core.command.exception.KeypleCardCommandUnknownStatusException;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
@@ -84,17 +84,17 @@ public abstract class AbstractApduResponseParser {
    *
    * @param exceptionClass the exception class
    * @param message the message
-   * @param commandRef {@link SeCommand} the command reference
+   * @param commandRef {@link CardCommand} the command reference
    * @param statusCode the status code
    * @return A not null value
    * @since 0.9
    */
-  protected KeypleSeCommandException buildCommandException(
-      Class<? extends KeypleSeCommandException> exceptionClass,
+  protected KeypleCardCommandException buildCommandException(
+      Class<? extends KeypleCardCommandException> exceptionClass,
       String message,
-      SeCommand commandRef,
+      CardCommand commandRef,
       Integer statusCode) {
-    return new KeypleSeCommandUnknownStatusException(message, commandRef, statusCode);
+    return new KeypleCardCommandUnknownStatusException(message, commandRef, statusCode);
   }
 
   /**
@@ -137,7 +137,7 @@ public abstract class AbstractApduResponseParser {
    * This method check the status code.<br>
    * If status code is not referenced, then status is considered unsuccessful.
    *
-   * @throws KeypleSeCommandException if status is not successful.
+   * @throws KeypleCardCommandException if status is not successful.
    * @since 0.9
    */
   public void checkStatus() {
@@ -149,14 +149,14 @@ public abstract class AbstractApduResponseParser {
     // Status code is not referenced, or not successful.
 
     // exception class
-    Class<? extends KeypleSeCommandException> exceptionClass =
+    Class<? extends KeypleCardCommandException> exceptionClass =
         props != null ? props.getExceptionClass() : null;
 
     // message
     String message = props != null ? props.getInformation() : "Unknown status";
 
     // command reference
-    SeCommand commandRef = getCommandRef();
+    CardCommand commandRef = getCommandRef();
 
     // status code
     Integer statusCode = response.getStatusCode();
@@ -172,7 +172,7 @@ public abstract class AbstractApduResponseParser {
    * @return a nullable command reference
    * @since 0.9
    */
-  protected SeCommand getCommandRef() {
+  protected CardCommand getCommandRef() {
     return builder != null ? builder.getCommandRef() : null;
   }
 
@@ -198,7 +198,7 @@ public abstract class AbstractApduResponseParser {
 
     private final boolean successful;
 
-    private final Class<? extends KeypleSeCommandException> exceptionClass;
+    private final Class<? extends KeypleCardCommandException> exceptionClass;
 
     /**
      * Creates a successful status.
@@ -221,7 +221,7 @@ public abstract class AbstractApduResponseParser {
      * @since 0.9
      */
     public StatusProperties(
-        String information, Class<? extends KeypleSeCommandException> exceptionClass) {
+        String information, Class<? extends KeypleCardCommandException> exceptionClass) {
       this.information = information;
       this.successful = exceptionClass == null;
       this.exceptionClass = exceptionClass;
@@ -253,7 +253,7 @@ public abstract class AbstractApduResponseParser {
      * @return A nullable reference
      * @since 0.9
      */
-    public Class<? extends KeypleSeCommandException> getExceptionClass() {
+    public Class<? extends KeypleCardCommandException> getExceptionClass() {
       return exceptionClass;
     }
   }

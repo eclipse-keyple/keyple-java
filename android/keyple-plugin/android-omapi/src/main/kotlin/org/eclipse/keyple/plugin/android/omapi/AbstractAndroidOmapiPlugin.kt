@@ -27,7 +27,7 @@ internal abstract class AbstractAndroidOmapiPlugin<T, V> : AbstractPlugin(PLUGIN
 
     abstract fun connectToSe(context: Context)
     abstract fun getNativeReaders(): Array<T>?
-    abstract fun mapToSeReader(nativeReader: T): Reader
+    abstract fun mapToReader(nativeReader: T): Reader
 
     protected var seService: V? = null
     private val params = mutableMapOf<String, String>()
@@ -50,7 +50,7 @@ internal abstract class AbstractAndroidOmapiPlugin<T, V> : AbstractPlugin(PLUGIN
         Timber.d("initNativeReaders")
         val readers = ConcurrentSkipListMap<String, Reader>() // empty list is returned us service not connected
         getNativeReaders()?.forEach { nativeReader ->
-            val reader = mapToSeReader(nativeReader)
+            val reader = mapToReader(nativeReader)
             readers[reader.name] = reader
         }
 

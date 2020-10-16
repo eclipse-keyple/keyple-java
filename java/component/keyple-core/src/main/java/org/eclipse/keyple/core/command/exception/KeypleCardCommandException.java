@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.command.exception;
 
-import org.eclipse.keyple.core.command.SeCommand;
+import org.eclipse.keyple.core.command.CardCommand;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 
 /**
@@ -19,9 +19,9 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleException;
  *
  * @since 0.9
  */
-public abstract class KeypleSeCommandException extends KeypleException {
+public abstract class KeypleCardCommandException extends KeypleException {
 
-  private final SeCommand command;
+  private final CardCommand command;
 
   private final Integer statusCode;
 
@@ -33,7 +33,7 @@ public abstract class KeypleSeCommandException extends KeypleException {
    * @param statusCode the status code
    * @since 0.9
    */
-  protected KeypleSeCommandException(String message, SeCommand command, Integer statusCode) {
+  protected KeypleCardCommandException(String message, CardCommand command, Integer statusCode) {
     super(message);
     this.command = command;
     this.statusCode = statusCode;
@@ -45,7 +45,7 @@ public abstract class KeypleSeCommandException extends KeypleException {
    * @return A non null reference
    * @since 0.9
    */
-  public SeCommand getCommand() {
+  public CardCommand getCommand() {
     return command;
   }
 

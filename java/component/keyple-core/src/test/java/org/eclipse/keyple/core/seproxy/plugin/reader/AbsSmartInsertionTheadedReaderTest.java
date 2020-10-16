@@ -112,27 +112,27 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
    */
 
   @Test
-  public void startSeDetection() throws Exception {
+  public void startCardDetection() throws Exception {
     // do not present any card for this test
     r = getBlank(PLUGIN_NAME, READER_NAME, 0);
 
     r.addObserver(getObs());
-    r.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+    r.startCardDetection(ObservableReader.PollingMode.SINGLESHOT);
 
     Thread.sleep(500);
     Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentMonitoringState());
 
-    r.stopSeDetection();
+    r.stopCardDetection();
   }
 
   @Test
-  public void stopSeDetection() throws Exception {
+  public void stopCardDetection() throws Exception {
     // do not present any card for this test
     r = getBlank(PLUGIN_NAME, READER_NAME, 0);
 
     r.addObserver(getObs());
-    r.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
-    r.stopSeDetection();
+    r.startCardDetection(ObservableReader.PollingMode.SINGLESHOT);
+    r.stopCardDetection();
 
     Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentMonitoringState());
   }
@@ -163,7 +163,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
    * doReturn(false).when(r).processCardInserted();
    *
    * r.addObserver(getObs()); Thread.sleep(100);
-   * r.startSeDetection(ObservableReader.PollingMode.SINGLESHOT); Thread.sleep(100);
+   * r.startCardDetection(ObservableReader.PollingMode.SINGLESHOT); Thread.sleep(100);
    *
    * Assert.assertEquals(WAIT_FOR_SE_REMOVAL, r.getCurrentMonitoringState());
    *
@@ -173,7 +173,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
    * READER_NAME, 1);// present one card once for this test
    *
    * doReturn(true).when(r).processCardInserted(); r.addObserver(getObs()); Thread.sleep(100);
-   * r.startSeDetection(ObservableReader.PollingMode.REPEATING);
+   * r.startCardDetection(ObservableReader.PollingMode.REPEATING);
    *
    * Thread.sleep(100);
    *
@@ -187,7 +187,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
    * doReturn(true).when(r).processCardInserted();
    *
    * r.addObserver(getObs()); Thread.sleep(100);
-   * r.startSeDetection(ObservableReader.PollingMode.REPEATING); Thread.sleep(100);
+   * r.startCardDetection(ObservableReader.PollingMode.REPEATING); Thread.sleep(100);
    * r.startRemovalSequence(); Thread.sleep(100);
    *
    * Assert.assertEquals(WAIT_FOR_SE_REMOVAL, r.getCurrentMonitoringState()); }
@@ -196,7 +196,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
    * READER_NAME, 1);// present one card once for this test
    * doReturn(true).when(r).processCardInserted();
    *
-   * r.addObserver(getObs()); r.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+   * r.addObserver(getObs()); r.startCardDetection(ObservableReader.PollingMode.SINGLESHOT);
    * //Thread.sleep(100); r.startRemovalSequence(); //Thread.sleep(100);
    *
    * Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentMonitoringState()); }
@@ -210,7 +210,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
    * // configure reader to raise timeout if SeProcessing is too long r.setThreadWaitTimeout(100);
    * // attach observer to detect TIMEOUT_EVENT r.addObserver(countDownOnTimeout(lock));
    *
-   * // Thread.sleep(100); r.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+   * // Thread.sleep(100); r.startCardDetection(ObservableReader.PollingMode.SINGLESHOT);
    * lock.await(5000, TimeUnit.MILLISECONDS);
    *
    * Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentMonitoringState());
@@ -224,7 +224,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
    * // configure reader to raise timeout if SeProcessing is too long r.setThreadWaitTimeout(300);
    * // attach observer to detect TIMEOUT_EVENT r.addObserver(countDownOnTimeout(lock));
    *
-   * Thread.sleep(100); r.startSeDetection(ObservableReader.PollingMode.REPEATING);
+   * Thread.sleep(100); r.startCardDetection(ObservableReader.PollingMode.REPEATING);
    * Thread.sleep(100); r.startRemovalSequence(); lock.await(5000, TimeUnit.MILLISECONDS);
    *
    * Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentMonitoringState());
@@ -239,7 +239,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
    * KeypleReaderIOException("ping failed")).when(r).transmitApdu(any(byte[].class));
    *
    * r.addObserver(getObs()); //Thread.sleep(100);
-   * r.startSeDetection(ObservableReader.PollingMode.REPEATING); //Thread.sleep(500);
+   * r.startCardDetection(ObservableReader.PollingMode.REPEATING); //Thread.sleep(500);
    * r.startRemovalSequence(); //Thread.sleep(100);
    *
    * Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentMonitoringState()); }
@@ -252,7 +252,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
    *
    *
    * r.addObserver(getObs()); Thread.sleep(100);
-   * r.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+   * r.startCardDetection(ObservableReader.PollingMode.SINGLESHOT);
    *
    * Thread.sleep(100);
    *
@@ -268,7 +268,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
    *
    *
    * r.addObserver(getObs()); Thread.sleep(100);
-   * r.startSeDetection(ObservableReader.PollingMode.SINGLESHOT); Thread.sleep(100);
+   * r.startCardDetection(ObservableReader.PollingMode.SINGLESHOT); Thread.sleep(100);
    * r.startRemovalSequence();
    *
    * Assert.assertEquals(null, r.getCurrentMonitoringState()); }

@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.seproxy.plugin.reader.util;
+package org.eclipse.keyple.core.seproxy.util;
 
 /**
  * This enum contains a non-exhaustive list of contactless smartcard communication protocols.

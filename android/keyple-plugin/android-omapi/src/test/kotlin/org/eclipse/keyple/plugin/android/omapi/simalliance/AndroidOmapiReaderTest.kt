@@ -19,7 +19,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.seproxy.message.ApduRequest
 import org.eclipse.keyple.core.seproxy.message.CardRequest
 import org.eclipse.keyple.core.seproxy.message.ChannelControl
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactsCardCommonProtocols
+import org.eclipse.keyple.core.seproxy.util.ContactsCardCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiReaderTest
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiSupportedProtocols

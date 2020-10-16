@@ -1,5 +1,5 @@
 /* **************************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information
  * regarding copyright ownership.
@@ -9,30 +9,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.command;
-
-import java.io.Serializable;
+package org.eclipse.keyple.core.seproxy.util;
 
 /**
- * Provides the API to get SeCommand's name and instruction byte (INS).
+ * This enum contains a non-exhaustive list of contacts smartcard communication protocols.
  *
- * @since 0.9
+ * @since 1.0
  */
-public interface SeCommand extends Serializable {
+public enum ContactsCardCommonProtocols {
+  /* ---- contacts ISO standard ---------------------------- */
+  ISO_7816_3,
+  ISO_7816_3_TO,
+  ISO_7816_3_T1,
 
-  /**
-   * Gets command's name.
-   *
-   * @return a String
-   * @since 0.9
-   */
-  String getName();
-
-  /**
-   * Gets Instruction Byte (INS)
-   *
-   * @return a byte.
-   * @since 0.9
-   */
-  byte getInstructionByte();
+  /* ---- contacts proprietary old Calypso SAM ---------------- */
+  CALYPSO_OLD_SAM_HSP; // High Speed Protocol
 }

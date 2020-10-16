@@ -53,7 +53,7 @@ public final class DefaultSelectionsRequest extends AbstractDefaultSelectionsReq
    * <p>The {@link ChannelControl} enum controls the closing of the physical channel at the end of
    * the selection.
    *
-   * <p>Note: the {@link CardRequest} list should be carefully ordered in accordance with the SEs
+   * <p>Note: the {@link CardRequest} list should be carefully ordered in accordance with the cards
    * expected in the application to optimize the processing time of the selection process. The first
    * selection case in the list will be processed first.
    *

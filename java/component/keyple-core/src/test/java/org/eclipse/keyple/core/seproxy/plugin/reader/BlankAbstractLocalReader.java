@@ -18,7 +18,7 @@ public class BlankAbstractLocalReader extends AbstractLocalReader {
   }
 
   @Override
-  public boolean checkSePresence() {
+  public boolean checkCardPresence() {
     return false;
   }
 

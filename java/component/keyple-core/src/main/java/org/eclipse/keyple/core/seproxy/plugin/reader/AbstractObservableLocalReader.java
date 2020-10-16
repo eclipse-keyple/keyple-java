@@ -249,7 +249,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
    */
   @Override
   public final boolean isCardPresent() {
-    if (checkSePresence()) {
+    if (checkCardPresence()) {
       return true;
     } else {
       /*
@@ -274,10 +274,10 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
    *
    * @param pollingMode indicates the action to be followed after processing the card: if REPEATING,
    *     the card detection is restarted, if SINGLESHOT, the card detection is stopped until a new
-   *     call to startSeDetection is made.
+   *     call to startCardDetection is made.
    */
   @Override
-  public final void startSeDetection(ObservableReader.PollingMode pollingMode) {
+  public final void startCardDetection(ObservableReader.PollingMode pollingMode) {
     if (logger.isTraceEnabled()) {
       logger.trace("[{}] start the card Detection with pollingMode {}", getName(), pollingMode);
     }
@@ -292,7 +292,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
    * of the start of card detection.
    */
   @Override
-  public final void stopSeDetection() {
+  public final void stopCardDetection() {
     if (logger.isTraceEnabled()) {
       logger.trace("[{}] stop the card Detection", getName());
     }
@@ -333,7 +333,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
    *     (MATCHED_ONLY).
    * @param pollingMode indicates the action to be followed after processing the card: if CONTINUE,
    *     the card detection is restarted, if STOP, the card detection is stopped until a new call to
-   *     startSeDetection is made.
+   *     startCardDetection is made.
    */
   @Override
   public final void setDefaultSelectionRequest(
@@ -343,7 +343,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
     // define the default selection request
     setDefaultSelectionRequest(defaultSelectionsRequest, notificationMode);
     // initiates the card detection
-    startSeDetection(pollingMode);
+    startCardDetection(pollingMode);
   }
 
   /**
@@ -473,7 +473,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
     }
 
     // We close here the physical channel in case it has been opened for a card outside the
-    // expected SEs
+    // expected cards
     try {
       closePhysicalChannel();
     } catch (KeypleReaderIOException e) {

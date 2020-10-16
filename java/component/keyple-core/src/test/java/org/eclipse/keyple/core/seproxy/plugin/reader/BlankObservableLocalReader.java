@@ -36,7 +36,7 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
   }
 
   @Override
-  public boolean checkSePresence() {
+  public boolean checkCardPresence() {
     return false;
   }
 

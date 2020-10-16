@@ -11,8 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.command;
 
-import static org.junit.Assert.*;
-
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -163,7 +161,7 @@ public class AbstractIso7816CommandBuilderTest extends CoreBaseTest {
     Assert.assertArrayEquals(ByteArrayUtil.fromHex("CC11B1B2041122334400"), apduRequest.getBytes());
   }
 
-  private enum CommandRef implements SeCommand {
+  private enum CommandRef implements CardCommand {
     COMMAND_1("COMMAND_1", (byte) 0x11),
     COMMAND_2("COMMAND_2", (byte) 0x22);
 
@@ -190,7 +188,7 @@ public class AbstractIso7816CommandBuilderTest extends CoreBaseTest {
   }
 
   private class Iso7816CommandBuilder extends AbstractIso7816CommandBuilder {
-    public Iso7816CommandBuilder(SeCommand commandReference, ApduRequest request) {
+    public Iso7816CommandBuilder(CardCommand commandReference, ApduRequest request) {
       super(commandReference, request);
     }
   }

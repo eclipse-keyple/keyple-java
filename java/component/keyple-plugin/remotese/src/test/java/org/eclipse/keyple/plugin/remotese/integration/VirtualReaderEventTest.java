@@ -29,7 +29,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.CardResponse;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.seproxy.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualObservableReader;
 import org.eclipse.keyple.plugin.stub.StubReader;
@@ -111,7 +111,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     // register stubPluginObserver
     virtualReader.addObserver(obs);
 
-    nativeReader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+    nativeReader.startCardDetection(ObservableReader.PollingMode.SINGLESHOT);
 
     logger.info("Insert a Hoplink card and wait 5 seconds for a card event to be thrown");
 
@@ -121,7 +121,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     // wait 5 seconds
     lock.await(5, TimeUnit.SECONDS);
 
-    nativeReader.stopSeDetection();
+    nativeReader.stopCardDetection();
 
     // remove observer
     virtualReader.removeObserver(obs);
@@ -165,7 +165,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     logger.info(
         "Insert and remove a Hoplink card and wait 5 seconds for two card events to be thrown");
 
-    nativeReader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+    nativeReader.startCardDetection(ObservableReader.PollingMode.SINGLESHOT);
 
     // insert card
     nativeReader.insertSe(StubReaderTest.hoplinkSE());
@@ -176,7 +176,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     // remove card
     nativeReader.removeSe();
 
-    nativeReader.stopSeDetection();
+    nativeReader.stopCardDetection();
 
     // wait 5 seconds
     lock.await(5, TimeUnit.SECONDS);
@@ -268,7 +268,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         .setDefaultSelectionRequest(
             cardSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
 
-    nativeReader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+    nativeReader.startCardDetection(ObservableReader.PollingMode.SINGLESHOT);
 
     // wait 1 second
     Thread.sleep(1000);
@@ -279,7 +279,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     // lock thread for 2 seconds max to wait for the event
     lock.await(5, TimeUnit.SECONDS);
 
-    nativeReader.stopSeDetection();
+    nativeReader.stopCardDetection();
 
     // remove observer
     virtualReader.removeObserver(obs);
@@ -396,7 +396,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     logger.debug("Wait 1 second before inserting card");
     Thread.sleep(500);
 
-    nativeReader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+    nativeReader.startCardDetection(ObservableReader.PollingMode.SINGLESHOT);
 
     // test
     nativeReader.insertSe(StubReaderTest.hoplinkSE());
@@ -404,7 +404,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     // lock thread for 2 seconds max to wait for the event
     lock.await(5, TimeUnit.SECONDS);
 
-    nativeReader.stopSeDetection();
+    nativeReader.stopCardDetection();
 
     // remove observer
     virtualReader.removeObserver(obs);
@@ -500,7 +500,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     // register observer
     virtualReader.addObserver(virtualReaderObs);
 
-    nativeReader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+    nativeReader.startCardDetection(ObservableReader.PollingMode.SINGLESHOT);
 
     // test
     logger.info("Inserting card");
@@ -512,7 +512,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     logger.info("Lock main thread, wait for event to release this thread");
     lock.await(5, TimeUnit.SECONDS);
 
-    nativeReader.stopSeDetection();
+    nativeReader.stopCardDetection();
 
     Assert.assertEquals(0, lock.getCount()); // should be 0 because countDown is called by
 

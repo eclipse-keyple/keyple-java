@@ -41,7 +41,7 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
      * Check if a card is present in this reader. see {@link Reader#isSecureElementPresent()}
      * @return True if the card is present, false otherwise
      */
-    override fun checkSePresence(): Boolean {
+    override fun checkCardPresence(): Boolean {
         return nativeReader.isSecureElementPresent
     }
 

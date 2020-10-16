@@ -21,7 +21,7 @@ public class BlankSmartSelectionReader extends AbstractLocalReader implements Sm
   }
 
   @Override
-  public boolean checkSePresence() {
+  public boolean checkCardPresence() {
     return false;
   }
 

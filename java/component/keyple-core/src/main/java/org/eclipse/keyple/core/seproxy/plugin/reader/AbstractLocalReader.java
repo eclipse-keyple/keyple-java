@@ -80,6 +80,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
     }
     protocolAssociations = new LinkedHashMap<String, String>();
   }
+
   /**
    * Check the presence of a card
    *
@@ -93,7 +94,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    */
   @Override
   public boolean isCardPresent() {
-    return checkSePresence();
+    return checkCardPresence();
   }
 
   /**
@@ -107,7 +108,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * @return true if the card is present
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */
-  protected abstract boolean checkSePresence();
+  protected abstract boolean checkCardPresence();
 
   /** Close both logical and physical channels */
   protected void closeLogicalAndPhysicalChannels() {

@@ -87,7 +87,7 @@ public final class CardSelection {
    * <br>
    * This makes it possible to chain several selections on the same card if necessary.
    */
-  public final void prepareReleaseSeChannel() {
+  public final void prepareReleaseChannel() {
     channelControl = ChannelControl.CLOSE_AFTER;
   }
 

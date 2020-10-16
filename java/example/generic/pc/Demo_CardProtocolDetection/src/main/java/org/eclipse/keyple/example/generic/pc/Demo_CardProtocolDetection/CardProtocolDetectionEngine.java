@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.generic.pc.Demo_SeProtocolDetection;
+package org.eclipse.keyple.example.generic.pc.Demo_CardProtocolDetection;
 
 import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
 
@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.Reader;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.seproxy.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.common.generic.AbstractReaderObserverAsynchronousEngine;
 import org.eclipse.keyple.example.common.generic.GenericCardSelectionRequest;
 
@@ -40,11 +40,11 @@ import org.eclipse.keyple.example.common.generic.GenericCardSelectionRequest;
  * The program spends most of its time waiting for a Enter key before exit. The actual card
  * processing is mainly event driven through the observability.
  */
-public class SeProtocolDetectionEngine extends AbstractReaderObserverAsynchronousEngine {
+public class CardProtocolDetectionEngine extends AbstractReaderObserverAsynchronousEngine {
   private Reader reader;
   private CardSelection cardSelection;
 
-  public SeProtocolDetectionEngine() {
+  public CardProtocolDetectionEngine() {
     super();
   }
 

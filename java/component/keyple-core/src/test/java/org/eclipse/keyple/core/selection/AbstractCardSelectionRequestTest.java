@@ -15,12 +15,12 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import java.util.List;
 import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
-import org.eclipse.keyple.core.command.SeCommand;
+import org.eclipse.keyple.core.command.CardCommand;
 import org.eclipse.keyple.core.seproxy.CardSelector;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.CardRequest;
 import org.eclipse.keyple.core.seproxy.message.CardResponse;
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.seproxy.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
 
@@ -76,12 +76,12 @@ public class AbstractCardSelectionRequestTest {
   }
 
   private static class TestCommandBuilder extends AbstractApduCommandBuilder {
-    public TestCommandBuilder(SeCommand commandRef, ApduRequest request) {
+    public TestCommandBuilder(CardCommand commandRef, ApduRequest request) {
       super(commandRef, request);
     }
   }
 
-  private enum TestCommands implements SeCommand {
+  private enum TestCommands implements CardCommand {
     COMMAND1("Command 1", (byte) 0x01),
     COMMAND2("Command 2", (byte) 0x02);
     private final String name;

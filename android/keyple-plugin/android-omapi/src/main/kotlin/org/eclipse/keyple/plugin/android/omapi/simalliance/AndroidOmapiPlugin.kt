@@ -34,7 +34,7 @@ internal object AndroidOmapiPlugin : AbstractAndroidOmapiPlugin<org.simalliance.
         return seService?.readers
     }
 
-    override fun mapToSeReader(nativeReader: org.simalliance.openmobileapi.Reader): Reader {
+    override fun mapToReader(nativeReader: org.simalliance.openmobileapi.Reader): Reader {
         Timber.d("Reader available name : %s", nativeReader.name)
         Timber.d("Reader available isCardPresent : %S", nativeReader.isSecureElementPresent)
         return AndroidOmapiReader(nativeReader, PLUGIN_NAME, nativeReader.name)

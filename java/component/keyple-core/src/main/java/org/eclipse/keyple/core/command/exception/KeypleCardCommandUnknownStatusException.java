@@ -11,14 +11,14 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.command.exception;
 
-import org.eclipse.keyple.core.command.SeCommand;
+import org.eclipse.keyple.core.command.CardCommand;
 
 /**
  * This exception indicates that the status code is not referenced.
  *
  * @since 0.9
  */
-public class KeypleSeCommandUnknownStatusException extends KeypleSeCommandException {
+public class KeypleCardCommandUnknownStatusException extends KeypleCardCommandException {
 
   /**
    * Constructor allowing to set a message, the command and the status code.
@@ -28,8 +28,8 @@ public class KeypleSeCommandUnknownStatusException extends KeypleSeCommandExcept
    * @param statusCode the status code (Should not be null)
    * @since 0.9
    */
-  public KeypleSeCommandUnknownStatusException(
-      String message, SeCommand command, Integer statusCode) {
+  public KeypleCardCommandUnknownStatusException(
+      String message, CardCommand command, Integer statusCode) {
     super(message, command, statusCode);
   }
 }

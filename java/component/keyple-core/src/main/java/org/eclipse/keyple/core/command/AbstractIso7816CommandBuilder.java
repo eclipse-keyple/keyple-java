@@ -34,11 +34,11 @@ public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandB
   /**
    * Abstract constructor to build a command with a command reference and an {@link ApduRequest}.
    *
-   * @param commandReference The {@link SeCommand} used as Command reference (should be not null)
+   * @param commandReference The {@link CardCommand} used as Command reference (should be not null)
    * @param request The {@link ApduRequest} used for the request
    * @since 0.9
    */
-  public AbstractIso7816CommandBuilder(SeCommand commandReference, ApduRequest request) {
+  public AbstractIso7816CommandBuilder(CardCommand commandReference, ApduRequest request) {
     super(commandReference, request);
   }
 
@@ -86,7 +86,7 @@ public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandB
    * <p>If dataIn is not null and Le &gt; 0 an IllegalArgumentException is thrown
    *
    * @param cla class of instruction (should not be null)
-   * @param command {@link SeCommand} used for Instruction (INS) (should not be null)
+   * @param command {@link CardCommand} used for Instruction (INS) (should not be null)
    * @param p1 instruction parameter 1 (should not be null)
    * @param p2 instruction parameter 2 (should not be null)
    * @param dataIn bytes sent in the data field of the command. dataIn.limit will be Lc (Number of
@@ -98,7 +98,7 @@ public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandB
    * @since 0.9
    */
   protected ApduRequest setApduRequest(
-      byte cla, SeCommand command, byte p1, byte p2, byte[] dataIn, Byte le) {
+      byte cla, CardCommand command, byte p1, byte p2, byte[] dataIn, Byte le) {
     boolean case4;
     /* sanity check */
     if (dataIn != null && le != null && le != 0) {

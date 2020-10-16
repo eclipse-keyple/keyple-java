@@ -40,7 +40,7 @@ public class BlankSmartPresenceTheadedReader extends AbstractObservableLocalRead
   }
 
   @Override
-  public boolean checkSePresence() {
+  public boolean checkCardPresence() {
     return false;
   }
 

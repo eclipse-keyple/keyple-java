@@ -38,7 +38,7 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols
+import org.eclipse.keyple.core.seproxy.util.ContactlessCardCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.example.calypso.android.nfc.R
 import org.eclipse.keyple.example.util.CalypsoClassicInfo
@@ -72,7 +72,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
 
                 Timber.d("Handle ACTION TECH intent")
                 // notify reader that card detection has been launched
-                reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT)
+                reader.startCardDetection(ObservableReader.PollingMode.SINGLESHOT)
                 initFromBackgroundTextView()
                 reader.processIntent(intent)
             } else {
@@ -92,7 +92,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
         try {
 
             // notify reader that card detection has been switched off
-            reader.stopSeDetection()
+            reader.stopCardDetection()
 
             // Disable Reader Mode for NFC Adapter
             reader.disableNFCReaderMode(this)
@@ -185,7 +185,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
             cardSelection = CardSelection()
 
             /* Close the channel after the selection */
-            cardSelection.prepareReleaseSeChannel()
+            cardSelection.prepareReleaseChannel()
 
             val selectionRequest2nd = PoSelectionRequest(PoSelector.builder().cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name).aidSelector(
                     AidSelector.builder().aidToSelect(cardAidPrefix).fileOccurrence(
@@ -230,7 +230,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
         val cardAidPrefix = CalypsoClassicInfo.AID_PREFIX
 
         /* Close the channel after the selection to force the selection of all applications */
-        cardSelection.prepareReleaseSeChannel()
+        cardSelection.prepareReleaseChannel()
 
         useCase = null
 
@@ -393,7 +393,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
         cardSelection = CardSelection()
 
         /* Close the channel after the selection */
-        cardSelection.prepareReleaseSeChannel()
+        cardSelection.prepareReleaseChannel()
 
         val aid = CalypsoClassicInfo.AID
 
@@ -524,7 +524,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
             }
         }
         // notify reader that card detection has been launched
-        reader.startSeDetection(ObservableReader.PollingMode.REPEATING)
+        reader.startCardDetection(ObservableReader.PollingMode.REPEATING)
     }
 
     /**

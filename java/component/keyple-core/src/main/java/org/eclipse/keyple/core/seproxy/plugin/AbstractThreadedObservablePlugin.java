@@ -202,7 +202,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
         ((ObservableReader) reader).clearObservers();
 
         // In case where Reader was detecting the card
-        ((ObservableReader) reader).stopSeDetection();
+        ((ObservableReader) reader).stopCardDetection();
       }
       readers.remove(reader.getName());
       if (logger.isTraceEnabled()) {

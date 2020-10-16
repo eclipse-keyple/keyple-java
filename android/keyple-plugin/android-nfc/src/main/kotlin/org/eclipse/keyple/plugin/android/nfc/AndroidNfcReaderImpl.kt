@@ -187,7 +187,7 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
      *
      * @return true if a card is present
      */
-    public override fun checkSePresence(): Boolean {
+    public override fun checkCardPresence(): Boolean {
         return tagProxy != null
     }
 

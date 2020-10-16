@@ -54,7 +54,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
     reader.addObserver(onInsertedCountDown(insert));
     reader.addObserver(onRemovedCountDown(remove));
 
-    reader.startSeDetection(ObservableReader.PollingMode.REPEATING);
+    reader.startCardDetection(ObservableReader.PollingMode.REPEATING);
     logger.info("[{}] Waiting 10 seconds for the card insertion...", reader.getName());
     insert.await(10, TimeUnit.SECONDS);
     Assert.assertEquals(0, insert.getCount());
@@ -86,7 +86,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
     reader.addObserver(onInsertedCountDown(insert));
     reader.addObserver(onRemovedCountDown(remove));
 
-    reader.startSeDetection(ObservableReader.PollingMode.REPEATING);
+    reader.startCardDetection(ObservableReader.PollingMode.REPEATING);
     logger.info("[{}] Waiting 1 seconds for the card insertion...", reader.getName());
 
     insert.await(1, TimeUnit.SECONDS);
@@ -117,7 +117,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
     reader.addObserver(onInsertedCountDown(insert));
     reader.addObserver(onRemovedCountDown(null));
 
-    reader.startSeDetection(ObservableReader.PollingMode.REPEATING);
+    reader.startCardDetection(ObservableReader.PollingMode.REPEATING);
 
     insert.await(10, TimeUnit.SECONDS);
 
@@ -211,7 +211,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
             PcscReader reader = (PcscReader) plugin.getReaders().values().toArray()[0];
             reader.addObserver(onInsertedCountDown(insertedlock));
             reader.addObserver(onRemovedCountDown(removedlock));
-            reader.startSeDetection(ObservableReader.PollingMode.REPEATING);
+            reader.startCardDetection(ObservableReader.PollingMode.REPEATING);
             connectedLock.countDown();
           }
         }

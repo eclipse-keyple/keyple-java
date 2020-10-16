@@ -53,11 +53,12 @@ public interface ObservableReader extends Reader {
   enum NotificationMode {
 
     /**
-     * All SEs presented to readers are notified regardless of the result of the default selection.
+     * All cards presented to readers are notified regardless of the result of the default
+     * selection.
      */
     ALWAYS,
     /**
-     * Only SEs that have been successfully selected (logical channel open) will be notified. The
+     * Only cards that have been successfully selected (logical channel open) will be notified. The
      * others will be ignored and the application will not be aware of them.
      */
     MATCHED_ONLY
@@ -121,20 +122,20 @@ public interface ObservableReader extends Reader {
    *
    * <p>The {@link PollingMode} indicates the action to be followed after processing the card: if
    * {@link PollingMode#REPEATING}, the card detection is restarted, if {@link
-   * PollingMode#SINGLESHOT}, the card detection is stopped until a new call to startSeDetection is
-   * made
+   * PollingMode#SINGLESHOT}, the card detection is stopped until a new call to startCardDetection
+   * is made
    *
    * @param pollingMode The polling mode to use (should be not null).
    * @since 0.9
    */
-  void startSeDetection(PollingMode pollingMode);
+  void startCardDetection(PollingMode pollingMode);
 
   /**
    * Stops the card detection.
    *
    * @since 0.9
    */
-  void stopSeDetection();
+  void stopCardDetection();
 
   /**
    * Defines the default selection request to be processed when a card is inserted.
@@ -164,7 +165,7 @@ public interface ObservableReader extends Reader {
    *
    * <p>The polling mode indicates the action to be followed after processing the card: if {@link
    * PollingMode#REPEATING}, the card detection is restarted, if {@link PollingMode#SINGLESHOT}, the
-   * card detection is stopped until a new call to * startSeDetection is made.
+   * card detection is stopped until a new call to * startCardDetection is made.
    *
    * @param defaultSelectionsRequest The default selection request to be operated.
    * @param notificationMode The notification mode to use (should be not null).

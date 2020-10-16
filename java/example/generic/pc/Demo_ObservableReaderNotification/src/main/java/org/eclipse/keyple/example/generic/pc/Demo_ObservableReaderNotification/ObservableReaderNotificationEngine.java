@@ -135,7 +135,7 @@ public class ObservableReaderNotificationEngine {
                 logger.info("Add observer READERNAME = {}", reader.getName());
                 ((ObservableReader) reader).addObserver(readerObserver);
                 ((ObservableReader) reader)
-                    .startSeDetection(ObservableReader.PollingMode.REPEATING);
+                    .startCardDetection(ObservableReader.PollingMode.REPEATING);
               } else {
                 logger.info("No observer to add READERNAME = {}", reader.getName());
               }

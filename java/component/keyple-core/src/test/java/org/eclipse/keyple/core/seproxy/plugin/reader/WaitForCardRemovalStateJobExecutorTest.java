@@ -169,7 +169,7 @@ public class WaitForCardRemovalStateJobExecutorTest extends CoreBaseTest {
      */
     BlankSmartPresenceTheadedReader r =
         AbsSmartPresenceTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME);
-    // r.startSeDetection(ObservableReader.PollingMode.REPEATING);
+    // r.startCardDetection(ObservableReader.PollingMode.REPEATING);
     WaitForCardRemovalState waitForCardRemovalState =
         new WaitForCardRemovalState(r, new SmartRemovalMonitoringJob(r), executorService);
     doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();

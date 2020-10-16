@@ -118,15 +118,15 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
   }
 
   @Override
-  public void startSeDetection(PollingMode pollingMode) {
+  public void startCardDetection(PollingMode pollingMode) {
     logger.warn(
-        "startSeDetection is not implemented in VirtualObservableReaderImpl, please use the method on the slave node");
+        "startCardDetection is not implemented in VirtualObservableReaderImpl, please use the method on the slave node");
   }
 
   @Override
-  public void stopSeDetection() {
+  public void stopCardDetection() {
     logger.warn(
-        "stopSeDetection is not implemented in VirtualObservableReaderImpl, please use the method on the slave node");
+        "stopCardDetection is not implemented in VirtualObservableReaderImpl, please use the method on the slave node");
   }
 
   /*
