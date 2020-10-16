@@ -83,7 +83,7 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
           PoSelectionRequest poSelectionRequest =
               new PoSelectionRequest(
                   PoSelector.builder()
-                      .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                      .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                       .aidSelector(
                           AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
                       .invalidatedPo(InvalidatedPo.ACCEPT)

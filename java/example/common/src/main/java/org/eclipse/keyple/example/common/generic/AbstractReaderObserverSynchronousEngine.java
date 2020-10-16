@@ -42,7 +42,7 @@ public abstract class AbstractReaderObserverSynchronousEngine
       AbstractDefaultSelectionsResponse defaultSelectionsResponse);
 
   /** Method to be implemented by the application to handle the CARD_INSERTED reader event */
-  protected abstract void processSeInserted(); // alternative AID selection
+  protected abstract void processCardInserted(); // alternative AID selection
 
   /** Method to be implemented by the application to handle the CARD_REMOVED reader event */
   protected abstract void processSeRemoved();
@@ -66,7 +66,7 @@ public abstract class AbstractReaderObserverSynchronousEngine
     switch (event.getEventType()) {
       case CARD_INSERTED:
         try {
-          processSeInserted(); // optional, to process alternative AID selection
+          processCardInserted(); // optional, to process alternative AID selection
         } catch (KeypleException e) {
           logger.error("Keyple exception: {}", e.getMessage());
           /*

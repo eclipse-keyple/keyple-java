@@ -26,7 +26,7 @@ public class CardSelector implements Serializable {
   /** logger */
   private static final Logger logger = LoggerFactory.getLogger(CardSelector.class);
 
-  private final String seProtocol;
+  private final String cardProtocol;
   private final AidSelector aidSelector;
   private final AtrFilter atrFilter;
 
@@ -331,7 +331,7 @@ public class CardSelector implements Serializable {
    * @param builder the CardSelector builder
    */
   protected CardSelector(CardSelectorBuilder builder) {
-    this.seProtocol = builder.seProtocol;
+    this.cardProtocol = builder.cardProtocol;
     this.aidSelector = builder.aidSelector;
     this.atrFilter = builder.atrFilter;
     if (logger.isTraceEnabled()) {
@@ -350,7 +350,7 @@ public class CardSelector implements Serializable {
    * @since 0.9
    */
   public static class CardSelectorBuilder {
-    private String seProtocol;
+    private String cardProtocol;
     private CardSelector.AtrFilter atrFilter;
     private CardSelector.AidSelector aidSelector;
 
@@ -360,11 +360,11 @@ public class CardSelector implements Serializable {
     /**
      * Sets the card protocol.
      *
-     * @param seProtocol A not empty String.
+     * @param cardProtocol A not empty String.
      * @return the builder instance
      */
-    public CardSelectorBuilder seProtocol(String seProtocol) {
-      this.seProtocol = seProtocol;
+    public CardSelectorBuilder cardProtocol(String cardProtocol) {
+      this.cardProtocol = cardProtocol;
       return this;
     }
 
@@ -414,8 +414,8 @@ public class CardSelector implements Serializable {
    *
    * @return the {@link String} provided at construction time
    */
-  public String getSeProtocol() {
-    return seProtocol;
+  public String getCardProtocol() {
+    return cardProtocol;
   }
 
   /**
@@ -439,8 +439,8 @@ public class CardSelector implements Serializable {
   @Override
   public String toString() {
     return "CardSelector{"
-        + "seProtocol="
-        + seProtocol
+        + "cardProtocol="
+        + cardProtocol
         + ", aidSelector="
         + aidSelector
         + ", atrFilter="

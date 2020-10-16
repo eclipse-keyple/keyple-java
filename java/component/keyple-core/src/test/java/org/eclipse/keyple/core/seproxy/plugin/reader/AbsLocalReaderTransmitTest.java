@@ -216,12 +216,12 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     CardSelector.AtrFilter atrFilter = new CardSelector.AtrFilter(ATR);
     CardSelector selector =
         CardSelector.builder()
-            .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+            .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
             .atrFilter(atrFilter)
             .build();
 
     CardSelector failSelector =
-        CardSelector.builder().seProtocol("MIFARE_ULTRA_LIGHT").atrFilter(atrFilter).build();
+        CardSelector.builder().cardProtocol("MIFARE_ULTRA_LIGHT").atrFilter(atrFilter).build();
 
     ApduRequest apduOK = new ApduRequest(APDU_SUCCESS, false);
     ApduRequest apduKO = new ApduRequest(APDU_IOEXC, false);

@@ -47,9 +47,9 @@ class CoreExamplesActivity : ExamplesActivity() {
             val name = it.name
             addResultEvent("Reader name: [$name]")
 
-            addActionEvent("Check First Reader Presency [reader.isSePresent]")
-            val isSePresent = it.isSePresent
-            addResultEvent("ReaderIsPresent: [$isSePresent]")
+            addActionEvent("Check First Reader Presency [reader.isCardPresent]")
+            val isCardPresent = it.isCardPresent
+            addResultEvent("ReaderIsPresent: [$isCardPresent]")
         }
 
         eventRecyclerView.smoothScrollToPosition(events.size - 1)
@@ -107,13 +107,13 @@ class CoreExamplesActivity : ExamplesActivity() {
         cardSelection.prepareReleaseSeChannel()
 
         /* operate card selection (change the AID here to adapt it to the card used for the test) */
-        val seAidPrefix = "A000000404012509"
+        val cardAidPrefix = "A000000404012509"
 
         /* AID based selection (1st selection, later indexed 0) */
         cardSelection.prepareSelection(GenericCardSelectionRequest(
                 CardSelector.builder()
                         .aidSelector(AidSelector.builder()
-                                .aidToSelect(seAidPrefix)
+                                .aidToSelect(cardAidPrefix)
                                 .fileOccurrence(AidSelector.FileOccurrence.FIRST)
                                 .fileControlInformation(AidSelector.FileControlInformation.FCI).build())
                         .build()))
@@ -122,7 +122,7 @@ class CoreExamplesActivity : ExamplesActivity() {
         cardSelection.prepareSelection(GenericCardSelectionRequest(
                 CardSelector.builder()
                 .aidSelector(AidSelector.builder()
-                        .aidToSelect(seAidPrefix)
+                        .aidToSelect(cardAidPrefix)
                         .fileOccurrence(AidSelector.FileOccurrence.NEXT)
                         .fileControlInformation(AidSelector.FileControlInformation.FCI).build())
                 .build()))
@@ -131,7 +131,7 @@ class CoreExamplesActivity : ExamplesActivity() {
         cardSelection.prepareSelection(GenericCardSelectionRequest(
                 CardSelector.builder()
                         .aidSelector(AidSelector.builder()
-                                .aidToSelect(seAidPrefix)
+                                .aidToSelect(cardAidPrefix)
                                 .fileOccurrence(AidSelector.FileOccurrence.NEXT)
                                 .fileControlInformation(AidSelector.FileControlInformation.FCI).build())
                         .build()))
@@ -143,7 +143,7 @@ class CoreExamplesActivity : ExamplesActivity() {
             addResultEvent("No readers available")
         } else {
             readers.values.forEach { reader: Reader ->
-                if (reader.isSePresent) {
+                if (reader.isCardPresent) {
                     addActionEvent("Sending multiSelection request based on AID Prefix $seAidPrefix to ${reader.name}")
                     try {
                         val selectionsResult = cardSelection.processExplicitSelection(reader)
@@ -176,13 +176,13 @@ class CoreExamplesActivity : ExamplesActivity() {
         addHeaderEvent("UseCase Generic #4: AID based sequential explicit multiple selection")
 
         /* operate card selection (change the AID here to adapt it to the card used for the test) */
-        val seAidPrefix = "A000000404012509"
+        val cardAidPrefix = "A000000404012509"
 
         if (readers.size <1) {
             addResultEvent("No readers available")
         } else {
             readers.values.forEach { reader: Reader ->
-                if (reader.isSePresent) {
+                if (reader.isCardPresent) {
 
                     var cardSelection = CardSelection()
 
@@ -193,12 +193,12 @@ class CoreExamplesActivity : ExamplesActivity() {
                     cardSelection.prepareSelection(GenericCardSelectionRequest(
                             CardSelector.builder()
                                     .aidSelector(AidSelector.builder()
-                                            .aidToSelect(seAidPrefix)
+                                            .aidToSelect(cardAidPrefix)
                                             .fileOccurrence(AidSelector.FileOccurrence.FIRST)
                                             .fileControlInformation(AidSelector.FileControlInformation.FCI).build())
                                     .build()))
                     /* Do the selection and display the result */
-                    doAndAnalyseSelection(reader, cardSelection, 1, seAidPrefix)
+                    doAndAnalyseSelection(reader, cardSelection, 1, cardAidPrefix)
 
                     /*
                      * New selection: get the next application occurrence matching the same AID, close the
@@ -212,13 +212,13 @@ class CoreExamplesActivity : ExamplesActivity() {
                     cardSelection.prepareSelection(GenericCardSelectionRequest(
                             CardSelector.builder()
                                     .aidSelector(AidSelector.builder()
-                                            .aidToSelect(seAidPrefix)
+                                            .aidToSelect(cardAidPrefix)
                                             .fileOccurrence(AidSelector.FileOccurrence.NEXT)
                                             .fileControlInformation(AidSelector.FileControlInformation.FCI).build())
                                     .build()))
 
                     /* Do the selection and display the result */
-                    doAndAnalyseSelection(reader, cardSelection, 2, seAidPrefix)
+                    doAndAnalyseSelection(reader, cardSelection, 2, cardAidPrefix)
                 } else {
                     addResultEvent("No cards were detected")
                 }
@@ -228,7 +228,7 @@ class CoreExamplesActivity : ExamplesActivity() {
     }
 
     @Throws(KeypleReaderException::class)
-    private fun doAndAnalyseSelection(reader: Reader, cardSelection: CardSelection, index: Int, seAidPrefix: String) {
+    private fun doAndAnalyseSelection(reader: Reader, cardSelection: CardSelection, index: Int, cardAidPrefix: String) {
         addActionEvent("Sending multiSelection request based on AID Prefix $seAidPrefix to ${reader.name}")
         val selectionsResult = cardSelection.processExplicitSelection(reader)
         if (selectionsResult.hasActiveSelection()) {

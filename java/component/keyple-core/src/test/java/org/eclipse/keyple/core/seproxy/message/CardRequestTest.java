@@ -36,7 +36,7 @@ public class CardRequestTest {
 
   // attributes
   List<ApduRequest> apdus;
-  String seProtocol;
+  String cardProtocol;
   Set<Integer> selectionStatusCode;
   CardSelector selector;
 
@@ -44,7 +44,7 @@ public class CardRequestTest {
   public void setUp() {
 
     apdus = getAapduLists();
-    seProtocol = getAString();
+    cardProtocol = getAString();
     selectionStatusCode = ApduRequestTest.getASuccessFulStatusCode();
     selector = getSelector(selectionStatusCode);
     cardRequest = new CardRequest(selector, apdus);
@@ -70,9 +70,9 @@ public class CardRequestTest {
   }
 
   @Test
-  public void getSeProtocol() {
+  public void getCardProtocol() {
     cardRequest = new CardRequest(getSelector(null), new ArrayList<ApduRequest>());
-    assertEquals(seProtocol, cardRequest.getCardSelector().getSeProtocol());
+    assertEquals(cardProtocol, cardRequest.getCardSelector().getCardProtocol());
   }
 
   @Test
@@ -104,7 +104,7 @@ public class CardRequestTest {
     //
     assertEquals(
         ContactlessCardCommonProtocols.ISO_14443_4.name(),
-        cardRequest.getCardSelector().getSeProtocol());
+        cardRequest.getCardSelector().getCardProtocol());
     assertNull(cardRequest.getCardSelector().getAidSelector().getSuccessfulSelectionStatusCodes());
   }
 
@@ -113,7 +113,7 @@ public class CardRequestTest {
     cardRequest = new CardRequest(getSelector(null), apdus);
     assertEquals(getSelector(null).toString(), cardRequest.getCardSelector().toString());
     assertArrayEquals(apdus.toArray(), cardRequest.getApduRequests().toArray());
-    assertEquals(seProtocol, cardRequest.getCardSelector().getSeProtocol());
+    assertEquals(cardProtocol, cardRequest.getCardSelector().getCardProtocol());
     //
     assertNull(cardRequest.getCardSelector().getAidSelector().getSuccessfulSelectionStatusCodes());
   }
@@ -126,7 +126,7 @@ public class CardRequestTest {
     assertArrayEquals(apdus.toArray(), cardRequest.getApduRequests().toArray());
     assertEquals(
         ContactlessCardCommonProtocols.ISO_14443_4.name(),
-        cardRequest.getCardSelector().getSeProtocol());
+        cardRequest.getCardSelector().getCardProtocol());
     //
     assertArrayEquals(
         selectionStatusCode.toArray(),
@@ -143,7 +143,7 @@ public class CardRequestTest {
     assertEquals(
         getSelector(selectionStatusCode).toString(), cardRequest.getCardSelector().toString());
     assertArrayEquals(apdus.toArray(), cardRequest.getApduRequests().toArray());
-    assertEquals(seProtocol, cardRequest.getCardSelector().getSeProtocol());
+    assertEquals(cardProtocol, cardRequest.getCardSelector().getCardProtocol());
     assertArrayEquals(
         selectionStatusCode.toArray(),
         cardRequest
@@ -189,7 +189,7 @@ public class CardRequestTest {
       }
     }
     CardSelector cardSelector =
-        CardSelector.builder().seProtocol(getAString()).aidSelector(aidSelector).build();
+        CardSelector.builder().cardProtocol(getAString()).aidSelector(aidSelector).build();
     return cardSelector;
   }
 }

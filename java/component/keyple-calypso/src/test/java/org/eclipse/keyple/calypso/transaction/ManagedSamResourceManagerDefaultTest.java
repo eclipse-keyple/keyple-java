@@ -129,7 +129,7 @@ public class ManagedSamResourceManagerDefaultTest extends CalypsoBaseTest {
     // create a mock reader
     ProxyReader reader = Mockito.mock(ProxyReader.class);
     when(reader.getName()).thenReturn(SAM_READER_NAME);
-    when(reader.isSePresent()).thenReturn(true);
+    when(reader.isCardPresent()).thenReturn(true);
     doReturn(selectionResponses)
         .when(reader)
         .transmitCardRequests(

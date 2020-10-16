@@ -81,12 +81,12 @@ class CoreExamplesActivity : AbstractExampleActivity() {
         addHeaderEvent("Reader  NAME = ${reader.name}")
 
         /*Check if a card is present in the reader */
-        if (reader.isSePresent) {
+        if (reader.isCardPresent) {
             /*
               * operate card AID selection (change the AID prefix here to adapt it to the card used for
               * the test [the card should have at least two applications matching the AID prefix])
               */
-            val seAidPrefix = CalypsoClassicInfo.AID_PREFIX
+            val cardAidPrefix = CalypsoClassicInfo.AID_PREFIX
 
             /* First selection case */
             cardSelection = CardSelection()
@@ -95,9 +95,9 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             cardSelection.prepareSelection(
                     GenericCardSelectionRequest(
                             CardSelector.builder()
-                                    .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
+                                    .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
                                     .aidSelector(AidSelector.builder()
-                                            .aidToSelect(seAidPrefix)
+                                            .aidToSelect(cardAidPrefix)
                                             .fileOccurrence(CardSelector.AidSelector.FileOccurrence.FIRST)
                                             .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI).build())
                                     .build()))
@@ -119,9 +119,9 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             cardSelection.prepareSelection(
                     GenericCardSelectionRequest(
                             CardSelector.builder()
-                                    .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
+                                    .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
                                     .aidSelector(CardSelector.AidSelector.builder()
-                                            .aidToSelect(seAidPrefix)
+                                            .aidToSelect(cardAidPrefix)
                                             .fileOccurrence(CardSelector.AidSelector.FileOccurrence.NEXT)
                                             .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI).build())
                                     .build()))
@@ -158,22 +158,22 @@ class CoreExamplesActivity : AbstractExampleActivity() {
 
         useCase = null
 
-        if (reader.isSePresent) {
+        if (reader.isCardPresent) {
             cardSelection = CardSelection(MultiSelectionProcessing.PROCESS_ALL)
 
             /* Close the channel after the selection to force the selection of all applications */
             cardSelection.prepareReleaseSeChannel()
 
             /* operate card selection (change the AID here to adapt it to the card used for the test) */
-            val seAidPrefix = CalypsoClassicInfo.AID_PREFIX
+            val cardAidPrefix = CalypsoClassicInfo.AID_PREFIX
 
             /* AID based selection (1st selection, later indexed 0) */
             cardSelection.prepareSelection(
                     GenericCardSelectionRequest(
                             CardSelector.builder()
-                                    .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
+                                    .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
                                     .aidSelector(CardSelector.AidSelector.builder()
-                                            .aidToSelect(seAidPrefix)
+                                            .aidToSelect(cardAidPrefix)
                                             .fileOccurrence(CardSelector.AidSelector.FileOccurrence.FIRST)
                                             .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI).build())
                                     .build()))
@@ -182,9 +182,9 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             cardSelection.prepareSelection(
                     GenericCardSelectionRequest(
                             CardSelector.builder()
-                                    .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
+                                    .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
                                     .aidSelector(CardSelector.AidSelector.builder()
-                                            .aidToSelect(seAidPrefix)
+                                            .aidToSelect(cardAidPrefix)
                                             .fileOccurrence(CardSelector.AidSelector.FileOccurrence.NEXT)
                                             .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI).build())
                                     .build()))
@@ -193,9 +193,9 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             cardSelection.prepareSelection(
                     GenericCardSelectionRequest(
                             CardSelector.builder()
-                                    .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
+                                    .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
                                     .aidSelector(CardSelector.AidSelector.builder()
-                                            .aidToSelect(seAidPrefix)
+                                            .aidToSelect(cardAidPrefix)
                                             .fileOccurrence(CardSelector.AidSelector.FileOccurrence.NEXT)
                                             .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI).build())
                                     .build()))
@@ -253,7 +253,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
          * selection
          */
         val cardSelector = GenericCardSelectionRequest(CardSelector.builder()
-                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
+                .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
                 .aidSelector(AidSelector.builder()
                         .aidToSelect(aid).build())
                 .build())
@@ -279,8 +279,8 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                     when (event?.eventType) {
                         ReaderEvent.EventType.CARD_MATCHED -> {
                             addResultEvent("CARD_MATCHED event: A card corresponding to request has been detected")
-                            val selectedSe = cardSelection.processDefaultSelection(event.defaultSelectionsResponse).activeSmartCard
-                            if (selectedSe != null) {
+                            val selectedCard = cardSelection.processDefaultSelection(event.defaultSelectionsResponse).activeSmartCard
+                            if (selectedCard != null) {
                                 addResultEvent("Observer notification: the selection of the card has succeeded. End of the card processing.")
                                 addResultEvent("Application FCI = ${ByteArrayUtil.toHex(selectedSe.fciBytes)}")
                             } else {
@@ -326,7 +326,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
         addHeaderEvent("UseCase Generic #1: Explicit AID selection")
         addHeaderEvent("Reader  NAME = ${reader.name}")
 
-        if (reader.isSePresent) {
+        if (reader.isCardPresent) {
 
             /*
              * Prepare the card selection
@@ -346,7 +346,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
              * the selection and read additional information afterwards
              */
             val genericCardSelectionRequest = GenericCardSelectionRequest(
-                    CardSelector.builder().seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name).aidSelector(
+                    CardSelector.builder().cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name).aidSelector(
                             AidSelector.builder().aidToSelect(aid).build()).build())
 
             /**
@@ -370,7 +370,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                 val selectionsResult = cardSelection.processExplicitSelection(reader)
 
                 if (selectionsResult.hasActiveSelection()) {
-                    val matchedSe = selectionsResult.activeSmartCard
+                    val matchedCard = selectionsResult.activeSmartCard
                     addResultEvent("The selection of the card has succeeded.")
                     addResultEvent("Application FCI = ${ByteArrayUtil.toHex(matchedSe.fciBytes)}")
                     addResultEvent("End of the generic card processing.")

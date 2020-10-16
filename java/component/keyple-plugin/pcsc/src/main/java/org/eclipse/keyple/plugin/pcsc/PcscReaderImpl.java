@@ -58,7 +58,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   private static final long INSERT_LATENCY = 500;
   private static final long REMOVAL_LATENCY = 500;
 
-  private final AtomicBoolean loopWaitSe = new AtomicBoolean();
+  private final AtomicBoolean loopWaitCard = new AtomicBoolean();
   private final AtomicBoolean loopWaitSeRemoval = new AtomicBoolean();
 
   private final boolean usePingPresence;
@@ -103,16 +103,16 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     if (!usePingPresence) {
       observableReaderStateService =
           ObservableReaderStateService.builder(this)
-              .waitForSeInsertionWithSmartDetection()
-              .waitForSeProcessingWithSmartDetection()
-              .waitForSeRemovalWithSmartDetection()
+              .WaitForCardInsertionWithSmartDetection()
+              .WaitForCardProcessingWithSmartDetection()
+              .WaitForCardRemovalWithSmartDetection()
               .build();
     } else {
       observableReaderStateService =
           ObservableReaderStateService.builder(this)
-              .waitForSeInsertionWithPollingDetection()
-              .waitForSeProcessingWithSmartDetection()
-              .waitForSeRemovalWithSmartDetection()
+              .WaitForCardInsertionWithPollingDetection()
+              .WaitForCardProcessingWithSmartDetection()
+              .WaitForCardRemovalWithSmartDetection()
               .build();
     }
 
@@ -152,7 +152,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     try {
       return terminal.isCardPresent();
     } catch (CardException e) {
-      throw new KeypleReaderIOException("Exception occurred in isSePresent", e);
+      throw new KeypleReaderIOException("Exception occurred in isCardPresent", e);
     }
   }
 
@@ -444,7 +444,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    *
    * <p>This status may be wrong if the card has been removed.
    *
-   * <p>The caller should test the card presence with isSePresent before calling this method.
+   * <p>The caller should test the card presence with isCardPresent before calling this method.
    *
    * @return true if the physical channel is open
    * @since 0.9

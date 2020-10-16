@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Ping the card to detect removal thanks to the method {@link
- * AbstractObservableLocalReader#isSePresentPing()}. This method is invoked in another thread.
+ * AbstractObservableLocalReader#isCardPresentPing()}. This method is invoked in another thread.
  *
  * <p>This job should be used by readers who do not have the ability to natively detect the
  * disappearance of the card at the end of the transaction.
@@ -37,7 +37,7 @@ class CardAbsentPingMonitoringJob extends AbstractMonitoringJob {
   private long removalWait = 200;
 
   /**
-   * Create a job monitor job that ping the card with the method isSePresentPing()
+   * Create a job monitor job that ping the card with the method isCardPresentPing()
    *
    * @param reader : reference to the reader
    */
@@ -46,7 +46,7 @@ class CardAbsentPingMonitoringJob extends AbstractMonitoringJob {
   }
 
   /**
-   * Create a job monitor job that ping the card with the method isSePresentPing()
+   * Create a job monitor job that ping the card with the method isCardPresentPing()
    *
    * @param reader : reference to the reader
    * @param removalWait : delay between between each APDU sending
@@ -62,7 +62,7 @@ class CardAbsentPingMonitoringJob extends AbstractMonitoringJob {
 
     /*
      * Loop until one the following condition is met : -
-     * AbstractObservableLocalReader#isSePresentPing returns false, meaning that the card ping has
+     * AbstractObservableLocalReader#isCardPresentPing returns false, meaning that the card ping has
      * failed - InterruptedException is caught
      */
     job =
@@ -72,12 +72,12 @@ class CardAbsentPingMonitoringJob extends AbstractMonitoringJob {
           @Override
           public void run() {
             if (logger.isDebugEnabled()) {
-              logger.debug("[{}] Polling from isSePresentPing", reader.getName());
+              logger.debug("[{}] Polling from isCardPresentPing", reader.getName());
             }
             // re-init loop value to true
             loop.set(true);
             while (loop.get()) {
-              if (!reader.isSePresentPing()) {
+              if (!reader.isCardPresentPing()) {
                 if (logger.isDebugEnabled()) {
                   logger.debug("[{}] the card stopped responding", reader.getName());
                 }

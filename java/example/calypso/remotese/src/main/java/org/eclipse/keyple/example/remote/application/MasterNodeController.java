@@ -116,9 +116,9 @@ public class MasterNodeController {
       Reader samReader = samStubPlugin.getReader("samReader");
 
       /* Create 'virtual' and insert a Calypso SAM */
-      StubSecureElement calypsoSamStubSe = new StubSamCalypsoClassic();
+      StubSecureElement calypsoSamStubCard = new StubSamCalypsoClassic();
 
-      ((StubReader) samReader).insertSe(calypsoSamStubSe);
+      ((StubReader) samReader).insertSe(calypsoSamStubCard);
       logger.info("Stub SAM inserted");
 
       /*

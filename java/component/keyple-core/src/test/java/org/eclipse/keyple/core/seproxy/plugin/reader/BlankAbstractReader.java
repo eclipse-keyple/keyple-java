@@ -39,7 +39,7 @@ public class BlankAbstractReader extends AbstractReader {
   }
 
   @Override
-  public boolean isSePresent() {
+  public boolean isCardPresent() {
     return false;
   }
 
@@ -47,7 +47,7 @@ public class BlankAbstractReader extends AbstractReader {
   public void activateProtocol(String readerProtocolName, String applicationProtocolName) {}
 
   @Override
-  public void deactivateProtocol(String seProtocol) {}
+  public void deactivateProtocol(String cardProtocol) {}
 
   @Override
   public boolean isContactless() {

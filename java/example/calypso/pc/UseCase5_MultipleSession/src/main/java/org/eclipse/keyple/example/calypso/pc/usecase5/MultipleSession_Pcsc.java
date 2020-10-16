@@ -102,7 +102,7 @@ public class MultipleSession_Pcsc {
     samSelection.prepareSelection(new SamSelectionRequest(samSelector));
     CalypsoSam calypsoSam;
     try {
-      if (samReader.isSePresent()) {
+      if (samReader.isCardPresent()) {
         SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
         if (selectionsResult.hasActiveSelection()) {
           calypsoSam = (CalypsoSam) selectionsResult.getActiveSmartCard();
@@ -125,7 +125,7 @@ public class MultipleSession_Pcsc {
     logger.info("= SAM Reader  NAME = {}", samResource.getReader().getName());
 
     // Check if a PO is present in the reader
-    if (poReader.isSePresent()) {
+    if (poReader.isCardPresent()) {
 
       logger.info("= #### 1st PO exchange: AID based selection with reading of Environment file.");
 

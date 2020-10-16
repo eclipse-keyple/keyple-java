@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This monitoring job polls the {@link Reader#isSePresent()} method to detect
+ * This monitoring job polls the {@link Reader#isCardPresent()} method to detect
  * CARD_INSERTED/CARD_REMOVED
  */
 class CardPresentMonitoringJob extends AbstractMonitoringJob {
@@ -33,7 +33,7 @@ class CardPresentMonitoringJob extends AbstractMonitoringJob {
   /**
    * Build a monitoring job to detect the card insertion
    *
-   * @param reader : reader that will be polled with the method isSePresent()
+   * @param reader : reader that will be polled with the method isCardPresent()
    * @param waitTimeout : wait time during two hit of the polling
    * @param monitorInsertion : if true, polls for CARD_INSERTED, else CARD_REMOVED
    */
@@ -52,14 +52,14 @@ class CardPresentMonitoringJob extends AbstractMonitoringJob {
       @Override
       public void run() {
         if (logger.isDebugEnabled()) {
-          logger.debug("[{}] Polling from isSePresent", reader.getName());
+          logger.debug("[{}] Polling from isCardPresent", reader.getName());
         }
         // re-init loop value to true
         loop.set(true);
         while (loop.get()) {
           try {
             // polls for CARD_INSERTED
-            if (monitorInsertion && reader.isSePresent()) {
+            if (monitorInsertion && reader.isCardPresent()) {
               if (logger.isDebugEnabled()) {
                 logger.debug("[{}] The card is present ", reader.getName());
               }
@@ -68,7 +68,7 @@ class CardPresentMonitoringJob extends AbstractMonitoringJob {
               return;
             }
             // polls for CARD_REMOVED
-            if (!monitorInsertion && !reader.isSePresent()) {
+            if (!monitorInsertion && !reader.isCardPresent()) {
               if (logger.isDebugEnabled()) {
                 logger.debug("[{}] The card is not present ", reader.getName());
               }
@@ -84,7 +84,7 @@ class CardPresentMonitoringJob extends AbstractMonitoringJob {
           retries++;
 
           if (logger.isTraceEnabled()) {
-            logger.trace("[{}] isSePresent polling retries : {}", reader.getName(), retries);
+            logger.trace("[{}] isCardPresent polling retries : {}", reader.getName(), retries);
           }
           try {
             // wait a bit

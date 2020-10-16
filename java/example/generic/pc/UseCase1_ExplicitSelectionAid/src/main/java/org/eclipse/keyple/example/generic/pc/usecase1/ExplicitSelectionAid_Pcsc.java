@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ExplicitSelectionAid_Pcsc {
   private static final Logger logger = LoggerFactory.getLogger(ExplicitSelectionAid_Pcsc.class);
-  private static final String seAid = "A000000291A000000191"; /* Here a Hoplink AID */
+  private static final String cardAid = "A000000291A000000191"; /* Here a Hoplink AID */
 
   public static void main(String[] args) {
 
@@ -68,7 +68,7 @@ public class ExplicitSelectionAid_Pcsc {
     logger.info("= Card Reader  NAME = {}", reader.getName());
 
     // Check if a card is present in the reader
-    if (reader.isSePresent()) {
+    if (reader.isCardPresent()) {
 
       logger.info("= #### AID based selection.");
 
@@ -85,7 +85,7 @@ public class ExplicitSelectionAid_Pcsc {
       GenericCardSelectionRequest genericCardSelectionRequest =
           new GenericCardSelectionRequest(
               CardSelector.builder()
-                  .aidSelector(CardSelector.AidSelector.builder().aidToSelect(seAid).build())
+                  .aidSelector(CardSelector.AidSelector.builder().aidToSelect(cardAid).build())
                   .build());
 
       // Add the selection case to the current selection (we could have added other cases
@@ -106,7 +106,7 @@ public class ExplicitSelectionAid_Pcsc {
           logger.info("Card ATR = {}", atr);
         }
       } else {
-        logger.info("The selection of the application " + seAid + " failed.");
+        logger.info("The selection of the application " + cardAid + " failed.");
       }
 
       logger.info("= #### End of the generic card processing.");

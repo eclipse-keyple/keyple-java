@@ -17,8 +17,8 @@ package org.eclipse.keyple.core.seproxy.exception;
  */
 public class KeypleReaderProtocolNotSupportedException extends KeypleReaderException {
 
-  /** @param seProtocol the identification data used to identify the card */
-  public KeypleReaderProtocolNotSupportedException(String seProtocol) {
-    super("The card protocol " + seProtocol + " is not supported.");
+  /** @param cardProtocol the identification data used to identify the card */
+  public KeypleReaderProtocolNotSupportedException(String cardProtocol) {
+    super("The card protocol " + cardProtocol + " is not supported.");
   }
 }

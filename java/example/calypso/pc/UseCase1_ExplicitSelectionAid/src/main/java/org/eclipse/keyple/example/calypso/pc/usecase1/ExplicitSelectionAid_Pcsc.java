@@ -74,7 +74,7 @@ public class ExplicitSelectionAid_Pcsc {
     logger.info("= PO Reader  NAME = {}", poReader.getName());
 
     // Check if a PO is present in the reader
-    if (poReader.isSePresent()) {
+    if (poReader.isCardPresent()) {
 
       logger.info("= #### 1st PO exchange: AID based selection with reading of Environment file.");
 

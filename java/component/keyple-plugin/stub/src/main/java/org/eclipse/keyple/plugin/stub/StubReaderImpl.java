@@ -35,7 +35,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
   private StubSecureElement card;
   boolean isContactless = true;
 
-  private final AtomicBoolean loopWaitSe = new AtomicBoolean();
+  private final AtomicBoolean loopWaitCard = new AtomicBoolean();
   private final AtomicBoolean loopWaitSeRemoval = new AtomicBoolean();
 
   /**
@@ -97,8 +97,8 @@ class StubReaderImpl extends AbstractObservableLocalReader
 
   @Override
   protected boolean isCurrentProtocol(String readerProtocolName) {
-    if (card != null && card.getSeProtocol() != null) {
-      return card.getSeProtocol().equals(readerProtocolName);
+    if (card != null && card.getCardProtocol() != null) {
+      return card.getCardProtocol().equals(readerProtocolName);
     } else {
       return false;
     }
@@ -238,9 +238,9 @@ class StubReaderImpl extends AbstractObservableLocalReader
   @Override
   protected final ObservableReaderStateService initStateService() {
     return ObservableReaderStateService.builder(this)
-        .waitForSeInsertionWithSmartDetection()
-        .waitForSeProcessingWithSmartDetection()
-        .waitForSeRemovalWithSmartDetection()
+        .WaitForCardInsertionWithSmartDetection()
+        .WaitForCardProcessingWithSmartDetection()
+        .WaitForCardRemovalWithSmartDetection()
         .build();
   }
 }

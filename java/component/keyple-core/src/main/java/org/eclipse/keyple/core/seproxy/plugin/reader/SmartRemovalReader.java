@@ -25,7 +25,7 @@ public interface SmartRemovalReader extends ObservableReaderNotifier {
    *
    * <p>In the case where the reader plugin is not able to handle the card removal process itself
    * (not implementing the {@link SmartRemovalReader} interface, then it is managed by the
-   * isSePresentPing method defined in this class.
+   * isCardPresentPing method defined in this class.
    *
    * <p>Returns true if the card has disappeared.
    *

@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
 public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
   private static final Logger logger =
       LoggerFactory.getLogger(DefaultSelectionNotification_Pcsc.class);
-  private String seAid = "A0000004040125090101";
+  private String cardAid = "A0000004040125090101";
   private CardSelection cardSelection;
   /**
    * This object is used to freeze the main thread while card operations are handle through the
@@ -94,8 +94,8 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
     GenericCardSelectionRequest cardSelector =
         new GenericCardSelectionRequest(
             CardSelector.builder()
-                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                .aidSelector(CardSelector.AidSelector.builder().aidToSelect(seAid).build())
+                .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                .aidSelector(CardSelector.AidSelector.builder().aidToSelect(cardAid).build())
                 .build());
 
     // Add the selection case to the current selection (we could have added other cases here)
@@ -130,9 +130,9 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
     switch (event.getEventType()) {
       case CARD_MATCHED:
         // the selection has one target, get the result at index 0
-        AbstractSmartCard selectedSe = null;
+        AbstractSmartCard selectedCard = null;
         try {
-          selectedSe =
+          selectedCard =
               cardSelection
                   .processDefaultSelection(event.getDefaultSelectionsResponse())
                   .getActiveSmartCard();
@@ -147,7 +147,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
           }
         }
 
-        if (selectedSe != null) {
+        if (selectedCard != null) {
           logger.info("Observer notification: the selection of the card has succeeded.");
 
           logger.info("= #### End of the card processing.");

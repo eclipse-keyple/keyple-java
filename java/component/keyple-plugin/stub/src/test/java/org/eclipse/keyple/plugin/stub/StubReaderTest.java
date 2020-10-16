@@ -89,7 +89,7 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
 
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
-    Assert.assertEquals(false, reader.isSePresent());
+    Assert.assertEquals(false, reader.isCardPresent());
 
     // CountDown lock
     final CountDownLatch lock = new CountDownLatch(2);
@@ -128,7 +128,7 @@ public class StubReaderTest extends BaseStubTest {
     reader.removeObserver(readerObs);
 
     Assert.assertEquals(0, lock.getCount()); // should be 0 because countDown is called by
-    Assert.assertTrue(reader.isSePresent());
+    Assert.assertTrue(reader.isCardPresent());
   }
 
   /**
@@ -196,7 +196,7 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(0, removeLock.getCount()); // should be 0 because removeLock is
     // countDown by obs
 
-    Assert.assertFalse(reader.isSePresent());
+    Assert.assertFalse(reader.isCardPresent());
   }
 
   /**
@@ -306,7 +306,7 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(0, secondRemoveLock.getCount()); // should be 0 because removeLock is
     // countDown by obs
 
-    Assert.assertFalse(reader.isSePresent());
+    Assert.assertFalse(reader.isCardPresent());
   }
 
   @Test
@@ -404,7 +404,7 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(0, secondRemoveLock.getCount()); // should be 0 because removeLock is
     // countDown by obs
 
-    Assert.assertFalse(reader.isSePresent());
+    Assert.assertFalse(reader.isCardPresent());
   }
 
   @Test
@@ -488,7 +488,7 @@ public class StubReaderTest extends BaseStubTest {
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
@@ -553,7 +553,7 @@ public class StubReaderTest extends BaseStubTest {
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
@@ -627,7 +627,7 @@ public class StubReaderTest extends BaseStubTest {
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
@@ -677,7 +677,7 @@ public class StubReaderTest extends BaseStubTest {
             PoSelectionRequest poSelectionRequest =
                 new PoSelectionRequest(
                     PoSelector.builder()
-                        .seProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
+                        .cardProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
                         .atrFilter(new PoSelector.AtrFilter("3B.*"))
                         .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                         .build());
@@ -760,7 +760,7 @@ public class StubReaderTest extends BaseStubTest {
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
@@ -1300,7 +1300,7 @@ public class StubReaderTest extends BaseStubTest {
       }
 
       @Override
-      public String getSeProtocol() {
+      public String getCardProtocol() {
         return "ISO_14443_4";
       }
     };
@@ -1329,7 +1329,7 @@ public class StubReaderTest extends BaseStubTest {
       }
 
       @Override
-      public String getSeProtocol() {
+      public String getCardProtocol() {
         return "CALYPSO_OLD_CARD_PRIME";
       }
     };
@@ -1354,7 +1354,7 @@ public class StubReaderTest extends BaseStubTest {
       }
 
       @Override
-      public String getSeProtocol() {
+      public String getCardProtocol() {
         return "ISO_14443_4";
       }
     };
@@ -1380,7 +1380,7 @@ public class StubReaderTest extends BaseStubTest {
       }
 
       @Override
-      public String getSeProtocol() {
+      public String getCardProtocol() {
         return "ISO_14443_4";
       }
     };
@@ -1415,7 +1415,7 @@ public class StubReaderTest extends BaseStubTest {
       }
 
       @Override
-      public String getSeProtocol() {
+      public String getCardProtocol() {
         return "ISO_14443_4";
       }
     };
@@ -1450,7 +1450,7 @@ public class StubReaderTest extends BaseStubTest {
     GenericCardSelectionRequest genericCardSelectionRequest =
         new GenericCardSelectionRequest(
             CardSelector.builder()
-                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .atrFilter(new CardSelector.AtrFilter("3B.*"))
                 .build());
 

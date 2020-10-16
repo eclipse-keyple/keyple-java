@@ -17,32 +17,30 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Wait for card Processing State
+ * Wait for card Removal State
  *
- * <p>The state during which the card is being processed by the application.
+ * <p>The state in which the card is still present and awaiting removal.
  *
  * <ul>
- *   <li>Upon SE_PROCESSED event, the machine changes state for WAIT_FOR_SE_REMOVAL or
- *       WAIT_FOR_SE_DETECTION according to the {@link ObservableReader.PollingMode} setting.
  *   <li>Upon CARD_REMOVED event, the machine changes state for WAIT_FOR_SE_INSERTION or
  *       WAIT_FOR_SE_DETECTION according to the {@link ObservableReader.PollingMode} setting.
  *   <li>Upon STOP_DETECT event, the machine changes state for WAIT_FOR_SE_DETECTION.
  * </ul>
  */
-class WaitForSeProcessingState extends AbstractObservableState {
+class WaitForCardRemovalState extends AbstractObservableState {
 
   /** logger */
-  private static final Logger logger = LoggerFactory.getLogger(WaitForSeProcessingState.class);
+  private static final Logger logger = LoggerFactory.getLogger(WaitForCardRemovalState.class);
 
-  WaitForSeProcessingState(AbstractObservableLocalReader reader) {
-    super(MonitoringState.WAIT_FOR_SE_PROCESSING, reader);
+  WaitForCardRemovalState(AbstractObservableLocalReader reader) {
+    super(MonitoringState.WAIT_FOR_SE_REMOVAL, reader);
   }
 
-  WaitForSeProcessingState(
+  WaitForCardRemovalState(
       AbstractObservableLocalReader reader,
       AbstractMonitoringJob monitoringJob,
       ExecutorService executorService) {
-    super(MonitoringState.WAIT_FOR_SE_PROCESSING, reader, monitoringJob, executorService);
+    super(MonitoringState.WAIT_FOR_SE_REMOVAL, reader, monitoringJob, executorService);
   }
 
   @Override
@@ -55,17 +53,6 @@ class WaitForSeProcessingState extends AbstractObservableState {
      * Process InternalEvent
      */
     switch (event) {
-      case SE_PROCESSED:
-        if (this.reader.getPollingMode() == ObservableReader.PollingMode.REPEATING) {
-          switchState(MonitoringState.WAIT_FOR_SE_REMOVAL);
-        } else {
-          // We close the channels now and notify the application of
-          // the CARD_REMOVED event.
-          this.reader.processSeRemoved();
-          switchState(MonitoringState.WAIT_FOR_START_DETECTION);
-        }
-        break;
-
       case CARD_REMOVED:
         // the card has been removed, we close all channels and return to
         // the currentState of waiting

@@ -46,7 +46,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
 
   /** ==== Card presence management ====================================== */
   @Test
-  public void isSePresent_false() throws Exception {
+  public void isCardPresent_false() throws Exception {
     AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
 
     final CountDownLatch lock = new CountDownLatch(1);
@@ -56,7 +56,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     when(r.isPhysicalChannelOpen()).thenReturn(true);
 
     // test
-    Assert.assertFalse(r.isSePresent());
+    Assert.assertFalse(r.isCardPresent());
 
     // wait
     lock.await(100, TimeUnit.MILLISECONDS);
@@ -65,12 +65,12 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
   }
 
   @Test
-  public void isSePresent_true() throws Exception {
+  public void isCardPresent_true() throws Exception {
     AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
     when(r.checkSePresence()).thenReturn(true);
 
     // test
-    Assert.assertTrue(r.isSePresent());
+    Assert.assertTrue(r.isCardPresent());
     verify(r, times(0)).processSeRemoved();
   }
 

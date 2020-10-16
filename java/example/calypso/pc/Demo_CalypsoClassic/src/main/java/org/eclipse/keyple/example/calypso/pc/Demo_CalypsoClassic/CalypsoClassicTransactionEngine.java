@@ -104,7 +104,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
     samSelection.prepareSelection(new SamSelectionRequest(samSelector));
     CalypsoSam calypsoSam;
     try {
-      if (samReader.isSePresent()) {
+      if (samReader.isCardPresent()) {
         SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
         if (selectionsResult.hasActiveSelection()) {
           calypsoSam = (CalypsoSam) selectionsResult.getActiveSmartCard();
@@ -337,7 +337,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
     cardSelection.prepareSelection(
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
+                .cardProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
                 .aidSelector(AidSelector.builder().aidToSelect(poFakeAid2).build())
                 .invalidatedPo(InvalidatedPo.REJECT)
                 .build()));
@@ -348,7 +348,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
     cardSelection.prepareSelection(
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
+                .cardProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
                 .atrFilter(new PoSelector.AtrFilter(CalypsoClassicInfo.ATR_REV1_REGEX))
                 .invalidatedPo(InvalidatedPo.REJECT)
                 .build()));
@@ -410,7 +410,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
   }
 
   @Override
-  public void processSeInserted() {
+  public void processCardInserted() {
     logger.error("Unexpected card insertion event");
   }
 

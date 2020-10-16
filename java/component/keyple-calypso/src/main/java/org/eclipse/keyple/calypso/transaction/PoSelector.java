@@ -64,8 +64,8 @@ public final class PoSelector extends CardSelector {
 
     /** {@inheritDoc} */
     @Override
-    public PoSelectorBuilder seProtocol(String seProtocol) {
-      return (PoSelectorBuilder) super.seProtocol(seProtocol);
+    public PoSelectorBuilder cardProtocol(String cardProtocol) {
+      return (PoSelectorBuilder) super.cardProtocol(cardProtocol);
     }
 
     /** {@inheritDoc} */

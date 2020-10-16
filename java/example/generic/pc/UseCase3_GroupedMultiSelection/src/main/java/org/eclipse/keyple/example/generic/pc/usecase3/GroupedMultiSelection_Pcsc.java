@@ -53,12 +53,12 @@ public class GroupedMultiSelection_Pcsc {
     logger.info("= Card Reader  NAME = {}", reader.getName());
 
     // Check if a card is present in the reader
-    if (reader.isSePresent()) {
+    if (reader.isCardPresent()) {
 
       CardSelection cardSelection = new CardSelection(MultiSelectionProcessing.PROCESS_ALL);
 
       // operate the card selection (change the AID here to adapt it to the card used for the test)
-      String seAidPrefix = "A000000404012509";
+      String cardAidPrefix = "A000000404012509";
 
       // AID based selection (1st selection, later indexed 0)
       cardSelection.prepareSelection(
@@ -66,7 +66,7 @@ public class GroupedMultiSelection_Pcsc {
               CardSelector.builder()
                   .aidSelector(
                       CardSelector.AidSelector.builder()
-                          .aidToSelect(seAidPrefix)
+                          .aidToSelect(cardAidPrefix)
                           .fileOccurrence(CardSelector.AidSelector.FileOccurrence.FIRST)
                           .fileControlInformation(
                               CardSelector.AidSelector.FileControlInformation.FCI)
@@ -79,7 +79,7 @@ public class GroupedMultiSelection_Pcsc {
               CardSelector.builder()
                   .aidSelector(
                       CardSelector.AidSelector.builder()
-                          .aidToSelect(seAidPrefix)
+                          .aidToSelect(cardAidPrefix)
                           .fileOccurrence(CardSelector.AidSelector.FileOccurrence.NEXT)
                           .fileControlInformation(
                               CardSelector.AidSelector.FileControlInformation.FCI)
@@ -92,7 +92,7 @@ public class GroupedMultiSelection_Pcsc {
               CardSelector.builder()
                   .aidSelector(
                       CardSelector.AidSelector.builder()
-                          .aidToSelect(seAidPrefix)
+                          .aidToSelect(cardAidPrefix)
                           .fileOccurrence(CardSelector.AidSelector.FileOccurrence.NEXT)
                           .fileControlInformation(
                               CardSelector.AidSelector.FileControlInformation.FCI)
@@ -105,9 +105,9 @@ public class GroupedMultiSelection_Pcsc {
       // Actual card communication: operate through a single request the card selection
       SelectionsResult selectionsResult = cardSelection.processExplicitSelection(reader);
 
-      if (selectionsResult.getMatchingSmartCards().size() > 0) {
+      if (selectionsResult.getSmartCards().size() > 0) {
         for (Map.Entry<Integer, AbstractSmartCard> entry :
-            selectionsResult.getMatchingSmartCards().entrySet()) {
+            selectionsResult.getSmartCards().entrySet()) {
           AbstractSmartCard smartCard = entry.getValue();
           String atr = smartCard.hasAtr() ? ByteArrayUtil.toHex(smartCard.getAtrBytes()) : "no ATR";
           String fci = smartCard.hasFci() ? ByteArrayUtil.toHex(smartCard.getFciBytes()) : "no FCI";

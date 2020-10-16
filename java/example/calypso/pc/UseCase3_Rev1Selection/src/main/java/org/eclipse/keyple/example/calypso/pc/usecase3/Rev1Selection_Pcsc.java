@@ -85,7 +85,7 @@ public class Rev1Selection_Pcsc {
     logger.info("= PO Reader  NAME = {}", poReader.getName());
 
     // Check if a PO is present in the reader
-    if (poReader.isSePresent()) {
+    if (poReader.isCardPresent()) {
 
       logger.info("= #### 1st PO exchange: ATR based selection with reading of Environment file.");
 
@@ -100,7 +100,7 @@ public class Rev1Selection_Pcsc {
       PoSelectionRequest poSelectionRequest =
           new PoSelectionRequest(
               PoSelector.builder()
-                  .seProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
+                  .cardProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
                   .atrFilter(new AtrFilter(PO_ATR_REGEX))
                   .invalidatedPo(InvalidatedPo.REJECT)
                   .build());

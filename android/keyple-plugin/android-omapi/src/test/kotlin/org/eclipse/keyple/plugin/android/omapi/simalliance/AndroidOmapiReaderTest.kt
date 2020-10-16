@@ -54,7 +54,7 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
         val cardRequest = CardRequest(CardSelector.builder()
-                .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
+                .cardProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(PO_AID)
                         .fileOccurrence(CardSelector.AidSelector.FileOccurrence.NEXT)
                         .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI).build())
@@ -72,7 +72,7 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
         val cardRequest = CardRequest(CardSelector.builder()
-                .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
+                .cardProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(PO_AID)
                         .fileOccurrence(CardSelector.AidSelector.FileOccurrence.NEXT)
                         .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI).build())

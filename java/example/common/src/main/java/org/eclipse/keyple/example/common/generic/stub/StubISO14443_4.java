@@ -17,7 +17,7 @@ import org.eclipse.keyple.plugin.stub.StubSecureElement;
 /** Simple contact card Stub (no command) */
 public class StubISO14443_4 extends StubSecureElement {
 
-  static final String seProtocol = "ISO_14443_4";
+  static final String cardProtocol = "ISO_14443_4";
   final String ATR_HEX = "3B8880010000000000718100F9";
 
   public StubISO14443_4() {
@@ -68,7 +68,7 @@ public class StubISO14443_4 extends StubSecureElement {
   }
 
   @Override
-  public String getSeProtocol() {
-    return seProtocol;
+  public String getCardProtocol() {
+    return cardProtocol;
   }
 }

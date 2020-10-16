@@ -30,13 +30,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RunWith(Parameterized.class)
-public class WaitForSeRemovalStateJobExecutorTest extends CoreBaseTest {
+public class WaitForCardRemovalStateJobExecutorTest extends CoreBaseTest {
 
   private static final Logger logger =
-      LoggerFactory.getLogger(WaitForSeRemovalStateJobExecutorTest.class);
+      LoggerFactory.getLogger(WaitForCardRemovalStateJobExecutorTest.class);
 
-  final String PLUGIN_NAME = "WaitForSeRemovalJobExecutorTestP";
-  final String READER_NAME = "WaitForSeRemovalStateJobExecutorTest";
+  final String PLUGIN_NAME = "WaitForCardRemovalJobExecutorTestP";
+  final String READER_NAME = "WaitForCardRemovalStateJobExecutorTest";
 
   final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -66,13 +66,13 @@ public class WaitForSeRemovalStateJobExecutorTest extends CoreBaseTest {
      * card has been removed
      */
     AbstractObservableLocalReader r = AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
-    WaitForSeRemovalState waitForSeRemovalState =
-        new WaitForSeRemovalState(r, new CardAbsentPingMonitoringJob(r), executorService);
+    WaitForCardRemovalState waitForCardRemovalState =
+        new WaitForCardRemovalState(r, new CardAbsentPingMonitoringJob(r), executorService);
     doReturn(ObservableReader.PollingMode.SINGLESHOT).when(r).getPollingMode();
-    doReturn(false).when(r).isSePresentPing();
+    doReturn(false).when(r).isCardPresentPing();
     doNothing().when(r).processSeRemoved();
     /* test */
-    waitForSeRemovalState.onActivate();
+    waitForCardRemovalState.onActivate();
 
     Thread.sleep(WAIT); // wait for the monitoring to act
 
@@ -80,7 +80,7 @@ public class WaitForSeRemovalStateJobExecutorTest extends CoreBaseTest {
     // Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
     verify(r, times(1)).switchState(WAIT_FOR_START_DETECTION);
 
-    waitForSeRemovalState.onDeactivate();
+    waitForCardRemovalState.onDeactivate();
   }
 
   @Test
@@ -89,21 +89,21 @@ public class WaitForSeRemovalStateJobExecutorTest extends CoreBaseTest {
      * ------------ input polling mode is CONTINUE card has been removed within timeout
      */
     AbstractObservableLocalReader r = AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
-    WaitForSeRemovalState waitForSeRemovalState =
-        new WaitForSeRemovalState(r, new CardAbsentPingMonitoringJob(r), executorService);
+    WaitForCardRemovalState waitForCardRemovalState =
+        new WaitForCardRemovalState(r, new CardAbsentPingMonitoringJob(r), executorService);
     doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();
-    doReturn(false).when(r).isSePresentPing();
+    doReturn(false).when(r).isCardPresentPing();
     doNothing().when(r).processSeRemoved();
 
     /* test */
-    waitForSeRemovalState.onActivate();
+    waitForCardRemovalState.onActivate();
 
     Thread.sleep(WAIT); // wait for the monitoring to act
 
     /* Assert */
     // Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentState().getMonitoringState());
     verify(r, times(1)).switchState(WAIT_FOR_SE_INSERTION);
-    waitForSeRemovalState.onDeactivate();
+    waitForCardRemovalState.onDeactivate();
   }
 
   @Test
@@ -119,7 +119,7 @@ public class WaitForSeRemovalStateJobExecutorTest extends CoreBaseTest {
     AbstractObservableState stateMock = Mockito.mock(AbstractObservableState.class);
     CardAbsentPingMonitoringJob jobControl = new CardAbsentPingMonitoringJob(r);
     doReturn(ObservableReader.PollingMode.SINGLESHOT).when(r).getPollingMode();
-    doReturn(true).when(r).isSePresentPing();
+    doReturn(true).when(r).isCardPresentPing();
     doNothing().when(r).processSeRemoved();
     /* test */
     Runnable task = jobControl.getMonitoringJob(stateMock);
@@ -144,20 +144,20 @@ public class WaitForSeRemovalStateJobExecutorTest extends CoreBaseTest {
      */
     BlankSmartPresenceTheadedReader r =
         AbsSmartPresenceTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME);
-    WaitForSeRemovalState waitForSeRemovalState =
-        new WaitForSeRemovalState(r, new SmartRemovalMonitoringJob(r), executorService);
+    WaitForCardRemovalState waitForCardRemovalState =
+        new WaitForCardRemovalState(r, new SmartRemovalMonitoringJob(r), executorService);
     doReturn(ObservableReader.PollingMode.SINGLESHOT).when(r).getPollingMode();
     doReturn(true).when(r).waitForCardAbsentNative();
     doNothing().when(r).processSeRemoved();
     /* test */
-    waitForSeRemovalState.onActivate();
+    waitForCardRemovalState.onActivate();
 
     Thread.sleep(WAIT); // wait for the monitoring to act
 
     /* Assert */
     // Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
     verify(r, times(1)).switchState(WAIT_FOR_START_DETECTION);
-    waitForSeRemovalState.onDeactivate();
+    waitForCardRemovalState.onDeactivate();
   }
 
   @Test
@@ -170,19 +170,19 @@ public class WaitForSeRemovalStateJobExecutorTest extends CoreBaseTest {
     BlankSmartPresenceTheadedReader r =
         AbsSmartPresenceTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME);
     // r.startSeDetection(ObservableReader.PollingMode.REPEATING);
-    WaitForSeRemovalState waitForSeRemovalState =
-        new WaitForSeRemovalState(r, new SmartRemovalMonitoringJob(r), executorService);
+    WaitForCardRemovalState waitForCardRemovalState =
+        new WaitForCardRemovalState(r, new SmartRemovalMonitoringJob(r), executorService);
     doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();
     doReturn(true).when(r).waitForCardAbsentNative();
     doNothing().when(r).processSeRemoved();
     /* test */
-    waitForSeRemovalState.onActivate();
+    waitForCardRemovalState.onActivate();
 
     Thread.sleep(WAIT); // wait for the monitoring to act
 
     /* Assert */
     // Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentState().getMonitoringState());
     verify(r, times(1)).switchState(WAIT_FOR_SE_INSERTION);
-    waitForSeRemovalState.onDeactivate();
+    waitForCardRemovalState.onDeactivate();
   }
 }

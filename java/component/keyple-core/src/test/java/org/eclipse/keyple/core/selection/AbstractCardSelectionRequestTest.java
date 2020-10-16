@@ -33,7 +33,7 @@ public class AbstractCardSelectionRequestTest {
   public void testGetCardSelector() {
     CardSelector cardSelector =
         CardSelector.builder()
-            .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+            .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
             .aidSelector(CardSelector.AidSelector.builder().aidToSelect(AID).build())
             .build();
     TestCardSelectionRequest testCardSelectionRequest = new TestCardSelectionRequest(cardSelector);
@@ -44,7 +44,7 @@ public class AbstractCardSelectionRequestTest {
   public void testAddCommandBuilder_GetCommandBuilders_getSelectionRequest() {
     CardSelector cardSelector =
         CardSelector.builder()
-            .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+            .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
             .aidSelector(CardSelector.AidSelector.builder().aidToSelect(AID).build())
             .build();
     TestCardSelectionRequest testCardSelectionRequest = new TestCardSelectionRequest(cardSelector);

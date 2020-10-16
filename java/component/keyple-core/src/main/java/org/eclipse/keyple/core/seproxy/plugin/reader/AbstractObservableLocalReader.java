@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  *       setDefaultSelectionRequest method.
  *       <p>Note: The system always starts in the WAIT_FOR_START_DETECTION state.
  *   <li>WAIT_FOR_SE_INSERTION
- *       <p>Awaiting the card insertion. After insertion, the processSeInserted method is called.
+ *       <p>Awaiting the card insertion. After insertion, the processCardInserted method is called.
  *       <p>A number of cases arise:
  *       <ul>
  *         <li>A default selection is defined: in this case it is played and its result leads to an
@@ -248,7 +248,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
    */
   @Override
-  public final boolean isSePresent() {
+  public final boolean isCardPresent() {
     if (checkSePresence()) {
       return true;
     } else {
@@ -385,7 +385,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
    * @return ReaderEvent that should be notified to observers, contains the results of the default
    *     selection if any, can be null if no event should be sent
    */
-  ReaderEvent processSeInserted() {
+  ReaderEvent processCardInserted() {
     if (logger.isTraceEnabled()) {
       logger.trace("[{}] process the inserted card", getName());
     }
@@ -495,7 +495,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
    *
    * @return true if the card still responds, false if not
    */
-  boolean isSePresentPing() {
+  boolean isCardPresentPing() {
     // APDU sent to check the communication with the PO
     final byte[] apdu = {(byte) 0x00, (byte) 0xC0, (byte) 0x00, (byte) 0x00, (byte) 0x00};
     // transmits the APDU and checks for the IO exception.
@@ -507,7 +507,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
     } catch (KeypleReaderIOException e) {
       if (logger.isTraceEnabled()) {
         logger.trace(
-            "[{}] Exception occurred in isSePresentPing. Message: {}", getName(), e.getMessage());
+            "[{}] Exception occurred in isCardPresentPing. Message: {}", getName(), e.getMessage());
       }
       return false;
     }
@@ -517,8 +517,8 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
   /**
    * This method is invoked when a card is removed in the case of an observable reader.
    *
-   * <p>It will also be invoked if isSePresent is called and at least one of the physical or logical
-   * channels is still open (case of a non-observable reader)
+   * <p>It will also be invoked if isCardPresent is called and at least one of the physical or
+   * logical channels is still open (case of a non-observable reader)
    *
    * <p>the card will be notified removed only if it has been previously notified present
    * (observable reader only)

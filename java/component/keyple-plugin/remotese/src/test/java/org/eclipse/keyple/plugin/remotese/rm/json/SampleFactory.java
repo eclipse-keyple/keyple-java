@@ -59,7 +59,7 @@ public class SampleFactory {
     CardSelector cardSelector =
         CardSelector.builder()
             .aidSelector(aidSelector)
-            .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+            .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
             .build();
 
     CardRequest cardRequest = new CardRequest(cardSelector, poApduRequests);
@@ -98,7 +98,7 @@ public class SampleFactory {
     CardSelector cardSelector =
         CardSelector.builder()
             .aidSelector(aidSelector)
-            .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+            .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
             .build();
 
     CardRequest cardRequest = new CardRequest(cardSelector, poApduRequests);
@@ -128,20 +128,20 @@ public class SampleFactory {
     CardSelector aidCardSelector =
         CardSelector.builder()
             .aidSelector(aidSelector)
-            .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+            .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
             .build();
 
     CardSelector.AtrFilter atrFilter = new CardSelector.AtrFilter("/regex/");
 
-    CardSelector seAtrSelector =
+    CardSelector cardAtrSelector =
         CardSelector.builder()
             .atrFilter(atrFilter)
-            .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name())
+            .cardProtocol(ContactsCardCommonProtocols.ISO_7816_3.name())
             .build();
 
     CardRequest cardRequest = new CardRequest(aidCardSelector, poApduRequests);
 
-    CardRequest cardRequest2 = new CardRequest(seAtrSelector, poApduRequests);
+    CardRequest cardRequest2 = new CardRequest(cardAtrSelector, poApduRequests);
 
     List<CardRequest> cardRequests = new ArrayList<CardRequest>();
     cardRequests.add(cardRequest);
