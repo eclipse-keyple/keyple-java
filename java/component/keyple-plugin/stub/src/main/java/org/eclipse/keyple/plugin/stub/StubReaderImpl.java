@@ -36,7 +36,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
   boolean isContactless = true;
 
   private final AtomicBoolean loopWaitCard = new AtomicBoolean();
-  private final AtomicBoolean loopWaitSeRemoval = new AtomicBoolean();
+  private final AtomicBoolean loopWaitCardRemoval = new AtomicBoolean();
 
   /**
    * Do not use directly
@@ -184,8 +184,8 @@ class StubReaderImpl extends AbstractObservableLocalReader
    */
   @Override
   public boolean waitForCardPresent() {
-    loopWaitSe.set(true);
-    while (loopWaitSe.get()) {
+    loopWaitCard.set(true);
+    while (loopWaitCard.get()) {
       if (checkSePresence()) {
         return true;
       }
@@ -202,7 +202,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
 
   @Override
   public void stopWaitForCard() {
-    loopWaitSe.set(false);
+    loopWaitCard.set(false);
   }
 
   /**
@@ -213,8 +213,8 @@ class StubReaderImpl extends AbstractObservableLocalReader
    */
   @Override
   public boolean waitForCardAbsentNative() {
-    loopWaitSeRemoval.set(true);
-    while (loopWaitSeRemoval.get()) {
+    loopWaitCardRemoval.set(true);
+    while (loopWaitCardRemoval.get()) {
       if (!checkSePresence()) {
         logger.trace("[{}] card removed", this.getName());
         return true;
@@ -232,7 +232,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
 
   @Override
   public void stopWaitForCardRemoval() {
-    loopWaitSeRemoval.set(false);
+    loopWaitCardRemoval.set(false);
   }
 
   @Override

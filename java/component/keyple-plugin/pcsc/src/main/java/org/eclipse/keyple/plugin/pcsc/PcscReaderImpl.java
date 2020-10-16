@@ -59,7 +59,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
   private static final long REMOVAL_LATENCY = 500;
 
   private final AtomicBoolean loopWaitCard = new AtomicBoolean();
-  private final AtomicBoolean loopWaitSeRemoval = new AtomicBoolean();
+  private final AtomicBoolean loopWaitCardRemoval = new AtomicBoolean();
 
   private final boolean usePingPresence;
 
@@ -169,10 +169,10 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         "[{}] waitForCardPresent => loop with latency of {} ms.", this.getName(), INSERT_LATENCY);
 
     // activate loop
-    loopWaitSe.set(true);
+    loopWaitCard.set(true);
 
     try {
-      while (loopWaitSe.get()) {
+      while (loopWaitCard.get()) {
         if (logger.isTraceEnabled()) {
           logger.trace("[{}] waitForCardPresent => looping", this.getName());
         }
@@ -211,7 +211,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    */
   @Override
   public void stopWaitForCard() {
-    loopWaitSe.set(false);
+    loopWaitCard.set(false);
   }
 
   /**
@@ -228,10 +228,10 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         this.getName(),
         REMOVAL_LATENCY);
 
-    loopWaitSeRemoval.set(true);
+    loopWaitCardRemoval.set(true);
 
     try {
-      while (loopWaitSeRemoval.get()) {
+      while (loopWaitCardRemoval.get()) {
         if (logger.isTraceEnabled()) {
           logger.trace("[{}] waitForCardAbsentNative => looping", this.getName());
         }
@@ -269,7 +269,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
    */
   @Override
   public void stopWaitForCardRemoval() {
-    loopWaitSeRemoval.set(false);
+    loopWaitCardRemoval.set(false);
   }
 
   /**
