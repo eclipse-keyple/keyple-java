@@ -16,47 +16,41 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 
-/** ReaderEvent used to notify changes at reader level */
+/**
+ * This POJO is used to propagate a change of a SE state in an {@link ObservableReader}.
+ *
+ * <p>The various events that can occur concern the insertion and removal of an SE from a reader.
+ *
+ * <p>When an insertion is made there are two cases depending on whether a default selection has
+ * been programmed or not.
+ *
+ * @since 0.9
+ */
 public final class ReaderEvent {
-  /** The name of the plugin handling the reader that produced the event */
+
   private final String pluginName;
-
-  /** The name of the reader that produced the event */
   private final String readerName;
-
-  /**
-   * The response to the selection request Note: although the object is instantiated externally, we
-   * use DefaultSelectionsResponse here to keep ReaderEvent serializable
-   */
   private final DefaultSelectionsResponse defaultResponses;
 
   /**
    * The different types of reader events, reflecting the status of the reader regarding the
-   * presence of the card
+   * presence of a Secure Element.
+   *
+   * @since 0.9
    */
   public enum EventType {
+
     /** An timeout error occurred. */
-    TIMEOUT_ERROR("SE Reader timeout Error"),
+    TIMEOUT_ERROR,
 
     /** A SE has been inserted. */
-    SE_INSERTED("SE insertion"),
+    SE_INSERTED,
 
     /** A SE has been inserted and the default requests process has been successfully operated. */
-    SE_MATCHED("SE matched"),
+    SE_MATCHED,
 
     /** The SE has been removed and is no longer able to communicate with the reader */
-    SE_REMOVED("SE removed");
-
-    /** The event name. */
-    private String name;
-
-    EventType(String name) {
-      this.name = name;
-    }
-
-    public String getName() {
-      return name;
-    }
+    SE_REMOVED
   }
 
   /** The type of event */
@@ -65,11 +59,12 @@ public final class ReaderEvent {
   /**
    * ReaderEvent constructor for simple insertion notification mode
    *
-   * @param pluginName the name of the current plugin
-   * @param readerName the name of the current reader
-   * @param eventType the type of event
+   * @param pluginName the name of the current plugin (should be not null)
+   * @param readerName the name of the current reader (should be not null)
+   * @param eventType the type of event (should be not null)
    * @param defaultSelectionsResponse the response to the default AbstractDefaultSelectionsRequest
    *     (may be null)
+   * @since 0.9
    */
   public ReaderEvent(
       String pluginName,
@@ -82,32 +77,64 @@ public final class ReaderEvent {
     this.defaultResponses = (DefaultSelectionsResponse) defaultSelectionsResponse;
   }
 
-  /** @return the name of the plugin from which the reader that generated the event comes from */
+  /**
+   * Gets the name of the plugin from which the reader that generated the event comes from
+   *
+   * @return A not empty string.
+   * @since 0.9
+   */
   public String getPluginName() {
     return pluginName;
   }
 
-  /** @return the name of the reader that generated the event comes from */
+  /**
+   * Gets the name of the reader that generated the event comes from
+   *
+   * @return A not empty string.
+   * @since 0.9
+   */
   public String getReaderName() {
     return readerName;
   }
 
-  /** @return the type of event */
+  /**
+   * Gets the reader event type.
+   *
+   * @return A not null value.
+   * @since 0.9
+   */
   public EventType getEventType() {
     return eventType;
   }
 
-  /** @return the default selection response (when the event is SE_INSERTED or SE_MATCHED) */
+  /**
+   * Gets the default selection response that may be present when the event is {@link
+   * EventType#SE_INSERTED}, always present when the event is {@link EventType#SE_MATCHED} and null
+   * in the others cases.
+   *
+   * @return A nullable value.
+   * @since 0.9
+   */
   public AbstractDefaultSelectionsResponse getDefaultSelectionsResponse() {
     return defaultResponses;
   }
 
-  /** @return the plugin from which the reader that generated the event comes from */
+  /**
+   * Gets the {@link ReaderPlugin} from which the reader that generated the event comes from.
+   *
+   * @return A not null reference.
+   * @since 0.9
+   */
   public ReaderPlugin getPlugin() {
     return SeProxyService.getInstance().getPlugin(pluginName);
   }
 
-  /** @return the reader that generated the event comes from */
+  /**
+   * Gets the {@link SeReader} from which generated event comes from
+   *
+   * @return A not null reference.
+   * @since 0.9
+   */
   public SeReader getReader() {
     return getPlugin().getReader(readerName);
   }

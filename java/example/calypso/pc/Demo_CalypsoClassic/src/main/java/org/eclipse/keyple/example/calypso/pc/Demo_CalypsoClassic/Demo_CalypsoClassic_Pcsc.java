@@ -17,11 +17,12 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactsCardCommonProtocols;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
-import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
-import org.eclipse.keyple.plugin.pcsc.PcscReaderConstants;
+import org.eclipse.keyple.plugin.pcsc.PcscReader;
+import org.eclipse.keyple.plugin.pcsc.PcscSupportedProtocols;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,44 +75,26 @@ public class Demo_CalypsoClassic_Pcsc {
     logger.info("SAM Reader  NAME = {}", samReader.getName());
 
     /* Set PcSc settings per reader */
-    poReader.setParameter(PcscReaderConstants.PROTOCOL_KEY, PcscReaderConstants.PROTOCOL_VAL_T1);
-    samReader.setParameter(PcscReaderConstants.PROTOCOL_KEY, PcscReaderConstants.PROTOCOL_VAL_T0);
+    ((PcscReader) poReader)
+        .setContactless(true)
+        .setIsoProtocol(PcscReader.IsoProtocol.T1)
+        .setSharingMode(PcscReader.SharingMode.SHARED);
 
-    poReader.setParameter(
-        PcscReaderConstants.TRANSMISSION_MODE_KEY,
-        PcscReaderConstants.TRANSMISSION_MODE_VAL_CONTACTLESS);
-    samReader.setParameter(
-        PcscReaderConstants.TRANSMISSION_MODE_KEY,
-        PcscReaderConstants.TRANSMISSION_MODE_VAL_CONTACTS);
+    ((PcscReader) samReader)
+        .setContactless(false)
+        .setIsoProtocol(PcscReader.IsoProtocol.T0)
+        .setSharingMode(PcscReader.SharingMode.SHARED);
 
-    /*
-     * PC/SC card access mode:
-     *
-     * The SAM is left in the SHARED mode (by default) to avoid automatic resets due to the
-     * limited time between two consecutive exchanges granted by Windows.
-     *
-     * This point will be addressed in a coming release of the Keyple PcSc reader plugin.
-     *
-     * The PO reader is set to EXCLUSIVE mode to avoid side effects (on OS Windows 8+) during
-     * the selection step that may result in session failures.
-     *
-     * See KEYPLE-CORE.PC.md file to learn more about this point.
-     *
-     */
-    samReader.setParameter(PcscReaderConstants.MODE_KEY, PcscReaderConstants.MODE_VAL_SHARED);
-    poReader.setParameter(PcscReaderConstants.MODE_KEY, PcscReaderConstants.MODE_VAL_SHARED);
+    /* Activate protocols */
+    poReader.activateProtocol(
+        PcscSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
+    poReader.activateProtocol(
+        PcscSupportedProtocols.CALYPSO_OLD_CARD_PRIME.name(),
+        ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name());
 
-    /* Set the PO reader protocol flag */
-    poReader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        PcscProtocolSetting.PCSC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
-    poReader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_B_PRIME,
-        PcscProtocolSetting.PCSC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_B_PRIME));
-
-    samReader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO7816_3,
-        PcscProtocolSetting.PCSC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO7816_3));
+    samReader.activateProtocol(
+        PcscSupportedProtocols.ISO_7816_3.name(), ContactsCardCommonProtocols.ISO_7816_3.name());
 
     /* Assign the readers to the Calypso transaction engine */
     transactionEngine.setReaders(poReader, samReader);

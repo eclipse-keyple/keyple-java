@@ -20,7 +20,6 @@ import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -63,7 +62,7 @@ public class StubPluginAsyncTest extends BaseStubTest {
           }
         });
 
-    stubPlugin.plugStubReader(READER_NAME, TransmissionMode.CONTACTLESS, false);
+    stubPlugin.plugStubReader(READER_NAME, true, false);
     lock.await(2, TimeUnit.SECONDS);
     Assert.assertEquals(0, lock.getCount());
   }

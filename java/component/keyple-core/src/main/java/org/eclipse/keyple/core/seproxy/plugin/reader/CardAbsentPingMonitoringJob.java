@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  *
  * <p>By default a delay of 200 ms is inserted between each APDU sending .
  */
-public class CardAbsentPingMonitoringJob extends AbstractMonitoringJob {
+class CardAbsentPingMonitoringJob extends AbstractMonitoringJob {
 
   private static final Logger logger = LoggerFactory.getLogger(CardAbsentPingMonitoringJob.class);
 

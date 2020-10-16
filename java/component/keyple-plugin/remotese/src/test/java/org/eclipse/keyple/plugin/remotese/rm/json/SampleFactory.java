@@ -20,7 +20,8 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactsCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 public class SampleFactory {
@@ -58,7 +59,7 @@ public class SampleFactory {
     SeSelector seSelector =
         SeSelector.builder()
             .aidSelector(aidSelector)
-            .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+            .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
             .build();
 
     SeRequest seRequest = new SeRequest(seSelector, poApduRequests);
@@ -97,7 +98,7 @@ public class SampleFactory {
     SeSelector seSelector =
         SeSelector.builder()
             .aidSelector(aidSelector)
-            .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+            .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
             .build();
 
     SeRequest seRequest = new SeRequest(seSelector, poApduRequests);
@@ -127,7 +128,7 @@ public class SampleFactory {
     SeSelector aidSeSelector =
         SeSelector.builder()
             .aidSelector(aidSelector)
-            .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+            .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
             .build();
 
     SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter("/regex/");
@@ -135,7 +136,7 @@ public class SampleFactory {
     SeSelector seAtrSelector =
         SeSelector.builder()
             .atrFilter(atrFilter)
-            .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
+            .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name())
             .build();
 
     SeRequest seRequest = new SeRequest(aidSeSelector, poApduRequests);

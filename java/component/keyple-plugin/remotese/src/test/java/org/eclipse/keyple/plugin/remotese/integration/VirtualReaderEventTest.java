@@ -26,12 +26,10 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualObservableReader;
 import org.eclipse.keyple.plugin.stub.StubReader;
@@ -71,8 +69,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     /*
      * connect stub reader to create virtual reader
      */
-    nativeReader =
-        this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID, TransmissionMode.CONTACTLESS);
+    nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID, true);
 
     // get virtual reader
     virtualReader = (VirtualObservableReader) getVirtualReader();
@@ -96,7 +93,6 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
    */
   @Test
   public void testInsert() throws Exception {
-
     // lock test until message is received
     final CountDownLatch lock = new CountDownLatch(1);
 
@@ -115,6 +111,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     // register stubPluginObserver
     virtualReader.addObserver(obs);
 
+    nativeReader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+
     logger.info("Insert a Hoplink SE and wait 5 seconds for a SE event to be thrown");
 
     // insert SE
@@ -122,6 +120,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
     // wait 5 seconds
     lock.await(5, TimeUnit.SECONDS);
+
+    nativeReader.stopSeDetection();
 
     // remove observer
     virtualReader.removeObserver(obs);
@@ -164,14 +164,18 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
     logger.info("Insert and remove a Hoplink SE and wait 5 seconds for two SE events to be thrown");
 
+    nativeReader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+
     // insert SE
     nativeReader.insertSe(StubReaderTest.hoplinkSE());
     // wait 0,5 second
     Thread.sleep(500);
-    ((ProxyReader) nativeReader).transmitSeRequest(null, ChannelControl.CLOSE_AFTER);
+    ((ProxyReader) nativeReader).releaseChannel();
 
     // remove SE
     nativeReader.removeSe();
+
+    nativeReader.stopSeDetection();
 
     // wait 5 seconds
     lock.await(5, TimeUnit.SECONDS);
@@ -253,7 +257,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     GenericSeSelectionRequest genericSeSelectionRequest =
         new GenericSeSelectionRequest(
             SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .build());
 
@@ -263,6 +267,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         .setDefaultSelectionRequest(
             seSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
 
+    nativeReader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+
     // wait 1 second
     Thread.sleep(1000);
 
@@ -271,6 +277,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
     // lock thread for 2 seconds max to wait for the event
     lock.await(5, TimeUnit.SECONDS);
+
+    nativeReader.stopSeDetection();
 
     // remove observer
     virtualReader.removeObserver(obs);
@@ -306,7 +314,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     GenericSeSelectionRequest genericSeSelectionRequest =
         new GenericSeSelectionRequest(
             SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .build());
 
@@ -373,7 +381,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     GenericSeSelectionRequest genericSeSelectionRequest =
         new GenericSeSelectionRequest(
             SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .build());
 
@@ -387,11 +395,15 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     logger.debug("Wait 1 second before inserting SE");
     Thread.sleep(500);
 
+    nativeReader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+
     // test
     nativeReader.insertSe(StubReaderTest.hoplinkSE());
 
     // lock thread for 2 seconds max to wait for the event
     lock.await(5, TimeUnit.SECONDS);
+
+    nativeReader.stopSeDetection();
 
     // remove observer
     virtualReader.removeObserver(obs);
@@ -412,7 +424,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     GenericSeSelectionRequest genericSeSelectionRequest =
         new GenericSeSelectionRequest(
             SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .atrFilter(new SeSelector.AtrFilter("3B.*"))
                 .build());
 
@@ -454,7 +466,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
             GenericSeSelectionRequest genericSeSelectionRequest =
                 new GenericSeSelectionRequest(
                     SeSelector.builder()
-                        .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                        .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                         .atrFilter(new SeSelector.AtrFilter("3B.*"))
                         .build());
 
@@ -487,6 +499,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     // register observer
     virtualReader.addObserver(virtualReaderObs);
 
+    nativeReader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+
     // test
     logger.info("Inserting SE");
     nativeReader.insertSe(hoplinkSE());
@@ -495,12 +509,14 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
     // lock thread for 5 seconds max to wait for the event
     logger.info("Lock main thread, wait for event to release this thread");
-    lock.await(2, TimeUnit.MINUTES);
+    lock.await(5, TimeUnit.SECONDS);
+
+    nativeReader.stopSeDetection();
+
     Assert.assertEquals(0, lock.getCount()); // should be 0 because countDown is called by
 
     // remove observer
-    // virtualReader.removeObserver(obs);
-
+    virtualReader.removeObserver(virtualReaderObs);
   }
 
   /*
@@ -509,11 +525,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
   /** Create a new class extending AbstractSeSelectionRequest */
   private class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
-    TransmissionMode transmissionMode;
-
     public GenericSeSelectionRequest(SeSelector seSelector) {
       super(seSelector);
-      transmissionMode = seSelector.getSeProtocol().getTransmissionMode();
     }
 
     @Override

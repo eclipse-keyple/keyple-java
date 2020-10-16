@@ -47,18 +47,6 @@ internal abstract class AbstractAndroidOmapiPluginTest<T, V> {
     }
 
     @Test
-    fun getParameters() {
-        Assert.assertNotNull(androidOmapiPlugin.parameters)
-    }
-
-    @Test
-    fun setParameter() {
-        androidOmapiPlugin.setParameter("key2", "value2")
-        Assert.assertTrue(androidOmapiPlugin.parameters.size == 1)
-        Assert.assertTrue(androidOmapiPlugin.parameters["key2"] == "value2")
-    }
-
-    @Test
     fun connectToSe() {
         androidOmapiPlugin.connectToSe(context)
     }

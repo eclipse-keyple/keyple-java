@@ -17,12 +17,11 @@ import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.core.command.SeCommand;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.exception.KeypleException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Before;
@@ -50,7 +49,8 @@ public class SeSelectionTest extends CoreBaseTest {
     // (see createSelectionSelectionSelection to have a look at the expected values)
 
     // get the selection operation
-    AbstractDefaultSelectionsRequest selectionOperation = seSelection.getSelectionOperation();
+    DefaultSelectionsRequest selectionOperation =
+        (DefaultSelectionsRequest) seSelection.getSelectionOperation();
 
     // check common flags
     Assert.assertEquals(
@@ -265,7 +265,7 @@ public class SeSelectionTest extends CoreBaseTest {
             .build();
     SeSelector seSelector1 =
         SeSelector.builder()
-            .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+            .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
             .aidSelector(aidSelector)
             .build();
 
@@ -292,7 +292,7 @@ public class SeSelectionTest extends CoreBaseTest {
 
     SeSelector seSelector2 =
         SeSelector.builder()
-            .seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME)
+            .seProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
             .atrFilter(new SeSelector.AtrFilter(".*"))
             .aidSelector(aidSelector)
             .build();

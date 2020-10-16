@@ -29,18 +29,23 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractReader;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.core.util.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Implements the {@link PcscPlugin} interface.<br>
+ * (package-private)
+ *
+ * @since 0.9
+ */
 final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements PcscPlugin {
 
   private static final Logger logger = LoggerFactory.getLogger(PcscPluginImpl.class);
 
-  private boolean scardNoServiceHackNeeded;
-
-  private String contactReaderRegexFilter = "";
-  private String contactlessReaderRegexFilter = "";
+  private Boolean scardNoServiceHackNeeded;
+  private String contactReaderRegexFilter;
+  private String contactlessReaderRegexFilter;
 
   /**
    * Singleton instance of SeProxyService 'volatile' qualifier ensures that read access to the
@@ -49,11 +54,13 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
    * <p>This qualifier is required for "lazy-singleton" pattern with double-check method, to be
    * thread-safe.
    */
-  private static volatile PcscPluginImpl instance; // NOSONAR: We implemented lazy-singleton
-  // pattern.
+  private static volatile PcscPluginImpl instance; // NOSONAR: lazy-singleton pattern.
 
   private PcscPluginImpl() {
-    super(PcscPluginConstants.PLUGIN_NAME);
+    super(PcscPluginFactory.PLUGIN_NAME);
+    contactReaderRegexFilter = "";
+    contactlessReaderRegexFilter = "";
+    scardNoServiceHackNeeded = null;
   }
 
   /**
@@ -61,6 +68,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
    *
    * @return single instance of PcscPlugin
    * @throws KeypleReaderException if a reader error occurs
+   * @since 0.9
    */
   public static PcscPluginImpl getInstance() {
     if (instance == null) {
@@ -73,40 +81,16 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
     return instance;
   }
 
-  @Override
-  public Map<String, String> getParameters() {
-    return null;
-  }
-
-  @Override
-  public void setParameter(String key, String value) {
-    if (logger.isDebugEnabled()) {
-      logger.debug(
-          "[{}] setParameter => PCSC Plugin: Set a parameter. KEY = {}, VALUE = {}",
-          this.getName(),
-          key,
-          value);
-    }
-    if (key == null || value == null) {
-      throw new IllegalArgumentException("None of the parameters can be null");
-    }
-    if (key.equals(PcscPluginConstants.CONTACT_READER_MATCHER_KEY)) {
-      contactReaderRegexFilter = value;
-    } else if (key.equals(PcscPluginConstants.CONTACTLESS_READER_MATCHER_KEY)) {
-      contactlessReaderRegexFilter = value;
-    } else {
-      throw new IllegalArgumentException("Invalid key value: " + key);
-    }
-  }
-
   /**
-   * Fetch the list of connected native reader (from smartcardio) and returns their names
+   * Fetch the list of connected native reader (from smartcard.io) and returns their names
    *
-   * @return connected readers' name list
+   * @return A {@link SortedSet} of {@link String}
    * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @since 0.9
    */
   @Override
   public SortedSet<String> fetchNativeReadersNames() {
+
     SortedSet<String> nativeReadersNames = new ConcurrentSkipListSet<String>();
     CardTerminals terminals = getCardTerminals();
     try {
@@ -128,23 +112,19 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
   }
 
   /**
-   * Fetch connected native readers (from smartcard.io) and returns a list of corresponding {@link
-   * AbstractReader} {@link AbstractReader} are new instances.
+   * Fetch all connected native readers (provided by smartcard.io) and returns a {@link Map} of
+   * corresponding {@link AbstractReader} as value and a {@link String} containing the reader name
+   * as key<br>
+   * Returned {@link AbstractReader} are new instances.
    *
-   * @return the list of AbstractReader objects.
+   * @return A {@link Map} (not null but possibly empty).
    * @throws KeypleReaderException if a reader error occurs
+   * @since 0.9
    */
   @Override
-  protected ConcurrentMap<String, SeReader> initNativeReaders() {
-    ConcurrentMap<String, SeReader> nativeReaders = new ConcurrentHashMap<String, SeReader>();
+  protected Map<String, SeReader> initNativeReaders() {
 
-    /*
-     * activate a special processing "SCARD_E_NO_NO_SERVICE" (on Windows platforms the removal
-     * of the last PC/SC reader stops the "Windows Smart Card service")
-     */
-    String OS = System.getProperty("os.name").toLowerCase();
-    scardNoServiceHackNeeded = OS.indexOf("win") >= 0;
-    logger.info("System detected : {}", scardNoServiceHackNeeded);
+    ConcurrentMap<String, SeReader> nativeReaders = new ConcurrentHashMap<String, SeReader>();
 
     // parse the current readers list to create the ProxyReader(s) associated with new reader(s)
     CardTerminals terminals = getCardTerminals();
@@ -170,27 +150,26 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
   }
 
   /**
-   * Fetch the reader whose name is provided as an argument. Returns the current reader if it is
-   * already listed. Creates and returns a new reader if not.
+   * Fetches the reader whose name is provided as an argument.
    *
-   * <p>Throws an exception if the wanted reader is not found.
+   * <p>Returns the current reader if it is already listed.<br>
+   * Creates and returns a new reader if not.
    *
-   * @param name name of the reader
-   * @return the reader object
+   * @param name A String (should be not null).
+   * @return A not null reference to a {@link SeReader}.
    * @throws KeypleReaderNotFoundException if a reader is not found by its name
    * @throws KeypleReaderIOException if the communication with the reader or the SE has failed
+   * @since 0.9
    */
   @Override
   protected SeReader fetchNativeReader(String name) {
+
     // return the current reader if it is already listed
     SeReader seReader = readers.get(name);
     if (seReader != null) {
       return seReader;
     }
-    /*
-     * parse the current PC/SC readers list to create the ProxyReader(s) associated with new
-     * reader(s)
-     */
+    /* parse the current PC/SC readers list to create the ProxyReader(s) associated with new reader(s) */
     CardTerminals terminals = getCardTerminals();
     try {
       for (CardTerminal term : terminals.list()) {
@@ -212,13 +191,18 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
   }
 
   private CardTerminals getCardTerminals() {
-    if (scardNoServiceHackNeeded) {
-      /*
-       * This hack avoids the problem of stopping the Windows Smart Card service when removing
-       * the last PC/SC reader.
-       *
-       * Some SONAR warnings have been disabled.
-       */
+
+    if (scardNoServiceHackNeeded == null) {
+      /* First time init: activate a special processing for the "SCARD_E_NO_NO_SERVICE" exception (on Windows platforms the removal of the last PC/SC reader stops the "Windows Smart Card service") */
+      String os = System.getProperty("os.name").toLowerCase();
+      scardNoServiceHackNeeded = os.contains("win");
+      logger.info("Windows System detected, SCARD_E_NO_NO_SERVICE management activated.");
+    }
+
+    if (scardNoServiceHackNeeded.equals(Boolean.TRUE)) {
+      /* This hack avoids the problem of stopping the Windows Smart Card service when removing the last PC/SC reader.
+
+      Some SONAR warnings have been disabled.*/
       try {
         Class<?> pcscterminal;
         pcscterminal = Class.forName("sun.security.smartcardio.PCSCTerminals");
@@ -227,17 +211,17 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
 
         if (contextId.getLong(pcscterminal) != 0L) {
           Class<?> pcsc = Class.forName("sun.security.smartcardio.PCSC");
-          Method SCardEstablishContext =
+          Method sCardEstablishContext =
               pcsc.getDeclaredMethod("SCardEstablishContext", new Class[] {Integer.TYPE});
-          SCardEstablishContext.setAccessible(true); // NOSONAR
+          sCardEstablishContext.setAccessible(true); // NOSONAR
 
-          Field SCARD_SCOPE_USER = pcsc.getDeclaredField("SCARD_SCOPE_USER");
-          SCARD_SCOPE_USER.setAccessible(true); // NOSONAR
+          Field sCardScopeUser = pcsc.getDeclaredField("SCARD_SCOPE_USER");
+          sCardScopeUser.setAccessible(true); // NOSONAR
 
           long newId =
               ((Long)
-                      SCardEstablishContext.invoke(
-                          pcsc, new Object[] {Integer.valueOf(SCARD_SCOPE_USER.getInt(pcsc))}))
+                      sCardEstablishContext.invoke(
+                          pcsc, new Object[] {Integer.valueOf(sCardScopeUser.getInt(pcsc))}))
                   .longValue();
           contextId.setLong(pcscterminal, newId); // NOSONAR
 
@@ -260,24 +244,53 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
   }
 
   /**
-   * (package-private)<br>
-   * Attempt to determine the transmission mode of the reader whose name is provided.<br>
-   * This determination is made by a test based on regular expressions provided by the application
-   * in parameter to the plugin (see CONTACT_READER_MATCHER_KEY and CONTACTLESS_READER_MATCHER_KEY)
+   * {@inheritDoc}
    *
-   * @param readerName the name of the reader for which we want to determine the transmission mode
-   * @return the transmission mode (CONTACTS or CONTACTLESS)
-   * @throws IllegalStateException if the mode of transmission could not be determined
+   * @since 1.0
    */
-  TransmissionMode findTransmissionMode(String readerName) {
+  @Override
+  public void setReaderNameFilter(boolean contactlessMode, String readerNameFilter) {
+
+    Assert.getInstance().notEmpty(readerNameFilter, "readerNameFilter");
+
+    if (contactlessMode) {
+      contactlessReaderRegexFilter = readerNameFilter;
+    } else {
+      contactReaderRegexFilter = readerNameFilter;
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
+  @Override
+  public void setProtocolIdentificationRule(String readerProtocolName, String protocolRule) {
+    PcscProtocolSetting.setProtocolIdentificationRule(readerProtocolName, protocolRule);
+  }
+
+  /**
+   * (package-private)<br>
+   * Attempts to determine the transmission mode of the reader whose name is provided.<br>
+   * This determination is made by a test based on regular expressions provided by the application
+   * in parameter to the plugin (see {@link #setReaderNameFilter(boolean, String)})
+   *
+   * @param readerName A string containing the reader name (must be not empty).
+   * @return True if the reader is contactless, false if not.
+   * @throws IllegalStateException if the mode of transmission could not be determined
+   * @since 0.9
+   */
+  boolean isContactless(String readerName) {
+
     Pattern p;
     p = Pattern.compile(contactReaderRegexFilter);
     if (p.matcher(readerName).matches()) {
-      return TransmissionMode.CONTACTS;
+      return false;
     }
     p = Pattern.compile(contactlessReaderRegexFilter);
     if (p.matcher(readerName).matches()) {
-      return TransmissionMode.CONTACTLESS;
+      return true;
     }
     throw new IllegalStateException(
         "Unable to determine the transmission mode for reader " + readerName);

@@ -11,7 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
-import java.util.HashMap
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
 import org.eclipse.keyple.core.seproxy.SeReader
@@ -24,19 +23,6 @@ import timber.log.Timber
  *
  */
 internal object AndroidNfcPluginImpl : AbstractPlugin(AndroidNfcPlugin.PLUGIN_NAME), AndroidNfcPlugin {
-
-    private val parameters = HashMap<String, String>() // not in use in
-
-    override fun getParameters(): Map<String, String> {
-
-        Timber.w("Android NFC Plugin does not support parameters, see AndroidNfcReaderImpl instead")
-        return parameters
-    }
-
-    override fun setParameter(key: String, value: String) {
-        Timber.w("Android NFC Plugin does not support parameters, see AndroidNfcReaderImpl instead")
-        parameters[key] = value
-    }
 
     /**
      * For an Android NFC device, the Android NFC Plugin manages only one @[AndroidNfcReaderImpl].

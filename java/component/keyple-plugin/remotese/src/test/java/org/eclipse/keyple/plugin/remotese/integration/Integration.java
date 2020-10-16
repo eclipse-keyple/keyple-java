@@ -15,7 +15,6 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
 import org.eclipse.keyple.plugin.remotese.transport.DtoHandler;
@@ -71,8 +70,7 @@ public class Integration {
    * @throws InterruptedException
    * @throws KeypleReaderNotFoundException
    */
-  public static StubReader createStubReader(
-      String stubReaderName, TransmissionMode transmissionMode)
+  public static StubReader createStubReader(String stubReaderName, boolean isContactless)
       throws InterruptedException, KeypleReaderNotFoundException, KeyplePluginNotFoundException {
 
     StubPlugin stubPlugin = createStubPlugin();
@@ -84,7 +82,7 @@ public class Integration {
     logger.debug("Stub plugin count observers : {}", stubPlugin.countObservers());
 
     logger.debug("Create a new StubReader : {}", stubReaderName);
-    stubPlugin.plugStubReader(stubReaderName, transmissionMode, true);
+    stubPlugin.plugStubReader(stubReaderName, isContactless, true);
 
     Thread.sleep(100);
 

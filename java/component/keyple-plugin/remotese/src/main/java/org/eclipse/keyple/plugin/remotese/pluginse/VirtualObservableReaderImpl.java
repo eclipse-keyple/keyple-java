@@ -15,9 +15,7 @@ import java.util.*;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderNotifier;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.pluginse.method.RmSetDefaultSelectionRequestTx;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTxEngine;
@@ -47,9 +45,9 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
       String nativeReaderName,
       RemoteMethodTxEngine rmTxEngine,
       String slaveNodeId,
-      TransmissionMode transmissionMode,
+      boolean isContactless,
       Map<String, String> options) {
-    super(session, nativeReaderName, rmTxEngine, slaveNodeId, transmissionMode, options);
+    super(session, nativeReaderName, rmTxEngine, slaveNodeId, isContactless, options);
   }
 
   @Override
@@ -91,7 +89,7 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
         "[{}] Notifying a reader event to {} observers. EVENTNAME = {}",
         this.getName(),
         this.countObservers(),
-        event.getEventType().getName());
+        event.getEventType().name());
 
     List<ReaderObserver> observersCopy;
 
@@ -221,6 +219,6 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
   @Override
   public final void finalizeSeProcessing() {
     // TODO check why we can't test if the channel is already closed here.
-    transmitSeRequest(null, ChannelControl.CLOSE_AFTER);
+    releaseChannel();
   }
 }

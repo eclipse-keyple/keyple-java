@@ -52,6 +52,18 @@ interface AndroidNfcReader : SmartRemovalReader {
      */
     fun disableNFCReaderMode(activity: Activity)
 
+    /**
+     * Configure NFC Reader
+     */
+    fun setParameter(key: String, value: String)
+
+    /**
+     * Get Reader parameters
+     *
+     * @return parameters
+     */
+    fun getParameters(): Map<String, String?>
+
     companion object {
 
         val READER_NAME = "AndroidNfcReaderImpl"

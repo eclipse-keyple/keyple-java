@@ -11,11 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.plugin.reader;
 
-import java.util.HashMap;
-import java.util.Map;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 
 public class BlankObservableLocalReader extends AbstractObservableLocalReader {
 
@@ -27,29 +23,16 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
    */
   public BlankObservableLocalReader(String pluginName, String readerName) {
     super(pluginName, readerName);
-
-    stateService = initStateService();
   }
 
   @Override
   public final ObservableReaderStateService initStateService() {
 
-    Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
-        new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-        new WaitForSeInsertion(this));
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-        new WaitForSeProcessing(this));
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL, new WaitForSeRemoval(this));
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
-        new WaitForStartDetect(this));
-
-    return new ObservableReaderStateService(
-        this, states, AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION);
+    return ObservableReaderStateService.builder(this)
+        .waitForSeInsertionWithNativeDetection()
+        .waitForSeProcessingWithNativeDetection()
+        .waitForSeRemovalWithNativeDetection()
+        .build();
   }
 
   @Override
@@ -74,7 +57,7 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
   }
 
   @Override
-  public boolean protocolFlagMatches(SeProtocol protocolFlag) {
+  protected boolean isCurrentProtocol(String readerProtocolName) {
     return false;
   }
 
@@ -84,17 +67,15 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
   }
 
   @Override
-  public TransmissionMode getTransmissionMode() {
-    return null;
-  }
+  protected void activateReaderProtocol(String readerProtocolName) {}
 
   @Override
-  public Map<String, String> getParameters() {
-    return null;
-  }
+  protected void deactivateReaderProtocol(String readerProtocolName) {}
 
   @Override
-  public void setParameter(String key, String value) {}
+  public boolean isContactless() {
+    return true;
+  }
 
   /**
    * The purpose of this method is to provide certain test methods with public access to

@@ -25,12 +25,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RunWith(Parameterized.class)
-public class WaitForSeRemovalTest extends CoreBaseTest {
+public class WaitForSeRemovalStateTest extends CoreBaseTest {
 
-  private static final Logger logger = LoggerFactory.getLogger(WaitForSeRemovalTest.class);
+  private static final Logger logger = LoggerFactory.getLogger(WaitForSeRemovalStateTest.class);
 
   final String PLUGIN_NAME = "WaitForSeRemovalJobExecutorTestP";
-  final String READER_NAME = "WaitForSeRemovalJobExecutorTest";
+  final String READER_NAME = "WaitForSeRemovalStateJobExecutorTest";
 
   static final Integer X_TIMES = 5; // run tests multiple times to reproduce flaky
 
@@ -52,14 +52,14 @@ public class WaitForSeRemovalTest extends CoreBaseTest {
      * ------------ input polling mode is STOP SE has been removed within timeout
      */
     AbstractObservableLocalReader r = AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
-    WaitForSeRemoval waitForSeRemoval = new WaitForSeRemoval(r);
+    WaitForSeRemovalState waitForSeRemovalState = new WaitForSeRemovalState(r);
     doReturn(ObservableReader.PollingMode.SINGLESHOT).when(r).getPollingMode();
     doNothing().when(r).processSeRemoved();
 
     /* test */
-    waitForSeRemoval.onActivate();
+    waitForSeRemovalState.onActivate();
 
-    waitForSeRemoval.onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
+    waitForSeRemovalState.onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
 
     /* Assert */
     verify(r, times(1)).switchState(WAIT_FOR_START_DETECTION);
@@ -71,13 +71,13 @@ public class WaitForSeRemovalTest extends CoreBaseTest {
      * ------------ input polling mode is CONTINUE SE has been removed within timeout
      */
     AbstractObservableLocalReader r = AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
-    WaitForSeRemoval waitForSeRemoval = new WaitForSeRemoval(r);
+    WaitForSeRemovalState waitForSeRemovalState = new WaitForSeRemovalState(r);
     doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();
     doNothing().when(r).processSeRemoved();
 
     /* test */
-    waitForSeRemoval.onActivate();
-    waitForSeRemoval.onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
+    waitForSeRemovalState.onActivate();
+    waitForSeRemovalState.onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
 
     /* Assert */
     verify(r, times(1)).switchState(WAIT_FOR_SE_INSERTION);

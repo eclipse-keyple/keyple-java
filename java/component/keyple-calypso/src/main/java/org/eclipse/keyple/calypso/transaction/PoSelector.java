@@ -12,7 +12,6 @@
 package org.eclipse.keyple.calypso.transaction;
 
 import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 
 /**
  * The {@link PoSelector} class extends {@link SeSelector} to handle specific PO features such as
@@ -65,7 +64,7 @@ public final class PoSelector extends SeSelector {
 
     /** {@inheritDoc} */
     @Override
-    public PoSelectorBuilder seProtocol(SeProtocol seProtocol) {
+    public PoSelectorBuilder seProtocol(String seProtocol) {
       return (PoSelectorBuilder) super.seProtocol(seProtocol);
     }
 

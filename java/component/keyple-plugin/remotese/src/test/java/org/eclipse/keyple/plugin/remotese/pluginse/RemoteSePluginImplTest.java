@@ -22,7 +22,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.CoreBaseTest;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
 import org.junit.Assert;
@@ -170,7 +169,7 @@ public class RemoteSePluginImplTest extends CoreBaseTest {
                     "slaveNodeId",
                     readerName,
                     dtoSender,
-                    TransmissionMode.CONTACTS,
+                    false,
                     true,
                     new HashMap<String, String>());
               } catch (Exception e) {

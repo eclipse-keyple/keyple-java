@@ -19,9 +19,10 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.seproxy.message.ApduRequest
 import org.eclipse.keyple.core.seproxy.message.ChannelControl
 import org.eclipse.keyple.core.seproxy.message.SeRequest
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
+import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactsCardCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiReaderTest
+import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiSupportedProtocols
 import org.junit.Assert
 import org.junit.Test
 import org.simalliance.openmobileapi.Channel
@@ -35,7 +36,9 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
     override lateinit var reader: AndroidOmapiReader
 
     override fun buildOmapiReaderImpl(nativeReader: Reader): AndroidOmapiReader {
-        return AndroidOmapiReader(nativeReader, PLUGIN_NAME, nativeReader.name)
+        var androidOmapiReader = AndroidOmapiReader(nativeReader, PLUGIN_NAME, nativeReader.name)
+        androidOmapiReader.activateProtocol(AndroidOmapiSupportedProtocols.ISO_7816_3.name, ContactsCardCommonProtocols.ISO_7816_3.name)
+        return androidOmapiReader
     }
 
     override fun getNativeReaderName(): String {
@@ -51,7 +54,7 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
         val seRequest = SeRequest(SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
+                .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(PO_AID)
                         .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
                         .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build())
@@ -69,7 +72,7 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
         val seRequest = SeRequest(SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3)
+                .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(PO_AID)
                         .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
                         .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build())
@@ -99,7 +102,9 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
         every { omapiReader.openSession() } returns session
         every { session.openLogicalChannel(ByteArrayUtil.fromHex(PO_AID)) } returns channel
         every { seService.version } returns version
-        every { session.atr } returns null
+        every { seService.isConnected } returns true
+        every { session.atr } returns ByteArrayUtil.fromHex("")
+        every { session.closeChannels() } returns Unit
         every { session.isClosed } returns false
         every { channel.selectResponse } returns ByteArrayUtil.fromHex(PO_AID_RESPONSE)
         every { channel.session } returns session
@@ -117,11 +122,13 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
 
         every { omapiReader.name } returns "SIM1"
         every { session.isClosed } returns false
-        every { session.atr } returns null
+        every { session.atr } returns ByteArrayUtil.fromHex("")
+        every { session.closeChannels() } returns Unit
         every { session.openLogicalChannel(ByteArrayUtil.fromHex(PO_AID)) } throws throwable
         every { omapiReader.openSession() } returns session
         every { omapiReader.seService } returns seService
         every { seService.version } returns version
+        every { seService.isConnected } returns true
         return omapiReader
     }
 
@@ -133,11 +140,13 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
 
         every { omapiReader.name } returns "SIM1"
         every { session.isClosed } returns false
-        every { session.atr } returns null
+        every { session.atr } returns ByteArrayUtil.fromHex("")
+        every { session.closeChannels() } returns Unit
         every { session.openLogicalChannel(ByteArrayUtil.fromHex(PO_AID)) } returns null
         every { omapiReader.openSession() } returns session
         every { omapiReader.seService } returns seService
         every { seService.version } returns version
+        every { seService.isConnected } returns true
         return omapiReader
     }
 
@@ -149,11 +158,13 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
 
         every { omapiReader.name } returns "SIM1"
         every { session.isClosed } returns false
-        every { session.atr } returns null
+        every { session.atr } returns ByteArrayUtil.fromHex("")
+        every { session.closeChannels() } returns Unit
         every { session.openBasicChannel(null) } throws throwable
         every { omapiReader.openSession() } returns session
         every { omapiReader.seService } returns seService
         every { seService.version } returns version
+        every { seService.isConnected } returns true
         return omapiReader
     }
 
@@ -165,11 +176,13 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
 
         every { omapiReader.name } returns "SIM1"
         every { session.isClosed } returns false
-        every { session.atr } returns null
+        every { session.atr } returns ByteArrayUtil.fromHex("")
+        every { session.closeChannels() } returns Unit
         every { session.openBasicChannel(null) } returns null
         every { omapiReader.openSession() } returns session
         every { omapiReader.seService } returns seService
         every { seService.version } returns version
+        every { seService.isConnected } returns true
         return omapiReader
     }
 
@@ -182,11 +195,13 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
         every { omapiReader.name } returns "SIM1"
         every { omapiReader.isSecureElementPresent } returns true
         every { session.isClosed } returns false
-        every { session.atr } returns null
+        every { session.atr } returns ByteArrayUtil.fromHex("")
+        every { session.closeChannels() } returns Unit
         every { session.openLogicalChannel(ByteArrayUtil.fromHex(PO_AID)) } throws NoSuchElementException("")
         every { omapiReader.seService } returns seService
         every { omapiReader.openSession() } returns session
         every { seService.version } returns version
+        every { seService.isConnected } returns true
         return omapiReader
     }
 
@@ -199,12 +214,14 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
         every { nativeReader.name } returns "SIM1"
         every { nativeReader.isSecureElementPresent } returns true
         every { session.isClosed } returns false
-        every { session.atr } returns null
+        every { session.atr } returns ByteArrayUtil.fromHex("")
+        every { session.closeChannels() } returns Unit
         every { session.openLogicalChannel(ByteArrayUtil.fromHex(PO_AID)) } returns channel
         every { session.openLogicalChannel(ByteArrayUtil.fromHex(PO_AID), any()) } returns channel
         every { nativeReader.seService } returns seService
         every { nativeReader.openSession() } returns session
         every { seService.version } returns omapiVersion
+        every { seService.isConnected } returns true
         every { channel.selectResponse } returns ByteArrayUtil.fromHex(PO_AID_RESPONSE)
         every { channel.session } returns session
         every { channel.transmit(any()) } returns ByteArrayUtil.fromHex("00000000000000000000000000000000000000000000000000000000000000009000")
@@ -221,6 +238,7 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
         every { nativeReader.openSession() } throws throwable
         every { nativeReader.seService } returns seService
         every { seService.version } returns version
+        every { seService.isConnected } returns true
         return nativeReader
     }
 
@@ -239,7 +257,9 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
         every { session.openLogicalChannel(any()) } returns channel
         every { session.isClosed } returns false
         every { seService.version } returns version
-        every { session.atr } returns null
+        every { seService.isConnected } returns true
+        every { session.atr } returns ByteArrayUtil.fromHex("")
+        every { session.closeChannels() } returns Unit
         every { channel.selectResponse } returns ByteArrayUtil.fromHex(PO_AID_RESPONSE)
         every { channel.session } returns session
         every { channel.session.close() } throws throwable
@@ -262,7 +282,9 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
         every { session.openLogicalChannel(any()) } returns channel
         every { session.isClosed } returns false
         every { seService.version } returns version
-        every { session.atr } returns null
+        every { seService.isConnected } returns true
+        every { session.atr } returns ByteArrayUtil.fromHex("")
+        every { session.closeChannels() } returns Unit
         every { channel.selectResponse } returns ByteArrayUtil.fromHex(PO_AID_RESPONSE)
         every { channel.session } returns session
         every { channel.session.close() } returns Unit

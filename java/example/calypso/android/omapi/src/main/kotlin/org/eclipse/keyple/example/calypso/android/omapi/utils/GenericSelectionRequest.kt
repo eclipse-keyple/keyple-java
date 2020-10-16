@@ -16,7 +16,6 @@ import org.eclipse.keyple.core.selection.AbstractMatchingSe
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest
 import org.eclipse.keyple.core.seproxy.SeSelector
 import org.eclipse.keyple.core.seproxy.message.SeResponse
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode
 
 class GenericSeSelectionRequest(seSelector: SeSelector) : AbstractSeSelectionRequest<AbstractApduCommandBuilder>(seSelector) {
     override fun parse(seResponse: SeResponse): AbstractMatchingSe {

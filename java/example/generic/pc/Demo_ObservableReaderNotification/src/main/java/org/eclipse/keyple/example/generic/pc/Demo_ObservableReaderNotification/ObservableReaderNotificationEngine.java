@@ -89,7 +89,7 @@ public class ObservableReaderNotificationEngine {
           "Event: PLUGINNAME = {}, READERNAME = {}, EVENT = {}",
           event.getPluginName(),
           event.getReaderName(),
-          event.getEventType().getName());
+          event.getEventType().name());
     }
   }
 
@@ -160,7 +160,7 @@ public class ObservableReaderNotificationEngine {
             }
             break;
           default:
-            logger.info("Unexpected reader event. EVENT = {}", event.getEventType().getName());
+            logger.info("Unexpected reader event. EVENT = {}", event.getEventType().name());
             break;
         }
       }

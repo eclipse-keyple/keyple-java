@@ -11,13 +11,20 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.plugin.reader;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Manages the internal state of an AbstractObservableLocalReader Process InternalEvent against the
  * current state
+ *
+ * @since 0.9
  */
 public class ObservableReaderStateService {
 
@@ -33,12 +40,17 @@ public class ObservableReaderStateService {
   /* Current currentState of the Observable Reader */
   private AbstractObservableState currentState;
 
-  public ObservableReaderStateService(
+  /* Single Executor to run State Service watch */
+  private final ExecutorService executorService;
+
+  private ObservableReaderStateService(
       AbstractObservableLocalReader reader,
       Map<AbstractObservableState.MonitoringState, AbstractObservableState> states,
-      AbstractObservableState.MonitoringState initState) {
+      AbstractObservableState.MonitoringState initState,
+      ExecutorService executorService) {
     this.states = states;
     this.reader = reader;
+    this.executorService = executorService;
     switchState(initState);
   }
 
@@ -47,8 +59,9 @@ public class ObservableReaderStateService {
    * the reader of external event like a tag discovered or a Se inserted
    *
    * @param event internal event
+   * @since 0.9
    */
-  public final synchronized void onEvent(AbstractObservableLocalReader.InternalEvent event) {
+  protected final synchronized void onEvent(AbstractObservableLocalReader.InternalEvent event) {
     this.currentState.onEvent(event);
   }
 
@@ -57,6 +70,7 @@ public class ObservableReaderStateService {
    * its state
    *
    * @param stateId : next state to onActivate
+   * @since 0.9
    */
   public final synchronized void switchState(AbstractObservableState.MonitoringState stateId) {
 
@@ -90,6 +104,7 @@ public class ObservableReaderStateService {
    * Get reader current state
    *
    * @return reader current state
+   * @since 0.9
    */
   protected final synchronized AbstractObservableState getCurrentState() {
     return currentState;
@@ -99,8 +114,247 @@ public class ObservableReaderStateService {
    * Get the reader current monitoring state
    *
    * @return current monitoring state
+   * @since 0.9
    */
   public final synchronized AbstractObservableState.MonitoringState getCurrentMonitoringState() {
     return this.currentState.getMonitoringState();
+  }
+
+  /**
+   * Builder providing steps to configure ObservableReaderStateService
+   *
+   * @param reader: Not null instance of {@link AbstractObservableLocalReader}
+   * @return A non null instance
+   * @since 1.0
+   */
+  public static SeInsertionStep builder(AbstractObservableLocalReader reader) {
+    return new Builder(reader);
+  }
+
+  /**
+   * Provide step to setup the type of SeInsertion State detection
+   *
+   * @since 1.0
+   */
+  public interface SeInsertionStep {
+    /**
+     * Set up SeInsertionDetection with Native reader ability
+     *
+     * @return A non null reference
+     * @since 1.0
+     */
+    SeProcessingStep waitForSeInsertionWithNativeDetection();
+
+    /**
+     * Set up SeInsertionDetection to detect the SE insertion thanks to the method {@link
+     * SmartInsertionReader#waitForCardPresent()}.
+     *
+     * @return A non null reference
+     * @throws KeypleReaderIOException if reader does not implements SmartInsertionReader
+     * @since 1.0
+     */
+    SeProcessingStep waitForSeInsertionWithSmartDetection();
+
+    /**
+     * Set up SeInsertionDetection to use polling of the {@link SeReader#isSePresent()} method to
+     * detect SE_INSERTED
+     *
+     * @return A non null reference
+     * @since 1.0
+     */
+    SeProcessingStep waitForSeInsertionWithPollingDetection();
+  }
+
+  /**
+   * Provide step to setup the type of SeProcessing State detection
+   *
+   * @since 1.0
+   */
+  public interface SeProcessingStep {
+    /**
+     * Set up SeProcessingDetection with Native reader ability
+     *
+     * @return A non null reference
+     * @since 1.0
+     */
+    SeRemovalStep waitForSeProcessingWithNativeDetection();
+
+    /**
+     * Set up SeProcessingDetection to detect processing thanks to the method {@link
+     * SmartRemovalReader#waitForCardAbsentNative()}.
+     *
+     * @return A non null reference
+     * @throws KeypleReaderIOException if reader does not implements SmartRemovalReader
+     * @since 1.0
+     */
+    SeRemovalStep waitForSeProcessingWithSmartDetection();
+  }
+
+  /**
+   * Provide step to setup the type of SeRemovale State detection
+   *
+   * @since 1.0
+   */
+  public interface SeRemovalStep {
+    /**
+     * Set up SeRemovalDetection with Native reader ability
+     *
+     * @return A non null reference
+     * @since 1.0
+     */
+    BuilderStep waitForSeRemovalWithNativeDetection();
+
+    /**
+     * Set up SeRemovalDetection to detect processing thanks to the method {@link
+     * SmartRemovalReader#waitForCardAbsentNative()}.
+     *
+     * @return A non null reference
+     * @throws KeypleReaderIOException if reader does not implements SmartRemovalReader
+     * @since 1.0
+     */
+    BuilderStep waitForSeRemovalWithSmartDetection();
+
+    /**
+     * Set up SeRemovalDetection with to use polling of the {@link SeReader#isSePresent()} method to
+     * detect SE_REMOVED
+     *
+     * @return A non null reference
+     * @since 1.0
+     */
+    BuilderStep waitForSeRemovalWithPollingDetection();
+  }
+
+  /**
+   * Provide the last step to build ObservableReaderStateService
+   *
+   * @since 1.0
+   */
+  public interface BuilderStep {
+    /**
+     * Build instance of ObservableReaderStateService
+     *
+     * @return A non null instance
+     * @since 1.0
+     */
+    ObservableReaderStateService build();
+  }
+
+  private static class Builder
+      implements SeInsertionStep, SeProcessingStep, SeRemovalStep, BuilderStep {
+
+    private Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
+        new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
+
+    private AbstractObservableLocalReader reader;
+    private final ExecutorService executorService;
+
+    private Builder(AbstractObservableLocalReader reader) {
+      this.reader = reader;
+      this.executorService = Executors.newSingleThreadExecutor();
+      this.states.put(
+          AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
+          new WaitForStartDetectState(this.reader));
+    }
+
+    /** @see SeInsertionStep#waitForSeInsertionWithNativeDetection() */
+    @Override
+    public SeProcessingStep waitForSeInsertionWithNativeDetection() {
+      states.put(
+          AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
+          new WaitForSeInsertionState(this.reader));
+      return this;
+    }
+
+    /** @see SeInsertionStep#waitForSeInsertionWithPollingDetection() */
+    @Override
+    public SeProcessingStep waitForSeInsertionWithPollingDetection() {
+      CardPresentMonitoringJob cardPresentMonitoringJob =
+          new CardPresentMonitoringJob(reader, 200, true);
+      states.put(
+          AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
+          new WaitForSeInsertionState(this.reader, cardPresentMonitoringJob, this.executorService));
+      return this;
+    }
+
+    /** @see SeInsertionStep#waitForSeInsertionWithSmartDetection() */
+    @Override
+    public SeProcessingStep waitForSeInsertionWithSmartDetection() {
+      if (!(reader instanceof SmartInsertionReader))
+        throw new KeypleReaderIOException("Reader should implement SmartInsertionReader");
+      final SmartInsertionMonitoringJob smartInsertionMonitoringJob =
+          new SmartInsertionMonitoringJob((SmartInsertionReader) reader);
+      states.put(
+          AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
+          new WaitForSeInsertionState(
+              this.reader, smartInsertionMonitoringJob, this.executorService));
+      return this;
+    }
+
+    /** @see SeProcessingStep#waitForSeProcessingWithNativeDetection() */
+    @Override
+    public SeRemovalStep waitForSeProcessingWithNativeDetection() {
+      this.states.put(
+          AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
+          new WaitForSeProcessingState(this.reader));
+      return this;
+    }
+
+    /** @see SeProcessingStep#waitForSeProcessingWithSmartDetection() */
+    @Override
+    public SeRemovalStep waitForSeProcessingWithSmartDetection() {
+      if (!(reader instanceof SmartRemovalReader))
+        throw new KeypleReaderIOException("Reader should implement SmartRemovalReader");
+      final SmartRemovalMonitoringJob smartRemovalMonitoringJob =
+          new SmartRemovalMonitoringJob((SmartRemovalReader) reader);
+      this.states.put(
+          AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
+          new WaitForSeProcessingState(
+              this.reader, smartRemovalMonitoringJob, this.executorService));
+      return this;
+    }
+
+    /** @see SeRemovalStep#waitForSeRemovalWithNativeDetection() */
+    @Override
+    public BuilderStep waitForSeRemovalWithNativeDetection() {
+      states.put(
+          AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
+          new WaitForSeRemovalState(this.reader));
+      return this;
+    }
+
+    /** @see SeRemovalStep#waitForSeRemovalWithPollingDetection() */
+    @Override
+    public BuilderStep waitForSeRemovalWithPollingDetection() {
+      CardAbsentPingMonitoringJob cardAbsentPingMonitoringJob =
+          new CardAbsentPingMonitoringJob(this.reader);
+      states.put(
+          AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
+          new WaitForSeRemovalState(
+              this.reader, cardAbsentPingMonitoringJob, this.executorService));
+      return this;
+    }
+
+    /** @see SeRemovalStep#waitForSeRemovalWithSmartDetection() */
+    @Override
+    public BuilderStep waitForSeRemovalWithSmartDetection() {
+      if (!(reader instanceof SmartRemovalReader))
+        throw new KeypleReaderIOException("Reader should implement SmartRemovalReader");
+      final SmartRemovalMonitoringJob smartRemovalMonitoringJob =
+          new SmartRemovalMonitoringJob((SmartRemovalReader) reader);
+      states.put(
+          AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
+          new WaitForSeRemovalState(this.reader, smartRemovalMonitoringJob, this.executorService));
+      return this;
+    }
+
+    /** @see BuilderStep#build() */
+    @Override
+    public ObservableReaderStateService build() {
+      return new ObservableReaderStateService(
+          reader,
+          states,
+          AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
+          executorService);
+    }
   }
 }

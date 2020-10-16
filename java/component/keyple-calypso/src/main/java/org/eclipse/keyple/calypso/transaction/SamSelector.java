@@ -13,7 +13,6 @@ package org.eclipse.keyple.calypso.transaction;
 
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 
 /**
  * The {@link SamSelector} class extends {@link SeSelector} to handle specific Calypso SAM needs
@@ -131,7 +130,7 @@ public class SamSelector extends SeSelector {
 
     /** {@inheritDoc} */
     @Override
-    public SamSelectorBuilder seProtocol(SeProtocol seProtocol) {
+    public SamSelectorBuilder seProtocol(String seProtocol) {
       return (SamSelectorBuilder) super.seProtocol(seProtocol);
     }
 

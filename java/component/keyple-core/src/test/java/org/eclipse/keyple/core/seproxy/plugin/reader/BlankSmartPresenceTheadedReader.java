@@ -11,12 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.plugin.reader;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,8 +19,6 @@ public class BlankSmartPresenceTheadedReader extends AbstractObservableLocalRead
 
   private static final Logger logger =
       LoggerFactory.getLogger(BlankSmartPresenceTheadedReader.class);
-
-  protected ExecutorService executorService = Executors.newSingleThreadExecutor();
 
   Integer mockDetect;
   Integer detectCount = 0;
@@ -69,7 +61,7 @@ public class BlankSmartPresenceTheadedReader extends AbstractObservableLocalRead
   }
 
   @Override
-  public boolean protocolFlagMatches(SeProtocol protocolFlag) {
+  protected boolean isCurrentProtocol(String readerProtocolName) {
     return false;
   }
 
@@ -79,17 +71,15 @@ public class BlankSmartPresenceTheadedReader extends AbstractObservableLocalRead
   }
 
   @Override
-  public TransmissionMode getTransmissionMode() {
-    return null;
-  }
+  protected void activateReaderProtocol(String readerProtocolName) {}
 
   @Override
-  public Map<String, String> getParameters() {
-    return null;
-  }
+  protected void deactivateReaderProtocol(String readerProtocolName) {}
 
   @Override
-  public void setParameter(String key, String value) {}
+  public boolean isContactless() {
+    return true;
+  }
 
   @Override
   public boolean waitForCardAbsentNative() {
@@ -114,26 +104,10 @@ public class BlankSmartPresenceTheadedReader extends AbstractObservableLocalRead
 
   @Override
   public ObservableReaderStateService initStateService() {
-
-    Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
-        new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
-        new WaitForStartDetect(this));
-
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-        new WaitForSeInsertion(this, new SmartInsertionMonitoringJob(this), executorService));
-
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-        new WaitForSeProcessing(this, new SmartRemovalMonitoringJob(this), executorService));
-
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-        new WaitForSeRemoval(this, new SmartRemovalMonitoringJob(this), executorService));
-
-    return new ObservableReaderStateService(
-        this, states, AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION);
+    return ObservableReaderStateService.builder(this)
+        .waitForSeInsertionWithSmartDetection()
+        .waitForSeProcessingWithSmartDetection()
+        .waitForSeRemovalWithSmartDetection()
+        .build();
   }
 }

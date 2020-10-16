@@ -41,7 +41,6 @@ import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -313,8 +312,8 @@ public class PoTransactionTest {
   public void setUp() {
     poCommandsTestSet.clear();
     samCommandsTestSet.clear();
-    poReader = createMockReader("PO", TransmissionMode.CONTACTLESS, poCommandsTestSet);
-    SeReader samReader = createMockReader("SAM", TransmissionMode.CONTACTS, samCommandsTestSet);
+    poReader = createMockReader("PO", true, poCommandsTestSet);
+    SeReader samReader = createMockReader("SAM", false, samCommandsTestSet);
     CalypsoSam calypsoSam = createCalypsoSam();
 
     samResource = new SeResource<CalypsoSam>(samReader, calypsoSam);
@@ -1699,14 +1698,12 @@ public class PoTransactionTest {
   }
 
   private ProxyReader createMockReader(
-      final String name,
-      TransmissionMode transmissionMode,
-      final Map<String, String> commandTestSet) {
+      final String name, boolean isContactless, final Map<String, String> commandTestSet) {
 
     // configure mock native reader
     ProxyReader mockReader = Mockito.spy(ProxyReader.class);
     doReturn(name).when(mockReader).getName();
-    doReturn(transmissionMode).when(mockReader).getTransmissionMode();
+    doReturn(isContactless).when(mockReader).isContactless();
 
     doAnswer(
             new Answer<SeResponse>() {

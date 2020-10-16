@@ -185,7 +185,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         r.getCurrentMonitoringState());
 
     // SE has been processed
-    r.terminateSeCommunication();
+    r.finalizeSeProcessing();
 
     // assert currentState have changed
     Assert.assertEquals(
@@ -203,11 +203,9 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
   @Test
   public void communicationClosing_forced() throws Exception {
     AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
-    // keep open
-    r.transmitSeRequest(SeRequestTest.getSeRequestSample(), ChannelControl.KEEP_OPEN);
-    // force closing
-    r.transmitSeRequest(null, ChannelControl.CLOSE_AFTER);
-    verify(r, times(1)).processSeRequest(null, ChannelControl.CLOSE_AFTER);
+    // release channel
+    r.releaseChannel();
+    verify(r, times(1)).releaseChannel();
   }
 
   @Test

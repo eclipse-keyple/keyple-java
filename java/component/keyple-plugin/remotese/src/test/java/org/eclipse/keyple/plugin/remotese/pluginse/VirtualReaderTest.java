@@ -23,7 +23,6 @@ import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.integration.Integration;
 import org.eclipse.keyple.plugin.remotese.integration.VirtualReaderBaseTest;
 import org.eclipse.keyple.plugin.remotese.rm.json.SampleFactory;
@@ -99,7 +98,7 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
             CLIENT_NODE_ID,
             NATIVE_READER_NAME,
             Integration.getFakeDtoNode(),
-            TransmissionMode.CONTACTLESS,
+            true,
             false,
             new HashMap<String, String>());
 
@@ -196,7 +195,7 @@ public class VirtualReaderTest extends VirtualReaderBaseTest {
     // configure mock native reader
     ProxyReader mockReader = Mockito.spy(ProxyReader.class);
     doReturn(readerName).when(mockReader).getName();
-    doReturn(TransmissionMode.CONTACTLESS).when(mockReader).getTransmissionMode();
+    doReturn(true).when(mockReader).isContactless();
     doReturn(new ArrayList<SeResponse>())
         .when(mockReader)
         .transmitSeRequests(

@@ -18,7 +18,6 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.message.ChannelControl;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
@@ -83,7 +82,11 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
 
   private ObservableReader.PollingMode currentPollingMode = ObservableReader.PollingMode.SINGLESHOT;
 
-  /* Internal events */
+  /**
+   * Internal events
+   *
+   * @since 0.9
+   */
   public enum InternalEvent {
     /** A SE has been inserted */
     SE_INSERTED,
@@ -108,7 +111,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
   private final Object sync = new Object();
 
   /* Service that handles Internal Events and their impact on the current state of the reader */
-  protected ObservableReaderStateService stateService;
+  protected final ObservableReaderStateService stateService;
 
   /**
    * Initialize the ObservableReaderStateService with the possible states and their implementation.
@@ -135,6 +138,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
    */
   public AbstractObservableLocalReader(String pluginName, String readerName) {
     super(pluginName, readerName);
+    stateService = initStateService();
   }
 
   /**
@@ -201,7 +205,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
           "[{}] Notifying a reader event to {} observers. EVENTNAME = {}",
           getName(),
           this.countObservers(),
-          event.getEventType().getName());
+          event.getEventType().name());
     }
 
     List<ObservableReader.ReaderObserver> observersCopy;
@@ -567,8 +571,9 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
   /** {@inheritDoc} */
   @Override
   public final void finalizeSeProcessing() {
-    if (isPhysicalChannelOpen()) {
-      transmitSeRequest(null, ChannelControl.CLOSE_AFTER);
+    if (logger.isTraceEnabled()) {
+      logger.trace("[{}] start removal sequence of the reader", getName());
     }
+    this.stateService.onEvent(InternalEvent.SE_PROCESSED);
   }
 }

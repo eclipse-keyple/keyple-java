@@ -11,11 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.seproxy.plugin.reader;
 
-import java.util.Map;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 
 public class BlankSmartSelectionReader extends AbstractLocalReader implements SmartSelectionReader {
 
@@ -45,11 +42,6 @@ public class BlankSmartSelectionReader extends AbstractLocalReader implements Sm
   }
 
   @Override
-  public boolean protocolFlagMatches(SeProtocol protocolFlag) {
-    return false;
-  }
-
-  @Override
   public byte[] transmitApdu(byte[] apduIn) {
     return new byte[0];
   }
@@ -58,20 +50,26 @@ public class BlankSmartSelectionReader extends AbstractLocalReader implements Sm
   void terminateSeCommunication() {}
 
   @Override
+  protected void activateReaderProtocol(String readerProtocolName) {}
+
+  @Override
+  protected void deactivateReaderProtocol(String readerProtocolName) {}
+
+  @Override
   public ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector) {
     return null;
   }
 
   @Override
-  public TransmissionMode getTransmissionMode() {
-    return null;
+  public void closeLogicalChannel() {}
+
+  @Override
+  protected boolean isCurrentProtocol(String readerProtocolName) {
+    return false;
   }
 
   @Override
-  public Map<String, String> getParameters() {
-    return null;
+  public boolean isContactless() {
+    return true;
   }
-
-  @Override
-  public void setParameter(String key, String value) {}
 }

@@ -11,28 +11,15 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.stub;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.regex.Pattern;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotFoundException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotSupportedException;
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableLocalReader;
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableState;
 import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderStateService;
-import org.eclipse.keyple.core.seproxy.plugin.reader.SmartInsertionMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.reader.SmartInsertionReader;
-import org.eclipse.keyple.core.seproxy.plugin.reader.SmartRemovalMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.reader.SmartRemovalReader;
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeInsertion;
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeProcessing;
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForSeRemoval;
-import org.eclipse.keyple.core.seproxy.plugin.reader.WaitForStartDetect;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
-import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,12 +33,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
   private static final Logger logger = LoggerFactory.getLogger(StubReaderImpl.class);
 
   private StubSecureElement se;
-
-  private Map<String, String> parameters = new HashMap<String, String>();
-
-  TransmissionMode transmissionMode = TransmissionMode.CONTACTLESS;
-
-  protected final ExecutorService executorService;
+  boolean isContactless = true;
 
   private final AtomicBoolean loopWaitSe = new AtomicBoolean();
   private final AtomicBoolean loopWaitSeRemoval = new AtomicBoolean();
@@ -63,12 +45,6 @@ class StubReaderImpl extends AbstractObservableLocalReader
    */
   StubReaderImpl(String pluginName, String readerName) {
     super(pluginName, readerName);
-
-    // create a executor service with one thread whose name is customized
-    executorService =
-        Executors.newSingleThreadExecutor(new NamedThreadFactory("MonitoringThread-" + readerName));
-
-    stateService = initStateService();
   }
 
   /**
@@ -76,11 +52,11 @@ class StubReaderImpl extends AbstractObservableLocalReader
    *
    * @param pluginName
    * @param name
-   * @param transmissionMode
+   * @param isContactless
    */
-  StubReaderImpl(String pluginName, String name, TransmissionMode transmissionMode) {
+  StubReaderImpl(String pluginName, String name, boolean isContactless) {
     this(pluginName, name);
-    this.transmissionMode = transmissionMode;
+    this.isContactless = isContactless;
   }
 
   @Override
@@ -119,43 +95,13 @@ class StubReaderImpl extends AbstractObservableLocalReader
     return se.processApdu(apduIn);
   }
 
-  /** {@inheritDoc} */
   @Override
-  protected boolean protocolFlagMatches(SeProtocol protocolFlag) {
-    boolean result;
-    if (se == null) {
-      throw new KeypleReaderIOException("No SE available.");
-    }
-    // Test protocolFlag to check if ATR based protocol filtering is required
-    if (protocolFlag != null) {
-      if (!isPhysicalChannelOpen()) {
-        openPhysicalChannel();
-      }
-      // the request will be executed only if the protocol match the requestElement
-      String selectionMask = getProtocolsMap().get(protocolFlag);
-      if (selectionMask == null) {
-        throw new KeypleReaderIOException("Target selector mask not found!", null);
-      }
-      Pattern p = Pattern.compile(selectionMask);
-      String protocol = se.getSeProcotol();
-      if (!p.matcher(protocol).matches()) {
-        logger.trace(
-            "[{}] protocolFlagMatches => unmatching SE. PROTOCOLFLAG = {}",
-            this.getName(),
-            protocolFlag);
-        result = false;
-      } else {
-        logger.trace(
-            "[{}] protocolFlagMatches => matching SE. PROTOCOLFLAG = {}",
-            this.getName(),
-            protocolFlag);
-        result = true;
-      }
+  protected boolean isCurrentProtocol(String readerProtocolName) {
+    if (se != null && se.getSeProtocol() != null) {
+      return se.getSeProtocol().equals(readerProtocolName);
     } else {
-      // no protocol defined returns true
-      result = true;
+      return false;
     }
-    return result;
   }
 
   @Override
@@ -163,28 +109,50 @@ class StubReaderImpl extends AbstractObservableLocalReader
     return se != null;
   }
 
-  /** {@inheritDoc} */
   @Override
-  public void setParameter(String name, String value) {
-    parameters.put(name, value);
+  protected final void activateReaderProtocol(String readerProtocolName) {
+
+    if (!StubProtocolSetting.getSettings().containsKey(readerProtocolName)) {
+      throw new KeypleReaderProtocolNotSupportedException(readerProtocolName);
+    }
+
+    if (logger.isDebugEnabled()) {
+      logger.debug(
+          "{}: Activate protocol {} with rule \"{}\".",
+          getName(),
+          readerProtocolName,
+          StubProtocolSetting.getSettings().get(readerProtocolName));
+    }
   }
 
-  /** {@inheritDoc} */
   @Override
-  public Map<String, String> getParameters() {
-    return parameters;
+  protected final void deactivateReaderProtocol(String readerProtocolName) {
+
+    if (!StubProtocolSetting.getSettings().containsKey(readerProtocolName)) {
+      throw new KeypleReaderProtocolNotSupportedException(readerProtocolName);
+    }
+
+    if (logger.isDebugEnabled()) {
+      logger.debug("{}: Deactivate protocol {}.", getName(), readerProtocolName);
+    }
   }
 
   /** @return the current transmission mode */
   @Override
-  public TransmissionMode getTransmissionMode() {
-    return transmissionMode;
+  public boolean isContactless() {
+    return isContactless;
   }
 
   /*
    * STATE CONTROLLERS FOR INSERTING AND REMOVING SECURE ELEMENT
    */
 
+  /**
+   * Inserts the provided SE.<br>
+   *
+   * @param _se stub secure element to be inserted in the reader
+   * @throws KeypleReaderProtocolNotFoundException if the SE protocol is not found
+   */
   public synchronized void insertSe(StubSecureElement _se) {
     logger.debug("Insert SE {}", _se);
     /* clean channels status */
@@ -202,7 +170,6 @@ class StubReaderImpl extends AbstractObservableLocalReader
 
   public synchronized void removeSe() {
     logger.debug("Remove SE {}", se != null ? se : "none");
-
     se = null;
   }
 
@@ -270,30 +237,10 @@ class StubReaderImpl extends AbstractObservableLocalReader
 
   @Override
   protected final ObservableReaderStateService initStateService() {
-    if (executorService == null) {
-      throw new IllegalArgumentException("Executor service has not been initialized");
-    }
-
-    Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
-        new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
-
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
-        new WaitForStartDetect(this));
-
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-        new WaitForSeInsertion(this, new SmartInsertionMonitoringJob(this), executorService));
-
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-        new WaitForSeProcessing(this, new SmartRemovalMonitoringJob(this), executorService));
-
-    states.put(
-        AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-        new WaitForSeRemoval(this, new SmartRemovalMonitoringJob(this), executorService));
-
-    return new ObservableReaderStateService(
-        this, states, AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION);
+    return ObservableReaderStateService.builder(this)
+        .waitForSeInsertionWithSmartDetection()
+        .waitForSeProcessingWithSmartDetection()
+        .waitForSeRemovalWithSmartDetection()
+        .build();
   }
 }

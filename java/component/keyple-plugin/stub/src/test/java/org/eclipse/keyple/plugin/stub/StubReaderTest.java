@@ -32,8 +32,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -93,30 +92,41 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(false, reader.isSePresent());
 
     // CountDown lock
-    final CountDownLatch lock = new CountDownLatch(1);
+    final CountDownLatch lock = new CountDownLatch(2);
 
     readerObs =
         new ObservableReader.ReaderObserver() {
           @Override
           public void update(ReaderEvent event) {
-            Assert.assertEquals(event.getReaderName(), reader.getName());
-            Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-            Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+            if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED) {
+              Assert.assertEquals(event.getReaderName(), reader.getName());
+              Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
+              Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
 
-            logger.debug("testInsert event is correct");
-            // unlock thread
-            lock.countDown();
+              logger.debug("testInsert event is correct");
+
+              lock.countDown();
+            } else if (event.getEventType() == ReaderEvent.EventType.SE_REMOVED) {
+              lock.countDown();
+            }
           }
         };
 
     // add observer
     reader.addObserver(readerObs);
 
+    reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+
     // test
     reader.insertSe(hoplinkSE());
 
     // lock thread for 2 seconds max to wait for the event
     lock.await(2, TimeUnit.SECONDS);
+
+    reader.stopSeDetection();
+
+    reader.removeObserver(readerObs);
+
     Assert.assertEquals(0, lock.getCount()); // should be 0 because countDown is called by
     Assert.assertTrue(reader.isSePresent());
   }
@@ -166,7 +176,7 @@ public class StubReaderTest extends BaseStubTest {
     // add observer
     reader.addObserver(readerObs);
 
-    reader.startSeDetection(ObservableReader.PollingMode.REPEATING);
+    reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
 
     // test
     reader.insertSe(hoplinkSE());
@@ -177,7 +187,7 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(0, insertLock.getCount()); // should be 0 because insertLock is
     // countDown by obs
 
-    ((ProxyReader) reader).transmitSeRequest(null, ChannelControl.CLOSE_AFTER);
+    ((ProxyReader) reader).releaseChannel();
     reader.removeSe();
 
     // lock thread for 2 seconds max to wait for the event SE_REMOVED
@@ -262,7 +272,7 @@ public class StubReaderTest extends BaseStubTest {
     // countDown by obs
     // Thread.sleep(1000);
 
-    ((ProxyReader) reader).transmitSeRequest(null, ChannelControl.CLOSE_AFTER);
+    ((ProxyReader) reader).releaseChannel();
     reader.removeSe();
 
     // lock thread for 2 seconds max to wait for the event SE_REMOVED
@@ -284,9 +294,11 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(0, secondInsertLock.getCount()); // should be 0 because insertLock is
     // countDown by obs
 
-    ((ProxyReader) reader).transmitSeRequest(null, ChannelControl.CLOSE_AFTER);
+    ((ProxyReader) reader).releaseChannel();
 
     // Thread.sleep(1000);
+    reader.stopSeDetection();
+
     reader.removeSe();
 
     // lock thread for 2 seconds max to wait for the event SE_REMOVED
@@ -362,7 +374,7 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(0, firstInsertLock.getCount()); // should be 0 because insertLock is
     // countDown by obs
 
-    ((ProxyReader) reader).transmitSeRequest(null, ChannelControl.CLOSE_AFTER);
+    ((ProxyReader) reader).releaseChannel();
     reader.removeSe();
 
     // lock thread for 2 seconds max to wait for the event SE_REMOVED
@@ -380,9 +392,11 @@ public class StubReaderTest extends BaseStubTest {
     // lock thread for 2 seconds max to wait for the event SE_INSERTED
     secondInsertLock.await(2, TimeUnit.SECONDS);
 
+    reader.stopSeDetection();
+
     Assert.assertEquals(0, secondInsertLock.getCount()); // should be 0 because insertLock is
     // countDown by obs
-    ((ProxyReader) reader).transmitSeRequest(null, ChannelControl.CLOSE_AFTER);
+    ((ProxyReader) reader).releaseChannel();
     reader.removeSe();
 
     // lock thread for 2 seconds max to wait for the event SE_REMOVED
@@ -403,64 +417,66 @@ public class StubReaderTest extends BaseStubTest {
     final CountDownLatch lock = new CountDownLatch(1);
     final String poAid = "A000000291A000000191";
 
-    // add Protocol flag
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+    // activate ISO_14443_4
+    reader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // add observer
     readerObs =
         new ObservableReader.ReaderObserver() {
           @Override
           public void update(ReaderEvent event) {
-            Assert.assertEquals(event.getReaderName(), reader.getName());
-            Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-            Assert.assertEquals(ReaderEvent.EventType.SE_MATCHED, event.getEventType());
-            Assert.assertTrue(
-                ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                    .getSelectionSeResponses()
-                    .get(0)
-                    .getSelectionStatus()
-                    .hasMatched());
-            Assert.assertArrayEquals(
-                ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                    .getSelectionSeResponses()
-                    .get(0)
-                    .getSelectionStatus()
-                    .getAtr()
-                    .getBytes(),
-                hoplinkSE().getATR());
+            if (event.getEventType() == ReaderEvent.EventType.SE_MATCHED) {
+              Assert.assertEquals(event.getReaderName(), reader.getName());
+              Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
+              Assert.assertEquals(ReaderEvent.EventType.SE_MATCHED, event.getEventType());
+              Assert.assertTrue(
+                  ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
+                      .getSelectionSeResponses()
+                      .get(0)
+                      .getSelectionStatus()
+                      .hasMatched());
+              Assert.assertArrayEquals(
+                  ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
+                      .getSelectionSeResponses()
+                      .get(0)
+                      .getSelectionStatus()
+                      .getAtr()
+                      .getBytes(),
+                  hoplinkSE().getATR());
 
-            // retrieve the expected FCI from the Stub SE running the select application command
-            byte[] aid = ByteArrayUtil.fromHex(poAid);
-            byte[] selectApplicationCommand = new byte[6 + aid.length];
-            selectApplicationCommand[0] = (byte) 0x00; // CLA
-            selectApplicationCommand[1] = (byte) 0xA4; // INS
-            selectApplicationCommand[2] = (byte) 0x04; // P1: select by name
-            selectApplicationCommand[3] = (byte) 0x00; // P2: requests the first
-            selectApplicationCommand[4] = (byte) (aid.length); // Lc
-            System.arraycopy(aid, 0, selectApplicationCommand, 5, aid.length); // data
+              // retrieve the expected FCI from the Stub SE running the select application command
+              byte[] aid = ByteArrayUtil.fromHex(poAid);
+              byte[] selectApplicationCommand = new byte[6 + aid.length];
+              selectApplicationCommand[0] = (byte) 0x00; // CLA
+              selectApplicationCommand[1] = (byte) 0xA4; // INS
+              selectApplicationCommand[2] = (byte) 0x04; // P1: select by name
+              selectApplicationCommand[3] = (byte) 0x00; // P2: requests the first
+              selectApplicationCommand[4] = (byte) (aid.length); // Lc
+              System.arraycopy(aid, 0, selectApplicationCommand, 5, aid.length); // data
 
-            selectApplicationCommand[5 + aid.length] = (byte) 0x00; // Le
-            byte[] fci = null;
-            try {
-              fci = hoplinkSE().processApdu(selectApplicationCommand);
-            } catch (KeypleReaderIOException e) {
-              e.printStackTrace();
+              selectApplicationCommand[5 + aid.length] = (byte) 0x00; // Le
+              byte[] fci = null;
+              try {
+                fci = hoplinkSE().processApdu(selectApplicationCommand);
+              } catch (KeypleReaderIOException e) {
+                e.printStackTrace();
+              }
+
+              Assert.assertArrayEquals(
+                  ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
+                      .getSelectionSeResponses()
+                      .get(0)
+                      .getSelectionStatus()
+                      .getFci()
+                      .getBytes(),
+                  fci);
+
+              logger.debug("match event is correct");
+              // unlock thread
+              lock.countDown();
             }
-
-            Assert.assertArrayEquals(
-                ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                    .getSelectionSeResponses()
-                    .get(0)
-                    .getSelectionStatus()
-                    .getFci()
-                    .getBytes(),
-                fci);
-
-            logger.debug("match event is correct");
-            // unlock thread
-            lock.countDown();
           }
         };
 
@@ -472,7 +488,7 @@ public class StubReaderTest extends BaseStubTest {
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
@@ -483,14 +499,22 @@ public class StubReaderTest extends BaseStubTest {
         .setDefaultSelectionRequest(
             seSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
 
+    // set PollingMode to Continue
+    reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+
+    lock.await(5, TimeUnit.SECONDS);
+
     // test
     reader.insertSe(hoplinkSE());
 
     // lock thread for 2 seconds max to wait for the event
-    lock.await(2, TimeUnit.SECONDS);
+    lock.await(5, TimeUnit.SECONDS);
     Assert.assertEquals(0, lock.getCount()); // should be 0 because countDown is called by
     // observer
+    reader.stopSeDetection();
+    lock.await(5, TimeUnit.SECONDS);
 
+    reader.removeObserver(readerObs);
   }
 
   @Test
@@ -514,10 +538,10 @@ public class StubReaderTest extends BaseStubTest {
           }
         };
 
-    // add Protocol flag
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+    // activate ISO_14443_4
+    reader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // add observer
     reader.addObserver(readerObs);
@@ -529,7 +553,7 @@ public class StubReaderTest extends BaseStubTest {
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
@@ -540,11 +564,15 @@ public class StubReaderTest extends BaseStubTest {
         .setDefaultSelectionRequest(
             seSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
 
+    reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+
     // test
     reader.insertSe(hoplinkSE());
 
     Thread.sleep(100);
     reader.removeSe();
+
+    reader.stopSeDetection();
 
     // lock thread for 2 seconds max to wait for the event
     lock.await(100, TimeUnit.MILLISECONDS);
@@ -561,31 +589,31 @@ public class StubReaderTest extends BaseStubTest {
     // CountDown lock
     final CountDownLatch lock = new CountDownLatch(1);
 
-    // add Protocol flag
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+    // activate ISO_14443_4
+    reader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // add observer
     readerObs =
         new ObservableReader.ReaderObserver() {
           @Override
           public void update(ReaderEvent event) {
-            Assert.assertEquals(event.getReaderName(), reader.getName());
-            Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
+            // Only SE_INSERTED/SE_REMOVED event are thrown
+            if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED) {
+              Assert.assertEquals(event.getReaderName(), reader.getName());
+              Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
 
-            // an SE_INSERTED event is thrown
-            Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+              // card has not match
+              Assert.assertFalse(
+                  ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
+                      .getSelectionSeResponses()
+                      .get(0)
+                      .getSelectionStatus()
+                      .hasMatched());
 
-            // card has not match
-            Assert.assertFalse(
-                ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                    .getSelectionSeResponses()
-                    .get(0)
-                    .getSelectionStatus()
-                    .hasMatched());
-
-            lock.countDown(); // should be called
+              lock.countDown(); // should be called
+            }
           }
         };
 
@@ -599,7 +627,7 @@ public class StubReaderTest extends BaseStubTest {
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
@@ -610,13 +638,19 @@ public class StubReaderTest extends BaseStubTest {
         .setDefaultSelectionRequest(
             seSelection.getSelectionOperation(), ObservableReader.NotificationMode.ALWAYS);
 
+    reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+
     // test
     reader.insertSe(hoplinkSE());
 
     // lock thread for 2 seconds max to wait for the event
     lock.await(2, TimeUnit.SECONDS);
+
+    reader.stopSeDetection();
+
     Assert.assertEquals(0, lock.getCount()); // should be 0 because countDown is called by
     // observer
+    reader.removeObserver(readerObs);
   }
 
   @Test
@@ -625,9 +659,10 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_B_PRIME,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_B_PRIME));
+    // activate CALYPSO_OLD_CARD_PRIME
+    reader.activateProtocol(
+        StubSupportedProtocols.CALYPSO_OLD_CARD_PRIME.name(),
+        ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name());
 
     // CountDown lock
     final CountDownLatch lock = new CountDownLatch(1);
@@ -637,15 +672,12 @@ public class StubReaderTest extends BaseStubTest {
         new ObservableReader.ReaderObserver() {
           @Override
           public void update(ReaderEvent event) {
-
-            Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
-
             SeSelection seSelection = new SeSelection();
 
             PoSelectionRequest poSelectionRequest =
                 new PoSelectionRequest(
                     PoSelector.builder()
-                        .seProtocol(SeCommonProtocols.PROTOCOL_B_PRIME)
+                        .seProtocol(ContactlessCardCommonProtocols.CALYPSO_OLD_CARD_PRIME.name())
                         .atrFilter(new PoSelector.AtrFilter("3B.*"))
                         .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                         .build());
@@ -672,6 +704,9 @@ public class StubReaderTest extends BaseStubTest {
 
     // add observer
     reader.addObserver(readerObs);
+
+    reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+
     // test
     reader.insertSe(revision1SE());
 
@@ -679,7 +714,10 @@ public class StubReaderTest extends BaseStubTest {
     lock.await(2, TimeUnit.SECONDS);
 
     Assert.assertEquals(0, lock.getCount()); // should be 0 because countDown is called by
+
+    reader.stopSeDetection();
     // observer
+    reader.removeObserver(readerObs);
   }
 
   @Test
@@ -694,10 +732,10 @@ public class StubReaderTest extends BaseStubTest {
     final CountDownLatch lock = new CountDownLatch(1);
     final String poAid = "A000000291A000000191";
 
-    // add Protocol flag
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+    // activate ISO_14443_4
+    reader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // add observer
     readerObs =
@@ -708,7 +746,7 @@ public class StubReaderTest extends BaseStubTest {
             if (ReaderEvent.EventType.SE_MATCHED == event.getEventType()) {
               logger.info("SE_MATCHED event received");
               logger.info("Notify SE processed after 0ms");
-              ((ProxyReader) reader).transmitSeRequest(null, ChannelControl.CLOSE_AFTER);
+              ((ProxyReader) reader).releaseChannel();
               lock.countDown();
             }
           }
@@ -722,7 +760,7 @@ public class StubReaderTest extends BaseStubTest {
     PoSelectionRequest poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(poAid).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
@@ -732,11 +770,16 @@ public class StubReaderTest extends BaseStubTest {
     reader.setDefaultSelectionRequest(
         seSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
 
+    reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+
     // test
     reader.insertSe(hoplinkSE());
 
     // lock thread for 2 seconds max to wait for the event
     lock.await(2, TimeUnit.SECONDS);
+
+    reader.stopSeDetection();
+
     Assert.assertEquals(0, lock.getCount()); // should be 0 because countDown is called by
     // observer
 
@@ -760,10 +803,10 @@ public class StubReaderTest extends BaseStubTest {
     // init SE
     reader.insertSe(hoplinkSE());
 
-    // add Protocol flag
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+    // activate ISO_14443_4
+    reader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -789,10 +832,10 @@ public class StubReaderTest extends BaseStubTest {
     // init SE
     reader.insertSe(noApduResponseSE());
 
-    // add Protocol flag
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+    // activate ISO_14443_4
+    reader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -815,10 +858,10 @@ public class StubReaderTest extends BaseStubTest {
     // init SE
     reader.insertSe(partialSE());
 
-    // add Protocol flag
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+    // activate ISO_14443_4
+    reader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -848,10 +891,10 @@ public class StubReaderTest extends BaseStubTest {
     // init SE
     reader.insertSe(partialSE());
 
-    // add Protocol flag
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+    // activate ISO_14443_4
+    reader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -883,10 +926,10 @@ public class StubReaderTest extends BaseStubTest {
     // init SE
     reader.insertSe(partialSE());
 
-    // add Protocol flag
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+    // activate ISO_14443_4
+    reader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -918,10 +961,10 @@ public class StubReaderTest extends BaseStubTest {
     // init SE
     reader.insertSe(partialSE());
 
-    // add Protocol flag
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+    // activate ISO_14443_4
+    reader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -952,10 +995,10 @@ public class StubReaderTest extends BaseStubTest {
     // init SE
     reader.insertSe(partialSE());
 
-    // add Protocol flag
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+    // activate ISO_14443_4
+    reader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -982,10 +1025,10 @@ public class StubReaderTest extends BaseStubTest {
     // init SE
     reader.insertSe(partialSE());
 
-    // add Protocol flag
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+    // activate ISO_14443_4
+    reader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -1012,10 +1055,10 @@ public class StubReaderTest extends BaseStubTest {
     // init SE
     reader.insertSe(partialSE());
 
-    // add Protocol flag
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+    // activate ISO_14443_4
+    reader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -1042,10 +1085,10 @@ public class StubReaderTest extends BaseStubTest {
     // init SE
     reader.insertSe(partialSE());
 
-    // add Protocol flag
-    reader.addSeProtocolSetting(
-        SeCommonProtocols.PROTOCOL_ISO14443_4,
-        StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+    // activate ISO_14443_4
+    reader.activateProtocol(
+        StubSupportedProtocols.ISO_14443_4.name(),
+        ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     // send the selection request
     genericSelectSe(reader);
@@ -1070,21 +1113,6 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
     Assert.assertNotNull(reader.getName());
-  }
-
-  // Set correct parameters
-  @Test
-  public void testSetAllowedParameters() {
-    stubPlugin.plugStubReader("StubReaderTest", true);
-    Assert.assertEquals(1, stubPlugin.getReaders().size());
-    StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
-
-    Map<String, String> p1 = new HashMap<String, String>();
-    p1.put("aParameter", "a");
-    reader.setParameters(p1);
-
-    Map<String, String> p2 = reader.getParameters();
-    assert (p1.equals(p2));
   }
 
   /*
@@ -1272,8 +1300,8 @@ public class StubReaderTest extends BaseStubTest {
       }
 
       @Override
-      public String getSeProcotol() {
-        return "PROTOCOL_ISO14443_4";
+      public String getSeProtocol() {
+        return "ISO_14443_4";
       }
     };
   }
@@ -1301,8 +1329,8 @@ public class StubReaderTest extends BaseStubTest {
       }
 
       @Override
-      public String getSeProcotol() {
-        return "PROTOCOL_B_PRIME";
+      public String getSeProtocol() {
+        return "CALYPSO_OLD_CARD_PRIME";
       }
     };
   }
@@ -1326,8 +1354,8 @@ public class StubReaderTest extends BaseStubTest {
       }
 
       @Override
-      public String getSeProcotol() {
-        return "PROTOCOL_ISO14443_4";
+      public String getSeProtocol() {
+        return "ISO_14443_4";
       }
     };
   }
@@ -1352,8 +1380,8 @@ public class StubReaderTest extends BaseStubTest {
       }
 
       @Override
-      public String getSeProcotol() {
-        return "PROTOCOL_ISO14443_4";
+      public String getSeProtocol() {
+        return "ISO_14443_4";
       }
     };
   }
@@ -1387,8 +1415,8 @@ public class StubReaderTest extends BaseStubTest {
       }
 
       @Override
-      public String getSeProcotol() {
-        return null;
+      public String getSeProtocol() {
+        return "ISO_14443_4";
       }
     };
   }
@@ -1400,11 +1428,9 @@ public class StubReaderTest extends BaseStubTest {
   public static void genericSelectSe(SeReader reader) {
     /** Create a new local class extending AbstractSeSelectionRequest */
     class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
-      TransmissionMode transmissionMode;
 
       public GenericSeSelectionRequest(SeSelector seSelector) {
         super(seSelector);
-        transmissionMode = seSelector.getSeProtocol().getTransmissionMode();
       }
 
       @Override
@@ -1424,7 +1450,7 @@ public class StubReaderTest extends BaseStubTest {
     GenericSeSelectionRequest genericSeSelectionRequest =
         new GenericSeSelectionRequest(
             SeSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .atrFilter(new SeSelector.AtrFilter("3B.*"))
                 .build());
 

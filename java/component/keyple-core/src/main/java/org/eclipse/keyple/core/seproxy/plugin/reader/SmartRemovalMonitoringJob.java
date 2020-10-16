@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * <p>If a communication problem with the reader occurs (KeypleReaderIOException) an internal
  * STOP_DETECT event is fired.
  */
-public class SmartRemovalMonitoringJob extends AbstractMonitoringJob {
+class SmartRemovalMonitoringJob extends AbstractMonitoringJob {
 
   private static final Logger logger = LoggerFactory.getLogger(SmartRemovalMonitoringJob.class);
 
