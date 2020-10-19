@@ -37,6 +37,7 @@ public interface RemoteServerReader extends SeReader {
    * Gets the user input data if they are set.
    *
    * @param classOfT The type expected of user input data.
+   * @param <T> The type expected of initial Card content
    * @return a nullable reference if there is no user input data.
    * @since 1.0
    */
@@ -46,6 +47,7 @@ public interface RemoteServerReader extends SeReader {
    * Gets the initial Card content if is set.
    *
    * @param classOfT The type expected of initial Card content
+   * @param <T> The type expected of initial Card content
    * @return a nullable reference if there is no initial Card content.
    * @since 1.0
    */
