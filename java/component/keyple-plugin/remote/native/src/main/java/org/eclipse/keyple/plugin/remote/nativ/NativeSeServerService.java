@@ -12,12 +12,12 @@
 package org.eclipse.keyple.plugin.remote.nativ;
 
 /**
- * <b>Native SE Server Service</b> API.
+ * <b>Native Server Service</b> API.
  *
- * <p>This service must be used in the use case of the <b>Remote SE Client Plugin</b>.
+ * <p>This service must be used in the use case of the <b>Remote Client Plugin</b>.
  *
  * <p>It must be started by a <b>server</b> application that is installed on a terminal with native
- * access to the SE pool cards reader :
+ * access to the pool cards reader :
  *
  * <ul>
  *   <li>To start the service, use the factory {link NativeSeServerServiceFactory}.

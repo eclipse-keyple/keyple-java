@@ -20,7 +20,7 @@ import java.util.List;
  * communication protocol, such as standard HTTP for example.
  *
  * <p>Keyple provides its own implementations of this interface and manages their lifecycle.<br>
- * This kind of node can be bind to a all <b>server</b> Remote SE plugins and services :
+ * This kind of node can be bind to a all <b>server</b> Remote plugins and services :
  *
  * <ul>
  *   <li>{@code RemoteSeServerPlugin}

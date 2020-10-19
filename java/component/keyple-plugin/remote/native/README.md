@@ -1,33 +1,33 @@
-# Keyple Remote SE Plugin (Native SE library)
+# Keyple Remote Plugin (Native library)
 
 Read first main principles describe in the [Core](../core/README.md) library.
 
 ## Table of Contents
 
-* [About Native SE library](#about-native-se-library)
+* [About Native library](#about-native-library)
 * [Native Services](#native-services)
-    * [NativeSeClientService](#nativeseclientservice)
-    * [NativeSeServerService](#nativeseserverservice)
-    * [NativeSePoolServerService](#nativesepoolserverservice)
+    * [NativeClientService](#nativeclientservice)
+    * [NativeServerService](#nativeserverservice)
+    * [NativePoolServerService](#nativepoolserverservice)
 
-## About Native SE library
+## About Native library
 
-The **Native SE** library must be used by the application installed on the terminal having local access to the SE reader.
+The **Native** library must be used by the application installed on the terminal having local access to the reader.
 
 ## Native Services
 
-### NativeSeClientService
+### NativeClientService
 
-* [Use cases](../core/README.md#remote-se-server-plugin)
-* [API](../core/README.md#remote-se-server-plugin-api-class-diagram)
-* [Sequence diagram](../core/README.md#remote-se-server-plugin-sequence-diagram)
+* [Use cases](../core/README.md#remote-server-plugin)
+* [API](../core/README.md#remote-server-plugin-api-class-diagram)
+* [Sequence diagram](../core/README.md#remote-server-plugin-sequence-diagram)
 
-### NativeSeServerService
+### NativeServerService
 
-* [Use cases](../core/README.md#remote-se-client-plugin)
-* [API](../core/README.md#remote-se-client-plugin-api-class-diagram)
+* [Use cases](../core/README.md#remote-client-plugin)
+* [API](../core/README.md#remote-client-plugin-api-class-diagram)
 
-### NativeSePoolServerService
+### NativePoolServerService
 
-* [Use cases](../core/README.md#remote-se-pool-client-plugin)
-* [API](../core/README.md#remote-se-pool-client-plugin-api-class-diagram)
+* [Use cases](../core/README.md#remote-pool-client-plugin)
+* [API](../core/README.md#remote-pool-client-plugin-api-class-diagram)

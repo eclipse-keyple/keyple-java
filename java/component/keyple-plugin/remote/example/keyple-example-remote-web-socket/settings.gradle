@@ -8,7 +8,7 @@ pluginManagement {
         id 'io.quarkus' version "${quarkusPluginVersion}"
     }
 }
-rootProject.name = 'keyple-example-remotese-web-socket'
+rootProject.name = 'keyple-example-remote-web-socket'
 
 
 include ':common'

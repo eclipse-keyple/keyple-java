@@ -33,11 +33,11 @@ import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.nativ.NativeClientService;
 import org.eclipse.keyple.plugin.remote.nativ.RemoteServiceParameters;
-import org.eclipse.keyple.plugin.remotese.core.KeypleClientAsync;
-import org.eclipse.keyple.plugin.remotese.core.KeypleClientReaderEventFilter;
-import org.eclipse.keyple.plugin.remotese.core.KeypleClientSync;
-import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
-import org.eclipse.keyple.plugin.remotese.core.exception.KeypleDoNotPropagateEventException;
+import org.eclipse.keyple.plugin.remote.core.KeypleClientAsync;
+import org.eclipse.keyple.plugin.remote.core.KeypleClientReaderEventFilter;
+import org.eclipse.keyple.plugin.remote.core.KeypleClientSync;
+import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.core.exception.KeypleDoNotPropagateEventException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -375,7 +375,7 @@ public class NativeClientServiceTest extends BaseNativeTest {
     /**
      * Constructor.
      *
-     * @param selectionResponse the response from the SE
+     * @param selectionResponse the response from the card
      */
     protected MatchingSeImpl(SeResponse selectionResponse) {
       super(selectionResponse);

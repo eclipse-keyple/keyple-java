@@ -12,7 +12,7 @@
 package org.eclipse.keyple.plugin.remote.core;
 
 /**
- * This POJO object contains data exchanged between **Native SE** and **Virtual SE** components.
+ * This POJO object contains data exchanged between **Native** and **Virtual** components.
  *
  * <p>It is built and processed by the plugin and you don't need to modified it.
  *
@@ -47,12 +47,12 @@ public class KeypleMessageDto {
     TRANSMIT,
     TRANSMIT_SET,
     SET_DEFAULT_SELECTION,
-    IS_SE_PRESENT,
+    IS_CARD_PRESENT,
     IS_READER_CONTACTLESS,
     TERMINATE_SERVICE,
-    STOP_SE_DETECTION,
-    START_SE_DETECTION,
-    FINALIZE_SE_PROCESSING,
+    STOP_CARD_DETECTION,
+    START_CARD_DETECTION,
+    FINALIZE_CARD_PROCESSING,
     RELEASE_CHANNEL,
     ERROR
   }
@@ -187,7 +187,7 @@ public class KeypleMessageDto {
   /**
    * This setter method must only be used during the deserialization process.
    *
-   * @param nativeReaderName The native SE reader name to set.
+   * @param nativeReaderName The native reader name to set.
    * @return the object instance.
    * @since 1.0
    */
@@ -209,7 +209,7 @@ public class KeypleMessageDto {
   /**
    * This setter method must only be used during the deserialization process.
    *
-   * @param virtualReaderName The virtual SE reader name to set.
+   * @param virtualReaderName The virtual reader name to set.
    * @return the object instance.
    * @since 1.0
    */

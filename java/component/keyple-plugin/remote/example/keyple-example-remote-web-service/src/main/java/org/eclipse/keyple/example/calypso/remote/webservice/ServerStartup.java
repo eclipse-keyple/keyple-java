@@ -9,14 +9,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.calypso.remotese.webservice;
+package org.eclipse.keyple.example.calypso.remote.webservice;
 
 import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
 import javax.inject.Inject;
-import org.eclipse.keyple.example.calypso.remotese.webservice.client.ClientApp;
-import org.eclipse.keyple.example.calypso.remotese.webservice.server.ServerApp;
+
+import org.eclipse.keyple.example.calypso.remote.webservice.client.ClientApp;
+import org.eclipse.keyple.example.calypso.remote.webservice.server.ServerApp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,9 +35,11 @@ public class ServerStartup {
    */
   public static class RemoteSeWebserviceExample implements QuarkusApplication {
 
-    @Inject ClientApp clientApp;
+    @Inject
+    ClientApp clientApp;
 
-    @Inject ServerApp serverApp;
+    @Inject
+    ServerApp serverApp;
 
     @Override
     public int run(String... args) throws Exception {

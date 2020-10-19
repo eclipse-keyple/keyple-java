@@ -122,7 +122,7 @@ abstract class AbstractVirtualReader extends AbstractReader {
   public boolean isSePresent() {
 
     // Send the message as a request
-    KeypleMessageDto response = sendRequest(KeypleMessageDto.Action.IS_SE_PRESENT, null);
+    KeypleMessageDto response = sendRequest(KeypleMessageDto.Action.IS_CARD_PRESENT, null);
 
     // Extract the response
     return KeypleJsonParser.getParser().fromJson(response.getBody(), Boolean.class);

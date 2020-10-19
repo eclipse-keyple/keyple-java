@@ -22,7 +22,7 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
-import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
 import org.mockito.Mockito;
 
 public abstract class BaseNativeTest {
@@ -90,7 +90,7 @@ public abstract class BaseNativeTest {
   public static KeypleMessageDto getIsSePresentDto(String sessionId) {
     return new KeypleMessageDto() //
         .setSessionId(sessionId) //
-        .setAction(KeypleMessageDto.Action.IS_SE_PRESENT.name()) //
+        .setAction(KeypleMessageDto.Action. IS_CARD_PRESENT.name()) //
         .setServerNodeId("serverNodeId") //
         .setClientNodeId("clientNodeId") //
         .setBody(null);
@@ -111,7 +111,7 @@ public abstract class BaseNativeTest {
 
     return new KeypleMessageDto() //
         .setSessionId(sessionId) //
-        .setAction(KeypleMessageDto.Action.START_SE_DETECTION.name()) //
+        .setAction(KeypleMessageDto.Action.START_CARD_DETECTION.name()) //
         .setServerNodeId("serverNodeId") //
         .setClientNodeId("clientNodeId") //
         .setBody(body.toString());
@@ -121,7 +121,7 @@ public abstract class BaseNativeTest {
     JsonObject body = new JsonObject();
     return new KeypleMessageDto() //
         .setSessionId(sessionId) //
-        .setAction(KeypleMessageDto.Action.STOP_SE_DETECTION.name()) //
+        .setAction(KeypleMessageDto.Action.STOP_CARD_DETECTION.name()) //
         .setServerNodeId("serverNodeId") //
         .setClientNodeId("clientNodeId") //
         .setBody(body.toString());
@@ -131,7 +131,7 @@ public abstract class BaseNativeTest {
     JsonObject body = new JsonObject();
     return new KeypleMessageDto() //
         .setSessionId(sessionId) //
-        .setAction(KeypleMessageDto.Action.FINALIZE_SE_PROCESSING.name()) //
+        .setAction(KeypleMessageDto.Action.FINALIZE_CARD_PROCESSING.name()) //
         .setServerNodeId("serverNodeId") //
         .setClientNodeId("clientNodeId") //
         .setBody(body.toString());

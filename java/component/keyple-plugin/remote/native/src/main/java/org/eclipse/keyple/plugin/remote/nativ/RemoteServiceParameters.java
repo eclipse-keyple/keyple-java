@@ -98,7 +98,7 @@ public class RemoteServiceParameters {
      * For Calypso ticketing application, this object will be a <b>CalypsoPo</b> or a
      * <b>CalypsoSam</b>, depending on the context.
      *
-     * @param initialCardContent The initial SE content.
+     * @param initialCardContent The initial card content.
      * @return the builder instance
      * @since 1.0
      */

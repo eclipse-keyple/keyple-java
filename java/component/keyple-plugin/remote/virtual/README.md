@@ -1,33 +1,33 @@
-# Keyple Remote SE Plugin (Virtual SE library)
+# Keyple Remote Plugin (Virtual library)
 
 Read first main principles describe in the [Core](../core/README.md) library.
 
 ## Table of Contents
 
-* [About Virtual SE library](#about-virtual-se-library)
+* [About Virtual library](#about-virtual-library)
 * [Remote Plugins](#remote-plugins)
-    * [RemoteSeServerPlugin](#remoteseserverplugin)
-    * [RemoteSeClientPlugin](#remoteseclientplugin)
-    * [RemoteSePoolClientPlugin](#remotesepoolclientplugin)
+    * [RemoteSeServerPlugin](#remoteserverplugin)
+    * [RemoteSeClientPlugin](#remoteclientplugin)
+    * [RemoteSePoolClientPlugin](#remotepoolclientplugin)
 
-## About Virtual SE library
+## About Virtual library
 
-The "**Virtual SE**" library must be used by the application installed on the terminal not having local access to the SE reader and that wishes to control the reader remotely.
+The "**Virtual**" library must be used by the application installed on the terminal not having local access to the reader and that wishes to control the reader remotely.
 
 ## Remote Plugins
 
 ### RemoteSeServerPlugin
 
-* [Use cases](../core/README.md#remote-se-server-plugin)
-* [API](../core/README.md#remote-se-server-plugin-api-class-diagram)
-* [Sequence diagram](../core/README.md#remote-se-server-plugin-sequence-diagram)
+* [Use cases](../core/README.md#remoterver-plugin)
+* [API](../core/README.md#remoterver-plugin-api-class-diagram)
+* [Sequence diagram](../core/README.md#remoterver-plugin-sequence-diagram)
 
 ### RemoteSeClientPlugin
 
-* [Use cases](../core/README.md#remote-se-client-plugin)
-* [API](../core/README.md#remote-se-client-plugin-api-class-diagram)
+* [Use cases](../core/README.md#remote-client-plugin)
+* [API](../core/README.md#remote-client-plugin-api-class-diagram)
 
 ### RemoteSePoolClientPlugin
 
-* [Use cases](../core/README.md#remote-se-pool-client-plugin)
-* [API](../core/README.md#remote-se-pool-client-plugin-api-class-diagram)
+* [Use cases](../core/README.md#remote-pool-client-plugin)
+* [API](../core/README.md#remote-pool-client-plugin-api-class-diagram)

@@ -1,1 +1,1 @@
-# Keyple Remote SE Integration tests
+# Keyple Remote Integration tests

@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * (package-private)<br>
- * Abstract class for all Native SE Services.
+ * Abstract class for all Native Services.
  */
 abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
 
@@ -117,19 +117,19 @@ abstract class AbstractNativeService extends AbstractKeypleMessageHandler {
           case SET_DEFAULT_SELECTION:
             response = setDefaultSelection();
             break;
-          case IS_SE_PRESENT:
+          case IS_CARD_PRESENT:
             response = isSePresent();
             break;
           case IS_READER_CONTACTLESS:
             response = isReaderContactless();
             break;
-          case START_SE_DETECTION:
+          case START_CARD_DETECTION:
             response = startSeDetection();
             break;
-          case STOP_SE_DETECTION:
+          case STOP_CARD_DETECTION:
             response = stopSeDetection();
             break;
-          case FINALIZE_SE_PROCESSING:
+          case FINALIZE_CARD_PROCESSING:
             response = finalizeSeProcessing();
             break;
           case RELEASE_CHANNEL:

@@ -9,12 +9,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.calypso.remotese.webservice.client;
+package org.eclipse.keyple.example.calypso.remote.webservice.client;
 
 import java.util.List;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+
+import org.eclipse.keyple.example.calypso.remote.webservice.server.WebserviceServerEndpoint;
 import org.eclipse.keyple.plugin.remote.core.KeypleClientAsync;
 import org.eclipse.keyple.plugin.remote.core.KeypleClientSync;
 import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
@@ -22,13 +24,13 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 /**
  * Example implementation of a {@link KeypleClientAsync} based on Web service. Interacts with {@link
- * org.eclipse.keyple.example.calypso.remotese.webservice.server.WebserviceServerEndpoint}
+ * WebserviceServerEndpoint}
  */
-@RegisterRestClient(configKey = "remotese-plugin-api")
+@RegisterRestClient(configKey = "remote-plugin-api")
 public interface WebserviceClientEndpoint extends KeypleClientSync {
 
   @POST
-  @Path("/remotese-plugin")
+  @Path("/remote-plugin")
   @Produces("application/json")
   @Override
   public List<KeypleMessageDto> sendRequest(KeypleMessageDto keypleMessageDto);

@@ -117,7 +117,7 @@ public final class KeypleClientSyncNodeImpl extends AbstractKeypleNode
   /**
    * (private)<br>
    * Event Observer inner class.<br>
-   * This class can be used only for <b>Remote SE Client Plugin</b> use case.
+   * This class can be used only for <b>Remote Client Plugin</b> use case.
    */
   private class EventObserver {
 

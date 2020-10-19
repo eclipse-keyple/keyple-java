@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * WebsocketClientEndpoint}
  */
 @ApplicationScoped
-@ServerEndpoint("/remotese-plugin")
+@ServerEndpoint("/remote-plugin")
 public class WebsocketServerEndpoint implements KeypleServerAsync {
   private static final Logger LOGGER = LoggerFactory.getLogger(WebsocketServerEndpoint.class);
 

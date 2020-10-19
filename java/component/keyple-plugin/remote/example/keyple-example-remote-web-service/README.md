@@ -1,4 +1,4 @@
-# keyple-example-remotese-web-service project
+# keyple-example-remote-web-service project
 
 This projects aims at demonstrating how straight forward is the implementation of the synchronous mode of the Remote Plugin. 
 

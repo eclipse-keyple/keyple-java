@@ -131,7 +131,7 @@ public class AsyncScenario extends BaseScenario {
   /** {@inheritDoc} */
   @Test
   @Override
-  public void execute_transaction_closeSession_SE_error() {
+  public void execute_transaction_closeSession_card_error() {
     nativeService =
         new NativeClientServiceFactory()
             .builder()

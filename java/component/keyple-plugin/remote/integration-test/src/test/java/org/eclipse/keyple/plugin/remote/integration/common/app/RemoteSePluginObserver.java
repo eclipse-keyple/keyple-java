@@ -69,7 +69,7 @@ public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
     // "EXECUTE_CALYPSO_SESSION_FROM_LOCAL_SELECTION"
     if (BaseScenario.SERVICE_ID_1.equals(virtualReader.getServiceId())) {
 
-      CalypsoPo calypsoPo = virtualReader.getInitialSeContent(CalypsoPo.class);
+      CalypsoPo calypsoPo = virtualReader.getInitialCardContent(CalypsoPo.class);
       UserInput userInput = virtualReader.getUserInputData(UserInput.class);
       try {
         // execute a transaction

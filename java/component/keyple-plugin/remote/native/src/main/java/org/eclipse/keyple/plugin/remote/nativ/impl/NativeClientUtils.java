@@ -22,7 +22,7 @@ import org.eclipse.keyple.plugin.remote.nativ.NativeClientService;
 public class NativeClientUtils {
 
   /**
-   * Get the Native SE Client Service
+   * Get the Native Client Service
    *
    * @return a not null reference
    * @throws IllegalStateException if the service is not initialized.
@@ -33,7 +33,7 @@ public class NativeClientUtils {
   }
 
   /**
-   * Get the async node associated to the Native SE Client Service.
+   * Get the async node associated to the Native Client Service.
    *
    * @return a not null reference
    * @throws IllegalStateException if the service is not initialized or is not bounded to an async
@@ -45,12 +45,12 @@ public class NativeClientUtils {
     if (service.getNode() instanceof KeypleClientAsyncNode) {
       return (KeypleClientAsyncNode) service.getNode();
     }
-    throw new IllegalStateException("The Native SE Service is not bounded to an async node");
+    throw new IllegalStateException("The Native Service is not bounded to an async node");
   }
 
   /**
    * (private)<br>
-   * Get the Native SE Client Service implementation
+   * Get the Native Client Service implementation
    *
    * @return a not null reference
    * @throws IllegalStateException if the service is not initialized.
@@ -58,7 +58,7 @@ public class NativeClientUtils {
   private static NativeClientServiceImpl getNativeSeClientService() {
     NativeClientServiceImpl service = NativeClientServiceImpl.getInstance();
     if (service == null) {
-      throw new IllegalStateException("The Native SE Client Service is not initialized");
+      throw new IllegalStateException("The Native Client Service is not initialized");
     }
     return service;
   }

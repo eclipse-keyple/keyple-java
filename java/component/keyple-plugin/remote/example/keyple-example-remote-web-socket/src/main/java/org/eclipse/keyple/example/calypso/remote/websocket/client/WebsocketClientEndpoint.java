@@ -35,7 +35,7 @@ public class WebsocketClientEndpoint implements KeypleClientAsync {
   /* opened sessions */
   final Map<String, Session> openSessions;
   /* URI of the server endpoint */
-  private final String URI = "http://0.0.0.0:8080/remotese-plugin";
+  private final String URI = "http://0.0.0.0:8080/remote-plugin";
 
   /** Constructor */
   public WebsocketClientEndpoint() {

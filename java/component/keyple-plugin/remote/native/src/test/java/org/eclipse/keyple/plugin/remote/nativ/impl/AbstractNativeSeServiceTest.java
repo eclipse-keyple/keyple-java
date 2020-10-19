@@ -28,7 +28,7 @@ import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
-import org.eclipse.keyple.plugin.remotese.core.KeypleMessageDto;
+import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -254,7 +254,7 @@ public class AbstractNativeSeServiceTest extends BaseNativeTest {
     KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
-    assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.IS_SE_PRESENT.name());
+    assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action. IS_CARD_PRESENT.name());
     boolean bodyValue = KeypleJsonParser.getParser().fromJson(responseDto.getBody(), Boolean.class);
     assertThat(bodyValue).isTrue();
   }
@@ -295,7 +295,7 @@ public class AbstractNativeSeServiceTest extends BaseNativeTest {
     // results
     assertMetadataMatches(requestDto, responseDto);
     assertThat(responseDto.getAction())
-        .isEqualTo(KeypleMessageDto.Action.START_SE_DETECTION.name());
+        .isEqualTo(KeypleMessageDto.Action.START_CARD_DETECTION.name());
     assertThat(responseDto.getBody()).isNull();
   }
 
@@ -307,7 +307,7 @@ public class AbstractNativeSeServiceTest extends BaseNativeTest {
     KeypleMessageDto responseDto = service.executeLocally(observableReaderMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
-    assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.STOP_SE_DETECTION.name());
+    assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.STOP_CARD_DETECTION.name());
     assertThat(responseDto.getBody()).isNull();
   }
 
@@ -320,7 +320,7 @@ public class AbstractNativeSeServiceTest extends BaseNativeTest {
     // results
     assertMetadataMatches(requestDto, responseDto);
     assertThat(responseDto.getAction())
-        .isEqualTo(KeypleMessageDto.Action.FINALIZE_SE_PROCESSING.name());
+        .isEqualTo(KeypleMessageDto.Action.FINALIZE_CARD_PROCESSING.name());
     assertThat(responseDto.getBody()).isNull();
   }
 }

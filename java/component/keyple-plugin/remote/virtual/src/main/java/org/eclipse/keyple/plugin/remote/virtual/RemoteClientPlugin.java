@@ -22,7 +22,7 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
  * <b>without plugin observation</b>.
  *
  * <p>It must be register by a <b>client</b> application installed on the terminal not having local
- * access to the SE card reader and that wishes to control the SE remotely :
+ * access to the reader and that wishes to control the card remotely :
  *
  * <ul>
  *   <li>To <b>register</b> the plugin, use the Keyple service method {@link

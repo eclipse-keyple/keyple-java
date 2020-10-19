@@ -156,7 +156,7 @@ final class VirtualObservableReader extends AbstractVirtualReader
 
     body.addProperty("pollingMode", pollingMode.name());
 
-    sendRequest(KeypleMessageDto.Action.START_SE_DETECTION, body);
+    sendRequest(KeypleMessageDto.Action.START_CARD_DETECTION, body);
   }
 
   /**
@@ -166,7 +166,7 @@ final class VirtualObservableReader extends AbstractVirtualReader
    */
   @Override
   public void stopSeDetection() {
-    sendRequest(KeypleMessageDto.Action.STOP_SE_DETECTION, null);
+    sendRequest(KeypleMessageDto.Action.STOP_CARD_DETECTION, null);
   }
 
   /**
@@ -218,6 +218,6 @@ final class VirtualObservableReader extends AbstractVirtualReader
    */
   @Override
   public void finalizeSeProcessing() {
-    sendRequest(KeypleMessageDto.Action.FINALIZE_SE_PROCESSING, null);
+    sendRequest(KeypleMessageDto.Action.FINALIZE_CARD_PROCESSING, null);
   }
 }

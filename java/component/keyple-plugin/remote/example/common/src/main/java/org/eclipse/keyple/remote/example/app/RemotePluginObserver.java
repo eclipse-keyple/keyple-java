@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.remotese.example.app;
+package org.eclipse.keyple.remote.example.app;
 
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.SeResource;
@@ -25,8 +25,8 @@ import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonP
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.remote.virtual.RemoteServerPlugin;
 import org.eclipse.keyple.plugin.remote.virtual.RemoteServerReader;
-import org.eclipse.keyple.remotese.example.model.TransactionResult;
-import org.eclipse.keyple.remotese.example.model.UserInfo;
+import org.eclipse.keyple.remote.example.model.TransactionResult;
+import org.eclipse.keyple.remote.example.model.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

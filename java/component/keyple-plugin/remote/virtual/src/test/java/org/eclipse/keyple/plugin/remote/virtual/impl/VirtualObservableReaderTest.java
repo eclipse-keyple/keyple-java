@@ -139,7 +139,7 @@ public class VirtualObservableReaderTest {
     reader.startSeDetection(pollingMode);
     verify(node).sendRequest(messageArgumentCaptor.capture());
     KeypleMessageDto request = messageArgumentCaptor.getValue();
-    assertThat(request.getAction()).isEqualTo(KeypleMessageDto.Action.START_SE_DETECTION.name());
+    assertThat(request.getAction()).isEqualTo(KeypleMessageDto.Action.START_CARD_DETECTION.name());
     JsonObject body = KeypleJsonParser.getParser().fromJson(request.getBody(), JsonObject.class);
     assertThat(
             KeypleJsonParser.getParser()
@@ -152,7 +152,7 @@ public class VirtualObservableReaderTest {
     reader.stopSeDetection();
     verify(node).sendRequest(messageArgumentCaptor.capture());
     KeypleMessageDto request = messageArgumentCaptor.getValue();
-    assertThat(request.getAction()).isEqualTo(KeypleMessageDto.Action.STOP_SE_DETECTION.name());
+    assertThat(request.getAction()).isEqualTo(KeypleMessageDto.Action.STOP_CARD_DETECTION.name());
     JsonObject body = KeypleJsonParser.getParser().fromJson(request.getBody(), JsonObject.class);
     assertThat(body).isNull();
   }
@@ -163,7 +163,7 @@ public class VirtualObservableReaderTest {
     verify(node).sendRequest(messageArgumentCaptor.capture());
     KeypleMessageDto request = messageArgumentCaptor.getValue();
     assertThat(request.getAction())
-        .isEqualTo(KeypleMessageDto.Action.FINALIZE_SE_PROCESSING.name());
+        .isEqualTo(KeypleMessageDto.Action.FINALIZE_CARD_PROCESSING.name());
     JsonObject body = KeypleJsonParser.getParser().fromJson(request.getBody(), JsonObject.class);
     assertThat(body).isNull();
   }

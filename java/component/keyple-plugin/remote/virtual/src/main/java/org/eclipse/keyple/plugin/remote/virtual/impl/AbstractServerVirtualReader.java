@@ -41,7 +41,7 @@ abstract class AbstractServerVirtualReader implements RemoteServerReader, ProxyR
    * @param reader The reader to decorate (must be not null).
    * @param serviceId The service id (must be not null).
    * @param userInputDataJson The user input data as a JSON string (optional).
-   * @param initialCardContentJson The initial SE content as a JSON string (optional).
+   * @param initialCardContentJson The initial card content as a JSON string (optional).
    */
   AbstractServerVirtualReader(
       AbstractVirtualReader reader,

@@ -114,7 +114,7 @@ public class SyncScenario extends BaseScenario {
   /** {@inheritDoc} */
   @Override
   @Test
-  public void execute_transaction_closeSession_SE_error() {
+  public void execute_transaction_closeSession_card_error() {
     nativeService =
         new NativeClientServiceFactory()
             .builder()

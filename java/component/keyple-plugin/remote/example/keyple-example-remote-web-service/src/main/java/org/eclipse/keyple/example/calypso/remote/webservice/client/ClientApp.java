@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.calypso.remotese.webservice.client;
+package org.eclipse.keyple.example.calypso.remote.webservice.client;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -24,9 +24,9 @@ import org.eclipse.keyple.plugin.remote.nativ.NativeClientService;
 import org.eclipse.keyple.plugin.remote.nativ.RemoteServiceParameters;
 import org.eclipse.keyple.plugin.remote.nativ.impl.NativeClientServiceFactory;
 import org.eclipse.keyple.plugin.stub.*;
-import org.eclipse.keyple.remotese.example.model.TransactionResult;
-import org.eclipse.keyple.remotese.example.model.UserInfo;
-import org.eclipse.keyple.remotese.example.se.StubCalypsoClassic;
+import org.eclipse.keyple.remote.example.model.TransactionResult;
+import org.eclipse.keyple.remote.example.model.UserInfo;
+import org.eclipse.keyple.remote.example.se.StubCalypsoClassic;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,11 +106,11 @@ public class ClientApp {
         StubSupportedProtocols.ISO_14443_4.name(),
         ContactlessCardCommonProtocols.ISO_14443_4.name());
 
-    // insert a Stub SE
+    // insert a Stub card
     ((StubReader) nativeReader).insertSe(new StubCalypsoClassic());
 
     LOGGER.info(
-        "Client - Native reader was configured with STUB reader : {} with a SE",
+        "Client - Native reader was configured with STUB reader : {} with a card",
         nativeReader.getName());
   }
 
@@ -145,7 +145,7 @@ public class ClientApp {
         ContactlessCardCommonProtocols.ISO_14443_4.name());
 
     LOGGER.info(
-        "Client - Native reader was configured with PCSC reader : {} with a SE",
+        "Client - Native reader was configured with PCSC reader : {} with a card",
         nativeReader.getName());
   }
 }

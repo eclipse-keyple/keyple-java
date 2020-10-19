@@ -66,7 +66,7 @@ public abstract class BaseScenario {
    * result the server creates a Observable Virtual Reader that receives native reader events such
    * as Card insertions and removals.
    *
-   * <p>A Card Insertion is simulated locally followed by a SE removal 1 second later.
+   * <p>A Card Insertion is simulated locally followed by a card removal 1 second later.
    *
    * <p>The Card Insertion event is sent to the Virtual Reader whose observer starts a remote
    * Calypso session. At the end of a successful calypso session, custom data is sent back to the
@@ -101,7 +101,7 @@ public abstract class BaseScenario {
    * Client application invokes remoteService which results in a remote calypso session. Native
    * Reader throws exception in the closing operation.
    */
-  abstract void execute_transaction_closeSession_SE_error();
+  abstract void execute_transaction_closeSession_card_error();
 
   abstract void execute_transaction_host_network_error();
 
@@ -129,14 +129,14 @@ public abstract class BaseScenario {
   StubReader nativeReader;
   StubReader nativeReader2;
 
-  RemoteServerPlugin remoteSePlugin;
+  RemoteServerPlugin remotePlugin;
   UserInput user1;
   UserInput user2;
   DeviceInput device1;
 
   ExecutorService clientPool = Executors.newCachedThreadPool(new NamedThreadFactory("client-pool"));
   ExecutorService serverPool =
-      Executors.newCachedThreadPool(new NamedThreadFactory("remotese-pool"));
+      Executors.newCachedThreadPool(new NamedThreadFactory("remote-pool"));
 
   /** Init native stub plugin that can work with {@link StubSecureElement} */
   void initNativeStubPlugin() {
@@ -184,9 +184,9 @@ public abstract class BaseScenario {
   /** Init a Sync Remote Server Plugin (ie. http server) */
   void initRemoteSePluginWithSyncNode() {
     try {
-      remoteSePlugin = RemoteServerUtils.getSyncPlugin();
+      remotePlugin = RemoteServerUtils.getSyncPlugin();
     } catch (KeyplePluginNotFoundException e) {
-      remoteSePlugin =
+      remotePlugin =
           (RemoteServerPlugin)
               SeProxyService.getInstance()
                   .registerPlugin(
@@ -202,10 +202,10 @@ public abstract class BaseScenario {
   /** Init a Async Remote Server Plugin with an async server endpoint */
   void initRemoteSePluginWithAsyncNode(KeypleServerAsync serverEndpoint) {
     try {
-      remoteSePlugin = RemoteServerUtils.getAsyncPlugin();
+      remotePlugin = RemoteServerUtils.getAsyncPlugin();
       logger.info("RemoteSePluginServer already registered, reusing it");
     } catch (KeyplePluginNotFoundException e) {
-      remoteSePlugin =
+      remotePlugin =
           (RemoteServerPlugin)
               SeProxyService.getInstance()
                   .registerPlugin(
@@ -280,7 +280,7 @@ public abstract class BaseScenario {
     return new Callable<Boolean>() {
       @Override
       public Boolean call() throws Exception {
-        // insert stub SE into stub
+        // insert stub card into stub
         nativeReader.insertSe(new StubCalypsoClassic());
 
         // execute remote service
@@ -300,13 +300,13 @@ public abstract class BaseScenario {
   }
 
   void localselection_remoteTransaction_successful() {
-    // insert stub SE into stub
+    // insert stub card into stub
     nativeReader.insertSe(new StubCalypsoClassic());
 
     // execute a local selection on native reader
     CalypsoPo calypsoPo = explicitPoSelection();
 
-    // execute remote service fed with the SE
+    // execute remote service fed with the card
     TransactionResult output =
         nativeService.executeRemoteService(
             RemoteServiceParameters.builder(SERVICE_ID_1, nativeReader)
@@ -321,7 +321,7 @@ public abstract class BaseScenario {
   }
 
   void remoteselection_remoteTransaction_successful() {
-    // insert stub SE into stub
+    // insert stub card into stub
     nativeReader.insertSe(new StubCalypsoClassic());
 
     // execute remote service
@@ -340,7 +340,7 @@ public abstract class BaseScenario {
   void multipleclients_remoteselection_remoteTransaction_successful() {
     user2 = new UserInput().setUserId("user2");
 
-    // insert stub SE into both readers
+    // insert stub card into both readers
     nativeReader.insertSe(new StubCalypsoClassic());
     nativeReader2.insertSe(new StubCalypsoClassic());
 
@@ -418,10 +418,10 @@ public abstract class BaseScenario {
     eventFilter.setUserData(user1);
 
     /*
-     * user1 inserts SE ,
-     * SE event is sent to server,
+     * user1 inserts card ,
+     * card event is sent to server,
      * a transaction is operated in response
-     * user1 removes SE
+     * user1 removes card
      */
     nativeReader.insertSe(new StubCalypsoClassic());
     logger.info(
@@ -432,10 +432,10 @@ public abstract class BaseScenario {
     await().atMost(1, TimeUnit.SECONDS).until(seRemoved(nativeReader));
 
     /*
-     * user2 inserts SE ,
-     * SE event is sent to server,
+     * user2 inserts card ,
+     * card event is sent to server,
      * a transaction is operated in response
-     * user2 removes SE
+     * user2 removes card
      */
     UserInput user2 = new UserInput().setUserId(UUID.randomUUID().toString());
     eventFilter.setUserData(user2);
@@ -450,12 +450,12 @@ public abstract class BaseScenario {
     /*
      * on the 2nd event, the virtual reader should be cleaned on native and virtual environment
      */
-    assertThat(remoteSePlugin.getReaders()).isEmpty();
+    assertThat(remotePlugin.getReaders()).isEmpty();
     assertThat(NativeClientServiceTest.getVirtualReaders(nativeService)).isEmpty();
   }
 
   void remoteselection_remoteTransaction() {
-    // insert stub SE into stub
+    // insert stub card into stub
     nativeReader.insertSe(new StubCalypsoClassic());
 
     // execute remote service
@@ -468,7 +468,7 @@ public abstract class BaseScenario {
   }
 
   void all_methods() {
-    // insert stub SE into stub
+    // insert stub card into stub
     nativeReader.insertSe(new StubCalypsoClassic());
 
     // execute remote service
