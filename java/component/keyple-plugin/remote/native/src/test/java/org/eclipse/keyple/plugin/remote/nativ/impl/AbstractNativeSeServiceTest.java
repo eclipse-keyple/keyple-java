@@ -254,7 +254,7 @@ public class AbstractNativeSeServiceTest extends BaseNativeTest {
     KeypleMessageDto responseDto = service.executeLocally(readerMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
-    assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action. IS_CARD_PRESENT.name());
+    assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.IS_CARD_PRESENT.name());
     boolean bodyValue = KeypleJsonParser.getParser().fromJson(responseDto.getBody(), Boolean.class);
     assertThat(bodyValue).isTrue();
   }
@@ -307,7 +307,8 @@ public class AbstractNativeSeServiceTest extends BaseNativeTest {
     KeypleMessageDto responseDto = service.executeLocally(observableReaderMocked, requestDto);
     // results
     assertMetadataMatches(requestDto, responseDto);
-    assertThat(responseDto.getAction()).isEqualTo(KeypleMessageDto.Action.STOP_CARD_DETECTION.name());
+    assertThat(responseDto.getAction())
+        .isEqualTo(KeypleMessageDto.Action.STOP_CARD_DETECTION.name());
     assertThat(responseDto.getBody()).isNull();
   }
 

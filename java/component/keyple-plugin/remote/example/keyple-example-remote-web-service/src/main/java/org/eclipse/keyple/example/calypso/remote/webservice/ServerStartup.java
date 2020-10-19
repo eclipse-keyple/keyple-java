@@ -15,7 +15,6 @@ import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
 import javax.inject.Inject;
-
 import org.eclipse.keyple.example.calypso.remote.webservice.client.ClientApp;
 import org.eclipse.keyple.example.calypso.remote.webservice.server.ServerApp;
 import org.slf4j.Logger;
@@ -35,11 +34,9 @@ public class ServerStartup {
    */
   public static class RemoteSeWebserviceExample implements QuarkusApplication {
 
-    @Inject
-    ClientApp clientApp;
+    @Inject ClientApp clientApp;
 
-    @Inject
-    ServerApp serverApp;
+    @Inject ServerApp serverApp;
 
     @Override
     public int run(String... args) throws Exception {

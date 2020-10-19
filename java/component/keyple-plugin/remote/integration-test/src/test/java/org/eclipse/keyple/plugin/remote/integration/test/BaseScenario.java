@@ -135,8 +135,7 @@ public abstract class BaseScenario {
   DeviceInput device1;
 
   ExecutorService clientPool = Executors.newCachedThreadPool(new NamedThreadFactory("client-pool"));
-  ExecutorService serverPool =
-      Executors.newCachedThreadPool(new NamedThreadFactory("remote-pool"));
+  ExecutorService serverPool = Executors.newCachedThreadPool(new NamedThreadFactory("remote-pool"));
 
   /** Init native stub plugin that can work with {@link StubSecureElement} */
   void initNativeStubPlugin() {

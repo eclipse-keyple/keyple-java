@@ -90,7 +90,7 @@ public abstract class BaseNativeTest {
   public static KeypleMessageDto getIsSePresentDto(String sessionId) {
     return new KeypleMessageDto() //
         .setSessionId(sessionId) //
-        .setAction(KeypleMessageDto.Action. IS_CARD_PRESENT.name()) //
+        .setAction(KeypleMessageDto.Action.IS_CARD_PRESENT.name()) //
         .setServerNodeId("serverNodeId") //
         .setClientNodeId("clientNodeId") //
         .setBody(null);

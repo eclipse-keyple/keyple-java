@@ -15,7 +15,6 @@ import java.util.List;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-
 import org.eclipse.keyple.example.calypso.remote.webservice.server.WebserviceServerEndpoint;
 import org.eclipse.keyple.plugin.remote.core.KeypleClientAsync;
 import org.eclipse.keyple.plugin.remote.core.KeypleClientSync;

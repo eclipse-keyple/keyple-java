@@ -170,7 +170,7 @@ public class VirtualReaderTest {
     // init
     KeypleMessageDto responseDto =
         new KeypleMessageDto() //
-            .setAction(KeypleMessageDto.Action. IS_CARD_PRESENT.name()) //
+            .setAction(KeypleMessageDto.Action.IS_CARD_PRESENT.name()) //
             .setVirtualReaderName(reader.getName()) //
             .setNativeReaderName(reader.nativeReaderName) //
             .setBody(KeypleJsonParser.getParser().toJson(true, Boolean.class));
