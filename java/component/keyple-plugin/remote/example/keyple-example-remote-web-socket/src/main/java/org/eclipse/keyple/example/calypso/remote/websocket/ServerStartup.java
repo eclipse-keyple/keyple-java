@@ -15,7 +15,6 @@ import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
 import javax.inject.Inject;
-
 import org.eclipse.keyple.example.calypso.remote.websocket.client.ClientApp;
 import org.eclipse.keyple.example.calypso.remote.websocket.server.ServerApp;
 import org.slf4j.Logger;
@@ -37,8 +36,7 @@ public class ServerStartup {
 
     @Inject ServerApp serverApp;
 
-    @Inject
-    ClientApp clientApp;
+    @Inject ClientApp clientApp;
 
     @Override
     public int run(String... args) throws Exception {

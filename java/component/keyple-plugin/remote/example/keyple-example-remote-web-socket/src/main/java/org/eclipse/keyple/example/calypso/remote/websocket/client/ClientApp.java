@@ -21,7 +21,6 @@ import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.eclipse.keyple.plugin.pcsc.PcscSupportedProtocols;
 import org.eclipse.keyple.plugin.remote.nativ.NativeClientService;
-import org.eclipse.keyple.plugin.remote.nativ.NativeClientService;
 import org.eclipse.keyple.plugin.remote.nativ.RemoteServiceParameters;
 import org.eclipse.keyple.plugin.remote.nativ.impl.NativeClientServiceFactory;
 import org.eclipse.keyple.plugin.stub.*;

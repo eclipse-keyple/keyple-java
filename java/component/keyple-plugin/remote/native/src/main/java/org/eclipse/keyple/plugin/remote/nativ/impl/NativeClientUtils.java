@@ -11,8 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.nativ.impl;
 
-import org.eclipse.keyple.plugin.remote.nativ.NativeClientService;
 import org.eclipse.keyple.plugin.remote.core.KeypleClientAsyncNode;
+import org.eclipse.keyple.plugin.remote.nativ.NativeClientService;
 
 /**
  * Utility class associated to a {@link NativeClientService}

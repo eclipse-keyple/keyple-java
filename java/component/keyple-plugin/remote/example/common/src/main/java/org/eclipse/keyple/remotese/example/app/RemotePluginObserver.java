@@ -118,7 +118,7 @@ public class RemotePluginObserver implements ObservablePlugin.PluginObserver {
   }
 
   /**
-   * Prepare a Selection object ready to select Calypso card  and read environment file
+   * Prepare a Selection object ready to select Calypso card and read environment file
    *
    * @return instance of Selection object
    */

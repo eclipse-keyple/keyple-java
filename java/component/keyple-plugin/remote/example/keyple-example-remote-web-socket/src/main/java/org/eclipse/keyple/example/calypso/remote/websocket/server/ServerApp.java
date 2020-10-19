@@ -26,9 +26,8 @@ public class ServerApp {
   @Inject WebsocketServerEndpoint websocketServerEndpoint;
 
   /**
-   * Initialize the Remote Plugin with an async endpoint {@link WebsocketServerEndpoint} and
-   * attach an observer to the plugin {@link RemotePluginObserver} that contains all the business
-   * logic
+   * Initialize the Remote Plugin with an async endpoint {@link WebsocketServerEndpoint} and attach
+   * an observer to the plugin {@link RemotePluginObserver} that contains all the business logic
    */
   public void init() {
 
