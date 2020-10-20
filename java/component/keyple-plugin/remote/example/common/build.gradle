@@ -1,0 +1,23 @@
+apply plugin: 'java'
+apply plugin: 'java-library'
+
+project.description = 'Example of Keyple Plugin Remote - common'
+
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+
+    /* Keyple dependencies */
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: keyple_version
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remote-native', version: keyple_version
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remote-virtual', version: keyple_version
+
+    /* Keyple plugin dependencies */
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-stub', version: keyple_version
+
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: "1.7.25"
+}

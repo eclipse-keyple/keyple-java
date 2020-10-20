@@ -24,18 +24,15 @@ project(':java:component:keyple-plugin:pcsc').name = "keyple-plugin-pcsc"
 include ':java:component:keyple-plugin:stub'
 project(':java:component:keyple-plugin:stub').name = "keyple-plugin-stub"
 
-include ':java:component:keyple-plugin:remotese'
-project(':java:component:keyple-plugin:remotese').name = "keyple-plugin-remotese"
+include ':java:component:keyple-plugin:remote:core'
+project(':java:component:keyple-plugin:remote:core').name = "keyple-plugin-remote-core"
 
-include ':java:component:keyple-plugin:remote-se:core'
-project(':java:component:keyple-plugin:remote-se:core').name = "keyple-plugin-remotese-core"
+include ':java:component:keyple-plugin:remote:native'
+project(':java:component:keyple-plugin:remote:native').name = "keyple-plugin-remote-native"
 
-include ':java:component:keyple-plugin:remote-se:nativese'
-project(':java:component:keyple-plugin:remote-se:nativese').name = "keyple-plugin-remotese-nativese"
+include ':java:component:keyple-plugin:remote:virtual'
+project(':java:component:keyple-plugin:remote:virtual').name = "keyple-plugin-remote-virtual"
 
-include ':java:component:keyple-plugin:remote-se:virtualse'
-project(':java:component:keyple-plugin:remote-se:virtualse').name = "keyple-plugin-remotese-virtualse"
-
-include ':java:component:keyple-plugin:remote-se:integration-test'
-project(':java:component:keyple-plugin:remote-se:integration-test').name = "keyple-plugin-remotese-integration-test"
+include ':java:component:keyple-plugin:remote:integration-test'
+project(':java:component:keyple-plugin:remote:integration-test').name = "keyple-plugin-remote-integration-test"
 
