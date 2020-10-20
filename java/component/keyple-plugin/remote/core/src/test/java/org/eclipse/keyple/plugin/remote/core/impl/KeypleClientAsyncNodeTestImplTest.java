@@ -23,7 +23,6 @@ import org.eclipse.keyple.plugin.remote.core.exception.KeypleTimeoutException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
@@ -188,9 +187,7 @@ public class KeypleClientAsyncNodeTestImplTest extends AbstractKeypleAsyncNodeTe
   void doEndpointToThrowException(
       boolean whenOpenSession, boolean whenSendMessage, boolean whenCloseSession) {
     if (whenOpenSession) {
-      Mockito.doThrow(new KeypleRemoteCommunicationException("TEST"))
-          .when(endpoint)
-          .openSession(sessionId);
+      doThrow(new KeypleRemoteCommunicationException("TEST")).when(endpoint).openSession(sessionId);
     }
     if (whenSendMessage) {
       doThrow(new KeypleRemoteCommunicationException("TEST")).when(endpoint).sendMessage(msg);

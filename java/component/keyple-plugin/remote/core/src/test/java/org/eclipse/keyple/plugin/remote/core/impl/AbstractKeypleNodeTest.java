@@ -12,12 +12,12 @@
 package org.eclipse.keyple.plugin.remote.core.impl;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 import java.util.concurrent.Callable;
 import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remote.core.exception.KeypleRemoteCommunicationException;
-import org.mockito.Mockito;
 
 public abstract class AbstractKeypleNodeTest {
 
@@ -44,7 +44,7 @@ public abstract class AbstractKeypleNodeTest {
   }
 
   void setHandlerError() {
-    Mockito.doThrow(new KeypleRemoteCommunicationException("TEST"))
+    doThrow(new KeypleRemoteCommunicationException("TEST"))
         .when(handler)
         .onMessage(any(KeypleMessageDto.class));
   }
