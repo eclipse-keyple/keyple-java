@@ -25,8 +25,8 @@ package org.eclipse.keyple.plugin.remote.core;
  *
  * <ul>
  *   <li>{@code NativeSeClientService}
- *   <li>{@code RemoteSeClientPlugin}
- *   <li>{@code RemoteSePoolClientPlugin}
+ *   <li>{@code RemoteClientPlugin}
+ *   <li>{@code RemotePoolClientPlugin}
  * </ul>
  *
  * To create it, you must only bind a <b>sync</b> node during the initialization process and you

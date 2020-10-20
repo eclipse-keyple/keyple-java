@@ -41,7 +41,7 @@ public class SyncScenario extends BaseScenario {
      *   <li>attach the plugin observer</li>
      * </ul>
      */
-    initRemoteSePluginWithSyncNode();
+    initRemotePluginWithSyncNode();
 
     /*
      * Client side :

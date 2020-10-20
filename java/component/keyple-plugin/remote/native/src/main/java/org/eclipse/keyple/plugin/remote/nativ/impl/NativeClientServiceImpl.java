@@ -174,7 +174,7 @@ final class NativeClientServiceImpl extends AbstractNativeService
   }
 
   /**
-   * Propagate Reader Events to RemoteSePlugin (internal use only)
+   * Propagate Reader Events to RemotePlugin (internal use only)
    *
    * @param event The event to be propagated (should be not null)
    * @since 1.0

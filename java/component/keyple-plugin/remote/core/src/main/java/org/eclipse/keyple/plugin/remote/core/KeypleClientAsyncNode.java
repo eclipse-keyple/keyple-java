@@ -25,8 +25,8 @@ package org.eclipse.keyple.plugin.remote.core;
  *
  * <ul>
  *   <li>{@code NativeSeClientService}
- *   <li>{@code RemoteSeClientPlugin}
- *   <li>{@code RemoteSePoolClientPlugin}
+ *   <li>{@code RemoteClientPlugin}
+ *   <li>{@code RemotePoolClientPlugin}
  * </ul>
  *
  * To create it, you should only bind an <b>async</b> node during the initialization process.<br>
@@ -35,8 +35,8 @@ package org.eclipse.keyple.plugin.remote.core;
  *
  * <ul>
  *   <li>{@code NativeSeClientUtils.getAsyncNode()}
- *   <li>{@code RemoteSeClientUtils.getAsyncNode()}
- *   <li>{@code RemoteSePoolClientUtils.getAsyncNode()}
+ *   <li>{@code RemoteClientUtils.getAsyncNode()}
+ *   <li>{@code RemotePoolClientUtils.getAsyncNode()}
  * </ul>
  *
  * @since 1.0

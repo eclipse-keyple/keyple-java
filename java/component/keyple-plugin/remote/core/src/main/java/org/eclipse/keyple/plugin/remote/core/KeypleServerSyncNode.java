@@ -23,7 +23,7 @@ import java.util.List;
  * This kind of node can be bind to a all <b>server</b> Remote plugins and services :
  *
  * <ul>
- *   <li>{@code RemoteSeServerPlugin}
+ *   <li>{@code RemoteServerPlugin}
  *   <li>{@code NativeSeServerService}
  *   <li>{@code NativeSePoolServerService}
  * </ul>
@@ -33,7 +33,7 @@ import java.util.List;
  * methods, depending on your use case :
  *
  * <ul>
- *   <li>{@code RemoteSeServerUtils.getSyncNode()}
+ *   <li>{@code RemoteServerUtils.getSyncNode()}
  *   <li>{@code NativeSeServerUtils.getSyncNode()}
  *   <li>{@code NativeSePoolServerUtils.getSyncNode()}
  * </ul>
@@ -51,7 +51,7 @@ public interface KeypleServerSyncNode {
    *   <li>Retrieve the node {@link KeypleServerSyncNode} using one of the following utility
    *       methods, depending on your use case :
    *       <ul>
-   *         <li>{@code RemoteSeServerUtils.getSyncNode()}
+   *         <li>{@code RemoteServerUtils.getSyncNode()}
    *         <li>{@code NativeSeServerUtils.getSyncNode()}
    *         <li>{@code NativeSePoolServerUtils.getSyncNode()}
    *       </ul>

@@ -26,7 +26,7 @@ package org.eclipse.keyple.plugin.remote.core;
  *   <li>Retrieve the node {@link KeypleServerAsyncNode} using one of the following <b>server</b>
  *       utility methods, depending on your use case :
  *       <ul>
- *         <li>{@code RemoteSeServerUtils.getAsyncNode()}
+ *         <li>{@code RemoteServerUtils.getAsyncNode()}
  *         <li>{@code NativeSeServerUtils.getAsyncNode()}
  *         <li>{@code NativeSePoolServerUtils.getAsyncNode()}
  *       </ul>

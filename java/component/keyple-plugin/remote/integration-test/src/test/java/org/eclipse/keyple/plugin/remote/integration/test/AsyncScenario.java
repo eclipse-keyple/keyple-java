@@ -57,7 +57,7 @@ public class AsyncScenario extends BaseScenario {
      *   <li>attach the plugin observer</li>
      * </ul>
      */
-    initRemoteSePluginWithAsyncNode(serverEndpoint);
+    initRemotePluginWithAsyncNode(serverEndpoint);
 
     /*
      * Client side :

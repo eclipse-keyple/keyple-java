@@ -50,27 +50,27 @@ The **Core** library contains all the common components used by **Native** and *
 
 ### Remote Server Plugin
 
-![RemoteSe_Component_RemoteSeServerPlugin_SeReader_API](../../../../../docs/img/remote/component/RemoteSe_Component_RemoteSeServerPlugin_SeReader_API.svg)
+![Remote_Component_RemoteServerPlugin_SeReader_API](../../../../../docs/img/remote/component/Remote_Component_RemoteServerPlugin_SeReader_API.svg)
 
-![RemoteSe_Component_RemoteSeServerPlugin_ObservableReader_API](../../../../../docs/img/remote/component/RemoteSe_Component_RemoteSeServerPlugin_ObservableReader_API.svg)
+![Remote_Component_RemoteServerPlugin_ObservableReader_API](../../../../../docs/img/remote/component/Remote_Component_RemoteServerPlugin_ObservableReader_API.svg)
 
 ### Remote Client Plugin
 
-![RemoteSe_Component_RemoteSeClientPlugin_SeReader_API](../../../../../docs/img/remote/component/RemoteSe_Component_RemoteSeClientPlugin_SeReader_API.svg)
+![Remote_Component_RemoteClientPlugin_SeReader_API](../../../../../docs/img/remote/component/Remote_Component_RemoteClientPlugin_SeReader_API.svg)
 
-![RemoteSe_Component_RemoteSeClientPlugin_ObservableReader_API](../../../../../docs/img/remote/component/RemoteSe_Component_RemoteSeClientPlugin_ObservableReader_API.svg)
+![Remote_Component_RemoteClientPlugin_ObservableReader_API](../../../../../docs/img/remote/component/Remote_Component_RemoteClientPlugin_ObservableReader_API.svg)
 
-![RemoteSe_Component_RemoteSeClientObservablePlugin_SeReader_API](../../../../../docs/img/remote/component/RemoteSe_Component_RemoteSeClientObservablePlugin_SeReader_API.svg)
+![Remote_Component_RemoteClientObservablePlugin_SeReader_API](../../../../../docs/img/remote/component/Remote_Component_RemoteClientObservablePlugin_SeReader_API.svg)
 
-![RemoteSe_Component_RemoteSeClientObservablePlugin_ObservableReader_API](../../../../../docs/img/remote/component/RemoteSe_Component_RemoteSeClientObservablePlugin_ObservableReader_API.svg)
+![Remote_Component_RemoteClientObservablePlugin_ObservableReader_API](../../../../../docs/img/remote/component/Remote_Component_RemoteClientObservablePlugin_ObservableReader_API.svg)
 
 ### Remote Pool Client Plugin
 
-![RemoteSe_Component_RemoteSePoolClientPlugin_SeReader_API](../../../../../docs/img/remote/component/RemoteSe_Component_RemoteSePoolClientPlugin_SeReader_API.svg)
+![Remote_Component_RemotePoolClientPlugin_SeReader_API](../../../../../docs/img/remote/component/Remote_Component_RemotePoolClientPlugin_SeReader_API.svg)
 
 ## Public Global API
 
-![RemoteSe_Class_API](../../../../../docs/img/remote/class/RemoteSe_Class_API.svg)
+![Remote_Class_API](../../../../../docs/img/remote/class/Remote_Class_API.svg)
 
 ## Network configuration
 
@@ -82,7 +82,7 @@ If you want to implement a Full-Duplex communication protocol, such as Web Socke
 * on **client**, the `KeypleClientAsyncNode` node and provide an implementation of the `KeypleClientAsync` endpoint interface;
 * on **server**, the `KeypleServerAsyncNode` node and provide an implementation of the `KeypleServerAsync` endpoint interface;
 
-![RemoteSe_Sequence_AsyncNode_API](../../../../../docs/img/remote/sequence/RemoteSe_Sequence_AsyncNode_API.svg)
+![Remote_Sequence_AsyncNode_API](../../../../../docs/img/remote/sequence/Remote_Sequence_AsyncNode_API.svg)
 
 ### Client-Server Synchronous communication
 
@@ -90,7 +90,7 @@ If you want to implement a Client-Server communication protocol, such as standar
 * on **client**, the `KeypleClientSyncNode` node and provide an implementation of the `KeypleClientSync` endpoint interface;
 * on **server**, the `KeypleServerSyncNode` node;
 
-![RemoteSe_Sequence_SyncNode_API](../../../../../docs/img/remote/sequence/RemoteSe_Sequence_SyncNode_API.svg)
+![Remote_Sequence_SyncNode_API](../../../../../docs/img/remote/sequence/Remote_Sequence_SyncNode_API.svg)
 
 ## Exchanged data
 
@@ -100,20 +100,20 @@ The POJO object `KeypleMessageDto` contains data exchanged between **Native** an
 
 ### Remote Server Plugin API (class diagram)
 
-![RemoteSe_Class_RemoteSeServerPlugin_API](../../../../../docs/img/remote/class/RemoteSe_Class_RemoteSeServerPlugin_API.svg)
+![Remote_Class_RemoteServerPlugin_API](../../../../../docs/img/remote/class/Remote_Class_RemoteServerPlugin_API.svg)
 
 ### Remote Client Plugin API (class diagram)
 
-![RemoteSe_Class_RemoteSeClientPlugin_API](../../../../../docs/img/remote/class/RemoteSe_Class_RemoteSeClientPlugin_API.svg)
+![Remote_Class_RemoteClientPlugin_API](../../../../../docs/img/remote/class/Remote_Class_RemoteClientPlugin_API.svg)
 
 ### Remote Pool Client Plugin API (class diagram)
 
-![RemoteSe_Class_RemoteSePoolClientPlugin_API](../../../../../docs/img/remote/class/RemoteSe_Class_RemoteSePoolClientPlugin_API.svg)
+![Remote_Class_RemotePoolClientPlugin_API](../../../../../docs/img/remote/class/Remote_Class_RemotePoolClientPlugin_API.svg)
 
 ### Remote Server Plugin (sequence diagram)
 
-![RemoteSe_Sequence_RemoteSeServerPlugin_API](../../../../../docs/img/remote/sequence/RemoteSe_Sequence_RemoteSeServerPlugin_API.svg)
+![Remote_Sequence_RemoteServerPlugin_API](../../../../../docs/img/remote/sequence/Remote_Sequence_RemoteServerPlugin_API.svg)
 
 ### Internal Class Diagram
 
-![RemoteSe_Class](../../../../../docs/img/remote/class/impl/RemoteSe_Class.svg)
+![Remote_Class](../../../../../docs/img/remote/class/impl/Remote_Class.svg)

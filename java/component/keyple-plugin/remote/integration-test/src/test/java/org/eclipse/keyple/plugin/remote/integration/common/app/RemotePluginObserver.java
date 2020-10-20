@@ -31,11 +31,11 @@ import org.eclipse.keyple.plugin.remote.virtual.RemoteServerReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RemoteSePluginObserver implements ObservablePlugin.PluginObserver {
+public class RemotePluginObserver implements ObservablePlugin.PluginObserver {
 
-  private static final Logger logger = LoggerFactory.getLogger(RemoteSePluginObserver.class);
+  private static final Logger logger = LoggerFactory.getLogger(RemotePluginObserver.class);
 
-  public RemoteSePluginObserver() {}
+  public RemotePluginObserver() {}
 
   @Override
   public void update(PluginEvent event) {

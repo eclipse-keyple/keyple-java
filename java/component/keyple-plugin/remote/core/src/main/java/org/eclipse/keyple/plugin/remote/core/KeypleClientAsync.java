@@ -36,8 +36,8 @@ public interface KeypleClientAsync {
    *       utility methods, depending on your use case :
    *       <ul>
    *         <li>{@code NativeSeClientUtils.getAsyncNode()}
-   *         <li>{@code RemoteSeClientUtils.getAsyncNode()}
-   *         <li>{@code RemoteSePoolClientUtils.getAsyncNode()}
+   *         <li>{@code RemoteClientUtils.getAsyncNode()}
+   *         <li>{@code RemotePoolClientUtils.getAsyncNode()}
    *       </ul>
    *   <li>Call the method {@link KeypleClientAsyncNode#onOpen(String)} on the node.
    * </ul>
@@ -74,8 +74,8 @@ public interface KeypleClientAsync {
    *       methods, depending on your use case :
    *       <ul>
    *         <li>{@code NativeSeClientUtils.getAsyncNode()}
-   *         <li>{@code RemoteSeClientUtils.getAsyncNode()}
-   *         <li>{@code RemoteSePoolClientUtils.getAsyncNode()}
+   *         <li>{@code RemoteClientUtils.getAsyncNode()}
+   *         <li>{@code RemotePoolClientUtils.getAsyncNode()}
    *       </ul>
    *   <li>Call the method {@link KeypleClientAsyncNode#onClose(String)} on the node.
    * </ul>

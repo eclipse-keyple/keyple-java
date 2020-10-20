@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * (package-private)<br>
- * Implementation of RemoteSeServerPlugin
+ * Implementation of RemoteServerPlugin
  */
 final class RemoteServerPluginImpl extends AbstractRemotePlugin implements RemoteServerPlugin {
 

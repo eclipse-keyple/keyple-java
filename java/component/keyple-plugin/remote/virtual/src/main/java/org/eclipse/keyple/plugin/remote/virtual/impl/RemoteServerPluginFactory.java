@@ -41,9 +41,9 @@ public class RemoteServerPluginFactory implements PluginFactory {
 
   private static final Logger logger = LoggerFactory.getLogger(RemoteServerPluginFactory.class);
   /** default name of the RemoteServerPlugin for a sync node : {@value} */
-  static final String PLUGIN_NAME_SYNC = "RemoteSeServerPluginSync";
+  static final String PLUGIN_NAME_SYNC = "RemoteServerPluginSync";
   /** default name of the RemoteServerPlugin for a async node : {@value} */
-  static final String PLUGIN_NAME_ASYNC = "RemoteSeServerPluginAsync";
+  static final String PLUGIN_NAME_ASYNC = "RemoteServerPluginAsync";
 
   private RemoteServerPlugin plugin;
 

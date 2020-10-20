@@ -22,7 +22,7 @@ import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remote.virtual.impl.RemoteServerUtils;
 
 /**
- * Example implementation of a RemoteSeServer with a {@link
+ * Example implementation of a RemoteServer with a {@link
  * org.eclipse.keyple.plugin.remote.core.KeypleServerSyncNode} based on Web Service. Serve {@link
  * WebserviceClientEndpoint} clients
  */
@@ -30,7 +30,7 @@ import org.eclipse.keyple.plugin.remote.virtual.impl.RemoteServerUtils;
 public class WebserviceServerEndpoint {
 
   /**
-   * Endpoint that transfer message to the RemoteSeServer Sync Node
+   * Endpoint that transfer message to the RemoteServer Sync Node
    *
    * @param message non nullable instance of a KeypleMessageDto
    * @return list of non nullable instances of KeypleMessageDto

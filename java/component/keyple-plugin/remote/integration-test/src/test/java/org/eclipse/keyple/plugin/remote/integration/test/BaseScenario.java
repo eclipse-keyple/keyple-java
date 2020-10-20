@@ -29,7 +29,7 @@ import org.eclipse.keyple.core.util.NamedThreadFactory;
 import org.eclipse.keyple.plugin.remote.core.KeypleServerAsync;
 import org.eclipse.keyple.plugin.remote.core.impl.AbstractKeypleNode;
 import org.eclipse.keyple.plugin.remote.integration.common.app.ReaderEventFilter;
-import org.eclipse.keyple.plugin.remote.integration.common.app.RemoteSePluginObserver;
+import org.eclipse.keyple.plugin.remote.integration.common.app.RemotePluginObserver;
 import org.eclipse.keyple.plugin.remote.integration.common.model.ConfigurationResult;
 import org.eclipse.keyple.plugin.remote.integration.common.model.DeviceInput;
 import org.eclipse.keyple.plugin.remote.integration.common.model.TransactionResult;
@@ -181,7 +181,7 @@ public abstract class BaseScenario {
   }
 
   /** Init a Sync Remote Server Plugin (ie. http server) */
-  void initRemoteSePluginWithSyncNode() {
+  void initRemotePluginWithSyncNode() {
     try {
       remotePlugin = RemoteServerUtils.getSyncPlugin();
     } catch (KeyplePluginNotFoundException e) {
@@ -191,7 +191,7 @@ public abstract class BaseScenario {
                   .registerPlugin(
                       RemoteServerPluginFactory.builder()
                           .withSyncNode()
-                          .withPluginObserver(new RemoteSePluginObserver())
+                          .withPluginObserver(new RemotePluginObserver())
                           // .usingDefaultEventNotificationPool()
                           .usingEventNotificationPool(serverPool)
                           .build());
@@ -199,10 +199,10 @@ public abstract class BaseScenario {
   }
 
   /** Init a Async Remote Server Plugin with an async server endpoint */
-  void initRemoteSePluginWithAsyncNode(KeypleServerAsync serverEndpoint) {
+  void initRemotePluginWithAsyncNode(KeypleServerAsync serverEndpoint) {
     try {
       remotePlugin = RemoteServerUtils.getAsyncPlugin();
-      logger.info("RemoteSePluginServer already registered, reusing it");
+      logger.info("RemotePluginServer already registered, reusing it");
     } catch (KeyplePluginNotFoundException e) {
       remotePlugin =
           (RemoteServerPlugin)
@@ -210,7 +210,7 @@ public abstract class BaseScenario {
                   .registerPlugin(
                       RemoteServerPluginFactory.builder()
                           .withAsyncNode(serverEndpoint)
-                          .withPluginObserver(new RemoteSePluginObserver())
+                          .withPluginObserver(new RemotePluginObserver())
                           .usingEventNotificationPool(serverPool)
                           .build());
     }

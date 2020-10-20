@@ -6,9 +6,9 @@ Read first main principles describe in the [Core](../core/README.md) library.
 
 * [About Virtual library](#about-virtual-library)
 * [Remote Plugins](#remote-plugins)
-    * [RemoteSeServerPlugin](#remoteserverplugin)
-    * [RemoteSeClientPlugin](#remoteclientplugin)
-    * [RemoteSePoolClientPlugin](#remotepoolclientplugin)
+    * [RemoteServerPlugin](#remoteserverplugin)
+    * [RemoteClientPlugin](#remoteclientplugin)
+    * [RemotePoolClientPlugin](#remotepoolclientplugin)
 
 ## About Virtual library
 
@@ -16,18 +16,18 @@ The "**Virtual**" library must be used by the application installed on the termi
 
 ## Remote Plugins
 
-### RemoteSeServerPlugin
+### RemoteServerPlugin
 
 * [Use cases](../core/README.md#remoterver-plugin)
 * [API](../core/README.md#remoterver-plugin-api-class-diagram)
 * [Sequence diagram](../core/README.md#remoterver-plugin-sequence-diagram)
 
-### RemoteSeClientPlugin
+### RemoteClientPlugin
 
 * [Use cases](../core/README.md#remote-client-plugin)
 * [API](../core/README.md#remote-client-plugin-api-class-diagram)
 
-### RemoteSePoolClientPlugin
+### RemotePoolClientPlugin
 
 * [Use cases](../core/README.md#remote-pool-client-plugin)
 * [API](../core/README.md#remote-pool-client-plugin-api-class-diagram)
