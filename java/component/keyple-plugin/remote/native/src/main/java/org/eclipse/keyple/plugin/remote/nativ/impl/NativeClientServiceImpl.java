@@ -127,7 +127,7 @@ final class NativeClientServiceImpl extends AbstractNativeService
             // Start the observation.
             if (logger.isTraceEnabled()) {
               logger.trace(
-                  "Add NativeSeClientService as an observer for reader {}", nativeReader.getName());
+                  "Add NativeClientService as an observer for reader {}", nativeReader.getName());
             }
             ((ObservableReader) nativeReader).addObserver(this);
 

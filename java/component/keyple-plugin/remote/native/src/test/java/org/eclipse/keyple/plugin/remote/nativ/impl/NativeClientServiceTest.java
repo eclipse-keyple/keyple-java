@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
 @RunWith(MockitoJUnitRunner.class)
 public class NativeClientServiceTest extends BaseNativeTest {
 
-  private static final Logger logger = LoggerFactory.getLogger(AbstractNativeSeServiceTest.class);
+  private static final Logger logger = LoggerFactory.getLogger(AbstractNativeServiceTest.class);
   KeypleClientSync syncClientEndpoint;
   KeypleClientAsync asyncClient;
   KeypleClientReaderEventFilter eventFilter;

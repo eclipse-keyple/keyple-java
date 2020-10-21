@@ -29,7 +29,7 @@ public class NativeClientUtils {
    * @since 1.0
    */
   public static NativeClientService getService() {
-    return getNativeSeClientService();
+    return getNativeClientService();
   }
 
   /**
@@ -41,7 +41,7 @@ public class NativeClientUtils {
    * @since 1.0
    */
   public static KeypleClientAsyncNode getAsyncNode() {
-    NativeClientServiceImpl service = getNativeSeClientService();
+    NativeClientServiceImpl service = getNativeClientService();
     if (service.getNode() instanceof KeypleClientAsyncNode) {
       return (KeypleClientAsyncNode) service.getNode();
     }
@@ -55,7 +55,7 @@ public class NativeClientUtils {
    * @return a not null reference
    * @throws IllegalStateException if the service is not initialized.
    */
-  private static NativeClientServiceImpl getNativeSeClientService() {
+  private static NativeClientServiceImpl getNativeClientService() {
     NativeClientServiceImpl service = NativeClientServiceImpl.getInstance();
     if (service == null) {
       throw new IllegalStateException("The Native Client Service is not initialized");
