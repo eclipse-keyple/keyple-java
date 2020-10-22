@@ -27,7 +27,7 @@ import org.mockito.Mockito;
 
 public abstract class BaseNativeTest {
 
-  final String readerName = "readerName";
+  protected static final String readerName = "readerName";
   final String readerNameUnknown = "readerNameUnknown";
   final String observableReaderName = "observableReaderName";
 

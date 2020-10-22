@@ -19,6 +19,8 @@ import com.google.gson.JsonObject;
 import java.util.SortedSet;
 import org.assertj.core.util.Sets;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
+import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
+import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remote.core.KeypleServerAsync;
@@ -124,17 +126,40 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
     Mockito.verify(asyncServer).sendMessage(responseCaptor.capture());
     KeypleMessageDto response = responseCaptor.getValue();
     assertMetadataMatches(request, response);
+    assertThat(readerMocked.getName()).isEqualTo(response.getNativeReaderName());
   }
 
   @Test
-  public void onReleaseReader_shouldPropagate_toLocalPoolPlugin() {
-    KeypleMessageDto request = getReleaseReaderDto();
-    NativePoolServerUtils.getAsyncNode().onMessage(request);
+  public void onAllocateReader_shouldPropagate_AllocationException() {
+    KeypleAllocationReaderException e = new KeypleAllocationReaderException("");
+    doThrow(e).when(poolPluginMock).allocateReader(groupReference);
+    KeypleMessageDto request = getAllocateReaderDto();
+    NativePoolServerUtils.getAsyncNode().onMessage(getAllocateReaderDto());
 
-    verify(poolPluginMock, times(1)).releaseReader(readerMocked);
+    verify(poolPluginMock, times(1)).allocateReader(groupReference);
     Mockito.verify(asyncServer).sendMessage(responseCaptor.capture());
     KeypleMessageDto response = responseCaptor.getValue();
     assertMetadataMatches(request, response);
+    String bodyResponse = response.getBody();
+    assertThat(e)
+        .isEqualToComparingFieldByFieldRecursively(
+            KeypleJsonParser.getParser().fromJson(bodyResponse, BodyError.class).getException());
+  }
+
+  @Test
+  public void onReleaseReader_shouldPropagate_toLocalPoolPlugin_onSyncNode() {
+    service =
+            (NativePoolServerServiceImpl)
+                    new NativePoolServerServiceFactory()
+                            .builder()
+                            .withReaderPoolPlugin(poolPluginMock)
+                            .withSyncNode()
+                            .getService();
+
+    KeypleMessageDto request = getReleaseReaderDto();
+    NativePoolServerUtils.getSyncNode().onRequest(request);
+
+    verify(poolPluginMock, times(1)).releaseReader(readerMocked);
   }
 
   @Test
@@ -143,6 +168,25 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
     NativePoolServerUtils.getAsyncNode().onMessage(request);
 
     verify(poolPluginMock, times(1)).getReaderGroupReferences();
+    Mockito.verify(asyncServer).sendMessage(responseCaptor.capture());
+    KeypleMessageDto response = responseCaptor.getValue();
+    assertMetadataMatches(request, response);
+    String readerGroupReferencesJson =
+        KeypleJsonParser.getParser()
+            .fromJson(response.getBody(), JsonObject.class)
+            .get("readerGroupReferences")
+            .toString();
+    assertThat(KeypleJsonParser.getParser().fromJson(readerGroupReferencesJson, SortedSet.class))
+        .containsExactly(groupReference);
+  }
+
+  @Test
+  public void onIsPresent_shouldPropagate_toLocalPoolPlugin() {
+    doReturn(true).when(readerMocked).isSePresent();
+    KeypleMessageDto request = getIsSePresentDto(sessionId);
+    NativePoolServerUtils.getAsyncNode().onMessage(request);
+
+    verify(readerMocked, times(1)).isSePresent();
     Mockito.verify(asyncServer).sendMessage(responseCaptor.capture());
     KeypleMessageDto response = responseCaptor.getValue();
     assertMetadataMatches(request, response);
@@ -158,8 +202,6 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
     doReturn(readerMocked).when(poolPluginMock).getReader(readerName);
     doReturn(groupReferences).when(poolPluginMock).getReaderGroupReferences();
     asyncServer = Mockito.mock(KeypleServerAsync.class);
-    // service = Mockito.mock(NativePoolServerServiceImpl.class,
-    // withSettings().useConstructor((ReaderPoolPlugin)poolPluginMock));
 
     service =
         (NativePoolServerServiceImpl)
@@ -202,5 +244,15 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
     assertThat(response).isNotNull();
     assertThat(response.getSessionId()).isEqualTo(request.getSessionId());
     assertThat(response.getClientNodeId()).isEqualTo(request.getClientNodeId());
+  }
+
+  public static KeypleMessageDto getIsSePresentDto(String sessionId) {
+    return new KeypleMessageDto() //
+        .setSessionId(sessionId) //
+        .setAction(KeypleMessageDto.Action.IS_CARD_PRESENT.name()) //
+        .setServerNodeId("serverNodeId") //
+        .setClientNodeId("clientNodeId") //
+        .setNativeReaderName(readerName)
+        .setBody(null);
   }
 }
