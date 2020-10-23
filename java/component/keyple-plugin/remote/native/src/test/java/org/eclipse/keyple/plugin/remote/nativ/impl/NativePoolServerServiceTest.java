@@ -16,10 +16,16 @@ import static org.mockito.Mockito.*;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+
 import java.util.SortedSet;
+
 import org.assertj.core.util.Sets;
+import org.eclipse.keyple.core.seproxy.PluginFactory;
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleAllocationReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.json.BodyError;
 import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
@@ -32,22 +38,20 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NativePoolServerServiceTest extends BaseNativeTest {
 
-  private static final Logger logger = LoggerFactory.getLogger(AbstractNativeServiceTest.class);
   ReaderPoolPlugin poolPluginMock;
   KeypleServerAsync asyncServer;
   Gson parser;
   String groupReference = "1";
   final String clientNodeId = "clientNodeId1";
-  final String serverNodeId = "serverNodeId1";
   final String virtualReaderName = "virtualReaderName1";
   final String sessionId = "session1";
   final SortedSet<String> groupReferences = Sets.newTreeSet(groupReference);
+  final String poolPluginName = "poolPluginMock";
+  KeypleMessageDto response;
 
   NativePoolServerServiceImpl service;
 
@@ -61,7 +65,9 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
   }
 
   @After
-  public void tearDown() {}
+  public void tearDown() {
+    SeProxyService.getInstance().unregisterPlugin(poolPluginName);
+  }
 
   @Test
   public void buildService_withAsyncNode() {
@@ -70,7 +76,6 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
         (NativePoolServerServiceImpl)
             new NativePoolServerServiceFactory()
                 .builder()
-                .withReaderPoolPlugin(poolPluginMock)
                 .withAsyncNode(asyncServer)
                 .getService();
 
@@ -85,7 +90,6 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
         (NativePoolServerServiceImpl)
             new NativePoolServerServiceFactory()
                 .builder()
-                .withReaderPoolPlugin(poolPluginMock)
                 .withSyncNode()
                 .getService();
 
@@ -94,26 +98,13 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void buildService_withNull_SyncNode_throwIAE() {
+  public void buildService_withNull_AsyncNode_throwIAE() {
     // test
     service =
         (NativePoolServerServiceImpl)
             new NativePoolServerServiceFactory()
                 .builder()
-                .withReaderPoolPlugin(poolPluginMock)
                 .withAsyncNode(null)
-                .getService();
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void buildService_withNull_Plugin_throwIAE() {
-    // test
-    service =
-        (NativePoolServerServiceImpl)
-            new NativePoolServerServiceFactory()
-                .builder()
-                .withReaderPoolPlugin(null)
-                .withAsyncNode(asyncServer)
                 .getService();
   }
 
@@ -121,10 +112,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
   public void onAllocateReader_shouldPropagate_toLocalPoolPlugin() {
     KeypleMessageDto request = getAllocateReaderDto();
     NativePoolServerUtils.getAsyncNode().onMessage(getAllocateReaderDto());
-
-    verify(poolPluginMock, times(1)).allocateReader(groupReference);
-    Mockito.verify(asyncServer).sendMessage(responseCaptor.capture());
-    KeypleMessageDto response = responseCaptor.getValue();
+    response = captureResponse();
     assertMetadataMatches(request, response);
     assertThat(readerMocked.getName()).isEqualTo(response.getNativeReaderName());
   }
@@ -135,31 +123,39 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
     doThrow(e).when(poolPluginMock).allocateReader(groupReference);
     KeypleMessageDto request = getAllocateReaderDto();
     NativePoolServerUtils.getAsyncNode().onMessage(getAllocateReaderDto());
-
-    verify(poolPluginMock, times(1)).allocateReader(groupReference);
-    Mockito.verify(asyncServer).sendMessage(responseCaptor.capture());
-    KeypleMessageDto response = responseCaptor.getValue();
+    response = captureResponse();
     assertMetadataMatches(request, response);
-    String bodyResponse = response.getBody();
     assertThat(e)
-        .isEqualToComparingFieldByFieldRecursively(
-            KeypleJsonParser.getParser().fromJson(bodyResponse, BodyError.class).getException());
+            .isEqualToComparingFieldByFieldRecursively(getExceptionFromDto(response));
   }
 
   @Test
-  public void onReleaseReader_shouldPropagate_toLocalPoolPlugin_onSyncNode() {
-    service =
-            (NativePoolServerServiceImpl)
-                    new NativePoolServerServiceFactory()
-                            .builder()
-                            .withReaderPoolPlugin(poolPluginMock)
-                            .withSyncNode()
-                            .getService();
+  public void onAllocateReader_withNoPlugin_shouldThrow_AllocationException() {
+    SeProxyService.getInstance().unregisterPlugin(poolPluginName);
+    KeypleMessageDto request = getAllocateReaderDto();
+    NativePoolServerUtils.getAsyncNode().onMessage(getAllocateReaderDto());
 
+    response = captureResponse();
+    assertMetadataMatches(request, response);
+    assertThat(getExceptionFromDto(response)).isInstanceOf(KeypleAllocationReaderException.class);
+  }
+
+  @Test
+  public void onReleaseReader_shouldPropagate_toLocalPoolPlugin() {
     KeypleMessageDto request = getReleaseReaderDto();
-    NativePoolServerUtils.getSyncNode().onRequest(request);
-
+    NativePoolServerUtils.getAsyncNode().onMessage(request);
     verify(poolPluginMock, times(1)).releaseReader(readerMocked);
+  }
+
+  @Test
+  public void onReleaseReader_withNoPlugin_shouldThrow_KPNFE() {
+    doReturn(Sets.newTreeSet()).when(poolPluginMock).getReaderNames();
+    KeypleMessageDto request = getReleaseReaderDto();
+    NativePoolServerUtils.getAsyncNode().onMessage(request);
+
+    response = captureResponse();
+    assertMetadataMatches(request, response);
+    assertThat(getExceptionFromDto(response)).isInstanceOf(KeypleReaderNotFoundException.class);
   }
 
   @Test
@@ -167,17 +163,21 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
     KeypleMessageDto request = getGroupReferencesDto();
     NativePoolServerUtils.getAsyncNode().onMessage(request);
 
-    verify(poolPluginMock, times(1)).getReaderGroupReferences();
-    Mockito.verify(asyncServer).sendMessage(responseCaptor.capture());
-    KeypleMessageDto response = responseCaptor.getValue();
+    response = captureResponse();
     assertMetadataMatches(request, response);
-    String readerGroupReferencesJson =
-        KeypleJsonParser.getParser()
-            .fromJson(response.getBody(), JsonObject.class)
-            .get("readerGroupReferences")
-            .toString();
-    assertThat(KeypleJsonParser.getParser().fromJson(readerGroupReferencesJson, SortedSet.class))
-        .containsExactly(groupReference);
+    assertThat(getReferenceGroupFromDto(response)).containsExactly(groupReference);
+  }
+
+  @Test
+  public void onGroupReferences_withNoPlugin_shouldReturn_emptyList() {
+    SeProxyService.getInstance().unregisterPlugin(poolPluginMock.getName());
+
+    KeypleMessageDto request = getGroupReferencesDto();
+    NativePoolServerUtils.getAsyncNode().onMessage(request);
+
+    response = captureResponse();
+    assertMetadataMatches(request, response);
+    assertThat(getReferenceGroupFromDto(response)).isEmpty();
   }
 
   @Test
@@ -186,8 +186,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
     KeypleMessageDto request = getIsSePresentDto(sessionId);
     NativePoolServerUtils.getAsyncNode().onMessage(request);
 
-    verify(readerMocked, times(1)).isSePresent();
-    Mockito.verify(asyncServer).sendMessage(responseCaptor.capture());
+    response = captureResponse();
     KeypleMessageDto response = responseCaptor.getValue();
     assertMetadataMatches(request, response);
   }
@@ -200,14 +199,28 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
     poolPluginMock = Mockito.mock(ReaderPoolPlugin.class);
     doReturn(readerMocked).when(poolPluginMock).allocateReader(groupReference);
     doReturn(readerMocked).when(poolPluginMock).getReader(readerName);
+    doReturn(Sets.newTreeSet(readerName)).when(poolPluginMock).getReaderNames();
+    doReturn(poolPluginName).when(poolPluginMock).getName();
     doReturn(groupReferences).when(poolPluginMock).getReaderGroupReferences();
     asyncServer = Mockito.mock(KeypleServerAsync.class);
+
+
+    SeProxyService.getInstance().registerPlugin(new PluginFactory() {
+      @Override
+      public String getPluginName() {
+        return poolPluginName;
+      }
+
+      @Override
+      public ReaderPlugin getPlugin() {
+        return poolPluginMock;
+      }
+    });
 
     service =
         (NativePoolServerServiceImpl)
             new NativePoolServerServiceFactory()
                 .builder()
-                .withReaderPoolPlugin(poolPluginMock)
                 .withAsyncNode(asyncServer)
                 .getService();
   }
@@ -254,5 +267,24 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
         .setClientNodeId("clientNodeId") //
         .setNativeReaderName(readerName)
         .setBody(null);
+  }
+
+  private SortedSet<String> getReferenceGroupFromDto(KeypleMessageDto msg){
+    String readerGroupReferencesJson =
+            KeypleJsonParser.getParser()
+                    .fromJson(msg.getBody(), JsonObject.class)
+                    .get("readerGroupReferences")
+                    .toString();
+    return KeypleJsonParser.getParser().fromJson(readerGroupReferencesJson, SortedSet.class);
+  }
+
+  private RuntimeException getExceptionFromDto(KeypleMessageDto msg){
+    String bodyResponse = msg.getBody();
+    return KeypleJsonParser.getParser().fromJson(bodyResponse, BodyError.class).getException();
+  }
+
+  private KeypleMessageDto captureResponse(){
+    Mockito.verify(asyncServer).sendMessage(responseCaptor.capture());
+    return responseCaptor.getValue();
   }
 }

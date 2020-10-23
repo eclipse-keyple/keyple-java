@@ -11,7 +11,6 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remote.nativ.impl;
 
-import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remote.core.KeypleServerAsync;
 import org.eclipse.keyple.plugin.remote.nativ.NativePoolServerService;
@@ -33,7 +32,7 @@ public class NativePoolServerServiceFactory {
    *
    * @return next configuration step
    */
-  public NativePoolServerServiceFactory.PluginStep builder() {
+  public NativePoolServerServiceFactory.NodeStep builder() {
     return new NativePoolServerServiceFactory.Step();
   }
 
@@ -63,20 +62,9 @@ public class NativePoolServerServiceFactory {
     BuilderStep withSyncNode();
   }
 
-  public interface PluginStep {
-    /**
-     * Configure the service with a local reader pool plugin
-     *
-     * @param poolPlugin non nullable instance of a reader pool plugin
-     * @return next configuration step
-     */
-    NodeStep withReaderPoolPlugin(ReaderPoolPlugin poolPlugin);
-  }
-
-  private static class Step implements NodeStep, BuilderStep, PluginStep {
+  private static class Step implements NodeStep, BuilderStep {
 
     private KeypleServerAsync asyncEndpoint;
-    private ReaderPoolPlugin readerPoolPlugin;
 
     private Step() {}
 
@@ -95,28 +83,19 @@ public class NativePoolServerServiceFactory {
     @Override
     public NativePoolServerService getService() {
       NativePoolServerServiceImpl nativePoolServerServiceImpl =
-          NativePoolServerServiceImpl.createInstance(readerPoolPlugin);
+          NativePoolServerServiceImpl.createInstance();
 
       if (asyncEndpoint != null) {
         nativePoolServerServiceImpl.bindServerAsyncNode(asyncEndpoint);
         logger.info(
-            "Create a new NativePoolServerService with a async server and plugin {}",
-            readerPoolPlugin.getName());
+            "Create a new NativePoolServerService with a async server");
       } else {
         nativePoolServerServiceImpl.bindServerSyncNode();
         logger.info(
-            "Create a new NativePoolServerService with a sync server and plugin {}",
-            readerPoolPlugin.getName());
+            "Create a new NativePoolServerService with a sync server");
       }
 
       return nativePoolServerServiceImpl;
-    }
-
-    @Override
-    public NodeStep withReaderPoolPlugin(ReaderPoolPlugin readerPoolPlugin) {
-      Assert.getInstance().notNull(readerPoolPlugin, "readerPoolPlugin");
-      this.readerPoolPlugin = readerPoolPlugin;
-      return this;
     }
   }
 }
