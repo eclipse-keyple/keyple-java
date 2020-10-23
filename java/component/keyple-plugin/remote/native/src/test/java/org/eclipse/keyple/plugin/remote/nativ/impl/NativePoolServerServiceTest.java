@@ -170,7 +170,6 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
 
   @Test
   public void onIsPresent_shouldPropagate_toLocalPoolPlugin() {
-    doReturn(true).when(readerMocked).isSePresent();
     KeypleMessageDto request = getIsSePresentDto(sessionId);
     NativePoolServerUtils.getAsyncNode().onMessage(request);
 
