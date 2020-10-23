@@ -20,7 +20,7 @@ import org.eclipse.keyple.plugin.remote.nativ.NativePoolServerService;
  *
  * @since 1.0
  */
-public class NativePoolServerUtils {
+final public class NativePoolServerUtils {
 
   /**
    * Get the async node associated to the Native Pool Server Service.
