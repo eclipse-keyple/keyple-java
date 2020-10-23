@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  *
  * @since 1.0
  */
-final public class NativePoolServerServiceFactory {
+public final class NativePoolServerServiceFactory {
 
   private static final Logger logger =
       LoggerFactory.getLogger(NativePoolServerServiceFactory.class);

@@ -31,7 +31,8 @@ import org.eclipse.keyple.plugin.remote.nativ.NativePoolServerService;
  * Implementation of the {@link NativePoolServerService}. This object is a singleton created by the
  * {@link NativePoolServerServiceFactory}
  */
-final class NativePoolServerServiceImpl extends AbstractNativeService implements NativePoolServerService {
+final class NativePoolServerServiceImpl extends AbstractNativeService
+    implements NativePoolServerService {
 
   private static NativePoolServerServiceImpl uniqueInstance;
 
