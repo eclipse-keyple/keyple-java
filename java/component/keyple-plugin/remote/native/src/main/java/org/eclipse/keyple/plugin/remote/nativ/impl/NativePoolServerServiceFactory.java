@@ -87,12 +87,10 @@ public class NativePoolServerServiceFactory {
 
       if (asyncEndpoint != null) {
         nativePoolServerServiceImpl.bindServerAsyncNode(asyncEndpoint);
-        logger.info(
-            "Create a new NativePoolServerService with a async server");
+        logger.info("Create a new NativePoolServerService with a async server");
       } else {
         nativePoolServerServiceImpl.bindServerSyncNode();
-        logger.info(
-            "Create a new NativePoolServerService with a sync server");
+        logger.info("Create a new NativePoolServerService with a sync server");
       }
 
       return nativePoolServerServiceImpl;

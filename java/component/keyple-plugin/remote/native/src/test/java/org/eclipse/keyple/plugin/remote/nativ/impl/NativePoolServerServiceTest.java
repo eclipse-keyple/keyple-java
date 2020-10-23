@@ -16,9 +16,7 @@ import static org.mockito.Mockito.*;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-
 import java.util.SortedSet;
-
 import org.assertj.core.util.Sets;
 import org.eclipse.keyple.core.seproxy.PluginFactory;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
@@ -74,10 +72,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
     // test
     service =
         (NativePoolServerServiceImpl)
-            new NativePoolServerServiceFactory()
-                .builder()
-                .withAsyncNode(asyncServer)
-                .getService();
+            new NativePoolServerServiceFactory().builder().withAsyncNode(asyncServer).getService();
 
     assertThat(service).isNotNull();
     assertThat(service).isEqualTo(NativePoolServerServiceImpl.getInstance());
@@ -88,10 +83,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
     // test
     service =
         (NativePoolServerServiceImpl)
-            new NativePoolServerServiceFactory()
-                .builder()
-                .withSyncNode()
-                .getService();
+            new NativePoolServerServiceFactory().builder().withSyncNode().getService();
 
     assertThat(service).isNotNull();
     assertThat(service).isEqualTo(NativePoolServerServiceImpl.getInstance());
@@ -102,10 +94,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
     // test
     service =
         (NativePoolServerServiceImpl)
-            new NativePoolServerServiceFactory()
-                .builder()
-                .withAsyncNode(null)
-                .getService();
+            new NativePoolServerServiceFactory().builder().withAsyncNode(null).getService();
   }
 
   @Test
@@ -125,8 +114,7 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
     NativePoolServerUtils.getAsyncNode().onMessage(getAllocateReaderDto());
     response = captureResponse();
     assertMetadataMatches(request, response);
-    assertThat(e)
-            .isEqualToComparingFieldByFieldRecursively(getExceptionFromDto(response));
+    assertThat(e).isEqualToComparingFieldByFieldRecursively(getExceptionFromDto(response));
   }
 
   @Test
@@ -204,25 +192,23 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
     doReturn(groupReferences).when(poolPluginMock).getReaderGroupReferences();
     asyncServer = Mockito.mock(KeypleServerAsync.class);
 
+    SeProxyService.getInstance()
+        .registerPlugin(
+            new PluginFactory() {
+              @Override
+              public String getPluginName() {
+                return poolPluginName;
+              }
 
-    SeProxyService.getInstance().registerPlugin(new PluginFactory() {
-      @Override
-      public String getPluginName() {
-        return poolPluginName;
-      }
-
-      @Override
-      public ReaderPlugin getPlugin() {
-        return poolPluginMock;
-      }
-    });
+              @Override
+              public ReaderPlugin getPlugin() {
+                return poolPluginMock;
+              }
+            });
 
     service =
         (NativePoolServerServiceImpl)
-            new NativePoolServerServiceFactory()
-                .builder()
-                .withAsyncNode(asyncServer)
-                .getService();
+            new NativePoolServerServiceFactory().builder().withAsyncNode(asyncServer).getService();
   }
 
   private KeypleMessageDto getAllocateReaderDto() {
@@ -269,21 +255,21 @@ public class NativePoolServerServiceTest extends BaseNativeTest {
         .setBody(null);
   }
 
-  private SortedSet<String> getReferenceGroupFromDto(KeypleMessageDto msg){
+  private SortedSet<String> getReferenceGroupFromDto(KeypleMessageDto msg) {
     String readerGroupReferencesJson =
-            KeypleJsonParser.getParser()
-                    .fromJson(msg.getBody(), JsonObject.class)
-                    .get("readerGroupReferences")
-                    .toString();
+        KeypleJsonParser.getParser()
+            .fromJson(msg.getBody(), JsonObject.class)
+            .get("readerGroupReferences")
+            .toString();
     return KeypleJsonParser.getParser().fromJson(readerGroupReferencesJson, SortedSet.class);
   }
 
-  private RuntimeException getExceptionFromDto(KeypleMessageDto msg){
+  private RuntimeException getExceptionFromDto(KeypleMessageDto msg) {
     String bodyResponse = msg.getBody();
     return KeypleJsonParser.getParser().fromJson(bodyResponse, BodyError.class).getException();
   }
 
-  private KeypleMessageDto captureResponse(){
+  private KeypleMessageDto captureResponse() {
     Mockito.verify(asyncServer).sendMessage(responseCaptor.capture());
     return responseCaptor.getValue();
   }
