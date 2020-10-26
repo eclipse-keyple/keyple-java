@@ -122,7 +122,7 @@ public class CardProtocolDetectionEngine extends AbstractReaderObserverAsynchron
   }
 
   @Override
-  public void processUnexpectedSeRemoval() {
+  public void processUnexpectedCardRemoval() {
     System.out.println("Unexpected card removal event");
   }
 }

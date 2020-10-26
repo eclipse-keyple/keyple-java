@@ -420,7 +420,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
   }
 
   @Override
-  public void processUnexpectedSeRemoval() {
+  public void processUnexpectedCardRemoval() {
     logger.error("Unexpected card removal event");
   }
 }

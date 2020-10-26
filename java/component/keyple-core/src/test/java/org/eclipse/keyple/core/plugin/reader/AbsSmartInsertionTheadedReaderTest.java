@@ -207,7 +207,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
    *
    * CountDownLatch lock = new CountDownLatch(1);
    *
-   * // configure reader to raise timeout if SeProcessing is too long r.setThreadWaitTimeout(100);
+   * // configure reader to raise timeout if Card processing is too long r.setThreadWaitTimeout(100);
    * // attach observer to detect TIMEOUT_EVENT r.addObserver(countDownOnTimeout(lock));
    *
    * // Thread.sleep(100); r.startCardDetection(ObservableReader.PollingMode.SINGLESHOT);
@@ -221,7 +221,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
    *
    * CountDownLatch lock = new CountDownLatch(1); doReturn(true).when(r).processCardInserted();
    *
-   * // configure reader to raise timeout if SeProcessing is too long r.setThreadWaitTimeout(300);
+   * // configure reader to raise timeout if card processing is too long r.setThreadWaitTimeout(300);
    * // attach observer to detect TIMEOUT_EVENT r.addObserver(countDownOnTimeout(lock));
    *
    * Thread.sleep(100); r.startCardDetection(ObservableReader.PollingMode.REPEATING);

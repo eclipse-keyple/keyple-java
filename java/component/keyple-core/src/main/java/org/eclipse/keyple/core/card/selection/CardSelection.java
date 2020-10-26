@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * <p>It provides a way to do an explicit card selection or to post process a default card
  * selection. <br>
  * The channel is kept open by default, but can be closed after each selection cases (see
- * PrepareReleaseSeChannel).
+ * prepareReleaseChannel).
  */
 public final class CardSelection {
   private static final Logger logger = LoggerFactory.getLogger(CardSelection.class);

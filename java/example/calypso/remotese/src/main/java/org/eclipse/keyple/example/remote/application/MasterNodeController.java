@@ -143,7 +143,7 @@ public class MasterNodeController {
 
       // observe remote card plugin for events
       logger.info(
-          "{} Observe SeRemotePlugin for Plugin Events and Reader Events", node.getNodeId());
+          "{} Observe CardRemotePlugin for Plugin Events and Reader Events", node.getNodeId());
       Plugin rsePlugin = masterAPI.getPlugin();
 
       // add a custom observer for the Remote Card plugin

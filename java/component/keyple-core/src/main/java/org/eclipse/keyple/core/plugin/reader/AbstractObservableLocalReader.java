@@ -400,7 +400,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
        * a default request is defined, send it and notify according to the notification mode
        * and the selection status
        */
-      boolean aSeMatched = false;
+      boolean aCardMatched = false;
       try {
         List<CardResponse> cardResponses =
             transmitCardRequests(
@@ -413,14 +413,14 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
             if (logger.isTraceEnabled()) {
               logger.trace("[{}] a default selection has matched", getName());
             }
-            aSeMatched = true;
+            aCardMatched = true;
             break;
           }
         }
 
         if (notificationMode == ObservableReader.NotificationMode.MATCHED_ONLY) {
           /* notify only if a card matched the selection, just ignore if not */
-          if (aSeMatched) {
+          if (aCardMatched) {
             return new ReaderEvent(
                 getPluginName(),
                 getName(),
@@ -437,7 +437,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
           }
         } else {
           // ObservableReader.NotificationMode.ALWAYS
-          if (aSeMatched) {
+          if (aCardMatched) {
             /* the card matched, notify a CARD_MATCHED event with the received response */
             return new ReaderEvent(
                 getPluginName(),
