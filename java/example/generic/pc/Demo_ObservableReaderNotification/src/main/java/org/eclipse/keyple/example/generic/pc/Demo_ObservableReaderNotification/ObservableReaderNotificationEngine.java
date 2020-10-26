@@ -69,7 +69,7 @@ public class ObservableReaderNotificationEngine {
            * manage the removal sequence.
            */
           try {
-            ((ObservableReader) (event.getReader())).finalizeSeProcessing();
+            ((ObservableReader) (event.getReader())).finalizeCardProcessing();
           } catch (KeypleReaderNotFoundException e) {
             e.printStackTrace();
           } catch (KeyplePluginNotFoundException e) {

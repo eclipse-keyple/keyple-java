@@ -85,7 +85,7 @@ public abstract class AbstractReaderObserverAsynchronousEngine
                    * manage the removal sequence.
                    */
                   try {
-                    ((ObservableReader) (event.getReader())).finalizeSeProcessing();
+                    ((ObservableReader) (event.getReader())).finalizeCardProcessing();
                   } catch (KeypleReaderNotFoundException ex) {
                     logger.error("Reader not found exception: {}", ex.getMessage());
                   } catch (KeyplePluginNotFoundException ex) {
@@ -115,7 +115,7 @@ public abstract class AbstractReaderObserverAsynchronousEngine
                    * manage the removal sequence.
                    */
                   try {
-                    ((ObservableReader) (event.getReader())).finalizeSeProcessing();
+                    ((ObservableReader) (event.getReader())).finalizeCardProcessing();
                   } catch (KeypleReaderNotFoundException ex) {
                     logger.error("Reader not found exception: {}", ex.getMessage());
                   } catch (KeyplePluginNotFoundException ex) {

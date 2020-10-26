@@ -190,7 +190,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         r.getCurrentMonitoringState());
 
     // the card has been processed
-    r.finalizeSeProcessing();
+    r.finalizeCardProcessing();
 
     // assert currentState have changed
     Assert.assertEquals(

@@ -139,7 +139,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
         } catch (KeypleException e) {
           logger.error("Exception: {}", e.getMessage());
           try {
-            ((ObservableReader) (event.getReader())).finalizeSeProcessing();
+            ((ObservableReader) (event.getReader())).finalizeCardProcessing();
           } catch (KeypleReaderNotFoundException ex) {
             logger.error("Reader not found exception: {}", ex.getMessage());
           } catch (KeyplePluginNotFoundException ex) {
@@ -171,7 +171,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
       // Informs the underlying layer of the end of the card processing, in order to manage the
       // removal sequence.
       try {
-        ((ObservableReader) (event.getReader())).finalizeSeProcessing();
+        ((ObservableReader) (event.getReader())).finalizeCardProcessing();
       } catch (KeypleReaderNotFoundException e) {
         logger.error("Reader not found exception: {}", e.getMessage());
       } catch (KeyplePluginNotFoundException e) {

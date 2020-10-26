@@ -216,7 +216,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
           // manage the
           // removal sequence.
           try {
-            ((ObservableReader) (event.getReader())).finalizeSeProcessing();
+            ((ObservableReader) (event.getReader())).finalizeCardProcessing();
           } catch (KeypleReaderNotFoundException e) {
             logger.error("Reader not found! {}", e.getMessage());
           } catch (KeyplePluginNotFoundException e) {

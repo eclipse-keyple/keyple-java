@@ -369,7 +369,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                      * nothing.
                      */
                     try {
-                        (event.reader as ObservableReader).finalizeSeProcessing()
+                        (event.reader as ObservableReader).finalizeCardProcessing()
                     } catch (e: KeypleReaderNotFoundException) {
                         Timber.e(e)
                         addResultEvent("Error: ${e.message}")
@@ -503,12 +503,12 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                         ReaderEvent.EventType.CARD_MATCHED -> {
                             addResultEvent("Tag detected - card MATCHED")
                             executeCommands(event.defaultSelectionsResponse)
-                            reader.finalizeSeProcessing()
+                            reader.finalizeCardProcessing()
                         }
 
                         ReaderEvent.EventType.CARD_INSERTED -> {
                             addResultEvent("PO detected but AID didn't match with ${CalypsoClassicInfo.AID}")
-                            reader.finalizeSeProcessing()
+                            reader.finalizeCardProcessing()
                         }
 
                         ReaderEvent.EventType.CARD_REMOVED -> {

@@ -217,7 +217,7 @@ final class VirtualObservableReaderImpl extends VirtualReaderImpl
 
   /** {@inheritDoc} */
   @Override
-  public final void finalizeSeProcessing() {
+  public final void finalizeCardProcessing() {
     // TODO check why we can't test if the channel is already closed here.
     releaseChannel();
   }

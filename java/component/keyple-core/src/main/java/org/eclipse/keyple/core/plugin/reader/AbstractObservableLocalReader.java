@@ -571,7 +571,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
 
   /** {@inheritDoc} */
   @Override
-  public final void finalizeSeProcessing() {
+  public final void finalizeCardProcessing() {
     if (logger.isTraceEnabled()) {
       logger.trace("[{}] start removal sequence of the reader", getName());
     }

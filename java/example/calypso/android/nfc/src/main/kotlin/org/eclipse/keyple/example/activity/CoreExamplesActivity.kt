@@ -308,7 +308,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                      * nothing.
                      */
                     try {
-                        (event.reader as ObservableReader).finalizeSeProcessing()
+                        (event.reader as ObservableReader).finalizeCardProcessing()
                     } catch (e: KeypleReaderNotFoundException) {
                         Timber.e(e)
                         addResultEvent("Error: ${e.message}")

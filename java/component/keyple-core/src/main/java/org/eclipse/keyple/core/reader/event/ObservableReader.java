@@ -187,5 +187,5 @@ public interface ObservableReader extends Reader {
    *
    * @since 0.9
    */
-  void finalizeSeProcessing();
+  void finalizeCardProcessing();
 }
