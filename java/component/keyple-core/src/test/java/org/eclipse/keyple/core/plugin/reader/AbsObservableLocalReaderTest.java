@@ -76,7 +76,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
 
     // test
     Assert.assertTrue(r.isCardPresent());
-    verify(r, times(0)).processSeRemoved();
+    verify(r, times(0)).processCardRemoved();
   }
 
   /** State Machine */

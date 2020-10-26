@@ -242,7 +242,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
    * <p>This method is recommended for non-observable readers.
    *
    * <p>When the card is not present the logical and physical channels status may be refreshed
-   * through a call to the processSeRemoved method.
+   * through a call to the processCardRemoved method.
    *
    * @return true if the card is present
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
@@ -257,7 +257,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
        * CARD_REMOVED notification is performed and the channels are closed.
        */
       if (isLogicalChannelOpen() || isPhysicalChannelOpen()) {
-        processSeRemoved();
+        processCardRemoved();
       }
       return false;
     }
@@ -523,7 +523,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
    * <p>the card will be notified removed only if it has been previously notified present
    * (observable reader only)
    */
-  final void processSeRemoved() {
+  final void processCardRemoved() {
     closeLogicalAndPhysicalChannels();
     notifyObservers(
         new ReaderEvent(getPluginName(), getName(), ReaderEvent.EventType.CARD_REMOVED, null));

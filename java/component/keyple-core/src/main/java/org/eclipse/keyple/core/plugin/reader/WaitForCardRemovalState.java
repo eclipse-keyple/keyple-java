@@ -58,7 +58,7 @@ class WaitForCardRemovalState extends AbstractObservableState {
         // the currentState of waiting
         // for insertion
         // We notify the application of the CARD_REMOVED event.
-        reader.processSeRemoved();
+        reader.processCardRemoved();
         if (reader.getPollingMode() == ObservableReader.PollingMode.REPEATING) {
           switchState(MonitoringState.WAIT_FOR_SE_INSERTION);
         } else {
@@ -67,7 +67,7 @@ class WaitForCardRemovalState extends AbstractObservableState {
         break;
 
       case STOP_DETECT:
-        reader.processSeRemoved();
+        reader.processCardRemoved();
         switchState(MonitoringState.WAIT_FOR_START_DETECTION);
         break;
 

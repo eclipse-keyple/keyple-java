@@ -49,7 +49,7 @@ public abstract class AbstractReaderObserverAsynchronousEngine
    * Method to be implemented by the application to handle the CARD_REMOVED reader event at the end
    * of the card processing
    */
-  protected abstract void processSeRemoved();
+  protected abstract void processCardRemoved();
 
   /**
    * Method to be implemented by the application to handle the CARD_REMOVED reader event during the
@@ -157,7 +157,7 @@ public abstract class AbstractReaderObserverAsynchronousEngine
           processUnexpectedSeRemoval(); // to clean current card processing
           logger.error("Unexpected card Removal");
         } else {
-          processSeRemoved();
+          processCardRemoved();
           if (logger.isInfoEnabled()) {
             logger.info("Waiting for a card...");
           }

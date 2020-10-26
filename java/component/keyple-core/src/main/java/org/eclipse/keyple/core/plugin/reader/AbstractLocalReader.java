@@ -93,7 +93,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
    * <p>This method is recommended for non-observable readers.
    *
    * <p>When the card is not present the logical and physical channels status may be refreshed
-   * through a call to the processSeRemoved method.
+   * through a call to the processCardRemoved method.
    *
    * @return true if the card is present
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed

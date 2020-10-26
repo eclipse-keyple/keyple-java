@@ -70,7 +70,7 @@ public class WaitForCardRemovalStateJobExecutorTest extends CoreBaseTest {
         new WaitForCardRemovalState(r, new CardAbsentPingMonitoringJob(r), executorService);
     doReturn(ObservableReader.PollingMode.SINGLESHOT).when(r).getPollingMode();
     doReturn(false).when(r).isCardPresentPing();
-    doNothing().when(r).processSeRemoved();
+    doNothing().when(r).processCardRemoved();
     /* test */
     waitForCardRemovalState.onActivate();
 
@@ -93,7 +93,7 @@ public class WaitForCardRemovalStateJobExecutorTest extends CoreBaseTest {
         new WaitForCardRemovalState(r, new CardAbsentPingMonitoringJob(r), executorService);
     doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();
     doReturn(false).when(r).isCardPresentPing();
-    doNothing().when(r).processSeRemoved();
+    doNothing().when(r).processCardRemoved();
 
     /* test */
     waitForCardRemovalState.onActivate();
@@ -120,7 +120,7 @@ public class WaitForCardRemovalStateJobExecutorTest extends CoreBaseTest {
     CardAbsentPingMonitoringJob jobControl = new CardAbsentPingMonitoringJob(r);
     doReturn(ObservableReader.PollingMode.SINGLESHOT).when(r).getPollingMode();
     doReturn(true).when(r).isCardPresentPing();
-    doNothing().when(r).processSeRemoved();
+    doNothing().when(r).processCardRemoved();
     /* test */
     Runnable task = jobControl.getMonitoringJob(stateMock);
     Future future = executorService.submit(task);
@@ -148,7 +148,7 @@ public class WaitForCardRemovalStateJobExecutorTest extends CoreBaseTest {
         new WaitForCardRemovalState(r, new SmartRemovalMonitoringJob(r), executorService);
     doReturn(ObservableReader.PollingMode.SINGLESHOT).when(r).getPollingMode();
     doReturn(true).when(r).waitForCardAbsentNative();
-    doNothing().when(r).processSeRemoved();
+    doNothing().when(r).processCardRemoved();
     /* test */
     waitForCardRemovalState.onActivate();
 
@@ -174,7 +174,7 @@ public class WaitForCardRemovalStateJobExecutorTest extends CoreBaseTest {
         new WaitForCardRemovalState(r, new SmartRemovalMonitoringJob(r), executorService);
     doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();
     doReturn(true).when(r).waitForCardAbsentNative();
-    doNothing().when(r).processSeRemoved();
+    doNothing().when(r).processCardRemoved();
     /* test */
     waitForCardRemovalState.onActivate();
 

@@ -54,7 +54,7 @@ public class WaitForCardRemovalStateTest extends CoreBaseTest {
     AbstractObservableLocalReader r = AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
     WaitForCardRemovalState waitForCardRemovalState = new WaitForCardRemovalState(r);
     doReturn(ObservableReader.PollingMode.SINGLESHOT).when(r).getPollingMode();
-    doNothing().when(r).processSeRemoved();
+    doNothing().when(r).processCardRemoved();
 
     /* test */
     waitForCardRemovalState.onActivate();
@@ -73,7 +73,7 @@ public class WaitForCardRemovalStateTest extends CoreBaseTest {
     AbstractObservableLocalReader r = AbsSmartInsertionTheadedReaderTest.getMock(READER_NAME);
     WaitForCardRemovalState waitForCardRemovalState = new WaitForCardRemovalState(r);
     doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();
-    doNothing().when(r).processSeRemoved();
+    doNothing().when(r).processCardRemoved();
 
     /* test */
     waitForCardRemovalState.onActivate();

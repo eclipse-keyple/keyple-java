@@ -415,7 +415,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverAsync
   }
 
   @Override
-  public void processSeRemoved() {
+  public void processCardRemoved() {
     logger.error("Card removal event");
   }
 

@@ -45,7 +45,7 @@ public abstract class AbstractReaderObserverSynchronousEngine
   protected abstract void processCardInserted(); // alternative AID selection
 
   /** Method to be implemented by the application to handle the CARD_REMOVED reader event */
-  protected abstract void processSeRemoved();
+  protected abstract void processCardRemoved();
 
   /**
    * Implementation of the {@link ObservableReader.ReaderObserver#update(ReaderEvent)} method.<br>
@@ -103,7 +103,7 @@ public abstract class AbstractReaderObserverSynchronousEngine
         break;
 
       case CARD_REMOVED:
-        processSeRemoved();
+        processCardRemoved();
         if (logger.isInfoEnabled()) {
           logger.info("Waiting for a card...");
         }

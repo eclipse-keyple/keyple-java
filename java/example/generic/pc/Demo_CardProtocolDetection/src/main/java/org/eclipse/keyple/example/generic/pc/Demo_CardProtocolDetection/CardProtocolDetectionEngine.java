@@ -117,7 +117,7 @@ public class CardProtocolDetectionEngine extends AbstractReaderObserverAsynchron
   }
 
   @Override
-  public void processSeRemoved() {
+  public void processCardRemoved() {
     System.out.println("Card removal event");
   }
 
