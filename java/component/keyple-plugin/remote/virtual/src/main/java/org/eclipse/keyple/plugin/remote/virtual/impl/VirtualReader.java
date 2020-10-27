@@ -37,4 +37,13 @@ final class VirtualReader extends AbstractVirtualReader {
       String clientNodeId) {
     super(pluginName, nativeReaderName, node, sessionId, clientNodeId);
   }
+
+  /**
+   * (package-private)
+   *
+   * @return non null instance of a nativeReaderName
+   */
+  String getNativeReaderName(){
+    return nativeReaderName;
+  }
 }
