@@ -33,6 +33,7 @@ public class NativeClientServiceFactory {
    * Init the builder
    *
    * @return next configuration step
+   * @since 1.0
    */
   public NodeStep builder() {
     return new Step();
@@ -43,6 +44,7 @@ public class NativeClientServiceFactory {
      * Build the service
      *
      * @return singleton instance of the service
+     * @since 1.0
      */
     NativeClientService getService();
   }
@@ -53,6 +55,7 @@ public class NativeClientServiceFactory {
      * server order before cancelling the global transaction.
      *
      * @return next configuration step
+     * @since 1.0
      */
     ReaderStep usingDefaultTimeout();
 
@@ -62,6 +65,7 @@ public class NativeClientServiceFactory {
      *
      * @param timeoutInSeconds timeout in seconds
      * @return next configuration step
+     * @since 1.0
      */
     ReaderStep usingCustomTimeout(int timeoutInSeconds);
   }
@@ -72,6 +76,7 @@ public class NativeClientServiceFactory {
      *
      * @param asyncClient non nullable instance of an async client
      * @return next configuration step
+     * @since 1.0
      */
     TimeoutStep withAsyncNode(KeypleClientAsync asyncClient);
 
@@ -80,6 +85,7 @@ public class NativeClientServiceFactory {
      *
      * @param syncClient non nullable instance of a sync client
      * @return next configuration step
+     * @since 1.0
      */
     ReaderStep withSyncNode(KeypleClientSync syncClient);
   }
@@ -90,6 +96,7 @@ public class NativeClientServiceFactory {
      *
      * @param eventFilter non-nullable event filter
      * @return next configuration step
+     * @since 1.0
      */
     BuilderStep withReaderObservation(KeypleClientReaderEventFilter eventFilter);
 
@@ -97,6 +104,7 @@ public class NativeClientServiceFactory {
      * Configure the service without observation
      *
      * @return next configuration step
+     * @since 1.0
      */
     BuilderStep withoutReaderObservation();
   }

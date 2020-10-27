@@ -31,6 +31,7 @@ public final class NativePoolServerServiceFactory {
    * Init the builder
    *
    * @return next configuration step
+   * @since 1.0
    */
   public NativePoolServerServiceFactory.NodeStep builder() {
     return new NativePoolServerServiceFactory.Step();
@@ -41,6 +42,7 @@ public final class NativePoolServerServiceFactory {
      * Build the service
      *
      * @return singleton instance of the service
+     * @since 1.0
      */
     NativePoolServerService getService();
   }
@@ -51,6 +53,7 @@ public final class NativePoolServerServiceFactory {
      *
      * @param endpoint non nullable instance of an async client
      * @return next configuration step
+     * @since 1.0
      */
     BuilderStep withAsyncNode(KeypleServerAsync endpoint);
 
@@ -58,6 +61,7 @@ public final class NativePoolServerServiceFactory {
      * Configure the service with a sync server
      *
      * @return next configuration step
+     * @since 1.0
      */
     BuilderStep withSyncNode();
   }
