@@ -36,8 +36,8 @@ import org.eclipse.keyple.example.calypso.android.nfc.R
 import org.eclipse.keyple.example.model.ChoiceEventModel
 import org.eclipse.keyple.example.model.EventModel
 import org.eclipse.keyple.example.util.configFlags
-import org.eclipse.keyple.example.util.configProtocol
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPluginFactory
+import org.eclipse.keyple.plugin.android.nfc.AndroidNfcProtocolSettings
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader
 import timber.log.Timber
 
@@ -85,7 +85,7 @@ abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnN
         /**
          * Register AndroidNfc plugin Factory
          */
-        val plugin = SmartCardService.getInstance().registerPlugin(AndroidNfcPluginFactory())
+        val plugin = SmartCardService.getInstance().registerPlugin(AndroidNfcPluginFactory(this))
 
         /**
          *  remove the observer if it already exist
@@ -96,7 +96,8 @@ abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnN
         (reader as ObservableReader).addObserver(this)
 
         // with this protocol settings we activate the nfc for ISO1443_4 protocol
-        reader.configProtocol(ContactlessCardCommonProtocols.ISO_14443_4)
+        reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name,
+                AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.ISO_14443_4.name))
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }

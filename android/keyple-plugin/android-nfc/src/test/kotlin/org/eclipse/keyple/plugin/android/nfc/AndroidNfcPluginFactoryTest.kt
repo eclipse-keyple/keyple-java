@@ -11,21 +11,29 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
+import android.app.Activity
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.Robolectric
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class AndroidNfcPluginFactoryTest {
 
     lateinit var factory: AndroidNfcPluginFactory
 
+    lateinit var activity: Activity
+
     @Before
     fun setUp() {
-        factory = AndroidNfcPluginFactory()
+        activity = Robolectric.buildActivity(Activity::class.java).create().get()
+        factory = AndroidNfcPluginFactory(activity)
     }
 
     @Test
     fun getPluginName() {
-        Assert.assertEquals(AndroidNfcPlugin.PLUGIN_NAME, factory.pluginName)
+        Assert.assertEquals(AndroidNfcReaderPostNImpl(activity).pluginName, factory.pluginName)
     }
 }

@@ -94,6 +94,18 @@ abstract class AbstractPcscReader extends AbstractObservableLocalReader
     logger.debug("[{}] constructor => using terminal ", terminal);
   }
 
+  @Override
+  protected void onStartDetection()
+  {
+    //Do nothing
+  }
+
+  @Override
+  protected void onStopDetection()
+  {
+    //Do nothing
+  }
+
   /**
    * {@inheritDoc}
    *

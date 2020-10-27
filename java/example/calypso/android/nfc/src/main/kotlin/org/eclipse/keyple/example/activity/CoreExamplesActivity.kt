@@ -43,7 +43,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
 
     override fun onResume() {
         super.onResume()
-        reader.enableNFCReaderMode(this)
+        reader.startCardDetection(ObservableReader.PollingMode.REPEATING)
     }
 
     override fun initContentView() {

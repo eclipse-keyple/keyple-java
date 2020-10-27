@@ -14,7 +14,6 @@ package org.eclipse.keyple.example.activity
 import android.nfc.NfcAdapter
 import android.view.MenuItem
 import androidx.core.view.GravityCompat
-import java.io.IOException
 import kotlinx.android.synthetic.main.activity_calypso_examples.drawerLayout
 import kotlinx.android.synthetic.main.activity_calypso_examples.eventRecyclerView
 import kotlinx.android.synthetic.main.activity_calypso_examples.toolbar
@@ -42,8 +41,9 @@ import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.example.calypso.android.nfc.R
 import org.eclipse.keyple.example.util.CalypsoClassicInfo
-import org.eclipse.keyple.example.util.configProtocol
+import org.eclipse.keyple.plugin.android.nfc.AndroidNfcProtocolSettings
 import timber.log.Timber
+import java.io.IOException
 
 /**
  * Example of @[SmartCardService] implementation based on the @[AndroidNfcPlugin]
@@ -80,7 +80,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                     drawerLayout.openDrawer(GravityCompat.START)
                 }
                 // enable detection
-                reader.enableNFCReaderMode(this)
+                reader.startCardDetection(ObservableReader.PollingMode.SINGLESHOT)
             }
         } catch (e: IOException) {
             showAlertDialog(e)
@@ -90,12 +90,8 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
     override fun onPause() {
         Timber.i("on Pause Fragment - Stopping Read Write Mode")
         try {
-
             // notify reader that card detection has been switched off
             reader.stopCardDetection()
-
-            // Disable Reader Mode for NFC Adapter
-            reader.disableNFCReaderMode(this)
         } catch (e: KeyplePluginNotFoundException) {
             Timber.e(e, "NFC Plugin not found")
         }
@@ -270,7 +266,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
             try {
                 val selectionResult = cardSelection.processExplicitSelection(reader)
 
-                if (selectionResult.smartCards.size > 0) {
+                if (selectionResult.smartCards.isNotEmpty()) {
                     selectionResult.smartCards.forEach {
                         val smartCard = it.value
                         addResultEvent("Selection status for selection " +
@@ -489,11 +485,13 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
 
         // uncomment to active protocol listening for Mifare ultralight
         // reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL, AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL))
-        reader.configProtocol(ContactlessCardCommonProtocols.ISO_14443_4)
+        reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name,
+                AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.ISO_14443_4.name))
 
         // uncomment to active protocol listening for Mifare ultralight
         // reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC, AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC))
-        reader.configProtocol(ContactlessCardCommonProtocols.ISO_14443_4)
+        // reader.activateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name,
+        //        AndroidNfcProtocolSettings.getSetting(ContactlessCardCommonProtocols.ISO_14443_4.name))
 
         useCase = object : UseCase {
             override fun onEventUpdate(event: ReaderEvent?) {

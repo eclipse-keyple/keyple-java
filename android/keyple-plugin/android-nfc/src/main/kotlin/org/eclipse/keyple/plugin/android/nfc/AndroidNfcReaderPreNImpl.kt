@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
+import android.app.Activity
 import org.eclipse.keyple.core.plugin.reader.WaitForCardRemovalNonBlocking
 
 /**
@@ -18,4 +19,4 @@ import org.eclipse.keyple.core.plugin.reader.WaitForCardRemovalNonBlocking
  *
  * It uses a Ping monitoring job to detect card removal
  */
-internal object AndroidNfcReaderPreNImpl : AbstractAndroidNfcReader(), WaitForCardRemovalNonBlocking
+internal class AndroidNfcReaderPreNImpl(activity: Activity) : AbstractAndroidNfcReader(activity), WaitForCardRemovalNonBlocking

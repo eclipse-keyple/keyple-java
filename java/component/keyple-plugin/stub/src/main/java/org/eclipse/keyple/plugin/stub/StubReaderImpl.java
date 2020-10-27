@@ -64,6 +64,18 @@ class StubReaderImpl extends AbstractObservableLocalReader
   }
 
   @Override
+  protected void onStartDetection()
+  {
+    //Do nothing
+  }
+
+  @Override
+  protected void onStopDetection()
+  {
+    //Do nothing
+  }
+
+  @Override
   protected byte[] getATR() {
     return card.getATR();
   }
