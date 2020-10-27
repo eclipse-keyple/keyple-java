@@ -49,10 +49,10 @@ public final class NativePoolServerServiceFactory {
     /**
      * Configure the service with an async server
      *
-     * @param asyncServer non nullable instance of an async client
+     * @param endpoint non nullable instance of an async client
      * @return next configuration step
      */
-    BuilderStep withAsyncNode(KeypleServerAsync asyncServer);
+    BuilderStep withAsyncNode(KeypleServerAsync endpoint);
 
     /**
      * Configure the service with a sync server
