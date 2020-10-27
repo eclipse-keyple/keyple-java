@@ -270,7 +270,11 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
      * @throws KeypleReaderProtocolNotSupportedException if the protocol is not supported.
      */
     override fun activateReaderProtocol(readerProtocolName: String?) {
-        TODO("Not yet implemented")
+
+        if (!protocolsMap.containsKey(readerProtocolName)) {
+            protocolsMap.put(readerProtocolName!!, AndroidNfcProtocolSettings.getSetting(readerProtocolName!!)!!)
+        }
+        Timber.d("${getName()}: Activate protocol $readerProtocolName with rule \"${protocolsMap[readerProtocolName]}\".")
     }
 
     /**
@@ -285,7 +289,10 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
      * @param readerProtocolName The protocol to deactivate (must be not null).
      */
     override fun deactivateReaderProtocol(readerProtocolName: String?) {
-        TODO("Not yet implemented")
+        if (protocolsMap.containsKey(readerProtocolName)) {
+            protocolsMap.remove(readerProtocolName)
+        }
+        Timber.d("${getName()}: Deactivate protocol $readerProtocolName.")
     }
 
     /**
@@ -297,8 +304,7 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
      * @since 1.0
      */
     override fun isCurrentProtocol(readerProtocolName: String?): Boolean {
-        TODO("Not yet implemented")
-        return true
+        return readerProtocolName == null || protocolsMap.containsKey(readerProtocolName) && protocolsMap[readerProtocolName] == tagProxy?.tech
     }
 
     /**
