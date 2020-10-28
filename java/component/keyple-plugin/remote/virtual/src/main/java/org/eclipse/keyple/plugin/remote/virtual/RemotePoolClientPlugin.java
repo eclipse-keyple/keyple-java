@@ -14,6 +14,8 @@ package org.eclipse.keyple.plugin.remote.virtual;
 import org.eclipse.keyple.core.seproxy.PluginFactory;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.plugin.remote.virtual.impl.RemotePoolClientPluginFactory;
+import org.eclipse.keyple.plugin.remote.virtual.impl.RemotePoolClientUtils;
 
 /**
  * <b>Remote Pool Client Plugin</b> API.
@@ -25,12 +27,11 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
  *
  * <ul>
  *   <li>To <b>register</b> the plugin, use the Keyple service method {@link
- *       SeProxyService#registerPlugin(PluginFactory)} using the factory {link
- *       RemotePoolClientPluginFactory}.
+ *       SeProxyService#registerPlugin(PluginFactory)} using the factory {@link RemotePoolClientPluginFactory}.
  *   <li>To access the plugin, use one of the following utility methods :
  *       <ul>
- *         <li>For <b>Async</b> node configuration : {link RemotePoolClientUtils#getAsyncPlugin()}
- *         <li>For <b>Sync</b> node configuration : {link RemotePoolClientUtils#getSyncPlugin()}
+ *         <li>For <b>Async</b> node configuration : {@link RemotePoolClientUtils#getAsyncPlugin()}
+ *         <li>For <b>Sync</b> node configuration : {@link RemotePoolClientUtils#getSyncPlugin()}
  *       </ul>
  *   <li>To <b>unregister</b> the plugin, use the Keyple service method {@link
  *       SeProxyService#unregisterPlugin(String)} using the plugin name.

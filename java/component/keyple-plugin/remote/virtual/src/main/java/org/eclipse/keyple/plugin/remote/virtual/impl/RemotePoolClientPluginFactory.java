@@ -13,17 +13,13 @@ package org.eclipse.keyple.plugin.remote.virtual.impl;
 
 import org.eclipse.keyple.core.seproxy.PluginFactory;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.util.Assert;
-import org.eclipse.keyple.plugin.remote.core.KeypleServerAsync;
+import org.eclipse.keyple.plugin.remote.core.KeypleClientAsync;
+import org.eclipse.keyple.plugin.remote.core.KeypleClientSync;
 import org.eclipse.keyple.plugin.remote.core.KeypleServerSyncNode;
 import org.eclipse.keyple.plugin.remote.virtual.RemotePoolClientPlugin;
-import org.eclipse.keyple.plugin.remote.virtual.RemoteServerPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * <b>Remote Pool Client Plugin</b> Factory
@@ -35,9 +31,9 @@ import java.util.concurrent.Executors;
  * instance of this factory. Invoke the {@link #builder()} method to create and configure a factory
  * instance.
  *
- * <p>Plugin name is defined by default in the factory. Access the Remote Pool Client Plugin with the
- * {@link RemotePoolClientUtils#getAsyncPlugin()} or {@link RemotePoolClientUtils#getSyncNode()} depending
- * on your node configuration.
+ * <p>Plugin name is defined by default in the factory. Access the Remote Pool Client Plugin with
+ * the {@link RemotePoolClientUtils#getAsyncPlugin()} or {@link RemotePoolClientUtils#getSyncNode()}
+ * depending on your node configuration.
  */
 public class RemotePoolClientPluginFactory implements PluginFactory {
 
@@ -46,6 +42,8 @@ public class RemotePoolClientPluginFactory implements PluginFactory {
   static final String PLUGIN_NAME_SYNC = "RemotePoolClientPluginSync";
   /** default name of the RemotePoolClientPlugin for a async node : {@value} */
   static final String PLUGIN_NAME_ASYNC = "RemotePoolClientPluginAsync";
+
+  private static final int DEFAULT_TIMEOUT = 5;
 
   private RemotePoolClientPlugin plugin;
 
@@ -99,18 +97,39 @@ public class RemotePoolClientPluginFactory implements PluginFactory {
      * @return next configuration step
      * @since 1.0
      */
-    BuilderStep withAsyncNode(KeypleServerAsync asyncEndpoint);
+    TimeoutStep withAsyncNode(KeypleClientAsync asyncEndpoint);
 
     /**
      * Configure the plugin to be used with a sync node. Retrieve the created {@link
      * KeypleServerSyncNode} with the method {@link RemotePoolClientUtils#getSyncNode()}
      *
+     * @param syncEndpoint non nullable instance of an sync client endpoint*
      * @return next configuration step
      * @since 1.0
      */
-    BuilderStep withSyncNode();
+    TimeoutStep withSyncNode(KeypleClientSync syncEndpoint);
   }
 
+  public interface TimeoutStep {
+    /**
+     * Use the default timeout of 5 seconds. This timeout defines how long the client waits for a
+     * server order before cancelling the global transaction.
+     *
+     * @return next configuration step
+     * @since 1.0
+     */
+    BuilderStep usingDefaultTimeout();
+
+    /**
+     * Configure the service with a custom timeout. This timeout defines how long the client waits
+     * for a server order before cancelling the global transaction.
+     *
+     * @param timeoutInSeconds timeout in seconds
+     * @return next configuration step
+     * @since 1.0
+     */
+    BuilderStep usingCustomTimeout(int timeoutInSeconds);
+  }
 
   public interface BuilderStep {
     /**
@@ -127,12 +146,11 @@ public class RemotePoolClientPluginFactory implements PluginFactory {
   }
 
   /** The builder pattern to create the factory instance. */
-  public static class Builder
-      implements NodeStep, BuilderStep {
+  public static class Builder implements NodeStep, BuilderStep, TimeoutStep {
 
-    private KeypleServerAsync asyncEndpoint;
-    private ExecutorService eventNotificationPool;
-    private ObservablePlugin.PluginObserver observer;
+    private KeypleClientAsync asyncEndpoint;
+    private KeypleClientSync syncEndpoint;
+    private int timeoutInSec;
 
     /**
      * {@inheritDoc}
@@ -140,7 +158,7 @@ public class RemotePoolClientPluginFactory implements PluginFactory {
      * @since 1.0
      */
     @Override
-    public BuilderStep withAsyncNode(KeypleServerAsync asyncEndpoint) {
+    public TimeoutStep withAsyncNode(KeypleClientAsync asyncEndpoint) {
       Assert.getInstance().notNull(asyncEndpoint, "asyncEndpoint");
       this.asyncEndpoint = asyncEndpoint;
       return this;
@@ -152,7 +170,31 @@ public class RemotePoolClientPluginFactory implements PluginFactory {
      * @since 1.0
      */
     @Override
-    public BuilderStep withSyncNode() {
+    public TimeoutStep withSyncNode(KeypleClientSync syncEndpoint) {
+      Assert.getInstance().notNull(syncEndpoint, "syncEndpoint");
+      this.syncEndpoint = syncEndpoint;
+      return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
+    @Override
+    public BuilderStep usingDefaultTimeout() {
+      timeoutInSec = DEFAULT_TIMEOUT;
+      return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0
+     */
+    @Override
+    public BuilderStep usingCustomTimeout(int timeoutInSeconds) {
+      timeoutInSec = timeoutInSeconds;
       return this;
     }
 
@@ -168,12 +210,12 @@ public class RemotePoolClientPluginFactory implements PluginFactory {
 
       if (asyncEndpoint != null) {
         plugin = new RemotePoolClientPluginImpl(PLUGIN_NAME_ASYNC);
-        logger.info("Create a new RemotePoolClientPlugin with a async server endpoint");
-        plugin.bindServerAsyncNode(asyncEndpoint);
+        logger.info("Create a new RemotePoolClientPlugin with a async client endpoint");
+        plugin.bindClientAsyncNode(asyncEndpoint, timeoutInSec);
       } else {
         plugin = new RemotePoolClientPluginImpl(PLUGIN_NAME_SYNC);
-        logger.info("Create a new RemotePoolClientPlugin with a sync server endpoint");
-        plugin.bindServerSyncNode();
+        logger.info("Create a new RemotePoolClientPlugin with a sync client endpoint");
+        plugin.bindClientSyncNode(syncEndpoint, null, null);
       }
 
       return new RemotePoolClientPluginFactory(plugin);

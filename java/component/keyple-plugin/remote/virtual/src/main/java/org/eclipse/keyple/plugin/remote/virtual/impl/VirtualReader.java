@@ -43,7 +43,7 @@ final class VirtualReader extends AbstractVirtualReader {
    *
    * @return non null instance of a nativeReaderName
    */
-  String getNativeReaderName(){
+  String getNativeReaderName() {
     return nativeReaderName;
   }
 }

@@ -19,9 +19,6 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
-import org.eclipse.keyple.core.util.json.BodyError;
-import org.eclipse.keyple.core.util.json.KeypleJsonParser;
-import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remote.core.impl.AbstractKeypleMessageHandler;
 
 /**
@@ -98,6 +95,4 @@ abstract class AbstractRemotePlugin extends AbstractKeypleMessageHandler impleme
    * @throws KeypleReaderIOException if the communication with the reader or the Card has failed
    */
   protected abstract Map<String, SeReader> initNativeReaders() throws KeypleReaderIOException;
-
-
 }
