@@ -24,9 +24,7 @@ import org.eclipse.keyple.core.util.json.KeypleJsonParser;
 import org.eclipse.keyple.plugin.remote.core.KeypleMessageDto;
 import org.eclipse.keyple.plugin.remote.virtual.RemotePoolClientPlugin;
 
-/**
- * Implementation of the {@link RemotePoolClientPlugin}
- */
+/** Implementation of the {@link RemotePoolClientPlugin} */
 final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
     implements RemotePoolClientPlugin {
 

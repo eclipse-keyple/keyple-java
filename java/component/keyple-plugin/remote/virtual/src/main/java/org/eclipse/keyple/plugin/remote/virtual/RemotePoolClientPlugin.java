@@ -27,7 +27,8 @@ import org.eclipse.keyple.plugin.remote.virtual.impl.RemotePoolClientUtils;
  *
  * <ul>
  *   <li>To <b>register</b> the plugin, use the Keyple service method {@link
- *       SeProxyService#registerPlugin(PluginFactory)} using the factory {@link RemotePoolClientPluginFactory}.
+ *       SeProxyService#registerPlugin(PluginFactory)} using the factory {@link
+ *       RemotePoolClientPluginFactory}.
  *   <li>To access the plugin, use one of the following utility methods :
  *       <ul>
  *         <li>For <b>Async</b> node configuration : {@link RemotePoolClientUtils#getAsyncPlugin()}
