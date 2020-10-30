@@ -12,7 +12,7 @@
 package org.eclipse.keyple.core.plugin.reader;
 
 import java.util.concurrent.ExecutorService;
-import org.eclipse.keyple.core.reader.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

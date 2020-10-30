@@ -9,11 +9,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.reader;
+package org.eclipse.keyple.core.service;
 
 import java.util.Map;
 import java.util.Set;
-import org.eclipse.keyple.core.reader.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 
 /** Card readers plugin interface. */
 public interface Plugin extends ProxyElement {

@@ -12,14 +12,14 @@
 package org.eclipse.keyple.example.remote.application;
 
 import java.io.IOException;
-import org.eclipse.keyple.core.reader.Plugin;
-import org.eclipse.keyple.core.reader.SmartCardService;
-import org.eclipse.keyple.core.reader.event.ObservablePlugin;
-import org.eclipse.keyple.core.reader.event.ObservableReader;
-import org.eclipse.keyple.core.reader.event.PluginEvent;
-import org.eclipse.keyple.core.reader.exception.KeyplePluginInstantiationException;
-import org.eclipse.keyple.core.reader.exception.KeypleReaderException;
-import org.eclipse.keyple.core.reader.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.ObservablePlugin;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.PluginEvent;
+import org.eclipse.keyple.core.service.exception.KeyplePluginInstantiationException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.transport.DtoNode;

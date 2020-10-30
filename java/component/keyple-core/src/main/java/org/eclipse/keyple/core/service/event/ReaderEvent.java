@@ -9,12 +9,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.reader.event;
+package org.eclipse.keyple.core.service.event;
 
 import org.eclipse.keyple.core.card.message.DefaultSelectionsResponse;
-import org.eclipse.keyple.core.reader.Plugin;
-import org.eclipse.keyple.core.reader.Reader;
-import org.eclipse.keyple.core.reader.SmartCardService;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.SmartCardService;
 
 /**
  * This POJO is used to propagate a change of a card state in an {@link ObservableReader}.

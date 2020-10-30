@@ -14,11 +14,11 @@ package org.eclipse.keyple.core.plugin;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import org.eclipse.keyple.core.reader.Plugin;
-import org.eclipse.keyple.core.reader.Reader;
-import org.eclipse.keyple.core.reader.exception.KeypleReaderException;
-import org.eclipse.keyple.core.reader.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.reader.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 
 /** Observable plugin. These plugin can report when a reader is added or removed. */
 public abstract class AbstractPlugin implements Plugin {

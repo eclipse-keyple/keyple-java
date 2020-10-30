@@ -22,8 +22,8 @@ import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import java.io.IOException
-import org.eclipse.keyple.core.reader.exception.KeypleReaderException
-import org.eclipse.keyple.core.reader.exception.KeypleReaderIOException
+import org.eclipse.keyple.core.service.exception.KeypleReaderException
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before

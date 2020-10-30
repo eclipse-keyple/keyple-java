@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.plugin.reader;
 
-import org.eclipse.keyple.core.reader.event.ReaderEvent;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
 
 public class BlankObservableLocalReader extends AbstractObservableLocalReader {
 

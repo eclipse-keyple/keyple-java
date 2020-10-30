@@ -14,7 +14,7 @@ package org.eclipse.keyple.example.remote.transport.websocket;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.keyple.core.reader.exception.KeypleRuntimeException;
+import org.eclipse.keyple.core.service.exception.KeypleRuntimeException;
 import org.eclipse.keyple.plugin.remotese.transport.DtoHandler;
 import org.eclipse.keyple.plugin.remotese.transport.factory.ServerNode;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;

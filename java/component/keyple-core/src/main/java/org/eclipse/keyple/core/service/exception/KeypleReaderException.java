@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.reader.exception;
+package org.eclipse.keyple.core.service.exception;
 
 /**
  * The exception {@code KeypleReaderException} is the parent abstract class of all Keyple reader

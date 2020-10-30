@@ -16,7 +16,7 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.eclipse.keyple.core.plugin.reader.AbstractReader;
-import org.eclipse.keyple.core.reader.Reader;
+import org.eclipse.keyple.core.service.Reader;
 
 public class MockAbstractThreadedPlugin extends AbstractThreadedObservablePlugin {
 

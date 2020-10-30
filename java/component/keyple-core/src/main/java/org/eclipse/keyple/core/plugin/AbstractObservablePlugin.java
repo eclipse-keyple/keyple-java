@@ -13,9 +13,9 @@ package org.eclipse.keyple.core.plugin;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.keyple.core.reader.event.ObservablePlugin;
-import org.eclipse.keyple.core.reader.event.PluginEvent;
-import org.eclipse.keyple.core.reader.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.event.ObservablePlugin;
+import org.eclipse.keyple.core.service.event.PluginEvent;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

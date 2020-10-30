@@ -9,15 +9,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.reader;
+package org.eclipse.keyple.core.service;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import org.eclipse.keyple.core.plugin.factory.PluginFactory;
-import org.eclipse.keyple.core.reader.exception.KeyplePluginInstantiationException;
-import org.eclipse.keyple.core.reader.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.service.exception.KeyplePluginInstantiationException;
+import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

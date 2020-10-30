@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.reader.exception;
+package org.eclipse.keyple.core.service.exception;
 
 /**
  * The exception {@code KeypleReaderNotFoundException} indicates that the reader is not found by its

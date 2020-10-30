@@ -14,7 +14,7 @@ package org.eclipse.keyple.core.plugin.reader;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.card.message.ProxyReader;
 import org.eclipse.keyple.core.card.selection.CardSelector;
-import org.eclipse.keyple.core.reader.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 
 /**
  * Interface implemented by readers able to handle natively the card selection process (e.g. Android

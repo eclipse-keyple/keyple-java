@@ -11,8 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.generic.pc.Demo_ObservableReaderNotification;
 
-import org.eclipse.keyple.core.reader.Plugin;
-import org.eclipse.keyple.core.reader.SmartCardService;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.example.common.generic.stub.StubSe1;
 import org.eclipse.keyple.example.common.generic.stub.StubSe2;
 import org.eclipse.keyple.plugin.stub.StubPlugin;

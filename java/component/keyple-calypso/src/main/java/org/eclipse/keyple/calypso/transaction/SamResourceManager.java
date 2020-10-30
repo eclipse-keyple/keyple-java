@@ -17,10 +17,10 @@ import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableExcepti
 import org.eclipse.keyple.core.card.selection.CardResource;
 import org.eclipse.keyple.core.card.selection.CardSelection;
 import org.eclipse.keyple.core.card.selection.SelectionsResult;
-import org.eclipse.keyple.core.reader.Reader;
-import org.eclipse.keyple.core.reader.exception.KeypleAllocationReaderException;
-import org.eclipse.keyple.core.reader.exception.KeypleException;
-import org.eclipse.keyple.core.reader.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.exception.KeypleAllocationReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 
 /**
  * Management of SAM resources:

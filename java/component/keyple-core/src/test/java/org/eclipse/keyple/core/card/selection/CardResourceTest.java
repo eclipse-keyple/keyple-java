@@ -15,7 +15,7 @@ import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.card.message.AnswerToReset;
 import org.eclipse.keyple.core.card.message.CardResponse;
 import org.eclipse.keyple.core.card.message.SelectionStatus;
-import org.eclipse.keyple.core.reader.Reader;
+import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Before;

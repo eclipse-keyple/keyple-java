@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.reader.exception;
+package org.eclipse.keyple.core.service.exception;
 
 import java.util.List;
 import org.eclipse.keyple.core.card.message.CardResponse;

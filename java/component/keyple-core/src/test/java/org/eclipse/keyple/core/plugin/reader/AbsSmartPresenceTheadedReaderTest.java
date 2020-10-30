@@ -17,8 +17,8 @@ import static org.mockito.Mockito.doReturn;
 
 import java.util.concurrent.CountDownLatch;
 import org.eclipse.keyple.core.CoreBaseTest;
-import org.eclipse.keyple.core.reader.event.ObservableReader;
-import org.eclipse.keyple.core.reader.event.ReaderEvent;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

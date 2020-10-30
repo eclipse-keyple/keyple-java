@@ -22,8 +22,8 @@ import java.io.IOException
 import java.util.HashMap
 import org.eclipse.keyple.core.plugin.reader.AbstractObservableLocalReader
 import org.eclipse.keyple.core.plugin.reader.ObservableReaderStateService
-import org.eclipse.keyple.core.reader.exception.KeypleReaderException
-import org.eclipse.keyple.core.reader.exception.KeypleReaderIOException
+import org.eclipse.keyple.core.service.exception.KeypleReaderException
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import timber.log.Timber
 

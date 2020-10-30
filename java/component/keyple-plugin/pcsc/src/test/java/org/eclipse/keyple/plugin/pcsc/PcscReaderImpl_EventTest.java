@@ -13,10 +13,10 @@ package org.eclipse.keyple.plugin.pcsc;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import org.eclipse.keyple.core.reader.event.ObservablePlugin;
-import org.eclipse.keyple.core.reader.event.ObservableReader;
-import org.eclipse.keyple.core.reader.event.PluginEvent;
-import org.eclipse.keyple.core.reader.event.ReaderEvent;
+import org.eclipse.keyple.core.service.event.ObservablePlugin;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.PluginEvent;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;

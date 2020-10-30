@@ -9,10 +9,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.reader.event;
+package org.eclipse.keyple.core.service.event;
 
 import org.eclipse.keyple.core.card.message.ChannelControl;
-import org.eclipse.keyple.core.reader.Reader;
+import org.eclipse.keyple.core.service.Reader;
 
 /**
  * Provides the API to observe cards in readers.

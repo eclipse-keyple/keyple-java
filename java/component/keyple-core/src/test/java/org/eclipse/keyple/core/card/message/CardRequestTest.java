@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import org.eclipse.keyple.core.card.selection.CardSelector;
-import org.eclipse.keyple.core.reader.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

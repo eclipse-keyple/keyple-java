@@ -16,7 +16,7 @@ import static org.eclipse.keyple.core.plugin.reader.AbstractObservableState.Moni
 import static org.mockito.Mockito.*;
 
 import org.eclipse.keyple.core.CoreBaseTest;
-import org.eclipse.keyple.core.reader.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

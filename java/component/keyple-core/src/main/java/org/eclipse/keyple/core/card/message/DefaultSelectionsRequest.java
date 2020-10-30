@@ -13,7 +13,7 @@ package org.eclipse.keyple.core.card.message;
 
 import java.util.List;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
-import org.eclipse.keyple.core.reader.event.AbstractDefaultSelectionsRequest;
+import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsRequest;
 
 /**
  * This POJO defines the default selection request to be processed when a card is inserted in an

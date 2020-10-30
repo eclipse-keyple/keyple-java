@@ -12,9 +12,9 @@
 package org.eclipse.keyple.plugin.stub;
 
 import java.util.Set;
-import org.eclipse.keyple.core.reader.Plugin;
-import org.eclipse.keyple.core.reader.event.ObservablePlugin;
-import org.eclipse.keyple.core.reader.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.event.ObservablePlugin;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 
 /** Stubplugin allows to simulate a {@link Plugin} and a {@link StubSecureElement} */
 public interface StubPlugin extends ObservablePlugin {

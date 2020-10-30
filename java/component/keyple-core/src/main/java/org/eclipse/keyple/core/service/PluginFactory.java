@@ -9,10 +9,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.plugin.factory;
+package org.eclipse.keyple.core.service;
 
-import org.eclipse.keyple.core.reader.Plugin;
-import org.eclipse.keyple.core.reader.exception.KeyplePluginInstantiationException;
+import org.eclipse.keyple.core.service.exception.KeyplePluginInstantiationException;
 
 /** Plugin Factory interface. */
 public interface PluginFactory {

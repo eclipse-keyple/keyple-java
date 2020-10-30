@@ -9,18 +9,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.reader.exception;
+package org.eclipse.keyple.core.service;
 
-import org.eclipse.keyple.core.reader.SmartCardService;
+import org.eclipse.keyple.core.card.message.ProxyReader;
 
 /**
- * The exception {@code KeyplePluginNotFoundException} indicates that the plugin is not found,
- * generally when it has not been previously registered to the {@link SmartCardService}.
+ * (package-private)<br>
+ * Allow {@link ProxyReader}s and {@link Plugin}s to be named.
  */
-public class KeyplePluginNotFoundException extends KeyplePluginException {
+interface ProxyElement {
 
-  /** @param pluginName the name of the plugin that has not been found */
-  public KeyplePluginNotFoundException(String pluginName) {
-    super("Plugin with name " + pluginName + " was not found");
-  }
+  /**
+   * Gets the name of the element
+   *
+   * @return A not empty string.
+   * @since 0.9
+   */
+  String getName();
 }

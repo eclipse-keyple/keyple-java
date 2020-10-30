@@ -9,15 +9,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.reader.exception;
+package org.eclipse.keyple.core.service.exception;
 
-public class KeypleRuntimeException extends RuntimeException {
+import org.eclipse.keyple.core.service.SmartCardService;
 
-  public KeypleRuntimeException(String message) {
-    super(message);
-  }
+/**
+ * The exception {@code KeyplePluginNotFoundException} indicates that the plugin is not found,
+ * generally when it has not been previously registered to the {@link SmartCardService}.
+ */
+public class KeyplePluginNotFoundException extends KeyplePluginException {
 
-  public KeypleRuntimeException(String message, Throwable cause) {
-    super(message, cause);
+  /** @param pluginName the name of the plugin that has not been found */
+  public KeyplePluginNotFoundException(String pluginName) {
+    super("Plugin with name " + pluginName + " was not found");
   }
 }

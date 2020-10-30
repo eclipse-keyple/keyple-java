@@ -11,8 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.plugin;
 
-import org.eclipse.keyple.core.reader.event.ObservablePlugin;
-import org.eclipse.keyple.core.reader.event.PluginEvent;
+import org.eclipse.keyple.core.service.event.ObservablePlugin;
+import org.eclipse.keyple.core.service.event.PluginEvent;
 
 /**
  * The {@link ObservablePluginNotifier} interface provides the API to notify the observers of an

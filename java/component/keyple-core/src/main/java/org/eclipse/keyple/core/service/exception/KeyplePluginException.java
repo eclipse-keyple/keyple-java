@@ -9,21 +9,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.reader;
-
-import org.eclipse.keyple.core.card.message.ProxyReader;
+package org.eclipse.keyple.core.service.exception;
 
 /**
- * (package-private)<br>
- * Allow {@link ProxyReader}s and {@link Plugin}s to be named.
+ * The exception {@code KeyplePluginException} is the parent abstract class of all Keyple plugins
+ * exceptions.
  */
-interface ProxyElement {
+public abstract class KeyplePluginException extends KeypleException {
+
+  /** @param message the message to identify the exception context */
+  protected KeyplePluginException(String message) {
+    super(message);
+  }
 
   /**
-   * Gets the name of the element
+   * Encapsulates a lower level plugin exception
    *
-   * @return A not empty string.
-   * @since 0.9
+   * @param message message to identify the exception context
+   * @param cause the cause
    */
-  String getName();
+  protected KeyplePluginException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

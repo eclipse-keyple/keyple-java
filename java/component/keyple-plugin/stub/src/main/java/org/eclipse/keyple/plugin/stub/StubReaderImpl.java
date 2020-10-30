@@ -16,11 +16,11 @@ import org.eclipse.keyple.core.plugin.reader.AbstractObservableLocalReader;
 import org.eclipse.keyple.core.plugin.reader.ObservableReaderStateService;
 import org.eclipse.keyple.core.plugin.reader.SmartInsertionReader;
 import org.eclipse.keyple.core.plugin.reader.SmartRemovalReader;
-import org.eclipse.keyple.core.reader.event.ReaderEvent;
-import org.eclipse.keyple.core.reader.exception.KeypleReaderException;
-import org.eclipse.keyple.core.reader.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.reader.exception.KeypleReaderProtocolNotFoundException;
-import org.eclipse.keyple.core.reader.exception.KeypleReaderProtocolNotSupportedException;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderProtocolNotFoundException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderProtocolNotSupportedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

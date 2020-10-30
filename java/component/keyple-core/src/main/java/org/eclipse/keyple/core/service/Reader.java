@@ -9,10 +9,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.reader;
+package org.eclipse.keyple.core.service;
 
-import org.eclipse.keyple.core.reader.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.reader.exception.KeypleReaderProtocolNotSupportedException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderProtocolNotSupportedException;
 
 /**
  * Defines a high level API to access a card reader.

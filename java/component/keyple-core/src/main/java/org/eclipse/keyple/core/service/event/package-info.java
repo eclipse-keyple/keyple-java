@@ -5,19 +5,19 @@
  * POJOs.
  *
  * <p>The API for observing the plugins is defined by the interface {@link
- * org.eclipse.keyple.core.reader.event.ObservablePlugin ObservablePlugin} and generates events
- * {@link org.eclipse.keyple.core.reader.event.PluginEvent PluginEvent}.
+ * org.eclipse.keyple.core.service.event.ObservablePlugin ObservablePlugin} and generates events
+ * {@link org.eclipse.keyple.core.service.event.PluginEvent PluginEvent}.
  *
  * <p>The API for observing the readers is defined by the interface {@link
- * org.eclipse.keyple.core.reader.event.ObservableReader ObservableReader} and generates events
- * {@link org.eclipse.keyple.core.reader.event.ReaderEvent ReaderEvent}.<br>
+ * org.eclipse.keyple.core.service.event.ObservableReader ObservableReader} and generates events
+ * {@link org.eclipse.keyple.core.service.event.ReaderEvent ReaderEvent}.<br>
  * The implementation of the abstract POJO classes {@link
- * org.eclipse.keyple.core.reader.event.AbstractDefaultSelectionsRequest
+ * org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsRequest
  * AbstractDefaultSelectionsRequest} and {@link
- * org.eclipse.keyple.core.reader.event.AbstractDefaultSelectionsResponse
+ * org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsResponse
  * AbstractDefaultSelectionsResponse} is provided by Keyple in the package {@link
  * org.eclipse.keyple.core.card.message}.
  *
  * @since 0.9
  */
-package org.eclipse.keyple.core.reader.event;
+package org.eclipse.keyple.core.service.event;

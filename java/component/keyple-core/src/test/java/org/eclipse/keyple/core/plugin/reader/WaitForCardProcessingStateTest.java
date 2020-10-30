@@ -19,7 +19,7 @@ import static org.mockito.Mockito.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.CoreBaseTest;
-import org.eclipse.keyple.core.reader.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;

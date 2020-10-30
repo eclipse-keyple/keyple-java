@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.stub;
 
-import org.eclipse.keyple.core.reader.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.ObservableReader;
 
 public interface StubReader extends ObservableReader {
 

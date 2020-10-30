@@ -25,10 +25,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.eclipse.keyple.core.reader.Reader
-import org.eclipse.keyple.core.reader.SmartCardService
-import org.eclipse.keyple.core.reader.exception.KeyplePluginInstantiationException
-import org.eclipse.keyple.core.reader.exception.KeyplePluginNotFoundException
+import org.eclipse.keyple.core.service.Reader
+import org.eclipse.keyple.core.service.SmartCardService
+import org.eclipse.keyple.core.service.exception.KeyplePluginInstantiationException
+import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException
 import org.eclipse.keyple.example.calypso.android.omapi.R
 import org.eclipse.keyple.plugin.android.omapi.PLUGIN_NAME
 import timber.log.Timber

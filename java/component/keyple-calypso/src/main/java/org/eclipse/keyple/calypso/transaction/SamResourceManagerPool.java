@@ -13,11 +13,11 @@ package org.eclipse.keyple.calypso.transaction;
 
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
 import org.eclipse.keyple.core.card.selection.CardResource;
-import org.eclipse.keyple.core.reader.Plugin;
-import org.eclipse.keyple.core.reader.Reader;
-import org.eclipse.keyple.core.reader.ReaderPoolPlugin;
-import org.eclipse.keyple.core.reader.exception.KeypleAllocationNoReaderException;
-import org.eclipse.keyple.core.reader.exception.KeypleAllocationReaderException;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.ReaderPoolPlugin;
+import org.eclipse.keyple.core.service.exception.KeypleAllocationNoReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleAllocationReaderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

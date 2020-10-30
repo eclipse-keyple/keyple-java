@@ -14,8 +14,8 @@ package org.eclipse.keyple.plugin.android.omapi
 import android.content.Context
 import java.util.concurrent.ConcurrentSkipListMap
 import org.eclipse.keyple.core.plugin.AbstractPlugin
-import org.eclipse.keyple.core.reader.Plugin
-import org.eclipse.keyple.core.reader.Reader
+import org.eclipse.keyple.core.service.Plugin
+import org.eclipse.keyple.core.service.Reader
 import timber.log.Timber
 
 /**

@@ -12,12 +12,12 @@
 package org.eclipse.keyple.plugin.stub;
 
 import java.util.*;
-import org.eclipse.keyple.core.reader.Reader;
-import org.eclipse.keyple.core.reader.ReaderPoolPlugin;
-import org.eclipse.keyple.core.reader.exception.KeypleAllocationNoReaderException;
-import org.eclipse.keyple.core.reader.exception.KeypleAllocationReaderException;
-import org.eclipse.keyple.core.reader.exception.KeypleReaderException;
-import org.eclipse.keyple.core.reader.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.ReaderPoolPlugin;
+import org.eclipse.keyple.core.service.exception.KeypleAllocationNoReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleAllocationReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 
 /**
  * Simulates a @{@link ReaderPoolPlugin} with {@link StubReaderImpl} and {@link StubSecureElement}

@@ -12,8 +12,8 @@
 package org.eclipse.keyple.plugin.remotese.pluginse.method;
 
 import com.google.gson.JsonObject;
-import org.eclipse.keyple.core.reader.event.AbstractDefaultSelectionsRequest;
-import org.eclipse.keyple.core.reader.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsRequest;
+import org.eclipse.keyple.core.service.event.ObservableReader;
 import org.eclipse.keyple.plugin.remotese.rm.AbstractRemoteMethodTx;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodName;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;

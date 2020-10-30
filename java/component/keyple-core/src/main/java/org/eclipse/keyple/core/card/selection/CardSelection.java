@@ -20,12 +20,12 @@ import org.eclipse.keyple.core.card.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.card.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.card.message.ProxyReader;
 import org.eclipse.keyple.core.card.message.SelectionStatus;
-import org.eclipse.keyple.core.reader.Reader;
-import org.eclipse.keyple.core.reader.event.AbstractDefaultSelectionsRequest;
-import org.eclipse.keyple.core.reader.event.AbstractDefaultSelectionsResponse;
-import org.eclipse.keyple.core.reader.event.ReaderEvent;
-import org.eclipse.keyple.core.reader.exception.KeypleException;
-import org.eclipse.keyple.core.reader.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsRequest;
+import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsResponse;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
+import org.eclipse.keyple.core.service.exception.KeypleException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

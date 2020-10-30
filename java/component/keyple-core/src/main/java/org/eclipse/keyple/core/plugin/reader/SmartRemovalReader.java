@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.plugin.reader;
 
-import org.eclipse.keyple.core.reader.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 
 /** Interface implemented by the readers able to handle natively the card removal process. */
 public interface SmartRemovalReader extends ObservableReaderNotifier {

@@ -12,8 +12,8 @@
 package org.eclipse.keyple.core.plugin.reader;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.eclipse.keyple.core.reader.Reader;
-import org.eclipse.keyple.core.reader.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

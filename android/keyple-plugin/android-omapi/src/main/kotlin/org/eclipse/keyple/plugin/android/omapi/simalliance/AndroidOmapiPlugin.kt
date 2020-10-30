@@ -12,7 +12,7 @@
 package org.eclipse.keyple.plugin.android.omapi.simalliance
 
 import android.content.Context
-import org.eclipse.keyple.core.reader.Reader
+import org.eclipse.keyple.core.service.Reader
 import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiPlugin
 import org.eclipse.keyple.plugin.android.omapi.PLUGIN_NAME
 import org.simalliance.openmobileapi.SEService

@@ -12,7 +12,7 @@
 package org.eclipse.keyple.plugin.remotese.rm.json;
 
 import java.io.IOException;
-import org.eclipse.keyple.core.reader.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.junit.Assert;

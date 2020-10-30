@@ -11,8 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc
 
-import org.eclipse.keyple.core.plugin.factory.PluginFactory
-import org.eclipse.keyple.core.reader.Plugin
+import org.eclipse.keyple.core.service.Plugin
+import org.eclipse.keyple.core.service.PluginFactory
 
 class AndroidNfcPluginFactory : PluginFactory {
 

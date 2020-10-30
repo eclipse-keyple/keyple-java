@@ -9,11 +9,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.reader;
+package org.eclipse.keyple.core.service;
 
 import java.util.SortedSet;
-import org.eclipse.keyple.core.reader.exception.KeypleAllocationNoReaderException;
-import org.eclipse.keyple.core.reader.exception.KeypleAllocationReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleAllocationNoReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleAllocationReaderException;
 
 /**
  * The ReaderPoolPlugin interface provides methods to handle the access to an undefined number of

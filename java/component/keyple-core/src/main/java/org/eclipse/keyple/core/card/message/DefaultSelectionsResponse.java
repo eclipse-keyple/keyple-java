@@ -12,8 +12,8 @@
 package org.eclipse.keyple.core.card.message;
 
 import java.util.List;
-import org.eclipse.keyple.core.reader.event.AbstractDefaultSelectionsResponse;
-import org.eclipse.keyple.core.reader.event.ReaderEvent;
+import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsResponse;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
 
 /**
  * This abstract class defines a POJO carrying the default selections responses in return to the

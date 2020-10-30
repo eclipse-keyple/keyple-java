@@ -11,8 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.stub;
 
-import org.eclipse.keyple.core.reader.Reader;
-import org.eclipse.keyple.core.reader.ReaderPoolPlugin;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.ReaderPoolPlugin;
 
 /** StubPoolPlugin allows to simulate a {@link ReaderPoolPlugin} and a {@link StubSecureElement} */
 public interface StubPoolPlugin extends ReaderPoolPlugin {

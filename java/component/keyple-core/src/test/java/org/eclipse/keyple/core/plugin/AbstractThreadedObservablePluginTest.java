@@ -12,9 +12,9 @@
 package org.eclipse.keyple.core.plugin;
 
 import org.eclipse.keyple.core.CoreBaseTest;
-import org.eclipse.keyple.core.reader.event.ObservablePlugin;
-import org.eclipse.keyple.core.reader.event.PluginEvent;
-import org.eclipse.keyple.core.reader.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.event.ObservablePlugin;
+import org.eclipse.keyple.core.service.event.PluginEvent;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

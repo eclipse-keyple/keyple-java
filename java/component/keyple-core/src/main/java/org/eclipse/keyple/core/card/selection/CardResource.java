@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.core.card.selection;
 
-import org.eclipse.keyple.core.reader.Reader;
+import org.eclipse.keyple.core.service.Reader;
 
 /** The CardResource class groups a AbstractSmartCard and its associated Reader */
 public class CardResource<T extends AbstractSmartCard> {

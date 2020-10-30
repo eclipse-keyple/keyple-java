@@ -13,7 +13,7 @@ package org.eclipse.keyple.plugin.remotese.transport.impl.java;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.keyple.core.reader.exception.KeypleRuntimeException;
+import org.eclipse.keyple.core.service.exception.KeypleRuntimeException;
 import org.eclipse.keyple.plugin.remotese.transport.*;
 import org.eclipse.keyple.plugin.remotese.transport.factory.ServerNode;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;

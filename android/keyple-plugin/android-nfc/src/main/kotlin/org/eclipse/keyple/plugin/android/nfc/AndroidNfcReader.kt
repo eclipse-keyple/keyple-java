@@ -15,7 +15,7 @@ import android.app.Activity
 import android.content.Intent
 import android.nfc.NfcAdapter
 import org.eclipse.keyple.core.plugin.reader.SmartRemovalReader
-import org.eclipse.keyple.core.reader.Reader
+import org.eclipse.keyple.core.service.Reader
 
 /**
  * [Reader] to communicate with NFC Tag though

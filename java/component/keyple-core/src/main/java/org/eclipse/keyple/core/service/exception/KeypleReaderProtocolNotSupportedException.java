@@ -9,19 +9,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.reader.exception;
+package org.eclipse.keyple.core.service.exception;
 
 /**
- * The exception {@code KeypleAllocationNoReaderException} indicates that no reader were available
- * during allocation invocation.
+ * The exception {@code KeypleReaderNotFoundException} indicates that the current card protocol is
+ * not supported by the plugin.
  */
-public class KeypleAllocationNoReaderException extends KeypleException {
+public class KeypleReaderProtocolNotSupportedException extends KeypleReaderException {
 
-  public KeypleAllocationNoReaderException(String message) {
-    super(message);
-  }
-
-  public KeypleAllocationNoReaderException(String message, Throwable cause) {
-    super(message, cause);
+  /** @param cardProtocol the identification data used to identify the card */
+  public KeypleReaderProtocolNotSupportedException(String cardProtocol) {
+    super("The card protocol " + cardProtocol + " is not supported.");
   }
 }

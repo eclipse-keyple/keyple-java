@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.reader.util;
+package org.eclipse.keyple.core.service.util;
 
 /**
  * This enum contains a non-exhaustive list of contacts smartcard communication protocols.

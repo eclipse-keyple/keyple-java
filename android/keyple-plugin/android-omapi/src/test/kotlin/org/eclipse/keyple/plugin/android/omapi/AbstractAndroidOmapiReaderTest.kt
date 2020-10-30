@@ -19,9 +19,9 @@ import org.eclipse.keyple.core.card.message.CardRequest
 import org.eclipse.keyple.core.card.message.ChannelControl
 import org.eclipse.keyple.core.card.selection.CardSelector
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing
-import org.eclipse.keyple.core.reader.exception.KeypleReaderException
-import org.eclipse.keyple.core.reader.exception.KeypleReaderIOException
-import org.eclipse.keyple.core.reader.util.ContactsCardCommonProtocols
+import org.eclipse.keyple.core.service.exception.KeypleReaderException
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException
+import org.eclipse.keyple.core.service.util.ContactsCardCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.junit.After
 import org.junit.Assert

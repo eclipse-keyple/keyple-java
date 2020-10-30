@@ -1,5 +1,5 @@
 /* **************************************************************************************
- * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information
  * regarding copyright ownership.
@@ -9,26 +9,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.reader.exception;
+package org.eclipse.keyple.core.service.exception;
 
 /**
- * The exception {@code KeyplePluginInstantiationException} indicates that the plugin cannot be
- * instantiated, possibly due to a problem with one of the associated readers.
+ * The exception {@code KeypleException} is the parent abstract class of all Keyple checked
+ * exceptions.
  */
-public class KeyplePluginInstantiationException extends KeyplePluginException {
+public abstract class KeypleException extends RuntimeException {
 
   /** @param message the message to identify the exception context */
-  public KeyplePluginInstantiationException(String message) {
+  protected KeypleException(String message) {
     super(message);
   }
 
   /**
-   * Encapsulates a lower level plugin exception
+   * Encapsulate a lower level exception (ie CardException, IOException, HostNotFoundException..)
    *
    * @param message message to identify the exception context
    * @param cause the cause
    */
-  public KeyplePluginInstantiationException(String message, Throwable cause) {
+  protected KeypleException(String message, Throwable cause) {
     super(message, cause);
   }
 }

@@ -17,7 +17,7 @@ import org.eclipse.keyple.core.card.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.core.card.message.ApduRequest;
 import org.eclipse.keyple.core.card.message.CardRequest;
 import org.eclipse.keyple.core.card.message.CardResponse;
-import org.eclipse.keyple.core.reader.exception.KeypleException;
+import org.eclipse.keyple.core.service.exception.KeypleException;
 
 /**
  * The AbstractCardSelectionRequest class combines a CardSelector with additional helper methods

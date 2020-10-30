@@ -9,19 +9,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.core.reader.exception;
+package org.eclipse.keyple.core.service.util;
 
 /**
- * The exception {@code KeypleReaderNotFoundException} indicates that the current card protocol is
- * undetermined.
+ * This enum contains a non-exhaustive list of contactless smartcard communication protocols.
+ *
+ * @since 1.0
  */
-public class KeypleReaderProtocolNotFoundException extends KeypleReaderException {
+public enum ContactlessCardCommonProtocols {
 
-  /** @param identificationData the identification data used to identify the card */
-  public KeypleReaderProtocolNotFoundException(String identificationData) {
-    super(
-        "The protocol of the card with identification data "
-            + identificationData
-            + " was not determined.");
-  }
+  /* ---- contactless standard ------------- */
+  ISO_14443_4,
+
+  /* ---- contactless  NFC compliant ------------- */
+  NFC_A_ISO_14443_3A,
+  NFC_B_ISO_14443_3B,
+  NFC_F_JIS_6319_4,
+  NFC_V_ISO_15693,
+
+  /* ---- other contactless proprietary protocols -------- */
+  CALYPSO_OLD_CARD_PRIME,
 }

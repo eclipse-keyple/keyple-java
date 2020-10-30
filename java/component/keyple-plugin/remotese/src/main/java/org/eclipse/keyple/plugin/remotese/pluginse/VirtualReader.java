@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
-import org.eclipse.keyple.core.reader.Reader;
+import org.eclipse.keyple.core.service.Reader;
 
 /** Define a Virtual Reader (non observable) */
 public interface VirtualReader extends Reader {
