@@ -22,8 +22,8 @@ import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import java.io.IOException
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
+import org.eclipse.keyple.core.service.exception.KeypleReaderException
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -83,10 +83,10 @@ class AndroidNfcReaderImplTest {
     // ---- TAG EVENTS  TESTS ----------- //
 
     @Test
-    fun checkSePresenceTest() {
+    fun checkCardPresenceTest() {
         every { tagProxy?.isConnected } returns true
         presentMockTag()
-        Assert.assertTrue(reader.checkSePresence())
+        Assert.assertTrue(reader.checkCardPresence())
     }
 
     @Test
@@ -190,12 +190,12 @@ class AndroidNfcReaderImplTest {
 //    fun protocolFlagMatchesTrue() {
 //        // init
 //        presentMockTag()
-//        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
-//                AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4))
-//        every { tagProxy?.tech } returns AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4)
+//        reader.addCardProtocolSetting(CardCommonProtocols.PROTOCOL_ISO14443_4,
+//                AndroidNfcProtocolSettings.getSetting(CardCommonProtocols.PROTOCOL_ISO14443_4))
+//        every { tagProxy?.tech } returns AndroidNfcProtocolSettings.getSetting(CardCommonProtocols.PROTOCOL_ISO14443_4)
 //
 //        // test
-//        Assert.assertTrue(reader.protocolFlagMatches(SeCommonProtocols.PROTOCOL_ISO14443_4))
+//        Assert.assertTrue(reader.protocolFlagMatches(CardCommonProtocols.PROTOCOL_ISO14443_4))
 //    }
 
     // ----- TEST PARAMETERS ------ //

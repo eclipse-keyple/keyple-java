@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.calypso.transaction.exception;
 
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
+import org.eclipse.keyple.core.service.exception.KeypleException;
 
 /**
  * The exception {@code CalypsoPoTransactionException} is the parent abstract class of all Keyple PO

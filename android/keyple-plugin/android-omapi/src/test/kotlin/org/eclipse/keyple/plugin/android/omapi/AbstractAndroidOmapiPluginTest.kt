@@ -57,10 +57,10 @@ internal abstract class AbstractAndroidOmapiPluginTest<T, V> {
     }
 
     @Test
-    fun mapToSeReader() {
+    fun mapToReader() {
         Companion.READERS_TO_MOCK.forEach {
             val omapiReader = mockReader(it.key, it.value)
-            val reader = androidOmapiPlugin.mapToSeReader(omapiReader)
+            val reader = androidOmapiPlugin.mapToReader(omapiReader)
             Assert.assertNotNull(reader)
             Assert.assertEquals(it.key, reader.name)
             Assert.assertEquals(it.value, reader.isCardPresent)

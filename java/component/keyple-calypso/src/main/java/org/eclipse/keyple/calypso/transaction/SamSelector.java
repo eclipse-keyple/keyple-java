@@ -12,7 +12,7 @@
 package org.eclipse.keyple.calypso.transaction;
 
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
-import org.eclipse.keyple.core.seproxy.CardSelector;
+import org.eclipse.keyple.core.card.selection.CardSelector;
 
 /**
  * The {@link SamSelector} class extends {@link CardSelector} to handle specific Calypso SAM needs

@@ -11,12 +11,12 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.common.generic;
 
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsResponse;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
+import org.eclipse.keyple.core.service.exception.KeypleException;
+import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,13 +49,13 @@ public abstract class AbstractReaderObserverAsynchronousEngine
    * Method to be implemented by the application to handle the CARD_REMOVED reader event at the end
    * of the card processing
    */
-  protected abstract void processSeRemoved();
+  protected abstract void processCardRemoved();
 
   /**
    * Method to be implemented by the application to handle the CARD_REMOVED reader event during the
    * card processing
    */
-  protected abstract void processUnexpectedSeRemoval();
+  protected abstract void processUnexpectedCardRemoval();
 
   /**
    * This flag helps to determine whether the CARD_REMOVED event was expected or not (case of card
@@ -68,7 +68,7 @@ public abstract class AbstractReaderObserverAsynchronousEngine
    *
    * @param event t
    */
-  private void runProcessSeInserted(final ReaderEvent event) {
+  private void runProcessCardInserted(final ReaderEvent event) {
     /* Run the PO processing asynchronously in a detach thread */
     Thread thread =
         new Thread(
@@ -85,7 +85,7 @@ public abstract class AbstractReaderObserverAsynchronousEngine
                    * manage the removal sequence.
                    */
                   try {
-                    ((ObservableReader) (event.getReader())).finalizeSeProcessing();
+                    ((ObservableReader) (event.getReader())).finalizeCardProcessing();
                   } catch (KeypleReaderNotFoundException ex) {
                     logger.error("Reader not found exception: {}", ex.getMessage());
                   } catch (KeyplePluginNotFoundException ex) {
@@ -115,7 +115,7 @@ public abstract class AbstractReaderObserverAsynchronousEngine
                    * manage the removal sequence.
                    */
                   try {
-                    ((ObservableReader) (event.getReader())).finalizeSeProcessing();
+                    ((ObservableReader) (event.getReader())).finalizeCardProcessing();
                   } catch (KeypleReaderNotFoundException ex) {
                     logger.error("Reader not found exception: {}", ex.getMessage());
                   } catch (KeyplePluginNotFoundException ex) {
@@ -145,7 +145,7 @@ public abstract class AbstractReaderObserverAsynchronousEngine
 
     switch (event.getEventType()) {
       case CARD_INSERTED:
-        runProcessSeInserted(event);
+        runProcessCardInserted(event);
         break;
 
       case CARD_MATCHED:
@@ -154,10 +154,10 @@ public abstract class AbstractReaderObserverAsynchronousEngine
 
       case CARD_REMOVED:
         if (currentlyProcessingCard) {
-          processUnexpectedSeRemoval(); // to clean current card processing
+          processUnexpectedCardRemoval(); // to clean current card processing
           logger.error("Unexpected card Removal");
         } else {
-          processSeRemoved();
+          processCardRemoved();
           if (logger.isInfoEnabled()) {
             logger.info("Waiting for a card...");
           }

@@ -14,15 +14,15 @@ package org.eclipse.keyple.example.calypso.android.omapi.activity
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_core_examples.eventRecyclerView
 import kotlinx.android.synthetic.main.activity_core_examples.toolbar
-import org.eclipse.keyple.core.selection.CardSelection
-import org.eclipse.keyple.core.seproxy.CardSelector
-import org.eclipse.keyple.core.seproxy.CardSelector.AidSelector
-import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing
-import org.eclipse.keyple.core.seproxy.Reader
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
-import org.eclipse.keyple.core.seproxy.message.CardRequest
-import org.eclipse.keyple.core.seproxy.message.ChannelControl
-import org.eclipse.keyple.core.seproxy.message.ProxyReader
+import org.eclipse.keyple.core.card.message.CardRequest
+import org.eclipse.keyple.core.card.message.ChannelControl
+import org.eclipse.keyple.core.card.message.ProxyReader
+import org.eclipse.keyple.core.card.selection.CardSelection
+import org.eclipse.keyple.core.card.selection.CardSelector
+import org.eclipse.keyple.core.card.selection.CardSelector.AidSelector
+import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing
+import org.eclipse.keyple.core.service.Reader
+import org.eclipse.keyple.core.service.exception.KeypleReaderException
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.example.calypso.android.omapi.R
 import org.eclipse.keyple.example.calypso.android.omapi.utils.AidEnum
@@ -104,7 +104,7 @@ class CoreExamplesActivity : ExamplesActivity() {
         val cardSelection = CardSelection(MultiSelectionProcessing.PROCESS_ALL)
 
         /* Close the channel after the selection in order to secure the selection of all applications */
-        cardSelection.prepareReleaseSeChannel()
+        cardSelection.prepareReleaseChannel()
 
         /* operate card selection (change the AID here to adapt it to the card used for the test) */
         val cardAidPrefix = "A000000404012509"
@@ -207,7 +207,7 @@ class CoreExamplesActivity : ExamplesActivity() {
                     cardSelection = CardSelection()
 
                     /* Close the channel after the selection */
-                    cardSelection.prepareReleaseSeChannel()
+                    cardSelection.prepareReleaseChannel()
 
                     cardSelection.prepareSelection(GenericCardSelectionRequest(
                             CardSelector.builder()

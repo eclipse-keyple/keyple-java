@@ -19,7 +19,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.unmockkAll
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException
+import org.eclipse.keyple.core.service.exception.KeyplePluginInstantiationException
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before

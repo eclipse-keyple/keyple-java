@@ -15,7 +15,7 @@ import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommand;
 import org.eclipse.keyple.calypso.command.po.parser.security.ChangeKeyRespPars;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 public class ChangeKeyCmdBuild extends AbstractPoCommandBuilder<ChangeKeyRespPars> {
   private static final CalypsoPoCommand command = CalypsoPoCommand.CHANGE_KEY;

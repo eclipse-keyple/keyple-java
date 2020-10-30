@@ -11,12 +11,12 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.common.generic;
 
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsResponse;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
+import org.eclipse.keyple.core.service.exception.KeypleException;
+import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +45,7 @@ public abstract class AbstractReaderObserverSynchronousEngine
   protected abstract void processCardInserted(); // alternative AID selection
 
   /** Method to be implemented by the application to handle the CARD_REMOVED reader event */
-  protected abstract void processSeRemoved();
+  protected abstract void processCardRemoved();
 
   /**
    * Implementation of the {@link ObservableReader.ReaderObserver#update(ReaderEvent)} method.<br>
@@ -74,7 +74,7 @@ public abstract class AbstractReaderObserverSynchronousEngine
            * manage the removal sequence.
            */
           try {
-            ((ObservableReader) (event.getReader())).finalizeSeProcessing();
+            ((ObservableReader) (event.getReader())).finalizeCardProcessing();
           } catch (KeypleReaderNotFoundException ex) {
             logger.error("Reader not found exception: {}", ex.getMessage());
           } catch (KeyplePluginNotFoundException ex) {
@@ -93,7 +93,7 @@ public abstract class AbstractReaderObserverSynchronousEngine
            * manage the removal sequence.
            */
           try {
-            ((ObservableReader) (event.getReader())).finalizeSeProcessing();
+            ((ObservableReader) (event.getReader())).finalizeCardProcessing();
           } catch (KeypleReaderNotFoundException ex) {
             logger.error("Reader not found exception: {}", ex.getMessage());
           } catch (KeyplePluginNotFoundException ex) {
@@ -103,7 +103,7 @@ public abstract class AbstractReaderObserverSynchronousEngine
         break;
 
       case CARD_REMOVED:
-        processSeRemoved();
+        processCardRemoved();
         if (logger.isInfoEnabled()) {
           logger.info("Waiting for a card...");
         }

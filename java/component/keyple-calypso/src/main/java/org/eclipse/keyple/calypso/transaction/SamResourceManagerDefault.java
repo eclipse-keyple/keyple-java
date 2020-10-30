@@ -11,19 +11,25 @@
  ************************************************************************************** */
 package org.eclipse.keyple.calypso.transaction;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
-import org.eclipse.keyple.core.selection.CardResource;
-import org.eclipse.keyple.core.seproxy.*;
-import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.PluginEvent;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.*;
+import org.eclipse.keyple.core.card.selection.CardResource;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.ObservablePlugin;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.PluginEvent;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
+import org.eclipse.keyple.core.service.exception.KeypleException;
+import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -279,7 +285,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
                 if (readerObserver != null) {
                   logger.trace("Remove observer and stop detection READERNAME = {}", readerName);
                   ((ObservableReader) samReader).removeObserver(readerObserver);
-                  ((ObservableReader) samReader).stopSeDetection();
+                  ((ObservableReader) samReader).stopCardDetection();
                 } else {
                   removeResource(samReader);
                   logger.trace(
@@ -386,7 +392,7 @@ public class SamResourceManagerDefault extends SamResourceManager {
     if (samReader instanceof ObservableReader && readerObserver != null) {
       logger.trace("Add observer and start detection READERNAME = {}", samReader.getName());
       ((ObservableReader) samReader).addObserver(readerObserver);
-      ((ObservableReader) samReader).startSeDetection(ObservableReader.PollingMode.REPEATING);
+      ((ObservableReader) samReader).startCardDetection(ObservableReader.PollingMode.REPEATING);
     } else {
       logger.trace("Sam Reader is not an ObservableReader = {}", samReader.getName());
     }

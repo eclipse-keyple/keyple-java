@@ -19,21 +19,21 @@ import kotlinx.android.synthetic.main.activity_core_examples.toolbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.eclipse.keyple.core.command.AbstractApduCommandBuilder
-import org.eclipse.keyple.core.selection.AbstractCardSelectionRequest
-import org.eclipse.keyple.core.selection.AbstractSmartCard
-import org.eclipse.keyple.core.selection.CardSelection
-import org.eclipse.keyple.core.seproxy.CardSelector
-import org.eclipse.keyple.core.seproxy.CardSelector.AidSelector
-import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing
-import org.eclipse.keyple.core.seproxy.Reader
-import org.eclipse.keyple.core.seproxy.event.ObservableReader
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException
-import org.eclipse.keyple.core.seproxy.message.CardResponse
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols
+import org.eclipse.keyple.core.card.command.AbstractApduCommandBuilder
+import org.eclipse.keyple.core.card.message.CardResponse
+import org.eclipse.keyple.core.card.selection.AbstractCardSelectionRequest
+import org.eclipse.keyple.core.card.selection.AbstractSmartCard
+import org.eclipse.keyple.core.card.selection.CardSelection
+import org.eclipse.keyple.core.card.selection.CardSelector
+import org.eclipse.keyple.core.card.selection.CardSelector.AidSelector
+import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing
+import org.eclipse.keyple.core.service.Reader
+import org.eclipse.keyple.core.service.event.ObservableReader
+import org.eclipse.keyple.core.service.event.ReaderEvent
+import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException
+import org.eclipse.keyple.core.service.exception.KeypleReaderException
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException
+import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.example.calypso.android.nfc.R
 import org.eclipse.keyple.example.util.CalypsoClassicInfo
@@ -113,7 +113,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             cardSelection = CardSelection()
 
             /* Close the channel after the selection */
-            cardSelection.prepareReleaseSeChannel()
+            cardSelection.prepareReleaseChannel()
 
             /* next selection (2nd selection, later indexed 1) */
             cardSelection.prepareSelection(
@@ -162,7 +162,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
             cardSelection = CardSelection(MultiSelectionProcessing.PROCESS_ALL)
 
             /* Close the channel after the selection to force the selection of all applications */
-            cardSelection.prepareReleaseSeChannel()
+            cardSelection.prepareReleaseChannel()
 
             /* operate card selection (change the AID here to adapt it to the card used for the test) */
             val cardAidPrefix = CalypsoClassicInfo.AID_PREFIX
@@ -308,7 +308,7 @@ class CoreExamplesActivity : AbstractExampleActivity() {
                      * nothing.
                      */
                     try {
-                        (event.reader as ObservableReader).finalizeSeProcessing()
+                        (event.reader as ObservableReader).finalizeCardProcessing()
                     } catch (e: KeypleReaderNotFoundException) {
                         Timber.e(e)
                         addResultEvent("Error: ${e.message}")

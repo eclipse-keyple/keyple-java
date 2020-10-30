@@ -15,8 +15,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import org.eclipse.keyple.core.seproxy.SmartCardService
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException
+import org.eclipse.keyple.core.service.SmartCardService
+import org.eclipse.keyple.core.service.exception.KeyplePluginInstantiationException
 import org.eclipse.keyple.example.calypso.android.omapi.R
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPluginFactory
 
