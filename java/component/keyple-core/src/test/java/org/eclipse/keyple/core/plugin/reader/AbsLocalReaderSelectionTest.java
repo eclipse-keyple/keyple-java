@@ -227,6 +227,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
    */
   public static AbstractLocalReader getSpy(String pluginName, String readerName) {
     AbstractLocalReader r = Mockito.spy(new BlankAbstractLocalReader(pluginName, readerName));
+    r.register();
     return r;
   }
 

@@ -42,6 +42,9 @@ public abstract class AbstractReader implements ProxyReader {
   /** Contains the name of the plugin */
   private final String pluginName;
 
+  /** Registeration status of the reader */
+  protected boolean isRegistered;
+
   /**
    * Reader constructor taking the name of the plugin that instantiated the reader and the name of
    * the reader in argument.
@@ -57,6 +60,7 @@ public abstract class AbstractReader implements ProxyReader {
 
     this.name = name;
     this.pluginName = pluginName;
+    this.isRegistered = false;
     if (logger.isDebugEnabled()) {
       this.before = System.nanoTime();
     }
@@ -94,6 +98,8 @@ public abstract class AbstractReader implements ProxyReader {
       List<CardRequest> cardRequests,
       MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl) {
+
+    checkStatus();
 
     List<CardResponse> cardResponse;
 
@@ -170,6 +176,8 @@ public abstract class AbstractReader implements ProxyReader {
   public final CardResponse transmitCardRequest(
       CardRequest cardRequest, ChannelControl channelControl) {
 
+    checkStatus();
+
     CardResponse cardResponse;
 
     if (logger.isDebugEnabled()) {
@@ -211,6 +219,33 @@ public abstract class AbstractReader implements ProxyReader {
     }
 
     return cardResponse;
+  }
+
+  /**
+   * Check if the reader status is "registered".
+   *
+   * @throws IllegalStateException is thrown when reader is not (or no longer) registered.
+   */
+  protected void checkStatus() {
+    if (!isRegistered)
+      throw new IllegalStateException(
+          String.format("This reader, %s, is not registered", getName()));
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void register() {
+    if (isRegistered)
+      throw new IllegalStateException(
+          String.format("This reader, %s, is already registered", getName()));
+    isRegistered = true;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void unregister() {
+    checkStatus();
+    isRegistered = false;
   }
 
   /**

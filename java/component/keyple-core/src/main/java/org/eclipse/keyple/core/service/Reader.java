@@ -34,6 +34,7 @@ public interface Reader extends ProxyElement {
    *
    * @return true if a card is present in the reader
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
+   * @throws IllegalStateException is called when reader is no longer registered
    * @since 0.9
    */
   boolean isCardPresent();
@@ -59,6 +60,7 @@ public interface Reader extends ProxyElement {
    * @param readerProtocolName A not empty String.
    * @param applicationProtocolName A not empty String.
    * @throws KeypleReaderProtocolNotSupportedException if the protocol is not supported.
+   * @throws IllegalStateException is called when reader is no longer registered
    * @since 1.0
    */
   void activateProtocol(String readerProtocolName, String applicationProtocolName);
@@ -74,6 +76,7 @@ public interface Reader extends ProxyElement {
    *
    * @param readerProtocolName A not empty String.
    * @throws KeypleReaderProtocolNotSupportedException if the protocol is not supported.
+   * @throws IllegalStateException is called when reader is no longer registered
    * @since 1.0
    */
   void deactivateProtocol(String readerProtocolName);
@@ -82,7 +85,24 @@ public interface Reader extends ProxyElement {
    * Tells if the current card communication is contactless.
    *
    * @return True if the communication is contactless, false if not.
+   * @throws IllegalStateException is called when reader is no longer registered
    * @since 1.0
    */
   boolean isContactless();
+
+  /**
+   * Change the reader status to registered
+   *
+   * @throws IllegalStateException is thrown when plugin is already registered.
+   * @since 1.0
+   */
+  void register();
+
+  /**
+   * Change the reader status to unregistered
+   *
+   * @throws IllegalStateException is thrown when plugin is already unregistered.
+   * @since 1.0
+   */
+  void unregister();
 }

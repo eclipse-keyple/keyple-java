@@ -176,4 +176,14 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
   public Reader getReader(String name) {
     return stubPlugin.getReader(name);
   }
+
+  @Override
+  public void register() {
+    stubPlugin.register();
+  }
+
+  @Override
+  public void unregister() {
+    stubPlugin.unregister();
+  }
 }

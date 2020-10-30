@@ -246,9 +246,11 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
    *
    * @return true if the card is present
    * @throws KeypleReaderIOException if the communication with the reader or the card has failed
+   * @throws IllegalStateException is called when reader is no longer registered
    */
   @Override
   public final boolean isCardPresent() {
+    if (!isRegistered) throw new IllegalStateException("This reader is no longer registered");
     if (checkCardPresence()) {
       return true;
     } else {
@@ -576,5 +578,15 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
       logger.trace("[{}] start removal sequence of the reader", getName());
     }
     this.stateService.onEvent(InternalEvent.SE_PROCESSED);
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void unregister() {
+    super.unregister();
+    notifyObservers(
+        new ReaderEvent(getPluginName(), getName(), ReaderEvent.EventType.UNREGISTERED, null));
+    clearObservers();
+    stopSeDetection();
   }
 }

@@ -355,6 +355,8 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
 
   public static void configure(AbstractLocalReader r) {
 
+    r.register();
+
     // activate and accept ISO_14443_4
     r.activateProtocol(
         ContactlessCardCommonProtocols.ISO_14443_4.name(),

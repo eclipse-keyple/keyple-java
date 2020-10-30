@@ -22,6 +22,7 @@ public interface Plugin extends ProxyElement {
    * Gets the list of names of all readers
    *
    * @return a list of String
+   * @throws IllegalStateException is called when plugin is no longer registered
    */
   Set<String> getReaderNames();
 
@@ -30,6 +31,7 @@ public interface Plugin extends ProxyElement {
    *
    * @return the map of this plugin's connected reader's name and instance, can be an empty list,
    *     can not be null;
+   * @throws IllegalStateException is called when plugin is no longer registered
    */
   Map<String, Reader> getReaders();
 
@@ -39,6 +41,23 @@ public interface Plugin extends ProxyElement {
    * @param name of the reader
    * @return the Reader object.
    * @throws KeypleReaderNotFoundException if the wanted reader is not found
+   * @throws IllegalStateException is called when plugin is no longer registered
    */
   Reader getReader(String name);
+
+  /**
+   * Change the plugin status to registered
+   *
+   * @throws IllegalStateException is thrown when plugin is already registered.
+   * @since 1.0
+   */
+  void register();
+
+  /**
+   * Change the plugin status to unregistered
+   *
+   * @throws IllegalStateException is thrown when plugin is already unregistered.
+   * @since 1.0
+   */
+  void unregister();
 }
