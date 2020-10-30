@@ -19,20 +19,25 @@ import org.eclipse.keyple.calypso.command.po.builder.IncreaseCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
-import org.eclipse.keyple.core.selection.AbstractCardSelectionRequest;
-import org.eclipse.keyple.core.selection.AbstractSmartCard;
-import org.eclipse.keyple.core.selection.CardSelection;
-import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.CardSelector;
-import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing;
-import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.event.*;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.message.ChannelControl;
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.card.message.ApduRequest;
+import org.eclipse.keyple.core.card.message.CardRequest;
+import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.ChannelControl;
+import org.eclipse.keyple.core.card.message.DefaultSelectionsResponse;
+import org.eclipse.keyple.core.card.message.ProxyReader;
+import org.eclipse.keyple.core.card.selection.AbstractCardSelectionRequest;
+import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
+import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.CardSelector;
+import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
+import org.eclipse.keyple.core.card.selection.SelectionsResult;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
+import org.eclipse.keyple.core.service.exception.KeypleException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -115,7 +120,7 @@ public class StubReaderTest extends BaseStubTest {
     // add observer
     reader.addObserver(readerObs);
 
-    reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+    reader.startCardDetection(ObservableReader.PollingMode.SINGLESHOT);
 
     // test
     reader.insertSe(hoplinkSE());
@@ -123,7 +128,7 @@ public class StubReaderTest extends BaseStubTest {
     // lock thread for 2 seconds max to wait for the event
     lock.await(2, TimeUnit.SECONDS);
 
-    reader.stopSeDetection();
+    reader.stopCardDetection();
 
     reader.removeObserver(readerObs);
 
@@ -176,7 +181,7 @@ public class StubReaderTest extends BaseStubTest {
     // add observer
     reader.addObserver(readerObs);
 
-    reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+    reader.startCardDetection(ObservableReader.PollingMode.SINGLESHOT);
 
     // test
     reader.insertSe(hoplinkSE());
@@ -259,7 +264,7 @@ public class StubReaderTest extends BaseStubTest {
     reader.addObserver(readerObs);
 
     // set PollingMode to Continue
-    reader.startSeDetection(ObservableReader.PollingMode.REPEATING);
+    reader.startCardDetection(ObservableReader.PollingMode.REPEATING);
 
     // test first sequence
     reader.insertSe(hoplinkSE());
@@ -297,7 +302,7 @@ public class StubReaderTest extends BaseStubTest {
     ((ProxyReader) reader).releaseChannel();
 
     // Thread.sleep(1000);
-    reader.stopSeDetection();
+    reader.stopCardDetection();
 
     reader.removeSe();
 
@@ -364,7 +369,7 @@ public class StubReaderTest extends BaseStubTest {
     reader.addObserver(readerObs);
 
     // set PollingMode to Continue
-    reader.startSeDetection(ObservableReader.PollingMode.REPEATING);
+    reader.startCardDetection(ObservableReader.PollingMode.REPEATING);
 
     // test first sequence
     reader.insertSe(hoplinkSE());
@@ -392,7 +397,7 @@ public class StubReaderTest extends BaseStubTest {
     // lock thread for 2 seconds max to wait for the event CARD_INSERTED
     secondInsertLock.await(2, TimeUnit.SECONDS);
 
-    reader.stopSeDetection();
+    reader.stopCardDetection();
 
     Assert.assertEquals(0, secondInsertLock.getCount()); // should be 0 because insertLock is
     // countDown by obs
@@ -500,7 +505,7 @@ public class StubReaderTest extends BaseStubTest {
             cardSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
 
     // set PollingMode to Continue
-    reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+    reader.startCardDetection(ObservableReader.PollingMode.SINGLESHOT);
 
     lock.await(5, TimeUnit.SECONDS);
 
@@ -511,7 +516,7 @@ public class StubReaderTest extends BaseStubTest {
     lock.await(5, TimeUnit.SECONDS);
     Assert.assertEquals(0, lock.getCount()); // should be 0 because countDown is called by
     // observer
-    reader.stopSeDetection();
+    reader.stopCardDetection();
     lock.await(5, TimeUnit.SECONDS);
 
     reader.removeObserver(readerObs);
@@ -564,7 +569,7 @@ public class StubReaderTest extends BaseStubTest {
         .setDefaultSelectionRequest(
             cardSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
 
-    reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+    reader.startCardDetection(ObservableReader.PollingMode.SINGLESHOT);
 
     // test
     reader.insertSe(hoplinkSE());
@@ -572,7 +577,7 @@ public class StubReaderTest extends BaseStubTest {
     Thread.sleep(100);
     reader.removeSe();
 
-    reader.stopSeDetection();
+    reader.stopCardDetection();
 
     // lock thread for 2 seconds max to wait for the event
     lock.await(100, TimeUnit.MILLISECONDS);
@@ -638,7 +643,7 @@ public class StubReaderTest extends BaseStubTest {
         .setDefaultSelectionRequest(
             cardSelection.getSelectionOperation(), ObservableReader.NotificationMode.ALWAYS);
 
-    reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+    reader.startCardDetection(ObservableReader.PollingMode.SINGLESHOT);
 
     // test
     reader.insertSe(hoplinkSE());
@@ -646,7 +651,7 @@ public class StubReaderTest extends BaseStubTest {
     // lock thread for 2 seconds max to wait for the event
     lock.await(2, TimeUnit.SECONDS);
 
-    reader.stopSeDetection();
+    reader.stopCardDetection();
 
     Assert.assertEquals(0, lock.getCount()); // should be 0 because countDown is called by
     // observer
@@ -705,7 +710,7 @@ public class StubReaderTest extends BaseStubTest {
     // add observer
     reader.addObserver(readerObs);
 
-    reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+    reader.startCardDetection(ObservableReader.PollingMode.SINGLESHOT);
 
     // test
     reader.insertSe(revision1SE());
@@ -715,7 +720,7 @@ public class StubReaderTest extends BaseStubTest {
 
     Assert.assertEquals(0, lock.getCount()); // should be 0 because countDown is called by
 
-    reader.stopSeDetection();
+    reader.stopCardDetection();
     // observer
     reader.removeObserver(readerObs);
   }
@@ -726,7 +731,7 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
-    reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+    reader.startCardDetection(ObservableReader.PollingMode.SINGLESHOT);
 
     // CountDown lock
     final CountDownLatch lock = new CountDownLatch(1);
@@ -770,7 +775,7 @@ public class StubReaderTest extends BaseStubTest {
     reader.setDefaultSelectionRequest(
         cardSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY);
 
-    reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+    reader.startCardDetection(ObservableReader.PollingMode.SINGLESHOT);
 
     // test
     reader.insertSe(hoplinkSE());
@@ -778,7 +783,7 @@ public class StubReaderTest extends BaseStubTest {
     // lock thread for 2 seconds max to wait for the event
     lock.await(2, TimeUnit.SECONDS);
 
-    reader.stopSeDetection();
+    reader.stopCardDetection();
 
     Assert.assertEquals(0, lock.getCount()); // should be 0 because countDown is called by
     // observer

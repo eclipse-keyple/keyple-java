@@ -20,10 +20,10 @@ import android.os.Build
 import android.os.Bundle
 import java.io.IOException
 import java.util.HashMap
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableLocalReader
-import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderStateService
+import org.eclipse.keyple.core.plugin.reader.AbstractObservableLocalReader
+import org.eclipse.keyple.core.plugin.reader.ObservableReaderStateService
+import org.eclipse.keyple.core.service.exception.KeypleReaderException
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import timber.log.Timber
 
@@ -187,7 +187,7 @@ internal object AndroidNfcReaderImpl : AbstractObservableLocalReader(AndroidNfcR
      *
      * @return true if a card is present
      */
-    public override fun checkSePresence(): Boolean {
+    public override fun checkCardPresence(): Boolean {
         return tagProxy != null
     }
 

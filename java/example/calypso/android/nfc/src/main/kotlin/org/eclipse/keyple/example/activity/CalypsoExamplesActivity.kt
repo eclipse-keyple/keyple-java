@@ -26,19 +26,19 @@ import org.eclipse.keyple.calypso.transaction.PoSelectionRequest
 import org.eclipse.keyple.calypso.transaction.PoSelector
 import org.eclipse.keyple.calypso.transaction.PoSelector.InvalidatedPo
 import org.eclipse.keyple.calypso.transaction.PoTransaction
-import org.eclipse.keyple.core.selection.CardResource
-import org.eclipse.keyple.core.selection.CardSelection
-import org.eclipse.keyple.core.seproxy.CardSelector.AidSelector
-import org.eclipse.keyple.core.seproxy.MultiSelectionProcessing
-import org.eclipse.keyple.core.seproxy.Reader
-import org.eclipse.keyple.core.seproxy.SmartCardService
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse
-import org.eclipse.keyple.core.seproxy.event.ObservableReader
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols
+import org.eclipse.keyple.core.card.selection.CardResource
+import org.eclipse.keyple.core.card.selection.CardSelection
+import org.eclipse.keyple.core.card.selection.CardSelector.AidSelector
+import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing
+import org.eclipse.keyple.core.service.Reader
+import org.eclipse.keyple.core.service.SmartCardService
+import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsResponse
+import org.eclipse.keyple.core.service.event.ObservableReader
+import org.eclipse.keyple.core.service.event.ReaderEvent
+import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException
+import org.eclipse.keyple.core.service.exception.KeypleReaderException
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException
+import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.example.calypso.android.nfc.R
 import org.eclipse.keyple.example.util.CalypsoClassicInfo
@@ -72,7 +72,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
 
                 Timber.d("Handle ACTION TECH intent")
                 // notify reader that card detection has been launched
-                reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT)
+                reader.startCardDetection(ObservableReader.PollingMode.SINGLESHOT)
                 initFromBackgroundTextView()
                 reader.processIntent(intent)
             } else {
@@ -92,7 +92,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
         try {
 
             // notify reader that card detection has been switched off
-            reader.stopSeDetection()
+            reader.stopCardDetection()
 
             // Disable Reader Mode for NFC Adapter
             reader.disableNFCReaderMode(this)
@@ -185,7 +185,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
             cardSelection = CardSelection()
 
             /* Close the channel after the selection */
-            cardSelection.prepareReleaseSeChannel()
+            cardSelection.prepareReleaseChannel()
 
             val selectionRequest2nd = PoSelectionRequest(PoSelector.builder().cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name).aidSelector(
                     AidSelector.builder().aidToSelect(cardAidPrefix).fileOccurrence(
@@ -230,7 +230,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
         val cardAidPrefix = CalypsoClassicInfo.AID_PREFIX
 
         /* Close the channel after the selection to force the selection of all applications */
-        cardSelection.prepareReleaseSeChannel()
+        cardSelection.prepareReleaseChannel()
 
         useCase = null
 
@@ -369,7 +369,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                      * nothing.
                      */
                     try {
-                        (event.reader as ObservableReader).finalizeSeProcessing()
+                        (event.reader as ObservableReader).finalizeCardProcessing()
                     } catch (e: KeypleReaderNotFoundException) {
                         Timber.e(e)
                         addResultEvent("Error: ${e.message}")
@@ -393,7 +393,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
         cardSelection = CardSelection()
 
         /* Close the channel after the selection */
-        cardSelection.prepareReleaseSeChannel()
+        cardSelection.prepareReleaseChannel()
 
         val aid = CalypsoClassicInfo.AID
 
@@ -503,12 +503,12 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
                         ReaderEvent.EventType.CARD_MATCHED -> {
                             addResultEvent("Tag detected - card MATCHED")
                             executeCommands(event.defaultSelectionsResponse)
-                            reader.finalizeSeProcessing()
+                            reader.finalizeCardProcessing()
                         }
 
                         ReaderEvent.EventType.CARD_INSERTED -> {
                             addResultEvent("PO detected but AID didn't match with ${CalypsoClassicInfo.AID}")
-                            reader.finalizeSeProcessing()
+                            reader.finalizeCardProcessing()
                         }
 
                         ReaderEvent.EventType.CARD_REMOVED -> {
@@ -524,7 +524,7 @@ class CalypsoExamplesActivity : AbstractExampleActivity() {
             }
         }
         // notify reader that card detection has been launched
-        reader.startSeDetection(ObservableReader.PollingMode.REPEATING)
+        reader.startCardDetection(ObservableReader.PollingMode.REPEATING)
     }
 
     /**

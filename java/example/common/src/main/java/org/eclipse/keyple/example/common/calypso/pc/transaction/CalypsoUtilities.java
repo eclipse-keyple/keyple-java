@@ -19,7 +19,7 @@ import java.io.InputStream;
 import java.util.Properties;
 import org.eclipse.keyple.calypso.transaction.CalypsoSam;
 import org.eclipse.keyple.calypso.transaction.PoSecuritySettings;
-import org.eclipse.keyple.core.selection.CardResource;
+import org.eclipse.keyple.core.card.selection.CardResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

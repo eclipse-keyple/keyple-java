@@ -11,10 +11,10 @@
  ************************************************************************************** */
 package org.eclipse.keyple.calypso.command.sam;
 
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.command.AbstractIso7816CommandBuilder;
-import org.eclipse.keyple.core.seproxy.message.ApduRequest;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.card.command.AbstractIso7816CommandBuilder;
+import org.eclipse.keyple.core.card.message.ApduRequest;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /**
  * Superclass for all SAM command builders.

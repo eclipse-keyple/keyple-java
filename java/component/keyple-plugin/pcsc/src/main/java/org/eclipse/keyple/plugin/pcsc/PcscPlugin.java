@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.pcsc;
 
-import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
+import org.eclipse.keyple.core.service.event.ObservablePlugin;
 
 /**
  * Provides the public elements used to manage the PC/SC plugin.<br>

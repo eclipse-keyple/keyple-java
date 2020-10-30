@@ -11,19 +11,19 @@
  ************************************************************************************** */
 package org.eclipse.keyple.example.generic.pc.usecase2;
 
-import org.eclipse.keyple.core.selection.AbstractSmartCard;
-import org.eclipse.keyple.core.selection.CardSelection;
-import org.eclipse.keyple.core.seproxy.CardSelector;
-import org.eclipse.keyple.core.seproxy.Plugin;
-import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.SmartCardService;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleException;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
+import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.CardSelector;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.event.ObservableReader.ReaderObserver;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
+import org.eclipse.keyple.core.service.exception.KeypleException;
+import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.common.ReaderUtilities;
 import org.eclipse.keyple.example.common.generic.GenericCardSelectionRequest;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
@@ -139,7 +139,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
         } catch (KeypleException e) {
           logger.error("Exception: {}", e.getMessage());
           try {
-            ((ObservableReader) (event.getReader())).finalizeSeProcessing();
+            ((ObservableReader) (event.getReader())).finalizeCardProcessing();
           } catch (KeypleReaderNotFoundException ex) {
             logger.error("Reader not found exception: {}", ex.getMessage());
           } catch (KeyplePluginNotFoundException ex) {
@@ -171,7 +171,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
       // Informs the underlying layer of the end of the card processing, in order to manage the
       // removal sequence.
       try {
-        ((ObservableReader) (event.getReader())).finalizeSeProcessing();
+        ((ObservableReader) (event.getReader())).finalizeCardProcessing();
       } catch (KeypleReaderNotFoundException e) {
         logger.error("Reader not found exception: {}", e.getMessage());
       } catch (KeyplePluginNotFoundException e) {

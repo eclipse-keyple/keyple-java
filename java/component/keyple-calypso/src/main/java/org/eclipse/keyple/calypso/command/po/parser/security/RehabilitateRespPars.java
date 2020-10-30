@@ -19,8 +19,8 @@ import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoAccessForbiddenE
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoDataAccessException;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoSecurityContextException;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoSessionBufferOverflowException;
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 /** Rehabilitate response parser. */
 public final class RehabilitateRespPars extends AbstractPoResponseParser {

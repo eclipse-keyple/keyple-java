@@ -17,7 +17,7 @@ import org.eclipse.keyple.calypso.KeyReference;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.builder.security.CardCipherPinCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.parser.security.CardCipherPinRespPars;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
 

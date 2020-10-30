@@ -13,8 +13,8 @@ package org.eclipse.keyple.plugin.android.nfc
 
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
-import org.eclipse.keyple.core.seproxy.Reader
-import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin
+import org.eclipse.keyple.core.plugin.AbstractPlugin
+import org.eclipse.keyple.core.service.Reader
 import timber.log.Timber
 
 /**

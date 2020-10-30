@@ -13,10 +13,9 @@ package org.eclipse.keyple.plugin.android.omapi.simalliance
 
 import java.io.IOException
 import kotlin.experimental.or
-import org.eclipse.keyple.core.seproxy.CardSelector
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
-import org.eclipse.keyple.core.seproxy.message.ApduResponse
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractLocalReader
+import org.eclipse.keyple.core.card.message.ApduResponse
+import org.eclipse.keyple.core.card.selection.CardSelector
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiReader
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiSupportedProtocols
@@ -44,7 +43,7 @@ internal class AndroidOmapiReader(private val nativeReader: Reader, pluginName: 
      * Check if a card is present in this reader. see [Reader.isSecureElementPresent]
      * @return True if the card is present, false otherwise
      */
-    override fun checkSePresence(): Boolean {
+    override fun checkCardPresence(): Boolean {
         return nativeReader.isSecureElementPresent
     }
 

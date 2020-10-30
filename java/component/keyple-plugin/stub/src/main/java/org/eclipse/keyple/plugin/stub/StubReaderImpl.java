@@ -12,20 +12,21 @@
 package org.eclipse.keyple.plugin.stub;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotFoundException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderProtocolNotSupportedException;
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractObservableLocalReader;
-import org.eclipse.keyple.core.seproxy.plugin.reader.ObservableReaderStateService;
-import org.eclipse.keyple.core.seproxy.plugin.reader.SmartInsertionReader;
-import org.eclipse.keyple.core.seproxy.plugin.reader.SmartRemovalReader;
+import org.eclipse.keyple.core.plugin.reader.AbstractObservableLocalReader;
+import org.eclipse.keyple.core.plugin.reader.ObservableReaderStateService;
+import org.eclipse.keyple.core.plugin.reader.SmartInsertionReader;
+import org.eclipse.keyple.core.plugin.reader.SmartRemovalReader;
+import org.eclipse.keyple.core.service.event.ReaderEvent;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderProtocolNotFoundException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderProtocolNotSupportedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Simulates communication with a {@link StubSecureElement}. StubReader is observable, it raises
- * {@link org.eclipse.keyple.core.seproxy.event.ReaderEvent} : CARD_INSERTED, CARD_REMOVED
+ * {@link ReaderEvent} : CARD_INSERTED, CARD_REMOVED
  */
 class StubReaderImpl extends AbstractObservableLocalReader
     implements StubReader, SmartInsertionReader, SmartRemovalReader {
@@ -105,7 +106,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
   }
 
   @Override
-  protected synchronized boolean checkSePresence() {
+  protected synchronized boolean checkCardPresence() {
     return card != null;
   }
 
@@ -186,7 +187,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
   public boolean waitForCardPresent() {
     loopWaitCard.set(true);
     while (loopWaitCard.get()) {
-      if (checkSePresence()) {
+      if (checkCardPresence()) {
         return true;
       }
       try {
@@ -215,7 +216,7 @@ class StubReaderImpl extends AbstractObservableLocalReader
   public boolean waitForCardAbsentNative() {
     loopWaitCardRemoval.set(true);
     while (loopWaitCardRemoval.get()) {
-      if (!checkSePresence()) {
+      if (!checkCardPresence()) {
         logger.trace("[{}] card removed", this.getName());
         return true;
       }

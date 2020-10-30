@@ -9,24 +9,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.eclipse.keyple.example.generic.pc.Demo_SeProtocolDetection;
+package org.eclipse.keyple.example.generic.pc.Demo_CardProtocolDetection;
 
 import static org.eclipse.keyple.calypso.transaction.PoSelector.*;
 
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
-import org.eclipse.keyple.core.selection.AbstractSmartCard;
-import org.eclipse.keyple.core.selection.CardSelection;
-import org.eclipse.keyple.core.seproxy.CardSelector;
-import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
+import org.eclipse.keyple.core.card.selection.CardSelection;
+import org.eclipse.keyple.core.card.selection.CardSelector;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsRequest;
+import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsResponse;
+import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.example.common.generic.AbstractReaderObserverAsynchronousEngine;
 import org.eclipse.keyple.example.common.generic.GenericCardSelectionRequest;
 
 /**
- * This code demonstrates the multi-protocols capability of the Keyple SeProxy
+ * This code demonstrates the multi-protocols capability of the Keyple SmartCardService
  *
  * <ul>
  *   <li>instantiates a PC/SC plugin for a reader which name matches the regular expression provided
@@ -40,11 +40,11 @@ import org.eclipse.keyple.example.common.generic.GenericCardSelectionRequest;
  * The program spends most of its time waiting for a Enter key before exit. The actual card
  * processing is mainly event driven through the observability.
  */
-public class SeProtocolDetectionEngine extends AbstractReaderObserverAsynchronousEngine {
+public class CardProtocolDetectionEngine extends AbstractReaderObserverAsynchronousEngine {
   private Reader reader;
   private CardSelection cardSelection;
 
-  public SeProtocolDetectionEngine() {
+  public CardProtocolDetectionEngine() {
     super();
   }
 
@@ -117,12 +117,12 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverAsynchronou
   }
 
   @Override
-  public void processSeRemoved() {
+  public void processCardRemoved() {
     System.out.println("Card removal event");
   }
 
   @Override
-  public void processUnexpectedSeRemoval() {
+  public void processUnexpectedCardRemoval() {
     System.out.println("Unexpected card removal event");
   }
 }

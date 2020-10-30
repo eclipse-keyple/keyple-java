@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.eclipse.keyple.calypso.transaction;
 
-import org.eclipse.keyple.core.seproxy.CardSelector;
+import org.eclipse.keyple.core.card.selection.CardSelector;
 
 /**
  * The {@link PoSelector} class extends {@link CardSelector} to handle specific PO features such as

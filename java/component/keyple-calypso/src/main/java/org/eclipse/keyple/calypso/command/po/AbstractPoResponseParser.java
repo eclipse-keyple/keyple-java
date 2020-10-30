@@ -12,10 +12,10 @@
 package org.eclipse.keyple.calypso.command.po;
 
 import org.eclipse.keyple.calypso.command.po.exception.*;
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
-import org.eclipse.keyple.core.command.SeCommand;
-import org.eclipse.keyple.core.command.exception.KeypleSeCommandException;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.card.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.card.command.CardCommand;
+import org.eclipse.keyple.core.card.command.exception.KeypleCardCommandException;
+import org.eclipse.keyple.core.card.message.ApduResponse;
 
 public abstract class AbstractPoResponseParser extends AbstractApduResponseParser {
 
@@ -38,13 +38,13 @@ public abstract class AbstractPoResponseParser extends AbstractApduResponseParse
 
   /** {@inheritDoc} */
   @Override
-  protected final KeypleSeCommandException buildCommandException(
-      Class<? extends KeypleSeCommandException> exceptionClass,
+  protected final KeypleCardCommandException buildCommandException(
+      Class<? extends KeypleCardCommandException> exceptionClass,
       String message,
-      SeCommand commandRef,
+      CardCommand commandRef,
       Integer statusCode) {
 
-    KeypleSeCommandException e;
+    KeypleCardCommandException e;
     CalypsoPoCommand command = (CalypsoPoCommand) commandRef;
     if (exceptionClass == CalypsoPoAccessForbiddenException.class) {
       e = new CalypsoPoAccessForbiddenException(message, command, statusCode);
@@ -77,7 +77,7 @@ public abstract class AbstractPoResponseParser extends AbstractApduResponseParse
   public void checkStatus() {
     try {
       super.checkStatus();
-    } catch (KeypleSeCommandException e) {
+    } catch (KeypleCardCommandException e) {
       throw (CalypsoPoCommandException) e;
     }
   }

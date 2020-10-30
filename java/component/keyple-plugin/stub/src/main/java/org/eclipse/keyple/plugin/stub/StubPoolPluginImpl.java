@@ -12,9 +12,12 @@
 package org.eclipse.keyple.plugin.stub;
 
 import java.util.*;
-import org.eclipse.keyple.core.seproxy.Reader;
-import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
-import org.eclipse.keyple.core.seproxy.exception.*;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.ReaderPoolPlugin;
+import org.eclipse.keyple.core.service.exception.KeypleAllocationNoReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleAllocationReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 
 /**
  * Simulates a @{@link ReaderPoolPlugin} with {@link StubReaderImpl} and {@link StubSecureElement}
@@ -141,7 +144,7 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
 
     /** Remove and Re-insert card to reset logical channel */
     StubReaderImpl stubReader = ((StubReaderImpl) reader);
-    if (stubReader.checkSePresence()) {
+    if (stubReader.checkCardPresence()) {
       StubSecureElement card = stubReader.getSe();
       stubReader.removeSe();
       stubReader.insertSe(card);
