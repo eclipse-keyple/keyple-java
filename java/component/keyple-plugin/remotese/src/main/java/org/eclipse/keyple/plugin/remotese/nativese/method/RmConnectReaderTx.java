@@ -13,10 +13,10 @@ package org.eclipse.keyple.plugin.remotese.nativese.method;
 
 import com.google.gson.JsonObject;
 import java.util.Map;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.nativese.INativeReaderService;
 import org.eclipse.keyple.plugin.remotese.rm.AbstractRemoteMethodTx;
@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 /** Handle the Connect Reader keypleDTO serialization and deserialization */
 public class RmConnectReaderTx extends AbstractRemoteMethodTx<String> {
 
-  private final SeReader localReader;
+  private final Reader localReader;
   private final INativeReaderService slaveAPI;
   private final Map<String, String> options;
 
@@ -44,7 +44,7 @@ public class RmConnectReaderTx extends AbstractRemoteMethodTx<String> {
       String nativeReaderName,
       String virtualReaderName,
       String masterNodeId,
-      SeReader localReader,
+      Reader localReader,
       String slaveNodeId,
       INativeReaderService slaveAPI,
       Map<String, String> options) {
@@ -75,7 +75,7 @@ public class RmConnectReaderTx extends AbstractRemoteMethodTx<String> {
          */
 
         // find the local reader by name
-        SeReader localReader = slaveAPI.findLocalReader(nativeReaderName);
+        Reader localReader = slaveAPI.findLocalReader(nativeReaderName);
 
         if (localReader instanceof ObservableReader) {
           logger.trace(

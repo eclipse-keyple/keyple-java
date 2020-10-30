@@ -23,9 +23,15 @@ import java.util.concurrent.ConcurrentMap;
 import org.eclipse.keyple.calypso.CalypsoBaseTest;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.exception.CalypsoNoSamResourceAvailableException;
-import org.eclipse.keyple.core.selection.SeResource;
-import org.eclipse.keyple.core.seproxy.*;
-import org.eclipse.keyple.core.seproxy.message.*;
+import org.eclipse.keyple.core.card.message.AnswerToReset;
+import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.ChannelControl;
+import org.eclipse.keyple.core.card.message.ProxyReader;
+import org.eclipse.keyple.core.card.message.SelectionStatus;
+import org.eclipse.keyple.core.card.selection.CardResource;
+import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
+import org.eclipse.keyple.core.service.Plugin;
+import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Before;
@@ -59,7 +65,7 @@ public class ManagedSamResourceManagerDefaultTest extends CalypsoBaseTest {
     Boolean exceptionThrown = false;
 
     // test
-    SeResource<CalypsoSam> out = null;
+    CardResource<CalypsoSam> out = null;
     try {
       out =
           srmSpy.allocateSamResource(
@@ -86,12 +92,12 @@ public class ManagedSamResourceManagerDefaultTest extends CalypsoBaseTest {
 
     // init SamResourceManager with a mathching filter
     SamResourceManagerDefault srmSpy = srmSpy(".*");
-    // doReturn(samResourceMock()).when(srmSpy).createSamResource(any(SeReader.class));
+    // doReturn(samResourceMock()).when(srmSpy).createSamResource(any(Reader.class));
 
     long start = System.currentTimeMillis();
 
     // test
-    SeResource<CalypsoSam> out =
+    CardResource<CalypsoSam> out =
         srmSpy.allocateSamResource(
             SamResourceManager.AllocationMode.BLOCKING,
             SamIdentifier.builder().samRevision(SamRevision.AUTO).build());
@@ -107,40 +113,40 @@ public class ManagedSamResourceManagerDefaultTest extends CalypsoBaseTest {
    * Helpers
    */
 
-  SeResponse samSelectionSuccess() {
+  CardResponse samSelectionSuccess() {
     SelectionStatus selectionStatus = Mockito.mock(SelectionStatus.class);
     when(selectionStatus.hasMatched()).thenReturn(true);
     when(selectionStatus.getAtr())
         .thenReturn(new AnswerToReset(ByteArrayUtil.fromHex(CalypsoSamTest.ATR1)));
 
-    SeResponse seResponse = Mockito.mock(SeResponse.class);
-    when(seResponse.getSelectionStatus()).thenReturn(selectionStatus);
-    when(seResponse.isLogicalChannelOpen()).thenReturn(true);
+    CardResponse cardResponse = Mockito.mock(CardResponse.class);
+    when(cardResponse.getSelectionStatus()).thenReturn(selectionStatus);
+    when(cardResponse.isLogicalChannelOpen()).thenReturn(true);
 
-    return seResponse;
+    return cardResponse;
   }
 
   // get a sam manager spy with a selectable sam
   SamResourceManagerDefault srmSpy(String samFilter) {
 
-    List<SeResponse> selectionResponses = new ArrayList<SeResponse>();
+    List<CardResponse> selectionResponses = new ArrayList<CardResponse>();
     selectionResponses.add(samSelectionSuccess());
 
     // create a mock reader
     ProxyReader reader = Mockito.mock(ProxyReader.class);
     when(reader.getName()).thenReturn(SAM_READER_NAME);
-    when(reader.isSePresent()).thenReturn(true);
+    when(reader.isCardPresent()).thenReturn(true);
     doReturn(selectionResponses)
         .when(reader)
-        .transmitSeRequests(
-            any(List.class), any(MultiSeRequestProcessing.class), any(ChannelControl.class));
+        .transmitCardRequests(
+            any(List.class), any(MultiSelectionProcessing.class), any(ChannelControl.class));
 
     // create a list of mock readers
-    ConcurrentMap<String, SeReader> readers = new ConcurrentHashMap<String, SeReader>();
+    ConcurrentMap<String, Reader> readers = new ConcurrentHashMap<String, Reader>();
     readers.put(reader.getName(), reader);
 
     // create the mock plugin
-    ReaderPlugin plugin = Mockito.mock(ReaderPlugin.class);
+    Plugin plugin = Mockito.mock(Plugin.class);
     when(plugin.getReaders()).thenReturn(readers);
     when(plugin.getReader(SAM_READER_NAME)).thenReturn(reader);
 
@@ -156,8 +162,8 @@ public class ManagedSamResourceManagerDefaultTest extends CalypsoBaseTest {
     return mock;
   }
 
-  SeReader seReaderMock() {
-    SeReader mock = Mockito.mock(SeReader.class);
+  Reader readerMock() {
+    Reader mock = Mockito.mock(Reader.class);
     return mock;
   }
 }

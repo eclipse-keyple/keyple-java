@@ -13,9 +13,9 @@ package org.eclipse.keyple.plugin.remotese.integration;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.ObservableReader;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualObservableReader;
@@ -62,7 +62,7 @@ public class SlaveAPITest {
     logger.info("Test {}", name.getMethodName());
     logger.info("------------------------------");
 
-    Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
+    Assert.assertEquals(0, SmartCardService.getInstance().getPlugins().size());
 
     logger.info("*** Init LocalTransportFactory");
     // use a local transport factory for testing purposes (only java calls between client and
@@ -87,7 +87,7 @@ public class SlaveAPITest {
     logger.info("TearDown Test");
 
     StubPlugin stubPlugin =
-        (StubPlugin) SeProxyService.getInstance().getPlugin(Integration.SLAVE_STUB);
+        (StubPlugin) SmartCardService.getInstance().getPlugin(Integration.SLAVE_STUB);
 
     Assert.assertEquals(0, ((ObservableReader) nativeReader).countObservers());
 
@@ -96,7 +96,7 @@ public class SlaveAPITest {
 
     Integration.unregisterAllPlugin(REMOTE_SE_PLUGIN_NAME);
 
-    Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
+    Assert.assertEquals(0, SmartCardService.getInstance().getPlugins().size());
   }
 
   /*
@@ -263,7 +263,7 @@ public class SlaveAPITest {
 
     SlaveAPI slaveAPI =
         new SlaveAPI(
-            SeProxyService.getInstance(),
+            SmartCardService.getInstance(),
             Integration.getFakeDtoNode(),
             SERVER_NODE_ID,
             RPC_TIMEOUT);
@@ -277,7 +277,7 @@ public class SlaveAPITest {
 
     SlaveAPI slaveAPI =
         new SlaveAPI(
-            SeProxyService.getInstance(),
+            SmartCardService.getInstance(),
             Integration.getFakeDtoNode(),
             SERVER_NODE_ID,
             RPC_TIMEOUT);

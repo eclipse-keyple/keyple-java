@@ -13,13 +13,13 @@ package org.eclipse.keyple.plugin.android.omapi.simalliance
 
 import io.mockk.every
 import io.mockk.mockk
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
-import org.eclipse.keyple.core.seproxy.SeSelector
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException
-import org.eclipse.keyple.core.seproxy.message.ApduRequest
-import org.eclipse.keyple.core.seproxy.message.ChannelControl
-import org.eclipse.keyple.core.seproxy.message.SeRequest
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactsCardCommonProtocols
+import org.eclipse.keyple.core.card.message.ApduRequest
+import org.eclipse.keyple.core.card.message.CardRequest
+import org.eclipse.keyple.core.card.message.ChannelControl
+import org.eclipse.keyple.core.card.selection.CardSelector
+import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing
+import org.eclipse.keyple.core.service.exception.KeypleReaderIOException
+import org.eclipse.keyple.core.service.util.ContactsCardCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.plugin.android.omapi.AbstractAndroidOmapiReaderTest
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiSupportedProtocols
@@ -53,15 +53,15 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
 
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
-        val seRequest = SeRequest(SeSelector.builder()
-                .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
-                .aidSelector(SeSelector.AidSelector.builder().aidToSelect(PO_AID)
-                        .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
-                        .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build())
+        val cardRequest = CardRequest(CardSelector.builder()
+                .cardProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
+                .aidSelector(CardSelector.AidSelector.builder().aidToSelect(PO_AID)
+                        .fileOccurrence(CardSelector.AidSelector.FileOccurrence.NEXT)
+                        .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI).build())
                 .build(),
                 poApduRequestList)
 
-        reader.transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN)
+        reader.transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN)
     }
 
     @Test
@@ -71,22 +71,22 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
 
         val poApduRequestList = listOf(ApduRequest(ByteArrayUtil.fromHex("0000"), true))
 
-        val seRequest = SeRequest(SeSelector.builder()
-                .seProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
-                .aidSelector(SeSelector.AidSelector.builder().aidToSelect(PO_AID)
-                        .fileOccurrence(SeSelector.AidSelector.FileOccurrence.NEXT)
-                        .fileControlInformation(SeSelector.AidSelector.FileControlInformation.FCI).build())
+        val cardRequest = CardRequest(CardSelector.builder()
+                .cardProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
+                .aidSelector(CardSelector.AidSelector.builder().aidToSelect(PO_AID)
+                        .fileOccurrence(CardSelector.AidSelector.FileOccurrence.NEXT)
+                        .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI).build())
                 .build(),
                 poApduRequestList)
 
-        val seRequests = ArrayList<SeRequest>()
-        seRequests.add(seRequest)
+        val cardRequests = ArrayList<CardRequest>()
+        cardRequests.add(cardRequest)
 
-        reader.transmitSeRequest(seRequest, ChannelControl.KEEP_OPEN)
-        val seResponseList = reader.transmitSeRequests(seRequests, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        reader.transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN)
+        val cardResponseList = reader.transmitCardRequests(cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
 
         // assert
-        Assert.assertNotNull(seResponseList[0])
+        Assert.assertNotNull(cardResponseList[0])
     }
 
     override fun mockReader(): Reader {

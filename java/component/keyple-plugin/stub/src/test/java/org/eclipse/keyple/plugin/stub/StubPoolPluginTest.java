@@ -11,8 +11,10 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.stub;
 
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.exception.*;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.exception.KeypleAllocationNoReaderException;
+import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -45,10 +47,10 @@ public class StubPoolPluginTest extends BaseStubTest {
     StubPoolPluginImpl stubPoolPlugin =
         (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME).getPlugin();
 
-    SeReader seReader = stubPoolPlugin.plugStubPoolReader("anyGroup", "anyName", stubSe);
+    Reader reader = stubPoolPlugin.plugStubPoolReader("anyGroup", "anyName", stubCard);
 
     Assert.assertEquals(1, stubPoolPlugin.getReaders().size());
-    Assert.assertEquals(true, seReader.isSePresent());
+    Assert.assertEquals(true, reader.isCardPresent());
     Assert.assertEquals(1, stubPoolPlugin.getReaderGroupReferences().size());
   }
 
@@ -59,7 +61,7 @@ public class StubPoolPluginTest extends BaseStubTest {
         (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME).getPlugin();
 
     // plug a reader
-    stubPoolPlugin.plugStubPoolReader("anyGroup", "anyName", stubSe);
+    stubPoolPlugin.plugStubPoolReader("anyGroup", "anyName", stubCard);
 
     // unplug the reader
     stubPoolPlugin.unplugStubPoolReader("anyGroup");
@@ -76,14 +78,14 @@ public class StubPoolPluginTest extends BaseStubTest {
         (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME).getPlugin();
 
     // plug readers
-    stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubSe);
-    stubPoolPlugin.plugStubPoolReader("group2", "stub2", stubSe);
+    stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubCard);
+    stubPoolPlugin.plugStubPoolReader("group2", "stub2", stubCard);
 
     // allocate Reader
-    SeReader seReader = stubPoolPlugin.allocateReader("group1");
+    Reader reader = stubPoolPlugin.allocateReader("group1");
 
     // check allocate result is correct
-    Assert.assertTrue(seReader.getName().startsWith("stub1"));
+    Assert.assertTrue(reader.getName().startsWith("stub1"));
 
     // check allocate list is correct
     Assert.assertTrue(stubPoolPlugin.listAllocatedReaders().containsKey("stub1"));
@@ -98,12 +100,12 @@ public class StubPoolPluginTest extends BaseStubTest {
         (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME).getPlugin();
 
     // plug readers
-    stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubSe);
-    stubPoolPlugin.plugStubPoolReader("group2", "stub2", stubSe);
+    stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubCard);
+    stubPoolPlugin.plugStubPoolReader("group2", "stub2", stubCard);
 
     // allocate Reader
-    SeReader seReader = stubPoolPlugin.allocateReader("group1");
-    SeReader seReader2 = stubPoolPlugin.allocateReader("group1");
+    Reader reader = stubPoolPlugin.allocateReader("group1");
+    Reader reader2 = stubPoolPlugin.allocateReader("group1");
   }
 
   /** Release one reader */
@@ -114,21 +116,21 @@ public class StubPoolPluginTest extends BaseStubTest {
         (StubPoolPluginImpl) new StubPoolPluginFactory(POOL_PLUGIN_NAME).getPlugin();
 
     // plug readers
-    stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubSe);
-    stubPoolPlugin.plugStubPoolReader("group2", "stub2", stubSe);
+    stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubCard);
+    stubPoolPlugin.plugStubPoolReader("group2", "stub2", stubCard);
 
     // allocate Reader
-    SeReader seReader = stubPoolPlugin.allocateReader("group1");
+    Reader reader = stubPoolPlugin.allocateReader("group1");
 
     // release reader
-    stubPoolPlugin.releaseReader(seReader);
+    stubPoolPlugin.releaseReader(reader);
 
     // assert no reader is allocated
     Assert.assertEquals(0, stubPoolPlugin.listAllocatedReaders().size());
   }
 
-  /** Stub Secure Element */
-  private static final StubSecureElement stubSe =
+  /** Stub Card */
+  private static final StubSecureElement stubCard =
       new StubSecureElement() {
         @Override
         public byte[] getATR() {
@@ -136,7 +138,7 @@ public class StubPoolPluginTest extends BaseStubTest {
         }
 
         @Override
-        public String getSeProtocol() {
+        public String getCardProtocol() {
           return "PROTOCOL_ISO7816_3";
         }
       };

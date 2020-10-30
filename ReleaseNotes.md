@@ -16,6 +16,9 @@ Releases:
  - [keyple-android-plugin-android-nfc 0.9a](#keyple-android-plugin-android-nfc-09a)
  - [keyple-android-plugin-android-omapi 0.9a](#keyple-android-plugin-android-omapi-09a)
 
+### keyple-java-core 1.0a
+* KEYP-346 : reorganization and renaming of many packages and classes 
+
 ### keyple-java-core 0.9a
 * KEYP-320 : ReaderPlugin and SeReader no longer implement the Comparable interface
 * KEYP-319 : added a method finalizeSeProcessing to ObservableReader to handle abnormal transaction terminations

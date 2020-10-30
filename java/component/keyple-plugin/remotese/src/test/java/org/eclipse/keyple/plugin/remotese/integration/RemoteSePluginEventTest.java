@@ -13,10 +13,10 @@ package org.eclipse.keyple.plugin.remotese.integration;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
-import org.eclipse.keyple.core.seproxy.event.PluginEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.event.ObservablePlugin;
+import org.eclipse.keyple.core.service.event.PluginEvent;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.plugin.remotese.pluginse.RemoteSePlugin;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
 import org.eclipse.keyple.plugin.stub.StubReader;
@@ -48,7 +48,7 @@ public class RemoteSePluginEventTest extends VirtualReaderBaseTest {
     Assert.assertEquals(0, remoteSePlugin.countObservers());
     clearMasterNSlave();
     unregisterPlugins();
-    Assert.assertEquals(0, seProxyService.getPlugins().size());
+    Assert.assertEquals(0, smartCardService.getPlugins().size());
   }
 
   /**

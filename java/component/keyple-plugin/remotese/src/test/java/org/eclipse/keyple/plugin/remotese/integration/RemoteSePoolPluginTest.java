@@ -11,8 +11,8 @@
  ************************************************************************************** */
 package org.eclipse.keyple.plugin.remotese.integration;
 
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.RemoteSePoolPlugin;
@@ -37,7 +37,7 @@ public class RemoteSePoolPluginTest {
   private StubPoolPlugin stubPoolPlugin;
   private SlaveAPI slaveAPI;
 
-  private SeProxyService seProxyService = SeProxyService.getInstance();
+  private SmartCardService smartCardService = SmartCardService.getInstance();
 
   // created by masterAPI
   private RemoteSePoolPlugin remoteSePoolPlugin;
@@ -51,7 +51,7 @@ public class RemoteSePoolPluginTest {
   @Before
   public void setUp() throws Exception {
 
-    Assert.assertEquals(0, seProxyService.getPlugins().size());
+    Assert.assertEquals(0, smartCardService.getPlugins().size());
 
     // create local transportfactory
     factory = new LocalTransportFactory(SERVER_NODE_ID);
@@ -64,10 +64,10 @@ public class RemoteSePoolPluginTest {
     stubPoolPlugin = Integration.createStubPoolPlugin();
 
     // plug readers
-    stubPoolPlugin.plugStubPoolReader(REF_GROUP1, "stub1", stubSe);
+    stubPoolPlugin.plugStubPoolReader(REF_GROUP1, "stub1", stubCard);
 
     // configure Slave with Stub Pool plugin and local server node
-    slaveAPI = new SlaveAPI(SeProxyService.getInstance(), factory.getServer(), "");
+    slaveAPI = new SlaveAPI(SmartCardService.getInstance(), factory.getServer(), "");
 
     // bind slaveAPI to stubPoolPlugin
     slaveAPI.registerReaderPoolPlugin(stubPoolPlugin);
@@ -79,7 +79,7 @@ public class RemoteSePoolPluginTest {
     // configure Master with RemoteSe Pool plugin and client node
     masterAPI =
         new MasterAPI(
-            SeProxyService.getInstance(),
+            SmartCardService.getInstance(),
             factory.getClient(CLIENT_NODE_ID),
             10000,
             MasterAPI.PLUGIN_TYPE_POOL,
@@ -90,15 +90,15 @@ public class RemoteSePoolPluginTest {
 
   @After
   public void tearDown() throws Exception {
-    SeProxyService.getInstance().unregisterPlugin(stubPoolPlugin.getName());
-    SeProxyService.getInstance().unregisterPlugin(remoteSePoolPlugin.getName());
+    SmartCardService.getInstance().unregisterPlugin(stubPoolPlugin.getName());
+    SmartCardService.getInstance().unregisterPlugin(remoteSePoolPlugin.getName());
     remoteSePoolPlugin = null;
     stubPoolPlugin = null;
     masterAPI = null;
     factory = null;
     slaveAPI = null;
 
-    Assert.assertEquals(0, seProxyService.getPlugins().size());
+    Assert.assertEquals(0, smartCardService.getPlugins().size());
   }
 
   /** Test allocate SUCCESS */
@@ -107,10 +107,10 @@ public class RemoteSePoolPluginTest {
 
     // allocate reader
     remoteSePoolPlugin.bind(SERVER_NODE_ID);
-    SeReader seReader = remoteSePoolPlugin.allocateReader(REF_GROUP1);
+    Reader reader = remoteSePoolPlugin.allocateReader(REF_GROUP1);
 
     // check results
-    Assert.assertNotNull(seReader);
+    Assert.assertNotNull(reader);
   }
 
   /** Test release SUCCESS */
@@ -119,20 +119,20 @@ public class RemoteSePoolPluginTest {
 
     // allocate reader
     remoteSePoolPlugin.bind(SERVER_NODE_ID);
-    SeReader seReader = remoteSePoolPlugin.allocateReader(REF_GROUP1);
+    Reader reader = remoteSePoolPlugin.allocateReader(REF_GROUP1);
 
     // release reader
-    ((RemoteSePoolPlugin) masterAPI.getPlugin()).releaseReader(seReader);
+    ((RemoteSePoolPlugin) masterAPI.getPlugin()).releaseReader(reader);
 
     // re allocate reader
-    SeReader seReader2 = remoteSePoolPlugin.allocateReader(REF_GROUP1);
+    Reader reader2 = remoteSePoolPlugin.allocateReader(REF_GROUP1);
 
     // check results
-    Assert.assertNotNull(seReader2);
+    Assert.assertNotNull(reader2);
   }
 
-  /** Stub Secure Element */
-  private static final StubSecureElement stubSe =
+  /** Stub card */
+  private static final StubSecureElement stubCard =
       new StubSecureElement() {
         @Override
         public byte[] getATR() {
@@ -140,7 +140,7 @@ public class RemoteSePoolPluginTest {
         }
 
         @Override
-        public String getSeProtocol() {
+        public String getCardProtocol() {
           return "ISO_14443_4";
         }
       };

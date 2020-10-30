@@ -1,7 +1,7 @@
 rootProject.name = 'generic-pc-example'
 
 include 'Demo_ObservableReaderNotification'
-include 'Demo_SeProtocolDetection'
+include 'Demo_CardProtocolDetection'
 include 'UseCase1_ExplicitSelectionAid'
 include 'UseCase2_DefaultSelectionNotification'
 include 'UseCase3_GroupedMultiSelection'

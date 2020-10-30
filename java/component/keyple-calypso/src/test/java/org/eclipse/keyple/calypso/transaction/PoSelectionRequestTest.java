@@ -14,8 +14,11 @@ package org.eclipse.keyple.calypso.transaction;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.calypso.SelectFileControl;
-import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.card.message.AnswerToReset;
+import org.eclipse.keyple.core.card.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.SelectionStatus;
+import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Before;
@@ -47,7 +50,7 @@ public class PoSelectionRequestTest {
     poSelectionRequest =
         new PoSelectionRequest(
             PoSelector.builder()
-                .seProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
+                .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
                 .atrFilter(new PoSelector.AtrFilter(".*"))
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
                 .build());
@@ -66,8 +69,8 @@ public class PoSelectionRequestTest {
     SelectionStatus selectionStatus =
         new SelectionStatus(
             new AnswerToReset(ByteArrayUtil.fromHex(ATR_VALUE)), SELECT_APPLICATION_RESPONSE, true);
-    SeResponse seResponse = new SeResponse(true, true, selectionStatus, apduResponses);
-    CalypsoPo calypsoPo = poSelectionRequest.parse(seResponse);
+    CardResponse cardResponse = new CardResponse(true, true, selectionStatus, apduResponses);
+    CalypsoPo calypsoPo = poSelectionRequest.parse(cardResponse);
 
     ElementaryFile ef1 = calypsoPo.getFileBySfi(sfi1);
     FileData records1 = ef1.getData();
@@ -92,8 +95,8 @@ public class PoSelectionRequestTest {
     SelectionStatus selectionStatus =
         new SelectionStatus(
             new AnswerToReset(ByteArrayUtil.fromHex(ATR_VALUE)), SELECT_APPLICATION_RESPONSE, true);
-    SeResponse seResponse = new SeResponse(true, true, selectionStatus, apduResponses);
-    CalypsoPo calypsoPo = poSelectionRequest.parse(seResponse);
+    CardResponse cardResponse = new CardResponse(true, true, selectionStatus, apduResponses);
+    CalypsoPo calypsoPo = poSelectionRequest.parse(cardResponse);
 
     ElementaryFile ef = calypsoPo.getFileByLid(lid1);
     FileHeader efHeader = ef.getHeader();
@@ -126,8 +129,8 @@ public class PoSelectionRequestTest {
     SelectionStatus selectionStatus =
         new SelectionStatus(
             new AnswerToReset(ByteArrayUtil.fromHex(ATR_VALUE)), SELECT_APPLICATION_RESPONSE, true);
-    SeResponse seResponse = new SeResponse(true, true, selectionStatus, apduResponses);
-    CalypsoPo calypsoPo = poSelectionRequest.parse(seResponse);
+    CardResponse cardResponse = new CardResponse(true, true, selectionStatus, apduResponses);
+    CalypsoPo calypsoPo = poSelectionRequest.parse(cardResponse);
 
     ElementaryFile ef = calypsoPo.getFileByLid(lid1);
     FileHeader efHeader = ef.getHeader();

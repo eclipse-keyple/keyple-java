@@ -15,9 +15,9 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.annotation.VisibleForTesting
-import org.eclipse.keyple.core.seproxy.PluginFactory
-import org.eclipse.keyple.core.seproxy.ReaderPlugin
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException
+import org.eclipse.keyple.core.service.Plugin
+import org.eclipse.keyple.core.service.PluginFactory
+import org.eclipse.keyple.core.service.exception.KeyplePluginInstantiationException
 
 /**
  * Build asynchronously the Android OMAPI plugin.
@@ -44,19 +44,19 @@ class AndroidOmapiPluginFactory(private val context: Context) : PluginFactory {
     }
 
     @Throws(KeyplePluginInstantiationException::class)
-    override fun getPlugin(): ReaderPlugin {
-        return getReaderPluginRegardingOsVersion()
+    override fun getPlugin(): Plugin {
+        return getPluginRegardingOsVersion()
     }
 
-    private fun getReaderPluginRegardingOsVersion(): ReaderPlugin {
+    private fun getPluginRegardingOsVersion(): Plugin {
         return if (sdkVersion >= Build.VERSION_CODES.P)
             org.eclipse.keyple.plugin.android.omapi.se.AndroidOmapiPlugin.init(context)
         else
-            getReaderPluginRegardingPackages()
+            getPluginRegardingPackages()
     }
 
     @Throws(KeyplePluginInstantiationException::class)
-    private fun getReaderPluginRegardingPackages(): ReaderPlugin {
+    private fun getPluginRegardingPackages(): Plugin {
         return try {
             context.packageManager
                     .getPackageInfo(SIMALLIANCE_OMAPI_PACKAGE_NAME, 0)
@@ -68,7 +68,7 @@ class AndroidOmapiPluginFactory(private val context: Context) : PluginFactory {
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     @Throws(KeyplePluginInstantiationException::class)
-    fun pluginInstance(): ReaderPlugin {
+    fun pluginInstance(): Plugin {
         return this.plugin
     }
 }

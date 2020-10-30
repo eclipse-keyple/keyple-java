@@ -12,9 +12,12 @@
 package org.eclipse.keyple.plugin.stub;
 
 import java.util.*;
-import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.exception.*;
+import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.ReaderPoolPlugin;
+import org.eclipse.keyple.core.service.exception.KeypleAllocationNoReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleAllocationReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderException;
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 
 /**
  * Simulates a @{@link ReaderPoolPlugin} with {@link StubReaderImpl} and {@link StubSecureElement}
@@ -25,7 +28,7 @@ import org.eclipse.keyple.core.seproxy.exception.*;
 final class StubPoolPluginImpl implements StubPoolPlugin {
 
   StubPluginImpl stubPlugin;
-  Map<String, StubReaderImpl> readerPool; // groupReference, seReader = limitation each
+  Map<String, StubReaderImpl> readerPool; // groupReference, reader = limitation each
   // groupReference
   // can have only one reader
   Map<String, String> allocatedReader; // readerName,groupReference
@@ -48,8 +51,8 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
   }
 
   @Override
-  public SeReader plugStubPoolReader(
-      String groupReference, String readerName, StubSecureElement se) {
+  public Reader plugStubPoolReader(
+      String groupReference, String readerName, StubSecureElement card) {
     try {
       // create new reader
       stubPlugin.plugStubReader(readerName, true);
@@ -57,7 +60,7 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
       // get new reader
       StubReaderImpl newReader = (StubReaderImpl) stubPlugin.getReader(readerName);
 
-      newReader.insertSe(se);
+      newReader.insertSe(card);
 
       // map reader to groupReference
       readerPool.put(groupReference, newReader);
@@ -73,7 +76,7 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
   public void unplugStubPoolReader(String groupReference) {
     try {
       // get reader
-      SeReader stubReader = readerPool.get(groupReference);
+      Reader stubReader = readerPool.get(groupReference);
 
       // remove reader from pool
       readerPool.remove(groupReference);
@@ -93,26 +96,26 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
    *
    * @param groupReference the reference of the group to which the reader belongs (may be null
    *     depending on the implementation made)
-   * @return seReader if available, null otherwise
+   * @return reader if available, null otherwise
    * @throws KeypleAllocationReaderException if the allocation failed due to a technical error
    * @throws KeypleAllocationNoReaderException if the allocation failed due to lack of available
    *     reader
    */
   @Override
-  public SeReader allocateReader(String groupReference) {
+  public Reader allocateReader(String groupReference) {
 
     // find the reader in the readerPool
-    StubReaderImpl seReader = readerPool.get(groupReference);
+    StubReaderImpl reader = readerPool.get(groupReference);
 
     // check if reader is found
-    if (seReader == null) {
+    if (reader == null) {
       throw new KeypleAllocationReaderException(
           "Impossible to allocate a reader for groupReference : "
               + groupReference
               + ". Has the reader being plugged to this referenceGroup?");
     }
     // check if reader is available
-    if (allocatedReader.containsKey(seReader.getName())) {
+    if (allocatedReader.containsKey(reader.getName())) {
       throw new KeypleAllocationNoReaderException(
           "Impossible to allocate a reader for groupReference : "
               + groupReference
@@ -120,34 +123,34 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
     }
 
     // allocate reader
-    allocatedReader.put(seReader.getName(), groupReference);
-    return seReader;
+    allocatedReader.put(reader.getName(), groupReference);
+    return reader;
   }
 
   /**
    * Release a reader
    *
-   * @param seReader the SeReader to be released.
+   * @param reader the Reader to be released.
    */
   @Override
-  public void releaseReader(SeReader seReader) {
-    if (seReader == null) {
-      throw new IllegalArgumentException("Could not release seReader, seReader is null");
+  public void releaseReader(Reader reader) {
+    if (reader == null) {
+      throw new IllegalArgumentException("Could not release reader, reader is null");
     }
-    if (!(seReader instanceof StubReaderImpl)) {
+    if (!(reader instanceof StubReaderImpl)) {
       throw new IllegalArgumentException(
-          "Can not release seReader, SeReader should be of type StubReader");
+          "Can not release reader, Reader should be of type StubReader");
     }
 
-    /** Remove and Re-insert SE to reset logical channel */
-    StubReaderImpl stubReader = ((StubReaderImpl) seReader);
-    if (stubReader.checkSePresence()) {
-      StubSecureElement se = stubReader.getSe();
+    /** Remove and Re-insert card to reset logical channel */
+    StubReaderImpl stubReader = ((StubReaderImpl) reader);
+    if (stubReader.checkCardPresence()) {
+      StubSecureElement card = stubReader.getSe();
       stubReader.removeSe();
-      stubReader.insertSe(se);
+      stubReader.insertSe(card);
     }
 
-    allocatedReader.remove(seReader.getName());
+    allocatedReader.remove(reader.getName());
   }
 
   public Map<String, String> listAllocatedReaders() {
@@ -164,13 +167,13 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
   }
 
   @Override
-  public Map<String, SeReader> getReaders() {
+  public Map<String, Reader> getReaders() {
     return stubPlugin.getReaders();
   }
 
   /** {@inheritDoc} */
   @Override
-  public SeReader getReader(String name) {
+  public Reader getReader(String name) {
     return stubPlugin.getReader(name);
   }
 }

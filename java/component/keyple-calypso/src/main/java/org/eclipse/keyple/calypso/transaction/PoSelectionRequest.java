@@ -18,15 +18,15 @@ import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException;
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoDesynchronizedExchangesException;
-import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.card.message.ApduResponse;
+import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.selection.AbstractCardSelectionRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Specialized selection request to manage the specific characteristics of Calypso POs */
 public class PoSelectionRequest
-    extends AbstractSeSelectionRequest<
+    extends AbstractCardSelectionRequest<
         AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> {
   private static final Logger logger = LoggerFactory.getLogger(PoSelectionRequest.class);
   private final PoClass poClass;
@@ -34,14 +34,14 @@ public class PoSelectionRequest
   /**
    * Constructor.
    *
-   * @param poSelector the selector to target a particular SE
+   * @param poSelector the selector to target a particular card
    */
   public PoSelectionRequest(PoSelector poSelector) {
 
     super(poSelector);
 
     /* No AID selector for a legacy Calypso PO */
-    if (seSelector.getAidSelector() == null) {
+    if (cardSelector.getAidSelector() == null) {
       poClass = PoClass.LEGACY;
     } else {
       poClass = PoClass.ISO;
@@ -99,25 +99,25 @@ public class PoSelectionRequest
   /**
    * Create a CalypsoPo object containing the selection data received from the plugin
    *
-   * @param seResponse the SE response received
+   * @param cardResponse the card response received
    * @return a {@link CalypsoPo}
    * @throws CalypsoDesynchronizedExchangesException if the number of responses is different from
    *     the number of requests
    * @throws CalypsoPoCommandException if a response from the PO was unexpected
    */
   @Override
-  protected CalypsoPo parse(SeResponse seResponse) {
+  protected CalypsoPo parse(CardResponse cardResponse) {
 
     List<AbstractPoCommandBuilder<? extends AbstractPoResponseParser>> commandBuilders =
         getCommandBuilders();
-    List<ApduResponse> apduResponses = seResponse.getApduResponses();
+    List<ApduResponse> apduResponses = cardResponse.getApduResponses();
 
     if (commandBuilders.size() != apduResponses.size()) {
       throw new CalypsoDesynchronizedExchangesException(
           "Mismatch in the number of requests/responses");
     }
 
-    CalypsoPo calypsoPo = new CalypsoPo(seResponse);
+    CalypsoPo calypsoPo = new CalypsoPo(cardResponse);
 
     if (!commandBuilders.isEmpty()) {
       CalypsoPoUtils.updateCalypsoPo(calypsoPo, commandBuilders, apduResponses);
