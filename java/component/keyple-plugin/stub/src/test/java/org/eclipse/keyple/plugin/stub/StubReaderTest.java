@@ -1166,7 +1166,12 @@ public class StubReaderTest extends BaseStubTest {
 
     List<ApduRequest> poApduRequests = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
 
-    SelectionRequest selectionRequest = new SelectionRequest(null, new CardRequest(poApduRequests));
+    CardSelector cardSelector =
+        CardSelector.builder()
+            .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
+            .build();
+    SelectionRequest selectionRequest =
+        new SelectionRequest(cardSelector, new CardRequest(poApduRequests));
 
     List<SelectionRequest> selectionRequests = new ArrayList<SelectionRequest>();
 
@@ -1181,13 +1186,18 @@ public class StubReaderTest extends BaseStubTest {
    * An Exception will be thrown.
    */
   public static List<SelectionRequest> getNoResponseRequest() {
-
+    String poAid = "A000000291A000000191";
     IncreaseCmdBuild poIncreaseCmdBuild =
         new IncreaseCmdBuild(PoClass.ISO, (byte) 0x14, (byte) 0x01, 0);
 
     List<ApduRequest> poApduRequests = Arrays.asList(poIncreaseCmdBuild.getApduRequest());
 
-    SelectionRequest selectionRequest = new SelectionRequest(null, new CardRequest(poApduRequests));
+    CardSelector cardSelector =
+        CardSelector.builder()
+            .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
+            .build();
+    SelectionRequest selectionRequest =
+        new SelectionRequest(cardSelector, new CardRequest(poApduRequests));
 
     List<SelectionRequest> selectionRequests = new ArrayList<SelectionRequest>();
 
@@ -1210,6 +1220,11 @@ public class StubReaderTest extends BaseStubTest {
     ReadRecordsCmdBuild poReadRecord2CmdBuild =
         new ReadRecordsCmdBuild(PoClass.ISO, 0x1E, 1, ReadRecordsCmdBuild.ReadMode.ONE_RECORD, 0);
 
+    CardSelector cardSelector =
+        CardSelector.builder()
+            .aidSelector(CardSelector.AidSelector.builder().aidToSelect(poAid).build())
+            .build();
+
     List<ApduRequest> poApduRequests1 = new ArrayList<ApduRequest>();
     poApduRequests1.add(poReadRecord1CmdBuild.getApduRequest());
     poApduRequests1.add(poReadRecord1CmdBuild.getApduRequest());
@@ -1229,17 +1244,17 @@ public class StubReaderTest extends BaseStubTest {
     poApduRequests3.add(poReadRecord1CmdBuild.getApduRequest());
 
     SelectionRequest selectionRequest1 =
-        new SelectionRequest(null, new CardRequest(poApduRequests1));
+        new SelectionRequest(cardSelector, new CardRequest(poApduRequests1));
 
     SelectionRequest selectionRequest2 =
-        new SelectionRequest(null, new CardRequest(poApduRequests2));
+        new SelectionRequest(cardSelector, new CardRequest(poApduRequests2));
 
     /* This CardRequest fails at step 3 */
     SelectionRequest selectionRequest3 =
-        new SelectionRequest(null, new CardRequest(poApduRequests3));
+        new SelectionRequest(cardSelector, new CardRequest(poApduRequests3));
 
     SelectionRequest selectionRequest4 =
-        new SelectionRequest(null, new CardRequest(poApduRequests1));
+        new SelectionRequest(cardSelector, new CardRequest(poApduRequests1));
 
     List<SelectionRequest> selectionRequests = new ArrayList<SelectionRequest>();
 
