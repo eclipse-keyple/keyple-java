@@ -12,9 +12,9 @@
 package org.eclipse.keyple.plugin.remote.virtual.impl;
 
 import com.google.gson.JsonObject;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
-import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderIOException;
@@ -137,11 +137,12 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
               .setSessionId(virtualReader.getSessionId())
               .setBody(null);
 
+      // unregister reader
+      readers.remove(reader.getName());
+
       // it is assumed a session is already open on the node, else an error is thrown
       KeypleMessageDto response = node.sendRequest(request);
       checkError(response);
-
-      readers.remove(reader.getName());
 
     } finally {
       // close the session on the node
@@ -180,6 +181,6 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
    */
   @Override
   protected Map<String, SeReader> initNativeReaders() throws KeypleReaderIOException {
-    return new ConcurrentHashMap<String, SeReader>();
+    return new HashMap<String, SeReader>();
   }
 }

@@ -58,7 +58,6 @@ public class RemotePoolClientPluginTest {
                 .usingCustomTimeout(10)
                 .build());
     assertThat(RemotePoolClientUtils.getSyncPlugin()).isNotNull();
-    assertThat(RemotePoolClientUtils.getSyncNode()).isNotNull();
 
     // unregister plugin
     SeProxyService.getInstance().unregisterPlugin(RemotePoolClientUtils.getSyncPlugin().getName());

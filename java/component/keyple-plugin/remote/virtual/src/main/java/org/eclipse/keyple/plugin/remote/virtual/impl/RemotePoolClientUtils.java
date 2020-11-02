@@ -14,7 +14,6 @@ package org.eclipse.keyple.plugin.remote.virtual.impl;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.plugin.remote.core.KeypleClientAsyncNode;
-import org.eclipse.keyple.plugin.remote.core.KeypleClientSyncNode;
 import org.eclipse.keyple.plugin.remote.virtual.RemotePoolClientPlugin;
 
 /** Use this class to access the registered {@link RemotePoolClientPlugin} */
@@ -52,15 +51,5 @@ public class RemotePoolClientUtils {
   public static RemotePoolClientPlugin getSyncPlugin() {
     return (RemotePoolClientPlugin)
         SeProxyService.getInstance().getPlugin(RemotePoolClientPluginFactory.PLUGIN_NAME_SYNC);
-  }
-
-  /**
-   * Retrieve the sync node used in the RemotePoolClientPlugin
-   *
-   * @return non nullable instance of KeypleClientSyncNode
-   * @since 1.0
-   */
-  public static KeypleClientSyncNode getSyncNode() {
-    return (KeypleClientSyncNode) ((RemotePoolClientPluginImpl) getSyncPlugin()).getNode();
   }
 }

@@ -45,7 +45,7 @@ public class RemotePoolClientPluginFactory implements PluginFactory {
 
   private static final int DEFAULT_TIMEOUT = 5;
 
-  private RemotePoolClientPlugin plugin;
+  private final RemotePoolClientPlugin plugin;
 
   /**
    * Create a builder process for this factory
