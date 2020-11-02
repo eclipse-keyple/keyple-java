@@ -149,5 +149,6 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
   @Override
   protected void onMessage(KeypleMessageDto msg) {
     // not used
+    throw new UnsupportedOperationException("onMessage method is not supported by this plugin");
   }
 }

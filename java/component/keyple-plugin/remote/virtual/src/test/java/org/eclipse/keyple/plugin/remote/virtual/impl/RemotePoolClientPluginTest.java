@@ -12,6 +12,7 @@
 package org.eclipse.keyple.plugin.remote.virtual.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 import com.google.gson.JsonObject;
 import java.util.Arrays;
@@ -135,6 +136,23 @@ public class RemotePoolClientPluginTest {
     remotePoolPlugin.releaseReader(virtualReader);
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void releaseReader_onWrongReader_shouldThrow_exception() {
+    // mock reader
+    SeReader reader = Mockito.mock(SeReader.class);
+    when(reader.getName()).thenReturn("mock");
+
+    syncEndpoint = new MockSyncEndpoint().setException(new KeypleReaderNotFoundException("msg"));
+    remotePoolPlugin =
+        (RemotePoolClientPluginImpl)
+            RemotePoolClientPluginFactory.builder()
+                .withSyncNode(syncEndpoint)
+                .usingDefaultTimeout()
+                .build()
+                .getPlugin();
+    remotePoolPlugin.releaseReader(reader);
+  }
+
   @Test
   public void getReferenceGroups_onSuccess_shouldReturn_result() {
     syncEndpoint = new MockSyncEndpoint();
@@ -176,6 +194,20 @@ public class RemotePoolClientPluginTest {
     virtualReader = remotePoolPlugin.allocateReader(groupReference);
     assertThat(remotePoolPlugin.getReader(virtualReader.getName())).isNotNull();
     assertThat(virtualReader.isSePresent()).isTrue();
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  public void onMessage_shouldThrow_exception() {
+    asyncEndpoint = new MockAsyncEndpoint();
+    remotePoolPlugin =
+        (RemotePoolClientPluginImpl)
+            SeProxyService.getInstance()
+                .registerPlugin(
+                    RemotePoolClientPluginFactory.builder()
+                        .withAsyncNode(asyncEndpoint)
+                        .usingDefaultTimeout()
+                        .build());
+    remotePoolPlugin.onMessage(new KeypleMessageDto());
   }
 
   /*
