@@ -622,10 +622,12 @@ public abstract class AbstractLocalReader extends AbstractReader {
   }
 
   /**
-   * Processes the {@link SelectionRequest} passed as an argument and returns a {@link SelectionResponse}.
+   * Processes the {@link SelectionRequest} passed as an argument and returns a {@link
+   * SelectionResponse}.
    *
-   * <p>The complete description of the process of transmitting an {@link SelectionRequest} is described
-   * in {@link ProxyReader#transmitSelectionRequests(List, MultiSelectionProcessing, ChannelControl)}.
+   * <p>The complete description of the process of transmitting an {@link SelectionRequest} is
+   * described in {@link ProxyReader#transmitSelectionRequests(List, MultiSelectionProcessing,
+   * ChannelControl)}.
    *
    * @param selectionRequest The {@link SelectionRequest} to be processed (must be not null).
    * @return A not null {@link SelectionResponse}.
