@@ -60,6 +60,8 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
       // get new reader
       StubReaderImpl newReader = (StubReaderImpl) stubPlugin.getReader(readerName);
 
+      newReader.register();
+
       newReader.insertSe(card);
 
       // map reader to groupReference

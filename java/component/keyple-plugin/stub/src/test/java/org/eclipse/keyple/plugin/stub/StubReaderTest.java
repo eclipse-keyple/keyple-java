@@ -94,6 +94,7 @@ public class StubReaderTest extends BaseStubTest {
     Assert.assertEquals(1, stubPlugin.getReaders().size());
 
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+    reader.register();
     Assert.assertEquals(false, reader.isCardPresent());
 
     // CountDown lock
@@ -146,6 +147,7 @@ public class StubReaderTest extends BaseStubTest {
     stubPlugin.plugStubReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+    reader.register();
 
     // CountDown lock
     final CountDownLatch insertLock = new CountDownLatch(1);
@@ -214,6 +216,8 @@ public class StubReaderTest extends BaseStubTest {
     stubPlugin.plugStubReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+
+    reader.register();
 
     // CountDown lock
     final CountDownLatch firstInsertLock = new CountDownLatch(1);
@@ -319,6 +323,7 @@ public class StubReaderTest extends BaseStubTest {
     stubPlugin.plugStubReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+    reader.register();
 
     // CountDown lock
     final CountDownLatch firstInsertLock = new CountDownLatch(1);
@@ -417,6 +422,7 @@ public class StubReaderTest extends BaseStubTest {
     stubPlugin.plugStubReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+    reader.register();
 
     // CountDown lock
     final CountDownLatch lock = new CountDownLatch(1);
@@ -527,6 +533,7 @@ public class StubReaderTest extends BaseStubTest {
     stubPlugin.plugStubReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+    reader.register();
 
     // CountDown lock
     final CountDownLatch lock = new CountDownLatch(1);
@@ -590,6 +597,7 @@ public class StubReaderTest extends BaseStubTest {
     stubPlugin.plugStubReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+    reader.register();
 
     // CountDown lock
     final CountDownLatch lock = new CountDownLatch(1);
@@ -663,6 +671,7 @@ public class StubReaderTest extends BaseStubTest {
     stubPlugin.plugStubReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+    reader.register();
 
     // activate CALYPSO_OLD_CARD_PRIME
     reader.activateProtocol(
@@ -730,6 +739,7 @@ public class StubReaderTest extends BaseStubTest {
     stubPlugin.plugStubReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+    reader.register();
 
     reader.startCardDetection(ObservableReader.PollingMode.SINGLESHOT);
 
@@ -802,6 +812,8 @@ public class StubReaderTest extends BaseStubTest {
     stubPlugin.plugStubReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+    reader.register();
+
     // init Request
     List<CardRequest> requests = getRequestIsoDepSetSample();
 
@@ -831,6 +843,8 @@ public class StubReaderTest extends BaseStubTest {
     stubPlugin.plugStubReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+    reader.register();
+
     // init Request
     List<CardRequest> requests = getNoResponseRequest();
 
@@ -857,6 +871,8 @@ public class StubReaderTest extends BaseStubTest {
     stubPlugin.plugStubReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+    reader.register();
+
     // init Request
     List<CardRequest> cardRequests = getPartialRequestList(0);
 
@@ -994,6 +1010,8 @@ public class StubReaderTest extends BaseStubTest {
     stubPlugin.plugStubReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+    reader.register();
+
     // init Request
     CardRequest cardRequest = getPartialRequest(0);
 
@@ -1024,6 +1042,8 @@ public class StubReaderTest extends BaseStubTest {
     stubPlugin.plugStubReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+    reader.register();
+
     // init Request
     CardRequest cardRequest = getPartialRequest(1);
 
@@ -1054,6 +1074,8 @@ public class StubReaderTest extends BaseStubTest {
     stubPlugin.plugStubReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+    reader.register();
+
     // init Request
     CardRequest cardRequest = getPartialRequest(2);
 
@@ -1084,6 +1106,8 @@ public class StubReaderTest extends BaseStubTest {
     stubPlugin.plugStubReader("StubReaderTest", true);
     Assert.assertEquals(1, stubPlugin.getReaders().size());
     StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+    reader.register();
+
     // init Request
     CardRequest cardRequest = getPartialRequest(3);
 
