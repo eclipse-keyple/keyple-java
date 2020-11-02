@@ -75,11 +75,10 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
                         .fileControlInformation(CardSelector.AidSelector.FileControlInformation.FCI).build())
                 .build(), cardRequest)
 
-        val selectionRequestsRequests = ArrayList<SelectionRequest>()
-        selectionRequestsRequests.add(selectionRequest)
+        val selectionRequests = ArrayList<SelectionRequest>()
+        selectionRequests.add(selectionRequest)
 
-        reader.transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN)
-        val cardResponseList = reader.transmitSelectionRequests(selectionRequestsRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        val cardResponseList = reader.transmitSelectionRequests(selectionRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
 
         // assert
         Assert.assertNotNull(cardResponseList[0])
