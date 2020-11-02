@@ -43,7 +43,7 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
   public SortedSet<String> getReaderGroupReferences() {
     String sessionId = generateSessionId();
     try {
-      // Open a new session on the node, session will be closed at the final
+      // Open a new session on the node, session will be closed at the end of this operation
       node.openSession(sessionId);
 
       KeypleMessageDto request =
@@ -97,6 +97,7 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
 
       return reader;
     } catch (RuntimeException e) {
+      // in case of error, session is closed
       node.closeSessionSilently(sessionId);
       throw e;
     }
@@ -112,6 +113,7 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
     VirtualReader virtualReader = (VirtualReader) reader;
 
     try {
+
       KeypleMessageDto request =
           new KeypleMessageDto()
               .setAction(KeypleMessageDto.Action.RELEASE_READER.name())
@@ -120,6 +122,7 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
               .setSessionId(virtualReader.getSessionId())
               .setBody(null);
 
+      // it is assumed a session is already open on the node, else an error is thrown
       KeypleMessageDto response = node.sendRequest(request);
       checkError(response);
 
