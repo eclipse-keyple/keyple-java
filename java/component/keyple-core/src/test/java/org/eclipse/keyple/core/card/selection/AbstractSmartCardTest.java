@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import org.eclipse.keyple.core.card.message.AnswerToReset;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.SelectionResponse;
 import org.eclipse.keyple.core.card.message.SelectionStatus;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
@@ -32,9 +33,10 @@ public class AbstractSmartCardTest {
     TestSmartCard testSmartCard;
     AnswerToReset answerToReset = new AnswerToReset(ByteArrayUtil.fromHex(ATR1));
     SelectionStatus selectionStatus = new SelectionStatus(answerToReset, null, true);
-    CardResponse cardResponse =
-        new CardResponse(true, false, selectionStatus, new ArrayList<ApduResponse>());
-    testSmartCard = new TestSmartCard(cardResponse);
+    SelectionResponse selectionResponse =
+        new SelectionResponse(
+            selectionStatus, new CardResponse(true, new ArrayList<ApduResponse>()));
+    testSmartCard = new TestSmartCard(selectionResponse);
     assertThat(testSmartCard.hasAtr()).isTrue();
     assertThat(testSmartCard.hasFci()).isFalse();
     assertThat(testSmartCard.getAtrBytes()).isEqualTo(ByteArrayUtil.fromHex(ATR1));
@@ -52,9 +54,10 @@ public class AbstractSmartCardTest {
     TestSmartCard testSmartCard;
     ApduResponse fci = new ApduResponse(ByteArrayUtil.fromHex(FCI_REV31), null);
     SelectionStatus selectionStatus = new SelectionStatus(null, fci, true);
-    CardResponse cardResponse =
-        new CardResponse(true, false, selectionStatus, new ArrayList<ApduResponse>());
-    testSmartCard = new TestSmartCard(cardResponse);
+    SelectionResponse selectionResponse =
+        new SelectionResponse(
+            selectionStatus, new CardResponse(true, new ArrayList<ApduResponse>()));
+    testSmartCard = new TestSmartCard(selectionResponse);
     assertThat(testSmartCard.hasAtr()).isFalse();
     assertThat(testSmartCard.hasFci()).isTrue();
     assertThat(testSmartCard.getFciBytes()).isEqualTo(ByteArrayUtil.fromHex(FCI_REV31));
@@ -73,9 +76,10 @@ public class AbstractSmartCardTest {
     AnswerToReset answerToReset = new AnswerToReset(ByteArrayUtil.fromHex(ATR1));
     ApduResponse fci = new ApduResponse(ByteArrayUtil.fromHex(FCI_REV31), null);
     SelectionStatus selectionStatus = new SelectionStatus(answerToReset, fci, true);
-    CardResponse cardResponse =
-        new CardResponse(true, false, selectionStatus, new ArrayList<ApduResponse>());
-    testSmartCard = new TestSmartCard(cardResponse);
+    SelectionResponse selectionResponse =
+        new SelectionResponse(
+            selectionStatus, new CardResponse(true, new ArrayList<ApduResponse>()));
+    testSmartCard = new TestSmartCard(selectionResponse);
     assertThat(testSmartCard.hasAtr()).isTrue();
     assertThat(testSmartCard.hasFci()).isTrue();
     assertThat(testSmartCard.getAtrBytes()).isEqualTo(ByteArrayUtil.fromHex(ATR1));
@@ -83,7 +87,7 @@ public class AbstractSmartCardTest {
   }
 
   private static class TestSmartCard extends AbstractSmartCard {
-    protected TestSmartCard(CardResponse selectionResponse) {
+    protected TestSmartCard(SelectionResponse selectionResponse) {
       super(selectionResponse);
     }
   }

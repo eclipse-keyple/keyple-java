@@ -27,6 +27,7 @@ import org.eclipse.keyple.core.card.message.AnswerToReset;
 import org.eclipse.keyple.core.card.message.CardResponse;
 import org.eclipse.keyple.core.card.message.ChannelControl;
 import org.eclipse.keyple.core.card.message.ProxyReader;
+import org.eclipse.keyple.core.card.message.SelectionResponse;
 import org.eclipse.keyple.core.card.message.SelectionStatus;
 import org.eclipse.keyple.core.card.selection.CardResource;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
@@ -113,23 +114,25 @@ public class ManagedSamResourceManagerDefaultTest extends CalypsoBaseTest {
    * Helpers
    */
 
-  CardResponse samSelectionSuccess() {
+  SelectionResponse samSelectionSuccess() {
     SelectionStatus selectionStatus = Mockito.mock(SelectionStatus.class);
     when(selectionStatus.hasMatched()).thenReturn(true);
     when(selectionStatus.getAtr())
         .thenReturn(new AnswerToReset(ByteArrayUtil.fromHex(CalypsoSamTest.ATR1)));
 
+    SelectionResponse selectionResponse = Mockito.mock(SelectionResponse.class);
+    when(selectionResponse.getSelectionStatus()).thenReturn(selectionStatus);
     CardResponse cardResponse = Mockito.mock(CardResponse.class);
-    when(cardResponse.getSelectionStatus()).thenReturn(selectionStatus);
     when(cardResponse.isLogicalChannelOpen()).thenReturn(true);
+    when(selectionResponse.getCardResponse()).thenReturn(cardResponse);
 
-    return cardResponse;
+    return selectionResponse;
   }
 
   // get a sam manager spy with a selectable sam
   SamResourceManagerDefault srmSpy(String samFilter) {
 
-    List<CardResponse> selectionResponses = new ArrayList<CardResponse>();
+    List<SelectionResponse> selectionResponses = new ArrayList<SelectionResponse>();
     selectionResponses.add(samSelectionSuccess());
 
     // create a mock reader
@@ -138,7 +141,7 @@ public class ManagedSamResourceManagerDefaultTest extends CalypsoBaseTest {
     when(reader.isCardPresent()).thenReturn(true);
     doReturn(selectionResponses)
         .when(reader)
-        .transmitCardRequests(
+        .transmitSelectionRequests(
             any(List.class), any(MultiSelectionProcessing.class), any(ChannelControl.class));
 
     // create a list of mock readers

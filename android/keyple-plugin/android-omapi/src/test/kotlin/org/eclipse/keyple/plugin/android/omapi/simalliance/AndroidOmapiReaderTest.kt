@@ -83,7 +83,7 @@ internal class AndroidOmapiReaderTest : AbstractAndroidOmapiReaderTest<Reader, A
         cardRequests.add(cardRequest)
 
         reader.transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN)
-        val cardResponseList = reader.transmitCardRequests(cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        val cardResponseList = reader.transmitSelectionRequests(cardRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
 
         // assert
         Assert.assertNotNull(cardResponseList[0])

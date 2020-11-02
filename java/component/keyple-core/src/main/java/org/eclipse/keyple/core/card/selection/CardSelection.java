@@ -13,12 +13,13 @@ package org.eclipse.keyple.core.card.selection;
 
 import java.util.*;
 import org.eclipse.keyple.core.card.command.AbstractApduCommandBuilder;
-import org.eclipse.keyple.core.card.message.CardRequest;
 import org.eclipse.keyple.core.card.message.CardResponse;
 import org.eclipse.keyple.core.card.message.ChannelControl;
 import org.eclipse.keyple.core.card.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.card.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.card.message.ProxyReader;
+import org.eclipse.keyple.core.card.message.SelectionRequest;
+import org.eclipse.keyple.core.card.message.SelectionResponse;
 import org.eclipse.keyple.core.card.message.SelectionStatus;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsRequest;
@@ -116,23 +117,25 @@ public final class CardSelection {
     int index = 0;
 
     /* Check card responses */
-    for (CardResponse cardResponse :
-        ((DefaultSelectionsResponse) defaultSelectionsResponse).getSelectionCardResponses()) {
+    for (SelectionResponse selectionResponse :
+        ((DefaultSelectionsResponse) defaultSelectionsResponse).getSelectionResponses()) {
       /* test if the selection is successful: we should have either a FCI or an ATR */
-      if (cardResponse != null
-          && cardResponse.getSelectionStatus() != null
-          && cardResponse.getSelectionStatus().hasMatched()) {
+      if (selectionResponse != null
+          && selectionResponse.getSelectionStatus() != null
+          && selectionResponse.getSelectionStatus().hasMatched()) {
         /*
          * create a AbstractSmartCard with the class deduced from the selection request
          * during the selection preparation
          */
-        AbstractSmartCard smartCard = cardSelectionRequests.get(index).parse(cardResponse);
+        AbstractSmartCard smartCard = cardSelectionRequests.get(index).parse(selectionResponse);
 
         // determine if the current matching card is selected
-        SelectionStatus selectionStatus = cardResponse.getSelectionStatus();
+        SelectionStatus selectionStatus = selectionResponse.getSelectionStatus();
         boolean isSelected;
         if (selectionStatus != null) {
-          isSelected = selectionStatus.hasMatched() && cardResponse.isLogicalChannelOpen();
+          isSelected =
+              selectionStatus.hasMatched()
+                  && selectionResponse.getCardResponse().isLogicalChannelOpen();
         } else {
           isSelected = false;
         }
@@ -168,9 +171,7 @@ public final class CardSelection {
     if (logger.isTraceEnabled()) {
       logger.trace(
           "Process default SELECTIONRESPONSE ({} response(s))",
-          ((DefaultSelectionsResponse) defaultSelectionsResponse)
-              .getSelectionCardResponses()
-              .size());
+          ((DefaultSelectionsResponse) defaultSelectionsResponse).getSelectionResponses().size());
     }
 
     return processSelection(defaultSelectionsResponse);
@@ -197,7 +198,7 @@ public final class CardSelection {
    * @throws KeypleException if an error occurs during the selection process
    */
   public SelectionsResult processExplicitSelection(Reader reader) {
-    List<CardRequest> selectionRequests = new ArrayList<CardRequest>();
+    List<SelectionRequest> selectionRequests = new ArrayList<SelectionRequest>();
     for (AbstractCardSelectionRequest<? extends AbstractApduCommandBuilder> cardSelectionRequest :
         cardSelectionRequests) {
       selectionRequests.add(cardSelectionRequest.getSelectionRequest());
@@ -207,11 +208,11 @@ public final class CardSelection {
     }
 
     /* Communicate with the card to do the selection */
-    List<CardResponse> cardResponse =
+    List<SelectionResponse> selectionResponses =
         ((ProxyReader) reader)
-            .transmitCardRequests(selectionRequests, multiSelectionProcessing, channelControl);
+            .transmitSelectionRequests(selectionRequests, multiSelectionProcessing, channelControl);
 
-    return processSelection(new DefaultSelectionsResponse(cardResponse));
+    return processSelection(new DefaultSelectionsResponse(selectionResponses));
   }
 
   /**
@@ -222,7 +223,7 @@ public final class CardSelection {
    * @return the {@link AbstractDefaultSelectionsRequest} previously prepared with prepareSelection
    */
   public AbstractDefaultSelectionsRequest getSelectionOperation() {
-    List<CardRequest> selectionRequests = new ArrayList<CardRequest>();
+    List<SelectionRequest> selectionRequests = new ArrayList<SelectionRequest>();
     for (AbstractCardSelectionRequest<? extends AbstractApduCommandBuilder> cardSelectionRequest :
         cardSelectionRequests) {
       selectionRequests.add(cardSelectionRequest.getSelectionRequest());

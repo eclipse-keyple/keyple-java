@@ -20,6 +20,7 @@ import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandExcepti
 import org.eclipse.keyple.core.card.message.AnswerToReset;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.SelectionResponse;
 import org.eclipse.keyple.core.card.message.SelectionStatus;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
@@ -47,8 +48,7 @@ public class SamSelectionRequestTest {
             .build();
     SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
     SelectionStatus selectionStatus = new SelectionStatus(new AnswerToReset(ATR), null, true);
-    CalypsoSam calypsoSam =
-        samSelectionRequest.parse(new CardResponse(true, true, selectionStatus, null));
+    CalypsoSam calypsoSam = samSelectionRequest.parse(new SelectionResponse(selectionStatus, null));
     // minimal checks on the CalypsoSam result
     assertThat(calypsoSam.getSamRevision()).isEqualTo(SamRevision.C1);
     assertThat(calypsoSam.getSerialNumber()).isEqualTo(SN);
@@ -66,7 +66,8 @@ public class SamSelectionRequestTest {
     List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
     apduResponses.add(UNLOCK_APDU_RESPONSE_OK);
     CalypsoSam calypsoSam =
-        samSelectionRequest.parse(new CardResponse(true, true, selectionStatus, apduResponses));
+        samSelectionRequest.parse(
+            new SelectionResponse(selectionStatus, new CardResponse(true, apduResponses)));
     // minimal checks on the CalypsoSam result
     assertThat(calypsoSam.getSamRevision()).isEqualTo(SamRevision.C1);
     assertThat(calypsoSam.getSerialNumber()).isEqualTo(SN);
@@ -84,6 +85,7 @@ public class SamSelectionRequestTest {
     List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
     apduResponses.add(UNLOCK_APDU_RESPONSE_KO);
     CalypsoSam calypsoSam =
-        samSelectionRequest.parse(new CardResponse(true, true, selectionStatus, apduResponses));
+        samSelectionRequest.parse(
+            new SelectionResponse(selectionStatus, new CardResponse(true, apduResponses)));
   }
 }
