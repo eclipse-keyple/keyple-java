@@ -27,7 +27,6 @@ import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.example.calypso.android.omapi.R
 import org.eclipse.keyple.example.calypso.android.omapi.utils.AidEnum
 import org.eclipse.keyple.example.calypso.android.omapi.utils.GenericCardSelectionRequest
-import java.util.*
 
 /**
  * Activity execution Keple-Core based examples.
