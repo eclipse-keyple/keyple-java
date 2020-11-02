@@ -15,7 +15,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import java.util.Map;
 import org.eclipse.keyple.core.card.message.ApduResponse;
-import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.SelectionResponse;
 import org.eclipse.keyple.core.card.message.SelectionStatus;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
@@ -31,12 +31,12 @@ public class SelectionsResultTest {
     SelectionsResult selectionsResult = new SelectionsResult();
     ApduResponse fci1 = new ApduResponse(ByteArrayUtil.fromHex(FCI1), null);
     SelectionStatus selectionStatus1 = new SelectionStatus(null, fci1, true);
-    CardResponse cardResponse1 = new CardResponse(true, false, selectionStatus1, null);
+    SelectionResponse selectionResponse1 = new SelectionResponse(selectionStatus1, null);
     ApduResponse fci2 = new ApduResponse(ByteArrayUtil.fromHex(FCI2), null);
     SelectionStatus selectionStatus2 = new SelectionStatus(null, fci2, true);
-    CardResponse cardResponse2 = new CardResponse(true, false, selectionStatus2, null);
-    TestSmartCard testSmartCard1 = new TestSmartCard(cardResponse1);
-    TestSmartCard testSmartCard2 = new TestSmartCard(cardResponse2);
+    SelectionResponse selectionResponse2 = new SelectionResponse(selectionStatus2, null);
+    TestSmartCard testSmartCard1 = new TestSmartCard(selectionResponse1);
+    TestSmartCard testSmartCard2 = new TestSmartCard(selectionResponse2);
     selectionsResult.addSmartCard(0, testSmartCard1, false);
     selectionsResult.addSmartCard(2, testSmartCard2, true);
     assertThat(selectionsResult.hasActiveSelection()).isTrue();
@@ -55,7 +55,7 @@ public class SelectionsResultTest {
   }
 
   private static class TestSmartCard extends AbstractSmartCard {
-    protected TestSmartCard(CardResponse selectionResponse) {
+    protected TestSmartCard(SelectionResponse selectionResponse) {
       super(selectionResponse);
     }
   }

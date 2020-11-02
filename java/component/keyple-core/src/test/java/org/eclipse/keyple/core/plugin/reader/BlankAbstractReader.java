@@ -15,6 +15,8 @@ import java.util.List;
 import org.eclipse.keyple.core.card.message.CardRequest;
 import org.eclipse.keyple.core.card.message.CardResponse;
 import org.eclipse.keyple.core.card.message.ChannelControl;
+import org.eclipse.keyple.core.card.message.SelectionRequest;
+import org.eclipse.keyple.core.card.message.SelectionResponse;
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
 
 /** A blank class extending AbstractReader only purpose is to be tested and spied by mockito */
@@ -25,8 +27,8 @@ public class BlankAbstractReader extends AbstractReader {
   }
 
   @Override
-  protected List<CardResponse> processCardRequests(
-      List<CardRequest> cardRequests,
+  protected List<SelectionResponse> processSelectionRequests(
+      List<SelectionRequest> selectionRequests,
       MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl) {
     return null;

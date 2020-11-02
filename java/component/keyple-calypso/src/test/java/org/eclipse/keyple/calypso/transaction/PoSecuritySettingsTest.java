@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.calypso.KeyReference;
 import org.eclipse.keyple.core.card.message.AnswerToReset;
-import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.SelectionResponse;
 import org.eclipse.keyple.core.card.message.SelectionStatus;
 import org.eclipse.keyple.core.card.selection.CardResource;
 import org.eclipse.keyple.core.service.Reader;
@@ -225,7 +225,7 @@ public class PoSecuritySettingsTest {
 
     SelectionStatus selectionStatus =
         new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex(ATR1)), null, true);
-    return new CalypsoSam(new CardResponse(true, true, selectionStatus, null));
+    return new CalypsoSam(new SelectionResponse(selectionStatus, null));
   }
 
   @Test

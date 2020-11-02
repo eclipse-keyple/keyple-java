@@ -16,7 +16,7 @@ import static org.eclipse.keyple.calypso.command.sam.SamRevision.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
-import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.SelectionResponse;
 import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
@@ -39,7 +39,7 @@ public class CalypsoSam extends AbstractSmartCard {
    *
    * @param selectionResponse the selection response from the SAM
    */
-  CalypsoSam(CardResponse selectionResponse) {
+  CalypsoSam(SelectionResponse selectionResponse) {
     super(selectionResponse);
 
     String atrString =

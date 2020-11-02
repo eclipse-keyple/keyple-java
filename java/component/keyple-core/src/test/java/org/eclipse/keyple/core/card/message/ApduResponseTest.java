@@ -96,13 +96,13 @@ public class ApduResponseTest {
     return new ApduResponse(ByteArrayUtil.fromHex("9000"), null);
   }
 
-  static ApduResponse getSuccessfullResponse() {
+  static ApduResponse getSuccessfulResponse() {
     return new ApduResponse(ByteArrayUtil.fromHex("FEDCBA98 9000h"), null);
   }
 
   public static List<ApduResponse> getAListOfAPDUs() {
     List<ApduResponse> apdus = new ArrayList<ApduResponse>();
-    apdus.add(getSuccessfullResponse());
+    apdus.add(getSuccessfulResponse());
     return apdus;
   }
 }

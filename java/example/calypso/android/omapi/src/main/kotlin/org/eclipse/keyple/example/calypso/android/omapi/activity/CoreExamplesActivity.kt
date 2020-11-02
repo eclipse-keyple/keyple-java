@@ -14,9 +14,9 @@ package org.eclipse.keyple.example.calypso.android.omapi.activity
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_core_examples.eventRecyclerView
 import kotlinx.android.synthetic.main.activity_core_examples.toolbar
-import org.eclipse.keyple.core.card.message.CardRequest
 import org.eclipse.keyple.core.card.message.ChannelControl
 import org.eclipse.keyple.core.card.message.ProxyReader
+import org.eclipse.keyple.core.card.message.SelectionRequest
 import org.eclipse.keyple.core.card.selection.CardSelection
 import org.eclipse.keyple.core.card.selection.CardSelector
 import org.eclipse.keyple.core.card.selection.CardSelector.AidSelector
@@ -27,6 +27,7 @@ import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.example.calypso.android.omapi.R
 import org.eclipse.keyple.example.calypso.android.omapi.utils.AidEnum
 import org.eclipse.keyple.example.calypso.android.omapi.utils.GenericCardSelectionRequest
+import java.util.*
 
 /**
  * Activity execution Keple-Core based examples.
@@ -74,15 +75,17 @@ class CoreExamplesActivity : ExamplesActivity() {
                     val cardSelector = CardSelector.builder()
                             .aidSelector(AidSelector.builder().aidToSelect(poAid).build())
                             .build()
-                    val cardRequest = CardRequest(cardSelector, null)
+                    val selectionRequest = SelectionRequest(cardSelector, null)
+                    val selectionRequests = ArrayList<SelectionRequest>()
+                    selectionRequests.add(selectionRequest)
 
                     addActionEvent("Sending CardRequest to select: $poAid")
                     try {
-                        val cardResponse = (it.value as ProxyReader).transmitCardRequest(cardRequest, ChannelControl.KEEP_OPEN)
+                        val selectionResponses = (it.value as ProxyReader).transmitSelectionRequests(selectionRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
 
-                        if (cardResponse?.selectionStatus?.hasMatched() == true) {
+                        if (selectionResponses[0]?.selectionStatus?.hasMatched() == true) {
                             addResultEvent("The selection of the PO has succeeded.")
-                            addResultEvent("Application FCI = ${ByteArrayUtil.toHex(cardResponse.selectionStatus.fci.bytes)}")
+                            addResultEvent("Application FCI = ${ByteArrayUtil.toHex(selectionResponses[0].selectionStatus.fci.bytes)}")
                         } else {
                             addResultEvent("The selection of the PO Failed")
                         }

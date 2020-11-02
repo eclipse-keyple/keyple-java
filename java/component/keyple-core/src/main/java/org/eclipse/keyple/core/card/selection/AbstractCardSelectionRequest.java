@@ -16,7 +16,8 @@ import java.util.List;
 import org.eclipse.keyple.core.card.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.core.card.message.ApduRequest;
 import org.eclipse.keyple.core.card.message.CardRequest;
-import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.SelectionRequest;
+import org.eclipse.keyple.core.card.message.SelectionResponse;
 import org.eclipse.keyple.core.service.exception.KeypleException;
 
 /**
@@ -41,12 +42,12 @@ public abstract class AbstractCardSelectionRequest<T extends AbstractApduCommand
    *
    * @return the selection CardRequest
    */
-  final CardRequest getSelectionRequest() {
+  final SelectionRequest getSelectionRequest() {
     List<ApduRequest> cardSelectionApduRequests = new ArrayList<ApduRequest>();
     for (T commandBuilder : commandBuilders) {
       cardSelectionApduRequests.add(commandBuilder.getApduRequest());
     }
-    return new CardRequest(cardSelector, cardSelectionApduRequests);
+    return new SelectionRequest(cardSelector, new CardRequest(cardSelectionApduRequests));
   }
 
   public CardSelector getCardSelector() {
@@ -74,9 +75,9 @@ public abstract class AbstractCardSelectionRequest<T extends AbstractApduCommand
   /**
    * Virtual parse method
    *
-   * @param cardResponse the card response received
+   * @param selectionResponse the card response received
    * @return a {@link AbstractSmartCard}
    * @throws KeypleException if an error occurs while parsing the card response
    */
-  protected abstract AbstractSmartCard parse(CardResponse cardResponse);
+  protected abstract AbstractSmartCard parse(SelectionResponse selectionResponse);
 }

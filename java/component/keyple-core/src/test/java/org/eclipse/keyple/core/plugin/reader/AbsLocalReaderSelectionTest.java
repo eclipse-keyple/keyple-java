@@ -20,9 +20,11 @@ import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.card.message.ApduRequest;
 import org.eclipse.keyple.core.card.message.ApduResponse;
 import org.eclipse.keyple.core.card.message.CardRequest;
-import org.eclipse.keyple.core.card.message.CardResponse;
 import org.eclipse.keyple.core.card.message.ChannelControl;
+import org.eclipse.keyple.core.card.message.SelectionRequest;
+import org.eclipse.keyple.core.card.message.SelectionResponse;
 import org.eclipse.keyple.core.card.selection.CardSelector;
+import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing;
 import org.eclipse.keyple.core.service.exception.KeypleReaderException;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Before;
@@ -86,11 +88,18 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     CardSelector cardSelector = getAtrSelector();
 
-    CardRequest cardRequest = new CardRequest(cardSelector, new ArrayList<ApduRequest>());
+    SelectionRequest selectionRequest =
+        new SelectionRequest(cardSelector, new CardRequest(new ArrayList<ApduRequest>()));
 
-    CardResponse cardResponse = r.processCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
+    List<SelectionRequest> selectionRequests = new ArrayList<SelectionRequest>();
 
-    assertThat(cardResponse.getSelectionStatus().hasMatched()).isTrue();
+    selectionRequests.add(selectionRequest);
+
+    List<SelectionResponse> selectionResponses =
+        r.processSelectionRequests(
+            selectionRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+
+    assertThat(selectionResponses.get(0).getSelectionStatus().hasMatched()).isTrue();
 
     assertThat(r.isLogicalChannelOpen()).isTrue();
   }
@@ -103,11 +112,18 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     CardSelector cardSelector = getAtrSelector();
 
-    CardRequest cardRequest = new CardRequest(cardSelector, new ArrayList<ApduRequest>());
+    SelectionRequest selectionRequest =
+        new SelectionRequest(cardSelector, new CardRequest(new ArrayList<ApduRequest>()));
 
-    CardResponse cardResponse = r.processCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
+    List<SelectionRequest> selectionRequests = new ArrayList<SelectionRequest>();
 
-    assertThat(cardResponse.getSelectionStatus().hasMatched()).isFalse();
+    selectionRequests.add(selectionRequest);
+
+    List<SelectionResponse> selectionResponses =
+        r.processSelectionRequests(
+            selectionRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+
+    assertThat(selectionResponses.get(0).getSelectionStatus().hasMatched()).isFalse();
   }
 
   /*
@@ -121,11 +137,18 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     CardSelector cardSelector = getAidSelector();
 
-    CardRequest cardRequest = new CardRequest(cardSelector, new ArrayList<ApduRequest>());
+    SelectionRequest selectionRequest =
+        new SelectionRequest(cardSelector, new CardRequest(new ArrayList<ApduRequest>()));
 
-    CardResponse cardResponse = r.processCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
+    List<SelectionRequest> selectionRequests = new ArrayList<SelectionRequest>();
 
-    assertThat(cardResponse.getSelectionStatus().hasMatched()).isTrue();
+    selectionRequests.add(selectionRequest);
+
+    List<SelectionResponse> selectionResponses =
+        r.processSelectionRequests(
+            selectionRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+
+    assertThat(selectionResponses.get(0).getSelectionStatus().hasMatched()).isTrue();
   }
 
   @Test
@@ -135,11 +158,18 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     CardSelector cardSelector = getAidSelector();
 
-    CardRequest cardRequest = new CardRequest(cardSelector, new ArrayList<ApduRequest>());
+    SelectionRequest selectionRequest =
+        new SelectionRequest(cardSelector, new CardRequest(new ArrayList<ApduRequest>()));
 
-    CardResponse cardResponse = r.processCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
+    List<SelectionRequest> selectionRequests = new ArrayList<SelectionRequest>();
 
-    assertThat(cardResponse.getSelectionStatus().hasMatched()).isFalse();
+    selectionRequests.add(selectionRequest);
+
+    List<SelectionResponse> selectionResponses =
+        r.processSelectionRequests(
+            selectionRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+
+    assertThat(selectionResponses.get(0).getSelectionStatus().hasMatched()).isFalse();
   }
 
   /*
@@ -157,11 +187,18 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     CardSelector cardSelector = getAidSelector();
 
-    CardRequest cardRequest = new CardRequest(cardSelector, new ArrayList<ApduRequest>());
+    SelectionRequest selectionRequest =
+        new SelectionRequest(cardSelector, new CardRequest(new ArrayList<ApduRequest>()));
 
-    CardResponse cardResponse = r.processCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
+    List<SelectionRequest> selectionRequests = new ArrayList<SelectionRequest>();
 
-    assertThat(cardResponse.getSelectionStatus().hasMatched()).isTrue();
+    selectionRequests.add(selectionRequest);
+
+    List<SelectionResponse> selectionResponses =
+        r.processSelectionRequests(
+            selectionRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+
+    assertThat(selectionResponses.get(0).getSelectionStatus().hasMatched()).isTrue();
   }
 
   /*
@@ -188,11 +225,18 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     CardSelector cardSelector =
         CardSelector.builder().atrFilter(atrFilter).aidSelector(aidSelector).build();
 
-    CardRequest cardRequest = new CardRequest(cardSelector, new ArrayList<ApduRequest>());
+    SelectionRequest selectionRequest =
+        new SelectionRequest(cardSelector, new CardRequest(new ArrayList<ApduRequest>()));
 
-    CardResponse cardResponse = r.processCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
+    List<SelectionRequest> selectionRequests = new ArrayList<SelectionRequest>();
 
-    assertThat(cardResponse.getSelectionStatus().hasMatched()).isTrue();
+    selectionRequests.add(selectionRequest);
+
+    List<SelectionResponse> selectionResponses =
+        r.processSelectionRequests(
+            selectionRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+
+    assertThat(selectionResponses.get(0).getSelectionStatus().hasMatched()).isTrue();
   }
 
   /*
@@ -206,11 +250,18 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     CardSelector cardSelector = CardSelector.builder().build();
 
-    CardRequest cardRequest = new CardRequest(cardSelector, new ArrayList<ApduRequest>());
+    SelectionRequest selectionRequest =
+        new SelectionRequest(cardSelector, new CardRequest(new ArrayList<ApduRequest>()));
 
-    CardResponse cardResponse = r.processCardRequest(cardRequest, ChannelControl.KEEP_OPEN);
+    List<SelectionRequest> selectionRequests = new ArrayList<SelectionRequest>();
 
-    assertThat(cardResponse.getSelectionStatus().hasMatched()).isTrue();
+    selectionRequests.add(selectionRequest);
+
+    List<SelectionResponse> selectionResponses =
+        r.processSelectionRequests(
+            selectionRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
+
+    assertThat(selectionResponses.get(0).getSelectionStatus().hasMatched()).isTrue();
   }
 
   /*

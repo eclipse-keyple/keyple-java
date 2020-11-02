@@ -15,7 +15,7 @@ import java.util.*;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
-import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.SelectionResponse;
 import org.eclipse.keyple.core.card.selection.AbstractSmartCard;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
@@ -95,7 +95,7 @@ public class CalypsoPo extends AbstractSmartCard {
    *
    * @param selectionResponse the response to the selection application command
    */
-  CalypsoPo(CardResponse selectionResponse) {
+  CalypsoPo(SelectionResponse selectionResponse) {
     super(selectionResponse);
 
     int bufferSizeIndicator;

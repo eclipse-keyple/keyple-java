@@ -13,7 +13,7 @@ package org.eclipse.keyple.core.card.selection;
 
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.card.message.AnswerToReset;
-import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.SelectionResponse;
 import org.eclipse.keyple.core.card.message.SelectionStatus;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -39,7 +39,7 @@ public class CardResourceTest extends CoreBaseTest {
     SelectionStatus selectionStatus =
         new SelectionStatus(
             new AnswerToReset(ByteArrayUtil.fromHex("3B00000000000000")), null, false);
-    SmartCard smartCard = new SmartCard(new CardResponse(true, true, selectionStatus, null));
+    SmartCard smartCard = new SmartCard(new SelectionResponse(selectionStatus, null));
     Reader reader = null;
     LocalCardResource localCardResource = new LocalCardResource(reader, smartCard);
     Assert.assertEquals(smartCard, localCardResource.getSmartCard());
@@ -48,7 +48,7 @@ public class CardResourceTest extends CoreBaseTest {
 
   /** Matching card instantiation */
   private final class SmartCard extends AbstractSmartCard {
-    SmartCard(CardResponse selectionResponse) {
+    SmartCard(SelectionResponse selectionResponse) {
       super(selectionResponse);
     }
   }
