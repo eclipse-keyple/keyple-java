@@ -39,6 +39,11 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
     super(name);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public SortedSet<String> getReaderGroupReferences() {
     String sessionId = generateSessionId();
@@ -68,6 +73,11 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
     }
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public SeReader allocateReader(String groupReference) {
     String sessionId = generateSessionId();
@@ -103,6 +113,11 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
     }
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public void releaseReader(SeReader reader) {
     Assert.getInstance().notNull(reader, "reader");
@@ -134,11 +149,11 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
     }
   }
 
-  @Override
-  protected Map<String, SeReader> initNativeReaders() throws KeypleReaderIOException {
-    return new ConcurrentHashMap<String, SeReader>();
-  }
-
+  /**
+   * {@inheritDoc}
+   *
+   * @since 1.0
+   */
   @Override
   public SeReader getReader(String name) {
     Assert.getInstance().notNull(name, "reader name");
@@ -149,9 +164,22 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
     return seReader;
   }
 
+  /**
+   * (package-private)<br>
+   * Not used in this plugin
+   */
   @Override
   protected void onMessage(KeypleMessageDto msg) {
     // not used
     throw new UnsupportedOperationException("onMessage method is not supported by this plugin");
+  }
+
+  /**
+   * (package-private)<br>
+   * Initialize the readers map
+   */
+  @Override
+  protected Map<String, SeReader> initNativeReaders() throws KeypleReaderIOException {
+    return new ConcurrentHashMap<String, SeReader>();
   }
 }
