@@ -132,8 +132,8 @@ public abstract class AbstractPlugin implements Plugin {
           String.format("This plugin, %s, is already registered", getName()));
     isRegistered = true;
     readers.putAll(initNativeReaders());
-    final Collection<SeReader> _readers = readers.values();
-    for (SeReader seReader : _readers) {
+    final Collection<Reader> _readers = readers.values();
+    for (Reader seReader : _readers) {
       seReader.register();
     }
   }
@@ -144,7 +144,7 @@ public abstract class AbstractPlugin implements Plugin {
     checkStatus();
     isRegistered = false;
     for (String key : readers.keySet()) {
-      final SeReader seReader = readers.remove(key);
+      final Reader seReader = readers.remove(key);
       seReader.unregister();
     }
   }

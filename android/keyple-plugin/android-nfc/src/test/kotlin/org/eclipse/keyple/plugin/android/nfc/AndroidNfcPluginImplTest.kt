@@ -13,6 +13,7 @@ package org.eclipse.keyple.plugin.android.nfc
 
 import java.io.IOException
 import org.eclipse.keyple.core.service.exception.KeypleReaderException
+import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

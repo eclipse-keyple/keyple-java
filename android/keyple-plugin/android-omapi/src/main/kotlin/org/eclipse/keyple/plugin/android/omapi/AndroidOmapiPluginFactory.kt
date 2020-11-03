@@ -33,7 +33,7 @@ class AndroidOmapiPluginFactory(private val context: Context, callback: (Android
     }
 
     init {
-        readerPlugin = getReaderPluginRegardingOsVersion()
+        readerPlugin = getPluginRegardingOsVersion()
         readerPlugin.init(context) { callback(this) }
     }
 

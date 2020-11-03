@@ -587,6 +587,6 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader
     notifyObservers(
         new ReaderEvent(getPluginName(), getName(), ReaderEvent.EventType.UNREGISTERED, null));
     clearObservers();
-    stopSeDetection();
+    stopCardDetection();
   }
 }
