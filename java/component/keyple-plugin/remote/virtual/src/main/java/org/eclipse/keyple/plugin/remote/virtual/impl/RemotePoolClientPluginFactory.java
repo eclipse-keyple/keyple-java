@@ -16,7 +16,6 @@ import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.util.Assert;
 import org.eclipse.keyple.plugin.remote.core.KeypleClientAsync;
 import org.eclipse.keyple.plugin.remote.core.KeypleClientSync;
-import org.eclipse.keyple.plugin.remote.core.KeypleServerSyncNode;
 import org.eclipse.keyple.plugin.remote.virtual.RemotePoolClientPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +31,8 @@ import org.slf4j.LoggerFactory;
  * instance.
  *
  * <p>Plugin name is defined by default in the factory. Access the Remote Pool Client Plugin with
- * the {@link RemotePoolClientUtils#getAsyncPlugin()} or {@link RemotePoolClientUtils#getSyncNode()}
- * depending on your node configuration.
+ * the {@link RemotePoolClientUtils#getAsyncPlugin()} or {@link
+ * RemotePoolClientUtils#getSyncPlugin()} depending on your node configuration.
  */
 public class RemotePoolClientPluginFactory implements PluginFactory {
 
@@ -100,8 +99,7 @@ public class RemotePoolClientPluginFactory implements PluginFactory {
     TimeoutStep withAsyncNode(KeypleClientAsync asyncEndpoint);
 
     /**
-     * Configure the plugin to be used with a sync node. Retrieve the created {@link
-     * KeypleServerSyncNode} with the method {@link RemotePoolClientUtils#getSyncNode()}
+     * Configure the plugin to be used with a sync node.
      *
      * @param syncEndpoint non nullable instance of an sync client endpoint*
      * @return next configuration step
