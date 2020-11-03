@@ -149,6 +149,7 @@ final class NativePoolServerServiceImpl extends AbstractNativeService
     for (ReaderPlugin plugin : plugins) {
       if (plugin.getReaderNames().contains(readerName)) {
         ((ReaderPoolPlugin) plugin).releaseReader(plugin.getReader(readerName));
+        return;
       }
     }
     throw new KeypleReaderNotFoundException(readerName);

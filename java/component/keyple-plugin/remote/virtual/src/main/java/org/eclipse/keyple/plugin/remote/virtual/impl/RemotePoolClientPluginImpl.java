@@ -57,7 +57,7 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
               .setSessionId(sessionId)
               .setBody(null);
 
-      KeypleMessageDto response = getNode().sendRequest(request);
+      KeypleMessageDto response = node.sendRequest(request);
 
       checkError(response);
       String readerGroupReferencesJson =
@@ -93,7 +93,7 @@ final class RemotePoolClientPluginImpl extends AbstractRemotePlugin
               .setSessionId(sessionId)
               .setBody(body.toString());
 
-      KeypleMessageDto response = getNode().sendRequest(request);
+      KeypleMessageDto response = node.sendRequest(request);
 
       checkError(response);
       VirtualReader reader =
