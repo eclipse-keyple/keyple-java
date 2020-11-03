@@ -20,11 +20,16 @@ pipeline {
             }
             steps{
                 container('java-builder') {
+                    configFileProvider(
+                        [configFile(fileId: 'gradle.properties',
+                            targetLocation: '/home/jenkins/agent/gradle.properties')]) {
+                        sh 'ln -s /home/jenkins/agent/gradle.properties /home/jenkins/.gradle/gradle.properties'
+                        /* Read key Id in gradle.properties */
+                        sh 'head -1 /home/jenkins/.gradle/gradle.properties'
+                    }
                     withCredentials([
                         file(credentialsId: 'secret-subkeys.asc',
                             variable: 'KEYRING')]) {
-                        sh 'ln -s /home/jenkins/agent/gradle.properties /home/jenkins/.gradle/gradle.properties'
-                        
                         /* Import GPG keyring with --batch and trust the keys non-interactively in a shell build step */
                         sh 'gpg1 --batch --import "${KEYRING}"'
                         sh 'gpg1 --list-secret-keys'
@@ -32,12 +37,6 @@ pipeline {
                         sh 'gpg1 --version'
                         sh 'for fpr in $(gpg1 --list-keys --with-colons  | awk -F: \'/fpr:/ {print $10}\' | sort -u); do echo -e "5\ny\n" |  gpg1 --batch --command-fd 0 --expert --edit-key ${fpr} trust; done'
                         sh 'ls -l  /home/jenkins/.gnupg/'
-                    }
-                    configFileProvider(
-                        [configFile(fileId: 'gradle.properties',
-                            targetLocation: '/home/jenkins/agent/gradle.properties')]) {
-                        /* Read key Id in gradle.properties */
-                        sh 'head -1 /home/jenkins/.gradle/gradle.properties'
                     }
                 }
             }
@@ -85,9 +84,7 @@ pipeline {
             steps{
                 container('java-builder') {
                     sh 'keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 90'
-                    
-                    sh "./gradlew -b java/example/calypso/remotese/build.gradle check -P keyple_version=${keypleVersion}"
-                    
+
                     dir('java/example/calypso/android/nfc/') {
                         sh "./gradlew assembleDebug -P keyple_version=${keypleVersion}"
                     }
