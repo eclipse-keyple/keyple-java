@@ -46,7 +46,6 @@ public abstract class AbstractPlugin implements Plugin {
   protected AbstractPlugin(String name) {
     this.name = name;
     this.isRegistered = false;
-    readers.putAll(initNativeReaders());
   }
 
   /** @return the name of the plugin */
@@ -132,6 +131,7 @@ public abstract class AbstractPlugin implements Plugin {
       throw new IllegalStateException(
           String.format("This plugin, %s, is already registered", getName()));
     isRegistered = true;
+    readers.putAll(initNativeReaders());
     final Collection<SeReader> _readers = readers.values();
     for (SeReader seReader : _readers) {
       seReader.register();

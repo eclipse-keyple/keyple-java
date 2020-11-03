@@ -19,14 +19,19 @@ import org.junit.Test
 
 class AndroidNfcPluginImplTest {
 
-    private lateinit var plugin: AndroidNfcPluginImpl
+    private val plugin = AndroidNfcPluginImpl
 
     // init before each test
     @Before
     @Throws(IOException::class)
     fun setUp() {
         // get unique instance
-        plugin = AndroidNfcPluginImpl
+        plugin.register()
+    }
+
+    @After
+    fun tearDown() {
+        plugin.unregister()
     }
 
     /*

@@ -26,7 +26,9 @@ abstract class BasicActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         /* register Omapi Plugin to the SmartCardService */
         try {
-            SmartCardService.getInstance().registerPlugin(AndroidOmapiPluginFactory(this))
+            AndroidOmapiPluginFactory(this){
+                SmartCardService.getInstance().registerPlugin(it)
+            }
         } catch (e: KeyplePluginInstantiationException) {
             e.printStackTrace()
         }

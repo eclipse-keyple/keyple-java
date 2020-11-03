@@ -23,19 +23,25 @@ import org.eclipse.keyple.core.service.exception.KeyplePluginInstantiationExcept
  * Build asynchronously the Android OMAPI plugin.
  * Platform incompabilities are not managed
  */
-class AndroidOmapiPluginFactory(private val context: Context) : PluginFactory {
+class AndroidOmapiPluginFactory(private val context: Context, callback: (AndroidOmapiPluginFactory) -> Unit) : PluginFactory {
 
     private var sdkVersion: Int = Build.VERSION.SDK_INT
+    private lateinit var readerPlugin: AbstractAndroidOmapiPlugin<*, *>
 
     companion object {
         const val SIMALLIANCE_OMAPI_PACKAGE_NAME = "org.simalliance.openmobileapi.service"
+    }
+
+    init {
+        readerPlugin = getReaderPluginRegardingOsVersion()
+        readerPlugin.init(context) { callback(this) }
     }
 
     /**
      *  sdkVersion can be forced for test purpose
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    constructor(context: Context, sdkVersion: Int) : this(context) {
+    constructor(context: Context, sdkVersion: Int, callback: (AndroidOmapiPluginFactory) -> Unit) : this(context, callback) {
         this.sdkVersion = sdkVersion
     }
 
@@ -48,19 +54,19 @@ class AndroidOmapiPluginFactory(private val context: Context) : PluginFactory {
         return getPluginRegardingOsVersion()
     }
 
-    private fun getPluginRegardingOsVersion(): Plugin {
+    private fun getPluginRegardingOsVersion(): AbstractAndroidOmapiPlugin<*, *> {
         return if (sdkVersion >= Build.VERSION_CODES.P)
-            org.eclipse.keyple.plugin.android.omapi.se.AndroidOmapiPlugin.init(context)
+            org.eclipse.keyple.plugin.android.omapi.se.AndroidOmapiPlugin
         else
             getPluginRegardingPackages()
     }
 
     @Throws(KeyplePluginInstantiationException::class)
-    private fun getPluginRegardingPackages(): Plugin {
+    private fun getPluginRegardingPackages(): AbstractAndroidOmapiPlugin<*, *> {
         return try {
             context.packageManager
                     .getPackageInfo(SIMALLIANCE_OMAPI_PACKAGE_NAME, 0)
-            org.eclipse.keyple.plugin.android.omapi.simalliance.AndroidOmapiPlugin.init(context)
+            org.eclipse.keyple.plugin.android.omapi.simalliance.AndroidOmapiPlugin
         } catch (e2: PackageManager.NameNotFoundException) {
             throw KeyplePluginInstantiationException("No OMAPI lib available within the OS")
         }

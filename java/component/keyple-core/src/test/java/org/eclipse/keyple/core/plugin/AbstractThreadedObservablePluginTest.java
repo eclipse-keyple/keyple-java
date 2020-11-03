@@ -34,13 +34,14 @@ public class AbstractThreadedObservablePluginTest extends CoreBaseTest {
   }
 
   /**
-   * An KeypleRuntimeException is thrown when building the plugin
+   * An KeypleRuntimeException is thrown when registering the plugin
    *
    * @throws Throwable
    */
   @Test(expected = KeypleReaderException.class)
   public void instantiatePlugin() {
-    new BlankFailingPlugin("addObserverTest");
+    BlankFailingPlugin plugin = new BlankFailingPlugin("addObserverTest");
+    plugin.register();
   }
 
   @Test
