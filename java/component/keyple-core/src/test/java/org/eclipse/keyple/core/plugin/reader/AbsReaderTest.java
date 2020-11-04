@@ -95,7 +95,7 @@ public class AbsReaderTest extends CoreBaseTest {
             MultiSelectionProcessing.FIRST_MATCH,
             ChannelControl.CLOSE_AFTER);
     verify(r, times(1))
-        .processSelectionRequests(
+        .processCardSelectionRequests(
             cardSelectionRequests,
             MultiSelectionProcessing.FIRST_MATCH,
             ChannelControl.CLOSE_AFTER);
@@ -131,9 +131,9 @@ public class AbsReaderTest extends CoreBaseTest {
     AbstractReader r = Mockito.spy(new BlankAbstractReader(pluginName, readerName));
     when(r.processCardRequest(any(CardRequest.class), any(ChannelControl.class)))
         .thenReturn(CardSelectionResponseTest.getACardResponse());
-    when(r.processSelectionRequests(
+    when(r.processCardSelectionRequests(
             any(List.class), any(MultiSelectionProcessing.class), any(ChannelControl.class)))
-        .thenReturn(getCardResponses());
+        .thenReturn(getCardSelectionResponses());
     return r;
   }
 
@@ -143,7 +143,7 @@ public class AbsReaderTest extends CoreBaseTest {
     return cardSelectionRequests;
   }
 
-  public static List<CardResponse> getCardResponses() {
+  public static List<CardResponse> getCardSelectionResponses() {
     List<CardResponse> responses = new ArrayList<CardResponse>();
     responses.add(CardSelectionResponseTest.getACardResponse());
     return responses;

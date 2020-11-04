@@ -86,8 +86,8 @@ public abstract class AbstractReader implements ProxyReader {
    * {@inheritDoc}
    *
    * <p>This implementation of {@link ProxyReader#transmitCardSelectionRequests(List,
-   * MultiSelectionProcessing, ChannelControl)} is based on {@link #processSelectionRequests(List,
-   * MultiSelectionProcessing, ChannelControl)}.<br>
+   * MultiSelectionProcessing, ChannelControl)} is based on {@link
+   * #processCardSelectionRequests(List, MultiSelectionProcessing, ChannelControl)}.<br>
    * It adds a logging of exchanges including a measure of execution time, available at the debug
    * level.
    */
@@ -112,7 +112,8 @@ public abstract class AbstractReader implements ProxyReader {
 
     try {
       cardSelectionRespons =
-          processSelectionRequests(cardSelectionRequests, multiSelectionProcessing, channelControl);
+          processCardSelectionRequests(
+              cardSelectionRequests, multiSelectionProcessing, channelControl);
     } catch (KeypleReaderIOException ex) {
       if (logger.isDebugEnabled()) {
         long timeStamp = System.nanoTime();
@@ -156,7 +157,7 @@ public abstract class AbstractReader implements ProxyReader {
    * @see ProxyReader#transmitCardSelectionRequests(List, MultiSelectionProcessing, ChannelControl)
    * @since 0.9
    */
-  protected abstract List<CardSelectionResponse> processSelectionRequests(
+  protected abstract List<CardSelectionResponse> processCardSelectionRequests(
       List<CardSelectionRequest> cardSelectionRequests,
       MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl);

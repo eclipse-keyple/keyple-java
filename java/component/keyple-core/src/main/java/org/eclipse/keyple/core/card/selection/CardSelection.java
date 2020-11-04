@@ -118,7 +118,7 @@ public final class CardSelection {
 
     /* Check card responses */
     for (CardSelectionResponse cardSelectionResponse :
-        ((DefaultSelectionsResponse) defaultSelectionsResponse).getSelectionResponses()) {
+        ((DefaultSelectionsResponse) defaultSelectionsResponse).getCardSelectionResponses()) {
       /* test if the selection is successful: we should have either a FCI or an ATR */
       if (cardSelectionResponse != null
           && cardSelectionResponse.getSelectionStatus() != null
@@ -171,7 +171,9 @@ public final class CardSelection {
     if (logger.isTraceEnabled()) {
       logger.trace(
           "Process default CardSelectionResponse ({} response(s))",
-          ((DefaultSelectionsResponse) defaultSelectionsResponse).getSelectionResponses().size());
+          ((DefaultSelectionsResponse) defaultSelectionsResponse)
+              .getCardSelectionResponses()
+              .size());
     }
 
     return processSelection(defaultSelectionsResponse);

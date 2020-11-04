@@ -31,5 +31,5 @@ public abstract class AbstractDefaultSelectionsResponse {
    * @return A not empty list.
    * @since 0.9
    */
-  protected abstract List<CardSelectionResponse> getSelectionResponses();
+  protected abstract List<CardSelectionResponse> getCardSelectionResponses();
 }

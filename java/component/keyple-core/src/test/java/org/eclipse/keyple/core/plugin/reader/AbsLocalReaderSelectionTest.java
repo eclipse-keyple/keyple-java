@@ -96,7 +96,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     cardSelectionRequests.add(cardSelectionRequest);
 
     List<CardSelectionResponse> cardSelectionRespons =
-        r.processSelectionRequests(
+        r.processCardSelectionRequests(
             cardSelectionRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
     assertThat(cardSelectionRespons.get(0).getSelectionStatus().hasMatched()).isTrue();
@@ -120,7 +120,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     cardSelectionRequests.add(cardSelectionRequest);
 
     List<CardSelectionResponse> cardSelectionRespons =
-        r.processSelectionRequests(
+        r.processCardSelectionRequests(
             cardSelectionRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
     assertThat(cardSelectionRespons.get(0).getSelectionStatus().hasMatched()).isFalse();
@@ -145,7 +145,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     cardSelectionRequests.add(cardSelectionRequest);
 
     List<CardSelectionResponse> cardSelectionRespons =
-        r.processSelectionRequests(
+        r.processCardSelectionRequests(
             cardSelectionRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
     assertThat(cardSelectionRespons.get(0).getSelectionStatus().hasMatched()).isTrue();
@@ -166,7 +166,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     cardSelectionRequests.add(cardSelectionRequest);
 
     List<CardSelectionResponse> cardSelectionRespons =
-        r.processSelectionRequests(
+        r.processCardSelectionRequests(
             cardSelectionRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
     assertThat(cardSelectionRespons.get(0).getSelectionStatus().hasMatched()).isFalse();
@@ -195,7 +195,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     cardSelectionRequests.add(cardSelectionRequest);
 
     List<CardSelectionResponse> cardSelectionRespons =
-        r.processSelectionRequests(
+        r.processCardSelectionRequests(
             cardSelectionRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
     assertThat(cardSelectionRespons.get(0).getSelectionStatus().hasMatched()).isTrue();
@@ -233,7 +233,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     cardSelectionRequests.add(cardSelectionRequest);
 
     List<CardSelectionResponse> cardSelectionRespons =
-        r.processSelectionRequests(
+        r.processCardSelectionRequests(
             cardSelectionRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
     assertThat(cardSelectionRespons.get(0).getSelectionStatus().hasMatched()).isTrue();
@@ -258,7 +258,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     cardSelectionRequests.add(cardSelectionRequest);
 
     List<CardSelectionResponse> cardSelectionRespons =
-        r.processSelectionRequests(
+        r.processCardSelectionRequests(
             cardSelectionRequests, MultiSelectionProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
     assertThat(cardSelectionRespons.get(0).getSelectionStatus().hasMatched()).isTrue();

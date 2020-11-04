@@ -13,6 +13,7 @@ package org.eclipse.keyple.core.service.exception;
 
 import java.util.List;
 import org.eclipse.keyple.core.card.message.CardResponse;
+import org.eclipse.keyple.core.card.message.CardSelectionResponse;
 
 /**
  * The exception {@code KeypleReaderIOException} indicates that some IO operations with the reader
@@ -21,11 +22,11 @@ import org.eclipse.keyple.core.card.message.CardResponse;
 public class KeypleReaderIOException extends KeypleReaderException {
 
   /*
-   * CardResponse and list of CardResponse objects to carry partial responses in case of a breakdown
+   * CardResponse and list of CardSelectionResponse objects to carry partial responses in case of a breakdown
    * in communication with the card.
    */
   private CardResponse cardResponse;
-  private List<CardResponse> cardResponses;
+  private List<CardSelectionResponse> cardSelectionResponses;
 
   /** @param message the message to identify the exception context */
   public KeypleReaderIOException(String message) {
@@ -42,12 +43,12 @@ public class KeypleReaderIOException extends KeypleReaderException {
     super(message, cause);
   }
 
-  public List<CardResponse> getCardResponses() {
-    return cardResponses;
+  public List<CardSelectionResponse> getCardSelectionResponses() {
+    return cardSelectionResponses;
   }
 
-  public void setCardResponses(List<CardResponse> cardResponse) {
-    this.cardResponses = cardResponse;
+  public void setCardSelectionResponses(List<CardSelectionResponse> cardSelectionResponses) {
+    this.cardSelectionResponses = cardSelectionResponses;
   }
 
   public CardResponse getCardResponse() {

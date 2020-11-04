@@ -49,5 +49,5 @@ public abstract class AbstractDefaultSelectionsRequest {
    * @return A not empty list.
    * @since 0.9
    */
-  protected abstract List<CardSelectionRequest> getSelectionRequests();
+  protected abstract List<CardSelectionRequest> getCardSelectionRequests();
 }

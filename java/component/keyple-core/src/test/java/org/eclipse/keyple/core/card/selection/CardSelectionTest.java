@@ -63,7 +63,7 @@ public class CardSelectionTest extends CoreBaseTest {
 
     // get the cardRequest set
     List<org.eclipse.keyple.core.card.message.CardSelectionRequest> cardSelectionRequests =
-        selectionOperation.getSelectionRequests();
+        selectionOperation.getCardSelectionRequests();
     Assert.assertEquals(2, cardSelectionRequests.size());
 
     // get the two card requests

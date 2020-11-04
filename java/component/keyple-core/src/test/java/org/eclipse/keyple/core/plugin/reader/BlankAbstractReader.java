@@ -27,7 +27,7 @@ public class BlankAbstractReader extends AbstractReader {
   }
 
   @Override
-  protected List<CardSelectionResponse> processSelectionRequests(
+  protected List<CardSelectionResponse> processCardSelectionRequests(
       List<CardSelectionRequest> cardSelectionRequests,
       MultiSelectionProcessing multiSelectionProcessing,
       ChannelControl channelControl) {

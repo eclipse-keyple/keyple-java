@@ -305,9 +305,9 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     doReturn(CardSelectionResponseTest.getACardResponse())
         .when(r)
         .processCardRequest(any(CardRequest.class), any(ChannelControl.class));
-    doReturn(getSelectionResponses())
+    doReturn(getCardSelectionResponses())
         .when(r)
-        .processSelectionRequests(
+        .processCardSelectionRequests(
             any(List.class), any(MultiSelectionProcessing.class), any(ChannelControl.class));
     return r;
   }
@@ -342,7 +342,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     };
   }
 
-  public static List<CardSelectionResponse> getSelectionResponses() {
+  public static List<CardSelectionResponse> getCardSelectionResponses() {
     List<CardSelectionResponse> responses = new ArrayList<CardSelectionResponse>();
     responses.add(
         new CardSelectionResponse(
